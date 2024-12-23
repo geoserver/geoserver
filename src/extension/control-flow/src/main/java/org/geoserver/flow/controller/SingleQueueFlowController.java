@@ -27,8 +27,7 @@ public class SingleQueueFlowController implements FlowController {
 
     int controllerPriority;
 
-    public SingleQueueFlowController(
-            Predicate<Request> matcher, int controllerPriority, ThreadBlocker blocker) {
+    public SingleQueueFlowController(Predicate<Request> matcher, int controllerPriority, ThreadBlocker blocker) {
         this.controllerPriority = controllerPriority;
         this.matcher = matcher;
         this.blocker = blocker;

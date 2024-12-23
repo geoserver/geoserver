@@ -8,8 +8,8 @@ import java.awt.image.DataBuffer;
 import javax.media.jai.iterator.RandomIter;
 
 /**
- * Class used to return samples from an underlying randomIter, returning proper type of number
- * (integer, float, double), calling the proper getSampleXXX method.
+ * Class used to return samples from an underlying randomIter, returning proper type of number (integer, float, double),
+ * calling the proper getSampleXXX method.
  */
 abstract class Sampler {
 
@@ -50,7 +50,8 @@ abstract class Sampler {
         Number getSample(int x, int y, int b) {
             return randomIter.getSampleFloat(x, y, b);
         }
-    };
+    }
+    ;
 
     static class IntSampler extends Sampler {
         public IntSampler(RandomIter iter) {
@@ -61,7 +62,8 @@ abstract class Sampler {
         Number getSample(int x, int y, int b) {
             return randomIter.getSample(x, y, b);
         }
-    };
+    }
+    ;
 
     static class DoubleSampler extends Sampler {
         public DoubleSampler(RandomIter iter) {
@@ -72,5 +74,6 @@ abstract class Sampler {
         Number getSample(int x, int y, int b) {
             return randomIter.getSampleDouble(x, y, b);
         }
-    };
+    }
+    ;
 }

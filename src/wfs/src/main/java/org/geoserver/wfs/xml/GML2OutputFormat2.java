@@ -38,8 +38,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 
-public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
-        implements ComplexFeatureAwareFormat {
+public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
 
     Catalog catalog;
     GeoServerResourceLoader resourceLoader;
@@ -62,8 +61,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse results, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException {
 
         // declare wfs schema location
@@ -80,8 +78,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
 
             // load the metadata for the feature type
             String namespaceURI = featureType.getName().getNamespaceURI();
-            FeatureTypeInfo meta =
-                    catalog.getFeatureTypeByName(namespaceURI, featureType.getTypeName());
+            FeatureTypeInfo meta = catalog.getFeatureTypeByName(namespaceURI, featureType.getTypeName());
             if (meta == null)
                 throw new WFSException(
                         gft,
@@ -98,16 +95,10 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
         Collection<FeatureTypeInfo> featureTypes = ns2metas.values();
 
         // create the encoder
-        ApplicationSchemaXSD xsd =
-                new ApplicationSchemaXSD(
-                        null,
-                        catalog,
-                        gft.getBaseUrl(),
-                        org.geotools.wfs.v1_0.WFS.getInstance(),
-                        featureTypes);
+        ApplicationSchemaXSD xsd = new ApplicationSchemaXSD(
+                null, catalog, gft.getBaseUrl(), org.geotools.wfs.v1_0.WFS.getInstance(), featureTypes);
         Configuration configuration =
-                new ApplicationSchemaConfiguration(
-                        xsd, new org.geotools.wfs.v1_0.WFSConfiguration_1_0());
+                new ApplicationSchemaConfiguration(xsd, new org.geotools.wfs.v1_0.WFSConfiguration_1_0());
 
         Encoder encoder = new Encoder(configuration);
         // encoder.setEncoding(wfs.getCharSet());
@@ -117,8 +108,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
                 buildSchemaURL(gft.getBaseUrl(), "wfs/1.0.0/WFS-basic.xsd"));
 
         // declare application schema namespaces
-        Map<String, String> params =
-                params("service", "WFS", "version", "1.0.0", "request", "DescribeFeatureType");
+        Map<String, String> params = params("service", "WFS", "version", "1.0.0", "request", "DescribeFeatureType");
         for (MapIterator i = ns2metas.mapIterator(); i.hasNext(); ) {
             NamespaceInfo ns = (NamespaceInfo) i.next();
             String namespaceURI = ns.getURI();
@@ -137,8 +127,7 @@ public class GML2OutputFormat2 extends WFSGetFeatureOutputFormat
 
             // set the schema location
             params.put("typeName", typeNames.toString());
-            encoder.setSchemaLocation(
-                    namespaceURI, buildURL(gft.getBaseUrl(), "wfs", params, URLType.RESOURCE));
+            encoder.setSchemaLocation(namespaceURI, buildURL(gft.getBaseUrl(), "wfs", params, URLType.RESOURCE));
         }
 
         encoder.encode(results.getAdaptee(), org.geotools.wfs.v1_0.WFS.FeatureCollection, output);

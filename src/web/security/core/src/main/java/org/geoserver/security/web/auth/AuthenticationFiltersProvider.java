@@ -12,18 +12,14 @@ import org.geoserver.security.config.SecurityAuthFilterConfig;
 import org.geoserver.security.filter.GeoServerAuthenticationFilter;
 import org.geoserver.security.web.SecurityNamedServiceProvider;
 
-public class AuthenticationFiltersProvider
-        extends SecurityNamedServiceProvider<SecurityAuthFilterConfig> {
+public class AuthenticationFiltersProvider extends SecurityNamedServiceProvider<SecurityAuthFilterConfig> {
 
     @Override
     protected List<SecurityAuthFilterConfig> getItems() {
         List<SecurityAuthFilterConfig> result = new ArrayList<>();
         try {
-            for (String name :
-                    getSecurityManager().listFilters(GeoServerAuthenticationFilter.class)) {
-                result.add(
-                        (SecurityAuthFilterConfig)
-                                getSecurityManager().loadFilterConfig(name, false));
+            for (String name : getSecurityManager().listFilters(GeoServerAuthenticationFilter.class)) {
+                result.add((SecurityAuthFilterConfig) getSecurityManager().loadFilterConfig(name, false));
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);

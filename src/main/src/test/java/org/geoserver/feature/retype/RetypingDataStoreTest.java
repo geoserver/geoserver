@@ -75,14 +75,13 @@ public class RetypingDataStoreTest {
         IOUtils.copy(properties.openStream(), new File(data, fileName));
 
         PropertyDataStore pds = new PropertyDataStore(data);
-        rts =
-                new RetypingDataStore(pds) {
-                    @Override
-                    protected String transformFeatureTypeName(String originalName) {
-                        if (originalName.equals(MockData.BUILDINGS.getLocalPart())) return RENAMED;
-                        else return super.transformFeatureTypeName(originalName);
-                    }
-                };
+        rts = new RetypingDataStore(pds) {
+            @Override
+            protected String transformFeatureTypeName(String originalName) {
+                if (originalName.equals(MockData.BUILDINGS.getLocalPart())) return RENAMED;
+                else return super.transformFeatureTypeName(originalName);
+            }
+        };
 
         // build a filter that will retrieve one feature only
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
@@ -199,14 +198,13 @@ public class RetypingDataStoreTest {
     }
 
     /**
-     * This test is made with mock objects because the property data store does not generate fids in
-     * the <type>.<id> form
+     * This test is made with mock objects because the property data store does not generate fids in the <type>.<id>
+     * form
      */
     @SuppressWarnings("unchecked")
     @Test
     public void testAppend() throws Exception {
-        SimpleFeatureType type =
-                DataUtilities.createType("trees", "the_geom:Point,FID:String,NAME:String");
+        SimpleFeatureType type = DataUtilities.createType("trees", "the_geom:Point,FID:String,NAME:String");
 
         SimpleFeatureStore fs = createMock(SimpleFeatureStore.class);
         expect(fs.addFeatures(isA(FeatureCollection.class)))
@@ -219,13 +217,12 @@ public class RetypingDataStoreTest {
         expect(ds.getFeatureSource("trees")).andReturn(fs);
         replay(ds);
 
-        RetypingDataStore rts =
-                new RetypingDataStore(ds) {
-                    @Override
-                    protected String transformFeatureTypeName(String originalName) {
-                        return "oaks";
-                    }
-                };
+        RetypingDataStore rts = new RetypingDataStore(ds) {
+            @Override
+            protected String transformFeatureTypeName(String originalName) {
+                return "oaks";
+            }
+        };
 
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(type);
         WKTReader reader = new WKTReader();

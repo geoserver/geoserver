@@ -28,8 +28,7 @@ import org.geotools.util.factory.FactoryRegistry;
 /** Locates the available {@link org.geotools.dggs.DGGSFactory} instances */
 public class DGGSFactoryFinder {
 
-    protected static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(DGGSFactoryFinder.class);
+    protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(DGGSFactoryFinder.class);
 
     /** The service registry for this manager. Will be initialized only when first needed. */
     private static volatile FactoryRegistry registry;
@@ -38,15 +37,12 @@ public class DGGSFactoryFinder {
     private DGGSFactoryFinder() {}
 
     /**
-     * Finds all implementations of {@link DGGSFactory} which have registered using the services
-     * mechanism.
+     * Finds all implementations of {@link DGGSFactory} which have registered using the services mechanism.
      *
      * @return An iterator over all discovered DGGSFactory.
      */
     public static synchronized Stream<DGGSFactory> getExtensionFactories() {
-        return getServiceRegistry()
-                .getFactories(DGGSFactory.class, null, null)
-                .filter(DGGSFactory::isAvailable);
+        return getServiceRegistry().getFactories(DGGSFactory.class, null, null).filter(DGGSFactory::isAvailable);
     }
 
     /**
@@ -68,29 +64,22 @@ public class DGGSFactoryFinder {
         return getExtensionFactories().map(f -> f.getId());
     }
 
-    /**
-     * Returns the service registry. The registry will be created the first time this method is
-     * invoked.
-     */
+    /** Returns the service registry. The registry will be created the first time this method is invoked. */
     private static FactoryRegistry getServiceRegistry() {
         assert Thread.holdsLock(DGGSFactoryFinder.class);
         if (registry == null) {
-            registry =
-                    new FactoryCreator(
-                            Arrays.asList(
-                                    new Class<?>[] {
-                                        DGGSFactory.class,
-                                    }));
+            registry = new FactoryCreator(Arrays.asList(new Class<?>[] {
+                DGGSFactory.class,
+            }));
         }
         return registry;
     }
 
     /**
-     * Scans for factory plug-ins on the application class path. This method is needed because the
-     * application class path can theoretically change, or additional plug-ins may become available.
-     * Rather than re-scanning the classpath on every invocation of the API, the class path is
-     * scanned automatically only on the first invocation. Clients can call this method to prompt a
-     * re-scan. Thus this method need only be invoked by sophisticated applications which
+     * Scans for factory plug-ins on the application class path. This method is needed because the application class
+     * path can theoretically change, or additional plug-ins may become available. Rather than re-scanning the classpath
+     * on every invocation of the API, the class path is scanned automatically only on the first invocation. Clients can
+     * call this method to prompt a re-scan. Thus this method need only be invoked by sophisticated applications which
      * dynamically make new plug-ins available at runtime.
      */
     public static synchronized void scanForPlugins() {
@@ -105,19 +94,13 @@ public class DGGSFactoryFinder {
      * @return
      * @throws IOException
      */
-    public static DGGSInstance createInstance(String factoryId, Map<String, ?> params)
-            throws IOException {
-        if (factoryId == null)
-            throw new IllegalArgumentException("Cannot create a store with a missing factory id");
+    public static DGGSInstance createInstance(String factoryId, Map<String, ?> params) throws IOException {
+        if (factoryId == null) throw new IllegalArgumentException("Cannot create a store with a missing factory id");
 
-        DGGSFactory factory =
-                DGGSFactoryFinder.getExtensionFactories()
-                        .filter(f -> factoryId.equals(f.getId()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "Cannot find DGGS factory for id " + factoryId));
+        DGGSFactory factory = DGGSFactoryFinder.getExtensionFactories()
+                .filter(f -> factoryId.equals(f.getId()))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Cannot find DGGS factory for id " + factoryId));
         return factory.createInstance(params);
     }
 }

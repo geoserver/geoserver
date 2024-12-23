@@ -28,8 +28,7 @@ abstract class AbstractGetLegendGraphicResponse extends Response {
     @Override
     public boolean canHandle(Operation operation) {
         Object[] parameters = operation.getParameters();
-        GetLegendGraphicRequest request =
-                OwsUtils.parameter(parameters, GetLegendGraphicRequest.class);
+        GetLegendGraphicRequest request = OwsUtils.parameter(parameters, GetLegendGraphicRequest.class);
         return request != null && getOutputFormats().contains(request.getFormat());
     }
 }

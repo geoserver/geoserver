@@ -18,9 +18,9 @@ import javax.servlet.http.HttpServletRequestWrapper;
 /**
  * A servlet filter that allows for advanced dispatching.
  *
- * <p>This fiter allows for a single mapping from web.xml for all requests to the spring dispatcher.
- * It creates a wrapper around the servlet request object that "fakes" the serveltPath property to
- * make it look like the mapping was created in web.xml when in actuality it was created in spring.
+ * <p>This fiter allows for a single mapping from web.xml for all requests to the spring dispatcher. It creates a
+ * wrapper around the servlet request object that "fakes" the serveltPath property to make it look like the mapping was
+ * created in web.xml when in actuality it was created in spring.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -84,9 +84,7 @@ public class AdvancedDispatchFilter implements Filter {
 
         @Override
         public String getServletPath() {
-            return servletPath != null
-                    ? servletPath
-                    : ((HttpServletRequest) getRequest()).getServletPath();
+            return servletPath != null ? servletPath : ((HttpServletRequest) getRequest()).getServletPath();
         }
     }
 }

@@ -76,9 +76,7 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
 
         tester.assertComponent("form:tabs:panel:batchesFound", Label.class);
 
-        tester.assertModelValue(
-                "form:tabs:panel:batchesFound",
-                "Found 0 batches that match the specified criteria");
+        tester.assertModelValue("form:tabs:panel:batchesFound", "Found 0 batches that match the specified criteria");
 
         FormTester formTester = tester.newFormTester("form");
 
@@ -88,17 +86,13 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
 
         tester.executeAjaxEvent("form:tabs:panel:configuration", "change");
 
-        tester.assertModelValue(
-                "form:tabs:panel:batchesFound",
-                "Found 2 batches that match the specified criteria");
+        tester.assertModelValue("form:tabs:panel:batchesFound", "Found 2 batches that match the specified criteria");
 
         formTester.setValue("tabs:panel:name", "Q%");
 
         tester.executeAjaxEvent("form:tabs:panel:name", "change");
 
-        tester.assertModelValue(
-                "form:tabs:panel:batchesFound",
-                "Found 1 batches that match the specified criteria");
+        tester.assertModelValue("form:tabs:panel:batchesFound", "Found 1 batches that match the specified criteria");
 
         formTester.setValue("tabs:panel:name", "%");
 
@@ -142,10 +136,8 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         formTester.select("tabs:panel:template", 0);
 
         File csv = File.createTempFile("import", ".csv");
-        FileUtils.writeStringToFile(
-                csv, "name;description\na;aaa\nb;bbb\n", StandardCharsets.UTF_8);
-        formTester.setFile(
-                "tabs:panel:fileUpload", new org.apache.wicket.util.file.File(csv), "text/csv");
+        FileUtils.writeStringToFile(csv, "name;description\na;aaa\nb;bbb\n", StandardCharsets.UTF_8);
+        formTester.setFile("tabs:panel:fileUpload", new org.apache.wicket.util.file.File(csv), "text/csv");
         formTester.submit("tabs:panel:import");
         tester.assertModelValue(
                 "form:tabs:panel:dialog:dialog:content:form:userPanel",
@@ -208,8 +200,7 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         tester.assertComponent("form:tabs:panel:configsFound", Label.class);
 
         tester.assertModelValue(
-                "form:tabs:panel:configsFound",
-                "Found 2 configurations that match the specified criteria");
+                "form:tabs:panel:configsFound", "Found 2 configurations that match the specified criteria");
 
         FormTester formTester = tester.newFormTester("form");
 
@@ -220,8 +211,7 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
         tester.executeAjaxEvent("form:tabs:panel:configuration", "change");
 
         tester.assertModelValue(
-                "form:tabs:panel:configsFound",
-                "Found 1 configurations that match the specified criteria");
+                "form:tabs:panel:configsFound", "Found 1 configurations that match the specified criteria");
 
         formTester.setValue("tabs:panel:configuration", "%");
 
@@ -242,8 +232,7 @@ public class BulkOperationsTest extends AbstractWicketTaskManagerTest {
             batch1 = dao.reload(batch1);
         } while (batch1 == null
                 || batch1.getLatestBatchRun() != null
-                        && batch1.getLatestBatchRun().getBatchRun().getStatus()
-                                != Status.COMMITTED);
+                        && batch1.getLatestBatchRun().getBatchRun().getStatus() != Status.COMMITTED);
 
         Thread.sleep(100);
         config1 = dao.reload(config1);

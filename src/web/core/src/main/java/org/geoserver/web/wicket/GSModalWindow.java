@@ -20,8 +20,7 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.util.io.IClusterable;
 
 /**
- * Temprary replacement for the pre-Wicket 9 GSModalWindow. Should be rewritten using Wicket9+ modal
- * window facilities
+ * Temprary replacement for the pre-Wicket 9 GSModalWindow. Should be rewritten using Wicket9+ modal window facilities
  */
 public class GSModalWindow extends Panel {
 
@@ -49,41 +48,34 @@ public class GSModalWindow extends Panel {
         this.panel = new ContentsPanel(ModalDialog.CONTENT_ID);
         this.panel.add(new WebMarkupContainer(TITLE_ID));
         this.panel.add(new WebMarkupContainer(ModalDialog.CONTENT_ID));
-        this.panel.add(
-                new AjaxLink<>("close") {
+        this.panel.add(new AjaxLink<>("close") {
 
-                    private static final long serialVersionUID = 8414211581955106952L;
+            private static final long serialVersionUID = 8414211581955106952L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        if (closeButtonCallback == null
-                                || closeButtonCallback.onCloseButtonClicked(target)) {
-                            close(target);
-                        }
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if (closeButtonCallback == null || closeButtonCallback.onCloseButtonClicked(target)) {
+                    close(target);
+                }
+            }
+        });
         this.delegate.setContent(this.panel);
     }
 
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
+        response.render(CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/modal.css")));
         response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(getClass(), "modal/modal.css")));
+                CssHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.css")));
         response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(getClass(), "modal/GSModalWindow.css")));
-        response.render(
-                JavaScriptHeaderItem.forReference(
-                        new PackageResourceReference(getClass(), "modal/GSModalWindow.js")));
+                JavaScriptHeaderItem.forReference(new PackageResourceReference(getClass(), "modal/GSModalWindow.js")));
     }
 
     public void close(AjaxRequestTarget target) {
         this.delegate.close(target);
         if (this.unloadConfirmation) {
-            target.prependJavaScript(
-                    "\n  $(window).off('beforeunload', GSModalWindow.onbeforeunload);");
+            target.prependJavaScript("\n  $(window).off('beforeunload', GSModalWindow.onbeforeunload);");
         }
         if (this.windowClosedCallback != null) {
             this.windowClosedCallback.onClose(target);

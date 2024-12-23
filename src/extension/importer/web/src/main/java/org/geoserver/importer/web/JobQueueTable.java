@@ -19,49 +19,45 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 
 public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
 
-    static final Property<Task<ImportContext>> IMPORT =
-            new AbstractProperty<>("import") {
-                @Override
-                public Object getPropertyValue(Task<ImportContext> item) {
-                    // have to check for null since the job might be out of the queue
-                    return item != null ? item.toString() : "null";
-                }
-            };
+    static final Property<Task<ImportContext>> IMPORT = new AbstractProperty<>("import") {
+        @Override
+        public Object getPropertyValue(Task<ImportContext> item) {
+            // have to check for null since the job might be out of the queue
+            return item != null ? item.toString() : "null";
+        }
+    };
 
-    static final Property<Task<ImportContext>> STATUS =
-            new AbstractProperty<>("status") {
-                @Override
-                public Object getPropertyValue(Task<ImportContext> item) {
-                    if (item == null) {
-                        return "Finished";
-                    }
+    static final Property<Task<ImportContext>> STATUS = new AbstractProperty<>("status") {
+        @Override
+        public Object getPropertyValue(Task<ImportContext> item) {
+            if (item == null) {
+                return "Finished";
+            }
 
-                    return item.isCancelled()
-                            ? "Cancelled"
-                            : item.isDone() ? "Finished" : item.isStarted() ? "Running" : "Pending";
-                }
-            };
+            return item.isCancelled()
+                    ? "Cancelled"
+                    : item.isDone() ? "Finished" : item.isStarted() ? "Running" : "Pending";
+        }
+    };
 
     public JobQueueTable(String id) {
-        super(
-                id,
-                new GeoServerDataProvider<>() {
+        super(id, new GeoServerDataProvider<>() {
 
-                    @Override
-                    protected List<Property<Task<ImportContext>>> getProperties() {
-                        return Arrays.asList(IMPORT, STATUS);
-                    }
+            @Override
+            protected List<Property<Task<ImportContext>>> getProperties() {
+                return Arrays.asList(IMPORT, STATUS);
+            }
 
-                    @Override
-                    protected List<Task<ImportContext>> getItems() {
-                        return ImporterWebUtils.importer().getTasks();
-                    }
+            @Override
+            protected List<Task<ImportContext>> getItems() {
+                return ImporterWebUtils.importer().getTasks();
+            }
 
-                    @Override
-                    protected IModel<Task<ImportContext>> newModel(Task<ImportContext> object) {
-                        return new JobModel(object);
-                    }
-                });
+            @Override
+            protected IModel<Task<ImportContext>> newModel(Task<ImportContext> object) {
+                return new JobModel(object);
+            }
+        });
 
         setOutputMarkupId(true);
         setFilterable(false);
@@ -70,9 +66,7 @@ public class JobQueueTable extends GeoServerTablePanel<Task<ImportContext>> {
 
     @Override
     protected Component getComponentForProperty(
-            String id,
-            IModel<Task<ImportContext>> itemModel,
-            Property<Task<ImportContext>> property) {
+            String id, IModel<Task<ImportContext>> itemModel, Property<Task<ImportContext>> property) {
         return new Label(id, property.getModel(itemModel));
     }
 

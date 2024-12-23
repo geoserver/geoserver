@@ -67,26 +67,21 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             TokenValidator bearerTokenValidator) {
         super(config, tokenServices, oauth2SecurityConfiguration, oauth2RestTemplate);
         // reconfigure the token services
-        if (tokenServices instanceof OpenIdConnectTokenServices
-                && config instanceof OpenIdConnectFilterConfig) {
+        if (tokenServices instanceof OpenIdConnectTokenServices && config instanceof OpenIdConnectFilterConfig) {
 
             OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
 
             ((OpenIdConnectTokenServices) tokenServices).setConfiguration(idConfig);
             AuthorizationCodeAccessTokenProvider provider =
-                    (AuthorizationCodeAccessTokenProvider)
-                            GeoServerExtensions.bean("authorizationAccessTokenProvider");
-            if (idConfig.isUsePKCE())
-                provider.setTokenRequestEnhancer(new PKCERequestEnhancer(idConfig));
-            else if (idConfig.isSendClientSecret())
-                provider.setTokenRequestEnhancer(new ClientSecretRequestEnhancer());
+                    (AuthorizationCodeAccessTokenProvider) GeoServerExtensions.bean("authorizationAccessTokenProvider");
+            if (idConfig.isUsePKCE()) provider.setTokenRequestEnhancer(new PKCERequestEnhancer(idConfig));
+            else if (idConfig.isSendClientSecret()) provider.setTokenRequestEnhancer(new ClientSecretRequestEnhancer());
             else provider.setTokenRequestEnhancer(new DefaultRequestEnhancer());
         }
         // reconfigure the configuration, allow building a useful rest template
         if (oauth2SecurityConfiguration instanceof OpenIdConnectSecurityConfiguration
                 && config instanceof OpenIdConnectFilterConfig) {
-            OpenIdConnectSecurityConfiguration sc =
-                    (OpenIdConnectSecurityConfiguration) oauth2SecurityConfiguration;
+            OpenIdConnectSecurityConfiguration sc = (OpenIdConnectSecurityConfiguration) oauth2SecurityConfiguration;
             OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
             sc.setConfiguration(idConfig);
         }
@@ -94,8 +89,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     }
 
     @Override
-    protected void enhanceAccessTokenRequest(
-            HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
+    protected void enhanceAccessTokenRequest(HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
         super.enhanceAccessTokenRequest(httpRequest, accessTokenRequest);
 
         OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) filterConfig;
@@ -117,17 +111,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             return null;
         }
 
-        OAuth2AuthenticationType type =
-                (OAuth2AuthenticationType) req.getAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY);
-        if ((type != null)
-                && (type.equals(OAuth2AuthenticationType.BEARER))
-                && (bearerTokenValidator != null)) {
+        OAuth2AuthenticationType type = (OAuth2AuthenticationType) req.getAttribute(OAUTH2_AUTHENTICATION_TYPE_KEY);
+        if ((type != null) && (type.equals(OAuth2AuthenticationType.BEARER)) && (bearerTokenValidator != null)) {
             if (!((OpenIdConnectFilterConfig) filterConfig).isAllowBearerTokens()) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
-                throw new IOException(
-                        "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
+                LOGGER.log(Level.WARNING, "OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
+                throw new IOException("OIDC: received an attached Bearer token, but Bearer tokens aren't allowed!");
             }
             // we must validate
 
@@ -142,19 +130,16 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     }
 
     private void validateBearerToken(HttpServletRequest req) throws Exception {
-        String accessToken =
-                (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
+        String accessToken = (String) req.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
         Map userinfoMap = (Map) req.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
 
         JWT jwt = JWTParser.parse(accessToken);
 
         if (jwt.getJWTClaimsSet() != null) {
-            Map accessTokenClaims =
-                    Optional.ofNullable(jwt.getJWTClaimsSet())
-                            .map(cs -> cs.getClaims())
-                            .orElse(Collections.emptyMap());
-            bearerTokenValidator.verifyToken(
-                    (OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
+            Map accessTokenClaims = Optional.ofNullable(jwt.getJWTClaimsSet())
+                    .map(cs -> cs.getClaims())
+                    .orElse(Collections.emptyMap());
+            bearerTokenValidator.verifyToken((OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
         } else if (jwt instanceof JWEObject) {
             if (tokenServices instanceof OpenIdConnectTokenServices) {
                 OpenIdConnectTokenServices ots = (OpenIdConnectTokenServices) tokenServices;
@@ -163,8 +148,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
                     throw new Exception("Bearer token is not active");
                 }
             } else {
-                throw new Exception(
-                        "Cannot verify bearer token, please setup an introspection endpoint");
+                throw new Exception("Cannot verify bearer token, please setup an introspection endpoint");
             }
         } else {
             throw new Exception("Bearer token validation not supported for this configuration");
@@ -172,8 +156,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     }
 
     @Override
-    protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
-            throws IOException {
+    protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal) throws IOException {
         RoleSource rs = getRoleSource();
         if (rs == null) {
             LOGGER.log(
@@ -191,21 +174,15 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         OpenIdRoleSource oirs = (OpenIdRoleSource) rs;
 
         if (filterConfig.isAllowUnSecureLogging()) {
-            String rolesAttributePath =
-                    ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+            String rolesAttributePath = ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
             LOGGER.log(
-                    Level.FINE,
-                    "OIDC: Getting Roles from {0}, location={1}",
-                    new Object[] {oirs, rolesAttributePath});
+                    Level.FINE, "OIDC: Getting Roles from {0}, location={1}", new Object[] {oirs, rolesAttributePath});
         }
         Collection<GeoServerRole> result = null;
         switch (oirs) {
             case AccessToken:
-                result =
-                        getRolesFromToken(
-                                (String)
-                                        request.getAttribute(
-                                                OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
+                result = getRolesFromToken(
+                        (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE));
                 break;
             case IdToken:
                 result = getRolesFromToken((String) request.getAttribute(ID_TOKEN_VALUE));
@@ -236,11 +213,9 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         return result;
     }
 
-    private Collection<GeoServerRole> getRolesFromMSGraphAPI(HttpServletRequest request)
-            throws IOException {
+    private Collection<GeoServerRole> getRolesFromMSGraphAPI(HttpServletRequest request) throws IOException {
         try {
-            String accessToken =
-                    (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
+            String accessToken = (String) request.getAttribute(OAuth2AuthenticationDetails.ACCESS_TOKEN_VALUE);
             MSGraphRolesResolver resolver = new MSGraphRolesResolver();
 
             List<String> groupIds = resolver.resolveRoles(accessToken);
@@ -283,16 +258,14 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     //
     // NOTE: in oauth2 this is the "check access token" endpoint.  In oidc this is the userinfo
     // endpoint.
-    private Collection<GeoServerRole> getRolesFromUserInfo(HttpServletRequest request)
-            throws IOException {
+    private Collection<GeoServerRole> getRolesFromUserInfo(HttpServletRequest request) throws IOException {
 
         Map userinfoMap = (Map) request.getAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
         if (userinfoMap == null) {
             return null;
         }
 
-        String rolesAttributePath =
-                ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+        String rolesAttributePath = ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
         Object o = extractFromJSON(userinfoMap, rolesAttributePath);
 
         List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
@@ -300,20 +273,18 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     }
 
     /**
-     * Given a part of the json, jsonObject, (from rolesAttributePath in the main json object),
-     * generate GeoServerRole roles.
+     * Given a part of the json, jsonObject, (from rolesAttributePath in the main json object), generate GeoServerRole
+     * roles.
      *
      * <p>jsonObject can either be a single String or a list-of-Strings.
      *
-     * @param rolesAttributePath for logging purposes - where are we looking for the role
-     *     information?
+     * @param rolesAttributePath for logging purposes - where are we looking for the role information?
      * @param jsonObject should be either a String or list-of-String
      * @return
      * @throws IOException
      */
     @SuppressWarnings("unchecked")
-    private List<GeoServerRole> getGeoServerRoles(String rolesAttributePath, Object jsonObject)
-            throws IOException {
+    private List<GeoServerRole> getGeoServerRoles(String rolesAttributePath, Object jsonObject) throws IOException {
         List<GeoServerRole> result = new ArrayList<>();
         if (jsonObject instanceof String) {
             result.add(new GeoServerRole((String) jsonObject));
@@ -321,10 +292,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             ((List) jsonObject).stream().forEach(v -> result.add(new GeoServerRole((String) v)));
         } else {
             LOGGER.log(
-                    Level.FINE,
-                    "Did not find "
-                            + rolesAttributePath
-                            + " in the token, returning an empty role list");
+                    Level.FINE, "Did not find " + rolesAttributePath + " in the token, returning an empty role list");
         }
         if (!result.isEmpty()) {
             enrichWithRoleCalculator(result);
@@ -340,8 +308,7 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         try {
             JOSEObject jo = JOSEObject.parse(token);
             String claims = jo.getPayload().toString();
-            String rolesAttributePath =
-                    ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
+            String rolesAttributePath = ((OpenIdConnectFilterConfig) this.filterConfig).getTokenRolesClaim();
             Object o = extractFromJSON(claims, rolesAttributePath);
             List<GeoServerRole> result = getGeoServerRoles(rolesAttributePath, o);
 
@@ -358,15 +325,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     }
 
     @Override
-    public void logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
         String idToken = null;
         if (request.getAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE) != null) {
-            idToken =
-                    (String) request.getAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE);
+            idToken = (String) request.getAttribute(OpenIdConnectAuthenticationFilter.ID_TOKEN_VALUE);
         } else {
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
             if (token != null && token.getAdditionalInformation() != null) {
@@ -377,8 +340,9 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             }
         }
 
-        final String endSessionUrl =
-                ((OpenIdConnectFilterConfig) filterConfig).buildEndSessionUrl(idToken).toString();
+        final String endSessionUrl = ((OpenIdConnectFilterConfig) filterConfig)
+                .buildEndSessionUrl(idToken)
+                .toString();
         super.logout(request, response, authentication);
 
         request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, endSessionUrl);

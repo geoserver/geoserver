@@ -26,8 +26,8 @@ import org.springframework.stereotype.Repository;
 /**
  * Implementation.
  *
- * <p>Node: values for templates that are lists are added in front of the user defined values in
- * order to keep the indexes in the description map constant even when the user modifies the list.
+ * <p>Node: values for templates that are lists are added in front of the user defined values in order to keep the
+ * indexes in the description map constant even when the user modifies the list.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
@@ -37,13 +37,12 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
     private static final Logger LOGGER = Logging.getLogger(ComplexMetadataServiceImpl.class);
 
-    @Autowired ConfigurationService configService;
+    @Autowired
+    ConfigurationService configService;
 
     @Override
     public void merge(
-            ComplexMetadataMap destination,
-            List<ComplexMetadataMap> sources,
-            Map<String, List<Integer>> derivedAtts) {
+            ComplexMetadataMap destination, List<ComplexMetadataMap> sources, Map<String, List<Integer>> derivedAtts) {
 
         clearTemplateData(destination, derivedAtts);
 
@@ -55,14 +54,11 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     }
 
     private void mergeAttributes(
-            ComplexMetadataMap destination,
-            ComplexMetadataMap source,
-            Map<String, List<Integer>> derivedAtts) {
+            ComplexMetadataMap destination, ComplexMetadataMap source, Map<String, List<Integer>> derivedAtts) {
         for (AttributeConfiguration attribute :
                 configService.getMetadataConfiguration().getAttributes()) {
             // keep track of the values that are from the template
-            List<Integer> indexes =
-                    derivedAtts.computeIfAbsent(attribute.getKey(), key -> new ArrayList<>());
+            List<Integer> indexes = derivedAtts.computeIfAbsent(attribute.getKey(), key -> new ArrayList<>());
 
             if (attribute.getFieldType() == FieldTypeEnum.COMPLEX) {
                 mergeComplexField(attribute, destination, source, indexes);
@@ -93,10 +89,9 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                 if (sourceSize > 0) {
                     // SHIFT user content
                     for (int i = destination.size(attribute.getKey()) - 1; i >= startIndex; i--) {
-                        Serializable value =
-                                destination
-                                        .get(Serializable.class, attribute.getKey(), i)
-                                        .getValue();
+                        Serializable value = destination
+                                .get(Serializable.class, attribute.getKey(), i)
+                                .getValue();
                         if (!contains(source, attribute, value)) {
                             destination
                                     .get(Serializable.class, attribute.getKey(), i + sourceSize)
@@ -111,7 +106,8 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
                 // insert template content
                 for (int i = 0; i < sourceSize; i++) {
-                    sourceValue = source.get(Serializable.class, attribute.getKey(), i).getValue();
+                    sourceValue = source.get(Serializable.class, attribute.getKey(), i)
+                            .getValue();
                     int index = startIndex + i;
                     indexes.add(index);
                     destination
@@ -121,10 +117,10 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         }
     }
 
-    private boolean contains(
-            ComplexMetadataMap source, AttributeConfiguration attribute, Serializable value) {
+    private boolean contains(ComplexMetadataMap source, AttributeConfiguration attribute, Serializable value) {
         for (int i = 0; i < source.size(attribute.getKey()); i++) {
-            Serializable other = source.get(Serializable.class, attribute.getKey(), i).getValue();
+            Serializable other =
+                    source.get(Serializable.class, attribute.getKey(), i).getValue();
             if (value == null && other == null || value != null && value.equals(other)) {
                 return true;
             }
@@ -155,8 +151,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                     for (int i = destination.size(attribute.getKey()) - 1; i >= startIndex; i--) {
                         ComplexMetadataMap orig = destination.subMap(attribute.getKey(), i);
                         if (!containsComplex(source, attribute, orig)) {
-                            ComplexMetadataMap shifted =
-                                    destination.subMap(attribute.getKey(), i + sourceSize);
+                            ComplexMetadataMap shifted = destination.subMap(attribute.getKey(), i + sourceSize);
                             copy(orig, shifted, attribute.getTypename());
                         } else {
                             // remove duplicates from templates
@@ -170,8 +165,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                 for (int i = 0; i < source.size(attribute.getKey()); i++) {
                     ComplexMetadataMap sourceMap = source.subMap(attribute.getKey(), i);
                     int index = startIndex + i;
-                    ComplexMetadataMap destinationMap =
-                            destination.subMap(attribute.getKey(), index);
+                    ComplexMetadataMap destinationMap = destination.subMap(attribute.getKey(), index);
                     indexes.add(index);
                     copy(sourceMap, destinationMap, attribute.getTypename());
                 }
@@ -195,17 +189,15 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
 
         for (AttributeConfiguration config : typeConfiguration.getAttributes()) {
             if (config.getFieldType() != FieldTypeEnum.COMPLEX) {
-                Serializable value = map.get(Serializable.class, config.getKey()).getValue();
-                Serializable otherValue = other.get(Serializable.class, config.getKey()).getValue();
-                if (!(value == null && otherValue == null
-                        || value != null && value.equals(otherValue))) {
+                Serializable value =
+                        map.get(Serializable.class, config.getKey()).getValue();
+                Serializable otherValue =
+                        other.get(Serializable.class, config.getKey()).getValue();
+                if (!(value == null && otherValue == null || value != null && value.equals(otherValue))) {
                     return false;
                 }
             } else {
-                if (!equals(
-                        map.subMap(config.getKey()),
-                        other.subMap(config.getKey()),
-                        config.getTypename())) {
+                if (!equals(map.subMap(config.getKey()), other.subMap(config.getKey()), config.getTypename())) {
                     return false;
                 }
             }
@@ -213,8 +205,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         return true;
     }
 
-    private void clearTemplateData(
-            ComplexMetadataMap destination, Map<String, List<Integer>> derivedAtts) {
+    private void clearTemplateData(ComplexMetadataMap destination, Map<String, List<Integer>> derivedAtts) {
         if (derivedAtts != null) {
             for (String key : derivedAtts.keySet()) {
                 AttributeConfiguration attConfig =
@@ -242,8 +233,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
             for (AttributeConfiguration config : attCollection.getAttributes()) {
                 int size;
                 if (config.getFieldType() != FieldTypeEnum.COMPLEX) {
-                    if (config.getOccurrence() == OccurrenceEnum.REPEAT
-                            && (size = map.size(config.getKey())) > 0) {
+                    if (config.getOccurrence() == OccurrenceEnum.REPEAT && (size = map.size(config.getKey())) > 0) {
                         for (int i = 0; i < size; i++) {
                             map.get(Serializable.class, config.getKey(), i).init();
                         }
@@ -251,8 +241,7 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
                         map.get(Serializable.class, config.getKey()).init();
                     }
                 } else {
-                    if (config.getOccurrence() == OccurrenceEnum.REPEAT
-                            && (size = map.size(config.getKey())) > 0) {
+                    if (config.getOccurrence() == OccurrenceEnum.REPEAT && (size = map.size(config.getKey())) > 0) {
                         for (int i = 0; i < size; i++) {
                             init(map.subMap(config.getKey(), i), config.getTypename());
                         }
@@ -265,27 +254,18 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     }
 
     @Override
-    public void copy(
-            ComplexMetadataMap source,
-            ComplexMetadataMap dest,
-            String typeName,
-            boolean ignoreUUID) {
+    public void copy(ComplexMetadataMap source, ComplexMetadataMap dest, String typeName, boolean ignoreUUID) {
         AttributeCollection attCollection = getAttributeCollection(typeName);
 
         for (AttributeConfiguration config : attCollection.getAttributes()) {
             if (config.getFieldType() != FieldTypeEnum.COMPLEX) {
                 if (!ignoreUUID || config.getFieldType() != FieldTypeEnum.UUID) {
                     dest.get(Serializable.class, config.getKey())
-                            .setValue(
-                                    ComplexMetadataMapImpl.dimCopy(
-                                            source.get(Serializable.class, config.getKey())
-                                                    .getValue()));
+                            .setValue(ComplexMetadataMapImpl.dimCopy(source.get(Serializable.class, config.getKey())
+                                    .getValue()));
                 }
             } else {
-                copy(
-                        source.subMap(config.getKey()),
-                        dest.subMap(config.getKey()),
-                        config.getTypename());
+                copy(source.subMap(config.getKey()), dest.subMap(config.getKey()), config.getTypename());
             }
         }
     }
@@ -308,30 +288,29 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
         if (attCollection != null) {
             for (AttributeConfiguration config : attCollection.getAttributes()) {
                 if (config.getFieldType() == FieldTypeEnum.DERIVED) {
-                    AttributeConfiguration derivedFrom =
-                            attCollection.findAttribute(config.getDerivedFrom());
+                    AttributeConfiguration derivedFrom = attCollection.findAttribute(config.getDerivedFrom());
                     if (derivedFrom != null) {
                         if (config.getOccurrence() == OccurrenceEnum.REPEAT) {
                             map.delete(config.getKey());
                             for (int i = 0; i < map.size(derivedFrom.getKey()); i++) {
-                                String value =
-                                        map.get(String.class, config.getDerivedFrom(), i)
-                                                .getValue();
+                                String value = map.get(String.class, config.getDerivedFrom(), i)
+                                        .getValue();
                                 int indexValue = derivedFrom.getValues().indexOf(value);
-                                String realValue =
-                                        indexValue >= 0 && indexValue < config.getValues().size()
-                                                ? config.getValues().get(indexValue)
-                                                : null;
+                                String realValue = indexValue >= 0
+                                                && indexValue
+                                                        < config.getValues().size()
+                                        ? config.getValues().get(indexValue)
+                                        : null;
                                 map.get(String.class, config.getKey(), i).setValue(realValue);
                             }
                         } else {
-                            String value =
-                                    map.get(String.class, config.getDerivedFrom()).getValue();
+                            String value = map.get(String.class, config.getDerivedFrom())
+                                    .getValue();
                             int indexValue = derivedFrom.getValues().indexOf(value);
-                            String actualValue =
-                                    indexValue >= 0 && indexValue < config.getValues().size()
-                                            ? config.getValues().get(indexValue)
-                                            : null;
+                            String actualValue = indexValue >= 0
+                                            && indexValue < config.getValues().size()
+                                    ? config.getValues().get(indexValue)
+                                    : null;
                             map.get(String.class, config.getKey()).setValue(actualValue);
                         }
                     }
@@ -349,14 +328,12 @@ public class ComplexMetadataServiceImpl implements ComplexMetadataService {
     }
 
     private AttributeCollection getAttributeCollection(String typeName) {
-        AttributeCollection coll =
-                typeName == null
-                        ? configService.getMetadataConfiguration()
-                        : configService.getMetadataConfiguration().findType(typeName);
+        AttributeCollection coll = typeName == null
+                ? configService.getMetadataConfiguration()
+                : configService.getMetadataConfiguration().findType(typeName);
 
         if (coll == null) {
-            LOGGER.log(
-                    Level.WARNING, "Could not find complex attribute type with name " + typeName);
+            LOGGER.log(Level.WARNING, "Could not find complex attribute type with name " + typeName);
         }
 
         return coll;

@@ -17,10 +17,8 @@ import org.geoserver.wfs.WFSInfo;
 public class ECQLConformance extends ConformanceInfo<WFSInfo> {
     public static final String METADATA_KEY = "ecql";
 
-    public static final APIConformance ECQL =
-            new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
-    public static final APIConformance ECQL_TEXT =
-            new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL = new APIConformance(ConformanceClass.ECQL, COMMUNITY_STANDARD);
+    public static final APIConformance ECQL_TEXT = new APIConformance(ConformanceClass.ECQL_TEXT, COMMUNITY_STANDARD);
 
     private Boolean ecql = null;
     private Boolean text = null;

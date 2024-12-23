@@ -21,51 +21,41 @@ import org.geotools.api.feature.type.PropertyType;
 public class MergePropertySelection extends PropertySelectionWrapper {
 
     public MergePropertySelection(
-            DynamicMergeBuilder templateBuilder,
-            PropertySelectionHandler propertySelectionHandler) {
+            DynamicMergeBuilder templateBuilder, PropertySelectionHandler propertySelectionHandler) {
         super(templateBuilder, propertySelectionHandler);
     }
 
     @Override
     protected AbstractTemplateBuilder retypeBuilder(AbstractTemplateBuilder templateBuilder) {
-        DynamicMergeBuilder dynamicMergeBuilder =
-                new DynamicMergeBuilder((DynamicMergeBuilder) templateBuilder, true) {
-                    @Override
-                    protected void writeValue(
-                            String name,
-                            TemplateOutputWriter writer,
-                            Object value,
-                            TemplateBuilderContext context)
-                            throws IOException {
-                        value = pruneJsonNodeIfNeeded(context, value);
-                        super.writeValue(name, writer, value, context);
-                    }
+        DynamicMergeBuilder dynamicMergeBuilder = new DynamicMergeBuilder((DynamicMergeBuilder) templateBuilder, true) {
+            @Override
+            protected void writeValue(
+                    String name, TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+                    throws IOException {
+                value = pruneJsonNodeIfNeeded(context, value);
+                super.writeValue(name, writer, value, context);
+            }
 
-                    @Override
-                    public TemplateBuilder getNestedTree(
-                            JsonNode node, TemplateBuilderContext context) {
-                        TemplateBuilder result = super.getNestedTree(node, context);
-                        Object object = context != null ? context.getCurrentObj() : null;
-                        if (object != null) {
-                            Property prop = (Property) object;
-                            PropertyType type = prop.getType();
-                            PropertySelectionVisitor propertySelectionVisitor =
-                                    new PropertySelectionVisitor(strategy, type);
-                            PropertySelectionContext selContext =
-                                    new PropertySelectionContext(getFullKey(context), false, false);
-                            result =
-                                    (TemplateBuilder)
-                                            result.accept(propertySelectionVisitor, selContext);
-                        }
-                        return result;
-                    }
+            @Override
+            public TemplateBuilder getNestedTree(JsonNode node, TemplateBuilderContext context) {
+                TemplateBuilder result = super.getNestedTree(node, context);
+                Object object = context != null ? context.getCurrentObj() : null;
+                if (object != null) {
+                    Property prop = (Property) object;
+                    PropertyType type = prop.getType();
+                    PropertySelectionVisitor propertySelectionVisitor = new PropertySelectionVisitor(strategy, type);
+                    PropertySelectionContext selContext =
+                            new PropertySelectionContext(getFullKey(context), false, false);
+                    result = (TemplateBuilder) result.accept(propertySelectionVisitor, selContext);
+                }
+                return result;
+            }
 
-                    @Override
-                    public boolean canWrite(TemplateBuilderContext context) {
-                        return MergePropertySelection.this.canWrite(context)
-                                && super.canWrite(context);
-                    }
-                };
+            @Override
+            public boolean canWrite(TemplateBuilderContext context) {
+                return MergePropertySelection.this.canWrite(context) && super.canWrite(context);
+            }
+        };
         return dynamicMergeBuilder;
     }
 }

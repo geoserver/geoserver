@@ -41,8 +41,7 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     public void testNotAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth(null, null);
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wps?service=wps&request=describeprocess&identifier=JTS:buffer");
+                getAsServletResponse("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
         assertEquals(response.getStatus(), 401);
     }
 
@@ -50,8 +49,7 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
     public void testAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth("test", "test");
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertXpathEvaluatesTo(
-                "1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
+        assertXpathEvaluatesTo("1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
     }
 
     // Execute process
@@ -70,9 +68,7 @@ public class WPSAccessMixedTest extends AbstractWPSAccessTest {
         checkValidationErrors(d);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
-        assertXpathExists(
-                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon",
-                d);
+        assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon", d);
     }
 
     @Override

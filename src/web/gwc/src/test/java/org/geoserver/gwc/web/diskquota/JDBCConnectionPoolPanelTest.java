@@ -22,8 +22,7 @@ public class JDBCConnectionPoolPanelTest extends GeoServerWicketTestSupport {
     @Test
     public void configPageRendersSuccessfully() {
         // start and render the test page
-        JDBCConfiguration.ConnectionPoolConfiguration pool =
-                new JDBCConfiguration.ConnectionPoolConfiguration();
+        JDBCConfiguration.ConnectionPoolConfiguration pool = new JDBCConfiguration.ConnectionPoolConfiguration();
         pool.setDriver("org.hsqldb.jdbcDriver");
         pool.setUrl("jdbc:hsqldb:file:./target/quota-hsql");
         pool.setUsername("sa");
@@ -32,8 +31,7 @@ public class JDBCConnectionPoolPanelTest extends GeoServerWicketTestSupport {
         pool.setMaxConnections(1);
         pool.setMaxOpenPreparedStatements(50);
         Model<JDBCConfiguration.ConnectionPoolConfiguration> pwModel = new Model<>(pool);
-        FormTestPage testPage =
-                new FormTestPage((ComponentBuilder) id -> new JDBCConnectionPoolPanel(id, pwModel));
+        FormTestPage testPage = new FormTestPage((ComponentBuilder) id -> new JDBCConnectionPoolPanel(id, pwModel));
         tester.startPage(testPage);
 
         // check the password is not visible in source

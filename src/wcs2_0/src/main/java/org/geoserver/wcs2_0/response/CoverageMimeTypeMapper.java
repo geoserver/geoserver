@@ -9,8 +9,8 @@ import java.io.IOException;
 import org.geoserver.catalog.CoverageInfo;
 
 /**
- * Maps a {@link CoverageInfo} to its native mime type, if any. Used to figure out the "native mime"
- * as required by the WCS 2.0 spec.
+ * Maps a {@link CoverageInfo} to its native mime type, if any. Used to figure out the "native mime" as required by the
+ * WCS 2.0 spec.
  *
  * @author Andrea Aime - GeoSolutions
  */

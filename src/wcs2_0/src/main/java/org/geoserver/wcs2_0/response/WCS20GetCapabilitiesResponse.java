@@ -38,8 +38,7 @@ public class WCS20GetCapabilitiesResponse extends Response {
 
     @Override
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request =
-                OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
+        GetCapabilitiesType request = OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
             // look for an accepted format

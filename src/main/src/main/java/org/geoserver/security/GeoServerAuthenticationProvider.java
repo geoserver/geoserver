@@ -21,13 +21,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 /**
  * Extension of {@link AuthenticationProvider} for the geoserver security subsystem.
  *
- * <p>Instances of this class are provided by {@link GeoServerSecurityProvider}. Authentication
- * providers are configured via {@link SecurityManagerConfig#getAuthProviderNames()}.
+ * <p>Instances of this class are provided by {@link GeoServerSecurityProvider}. Authentication providers are configured
+ * via {@link SecurityManagerConfig#getAuthProviderNames()}.
  *
- * <p>Authentication providers are maintained by {@link GeoServerSecurityManager} in a list. During
- * authentication the manager passes an authentication request to each provider in the list until a
- * provider can successfully authenticate by returning non-null from {@link
- * #authenticate(Authentication, HttpServletRequest)}.
+ * <p>Authentication providers are maintained by {@link GeoServerSecurityManager} in a list. During authentication the
+ * manager passes an authentication request to each provider in the list until a provider can successfully authenticate
+ * by returning non-null from {@link #authenticate(Authentication, HttpServletRequest)}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -42,31 +41,25 @@ public abstract class GeoServerAuthenticationProvider extends AbstractGeoServerS
         return supports(authentication, request());
     }
 
-    /**
-     * Same function as {@link #supports(Class)} but is provided with the current request object.
-     */
-    public abstract boolean supports(
-            Class<? extends Object> authentication, HttpServletRequest request);
+    /** Same function as {@link #supports(Class)} but is provided with the current request object. */
+    public abstract boolean supports(Class<? extends Object> authentication, HttpServletRequest request);
 
     @Override
-    public final Authentication authenticate(Authentication authentication)
-            throws AuthenticationException {
+    public final Authentication authenticate(Authentication authentication) throws AuthenticationException {
         return authenticate(authentication, request());
     }
 
     /**
-     * Same function as {@link #authenticate(Authentication)} but is provided with the current
-     * request object.
+     * Same function as {@link #authenticate(Authentication)} but is provided with the current request object.
      *
-     * <p>This method should never throw an {@link AuthenticationException}. Throwing back such an
-     * exception interrupts the authentication procedure in {@link GeoServerSecurityManager} and
-     * will prevent providers down the chain from processing the authentication request.
+     * <p>This method should never throw an {@link AuthenticationException}. Throwing back such an exception interrupts
+     * the authentication procedure in {@link GeoServerSecurityManager} and will prevent providers down the chain from
+     * processing the authentication request.
      *
-     * <p>On successful authentication, this method returns an {@Link Authentication} object,
-     * otherwise <code>null</code> should be returned.
+     * <p>On successful authentication, this method returns an {@Link Authentication} object, otherwise <code>null
+     * </code> should be returned.
      */
-    public abstract Authentication authenticate(
-            Authentication authentication, HttpServletRequest request);
+    public abstract Authentication authenticate(Authentication authentication, HttpServletRequest request);
 
     /** The current request. */
     HttpServletRequest request() {

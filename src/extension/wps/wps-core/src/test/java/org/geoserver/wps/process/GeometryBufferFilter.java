@@ -8,8 +8,7 @@ package org.geoserver.wps.process;
 import org.geotools.api.feature.type.Name;
 
 /**
- * Simple select filter, excludes all the processes in the JTS process factory besides the "buffer"
- * one
+ * Simple select filter, excludes all the processes in the JTS process factory besides the "buffer" one
  *
  * @author Andrea Aime - GeoSolutions
  */

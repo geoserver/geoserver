@@ -13,8 +13,8 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.ServiceException;
 
 /**
- * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request
- * processing) have verified the requested mime type makes sense
+ * Writes out metadata in the requested format. Trusts that the steps before (kvp parsing, request processing) have
+ * verified the requested mime type makes sense
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -30,8 +30,7 @@ public class QuicklookResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         QuicklookResults results = (QuicklookResults) value;
         IOUtils.write(results.getPayload(), output);
     }

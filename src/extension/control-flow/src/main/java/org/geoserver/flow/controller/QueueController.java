@@ -51,8 +51,7 @@ public abstract class QueueController implements FlowController {
     protected void cleanUpQueues(long now) {
         // cleanup stale queues if necessary
         int queuesSize = queues.size();
-        if ((queuesSize > maxQueues && (now - lastCleanup) > (maxAge / 10))
-                || (now - lastCleanup) > maxAge) {
+        if ((queuesSize > maxQueues && (now - lastCleanup) > (maxAge / 10)) || (now - lastCleanup) > maxAge) {
             int cleanupCount = 0;
             synchronized (this) {
                 for (String key : queues.keySet()) {
@@ -64,14 +63,13 @@ public abstract class QueueController implements FlowController {
                 }
                 lastCleanup = now;
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            getClass().getSimpleName()
-                                    + "("
-                                    + queueMaxSize
-                                    + ") purged "
-                                    + cleanupCount
-                                    + " stale queues out of "
-                                    + queuesSize);
+                    LOGGER.fine(getClass().getSimpleName()
+                            + "("
+                            + queueMaxSize
+                            + ") purged "
+                            + cleanupCount
+                            + " stale queues out of "
+                            + queuesSize);
                 }
             }
         }

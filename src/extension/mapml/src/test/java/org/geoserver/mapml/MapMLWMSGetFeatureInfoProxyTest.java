@@ -71,8 +71,7 @@ public class MapMLWMSGetFeatureInfoProxyTest extends MapMLBaseProxyTest {
     }
 
     @Test
-    public void testMapMLNotCascadingQueryLinkOnRemoteNotSupportingClientFormats()
-            throws Exception {
+    public void testMapMLNotCascadingQueryLinkOnRemoteNotSupportingClientFormats() throws Exception {
         Catalog cat = getCatalog();
         LayerInfo layerInfo = cat.getLayerByName("cascadedLayer");
         ResourceInfo layerMeta = layerInfo.getResource();

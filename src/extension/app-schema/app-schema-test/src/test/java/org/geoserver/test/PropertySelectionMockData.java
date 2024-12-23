@@ -21,10 +21,7 @@ public class PropertySelectionMockData extends AbstractAppSchemaMockData {
         putNamespace(EX_PREFIX, EX_URI);
 
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeaturePropertySelection.xml",
-                "MappedFeatureNoId.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeaturePropertySelection.xml", "MappedFeatureNoId.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",

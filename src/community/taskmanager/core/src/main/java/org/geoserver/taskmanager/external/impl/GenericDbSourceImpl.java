@@ -14,8 +14,8 @@ import org.geoserver.taskmanager.external.ExternalGS;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
 /**
- * Generic datasource that only takes the connection url and driver class as input in addition the
- * the user name and password. The schema attribute is optional.
+ * Generic datasource that only takes the connection url and driver class as input in addition the the user name and
+ * password. The schema attribute is optional.
  *
  * @author Timothy De Bock
  */

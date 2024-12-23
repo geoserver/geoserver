@@ -75,12 +75,7 @@ public class IpFlowController extends QueueController {
                 queue = queues.get(incomingIp);
                 if (queue == null) {
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(
-                                "IpFlowController("
-                                        + queueMaxSize
-                                        + "),"
-                                        + incomingIp
-                                        + ", creating new queue");
+                        LOGGER.fine("IpFlowController(" + queueMaxSize + ")," + incomingIp + ", creating new queue");
                     }
                     queue = new TimedBlockingQueue(queueMaxSize, true);
                     queues.put(incomingIp, queue);
@@ -98,35 +93,24 @@ public class IpFlowController extends QueueController {
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "IpFlowController("
-                                + queueMaxSize
-                                + ") "
-                                + incomingIp
-                                + ", concurrent requests: "
-                                + queue.size());
+                LOGGER.fine("IpFlowController("
+                        + queueMaxSize
+                        + ") "
+                        + incomingIp
+                        + ", concurrent requests: "
+                        + queue.size());
             }
-            request.getHttpResponse()
-                    .addHeader(X_CONCURRENT_LIMIT + "-ip", String.valueOf(queueMaxSize));
-            request.getHttpResponse()
-                    .addHeader(X_CONCURRENT_REQUESTS + "-ip", String.valueOf(queue.size()));
+            request.getHttpResponse().addHeader(X_CONCURRENT_LIMIT + "-ip", String.valueOf(queueMaxSize));
+            request.getHttpResponse().addHeader(X_CONCURRENT_REQUESTS + "-ip", String.valueOf(queue.size()));
         } catch (InterruptedException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Unexpected interruption while " + "blocking on the request queue");
+            LOGGER.log(Level.WARNING, "Unexpected interruption while " + "blocking on the request queue");
         }
         // cleanup stale queues if necessary
         cleanUpQueues(now);
 
         // logs about queue size
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "IpFlowController("
-                            + queueMaxSize
-                            + ","
-                            + incomingIp
-                            + ") queue size "
-                            + queue.size());
+            LOGGER.fine("IpFlowController(" + queueMaxSize + "," + incomingIp + ") queue size " + queue.size());
         }
 
         return retval;

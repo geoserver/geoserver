@@ -56,8 +56,7 @@ public class BufferedRequestStream extends ServletInputStream {
         try {
             return available() < 1;
         } catch (IOException e) {
-            Logger LOGGER =
-                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            Logger LOGGER = org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
             LOGGER.finer("Stream is closed");
             return true;
         }
@@ -106,8 +105,7 @@ public class BufferedRequestStream extends ServletInputStream {
                 myInputStream = null;
             }
         } else {
-            Logger LOGGER =
-                    org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
+            Logger LOGGER = org.geotools.util.logging.Logging.getLogger(BufferedRequestStream.class);
             LOGGER.finer("Stream already closed");
         }
     }

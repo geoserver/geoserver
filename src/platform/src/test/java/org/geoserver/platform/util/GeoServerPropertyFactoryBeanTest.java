@@ -27,20 +27,19 @@ public class GeoServerPropertyFactoryBeanTest {
 
     @Before
     public void setUp() {
-        factory =
-                new GeoServerPropertyFactoryBean<>(PROPERTY_NAME) {
+        factory = new GeoServerPropertyFactoryBean<>(PROPERTY_NAME) {
 
-                    @Override
-                    protected String createInstance(String propertyValue) {
-                        if (propertyValue.equals("UNKNOWN")) return null;
-                        return "Bean: " + propertyValue;
-                    }
+            @Override
+            protected String createInstance(String propertyValue) {
+                if (propertyValue.equals("UNKNOWN")) return null;
+                return "Bean: " + propertyValue;
+            }
 
-                    @Override
-                    public Class<?> getObjectType() {
-                        return String.class;
-                    }
-                };
+            @Override
+            public Class<?> getObjectType() {
+                return String.class;
+            }
+        };
         ApplicationContext context = EasyMock.createMock(ApplicationContext.class);
         EasyMock.replay(context);
         factory.setApplicationContext(context);
@@ -68,12 +67,10 @@ public class GeoServerPropertyFactoryBeanTest {
 
     @Test
     public void testGetBadDefault() throws Exception {
-        assertThrows(
-                IllegalStateException.class,
-                () -> {
-                    factory.setDefaultValue("UNKNOWN");
-                    factory.createInstance();
-                });
+        assertThrows(IllegalStateException.class, () -> {
+            factory.setDefaultValue("UNKNOWN");
+            factory.createInstance();
+        });
     }
 
     @Test

@@ -40,26 +40,16 @@ import org.locationtech.jts.geom.Polygon;
  */
 public class GenericRecordBuilder implements RecordBuilder {
 
-    /**
-     * A user property of the boundingBox attribute containing the original envelopes of the Record.
-     */
+    /** A user property of the boundingBox attribute containing the original envelopes of the Record. */
     public static final String ORIGINAL_BBOXES = "RecordOriginalBounds";
 
     /** For wrapping simple content in complex attribute */
     protected static final AttributeType SIMPLE_TYPE =
-            new AttributeTypeImpl(
-                    ComplexFeatureConstants.SIMPLE_CONTENT,
-                    String.class,
-                    false,
-                    false,
-                    null,
-                    null,
-                    null);
+            new AttributeTypeImpl(ComplexFeatureConstants.SIMPLE_CONTENT, String.class, false, false, null, null, null);
 
     /** For wrapping simple content in complex attribute */
     protected static final AttributeDescriptor SIMPLE_DESCRIPTOR =
-            new AttributeDescriptorImpl(
-                    SIMPLE_TYPE, ComplexFeatureConstants.SIMPLE_CONTENT, 1, 1, true, null);
+            new AttributeDescriptorImpl(SIMPLE_TYPE, ComplexFeatureConstants.SIMPLE_CONTENT, 1, 1, true, null);
 
     protected ComplexFeatureBuilder fb;
     protected List<ReferencedEnvelope> boxes = new ArrayList<>();
@@ -68,8 +58,8 @@ public class GenericRecordBuilder implements RecordBuilder {
     protected Map<Name, Name> substitutionMap = new HashMap<>();
 
     /**
-     * A tree structure is built initially before the feature is built, so that all data for the
-     * feature can be collected and properly structured to build the feature.
+     * A tree structure is built initially before the feature is built, so that all data for the feature can be
+     * collected and properly structured to build the feature.
      */
     protected abstract static class TreeNode {
         @Override
@@ -223,8 +213,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         }
 
         public TreeFork getFork(AttributeDescriptor descriptor) {
-            return children.computeIfAbsent(
-                    descriptor.getName().getLocalPart(), attName -> new TreeFork(descriptor));
+            return children.computeIfAbsent(descriptor.getName().getLocalPart(), attName -> new TreeFork(descriptor));
         }
 
         public TreeFork getSimpleFork() {
@@ -284,11 +273,10 @@ public class GenericRecordBuilder implements RecordBuilder {
 
         AttributeDescriptor descriptor = (AttributeDescriptor) Types.findDescriptor(type, attName);
         if (descriptor == null) {
-            throw new IllegalArgumentException(
-                    "Cannot find descriptor for attribute "
-                            + attName
-                            + " in type "
-                            + type.getName().toString());
+            throw new IllegalArgumentException("Cannot find descriptor for attribute "
+                    + attName
+                    + " in type "
+                    + type.getName().toString());
         }
 
         int fromIndex = attIndex == null ? 0 : attIndex - 1;
@@ -355,9 +343,7 @@ public class GenericRecordBuilder implements RecordBuilder {
                                 index + 1,
                                 (ComplexType) descriptor.getType(),
                                 path,
-                                item instanceof List
-                                        ? (List<Object>) item
-                                        : Collections.singletonList(item),
+                                item instanceof List ? (List<Object>) item : Collections.singletonList(item),
                                 userData,
                                 splitIndex);
                     }
@@ -373,11 +359,9 @@ public class GenericRecordBuilder implements RecordBuilder {
      * @param value the value(s) to be inserted
      * @param userData the user data
      */
-    public void addElement(
-            PropertyPath name, List<Object> value, Map<Object, Object> userData, int[] splitIndex) {
+    public void addElement(PropertyPath name, List<Object> value, Map<Object, Object> userData, int[] splitIndex) {
 
-        createAttribute(
-                root, 0, recordDescriptor.getFeatureType(), name, value, userData, splitIndex);
+        createAttribute(root, 0, recordDescriptor.getFeatureType(), name, value, userData, splitIndex);
     }
 
     /**
@@ -445,8 +429,7 @@ public class GenericRecordBuilder implements RecordBuilder {
         }
 
         if (queryables.getBoundingBoxPropertyName() != null) {
-            Map<Object, Object> userData =
-                    Collections.singletonMap(ORIGINAL_BBOXES, new ArrayList<>(boxes));
+            Map<Object, Object> userData = Collections.singletonMap(ORIGINAL_BBOXES, new ArrayList<>(boxes));
             addElement(
                     PropertyPath.fromDotPath(queryables.getBoundingBoxPropertyName()),
                     Collections.singletonList(geom),

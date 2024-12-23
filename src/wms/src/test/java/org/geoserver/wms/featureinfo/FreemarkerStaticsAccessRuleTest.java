@@ -63,36 +63,31 @@ public class FreemarkerStaticsAccessRuleTest {
     @Test
     public void testValid() {
         // most simple
-        FreemarkerStaticsAccessRule tmpRule =
-                FreemarkerStaticsAccessRule.fromPattern("java.lang.String");
+        FreemarkerStaticsAccessRule tmpRule = FreemarkerStaticsAccessRule.fromPattern("java.lang.String");
         assertFalse(tmpRule.isUnrestricted());
         assertEquals(1, tmpRule.getAllowedItems().size());
         assertEquals("java.lang.String", tmpRule.getAllowedItems().get(0).getClassName());
 
         // multiple, JDK and other
-        tmpRule =
-                FreemarkerStaticsAccessRule.fromPattern(
-                        " java.lang.String  ,java.text.DecimalFormat  , "
-                                + FeatureTemplate.class.getName());
+        tmpRule = FreemarkerStaticsAccessRule.fromPattern(
+                " java.lang.String  ,java.text.DecimalFormat  , " + FeatureTemplate.class.getName());
         assertFalse(tmpRule.isUnrestricted());
         assertEquals(3, tmpRule.getAllowedItems().size());
         assertEquals("java.lang.String", tmpRule.getAllowedItems().get(0).getClassName());
         assertEquals("java.text.DecimalFormat", tmpRule.getAllowedItems().get(1).getClassName());
         assertEquals(
-                FeatureTemplate.class.getName(), tmpRule.getAllowedItems().get(2).getClassName());
+                FeatureTemplate.class.getName(),
+                tmpRule.getAllowedItems().get(2).getClassName());
 
         // inner classes
-        tmpRule =
-                FreemarkerStaticsAccessRule.fromPattern(
-                        getClass().getName() + "$" + Dummy.class.getSimpleName());
+        tmpRule = FreemarkerStaticsAccessRule.fromPattern(getClass().getName() + "$" + Dummy.class.getSimpleName());
         assertFalse(tmpRule.isUnrestricted());
         assertEquals(1, tmpRule.getAllowedItems().size());
         assertEquals(Dummy.class.getName(), tmpRule.getAllowedItems().get(0).getClassName());
 
         // partially broken
-        tmpRule =
-                FreemarkerStaticsAccessRule.fromPattern(
-                        " java.lang.String, not.existing.Class ,java.text.DecimalFormat");
+        tmpRule = FreemarkerStaticsAccessRule.fromPattern(
+                " java.lang.String, not.existing.Class ,java.text.DecimalFormat");
         assertFalse(tmpRule.isUnrestricted());
         assertEquals(2, tmpRule.getAllowedItems().size());
         assertEquals("java.lang.String", tmpRule.getAllowedItems().get(0).getClassName());
@@ -115,8 +110,7 @@ public class FreemarkerStaticsAccessRuleTest {
         assertSuffixes(lName1, lName2, lName3);
     }
 
-    private void assertSuffixes(
-            java.lang.String aName1, java.lang.String aName2, java.lang.String aName3) {
+    private void assertSuffixes(java.lang.String aName1, java.lang.String aName2, java.lang.String aName3) {
 
         FreemarkerStaticsAccessRule tmpRule =
                 FreemarkerStaticsAccessRule.fromPattern(aName1 + "," + aName2 + "," + aName3);

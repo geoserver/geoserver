@@ -15,34 +15,24 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
 
     @Test
     public void testEOExtensions() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges");
+        Document dom = getAsDOM("wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges");
         // print(dom);
 
         // we have one eo metadata in the right place
         assertEquals(
                 "1",
-                xpath.evaluate(
-                        "count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata/eop:EarthObservation)",
-                        dom));
+                xpath.evaluate("count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata/eop:EarthObservation)", dom));
         assertEquals("1", xpath.evaluate("count(//eop:EarthObservation)", dom));
 
         assertEquals(
                 "2008-10-31T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", dom));
         assertEquals(
                 "2008-11-07T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition", dom));
         assertEquals(
                 "2008-11-07T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition", dom));
 
         assertEquals(
                 "1",
@@ -68,8 +58,7 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         assertEquals(
                 "ARCHIVED",
                 xpath.evaluate(
-                        "//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:status",
-                        dom));
+                        "//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:status", dom));
     }
 
     @Test
@@ -79,22 +68,17 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         wcs.getMetadata().put(WCSEOMetadata.ENABLED.key, false);
         getGeoServer().save(wcs);
 
-        Document dom =
-                getAsDOM(
-                        "wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges");
+        Document dom = getAsDOM("wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges");
         // print(dom);
 
         // we don't have the EO extensions
-        assertEquals(
-                "0",
-                xpath.evaluate("count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata)", dom));
+        assertEquals("0", xpath.evaluate("count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata)", dom));
     }
 
     @Test
     public void testSingleGranule() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges_granule_timeranges.1");
+        Document dom = getAsDOM(
+                "wcs?request=DescribeCoverage&version=2.0.1&service=WCS&coverageid=sf__timeranges_granule_timeranges.1");
         // print(dom);
 
         assertXpathEvaluatesTo(
@@ -104,26 +88,18 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         // we have one eo metadata in the right place
         assertEquals(
                 "1",
-                xpath.evaluate(
-                        "count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata/eop:EarthObservation)",
-                        dom));
+                xpath.evaluate("count(//gmlcov:metadata/gmlcov:Extension/wcseo:EOMetadata/eop:EarthObservation)", dom));
         assertEquals("1", xpath.evaluate("count(//eop:EarthObservation)", dom));
 
         assertEquals(
                 "2008-11-05T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:beginPosition", dom));
         assertEquals(
                 "2008-11-07T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:phenomenonTime/gml:TimePeriod/gml:endPosition", dom));
         assertEquals(
                 "2008-11-07T00:00:00.000Z",
-                xpath.evaluate(
-                        "//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition",
-                        dom));
+                xpath.evaluate("//eop:EarthObservation/om:resultTime/gml:TimeInstant/gml:timePosition", dom));
 
         assertEquals(
                 "1",
@@ -149,7 +125,6 @@ public class DescribeCoverageTest extends WCSEOTestSupport {
         assertEquals(
                 "ARCHIVED",
                 xpath.evaluate(
-                        "//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:status",
-                        dom));
+                        "//eop:EarthObservation/eop:metaDataProperty/eop:EarthObservationMetaData/eop:status", dom));
     }
 }

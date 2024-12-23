@@ -35,8 +35,7 @@ public class GeoServerRoleConverterImplTest {
         r2.getProperties().setProperty("r2_p1", "r2_v1");
         GeoServerRole r3 = new GeoServerRole("r3");
 
-        GeoServerRole r =
-                converter.convertRoleFromString(converter.convertRoleToString(r1), "testuser");
+        GeoServerRole r = converter.convertRoleFromString(converter.convertRoleToString(r1), "testuser");
 
         assertEquals("r1", r.getAuthority());
         assertEquals(2, r.getProperties().size());

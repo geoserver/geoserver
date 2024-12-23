@@ -49,12 +49,8 @@ public class GeoServerErrorPage extends GeoServerBasePage {
 
         WebMarkupContainer wmc = new WebMarkupContainer("trace-explanation");
         wmc.setVisible(trace);
-        wmc.add(
-                new ExternalLink(
-                                "userListLink",
-                                new ResourceModel("userListLink"),
-                                new ResourceModel("userListText"))
-                        .setVisible(trace));
+        wmc.add(new ExternalLink("userListLink", new ResourceModel("userListLink"), new ResourceModel("userListText"))
+                .setVisible(trace));
 
         add(wmc);
 

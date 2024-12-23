@@ -12,8 +12,7 @@ import org.junit.Test;
 
 public class JwtHeaderUserNameExtractorTest {
 
-    public JwtHeaderUserNameExtractor getExtractor(
-            JwtConfiguration.UserNameHeaderFormat format, String path) {
+    public JwtHeaderUserNameExtractor getExtractor(JwtConfiguration.UserNameHeaderFormat format, String path) {
         JwtConfiguration config = new JwtConfiguration();
         config.setUserNameFormatChoice(format);
         config.setUserNameJsonPath(path);
@@ -25,9 +24,8 @@ public class JwtHeaderUserNameExtractorTest {
 
     @Test
     public void testSimpleJwt() throws ParseException {
-        String username =
-                getExtractor(JwtConfiguration.UserNameHeaderFormat.JWT, "preferred_username")
-                        .extractUserName(accessToken);
+        String username = getExtractor(JwtConfiguration.UserNameHeaderFormat.JWT, "preferred_username")
+                .extractUserName(accessToken);
         Assert.assertEquals("david.blasby@geocat.net", username);
     }
 
@@ -36,47 +34,36 @@ public class JwtHeaderUserNameExtractorTest {
 
     @Test
     public void testSimpleJson() throws ParseException {
-        String username =
-                getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "preferred_username")
-                        .extractUserName(json);
+        String username = getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "preferred_username")
+                .extractUserName(json);
         Assert.assertEquals("david.blasby@geocat.net", username);
     }
 
     @Test
     public void testSimpleString() throws ParseException {
         String json = "david.blasby@geocat.net";
-        String username =
-                getExtractor(JwtConfiguration.UserNameHeaderFormat.STRING, "xxxyyy")
-                        .extractUserName(json);
+        String username = getExtractor(JwtConfiguration.UserNameHeaderFormat.STRING, "xxxyyy")
+                .extractUserName(json);
         Assert.assertEquals("david.blasby@geocat.net", username);
     }
 
     @Test
     public void testNonExistentClaim() {
-        String claimValue =
-                getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "notThere")
-                        .extractUserName(json);
+        String claimValue = getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "notThere")
+                .extractUserName(json);
         Assert.assertNull(claimValue);
 
-        claimValue =
-                getExtractor(
-                                JwtConfiguration.UserNameHeaderFormat.JSON,
-                                "resource_access.notThere.abc")
-                        .extractUserName(json);
+        claimValue = getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "resource_access.notThere.abc")
+                .extractUserName(json);
         Assert.assertNull(claimValue);
 
-        claimValue =
-                getExtractor(
-                                JwtConfiguration.UserNameHeaderFormat.JSON,
-                                "resource_access.live-key2.notThere")
-                        .extractUserName(json);
+        claimValue = getExtractor(JwtConfiguration.UserNameHeaderFormat.JSON, "resource_access.live-key2.notThere")
+                .extractUserName(json);
         Assert.assertNull(claimValue);
 
-        claimValue =
-                getExtractor(
-                                JwtConfiguration.UserNameHeaderFormat.JSON,
-                                "resource_access.live-key2.roles.notThere")
-                        .extractUserName(json);
+        claimValue = getExtractor(
+                        JwtConfiguration.UserNameHeaderFormat.JSON, "resource_access.live-key2.roles.notThere")
+                .extractUserName(json);
         Assert.assertNull(claimValue);
     }
 }

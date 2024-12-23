@@ -12,8 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- * A wrapper making sure the servlet container will never see a flush call once the output stream is
- * closed
+ * A wrapper making sure the servlet container will never see a flush call once the output stream is closed
  *
  * @author Andrea Aime - GeoSolutions
  */

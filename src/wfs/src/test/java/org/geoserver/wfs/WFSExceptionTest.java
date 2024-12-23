@@ -63,8 +63,7 @@ public class WFSExceptionTest {
     }
 
     /**
-     * Test {@link WFSException#init(Object)} for Exception with a WFS11 {@link
-     * GetFeatureRequest}-Action.
+     * Test {@link WFSException#init(Object)} for Exception with a WFS11 {@link GetFeatureRequest}-Action.
      *
      * @see "https://osgeo-org.atlassian.net/browse/GEOS-5857"
      */
@@ -77,8 +76,7 @@ public class WFSExceptionTest {
     }
 
     /**
-     * Test {@link WFSException#init(Object)} for Exception with a WFS20 {@link
-     * GetFeatureRequest}-Action.
+     * Test {@link WFSException#init(Object)} for Exception with a WFS20 {@link GetFeatureRequest}-Action.
      *
      * @see "https://osgeo-org.atlassian.net/browse/GEOS-5857"
      */

@@ -34,58 +34,57 @@ public class BinaryProcessingsTest extends WPSTestSupport {
 
     @Test
     public void testAddOperation() throws Exception {
-        String addXml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>gs:AddCoverages</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageA</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageB</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String addXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:AddCoverages</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageA</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageB</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), addXml);
         try (InputStream is = getBinaryInputStream(response)) {
@@ -93,12 +92,9 @@ public class BinaryProcessingsTest extends WPSTestSupport {
             ArcGridFormat format = new ArcGridFormat();
             GridCoverage2D gc = format.getReader(is).read(null);
 
-            assertTrue(
-                    new Envelope(144.9, 146.1, -40.9, -43.1)
-                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-            double[] addToSameCoverageValue =
-                    (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
+            double[] addToSameCoverageValue = (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
             assertEquals(1978.0, addToSameCoverageValue[0], DELTA);
 
             gc.dispose(true);
@@ -107,58 +103,57 @@ public class BinaryProcessingsTest extends WPSTestSupport {
 
     @Test
     public void testMultiplyOperation() throws Exception {
-        String multiplyXml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>gs:MultiplyCoverages</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageA</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageB</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String multiplyXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:MultiplyCoverages</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageA</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageB</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), multiplyXml);
         try (InputStream is = getBinaryInputStream(response)) {
@@ -166,12 +161,9 @@ public class BinaryProcessingsTest extends WPSTestSupport {
             ArcGridFormat format = new ArcGridFormat();
             GridCoverage2D gc = format.getReader(is).read(null);
 
-            assertTrue(
-                    new Envelope(144.9, 146.1, -40.9, -43.1)
-                            .contains(new ReferencedEnvelope(gc.getEnvelope())));
+            assertTrue(new Envelope(144.9, 146.1, -40.9, -43.1).contains(new ReferencedEnvelope(gc.getEnvelope())));
 
-            double[] multiplyForSameCoverageValue =
-                    (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
+            double[] multiplyForSameCoverageValue = (double[]) gc.evaluate(new Position2D(145.9584, -41.6587));
             assertEquals(978121.0, multiplyForSameCoverageValue[0], DELTA);
 
             gc.dispose(true);
@@ -180,58 +172,57 @@ public class BinaryProcessingsTest extends WPSTestSupport {
 
     @Test
     public void testIncompatibleGridCoverages() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>gs:AddCoverages</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageA</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverageB</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_BM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:AddCoverages</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageA</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverageB</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_BM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         String content = response.getContentAsString();

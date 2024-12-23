@@ -17,28 +17,26 @@ import org.junit.rules.ErrorCollector;
 
 public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
 
-    @Rule public ErrorCollector collector = new ErrorCollector();
+    @Rule
+    public ErrorCollector collector = new ErrorCollector();
 
     @Test
     public void testMetricCollector() {
-        final SystemInfoCollector systemInfoCollector =
-                GeoServerExtensions.bean(SystemInfoCollector.class);
+        final SystemInfoCollector systemInfoCollector = GeoServerExtensions.bean(SystemInfoCollector.class);
         final Metrics collected = systemInfoCollector.retrieveAllSystemInfo();
         final List<MetricValue> metrics = collected.getMetrics();
         for (MetricValue m : metrics) {
             collector.checkThat(
                     "Metric for " + m.getName() + " available but value is not retrieved",
                     (m.getAvailable() && !m.getValue().equals(BaseSystemInfoCollector.DEFAULT_VALUE)
-                            || (!m.getAvailable()
-                                    && m.getValue().equals(BaseSystemInfoCollector.DEFAULT_VALUE))),
+                            || (!m.getAvailable() && m.getValue().equals(BaseSystemInfoCollector.DEFAULT_VALUE))),
                     equalTo(true));
         }
     }
 
     @Test
     public void testStatisticsEnabled() throws InterruptedException {
-        final SystemInfoCollector systemInfoCollector =
-                GeoServerExtensions.bean(SystemInfoCollector.class);
+        final SystemInfoCollector systemInfoCollector = GeoServerExtensions.bean(SystemInfoCollector.class);
 
         // enable the statistics
         systemInfoCollector.setStatisticsStatus(true);
@@ -50,13 +48,13 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
         final List<MetricValue> metrics = collected.getMetrics();
 
         // check operating system name is not a default value
-        Assert.assertNotEquals(BaseSystemInfoCollector.DEFAULT_VALUE, metrics.get(0).getValue());
+        Assert.assertNotEquals(
+                BaseSystemInfoCollector.DEFAULT_VALUE, metrics.get(0).getValue());
     }
 
     @Test
     public void testStatisticsDisabled() {
-        final OSHISystemInfoMonitor systemInfoCollector =
-                GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
+        final OSHISystemInfoMonitor systemInfoCollector = GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
 
         // disable the statistics
         systemInfoCollector.setStatisticsStatus(false);
@@ -75,8 +73,7 @@ public class SystemInfoCollectorTest extends GeoServerSystemTestSupport {
     @Override
     protected void destroyGeoServer() {
 
-        final OSHISystemInfoMonitor systemInfoCollector =
-                GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
+        final OSHISystemInfoMonitor systemInfoCollector = GeoServerExtensions.bean(OSHISystemInfoMonitor.class);
 
         super.destroyGeoServer();
 

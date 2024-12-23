@@ -26,8 +26,7 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Test
@@ -36,13 +35,10 @@ public class GeoServerSecuredPageTest extends GeoServerWicketTestSupport {
         tester.startPage(LayerPage.class);
         tester.assertRenderedPage(GeoServerLoginPage.class);
         // make sure the spring security emulation is properly setup
-        SavedRequest sr =
-                (SavedRequest)
-                        tester.getHttpSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
+        SavedRequest sr = (SavedRequest) tester.getHttpSession().getAttribute(GeoServerSecuredPage.SAVED_REQUEST);
         assertNotNull(sr);
         String redirectUrl = URLDecoder.decode(sr.getRedirectUrl(), "UTF8");
-        assertTrue(
-                redirectUrl.contains("wicket/bookmarkable/org.geoserver.web.data.layer.LayerPage"));
+        assertTrue(redirectUrl.contains("wicket/bookmarkable/org.geoserver.web.data.layer.LayerPage"));
     }
 
     @Test

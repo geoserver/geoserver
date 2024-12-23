@@ -61,8 +61,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            failed =
-                    checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
         }
         assertTrue(failed);
 
@@ -71,8 +70,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            failed =
-                    checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
         }
         assertTrue(failed);
 
@@ -81,8 +79,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (FilterConfigException ex) {
-            failed =
-                    checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_CLIENT_ID_REQUIRED);
         }
         assertTrue(failed);
 
@@ -94,11 +91,8 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OpenIdConnectFilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex,
-                            OpenIdConnectFilterConfigException
-                                    .OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED);
+            failed = checkConfigException(
+                    ex, OpenIdConnectFilterConfigException.OAUTH2_CHECKTOKEN_OR_WKTS_ENDPOINT_URL_REQUIRED);
         }
         assertTrue(failed);
 
@@ -109,9 +103,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex, OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
         }
         assertTrue(failed);
 
@@ -120,9 +112,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex, OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
         }
         assertTrue(failed);
 
@@ -133,9 +123,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex, OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
         }
         assertTrue(failed);
         config.setUserAuthorizationUri("https://oauth2server/case");
@@ -145,10 +133,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex,
-                            OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
         }
         assertTrue(failed);
         config.setIntrospectionEndpointUrl("https://oah2server/introspect");
@@ -158,9 +143,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            failed =
-                    checkConfigException(
-                            ex, OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
+            failed = checkConfigException(ex, OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
         }
         assertTrue(failed);
         config.setLogoutUri("http://localhost/gesoerver");

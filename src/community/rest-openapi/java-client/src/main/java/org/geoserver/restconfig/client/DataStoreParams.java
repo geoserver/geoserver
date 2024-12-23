@@ -17,9 +17,7 @@ public class DataStoreParams {
     public static Optional<ConnectionParameterEntry> find(
             @NonNull String name, @NonNull ConnectionParameters responseParams) {
         List<ConnectionParameterEntry> entry =
-                responseParams.getEntry() == null
-                        ? Collections.emptyList()
-                        : responseParams.getEntry();
+                responseParams.getEntry() == null ? Collections.emptyList() : responseParams.getEntry();
         return entry.stream().filter(e -> name.equals(e.getAtKey())).findFirst();
     }
 

@@ -19,19 +19,15 @@ public class LinkedLayersPanel extends Panel {
     public LinkedLayersPanel(String id, IModel<MetadataTemplate> metadataTemplateModel) {
         super(id);
 
-        add(
-                new GeoServerTablePanel<>(
-                        "layersTable", new LinkedLayersDataProvider(metadataTemplateModel)) {
+        add(new GeoServerTablePanel<>("layersTable", new LinkedLayersDataProvider(metadataTemplateModel)) {
 
-                    private static final long serialVersionUID = -6805672124565219769L;
+            private static final long serialVersionUID = -6805672124565219769L;
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<ResourceInfo> itemModel,
-                            Property<ResourceInfo> property) {
-                        return null;
-                    }
-                });
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<ResourceInfo> itemModel, Property<ResourceInfo> property) {
+                return null;
+            }
+        });
     }
 }

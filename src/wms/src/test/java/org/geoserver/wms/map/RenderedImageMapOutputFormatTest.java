@@ -139,24 +139,20 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     static final String STRAIGHT_VERTICAL_LINE_STYLE = "verticalline";
 
-    static final QName NORMALIZED =
-            new QName(MockData.CITE_URI, "NORMALIZED", MockData.CITE_PREFIX);
+    static final QName NORMALIZED = new QName(MockData.CITE_URI, "NORMALIZED", MockData.CITE_PREFIX);
 
     static final String NORMALIZED_STYLE = "normalized";
 
-    static final QName CROSS_DATELINE =
-            new QName(MockData.CITE_URI, "CROSS_DATELINE", MockData.CITE_PREFIX);
+    static final QName CROSS_DATELINE = new QName(MockData.CITE_URI, "CROSS_DATELINE", MockData.CITE_PREFIX);
 
     static final String CROSS_DATELINE_STYLE = "crossline";
 
     static final QName TIFF_3035 = new QName(MockData.SF_URI, "3035", MockData.SF_PREFIX);
 
-    public static final QName MULTIBAND_WORLD =
-            new QName(MockData.WCS_URI, "multiband_world", MockData.WCS_PREFIX);
+    public static final QName MULTIBAND_WORLD = new QName(MockData.WCS_URI, "multiband_world", MockData.WCS_PREFIX);
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    RenderedImageMapOutputFormatTest.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            RenderedImageMapOutputFormatTest.class.getPackage().getName());
 
     private RenderedImageMapOutputFormat rasterMapProducer;
 
@@ -196,12 +192,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         public void put(Rectangle2D arg0) {}
 
         @Override
-        public void put(
-                String arg0,
-                TextSymbolizer arg1,
-                Feature arg2,
-                LiteShape2 arg3,
-                NumberRange<Double> arg4) {}
+        public void put(String arg0, TextSymbolizer arg1, Feature arg2, LiteShape2 arg3, NumberRange<Double> arg4) {}
 
         @Override
         public void start() {}
@@ -244,11 +235,9 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     public void testSimpleGetMapQuery() throws Exception {
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                MockData.BASIC_POLYGONS.getPrefix(),
-                                MockData.BASIC_POLYGONS.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
 
         final Envelope env = fs.getBounds();
 
@@ -285,14 +274,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                STRAIGHT_VERTICAL_LINE.getPrefix(),
-                                STRAIGHT_VERTICAL_LINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        STRAIGHT_VERTICAL_LINE.getPrefix(), STRAIGHT_VERTICAL_LINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
         CoordinateReferenceSystem utm32 = CRS.decode("EPSG:32632");
         ReferencedEnvelope targetEnv = env.transform(utm32, true);
 
@@ -328,14 +314,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                STRAIGHT_VERTICAL_LINE.getPrefix(),
-                                STRAIGHT_VERTICAL_LINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        STRAIGHT_VERTICAL_LINE.getPrefix(), STRAIGHT_VERTICAL_LINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
         CoordinateReferenceSystem utm32 = CRS.decode("EPSG:32632");
         ReferencedEnvelope targetEnv = env.transform(utm32, true);
 
@@ -376,13 +359,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
 
         GetMapRequest request = new GetMapRequest();
         final WMSMapContent map = new WMSMapContent();
@@ -422,13 +402,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
 
         GetMapRequest request = new GetMapRequest();
         final WMSMapContent map = new WMSMapContent();
@@ -461,13 +438,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(CROSS_DATELINE.getPrefix(), CROSS_DATELINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(-150, 150, -30, 30, DefaultGeographicCRS.WGS84);
 
         GetMapRequest request = new GetMapRequest();
         request.getFormatOptions().put("disableDatelineWrappingHeuristic", "true");
@@ -505,14 +479,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         ((DummyRasterMapProducer) this.rasterMapProducer).setGraphics(graphics);
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                STRAIGHT_VERTICAL_LINE.getPrefix(),
-                                STRAIGHT_VERTICAL_LINE.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        STRAIGHT_VERTICAL_LINE.getPrefix(), STRAIGHT_VERTICAL_LINE.getLocalPart())
+                .getFeatureSource(null, null);
 
-        final ReferencedEnvelope env =
-                new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope env = new ReferencedEnvelope(10, 15, 0, 50, DefaultGeographicCRS.WGS84);
         CoordinateReferenceSystem utm32 = CRS.decode("EPSG:32632");
         ReferencedEnvelope targetEnv = env.transform(utm32, true);
 
@@ -550,27 +521,18 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         getGeoServer().save(info);
         Catalog catalog = getCatalog();
         CoverageInfo ci =
-                catalog.getCoverageByName(
-                        SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
+                catalog.getCoverageByName(SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
 
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
         CoordinateReferenceSystem wgs84 = DefaultGeographicCRS.WGS84;
-        GeneralBounds env =
-                GeneralBounds.toGeneralEnvelope(ReferencedEnvelope.rect(-40, 0, 40, 80, wgs84));
+        GeneralBounds env = GeneralBounds.toGeneralEnvelope(ReferencedEnvelope.rect(-40, 0, 40, 80, wgs84));
         MathTransform transform = CRS.findMathTransform(wgs84, crs);
         env = CRS.transform(transform, env);
         ReferencedEnvelope bbox =
-                new ReferencedEnvelope(
-                        env.getMinimum(0),
-                        env.getMaximum(0),
-                        env.getMinimum(1),
-                        env.getMaximum(1),
-                        crs);
+                new ReferencedEnvelope(env.getMinimum(0), env.getMaximum(0), env.getMinimum(1), env.getMaximum(1), crs);
         request.setBbox(bbox);
-        request.setInterpolations(
-                Collections.singletonList(
-                        Interpolation.getInstance(Interpolation.INTERP_BILINEAR)));
+        request.setInterpolations(Collections.singletonList(Interpolation.getInstance(Interpolation.INTERP_BILINEAR)));
         request.setSRS("EPSG:3857");
         request.setFormat("image/png");
 
@@ -586,9 +548,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         StyleBuilder builder = new StyleBuilder();
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
-        Layer l =
-                new CachedGridReaderLayer(
-                        reader, builder.createStyle(builder.createRasterSymbolizer()));
+        Layer l = new CachedGridReaderLayer(reader, builder.createStyle(builder.createRasterSymbolizer()));
         map.addLayer(l);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
@@ -629,26 +589,22 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     private void setDisableGutter(boolean value)
-            throws NoSuchFieldException, SecurityException, IllegalArgumentException,
-                    IllegalAccessException {
+            throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         Field field = DirectRasterRenderer.class.getDeclaredField("DISABLE_GUTTER");
         field.setAccessible(true);
         field.set(null, value);
     }
 
     /**
-     * Test to make sure the "direct" raster path and the "nondirect" raster path produce matching
-     * results. This test was originally created after fixes to GEOS-7270 where there were issues
-     * with images generated during the direct raster path but not in the normal path, stemming from
-     * not setting the background color the same way
+     * Test to make sure the "direct" raster path and the "nondirect" raster path produce matching results. This test
+     * was originally created after fixes to GEOS-7270 where there were issues with images generated during the direct
+     * raster path but not in the normal path, stemming from not setting the background color the same way
      */
     @Test
     public void testDirectVsNonDirectRasterRender() throws Exception {
         Catalog catalog = getCatalog();
-        CoverageInfo ci =
-                catalog.getCoverageByName(
-                        SystemTestData.MULTIBAND.getPrefix(),
-                        SystemTestData.MULTIBAND.getLocalPart());
+        CoverageInfo ci = catalog.getCoverageByName(
+                SystemTestData.MULTIBAND.getPrefix(), SystemTestData.MULTIBAND.getLocalPart());
 
         final Envelope env = ci.boundingBox();
 
@@ -656,14 +612,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
-        ReferencedEnvelope bbox =
-                new ReferencedEnvelope(
-                        new Envelope(
-                                -116.90673461649858211,
-                                -114.30988665660261461,
-                                32.07093728218402617,
-                                33.89032847348440214),
-                        crs);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(
+                        -116.90673461649858211, -114.30988665660261461, 32.07093728218402617, 33.89032847348440214),
+                crs);
         request.setBbox(bbox);
         request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
         request.setFormat("image/png");
@@ -678,9 +630,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         StyleBuilder builder = new StyleBuilder();
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
-        Layer l =
-                new CachedGridReaderLayer(
-                        reader, builder.createStyle(builder.createRasterSymbolizer()));
+        Layer l = new CachedGridReaderLayer(reader, builder.createStyle(builder.createRasterSymbolizer()));
         map.addLayer(l);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
@@ -695,14 +645,12 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     public void testDirectRasterRenderRespectingFormatOptions() throws Exception {
         Catalog catalog = getCatalog();
         CoverageInfo ci =
-                catalog.getCoverageByName(
-                        SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
+                catalog.getCoverageByName(SystemTestData.WORLD.getPrefix(), SystemTestData.WORLD.getLocalPart());
 
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
 
         // Request an area going over the dateline
-        ReferencedEnvelope bbox =
-                new ReferencedEnvelope(new Envelope(115.0, 315.0, -60.0, 60.0), crs);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(new Envelope(115.0, 315.0, -60.0, 60.0), crs);
 
         GetMapRequest request = new GetMapRequest();
         request.setBbox(bbox);
@@ -714,14 +662,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     private void testWithFormatOptions(
-            CoverageInfo ci,
-            GetMapRequest request,
-            ReferencedEnvelope bbox,
-            boolean formatOptionsEnabled)
+            CoverageInfo ci, GetMapRequest request, ReferencedEnvelope bbox, boolean formatOptionsEnabled)
             throws IOException {
         request.getFormatOptions().put("mapWrapping", Boolean.toString(formatOptionsEnabled));
-        request.getFormatOptions()
-                .put("advancedProjectionHandling", Boolean.toString(formatOptionsEnabled));
+        request.getFormatOptions().put("advancedProjectionHandling", Boolean.toString(formatOptionsEnabled));
 
         final WMSMapContent map = new WMSMapContent(request);
         final float width = 400;
@@ -734,26 +678,21 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         StyleBuilder builder = new StyleBuilder();
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
-        Layer l =
-                new CachedGridReaderLayer(
-                        reader, builder.createStyle(builder.createRasterSymbolizer()));
+        Layer l = new CachedGridReaderLayer(reader, builder.createStyle(builder.createRasterSymbolizer()));
         map.addLayer(l);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
         RenderedImage image = imageMap.getImage();
         float xOffset = 150;
         ImageWorker worker =
-                new ImageWorker(image)
-                        .crop(xOffset, 0, width - xOffset, 240)
-                        .translate(-xOffset, 0, null);
+                new ImageWorker(image).crop(xOffset, 0, width - xOffset, 240).translate(-xOffset, 0, null);
 
         if (formatOptionsEnabled) {
             // We have enabled continuous map wrapping.
             // So cropping over the dateline we will see again
             // North and South America
             ImageAssert.assertEquals(
-                    new File(
-                            "src/test/resources/org/geoserver/wms/map/direct-raster-format-options-expected.png"),
+                    new File("src/test/resources/org/geoserver/wms/map/direct-raster-format-options-expected.png"),
                     worker.getRenderedImage(),
                     10);
         } else {
@@ -776,12 +715,9 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Style basicStyle = styleByName.getStyle();
 
         // Build up a complex map so that we can reasonably guarantee a 1 ms timout
-        SimpleFeatureSource fs =
-                (SimpleFeatureSource)
-                        catalog.getFeatureTypeByName(
-                                        MockData.BASIC_POLYGONS.getPrefix(),
-                                        MockData.BASIC_POLYGONS.getLocalPart())
-                                .getFeatureSource(null, null);
+        SimpleFeatureSource fs = (SimpleFeatureSource) catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
         MapLayerInfo mapLayerInfo = new MapLayerInfo(fs);
         request.setLayers(Collections.singletonList(mapLayerInfo));
         Envelope env = fs.getBounds();
@@ -789,11 +725,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         SimpleFeatureCollection delayedCollection = new DelayedFeatureCollection(features, 50);
         map.addLayer(new FeatureLayer(delayedCollection, basicStyle));
 
-        LOGGER.info(
-                "about to create map ctx for "
-                        + map.layers().size()
-                        + " layers with bounds "
-                        + env);
+        LOGGER.info("about to create map ctx for " + map.layers().size() + " layers with bounds " + env);
 
         map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
         map.setMapWidth(1000);
@@ -810,8 +742,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             fail("Timeout was not reached");
         } catch (ServiceException e) {
             assertThat(e.getMessage(), startsWith("This request used more time than allowed"));
-            String expectedLayerNameMsg =
-                    "Layers: " + mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName();
+            String expectedLayerNameMsg = "Layers: "
+                    + mapLayerInfo.getRemoteFeatureSource().getSchema().getTypeName();
             assertThat(e.getMessage(), containsString(expectedLayerNameMsg));
         }
 
@@ -825,10 +757,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             fail("Timeout was not reached");
         } catch (ServiceException e) {
             assertTrue(e instanceof WMSPartialMapException);
-            assertTrue(
-                    e.getCause()
-                            .getMessage()
-                            .startsWith("This request used more time than allowed"));
+            assertTrue(e.getCause().getMessage().startsWith("This request used more time than allowed"));
             RenderedImageMap partialMap = (RenderedImageMap) ((WMSPartialMapException) e).getMap();
             assertNotNull(partialMap);
             assertNotNull(partialMap.getImage());
@@ -850,17 +779,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     public void testBlueLake() throws IOException, IllegalFilterException, Exception {
         final Catalog catalog = getCatalog();
         org.geoserver.catalog.FeatureTypeInfo typeInfo =
-                catalog.getFeatureTypeByName(
-                        MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+                catalog.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
         Envelope env = typeInfo.getFeatureSource(null, null).getBounds();
         double shift = env.getWidth() / 6;
 
-        env =
-                new Envelope(
-                        env.getMinX() - shift,
-                        env.getMaxX() + shift,
-                        env.getMinY() - shift,
-                        env.getMaxY() + shift);
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift, env.getMaxY() + shift);
 
         GetMapRequest request = new GetMapRequest();
         final WMSMapContent map = new WMSMapContent();
@@ -896,17 +819,11 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     public void testCustomLabelCache() throws IOException {
         final Catalog catalog = getCatalog();
         org.geoserver.catalog.FeatureTypeInfo typeInfo =
-                catalog.getFeatureTypeByName(
-                        MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+                catalog.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
         Envelope env = typeInfo.getFeatureSource(null, null).getBounds();
         double shift = env.getWidth() / 6;
 
-        env =
-                new Envelope(
-                        env.getMinX() - shift,
-                        env.getMaxX() + shift,
-                        env.getMinY() - shift,
-                        env.getMaxY() + shift);
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift, env.getMaxY() + shift);
 
         GetMapRequest request = new GetMapRequest();
         final WMSMapContent map = new WMSMapContent();
@@ -949,48 +866,30 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         testData.addRasterLayer(SIX_BANDS, "6b.tiff", null, getCatalog());
         testData.addStyle(NORMALIZED_STYLE, "normalized.sld", getClass(), getCatalog());
         testData.addRasterLayer(
-                TIFF_3035,
-                "3035.zip",
-                "tif",
-                null,
-                RenderedImageMapOutputFormatTest.class,
-                getCatalog());
+                TIFF_3035, "3035.zip", "tif", null, RenderedImageMapOutputFormatTest.class, getCatalog());
 
-        testData.addStyle(
-                STRAIGHT_VERTICAL_LINE_STYLE, "verticalline.sld", getClass(), getCatalog());
+        testData.addStyle(STRAIGHT_VERTICAL_LINE_STYLE, "verticalline.sld", getClass(), getCatalog());
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STRAIGHT_VERTICAL_LINE_STYLE);
         testData.addVectorLayer(
-                STRAIGHT_VERTICAL_LINE,
-                properties,
-                "VerticalLine.properties",
-                getClass(),
-                getCatalog());
+                STRAIGHT_VERTICAL_LINE, properties, "VerticalLine.properties", getClass(), getCatalog());
 
         testData.addStyle(CROSS_DATELINE_STYLE, "crossline.sld", getClass(), getCatalog());
         properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, CROSS_DATELINE_STYLE);
-        testData.addVectorLayer(
-                CROSS_DATELINE, properties, "CrossLine.properties", getClass(), getCatalog());
+        testData.addVectorLayer(CROSS_DATELINE, properties, "CrossLine.properties", getClass(), getCatalog());
     }
 
     @Test
     public void testInterpolations() throws IOException, IllegalFilterException, Exception {
         final Catalog catalog = getCatalog();
-        CoverageInfo coverageInfo =
-                catalog.getCoverageByName(
-                        MockData.TASMANIA_DEM.getNamespaceURI(),
-                        MockData.TASMANIA_DEM.getLocalPart());
+        CoverageInfo coverageInfo = catalog.getCoverageByName(
+                MockData.TASMANIA_DEM.getNamespaceURI(), MockData.TASMANIA_DEM.getLocalPart());
 
         Envelope env = coverageInfo.boundingBox();
         double shift = env.getWidth() / 6;
 
-        env =
-                new Envelope(
-                        env.getMinX() - shift,
-                        env.getMaxX() + shift,
-                        env.getMinY() - shift,
-                        env.getMaxY() + shift);
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift, env.getMaxY() + shift);
 
         GetMapRequest request = new GetMapRequest();
         WMSMapContent map = new WMSMapContent();
@@ -1004,12 +903,10 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         addRasterToMap(map, MockData.TASMANIA_DEM);
 
         map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
-        request.setInterpolations(
-                Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_NEAREST)));
+        request.setInterpolations(Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_NEAREST)));
         request.setFormat(getMapFormat());
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op =
-                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -1024,8 +921,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         addRasterToMap(map, MockData.TASMANIA_DEM);
 
         map.getViewport().setBounds(new ReferencedEnvelope(env, DefaultGeographicCRS.WGS84));
-        request.setInterpolations(
-                Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_BICUBIC)));
+        request.setInterpolations(Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_BICUBIC)));
         request.setFormat(getMapFormat());
 
         imageMap = this.rasterMapProducer.produceMap(map);
@@ -1043,8 +939,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
-    public void testInterpolationFromLayerConfig()
-            throws IOException, IllegalFilterException, Exception {
+    public void testInterpolationFromLayerConfig() throws IOException, IllegalFilterException, Exception {
         final Catalog catalog = getCatalog();
 
         LayerInfo layerInfo = catalog.getLayerByName(MockData.TASMANIA_DEM.getLocalPart());
@@ -1055,12 +950,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Envelope env = layerInfo.getResource().boundingBox();
         double shift = env.getWidth() / 6;
 
-        env =
-                new Envelope(
-                        env.getMinX() - shift,
-                        env.getMaxX() + shift,
-                        env.getMinY() - shift,
-                        env.getMaxY() + shift);
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift, env.getMaxY() + shift);
 
         // set Nearest Neighbor interpolation on layer
         GetMapRequest request = new GetMapRequest();
@@ -1077,8 +967,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.setRequest(request);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op =
-                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage imageNearest = op.getAsBufferedImage();
         imageMap.dispose();
         assertNotBlank("testInterpolationsNearest", imageNearest);
@@ -1128,14 +1017,12 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         addRasterToMap(map, MockData.TASMANIA_DEM);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        checkByLayerInterpolation(
-                imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
+        checkByLayerInterpolation(imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
 
         // interpolation method specified in the request overrides service and layer configuration
         request = new GetMapRequest();
         // request says "Bicubic"
-        request.setInterpolations(
-                Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_BICUBIC)));
+        request.setInterpolations(Arrays.asList(Interpolation.getInstance(Interpolation.INTERP_BICUBIC)));
         request.setFormat(getMapFormat());
         // adding layer twice on purpose to disable direct raster render
         request.setLayers(Arrays.asList(mapLayer, mapLayer));
@@ -1147,8 +1034,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
                 request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
 
         // service config says "Nearest"
-        assertEquals(
-                WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
+        assertEquals(WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
 
         map = createWMSMap(env);
         map.setRequest(request);
@@ -1156,8 +1042,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         addRasterToMap(map, MockData.TASMANIA_DEM);
 
         imageMap = this.rasterMapProducer.produceMap(map);
-        checkByLayerInterpolation(
-                imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
+        checkByLayerInterpolation(imageMap, Interpolation.getInstance(Interpolation.INTERP_BICUBIC));
 
         // if default interpolation method is not specified, service default is used
         request = new GetMapRequest();
@@ -1168,8 +1053,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertNull(request.getLayers().get(0).getLayerInfo().getDefaultWMSInterpolationMethod());
         assertTrue(request.getInterpolations().isEmpty());
 
-        assertEquals(
-                WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
+        assertEquals(WMSInfo.WMSInterpolation.Nearest, getWMS().getServiceInfo().getInterpolation());
 
         map = createWMSMap(env);
         map.setRequest(request);
@@ -1199,8 +1083,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
      */
     private void checkByLayerInterpolation(RenderedImageMap imageMap, Interpolation expected) {
         Layer layer = imageMap.getMapContext().layers().get(0);
-        Interpolation actual =
-                (Interpolation) layer.getUserData().get(StreamingRenderer.BYLAYER_INTERPOLATION);
+        Interpolation actual = (Interpolation) layer.getUserData().get(StreamingRenderer.BYLAYER_INTERPOLATION);
         assertEquals(expected, actual);
     }
 
@@ -1236,17 +1119,14 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
             style = defaultStyle.getStyle();
         }
 
-        SimpleFeatureCollection fc =
-                FeatureUtilities.wrapGridCoverageReader(
-                        (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null),
-                        new GeneralParameterValue[] {});
+        SimpleFeatureCollection fc = FeatureUtilities.wrapGridCoverageReader(
+                (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null), new GeneralParameterValue[] {});
         map.addLayer(new FeatureLayer(fc, style));
     }
 
     private void addToMap(final WMSMapContent map, final QName typeName) throws IOException {
         final FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+                getCatalog().getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
         List<LayerInfo> layers = getCatalog().getLayers(ftInfo);
         StyleInfo defaultStyle = layers.get(0).getDefaultStyle();
@@ -1260,8 +1140,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Style style = catalog.getStyleByName("Default").getStyle();
 
         FeatureTypeInfo typeInfo =
-                catalog.getFeatureTypeByName(
-                        MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
+                catalog.getFeatureTypeByName(MockData.LAKES.getNamespaceURI(), MockData.LAKES.getLocalPart());
         Envelope env = typeInfo.getFeatureSource(null, null).getBounds();
         env.expandToInclude(fSource.getBounds());
 
@@ -1270,12 +1149,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         double shift = env.getWidth() / 6;
 
-        env =
-                new Envelope(
-                        env.getMinX() - shift,
-                        env.getMaxX() + shift,
-                        env.getMinY() - shift,
-                        env.getMaxY() + shift);
+        env = new Envelope(env.getMinX() - shift, env.getMaxX() + shift, env.getMinY() - shift, env.getMaxY() + shift);
 
         WMSMapContent map = new WMSMapContent();
         GetMapRequest request = new GetMapRequest();
@@ -1301,20 +1175,14 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertNotBlank("testDefaultStyle " + typeName, (BufferedImage) image);
     }
 
-    /**
-     * Checks {@link RenderedImageMapOutputFormat} makes good use of {@link RenderExceptionStrategy}
-     */
+    /** Checks {@link RenderedImageMapOutputFormat} makes good use of {@link RenderExceptionStrategy} */
     @Test
     public void testRenderingErrorsHandling() throws Exception {
 
         // the ones that are ignorable by the renderer
         assertNotNull(forceRenderingError(new TransformException("fake transform exception")));
-        assertNotNull(
-                forceRenderingError(
-                        new NoninvertibleTransformException("fake non invertible exception")));
-        assertNotNull(
-                forceRenderingError(
-                        new IllegalAttributeException("non illegal attribute exception")));
+        assertNotNull(forceRenderingError(new NoninvertibleTransformException("fake non invertible exception")));
+        assertNotNull(forceRenderingError(new IllegalAttributeException("non illegal attribute exception")));
         assertNotNull(forceRenderingError(new FactoryException("fake factory exception")));
 
         // any other one should make the map producer fail
@@ -1341,23 +1209,19 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test to check if we can successfully create a direct rendered image by using a coverage view
-     * as a source, and a symbolizer defining which three bands of the input coverage view can be
-     * used for RGB coloring, and with what order.
+     * Test to check if we can successfully create a direct rendered image by using a coverage view as a source, and a
+     * symbolizer defining which three bands of the input coverage view can be used for RGB coloring, and with what
+     * order.
      */
     @Test
     public void testStyleUsingChannelsFromCoverageView() throws Exception {
 
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
-        ReferencedEnvelope bbox =
-                new ReferencedEnvelope(
-                        new Envelope(
-                                -116.90673461649858211,
-                                -114.30988665660261461,
-                                32.07093728218402617,
-                                33.89032847348440214),
-                        crs);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(
+                        -116.90673461649858211, -114.30988665660261461, 32.07093728218402617, 33.89032847348440214),
+                crs);
         request.setBbox(bbox);
         request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
         request.setFormat("image/png");
@@ -1373,17 +1237,13 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         Catalog catalog = getCatalog();
 
         // Source image
-        CoverageInfo ci =
-                catalog.getCoverageByName(
-                        SystemTestData.MULTIBAND.getPrefix(),
-                        SystemTestData.MULTIBAND.getLocalPart());
+        CoverageInfo ci = catalog.getCoverageByName(
+                SystemTestData.MULTIBAND.getPrefix(), SystemTestData.MULTIBAND.getLocalPart());
 
         GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
 
-        Layer sl =
-                new CachedGridReaderLayer(
-                        reader, styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()));
+        Layer sl = new CachedGridReaderLayer(reader, styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()));
         map.addLayer(sl);
 
         RenderedImageMap srcImageMap = this.rasterMapProducer.produceMap(map);
@@ -1395,51 +1255,27 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         // Note that first three bands are int reverse order of the bands of the source coverage
         final InputCoverageBand ib0 = new InputCoverageBand("multiband", "2");
         final CoverageBand b0 =
-                new CoverageBand(
-                        Collections.singletonList(ib0),
-                        "multiband@2",
-                        0,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib0), "multiband@2", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib1 = new InputCoverageBand("multiband", "1");
         final CoverageBand b1 =
-                new CoverageBand(
-                        Collections.singletonList(ib1),
-                        "multiband@1",
-                        1,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib1), "multiband@1", 1, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib2 = new InputCoverageBand("multiband", "0");
         final CoverageBand b2 =
-                new CoverageBand(
-                        Collections.singletonList(ib2),
-                        "multiband@0",
-                        2,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib2), "multiband@0", 2, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib3 = new InputCoverageBand("multiband", "0");
         final CoverageBand b3 =
-                new CoverageBand(
-                        Collections.singletonList(ib3),
-                        "multiband@0",
-                        0,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib3), "multiband@0", 0, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib4 = new InputCoverageBand("multiband", "1");
         final CoverageBand b4 =
-                new CoverageBand(
-                        Collections.singletonList(ib4),
-                        "multiband@1",
-                        1,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib4), "multiband@1", 1, CompositionType.BAND_SELECT);
 
         final InputCoverageBand ib5 = new InputCoverageBand("multiband", "2");
         final CoverageBand b5 =
-                new CoverageBand(
-                        Collections.singletonList(ib5),
-                        "multiband@2",
-                        2,
-                        CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(ib5), "multiband@2", 2, CompositionType.BAND_SELECT);
 
         final List<CoverageBand> coverageBands = new ArrayList<>(1);
         coverageBands.add(b0);
@@ -1456,8 +1292,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
 
         // Reordered bands coverage
-        CoverageInfo coverageInfo =
-                multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
+        CoverageInfo coverageInfo = multiBandCoverageView.createCoverageInfo("multiband_select", storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         catalog.add(coverageInfo);
         final LayerInfo layerInfoView = builder.buildLayer(coverageInfo);
@@ -1474,8 +1309,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         SelectedChannelType green = SF.createSelectedChannelType("2", null);
         SelectedChannelType blue = SF.createSelectedChannelType("1", null);
         ChannelSelection cs = SF.createChannelSelection(red, green, blue);
-        RasterSymbolizer symbolizer =
-                SF.createRasterSymbolizer(null, null, cs, null, null, null, null, null);
+        RasterSymbolizer symbolizer = SF.createRasterSymbolizer(null, null, cs, null, null, null, null, null);
 
         reader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
         reader.getCoordinateReferenceSystem();
@@ -1518,22 +1352,18 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test to check the case where a {@link org.geotools.coverage.grid.io.AbstractGridFormat#BANDS}
-     * reading parameter is passed to a coverage reader that does not support it. Reader should
-     * ignore it, resulting coverage should not be affected.
+     * Test to check the case where a {@link org.geotools.coverage.grid.io.AbstractGridFormat#BANDS} reading parameter
+     * is passed to a coverage reader that does not support it. Reader should ignore it, resulting coverage should not
+     * be affected.
      */
     @Test
     public void testBandSelectionToNormalCoverage() throws Exception {
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
-        ReferencedEnvelope bbox =
-                new ReferencedEnvelope(
-                        new Envelope(
-                                -116.90673461649858211,
-                                -114.30988665660261461,
-                                32.07093728218402617,
-                                33.89032847348440214),
-                        crs);
+        ReferencedEnvelope bbox = new ReferencedEnvelope(
+                new Envelope(
+                        -116.90673461649858211, -114.30988665660261461, 32.07093728218402617, 33.89032847348440214),
+                crs);
         request.setBbox(bbox);
         request.setSRS("urn:x-ogc:def:crs:EPSG:4326");
         request.setFormat("image/png");
@@ -1555,19 +1385,14 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         final int[] bandIndices = {1, 2, 0, 2, 1};
         // Inject bandIndices read param
-        Parameter<int[]> bandIndicesParam =
-                (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
+        Parameter<int[]> bandIndicesParam = (Parameter<int[]>) AbstractGridFormat.BANDS.createValue();
         bandIndicesParam.setValue(bandIndices);
         List<GeneralParameterValue> paramList = new ArrayList<>();
         paramList.add(bandIndicesParam);
-        GeneralParameterValue[] readParams =
-                paramList.toArray(new GeneralParameterValue[paramList.size()]);
+        GeneralParameterValue[] readParams = paramList.toArray(new GeneralParameterValue[paramList.size()]);
 
-        Layer sl =
-                new CachedGridReaderLayer(
-                        reader,
-                        styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()),
-                        readParams);
+        Layer sl = new CachedGridReaderLayer(
+                reader, styleBuilder.createStyle(styleBuilder.createRasterSymbolizer()), readParams);
         map.addLayer(sl);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
@@ -1602,8 +1427,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op =
-                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage image = op.getAsBufferedImage();
         imageMap.dispose();
 
@@ -1615,8 +1439,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testGetMapOnByteNodataChannelSelectAndContrastEnhancement() throws Exception {
         GetMapRequest request = new GetMapRequest();
-        CoverageInfo coverageInfo =
-                getCatalog().getCoverageByName(SIX_BANDS.getPrefix(), SIX_BANDS.getLocalPart());
+        CoverageInfo coverageInfo = getCatalog().getCoverageByName(SIX_BANDS.getPrefix(), SIX_BANDS.getLocalPart());
         ReferencedEnvelope bbox = coverageInfo.getNativeBoundingBox();
         GridEnvelope gridRange = coverageInfo.getGrid().getGridRange();
 
@@ -1639,8 +1462,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op =
-                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         BufferedImage image = op.getAsBufferedImage();
         imageMap.dispose();
 
@@ -1656,42 +1478,37 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Sets up a rendering loop and throws {@code renderExceptionToThrow} wrapped to a
-     * RuntimeException when the renderer tries to get a Feature to render.
+     * Sets up a rendering loop and throws {@code renderExceptionToThrow} wrapped to a RuntimeException when the
+     * renderer tries to get a Feature to render.
      *
-     * <p>If the rendering succeeded returns the image, which is going to be a blank one but means
-     * the renderer didn't complain about the exception caught. Otherwise throws back the exception
-     * thrown by {@link RenderedImageMapOutputFormat#produceMap()}
+     * <p>If the rendering succeeded returns the image, which is going to be a blank one but means the renderer didn't
+     * complain about the exception caught. Otherwise throws back the exception thrown by
+     * {@link RenderedImageMapOutputFormat#produceMap()}
      */
     @SuppressWarnings("unchecked")
-    private RenderedImage forceRenderingError(final Exception renderExceptionToThrow)
-            throws Exception {
+    private RenderedImage forceRenderingError(final Exception renderExceptionToThrow) throws Exception {
 
         GetMapRequest request = new GetMapRequest();
         final WMSMapContent map = new WMSMapContent();
         map.setMapWidth(100);
         map.setMapHeight(100);
         map.setRequest(request);
-        final ReferencedEnvelope bounds =
-                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope bounds = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
         map.getViewport().setBounds(bounds);
 
         final FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(STREAMS.getNamespaceURI(), STREAMS.getLocalPart());
+                getCatalog().getFeatureTypeByName(STREAMS.getNamespaceURI(), STREAMS.getLocalPart());
 
-        final SimpleFeatureSource featureSource =
-                (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
+        final SimpleFeatureSource featureSource = (SimpleFeatureSource) ftInfo.getFeatureSource(null, null);
 
         // This source should make the renderer fail when asking for the features
-        DecoratingFeatureSource source =
-                new DecoratingFeatureSource(featureSource) {
-                    @Override
-                    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
-                        throw new RuntimeException(renderExceptionToThrow);
-                        // return delegate.getFeatures(query);
-                    }
-                };
+        DecoratingFeatureSource source = new DecoratingFeatureSource(featureSource) {
+            @Override
+            public SimpleFeatureCollection getFeatures(Query query) throws IOException {
+                throw new RuntimeException(renderExceptionToThrow);
+                // return delegate.getFeatures(query);
+            }
+        };
 
         StyleInfo someStyle = getCatalog().getStyleByName("line");
         map.addLayer(new FeatureLayer(source, someStyle.getStyle()));
@@ -1704,8 +1521,8 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test to make sure the rendering does not skip on unmatched original envelope and tries
-     * anyways to render an output
+     * Test to make sure the rendering does not skip on unmatched original envelope and tries anyways to render an
+     * output
      */
     @Test
     public void testMosaicExpansion() throws Exception {
@@ -1741,8 +1558,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
             // now use the render to paint a map not hitting the original envelope of reader2
             ReferencedEnvelope renderEnvelope =
-                    new ReferencedEnvelope(
-                            991000, 992000, 216000, 217000, reader2.getCoordinateReferenceSystem());
+                    new ReferencedEnvelope(991000, 992000, 216000, 217000, reader2.getCoordinateReferenceSystem());
             GetMapRequest request = new GetMapRequest();
             request.setBbox(renderEnvelope);
             request.setSRS("EPSG:6539");
@@ -1800,8 +1616,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         map.getViewport().setBounds(bbox);
 
         RenderedImageMap imageMap = this.rasterMapProducer.produceMap(map);
-        RenderedOp op =
-                (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
+        RenderedOp op = (RenderedOp) ((RenderedImageTimeDecorator) imageMap.getImage()).getDelegate();
         Point[] tileIndices = op.getTileIndices(new Rectangle(0, 0, mapWidth, mapHeight));
 
         // Assert we are getting more than a single huge tile.
@@ -1819,16 +1634,14 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
     }
 
     @Test
-    public void testReprojectionHasNoWhiteLine()
-            throws IOException, IllegalFilterException, Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?BBOX=-1137115.798172220821,2084204.190127906622,6183796.336430944502,4720584.184010294266"
-                                + "&styles=&layers=sf:3035&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=1943"
-                                + "&height=700"
-                                + "&srs=EPSG:3857");
+    public void testReprojectionHasNoWhiteLine() throws IOException, IllegalFilterException, Exception {
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?BBOX=-1137115.798172220821,2084204.190127906622,6183796.336430944502,4720584.184010294266"
+                        + "&styles=&layers=sf:3035&Format=image/png"
+                        + "&request=GetMap"
+                        + "&width=1943"
+                        + "&height=700"
+                        + "&srs=EPSG:3857");
 
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertNotNull(image);
@@ -1856,23 +1669,21 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
     @Test
     public void testFaultyStyleDoesntBreak() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?BBOX=-180,-90,180,90"
-                                + "&styles=raster&layers=cdf:Fifteen&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=256"
-                                + "&height=256"
-                                + "&srs=EPSG%3A4326");
+        MockHttpServletResponse response = getAsServletResponse("wms?BBOX=-180,-90,180,90"
+                + "&styles=raster&layers=cdf:Fifteen&Format=image/png"
+                + "&request=GetMap"
+                + "&width=256"
+                + "&height=256"
+                + "&srs=EPSG%3A4326");
 
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertNotNull(image);
         assertBlank("testFaultyStyleDoesntBreak", image);
     }
     /**
-     * This dummy producer adds no functionality to DefaultRasterMapOutputFormat, just implements a
-     * void formatImageOutputStream to have a concrete class over which test that
-     * DefaultRasterMapOutputFormat correctly generates the BufferedImage.
+     * This dummy producer adds no functionality to DefaultRasterMapOutputFormat, just implements a void
+     * formatImageOutputStream to have a concrete class over which test that DefaultRasterMapOutputFormat correctly
+     * generates the BufferedImage.
      *
      * @author Gabriel Roldan
      * @version $Id: DefaultRasterMapOutputFormatTest.java 6797 2007-05-16 10:23:50Z aaime $
@@ -1891,10 +1702,7 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
 
         @Override
         protected Graphics2D getGraphics(
-                boolean transparent,
-                Color bgColor,
-                RenderedImage preparedImage,
-                Map<Key, Object> hintsMap) {
+                boolean transparent, Color bgColor, RenderedImage preparedImage, Map<Key, Object> hintsMap) {
             if (this.graphics != null) {
                 return this.graphics;
             }

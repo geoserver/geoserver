@@ -44,8 +44,7 @@ public class OseoGeoJSONCollectionConverter extends BaseMessageConverter<Object>
     @Override
     protected Object readInternal(Class<? extends Object> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
-        return GeoJSONReader.parseFeatureCollection(
-                IOUtils.toString(inputMessage.getBody(), StandardCharsets.UTF_8));
+        return GeoJSONReader.parseFeatureCollection(IOUtils.toString(inputMessage.getBody(), StandardCharsets.UTF_8));
     }
 
     @Override

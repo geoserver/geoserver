@@ -33,27 +33,21 @@ public class TilesAPIBuilder extends OpenAPIBuilder<TilesServiceInfo> {
 
         // adjust path output formats
         declareGetResponseFormats(api, "/collections", TiledCollectionsDocument.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}", TiledCollectionsDocument.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}", TiledCollectionsDocument.class);
 
         // the external documentation
-        api.externalDocs(
-                new ExternalDocumentation()
-                        .description("Tiles specification")
-                        .url("https://github.com/opengeospatial/OGC-API-Map-Tiles"));
+        api.externalDocs(new ExternalDocumentation()
+                .description("Tiles specification")
+                .url("https://github.com/opengeospatial/OGC-API-Map-Tiles"));
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
 
-        List<String> validCollectionIds =
-                Streams.stream(gwc.getTileLayers())
-                        .map(
-                                tl ->
-                                        tl instanceof GeoServerTileLayer
-                                                ? ((GeoServerTileLayer) tl).getContextualName()
-                                                : tl.getName())
-                        .collect(Collectors.toList());
+        List<String> validCollectionIds = Streams.stream(gwc.getTileLayers())
+                .map(tl ->
+                        tl instanceof GeoServerTileLayer ? ((GeoServerTileLayer) tl).getContextualName() : tl.getName())
+                .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
         return api;

@@ -25,8 +25,7 @@ import org.vfny.geoserver.wcs.WcsException;
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
-public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate {
+public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     /** FILE_EXTENSION */
     private static final String FILE_EXTENSION = "gml";
@@ -38,8 +37,7 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
     private EnvelopeAxesLabelsMapper envelopeDimensionsMapper;
 
     @SuppressWarnings("serial")
-    public GMLCoverageResponseDelegate(
-            EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
+    public GMLCoverageResponseDelegate(EnvelopeAxesLabelsMapper envelopeDimensionsMapper, GeoServer geoserver) {
         super(
                 geoserver,
                 List.of(FILE_EXTENSION, MIME_TYPE), // output formats
@@ -55,10 +53,7 @@ public class GMLCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
     @Override
     public void encode(
-            GridCoverage2D coverage,
-            String outputFormat,
-            Map<String, String> econdingParameters,
-            OutputStream output)
+            GridCoverage2D coverage, String outputFormat, Map<String, String> econdingParameters, OutputStream output)
             throws ServiceException, IOException {
         final GMLTransformer transformer = new GMLTransformer(envelopeDimensionsMapper);
         transformer.setIndentation(4);

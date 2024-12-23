@@ -22,10 +22,7 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.feature.FeatureCollection;
 import org.locationtech.jts.geom.Geometry;
 
-/**
- * This class allows the management of freemarker templates to customize geoJSON output in
- * getFeatureInfo request.
- */
+/** This class allows the management of freemarker templates to customize geoJSON output in getFeatureInfo request. */
 public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
 
     static final ObjectMapper MAPPER;
@@ -36,14 +33,12 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
         MAPPER.registerModule(module);
     }
 
-    public GeoJSONTemplateManager(
-            OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
+    public GeoJSONTemplateManager(OutputFormat format, WMS wms, GeoServerResourceLoader resourceLoader) {
         super(format, wms, resourceLoader);
     }
 
     @Override
-    protected boolean templatesExist(
-            Template header, Template footer, List<FeatureCollection> collections)
+    protected boolean templatesExist(Template header, Template footer, List<FeatureCollection> collections)
             throws IOException {
         if (header == null || footer == null) return false;
         else {
@@ -56,8 +51,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     @Override
-    protected void handleContent(List<FeatureCollection> collections, OutputStreamWriter osw)
-            throws IOException {
+    protected void handleContent(List<FeatureCollection> collections, OutputStreamWriter osw) throws IOException {
         for (int i = 0; i < collections.size(); i++) {
             FeatureCollection fc = collections.get(i);
             Template content = getContentTemplate(fc, wms.getCharSet());
@@ -80,8 +74,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
     }
 
     /** Write a FeatureCollection using normal GeoJSON encoding */
-    private void handleJSONWithoutTemplate(FeatureCollection collection, OutputStreamWriter osw)
-            throws IOException {
+    private void handleJSONWithoutTemplate(FeatureCollection collection, OutputStreamWriter osw) throws IOException {
         GeoJSONGetFeatureResponse format =
                 new GeoJSONGetFeatureResponse(wms.getGeoServer(), OutputFormat.JSON.getFormat());
         boolean isComplex = collection.getSchema() instanceof SimpleFeatureType;
@@ -91,10 +84,7 @@ public class GeoJSONTemplateManager extends FreeMarkerTemplateManager {
         outWriter.flush();
     }
 
-    /**
-     * Encode geometry to a valid geoJSON representation. The method is aimed to be used in free
-     * marker templates.
-     */
+    /** Encode geometry to a valid geoJSON representation. The method is aimed to be used in free marker templates. */
     public static String geomToGeoJSON(Geometry geometry) throws JsonProcessingException {
         return MAPPER.writeValueAsString(geometry);
     }

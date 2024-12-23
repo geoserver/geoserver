@@ -52,8 +52,8 @@ public class TokenSignatureValidatorTest {
     /**
      * tests a bad signature.
      *
-     * <p>We modify an existing access token (cf TokenExpiryValidatorTest) and don't update the
-     * signature. The signature check should fail (throw).
+     * <p>We modify an existing access token (cf TokenExpiryValidatorTest) and don't update the signature. The signature
+     * check should fail (throw).
      *
      * @throws Exception
      */

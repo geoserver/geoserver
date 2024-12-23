@@ -47,8 +47,7 @@ public class H3ZoneIteratorTest {
 
     @Test
     public void testRootZones() {
-        H3ZoneIterator<Long> iterator =
-                new H3ZoneIterator<>(h3, id -> false, id -> true, identity());
+        H3ZoneIterator<Long> iterator = new H3ZoneIterator<>(h3, id -> false, id -> true, identity());
         List<Long> zoneIds = collectZones(iterator);
         assertEquals(122, zoneIds.size());
         assertTrue(zoneIds.containsAll(h3.getRes0Indexes()));
@@ -56,8 +55,7 @@ public class H3ZoneIteratorTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testEmpty() {
-        H3ZoneIterator<Long> iterator =
-                new H3ZoneIterator<>(h3, id -> false, id -> false, identity());
+        H3ZoneIterator<Long> iterator = new H3ZoneIterator<>(h3, id -> false, id -> false, identity());
         assertFalse(iterator.hasNext());
         // make it throw a no such element
         iterator.next();
@@ -67,13 +65,12 @@ public class H3ZoneIteratorTest {
     public void testDrillDown() {
         long center = h3.geoToH3(0, 0, 0);
         // gets the res = 2 children of the center cell
-        H3ZoneIterator<Long> iterator =
-                new H3ZoneIterator<>(
-                        h3,
-                        id1 -> h3.h3GetResolution(id1) < 2,
-                        id -> h3.h3GetResolution(id) == 2,
-                        id -> id,
-                        Arrays.asList(center));
+        H3ZoneIterator<Long> iterator = new H3ZoneIterator<>(
+                h3,
+                id1 -> h3.h3GetResolution(id1) < 2,
+                id -> h3.h3GetResolution(id) == 2,
+                id -> id,
+                Arrays.asList(center));
         List<Long> zones = collectZones(iterator);
         List<Long> l3Children = h3.h3ToChildren(center, 2);
         assertEquals(l3Children.size(), zones.size());

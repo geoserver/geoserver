@@ -21,19 +21,14 @@ public class HTTPLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     public HTTPLayerConfig(String id, IModel<LayerInfo> model, String metadataPropertyName) {
         super(id, model);
-        add(
-                new CheckBox(
-                        ResourceInfo.CACHING_ENABLED,
-                        new MapModel<>(
-                                new PropertyModel<>(model, metadataPropertyName),
-                                "cachingEnabled")));
+        add(new CheckBox(
+                ResourceInfo.CACHING_ENABLED,
+                new MapModel<>(new PropertyModel<>(model, metadataPropertyName), "cachingEnabled")));
 
-        TextField<Long> maxAge =
-                new TextField<>(
-                        ResourceInfo.CACHE_AGE_MAX,
-                        new MapModel<>(
-                                new PropertyModel<>(model, metadataPropertyName), "cacheAgeMax"),
-                        Long.class);
+        TextField<Long> maxAge = new TextField<>(
+                ResourceInfo.CACHE_AGE_MAX,
+                new MapModel<>(new PropertyModel<>(model, metadataPropertyName), "cacheAgeMax"),
+                Long.class);
         maxAge.add(RangeValidator.range(0l, Long.MAX_VALUE));
         add(maxAge);
     }

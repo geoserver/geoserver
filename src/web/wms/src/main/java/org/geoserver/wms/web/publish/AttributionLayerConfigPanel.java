@@ -37,70 +37,58 @@ public class AttributionLayerConfigPanel extends PublishedConfigurationPanel<Pub
                     GeoServerApplication.get().getCatalog().getFactory().createAttribution());
         }
 
-        add(
-                new TextField<>(
-                        "wms.attribution.title", new PropertyModel<>(model, "attribution.title")));
+        add(new TextField<>("wms.attribution.title", new PropertyModel<>(model, "attribution.title")));
 
         final TextField<String> href =
-                new TextField<>(
-                        "wms.attribution.href", new PropertyModel<>(model, "attribution.href"));
+                new TextField<>("wms.attribution.href", new PropertyModel<>(model, "attribution.href"));
         href.add(new UrlValidator());
         href.setOutputMarkupId(true);
         add(href);
 
         final TextField<String> logo =
-                new TextField<>(
-                        "wms.attribution.logo", new PropertyModel<>(model, "attribution.logoURL"));
+                new TextField<>("wms.attribution.logo", new PropertyModel<>(model, "attribution.logoURL"));
         logo.add(new UrlValidator());
         logo.setOutputMarkupId(true);
         add(logo);
 
         final TextField<String> type =
-                new TextField<>(
-                        "wms.attribution.type", new PropertyModel<>(model, "attribution.logoType"));
+                new TextField<>("wms.attribution.type", new PropertyModel<>(model, "attribution.logoType"));
         type.setOutputMarkupId(true);
         add(type);
 
-        final TextField<Integer> height =
-                new TextField<>(
-                        "wms.attribution.height",
-                        new PropertyModel<>(model, "attribution.logoHeight"),
-                        Integer.class);
+        final TextField<Integer> height = new TextField<>(
+                "wms.attribution.height", new PropertyModel<>(model, "attribution.logoHeight"), Integer.class);
         height.add(RangeValidator.minimum(0));
         height.setOutputMarkupId(true);
         add(height);
 
-        final TextField<Integer> width =
-                new TextField<>(
-                        "wms.attribution.width",
-                        new PropertyModel<>(model, "attribution.logoWidth"),
-                        Integer.class);
+        final TextField<Integer> width = new TextField<>(
+                "wms.attribution.width", new PropertyModel<>(model, "attribution.logoWidth"), Integer.class);
         width.add(RangeValidator.minimum(0));
         width.setOutputMarkupId(true);
         add(width);
 
-        add(
-                new AjaxSubmitLink("verifyImage") {
-                    private static final long serialVersionUID = 6814575194862084111L;
+        add(new AjaxSubmitLink("verifyImage") {
+            private static final long serialVersionUID = 6814575194862084111L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (logo.getDefaultModelObjectAsString() != null) {
-                            try {
-                                URL url = new URL(logo.getDefaultModelObjectAsString());
-                                URLConnection conn = url.openConnection();
-                                type.getModel().setObject(conn.getContentType());
-                                BufferedImage image = ImageIO.read(conn.getInputStream());
-                                height.setModelValue(new String[] {"" + image.getHeight()});
-                                width.setModelValue(new String[] {"" + image.getWidth()});
-                            } catch (Exception e) {
-                            }
-                        }
-
-                        target.add(type);
-                        target.add(height);
-                        target.add(width);
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (logo.getDefaultModelObjectAsString() != null) {
+                    try {
+                        URL url = new URL(logo.getDefaultModelObjectAsString());
+                        URLConnection conn = url.openConnection();
+                        type.getModel().setObject(conn.getContentType());
+                        BufferedImage image = ImageIO.read(conn.getInputStream());
+                        height.setModelValue(new String[] {"" + image.getHeight()});
+                        width.setModelValue(new String[] {"" + image.getWidth()});
+                    } catch (Exception e) {
                     }
-                });
+                }
+
+                target.add(type);
+                target.add(height);
+                target.add(width);
+            }
+        });
     }
 }

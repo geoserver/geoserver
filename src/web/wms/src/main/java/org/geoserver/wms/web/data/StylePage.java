@@ -39,46 +39,39 @@ public class StylePage extends GeoServerSecuredPage {
     public StylePage() {
         StyleProvider provider = new StyleProvider();
         add(
-                table =
-                        new GeoServerTablePanel<>("table", provider, true) {
+                table = new GeoServerTablePanel<>("table", provider, true) {
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<StyleInfo> itemModel,
-                                    Property<StyleInfo> property) {
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<StyleInfo> itemModel, Property<StyleInfo> property) {
 
-                                if (property == StyleProvider.NAME) {
-                                    return styleLink(id, itemModel);
-                                }
-                                if (property == StyleProvider.WORKSPACE) {
-                                    return workspaceLink(id, itemModel);
-                                }
-                                if (property == StyleProvider.MODIFIED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            StyleProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
-                                }
-                                if (property == StyleProvider.CREATED_TIMESTAMP) {
-                                    return new DateTimeLabel(
-                                            id,
-                                            StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
-                                }
-                                if (property == StyleProvider.FORMAT) {
-                                    return new StyleFormatLabel(
-                                            id,
-                                            StyleProvider.FORMAT.getModel(itemModel),
-                                            StyleProvider.FORMAT_VERSION.getModel(itemModel));
-                                }
-                                return null;
-                            }
+                        if (property == StyleProvider.NAME) {
+                            return styleLink(id, itemModel);
+                        }
+                        if (property == StyleProvider.WORKSPACE) {
+                            return workspaceLink(id, itemModel);
+                        }
+                        if (property == StyleProvider.MODIFIED_TIMESTAMP) {
+                            return new DateTimeLabel(id, StyleProvider.MODIFIED_TIMESTAMP.getModel(itemModel));
+                        }
+                        if (property == StyleProvider.CREATED_TIMESTAMP) {
+                            return new DateTimeLabel(id, StyleProvider.CREATED_TIMESTAMP.getModel(itemModel));
+                        }
+                        if (property == StyleProvider.FORMAT) {
+                            return new StyleFormatLabel(
+                                    id,
+                                    StyleProvider.FORMAT.getModel(itemModel),
+                                    StyleProvider.FORMAT_VERSION.getModel(itemModel));
+                        }
+                        return null;
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(!table.getSelection().isEmpty());
-                                target.add(removal);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        removal.setEnabled(!table.getSelection().isEmpty());
+                        target.add(removal);
+                    }
+                });
         table.setOutputMarkupId(true);
 
         // the confirm dialog
@@ -94,17 +87,15 @@ public class StylePage extends GeoServerSecuredPage {
 
         // the removal button
         header.add(
-                removal =
-                        new SelectionRemovalLink("removeSelected", table, dialog) {
-                            @Override
-                            protected StringResourceModel canRemove(CatalogInfo object) {
-                                if (isDefaultStyle(object)) {
-                                    return new StringResourceModel(
-                                            "cantRemoveDefaultStyle", StylePage.this, null);
-                                }
-                                return null;
-                            }
-                        });
+                removal = new SelectionRemovalLink("removeSelected", table, dialog) {
+                    @Override
+                    protected StringResourceModel canRemove(CatalogInfo object) {
+                        if (isDefaultStyle(object)) {
+                            return new StringResourceModel("cantRemoveDefaultStyle", StylePage.this, null);
+                        }
+                        return null;
+                    }
+                });
         removal.setOutputMarkupId(true);
         removal.setEnabled(false);
 
@@ -119,21 +110,14 @@ public class StylePage extends GeoServerSecuredPage {
         String wsName = (String) wsModel.getObject();
 
         return new SimpleBookmarkableLink(
-                id,
-                StyleEditPage.class,
-                nameModel,
-                StyleEditPage.NAME,
-                name,
-                StyleEditPage.WORKSPACE,
-                wsName);
+                id, StyleEditPage.class, nameModel, StyleEditPage.NAME, name, StyleEditPage.WORKSPACE, wsName);
     }
 
     Component workspaceLink(String id, IModel<StyleInfo> model) {
         IModel<?> wsNameModel = StyleProvider.WORKSPACE.getModel(model);
         String wsName = (String) wsNameModel.getObject();
         if (wsName != null) {
-            return new SimpleBookmarkableLink(
-                    id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
+            return new SimpleBookmarkableLink(id, WorkspaceEditPage.class, new Model<>(wsName), "name", wsName);
         } else {
             return new WebMarkupContainer(id);
         }

@@ -34,8 +34,7 @@ public class UserGroupServiceException extends AbstractSecurityException {
     public static final String GROUP_ALREADY_EXISTS_$1 = "GROUP_ALREADY_EXISTS";
     // return MessageFormat.format("Group {0} already exists",args);
 
-    public static final String USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1 =
-            "USER_IN_OTHER_GROUP_NOT_MODIFIABLE";
+    public static final String USER_IN_OTHER_GROUP_NOT_MODIFIABLE_$1 = "USER_IN_OTHER_GROUP_NOT_MODIFIABLE";
 
     public UserGroupServiceException(String errorId, Object[] args) {
         super(errorId, args);

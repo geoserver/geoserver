@@ -30,8 +30,7 @@ public class MapServiceControllerTest extends ControllerTest {
         assertFalse(result.isEmpty());
         // TODO: Can't validate since ids are not integers.
         assertTrue(
-                result + " ;Root controller validates",
-                JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/root.json"));
+                result + " ;Root controller validates", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/root.json"));
     }
 
     @Test
@@ -49,19 +48,14 @@ public class MapServiceControllerTest extends ControllerTest {
 
     @Test
     public void testIdentify() throws Exception {
-        JSONObject result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "/cite/MapServer/identify?f=json"
-                                        + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
-                                        + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
-                                        + "62.927282&tolerance=10 ");
+        JSONObject result = (JSONObject) getAsJSON(getBaseURL()
+                + "/cite/MapServer/identify?f=json"
+                + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
+                + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
+                + "62.927282&tolerance=10 ");
         System.out.println(result.toString());
         assertFalse(result.has("error"));
-        assertTrue(
-                "Result validates against schema",
-                JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/identify.json"));
+        assertTrue("Result validates against schema", JsonSchemaTest.validateJSON(result, "/gsr-ms/1.0/identify.json"));
 
         assertEquals(2, result.getJSONArray("results").size());
         assertEquals(
@@ -76,14 +70,11 @@ public class MapServiceControllerTest extends ControllerTest {
     @Test
     public void testIdentifyWkid() throws Exception {
         // test cite; expect wkid 4326
-        JSONObject result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "/cite/MapServer/identify?f=json"
-                                        + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
-                                        + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
-                                        + "62.927282&tolerance=10 ");
+        JSONObject result = (JSONObject) getAsJSON(getBaseURL()
+                + "/cite/MapServer/identify?f=json"
+                + "&geometryType=esriGeometryPoint&geometry={x: 0, y: 0}"
+                + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
+                + "62.927282&tolerance=10 ");
         assertFalse(result.has("error"));
         print(result);
 
@@ -96,14 +87,11 @@ public class MapServiceControllerTest extends ControllerTest {
                         .getJSONObject("spatialReference")
                         .getString("wkid"));
 
-        result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "/cdf/MapServer/identify?f=json"
-                                        + "&geometryType=esriGeometryPoint&geometry={x: 500050, y: 500050}&sr=32615"
-                                        + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
-                                        + "62.927282&tolerance=10 ");
+        result = (JSONObject) getAsJSON(getBaseURL()
+                + "/cdf/MapServer/identify?f=json"
+                + "&geometryType=esriGeometryPoint&geometry={x: 500050, y: 500050}&sr=32615"
+                + "&layers=all:0&imageDisplay=718,610,96&mapExtent=-126.175461,11.400420,-65.525810,"
+                + "62.927282&tolerance=10 ");
         assertFalse(result.has("error"));
 
         // upgrading from 2.13.x to 2.16.x made the count go down from 99 to 98
@@ -124,10 +112,7 @@ public class MapServiceControllerTest extends ControllerTest {
     @Test
     public void testFind() throws Exception {
         JSONObject result =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + "/cite/MapServer/find?f=json&searchText=Ash&layers=8");
+                (JSONObject) getAsJSON(getBaseURL() + "/cite/MapServer/find?f=json&searchText=Ash&layers=8");
         System.out.println(result.toString());
         JSONArray results = (JSONArray) result.get("results");
         assertEquals("Results should have one element", 1, results.size());

@@ -42,8 +42,8 @@ public class DirectDownload {
     private static final FilterFactory FF = FeatureUtilities.DEFAULT_FILTER_FACTORY;
 
     /**
-     * Files collector class which populates a {@link File}s {@link List} by accessing a {@link
-     * FileGroupProvider} instance.
+     * Files collector class which populates a {@link File}s {@link List} by accessing a {@link FileGroupProvider}
+     * instance.
      */
     class FilesCollector {
 
@@ -55,11 +55,10 @@ public class DirectDownload {
         private FileGroupProvider fileGroupProvider;
 
         /**
-         * Only collect the subset of files available from the fileGroupProvider, which match the
-         * provided fileId.
+         * Only collect the subset of files available from the fileGroupProvider, which match the provided fileId.
          *
-         * <p>a File Identifier is composed of "hash-baseName". Only the files having same baseName
-         * and matching hash will be added to the list
+         * <p>a File Identifier is composed of "hash-baseName". Only the files having same baseName and matching hash
+         * will be added to the list
          */
         private void collectSubset(String fileId, List<File> result) {
             String hash = fileId;
@@ -86,8 +85,7 @@ public class DirectDownload {
                     }
                 }
             } catch (NoSuchAlgorithmException | IOException e) {
-                throw new ServiceException(
-                        "Exception occurred while looking for raw files for :" + fileId, e);
+                throw new ServiceException("Exception occurred while looking for raw files for :" + fileId, e);
             }
         }
 
@@ -147,19 +145,15 @@ public class DirectDownload {
         // Get the underlying coverage from the catalog
         CoverageInfo info = geoserver.getCatalog().getCoverageByName(coverageName);
         if (info == null) {
-            throw new ServiceException(
-                    "No object available for the specified name:" + coverageName);
+            throw new ServiceException("No object available for the specified name:" + coverageName);
         }
 
         // Get the reader to access the coverage
         GridCoverage2DReader reader;
         try {
-            reader =
-                    (GridCoverage2DReader)
-                            info.getGridCoverageReader(null, GeoTools.getDefaultHints());
+            reader = (GridCoverage2DReader) info.getGridCoverageReader(null, GeoTools.getDefaultHints());
         } catch (IOException e) {
-            throw new ServiceException(
-                    "Failed to get a reader for the associated info: " + info, e);
+            throw new ServiceException("Failed to get a reader for the associated info: " + info, e);
         }
 
         // Get resources for the specified file
@@ -174,16 +168,15 @@ public class DirectDownload {
             getExtraFiles(reader, result);
         }
         if (result == null || result.isEmpty()) {
-            throw new ServiceException(
-                    "Unable to get any data for resourceId=" + resourceId + " and file=" + fileId);
+            throw new ServiceException("Unable to get any data for resourceId=" + resourceId + " and file=" + fileId);
         }
         checkSizeLimit(result, info);
         return result;
     }
 
     /**
-     * Get extra files for the specified reader and add them to the result list. Extra files are
-     * usually auxiliary files like, as an instance, indexer, properties, config files for a mosaic.
+     * Get extra files for the specified reader and add them to the result list. Extra files are usually auxiliary files
+     * like, as an instance, indexer, properties, config files for a mosaic.
      */
     private void getExtraFiles(GridCoverage2DReader reader, List<File> result) {
         ServiceInfo info = reader.getInfo();
@@ -194,17 +187,15 @@ public class DirectDownload {
             collector.collectFull(result);
         } else {
             throw new ServiceException(
-                    "Unable to get files from the specified ServiceInfo which"
-                            + " doesn't implement FileServiceInfo");
+                    "Unable to get files from the specified ServiceInfo which" + " doesn't implement FileServiceInfo");
         }
     }
 
     /**
-     * Get the data files from the specified {@link GridCoverage2DReader}, related to the provided
-     * coverageName, matching the specified fileId and add them to the result list.
+     * Get the data files from the specified {@link GridCoverage2DReader}, related to the provided coverageName,
+     * matching the specified fileId and add them to the result list.
      */
-    private void getFileResources(
-            GridCoverage2DReader reader, String coverageName, String fileId, List<File> result) {
+    private void getFileResources(GridCoverage2DReader reader, String coverageName, String fileId, List<File> result) {
         ResourceInfo resourceInfo = reader.getInfo(coverageName);
         if (resourceInfo instanceof FileResourceInfo) {
             FileResourceInfo fileResourceInfo = (FileResourceInfo) resourceInfo;
@@ -222,19 +213,17 @@ public class DirectDownload {
                 collector.collectFull(result);
             }
         } else {
-            throw new ServiceException(
-                    "Unable to get files from the specified ResourceInfo which"
-                            + " doesn't implement FileResourceInfo");
+            throw new ServiceException("Unable to get files from the specified ResourceInfo which"
+                    + " doesn't implement FileResourceInfo");
         }
     }
 
     /**
-     * Check the current download is not exceeding the maxDownloadSize limit (if activated). Throws
-     * a {@link CSWException} in case the limit is exceeded
+     * Check the current download is not exceeding the maxDownloadSize limit (if activated). Throws a
+     * {@link CSWException} in case the limit is exceeded
      */
     private void checkSizeLimit(List<File> fileList, CoverageInfo info) {
-        DirectDownloadSettings settings =
-                DirectDownloadSettings.getSettingsFromMetadata(info.getMetadata(), csw);
+        DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(info.getMetadata(), csw);
         long maxSize = settings != null ? settings.getMaxDownloadSize() : 0;
         long sizeLimit = maxSize * 1024;
         if (fileList != null && !fileList.isEmpty() && sizeLimit > 0) {
@@ -243,12 +232,11 @@ public class DirectDownload {
                 cumulativeSize += file.length();
             }
             if (cumulativeSize > sizeLimit) {
-                throw new CSWException(
-                        LIMIT_MESSAGE
-                                + "The limit is "
-                                + formatBytes(sizeLimit)
-                                + " but the amount of raw data to be downloaded is "
-                                + formatBytes(cumulativeSize));
+                throw new CSWException(LIMIT_MESSAGE
+                        + "The limit is "
+                        + formatBytes(sizeLimit)
+                        + " but the amount of raw data to be downloaded is "
+                        + formatBytes(cumulativeSize));
             }
         }
     }

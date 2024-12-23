@@ -31,15 +31,12 @@ public class DGGSGeometryStoreEditPanel extends StoreEditPanel {
         final IModel model = storeEditForm.getModel();
         setDefaultModel(model);
 
-        final IModel<Map<String, ?>> paramsModel =
-                new PropertyModel<>(model, "connectionParameters");
+        final IModel<Map<String, ?>> paramsModel = new PropertyModel<>(model, "connectionParameters");
 
-        IModel<Serializable> valueModel =
-                new MapModel<>(paramsModel, DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key);
+        IModel<Serializable> valueModel = new MapModel<>(paramsModel, DGGSGeometryStoreFactory.DGGS_FACTORY_ID.key);
         IModel<String> labelModel = new ParamResourceModel("DGGSFactoryId", this);
         DropDownChoiceParamPanel parameterPanel =
-                new DropDownChoiceParamPanel(
-                        "factoryId", valueModel, labelModel, getDGGSFactoryIds(), true);
+                new DropDownChoiceParamPanel("factoryId", valueModel, labelModel, getDGGSFactoryIds(), true);
         add(parameterPanel);
     }
 

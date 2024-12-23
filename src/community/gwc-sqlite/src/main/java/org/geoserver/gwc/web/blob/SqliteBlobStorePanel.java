@@ -30,65 +30,41 @@ abstract class SqliteBlobStorePanel<T extends SqliteInfo> extends Panel {
         super.onInitialize();
 
         // the root directory of this blob store
-        DirectoryParamPanel directoryPanel =
-                new DirectoryParamPanel(
-                        "rootDirectory",
-                        new PropertyModel<>(getDefaultModel().getObject(), "rootDirectory"),
-                        new ParamResourceModel("rootDirectory", this),
-                        true);
+        DirectoryParamPanel directoryPanel = new DirectoryParamPanel(
+                "rootDirectory",
+                new PropertyModel<>(getDefaultModel().getObject(), "rootDirectory"),
+                new ParamResourceModel("rootDirectory", this),
+                true);
         add(directoryPanel);
         directoryPanel
                 .getFormComponent()
                 .setModel(new PropertyModel<>(getDefaultModel().getObject(), "rootDirectory"));
-        directoryPanel.setFileFilter(
-                new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
+        directoryPanel.setFileFilter(new Model<>((DirectoryFileFilter) DirectoryFileFilter.INSTANCE));
 
         // properties that will be used to build a database file path
-        add(
-                new TextField<String>("templatePath")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "templatePath", new ResourceModel("templatePath"))));
-        add(
-                new TextField<Long>("rowRangeCount")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "rowRangeCount", new ResourceModel("rowRangeCount"))));
-        add(
-                new TextField<Long>("columnRangeCount")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "columnRangeCount",
-                                        new ResourceModel("columnRangeCount"))));
+        add(new TextField<String>("templatePath")
+                .setRequired(true)
+                .add(new AttributeModifier("templatePath", new ResourceModel("templatePath"))));
+        add(new TextField<Long>("rowRangeCount")
+                .setRequired(true)
+                .add(new AttributeModifier("rowRangeCount", new ResourceModel("rowRangeCount"))));
+        add(new TextField<Long>("columnRangeCount")
+                .setRequired(true)
+                .add(new AttributeModifier("columnRangeCount", new ResourceModel("columnRangeCount"))));
 
         // connection pool related properties
-        add(
-                new TextField<Long>("poolSize")
-                        .setRequired(true)
-                        .add(new AttributeModifier("poolSize", new ResourceModel("poolSize"))));
-        add(
-                new TextField<Long>("poolReaperIntervalMs")
-                        .setRequired(true)
-                        .add(
-                                new AttributeModifier(
-                                        "poolReaperIntervalMs",
-                                        new ResourceModel("poolReaperIntervalMs"))));
+        add(new TextField<Long>("poolSize")
+                .setRequired(true)
+                .add(new AttributeModifier("poolSize", new ResourceModel("poolSize"))));
+        add(new TextField<Long>("poolReaperIntervalMs")
+                .setRequired(true)
+                .add(new AttributeModifier("poolReaperIntervalMs", new ResourceModel("poolReaperIntervalMs"))));
 
         // should database files be deleted or should we delete tiles ranges
-        add(
-                new CheckBox("eagerDelete")
-                        .add(
-                                new AttributeModifier(
-                                        "eagerDelete", new ResourceModel("eagerDelete"))));
+        add(new CheckBox("eagerDelete").add(new AttributeModifier("eagerDelete", new ResourceModel("eagerDelete"))));
 
         // controls if the blob store will set and use the tile creation time
-        add(
-                new CheckBox("useCreateTime")
-                        .add(
-                                new AttributeModifier(
-                                        "useCreateTime", new ResourceModel("useCreateTime"))));
+        add(new CheckBox("useCreateTime")
+                .add(new AttributeModifier("useCreateTime", new ResourceModel("useCreateTime"))));
     }
 }

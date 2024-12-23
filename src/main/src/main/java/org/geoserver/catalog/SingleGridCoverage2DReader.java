@@ -32,11 +32,9 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     protected String coverageName;
 
-    public static SingleGridCoverage2DReader wrap(
-            GridCoverage2DReader delegate, String coverageName) {
+    public static SingleGridCoverage2DReader wrap(GridCoverage2DReader delegate, String coverageName) {
         if (delegate instanceof StructuredGridCoverage2DReader) {
-            return new StructuredSingleGridCoverage2DReader(
-                    (StructuredGridCoverage2DReader) delegate, coverageName);
+            return new StructuredSingleGridCoverage2DReader((StructuredGridCoverage2DReader) delegate, coverageName);
         } else {
             return new SingleGridCoverage2DReader(delegate, coverageName);
         }
@@ -57,10 +55,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     protected void checkCoverageName(String coverageName) {
         if (!this.coverageName.equals(coverageName)) {
             throw new IllegalArgumentException(
-                    "Unknown coverage named "
-                            + coverageName
-                            + ", the only valid value is: "
-                            + this.coverageName);
+                    "Unknown coverage named " + coverageName + ", the only valid value is: " + this.coverageName);
         }
     }
 
@@ -135,8 +130,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
         return delegate.read(coverageName, parameters);
     }
 
@@ -164,21 +158,18 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
     }
 
     @Override
-    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
-            throws IOException {
+    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getDynamicParameters(coverageName);
     }
 
     @Override
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
-            throws IOException {
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) throws IOException {
         return delegate.getReadingResolutions(this.coverageName, policy, requestedResolution);
     }
 
     @Override
-    public double[] getReadingResolutions(
-            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         checkCoverageName(coverageName);
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
@@ -186,9 +177,7 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
 
     @Override
     public String[] getGridCoverageNames() throws IOException {
-        return new String[] {
-            coverageName
-        }; // Being a singleGridCoverage reader, I can return the only coverage
+        return new String[] {coverageName}; // Being a singleGridCoverage reader, I can return the only coverage
     }
 
     @Override

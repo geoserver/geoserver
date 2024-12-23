@@ -10,16 +10,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Sets the default content type for a given API controller method. To be used when the expectd
- * default in not {@link org.springframework.http.MediaType#APPLICATION_JSON_VALUE}.
+ * Sets the default content type for a given API controller method. To be used when the expectd default in not
+ * {@link org.springframework.http.MediaType#APPLICATION_JSON_VALUE}.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface DefaultContentType {
 
     /**
-     * The default content type to use in place of {@link
-     * org.springframework.http.MediaType#APPLICATION_JSON_VALUE}.
+     * The default content type to use in place of {@link org.springframework.http.MediaType#APPLICATION_JSON_VALUE}.
      */
     String value();
 }

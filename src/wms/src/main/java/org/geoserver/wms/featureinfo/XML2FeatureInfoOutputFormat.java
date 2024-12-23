@@ -8,8 +8,7 @@ package org.geoserver.wms.featureinfo;
 import org.geoserver.wms.WMS;
 
 /**
- * A GetFeatureInfo response handler specialized in producing GML 2 data for a GetFeatureInfo
- * request.
+ * A GetFeatureInfo response handler specialized in producing GML 2 data for a GetFeatureInfo request.
  *
  * <p>This class is an alternative to <code>GML2FeatureInfoOutputFormat</code>.
  *
@@ -19,8 +18,8 @@ import org.geoserver.wms.WMS;
 public class XML2FeatureInfoOutputFormat extends GML2FeatureInfoOutputFormat {
 
     /**
-     * The MIME type of the format this response produces: <code>"text/xml"</code>. This is an
-     * alternative format for GML2: <code>"application/vnd.ogc.gml"</code>.
+     * The MIME type of the format this response produces: <code>"text/xml"</code>. This is an alternative format for
+     * GML2: <code>"application/vnd.ogc.gml"</code>.
      */
     public static final String FORMAT = "text/xml";
 

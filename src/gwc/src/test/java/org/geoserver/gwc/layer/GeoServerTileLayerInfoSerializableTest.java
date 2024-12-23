@@ -40,7 +40,8 @@ import org.junit.rules.TemporaryFolder;
 
 public class GeoServerTileLayerInfoSerializableTest {
 
-    @Rule public TemporaryFolder temp = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
 
     private GeoServerTileLayerInfo info;
 
@@ -62,20 +63,14 @@ public class GeoServerTileLayerInfoSerializableTest {
     }
 
     @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
-    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher)
-            throws Exception {
-        Object value =
-                Arrays.stream(
-                                Introspector.getBeanInfo(expected.getClass())
-                                        .getPropertyDescriptors())
-                        .filter(p -> p.getName().equals(property))
-                        .findAny()
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "bean expected lacks the property " + property))
-                        .getReadMethod()
-                        .invoke(expected);
+    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
+        Object value = Arrays.stream(
+                        Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())
+                .filter(p -> p.getName().equals(property))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("bean expected lacks the property " + property))
+                .getReadMethod()
+                .invoke(expected);
         return hasProperty(property, (Matcher<?>) ((Function) valueMatcher).apply(value));
     }
 

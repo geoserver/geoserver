@@ -325,12 +325,8 @@ public class GWCZoomContextFinderTest {
 
         ScaleRange range = zContext.getRange(3, 3);
 
-        assertThat(
-                range.getMaxDenom(),
-                Matchers.closeTo(Math.sqrt(500_000_000d * 200_000_000), EPSILON));
-        assertThat(
-                range.getMinDenom(),
-                Matchers.closeTo(Math.sqrt(200_000_000d * 100_000_000), EPSILON));
+        assertThat(range.getMaxDenom(), Matchers.closeTo(Math.sqrt(500_000_000d * 200_000_000), EPSILON));
+        assertThat(range.getMinDenom(), Matchers.closeTo(Math.sqrt(200_000_000d * 100_000_000), EPSILON));
 
         verify(broker, set, grid2, grid3, grid4);
     }

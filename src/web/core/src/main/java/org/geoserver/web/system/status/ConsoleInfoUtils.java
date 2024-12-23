@@ -22,31 +22,26 @@ public final class ConsoleInfoUtils {
 
     /**
      * @param lockedMonitors From ThreadMXBean docs: if true, dump all locked monitors
-     * @param lockedSynchronizers From ThreadMXBean docs: if true, dump all locked ownable
-     *     synchronizers
+     * @param lockedSynchronizers From ThreadMXBean docs: if true, dump all locked ownable synchronizers
      * @return large text with information about JVM threads
      */
     static String getThreadsInfo(boolean lockedMonitors, boolean lockedSynchronizers) {
-        return Arrays.stream(
-                        ManagementFactory.getThreadMXBean()
-                                .dumpAllThreads(lockedMonitors, lockedSynchronizers))
+        return Arrays.stream(ManagementFactory.getThreadMXBean().dumpAllThreads(lockedMonitors, lockedSynchronizers))
                 .map(t -> getThreadStackTraces(t))
                 .collect(Collectors.joining("\n"));
     }
 
     static String getThreadStackTraces(ThreadInfo ti) {
-        StringBuilder sb =
-                new StringBuilder(
-                        "\""
-                                + ti.getThreadName()
-                                + "\""
-                                + (ti.isDaemon() ? " daemon" : "")
-                                + " prio="
-                                + ti.getPriority()
-                                + " Id="
-                                + ti.getThreadId()
-                                + " "
-                                + ti.getThreadState());
+        StringBuilder sb = new StringBuilder("\""
+                + ti.getThreadName()
+                + "\""
+                + (ti.isDaemon() ? " daemon" : "")
+                + " prio="
+                + ti.getPriority()
+                + " Id="
+                + ti.getThreadId()
+                + " "
+                + ti.getThreadState());
         if (ti.getLockName() != null) {
             sb.append(" on " + ti.getLockName());
         }
@@ -119,26 +114,20 @@ public final class ConsoleInfoUtils {
     }
 
     /**
-     * To retrieve the PID of the Java process is used the method
-     * ManagementFactory.getRuntimeMXBean().getName() The returned name usually is the format
-     * [pid]@[machinename] but depends on the implementation of the JVM
+     * To retrieve the PID of the Java process is used the method ManagementFactory.getRuntimeMXBean().getName() The
+     * returned name usually is the format [pid]@[machinename] but depends on the implementation of the JVM
      *
      * @return the histo memory dump in the format produced by the jmap -histo:live
      */
     static String getHistoMemoryDump() {
         try {
-            int pid =
-                    Optional.ofNullable(ManagementFactory.getRuntimeMXBean().getName())
-                            .map(processName -> Arrays.asList(processName.split("@")))
-                            .filter(elements -> !elements.isEmpty())
-                            .map(maybePid -> Integer.valueOf(maybePid.get(0)))
-                            .orElseThrow(
-                                    () ->
-                                            new IOException(
-                                                    "Problem on getting the PID for the java process"));
+            int pid = Optional.ofNullable(ManagementFactory.getRuntimeMXBean().getName())
+                    .map(processName -> Arrays.asList(processName.split("@")))
+                    .filter(elements -> !elements.isEmpty())
+                    .map(maybePid -> Integer.valueOf(maybePid.get(0)))
+                    .orElseThrow(() -> new IOException("Problem on getting the PID for the java process"));
 
-            final Process jmapProcess =
-                    Runtime.getRuntime().exec(String.format("jmap -histo:live %d", pid));
+            final Process jmapProcess = Runtime.getRuntime().exec(String.format("jmap -histo:live %d", pid));
             try (final BufferedReader stdConsole =
                     new BufferedReader(new InputStreamReader(jmapProcess.getInputStream()))) {
 
@@ -151,8 +140,7 @@ public final class ConsoleInfoUtils {
             }
         } catch (IOException e) {
             return String.format(
-                    "Error reading the histo memory dump with the jmap command. Exception: %s",
-                    e.getMessage());
+                    "Error reading the histo memory dump with the jmap command. Exception: %s", e.getMessage());
         }
     }
 }

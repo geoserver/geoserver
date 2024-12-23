@@ -44,24 +44,19 @@ public class YsldHandler extends StyleHandler {
         try {
             TEMPLATES.put(
                     StyleType.POINT,
-                    IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_point.ysld"), UTF_8));
+                    IOUtils.toString(YsldHandler.class.getResourceAsStream("template_point.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.POLYGON,
-                    IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_polygon.ysld"), UTF_8));
+                    IOUtils.toString(YsldHandler.class.getResourceAsStream("template_polygon.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.LINE,
-                    IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_line.ysld"), UTF_8));
+                    IOUtils.toString(YsldHandler.class.getResourceAsStream("template_line.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.RASTER,
-                    IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_raster.ysld"), UTF_8));
+                    IOUtils.toString(YsldHandler.class.getResourceAsStream("template_raster.ysld"), UTF_8));
             TEMPLATES.put(
                     StyleType.GENERIC,
-                    IOUtils.toString(
-                            YsldHandler.class.getResourceAsStream("template_generic.ysld"), UTF_8));
+                    IOUtils.toString(YsldHandler.class.getResourceAsStream("template_generic.ysld"), UTF_8));
         } catch (IOException e) {
             throw new RuntimeException("Error loading up the style templates", e);
         }
@@ -87,8 +82,8 @@ public class YsldHandler extends StyleHandler {
     /**
      * Creates a new handler.
      *
-     * <p>The instance is created with {@link org.geotools.ysld.parse.WellKnownZoomContextFinder} as
-     * the zoom context finder.
+     * <p>The instance is created with {@link org.geotools.ysld.parse.WellKnownZoomContextFinder} as the zoom context
+     * finder.
      */
     public YsldHandler() {
         this(List.of(WellKnownZoomContextFinder.getInstance()), new UomMapper());
@@ -119,10 +114,7 @@ public class YsldHandler extends StyleHandler {
 
     @Override
     public StyledLayerDescriptor parse(
-            Object input,
-            Version version,
-            @Nullable ResourceLocator resourceLocator,
-            EntityResolver entityResolver)
+            Object input, Version version, @Nullable ResourceLocator resourceLocator, EntityResolver entityResolver)
             throws IOException {
 
         if (resourceLocator == null && input instanceof File) {
@@ -134,16 +126,14 @@ public class YsldHandler extends StyleHandler {
     }
 
     @Override
-    public void encode(
-            StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
+    public void encode(StyledLayerDescriptor sld, Version version, boolean pretty, OutputStream output)
             throws IOException {
         Ysld.encode(sld, output, uomMapper);
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver)
-            throws IOException {
+    public List<Exception> validate(Object input, Version version, EntityResolver entityResolver) throws IOException {
         return (List) Ysld.validate(toReader(input), zoomFinders, uomMapper);
     }
 

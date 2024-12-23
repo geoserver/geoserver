@@ -115,36 +115,33 @@ public final class RulesDaoTest extends TestSupport {
     @Test
     public void testRuleCrud() {
         // create the rules to be used, rule C is an update of rule B (the id is the same)
-        Rule ruleA =
-                new RuleBuilder()
-                        .withId("0")
-                        .withActivated(true)
-                        .withPosition(3)
-                        .withParameter("cql_filter")
-                        .withTransform("CFCC='$2'")
-                        .build();
-        Rule ruleB =
-                new RuleBuilder()
-                        .withId("1")
-                        .withActivated(true)
-                        .withMatch("^(?:/[^/]*){3}(/([^/]+)).*$")
-                        .withParameter("cql_filter")
-                        .withActivation("^.*$")
-                        .withTransform("CFCC='$2'")
-                        .withRemove(1)
-                        .withCombine("$1 AND $2")
-                        .build();
-        Rule ruleC =
-                new RuleBuilder()
-                        .withId("1")
-                        .withActivated(false)
-                        .withMatch("^(?:/[^/]*){4}(/([^/]+)).*$")
-                        .withParameter("cql_filter")
-                        .withActivation("^.*$")
-                        .withTransform("CFCC='$2'")
-                        .withRemove(1)
-                        .withCombine("$1 OR $2")
-                        .build();
+        Rule ruleA = new RuleBuilder()
+                .withId("0")
+                .withActivated(true)
+                .withPosition(3)
+                .withParameter("cql_filter")
+                .withTransform("CFCC='$2'")
+                .build();
+        Rule ruleB = new RuleBuilder()
+                .withId("1")
+                .withActivated(true)
+                .withMatch("^(?:/[^/]*){3}(/([^/]+)).*$")
+                .withParameter("cql_filter")
+                .withActivation("^.*$")
+                .withTransform("CFCC='$2'")
+                .withRemove(1)
+                .withCombine("$1 AND $2")
+                .build();
+        Rule ruleC = new RuleBuilder()
+                .withId("1")
+                .withActivated(false)
+                .withMatch("^(?:/[^/]*){4}(/([^/]+)).*$")
+                .withParameter("cql_filter")
+                .withActivation("^.*$")
+                .withTransform("CFCC='$2'")
+                .withRemove(1)
+                .withCombine("$1 OR $2")
+                .build();
         // get the existing rules, this should return an empty list
         List<Rule> rules = getRules();
         assertThat(rules.size(), is(0));

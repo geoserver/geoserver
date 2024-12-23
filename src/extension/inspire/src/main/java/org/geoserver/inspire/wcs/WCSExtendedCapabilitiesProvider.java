@@ -26,8 +26,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class WCSExtendedCapabilitiesProvider
-        extends org.geoserver.wcs2_0.response.WCSExtendedCapabilitiesProvider {
+public class WCSExtendedCapabilitiesProvider extends org.geoserver.wcs2_0.response.WCSExtendedCapabilitiesProvider {
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
@@ -43,24 +42,20 @@ public class WCSExtendedCapabilitiesProvider
     }
 
     @Override
-    public void encodeExtendedOperations(Translator tx, WCSInfo wcs, GetCapabilitiesType request)
-            throws IOException {
+    public void encodeExtendedOperations(Translator tx, WCSInfo wcs, GetCapabilitiesType request) throws IOException {
         // INSPIRE has nothing to add to operations section
     }
 
     @Override
     public void encodeExtendedContents(
-            Translator tx, WCSInfo wcs, List<CoverageInfo> coverages, GetCapabilitiesType request)
-            throws IOException {
+            Translator tx, WCSInfo wcs, List<CoverageInfo> coverages, GetCapabilitiesType request) throws IOException {
         MetadataMap serviceMetadata = wcs.getMetadata();
-        Boolean createExtendedCapabilities =
-                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
 
         UniqueResourceIdentifiers ids =
-                serviceMetadata.get(
-                        SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
+                serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         // Don't create extended capabilities element if mandatory content not present
         // or turned off
         if (metadataURL == null
@@ -86,9 +81,7 @@ public class WCSExtendedCapabilitiesProvider
         ServicesUtils.encodeSupportedLanguages(serviceMetadata, tx);
         for (UniqueResourceIdentifier id : ids) {
             if (id.getMetadataURL() != null) {
-                tx.start(
-                        "inspire_dls:SpatialDataSetIdentifier",
-                        atts("metadataURL", id.getMetadataURL()));
+                tx.start("inspire_dls:SpatialDataSetIdentifier", atts("metadataURL", id.getMetadataURL()));
             } else {
                 tx.start("inspire_dls:SpatialDataSetIdentifier");
             }

@@ -66,16 +66,12 @@ public class OGRWrapper extends AbstractToolWrapper {
 
             return formats;
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Could not get the list of output formats supported by ogr2ogr",
-                    e);
+            LOGGER.log(Level.SEVERE, "Could not get the list of output formats supported by ogr2ogr", e);
             return Collections.emptySet();
         }
     }
 
-    private void addFormats(List<String> commands, Set<String> formats)
-            throws IOException, InterruptedException {
+    private void addFormats(List<String> commands, Set<String> formats) throws IOException, InterruptedException {
         StringBuilder sb = new StringBuilder();
         // can't trust the exit code, --help exits with -1 on my pc
         run(commands, sb);
@@ -89,10 +85,7 @@ public class OGRWrapper extends AbstractToolWrapper {
         }
     }
 
-    /**
-     * Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as
-     * the exit code
-     */
+    /** Returns true if ogr2ogr is available, that is, if executing "ogr2ogr --version" returns 0 as the exit code */
     @Override
     public boolean isAvailable() {
         List<String> commands = new ArrayList<>();

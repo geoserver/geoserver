@@ -57,21 +57,29 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_TEMPLATE_NAME = "template-name";
     private static final String TEMPLATE_NAME = "myTemplate";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private MetadataTemplateService templateService;
+    @Autowired
+    private MetadataTemplateService templateService;
 
     private Configuration config;
 
@@ -96,10 +104,8 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task1);
 
         Task task2 = fac.createTask();
@@ -107,8 +113,7 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         task2.setType(MetadataTemplateSyncTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(
                 task2, MetadataTemplateSyncTaskTypeImpl.PARAM_METADATA_TEMPLATE, ATT_TEMPLATE_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, MetadataTemplateSyncTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task2, MetadataTemplateSyncTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task2);
 
         config = dao.save(config);
@@ -150,8 +155,10 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         MetadataTemplateImpl template = new MetadataTemplateImpl();
         template.setId(UUID.randomUUID().toString());
         template.setName(TEMPLATE_NAME);
-        template.getLinkedLayers().add(geoServer.getCatalog().getCoverageByName("DEM").getId());
-        template.getLinkedLayers().add(geoServer.getCatalog().getCoverageByName("World").getId());
+        template.getLinkedLayers()
+                .add(geoServer.getCatalog().getCoverageByName("DEM").getId());
+        template.getLinkedLayers()
+                .add(geoServer.getCatalog().getCoverageByName("World").getId());
         templateService.save(template);
 
         // set some metadata
@@ -165,11 +172,10 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_TEMPLATE_NAME, TEMPLATE_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger()
-                        .forJob(batchCreate.getId().toString())
-                        .startNow()
-                        .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batchCreate.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -204,8 +210,10 @@ public class MetaDataTemplateSyncTaskTest extends AbstractTaskManagerTest {
         }
         geoServer.getCatalog().save(ci);
 
-        trigger =
-                TriggerBuilder.newTrigger().forJob(batchSync.getId().toString()).startNow().build();
+        trigger = TriggerBuilder.newTrigger()
+                .forJob(batchSync.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

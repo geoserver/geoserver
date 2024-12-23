@@ -52,15 +52,14 @@ public class UserPasswordController extends RestBaseController {
     public void passwordPut(@RequestBody Map<String, String> putMap) {
         if (!getManager()
                 .checkAuthenticationForRole(
-                        SecurityContextHolder.getContext().getAuthentication(),
-                        GeoServerRole.AUTHENTICATED_ROLE))
+                        SecurityContextHolder.getContext().getAuthentication(), GeoServerRole.AUTHENTICATED_ROLE))
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
-            throw new RestException(
-                    "Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
 
         try {
             // Look for the service that handles the current user
-            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            String userName =
+                    SecurityContextHolder.getContext().getAuthentication().getName();
 
             GeoServerUserGroupService ugService = null;
 
@@ -73,15 +72,12 @@ public class UserPasswordController extends RestBaseController {
 
             if (ugService == null) {
                 throw new RestException(
-                        "Cannot calculate if PUT is allowed (service not found)",
-                        HttpStatus.UNPROCESSABLE_ENTITY);
+                        "Cannot calculate if PUT is allowed (service not found)", HttpStatus.UNPROCESSABLE_ENTITY);
             }
 
         } catch (IOException e) {
             throw new RestException(
-                    "Cannot calculate if PUT is allowed (" + e.getMessage() + ")",
-                    HttpStatus.UNPROCESSABLE_ENTITY,
-                    e);
+                    "Cannot calculate if PUT is allowed (" + e.getMessage() + ")", HttpStatus.UNPROCESSABLE_ENTITY, e);
         }
         String newpass = putMap.get(UP_NEW_PW);
 
@@ -93,7 +89,8 @@ public class UserPasswordController extends RestBaseController {
 
         try {
             // Look for the authentication service
-            String userName = SecurityContextHolder.getContext().getAuthentication().getName();
+            String userName =
+                    SecurityContextHolder.getContext().getAuthentication().getName();
 
             for (GeoServerUserGroupService service : getManager().loadUserGroupServices()) {
                 user = service.getUserByUsername(userName);
@@ -103,8 +100,7 @@ public class UserPasswordController extends RestBaseController {
                 }
             }
         } catch (IOException e) {
-            throw new RestException(
-                    "Cannot retrieve user service", HttpStatus.FAILED_DEPENDENCY, e);
+            throw new RestException("Cannot retrieve user service", HttpStatus.FAILED_DEPENDENCY, e);
         }
 
         if (ugService == null) {
@@ -113,13 +109,11 @@ public class UserPasswordController extends RestBaseController {
 
         // Check again if the provider allows updates
         if (!ugService.canCreateStore()) {
-            throw new RestException(
-                    "User service does not support changing pw", HttpStatus.FAILED_DEPENDENCY);
+            throw new RestException("User service does not support changing pw", HttpStatus.FAILED_DEPENDENCY);
         }
 
         try {
-            UserGroupStoreValidationWrapper ugStore =
-                    new UserGroupStoreValidationWrapper(ugService.createStore());
+            UserGroupStoreValidationWrapper ugStore = new UserGroupStoreValidationWrapper(ugService.createStore());
 
             user.setPassword(newpass);
             ugStore.updateUser(user);

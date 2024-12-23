@@ -20,13 +20,12 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
- * A basic text based output format designed to ease debugging GetCoverage calls (and actually read
- * the contents of a coverage without getting mad...)
+ * A basic text based output format designed to ease debugging GetCoverage calls (and actually read the contents of a
+ * coverage without getting mad...)
  *
  * @author Andrea Aime - TOPP
  */
-public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate {
+public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     @SuppressWarnings("serial")
     public DebugCoverageResponseDelegate(GeoServer geoserver) {
@@ -34,19 +33,14 @@ public class DebugCoverageResponseDelegate extends BaseCoverageResponseDelegate
                 geoserver,
                 List.of("DEBUG", "text/debug"), // output formats
                 Map.ofEntries( // file extensions
-                        entry("DEBUG", "txt"),
-                        entry("text/debug", "txt"),
-                        entry("text/plain", "txt")),
+                        entry("DEBUG", "txt"), entry("text/debug", "txt"), entry("text/plain", "txt")),
                 Map.ofEntries( // mime types
                         entry("DEBUG", "text/plain"), entry("text/debug", "text/plain")));
     }
 
     @Override
     public void encode(
-            GridCoverage2D coverage,
-            String outputFormat,
-            Map<String, String> econdingParameters,
-            OutputStream output)
+            GridCoverage2D coverage, String outputFormat, Map<String, String> econdingParameters, OutputStream output)
             throws ServiceException, IOException {
         PrintStream ps = new PrintStream(output);
         ps.println("Grid bounds: " + coverage.getEnvelope());

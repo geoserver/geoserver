@@ -311,8 +311,7 @@ public class Backup extends JobExecutionListenerSupport
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null && getAuth() != null) {
             authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            this.auth.getName(), null, this.auth.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(this.auth.getName(), null, this.auth.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         return authentication;
@@ -411,9 +410,7 @@ public class Backup extends JobExecutionListenerSupport
 
         paramsBuilder
                 .addString(PARAM_JOB_NAME, BACKUP_JOB_NAME)
-                .addString(
-                        PARAM_OUTPUT_FILE_PATH,
-                        BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
+                .addString(PARAM_OUTPUT_FILE_PATH, BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
 
         //        parseParams(params, paramsBuilder);
@@ -423,12 +420,12 @@ public class Backup extends JobExecutionListenerSupport
         // Send Execution Signal
         BackupExecutionAdapter backupExecution;
         try {
-            if (getRestoreRunningExecutions().isEmpty() && getBackupRunningExecutions().isEmpty()) {
+            if (getRestoreRunningExecutions().isEmpty()
+                    && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
                     JobExecution jobExecution = jobLauncher.run(backupJob, jobParameters);
-                    backupExecution =
-                            new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
+                    backupExecution = new BackupExecutionAdapter(jobExecution, totalNumberOfBackupSteps);
                     backupExecutions.put(backupExecution.getId(), backupExecution);
 
                     backupExecution.setArchiveFile(archiveFile);
@@ -442,9 +439,7 @@ public class Backup extends JobExecutionListenerSupport
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_TIME.equals(jobParam.getKey())) {
-                            backupExecution
-                                    .getOptions()
-                                    .add(jobParam.getKey() + "=" + jobParam.getValue());
+                            backupExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
                         }
                     }
 
@@ -524,20 +519,18 @@ public class Backup extends JobExecutionListenerSupport
 
         paramsBuilder
                 .addString(PARAM_JOB_NAME, RESTORE_JOB_NAME)
-                .addString(
-                        PARAM_INPUT_FILE_PATH,
-                        BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
+                .addString(PARAM_INPUT_FILE_PATH, BackupUtils.getArchiveURLProtocol(tmpDir) + tmpDir.path())
                 .addLong(PARAM_TIME, System.currentTimeMillis());
 
         JobParameters jobParameters = paramsBuilder.toJobParameters();
 
         try {
-            if (getRestoreRunningExecutions().isEmpty() && getBackupRunningExecutions().isEmpty()) {
+            if (getRestoreRunningExecutions().isEmpty()
+                    && getBackupRunningExecutions().isEmpty()) {
                 synchronized (jobOperator) {
                     // Start a new Job
                     JobExecution jobExecution = jobLauncher.run(restoreJob, jobParameters);
-                    restoreExecution =
-                            new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
+                    restoreExecution = new RestoreExecutionAdapter(jobExecution, totalNumberOfRestoreSteps);
                     restoreExecutions.put(restoreExecution.getId(), restoreExecution);
                     restoreExecution.setArchiveFile(archiveFile);
                     restoreExecution.setWsFilter(wsFilter);
@@ -548,9 +541,7 @@ public class Backup extends JobExecutionListenerSupport
                         if (!PARAM_OUTPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_INPUT_FILE_PATH.equals(jobParam.getKey())
                                 && !PARAM_TIME.equals(jobParam.getKey())) {
-                            restoreExecution
-                                    .getOptions()
-                                    .add(jobParam.getKey() + "=" + jobParam.getValue());
+                            restoreExecution.getOptions().add(jobParam.getKey() + "=" + jobParam.getValue());
                         }
                     }
 
@@ -572,8 +563,7 @@ public class Backup extends JobExecutionListenerSupport
     public void afterJob(JobExecution jobExecution) {
         // Release locks on GeoServer Configuration:
         try {
-            List<BackupRestoreCallback> callbacks =
-                    GeoServerExtensions.extensions(BackupRestoreCallback.class);
+            List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
             for (BackupRestoreCallback callback : callbacks) {
                 callback.onEndRequest();
             }
@@ -585,16 +575,14 @@ public class Backup extends JobExecutionListenerSupport
     @Override
     public void beforeJob(JobExecution jobExecution) {
         // Acquire GeoServer Configuration Lock in READ mode
-        List<BackupRestoreCallback> callbacks =
-                GeoServerExtensions.extensions(BackupRestoreCallback.class);
+        List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
         for (BackupRestoreCallback callback : callbacks) {
             callback.onBeginRequest(jobExecution.getJobParameters().getString(PARAM_JOB_NAME));
         }
     }
 
     /** Stop a running Backup/Restore Execution */
-    public void stopExecution(Long executionId)
-            throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+    public void stopExecution(Long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
         LOGGER.info("Stopping execution id [" + executionId + "]");
 
         JobExecution jobExecution = null;
@@ -619,8 +607,7 @@ public class Backup extends JobExecutionListenerSupport
 
             // Release locks on GeoServer Configuration:
             try {
-                List<BackupRestoreCallback> callbacks =
-                        GeoServerExtensions.extensions(BackupRestoreCallback.class);
+                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
                 for (BackupRestoreCallback callback : callbacks) {
                     callback.onEndRequest();
                 }
@@ -632,8 +619,8 @@ public class Backup extends JobExecutionListenerSupport
 
     /** Restarts a running Backup/Restore Execution */
     public Long restartExecution(Long executionId)
-            throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException,
-                    NoSuchJobException, JobRestartException, JobParametersInvalidException {
+            throws JobInstanceAlreadyCompleteException, NoSuchJobExecutionException, NoSuchJobException,
+                    JobRestartException, JobParametersInvalidException {
         return jobOperator.restart(executionId);
     }
 
@@ -660,8 +647,7 @@ public class Backup extends JobExecutionListenerSupport
 
             // Release locks on GeoServer Configuration:
             try {
-                List<BackupRestoreCallback> callbacks =
-                        GeoServerExtensions.extensions(BackupRestoreCallback.class);
+                List<BackupRestoreCallback> callbacks = GeoServerExtensions.extensions(BackupRestoreCallback.class);
                 for (BackupRestoreCallback callback : callbacks) {
                     callback.onEndRequest();
                 }

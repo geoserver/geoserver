@@ -36,75 +36,66 @@ public class GranulStackImplTest {
         // with a check on whether they get disposed of
         AtomicBoolean readerDisposed = new AtomicBoolean(false);
         AtomicBoolean streamDisposed = new AtomicBoolean(false);
-        byte[] bytes =
-                Base64.getDecoder().decode("R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
-        MemoryCacheImageInputStream is =
-                new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes)) {
-                    @Override
-                    public void close() {
-                        streamDisposed.set(true);
-                    }
-                };
-        final ImageReader nativeReader = ImageIO.getImageReadersByFormatName("GIF").next();
+        byte[] bytes = Base64.getDecoder().decode("R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==");
+        MemoryCacheImageInputStream is = new MemoryCacheImageInputStream(new ByteArrayInputStream(bytes)) {
+            @Override
+            public void close() {
+                streamDisposed.set(true);
+            }
+        };
+        final ImageReader nativeReader =
+                ImageIO.getImageReadersByFormatName("GIF").next();
         nativeReader.setInput(is);
-        ImageReader reader =
-                new ImageReader(null) {
+        ImageReader reader = new ImageReader(null) {
 
-                    @Override
-                    public int getNumImages(boolean allowSearch) throws IOException {
-                        return nativeReader.getNumImages(allowSearch);
-                    }
+            @Override
+            public int getNumImages(boolean allowSearch) throws IOException {
+                return nativeReader.getNumImages(allowSearch);
+            }
 
-                    @Override
-                    public int getWidth(int imageIndex) throws IOException {
-                        return nativeReader.getWidth(imageIndex);
-                    }
+            @Override
+            public int getWidth(int imageIndex) throws IOException {
+                return nativeReader.getWidth(imageIndex);
+            }
 
-                    @Override
-                    public int getHeight(int imageIndex) throws IOException {
-                        return nativeReader.getHeight(imageIndex);
-                    }
+            @Override
+            public int getHeight(int imageIndex) throws IOException {
+                return nativeReader.getHeight(imageIndex);
+            }
 
-                    @Override
-                    public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex)
-                            throws IOException {
-                        return nativeReader.getImageTypes(imageIndex);
-                    }
+            @Override
+            public Iterator<ImageTypeSpecifier> getImageTypes(int imageIndex) throws IOException {
+                return nativeReader.getImageTypes(imageIndex);
+            }
 
-                    @Override
-                    public IIOMetadata getStreamMetadata() throws IOException {
-                        return nativeReader.getStreamMetadata();
-                    }
+            @Override
+            public IIOMetadata getStreamMetadata() throws IOException {
+                return nativeReader.getStreamMetadata();
+            }
 
-                    @Override
-                    public IIOMetadata getImageMetadata(int imageIndex) throws IOException {
-                        return nativeReader.getImageMetadata(imageIndex);
-                    }
+            @Override
+            public IIOMetadata getImageMetadata(int imageIndex) throws IOException {
+                return nativeReader.getImageMetadata(imageIndex);
+            }
 
-                    @Override
-                    public BufferedImage read(int imageIndex, ImageReadParam param)
-                            throws IOException {
-                        return nativeReader.read(imageIndex, param);
-                    }
+            @Override
+            public BufferedImage read(int imageIndex, ImageReadParam param) throws IOException {
+                return nativeReader.read(imageIndex, param);
+            }
 
-                    @Override
-                    public void dispose() {
-                        nativeReader.dispose();
-                        readerDisposed.set(true);
-                    }
-                };
+            @Override
+            public void dispose() {
+                nativeReader.dispose();
+                readerDisposed.set(true);
+            }
+        };
         // wrap it in a image read
-        RenderedOp image =
-                ImageReadDescriptor.create(
-                        is, 0, false, false, false, null, null, null, reader, null);
+        RenderedOp image = ImageReadDescriptor.create(is, 0, false, false, false, null, null, null, reader, null);
 
         // build a coverage and a granule stack around it
         GridCoverageFactory coverageFactory = CoverageFactoryFinder.getGridCoverageFactory(null);
         GridCoverage2D coverage =
-                coverageFactory.create(
-                        "foo",
-                        image,
-                        new ReferencedEnvelope(0, 1, 0, 1, DefaultGeographicCRS.WGS84));
+                coverageFactory.create("foo", image, new ReferencedEnvelope(0, 1, 0, 1, DefaultGeographicCRS.WGS84));
         GranuleStackImpl stack = new GranuleStackImpl("fooBar", DefaultGeographicCRS.WGS84, null);
         stack.addCoverage(coverage);
 

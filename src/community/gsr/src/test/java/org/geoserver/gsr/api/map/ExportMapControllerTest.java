@@ -28,15 +28,13 @@ public class ExportMapControllerTest extends ControllerTest {
 
     @Test
     public void exportMap() throws Exception {
-        String exportMapUrl =
-                getBaseURL()
-                        + SystemTestData.BASIC_POLYGONS.getPrefix()
-                        + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
-                        + SystemTestData.BASIC_POLYGONS.getLocalPart()
-                        + "&size=150,150&format=png";
+        String exportMapUrl = getBaseURL()
+                + SystemTestData.BASIC_POLYGONS.getPrefix()
+                + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
+                + SystemTestData.BASIC_POLYGONS.getLocalPart()
+                + "&size=150,150&format=png";
         MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
-        RenderedImage image =
-                ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
+        RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
         File resultsFile = new File("src/test/resources/images/export_result1.png");
         ImageAssert.assertEquals(resultsFile, image, 20);
     }
@@ -44,58 +42,47 @@ public class ExportMapControllerTest extends ControllerTest {
     @Test
     public void exportMapNumber() throws Exception {
         JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                getBaseURL()
-                                        + SystemTestData.BASIC_POLYGONS.getPrefix()
-                                        + "/MapServer");
+                (JSONObject) getAsJSON(getBaseURL() + SystemTestData.BASIC_POLYGONS.getPrefix() + "/MapServer");
         print(json);
-        Integer basicPolygonsId =
-                (Integer)
-                        json.getJSONArray("layers").stream()
-                                .filter(o -> "BasicPolygons".equals(((JSONObject) o).get("name")))
-                                .map(o -> ((JSONObject) o).get("id"))
-                                .findFirst()
-                                .get();
+        Integer basicPolygonsId = (Integer) json.getJSONArray("layers").stream()
+                .filter(o -> "BasicPolygons".equals(((JSONObject) o).get("name")))
+                .map(o -> ((JSONObject) o).get("id"))
+                .findFirst()
+                .get();
 
-        String exportMapUrl =
-                getBaseURL()
-                        + SystemTestData.BASIC_POLYGONS.getPrefix()
-                        + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
-                        + basicPolygonsId
-                        + "&size=150,150&format=png";
+        String exportMapUrl = getBaseURL()
+                + SystemTestData.BASIC_POLYGONS.getPrefix()
+                + "/MapServer/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
+                + basicPolygonsId
+                + "&size=150,150&format=png";
         MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
-        RenderedImage image =
-                ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
+        RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
         File resultsFile = new File("src/test/resources/images/export_result1.png");
         ImageAssert.assertEquals(resultsFile, image, 20);
     }
 
     @Test
     public void exportMapSpecificLayer() throws Exception {
-        String exportMapUrl =
-                getBaseURL()
-                        + SystemTestData.BASIC_POLYGONS.getPrefix()
-                        + "/MapServer/0/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers&size=150,150&format=png";
+        String exportMapUrl = getBaseURL()
+                + SystemTestData.BASIC_POLYGONS.getPrefix()
+                + "/MapServer/0/export?f=image&bbox=-180.0,-90.0,180.0,90.0&layers&size=150,150&format=png";
         MockHttpServletResponse servletResponse = getAsServletResponse(exportMapUrl);
         System.out.println(servletResponse.getErrorMessage());
         assertTrue(
                 "Response code must be good: " + servletResponse.getStatus(),
                 servletResponse.getStatus() >= 200 && servletResponse.getStatus() < 300);
-        RenderedImage image =
-                ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
+        RenderedImage image = ImageIO.read(new ByteArrayInputStream(servletResponse.getContentAsByteArray()));
         File resultsFile = new File("src/test/resources/images/export_result1.png");
         ImageAssert.assertEquals(resultsFile, image, 20);
     }
 
     @Test
     public void exportMapJSON() throws Exception {
-        String exportMapUrl =
-                getBaseURL()
-                        + SystemTestData.BASIC_POLYGONS.getPrefix()
-                        + "/MapServer/export?f=json&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
-                        + SystemTestData.BASIC_POLYGONS.getLocalPart()
-                        + "&size=150,150";
+        String exportMapUrl = getBaseURL()
+                + SystemTestData.BASIC_POLYGONS.getPrefix()
+                + "/MapServer/export?f=json&bbox=-180.0,-90.0,180.0,90.0&layers=show:"
+                + SystemTestData.BASIC_POLYGONS.getLocalPart()
+                + "&size=150,150";
 
         MockHttpServletRequest request = createRequest(exportMapUrl);
         request.setMethod("GET");
@@ -103,8 +90,7 @@ public class ExportMapControllerTest extends ControllerTest {
         request.addHeader("Accept", "application/json");
         MockHttpServletResponse servletResponse = dispatch(request, null);
 
-        assertTrue(
-                servletResponse.getContentAsString().contains("f=image")
-                        && servletResponse.getContentAsString().contains("format=png"));
+        assertTrue(servletResponse.getContentAsString().contains("f=image")
+                && servletResponse.getContentAsString().contains("format=png"));
     }
 }

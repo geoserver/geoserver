@@ -65,35 +65,34 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         String xml = tx.transform(executeBuffer);
         // System.out.println(xml);
 
-        String expected =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + "xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-                        + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>JTS:buffer</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>geom</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>10</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>";
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + "xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>JTS:buffer</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>geom</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>10</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
 
         Document test = XMLUnit.buildTestDocument(xml);
         checkValidationErrors(test);
@@ -111,39 +110,38 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         String xml = tx.transform(executeBuffer);
         // System.out.println(xml);
 
-        String expected =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + "xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
-                        + "xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-                        + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>JTS:buffer</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>geom</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">\n"
-                        + "          <gml:Point xmlns:gml=\"http://www.opengis.net/gml\">\n"
-                        + "            <gml:coordinates>0,0</gml:coordinates>\n"
-                        + "          </gml:Point>\n"
-                        + "        </wps:ComplexData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>10</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>";
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + "xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                + "xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>JTS:buffer</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>geom</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">\n"
+                + "          <gml:Point xmlns:gml=\"http://www.opengis.net/gml\">\n"
+                + "            <gml:coordinates>0,0</gml:coordinates>\n"
+                + "          </gml:Point>\n"
+                + "        </wps:ComplexData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>10</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
 
         Document test = XMLUnit.buildTestDocument(xml);
         checkValidationErrors(test);
@@ -164,57 +162,53 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         OutputParameter bufferOutput = new OutputParameter(areaName, "result");
 
         ExecuteRequest executeArea =
-                new ExecuteRequest(
-                        areaName.getURI(),
-                        Arrays.asList(areaGeomValues),
-                        Arrays.asList(bufferOutput));
+                new ExecuteRequest(areaName.getURI(), Arrays.asList(areaGeomValues), Arrays.asList(bufferOutput));
 
         WPSExecuteTransformer tx = new WPSExecuteTransformer();
         tx.setIndentation(2);
         String xml = tx.transform(executeArea);
         // System.out.println(xml);
 
-        String expected =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>JTS:area</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>geom</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n"
-                        + "            <ows:Identifier>JTS:buffer</ows:Identifier>\n"
-                        + "            <wps:DataInputs>\n"
-                        + "              <wps:Input>\n"
-                        + "                <ows:Identifier>geom</ows:Identifier>\n"
-                        + "                <wps:Data>\n"
-                        + "                  <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n"
-                        + "                </wps:Data>\n"
-                        + "              </wps:Input>\n"
-                        + "              <wps:Input>\n"
-                        + "                <ows:Identifier>distance</ows:Identifier>\n"
-                        + "                <wps:Data>\n"
-                        + "                  <wps:LiteralData>10</wps:LiteralData>\n"
-                        + "                </wps:Data>\n"
-                        + "              </wps:Input>\n"
-                        + "            </wps:DataInputs>\n"
-                        + "            <wps:ResponseForm>\n"
-                        + "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
-                        + "                <ows:Identifier>result</ows:Identifier>\n"
-                        + "              </wps:RawDataOutput>\n"
-                        + "            </wps:ResponseForm>\n"
-                        + "          </wps:Execute>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput>\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>";
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>JTS:area</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>geom</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n"
+                + "            <ows:Identifier>JTS:buffer</ows:Identifier>\n"
+                + "            <wps:DataInputs>\n"
+                + "              <wps:Input>\n"
+                + "                <ows:Identifier>geom</ows:Identifier>\n"
+                + "                <wps:Data>\n"
+                + "                  <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[POINT(0 0)]]></wps:ComplexData>\n"
+                + "                </wps:Data>\n"
+                + "              </wps:Input>\n"
+                + "              <wps:Input>\n"
+                + "                <ows:Identifier>distance</ows:Identifier>\n"
+                + "                <wps:Data>\n"
+                + "                  <wps:LiteralData>10</wps:LiteralData>\n"
+                + "                </wps:Data>\n"
+                + "              </wps:Input>\n"
+                + "            </wps:DataInputs>\n"
+                + "            <wps:ResponseForm>\n"
+                + "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
+                + "                <ows:Identifier>result</ows:Identifier>\n"
+                + "              </wps:RawDataOutput>\n"
+                + "            </wps:ResponseForm>\n"
+                + "          </wps:Execute>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput>\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
 
         Document test = XMLUnit.buildTestDocument(xml);
         checkValidationErrors(test);
@@ -235,61 +229,57 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         OutputParameter bufferOutput = new OutputParameter(areaName, "result");
 
         ExecuteRequest executeArea =
-                new ExecuteRequest(
-                        areaName.getURI(),
-                        Arrays.asList(areaGeomValues),
-                        Arrays.asList(bufferOutput));
+                new ExecuteRequest(areaName.getURI(), Arrays.asList(areaGeomValues), Arrays.asList(bufferOutput));
 
         WPSExecuteTransformer tx = new WPSExecuteTransformer();
         tx.setIndentation(2);
         String xml = tx.transform(executeArea);
         // System.out.println(xml);
 
-        String expected =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>JTS:area</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>geom</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n"
-                        + "            <ows:Identifier>JTS:buffer</ows:Identifier>\n"
-                        + "            <wps:DataInputs>\n"
-                        + "              <wps:Input>\n"
-                        + "                <ows:Identifier>geom</ows:Identifier>\n"
-                        + "                <wps:Data>\n"
-                        + "                  <wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">\n"
-                        + "                    <gml:Point xmlns:gml=\"http://www.opengis.net/gml\">\n"
-                        + "                      <gml:coordinates>0,0</gml:coordinates>\n"
-                        + "                    </gml:Point>\n"
-                        + "                  </wps:ComplexData>\n"
-                        + "                </wps:Data>\n"
-                        + "              </wps:Input>\n"
-                        + "              <wps:Input>\n"
-                        + "                <ows:Identifier>distance</ows:Identifier>\n"
-                        + "                <wps:Data>\n"
-                        + "                  <wps:LiteralData>10</wps:LiteralData>\n"
-                        + "                </wps:Data>\n"
-                        + "              </wps:Input>\n"
-                        + "            </wps:DataInputs>\n"
-                        + "            <wps:ResponseForm>\n"
-                        + "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
-                        + "                <ows:Identifier>result</ows:Identifier>\n"
-                        + "              </wps:RawDataOutput>\n"
-                        + "            </wps:ResponseForm>\n"
-                        + "          </wps:Execute>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput>\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>";
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>JTS:area</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>geom</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"text/xml; subtype=gml/3.1.1\" xlink:href=\"http://geoserver/wps\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wps:Execute version=\"1.0.0\" service=\"WPS\">\n"
+                + "            <ows:Identifier>JTS:buffer</ows:Identifier>\n"
+                + "            <wps:DataInputs>\n"
+                + "              <wps:Input>\n"
+                + "                <ows:Identifier>geom</ows:Identifier>\n"
+                + "                <wps:Data>\n"
+                + "                  <wps:ComplexData mimeType=\"text/xml; subtype=gml/2.1.2\">\n"
+                + "                    <gml:Point xmlns:gml=\"http://www.opengis.net/gml\">\n"
+                + "                      <gml:coordinates>0,0</gml:coordinates>\n"
+                + "                    </gml:Point>\n"
+                + "                  </wps:ComplexData>\n"
+                + "                </wps:Data>\n"
+                + "              </wps:Input>\n"
+                + "              <wps:Input>\n"
+                + "                <ows:Identifier>distance</ows:Identifier>\n"
+                + "                <wps:Data>\n"
+                + "                  <wps:LiteralData>10</wps:LiteralData>\n"
+                + "                </wps:Data>\n"
+                + "              </wps:Input>\n"
+                + "            </wps:DataInputs>\n"
+                + "            <wps:ResponseForm>\n"
+                + "              <wps:RawDataOutput mimeType=\"text/xml; subtype=gml/3.1.1\">\n"
+                + "                <ows:Identifier>result</ows:Identifier>\n"
+                + "              </wps:RawDataOutput>\n"
+                + "            </wps:ResponseForm>\n"
+                + "          </wps:Execute>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput>\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>";
 
         Document test = XMLUnit.buildTestDocument(xml);
         checkValidationErrors(test);
@@ -380,13 +370,11 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         ParameterValue cgFeatures = collectGeometriesFeaturesValues.values.get(0);
         cgFeatures.setType(ParameterType.VECTOR_LAYER);
         cgFeatures.setValue(geosolutionsStates);
-        OutputParameter collectGeometriesOutput =
-                new OutputParameter(collectGeometriesName, "result");
-        ExecuteRequest collectGeometriesRequest =
-                new ExecuteRequest(
-                        collectGeometriesName.getURI(),
-                        Arrays.asList(collectGeometriesFeaturesValues),
-                        Arrays.asList(collectGeometriesOutput));
+        OutputParameter collectGeometriesOutput = new OutputParameter(collectGeometriesName, "result");
+        ExecuteRequest collectGeometriesRequest = new ExecuteRequest(
+                collectGeometriesName.getURI(),
+                Arrays.asList(collectGeometriesFeaturesValues),
+                Arrays.asList(collectGeometriesOutput));
 
         Name clipName = new NameImpl("gs", "CropCoverage");
         InputParameterValues clipFeaturesValues = new InputParameterValues(clipName, "coverage");
@@ -394,8 +382,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         features.setType(ParameterType.RASTER_LAYER);
         RasterLayerConfiguration geosolutionsUsa = new RasterLayerConfiguration();
         geosolutionsUsa.setLayerName("geosolutions:usa");
-        geosolutionsUsa.setSpatialDomain(
-                new ReferencedEnvelope(-180.0, 180, -90.000000000036, 90, epsg4326));
+        geosolutionsUsa.setSpatialDomain(new ReferencedEnvelope(-180.0, 180, -90.000000000036, 90, epsg4326));
         features.setValue(geosolutionsUsa);
 
         InputParameterValues clipClipValues = new InputParameterValues(clipName, "cropShape");
@@ -405,11 +392,8 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
 
         OutputParameter clipOutput = new OutputParameter(clipName, "result");
 
-        ExecuteRequest executeBuffer =
-                new ExecuteRequest(
-                        clipName.getURI(),
-                        Arrays.asList(clipFeaturesValues, clipClipValues),
-                        Arrays.asList(clipOutput));
+        ExecuteRequest executeBuffer = new ExecuteRequest(
+                clipName.getURI(), Arrays.asList(clipFeaturesValues, clipClipValues), Arrays.asList(clipOutput));
         return executeBuffer;
     }
 
@@ -424,19 +408,17 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
                         ? "POINT(0 0)"
                         : "<gml:Point xmlns:gml=\"http://www.opengis.net/gml\"><gml:coordinates>0,0</gml:coordinates></gml:Point>");
 
-        InputParameterValues bufferDistanceValues =
-                new InputParameterValues(bufferName, "distance");
+        InputParameterValues bufferDistanceValues = new InputParameterValues(bufferName, "distance");
         ParameterValue distance = bufferDistanceValues.values.get(0);
         distance.setType(ParameterType.LITERAL);
         distance.setValue("10");
 
         OutputParameter bufferOutput = new OutputParameter(bufferName, "result");
 
-        ExecuteRequest executeBuffer =
-                new ExecuteRequest(
-                        bufferName.getURI(),
-                        Arrays.asList(bufferGeomValues, bufferDistanceValues),
-                        Arrays.asList(bufferOutput));
+        ExecuteRequest executeBuffer = new ExecuteRequest(
+                bufferName.getURI(),
+                Arrays.asList(bufferGeomValues, bufferDistanceValues),
+                Arrays.asList(bufferOutput));
         return executeBuffer;
     }
 
@@ -449,8 +431,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                LOGGER.warning(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.warning(ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }
@@ -471,8 +452,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         OutputParameter output = new OutputParameter(centroidName, "result");
 
         ExecuteRequest execute =
-                new ExecuteRequest(
-                        centroidName.getURI(), Arrays.asList(inputValues), Arrays.asList(output));
+                new ExecuteRequest(centroidName.getURI(), Arrays.asList(inputValues), Arrays.asList(output));
 
         NamespaceInfo fooNs = EasyMock.createNiceMock(NamespaceInfo.class);
         expect(fooNs.getURI()).andReturn("http://foo.org");
@@ -544,10 +524,7 @@ public class WPSExecuteTransformerTest extends GeoServerWicketTestSupport {
         OutputParameter bufferOutput = new OutputParameter(processName, "result");
 
         ExecuteRequest execute =
-                new ExecuteRequest(
-                        processName.getURI(),
-                        Arrays.asList(features, clip),
-                        Arrays.asList(bufferOutput));
+                new ExecuteRequest(processName.getURI(), Arrays.asList(features, clip), Arrays.asList(bufferOutput));
         return execute;
     }
 }

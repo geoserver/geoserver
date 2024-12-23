@@ -148,9 +148,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
             MockHttpClient wms11Client = new MockHttpClient();
             URL wms11BaseURL = new URL(TestHttpClientProvider.MOCKSERVER + "/wms11");
-            URL capsDocument =
-                    WMSLayerConfigTest.class.getResource(
-                            "/org/geoserver/wms/web/data/publish/caps111.xml");
+            URL capsDocument = WMSLayerConfigTest.class.getResource("/org/geoserver/wms/web/data/publish/caps111.xml");
             wms11Client.expectGet(
                     new URL(wms11BaseURL + "?service=WMS&request=GetCapabilities&version=1.1.1"),
                     new MockHttpResponse(capsDocument, "text/xml"));
@@ -196,33 +194,26 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         tester.debugComponentTrees();
         tester.assertComponent("styleForm:context:panel:name", TextField.class);
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
 
         tester.assertVisible("styleForm:context:panel:upload");
 
         // Load the legend
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
         tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
 
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
                 "styleForm:context:panel:legendPanel:externalGraphicContainer:list:chooseImage",
                 GeoServerAjaxFormLink.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         tester.assertModelValue("styleForm:context:panel:name", "Buildings");
 
@@ -238,8 +229,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // GEOS-3257, actually drag into xml and compare with xmlunit to avoid
         // line ending problems
         String xml =
-                tester.getComponentFromLastRenderedPage("styleForm:styleEditor")
-                        .getDefaultModelObjectAsString();
+                tester.getComponentFromLastRenderedPage("styleForm:styleEditor").getDefaultModelObjectAsString();
         xml = xml.replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&quot;", "\"");
         Document d2 = db.parse(new ByteArrayInputStream(xml.getBytes()));
 
@@ -249,62 +239,48 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInsertImage() throws Exception {
         // create some fake images
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         dd.getStyles().get("somepicture.png").out().close();
         dd.getStyles().get("otherpicture.jpg").out().close();
         dd.getStyles().get("vector.svg").out().close();
 
         // since we don't have code mirror available in the test environment, we are kind of limited
         // we'll make the tool bar visible to test the dialog anyway
-        tester.getComponentFromLastRenderedPage(
-                        "styleForm:styleEditor:editorContainer:toolbar", false)
+        tester.getComponentFromLastRenderedPage("styleForm:styleEditor:editorContainer:toolbar", false)
                 .setVisible(true);
 
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         tester.assertComponent(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel",
-                ChooseImagePanel.class);
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image",
-                DropDownChoice.class);
-        tester.assertInvisible(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image", DropDownChoice.class);
+        tester.assertInvisible("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
         @SuppressWarnings("unchecked")
-        List<? extends String> choices =
-                ((DropDownChoice<String>)
-                                tester.getComponentFromLastRenderedPage(
-                                        "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image"))
-                        .getChoices();
+        List<? extends String> choices = ((DropDownChoice<String>) tester.getComponentFromLastRenderedPage(
+                        "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image"))
+                .getChoices();
         assertEquals(3, choices.size());
         assertEquals("otherpicture.jpg", choices.get(0));
         assertEquals("somepicture.png", choices.get(1));
         assertEquals("vector.svg", choices.get(2));
 
-        FormTester formTester =
-                tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         formTester.select("userPanel:image", 1);
 
-        tester.executeAjaxEvent(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image",
-                "change");
-        tester.assertVisible(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
+        tester.executeAjaxEvent("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image", "change");
+        tester.assertVisible("dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:display");
 
         formTester.submit("submit");
 
         // we can at least test that the right javascript code is there
-        Pattern pattern =
-                Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic "
-                                + "xmlns=\"http://www.opengis.net/sld\" "
-                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
-                                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
-                                + "(.*)\" />\\\\n"
-                                + "<Format>([^<]+)<..Format>\\\\n"
-                                + "<..ExternalGraphic>\\\\n'\\)");
+        Pattern pattern = Pattern.compile("replaceSelection\\('<ExternalGraphic "
+                + "xmlns=\"http://www.opengis.net/sld\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
+                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
+                + "(.*)\" />\\\\n"
+                + "<Format>([^<]+)<..Format>\\\\n"
+                + "<..ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -312,11 +288,9 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         // test uploading
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
-        formTester =
-                tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
+        formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         org.apache.wicket.util.file.File file =
-                new org.apache.wicket.util.file.File(
-                        URLs.urlToFile(getClass().getResource("GeoServer_75.png")));
+                new org.apache.wicket.util.file.File(URLs.urlToFile(getClass().getResource("GeoServer_75.png")));
         formTester.setFile("userPanel:upload", file, "image/png");
         formTester.submit("submit");
 
@@ -336,65 +310,55 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testInsertImageSLD11() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
-                        + "xmlns:se=\"http://www.opengis.net/se\">\n"
-                        + "  <NamedLayer>\n"
-                        + "    <se:Name>justaname</se:Name>\n"
-                        + "    <UserStyle>\n"
-                        + "      <se:Name>justaname</se:Name>\n"
-                        + "      <se:FeatureTypeStyle>\n"
-                        + "        <se:Rule>\n"
-                        + "          <se:PointSymbolizer>\n"
-                        + "             <se:Graphic>\n"
-                        + "            </se:Graphic>\\n"
-                        + "          </se:PointSymbolizer>\n"
-                        + "        </se:Rule>\n"
-                        + "      </se:FeatureTypeStyle>\n"
-                        + "    </UserStyle>\n"
-                        + "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
+                + "xmlns:se=\"http://www.opengis.net/se\">\n"
+                + "  <NamedLayer>\n"
+                + "    <se:Name>justaname</se:Name>\n"
+                + "    <UserStyle>\n"
+                + "      <se:Name>justaname</se:Name>\n"
+                + "      <se:FeatureTypeStyle>\n"
+                + "        <se:Rule>\n"
+                + "          <se:PointSymbolizer>\n"
+                + "             <se:Graphic>\n"
+                + "            </se:Graphic>\\n"
+                + "          </se:PointSymbolizer>\n"
+                + "        </se:Rule>\n"
+                + "      </se:FeatureTypeStyle>\n"
+                + "    </UserStyle>\n"
+                + "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>";
 
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         // create some fake images
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         dd.getStyles().get("somepicture.png").out().close();
 
         // since we don't have code mirror available in the test environment, we are kind of limited
         // we'll make the tool bar visible to test the dialog anyway
-        tester.getComponentFromLastRenderedPage(
-                        "styleForm:styleEditor:editorContainer:toolbar", false)
+        tester.getComponentFromLastRenderedPage("styleForm:styleEditor:editorContainer:toolbar", false)
                 .setVisible(true);
 
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1", AjaxLink.class);
         tester.clickLink("styleForm:styleEditor:editorContainer:toolbar:custom-buttons:1");
         tester.assertComponent(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel",
-                ChooseImagePanel.class);
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel", ChooseImagePanel.class);
         tester.assertComponent(
-                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image",
-                DropDownChoice.class);
+                "dialog:dialog:modal:overlay:dialog:content:content:form:userPanel:image", DropDownChoice.class);
 
-        FormTester formTester =
-                tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
+        FormTester formTester = tester.newFormTester("dialog:dialog:modal:overlay:dialog:content:content:form");
         formTester.select("userPanel:image", 0);
         formTester.submit("submit");
 
         // we can at least test that the right javascript code is there
-        Pattern pattern =
-                Pattern.compile(
-                        "replaceSelection\\('<ExternalGraphic "
-                                + "xmlns=\"http://www.opengis.net/se\" "
-                                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
-                                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
-                                + "(.*)\" />\\\\n"
-                                + "<Format>(.*)<..Format>\\\\n"
-                                + "<..ExternalGraphic>\\\\n'\\)");
+        Pattern pattern = Pattern.compile("replaceSelection\\('<ExternalGraphic "
+                + "xmlns=\"http://www.opengis.net/se\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">\\\\n"
+                + "<OnlineResource xlink:type=\"simple\" xlink:href=\""
+                + "(.*)\" />\\\\n"
+                + "<Format>(.*)<..Format>\\\\n"
+                + "<..ExternalGraphic>\\\\n'\\)");
         Matcher matcher = pattern.matcher(tester.getLastResponse().getDocument());
         assertTrue(matcher.find());
         assertEquals("somepicture.png", matcher.group(1));
@@ -418,14 +382,11 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         // Set the form value of the checkbox to true and force an ajax form update
         FormTester form = tester.newFormTester("styleForm");
         form.setValue(
-                "context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected",
-                true);
-        AbstractAjaxBehavior behavior =
-                (AbstractAjaxBehavior)
-                        WicketTesterHelper.findBehavior(
-                                tester.getComponentFromLastRenderedPage(
-                                        "styleForm:context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected"),
-                                AjaxFormComponentUpdatingBehavior.class);
+                "context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected", true);
+        AbstractAjaxBehavior behavior = (AbstractAjaxBehavior) WicketTesterHelper.findBehavior(
+                tester.getComponentFromLastRenderedPage(
+                        "styleForm:context:panel:layer.table:listContainer:items:1:itemProperties:2:component:default.selected"),
+                AjaxFormComponentUpdatingBehavior.class);
         tester.executeBehavior(behavior);
 
         l = getCatalog().getLayers().get(0);
@@ -443,8 +404,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             edit = new StyleEditPage(buildingsStyle);
             tester.startPage(edit);
             tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
-            tester.assertComponent(
-                    "styleForm:context:panel:layer.table", GeoServerTablePanel.class);
+            tester.assertComponent("styleForm:context:panel:layer.table", GeoServerTablePanel.class);
         } finally {
             l.setDefaultStyle(s);
             getCatalog().save(l);
@@ -456,8 +416,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
         tester.assertComponent(
-                "styleForm:popup:modal:overlay:dialog:content:content:layer.table",
-                GeoServerTablePanel.class);
+                "styleForm:popup:modal:overlay:dialog:content:content:layer.table", GeoServerTablePanel.class);
         tester.executeAjaxEvent(
                 "styleForm:popup:modal:overlay:dialog:content:content:layer.table:navigatorBottom:navigator:last",
                 "click");
@@ -475,8 +434,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
         tester.executeAjaxEvent("styleForm:context:panel:changeLayer:link", "click");
         tester.assertComponent(
-                "styleForm:popup:modal:overlay:dialog:content:content:layer.table",
-                GeoServerTablePanel.class);
+                "styleForm:popup:modal:overlay:dialog:content:content:layer.table", GeoServerTablePanel.class);
 
         // 31 layers total, 25 layers per page; foo should not appear on page 1 or 2.
         tester.assertContainsNot("wmsstore");
@@ -512,26 +470,23 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         form.setValue("context:panel:name", "Default");
         tester.executeAjaxEvent("save", "click");
 
-        tester.assertContains(
-                "java.lang.IllegalArgumentException: Style named &#039;Default&#039; already exists");
+        tester.assertContains("java.lang.IllegalArgumentException: Style named &#039;Default&#039; already exists");
         tester.debugComponentTrees();
     }
 
     @Test
     public void testValidate() throws Exception {
-        String xml =
-                "<StyledLayerDescriptor version='1.0.0' "
-                        + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                        + " xmlns='http://www.opengis.net/sld' "
-                        + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                        + "  <NamedLayer>"
-                        + "    <Name>Style</Name>"
-                        + "  </NamedLayer>"
-                        + "</StyledLayerDescriptor>";
+        String xml = "<StyledLayerDescriptor version='1.0.0' "
+                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
+                + " xmlns='http://www.opengis.net/sld' "
+                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
+                + "  <NamedLayer>"
+                + "    <Name>Style</Name>"
+                + "  </NamedLayer>"
+                + "</StyledLayerDescriptor>";
 
         // tester.debugComponentTrees();
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
@@ -542,8 +497,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         String xml = IOUtils.toString(TestData.class.getResource("externalEntities.sld"), UTF_8);
 
         // tester.debugComponentTrees();
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         List<Serializable> messages = tester.getMessages(FeedbackMessage.ERROR);
@@ -555,23 +509,21 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValidateNamedLayers() throws Exception {
-        String xml =
-                "<StyledLayerDescriptor version='1.0.0' "
-                        + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                        + " xmlns='http://www.opengis.net/sld' "
-                        + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>Streams</Name>\n"
-                        + // Reference the Streams layer
-                        "  </NamedLayer>\n"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>RoadSegments</Name>\n"
-                        + // 2nd, valid layer
-                        "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>";
+        String xml = "<StyledLayerDescriptor version='1.0.0' "
+                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
+                + " xmlns='http://www.opengis.net/sld' "
+                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
+                + "  <NamedLayer>\n"
+                + "    <Name>Streams</Name>\n"
+                + // Reference the Streams layer
+                "  </NamedLayer>\n"
+                + "  <NamedLayer>\n"
+                + "    <Name>RoadSegments</Name>\n"
+                + // 2nd, valid layer
+                "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>";
 
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
@@ -579,62 +531,48 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testValidateNamedLayersInvalid() throws Exception {
-        String xml =
-                "<StyledLayerDescriptor version='1.0.0' "
-                        + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
-                        + " xmlns='http://www.opengis.net/sld' "
-                        + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>Streams</Name>\n"
-                        + // Reference the Streams layer
-                        "  </NamedLayer>\n"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>Stream</Name>\n"
-                        + // 2nd, invalid layer
-                        "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>";
+        String xml = "<StyledLayerDescriptor version='1.0.0' "
+                + " xsi:schemaLocation='http://www.opengis.net/sld StyledLayerDescriptor.xsd' "
+                + " xmlns='http://www.opengis.net/sld' "
+                + " xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance'>"
+                + "  <NamedLayer>\n"
+                + "    <Name>Streams</Name>\n"
+                + // Reference the Streams layer
+                "  </NamedLayer>\n"
+                + "  <NamedLayer>\n"
+                + "    <Name>Stream</Name>\n"
+                + // 2nd, invalid layer
+                "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>";
 
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
-        tester.assertErrorMessages(
-                new String[] {"No layer or layer group named 'Stream' found in the catalog"});
+        tester.assertErrorMessages(new String[] {"No layer or layer group named 'Stream' found in the catalog"});
     }
 
-    /**
-     * Test that while editing a style, the user can create and then discard a legend without ever
-     * saving it.
-     */
+    /** Test that while editing a style, the user can create and then discard a legend without ever saving it. */
     @Test
     public void testDiscardNewLegendInfo() {
         tester.assertRenderedPage(StyleEditPage.class);
         tester.assertNoErrorMessage();
 
         // Show the legend panel (The test style does not initially have a legend)
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
         // Assert that the legend panel components exist
         tester.assertComponent("styleForm:context:panel:legendPanel", ExternalGraphicPanel.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         // Hide the legend panel (= "Discard Legend")
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide", "click");
         tester.assertNoErrorMessage();
 
         // Submit the style (no legend should be saved)
@@ -660,39 +598,28 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         getCatalog().save(style);
 
         // Reload the page
-        tester.startPage(
-                new StyleEditPage(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart())));
+        tester.startPage(new StyleEditPage(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart())));
 
         // Make sure the legend fields exist and are populated as expected
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "test.jpg");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "test.jpg");
 
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
-        tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", 100);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
+        tester.assertModelValue("styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", 100);
 
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
-        tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", 100);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
+        tester.assertModelValue("styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", 100);
 
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
-        tester.assertModelValue(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", "jpg");
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
+        tester.assertModelValue("styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", "jpg");
 
         // Hide the legend panel (= "Discard Legend")
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide", "click");
 
         // Submit the form. (The legend should be discarded)
         FormTester form = tester.newFormTester("styleForm", false);
@@ -705,43 +632,32 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * Test that while editing a style, the user can discard a legend, even if the legend has
-     * invalid values at the time, and then continue to save the style.
+     * Test that while editing a style, the user can discard a legend, even if the legend has invalid values at the
+     * time, and then continue to save the style.
      */
     @Test
     public void testDiscardLegendWithBadValues() throws IOException, URISyntaxException {
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
         // Make sure the fields we are editing actually exist
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:onlineResource", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:width", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:height", TextField.class);
         tester.assertComponent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format",
-                TextField.class);
+                "styleForm:context:panel:legendPanel:externalGraphicContainer:list:format", TextField.class);
 
         // Set some bad values for the legend
         FormTester form = tester.newFormTester("styleForm", false);
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:onlineResource",
-                "missing.ong");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", "missing.ong");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:width", "-100");
         form.setValue("context:panel:legendPanel:externalGraphicContainer:list:height", "");
-        form.setValue(
-                "context:panel:legendPanel:externalGraphicContainer:list:format", "bad/value");
+        form.setValue("context:panel:legendPanel:externalGraphicContainer:list:format", "bad/value");
 
         // Hide the legend panel (= "Discard Legend")
-        tester.executeAjaxEvent(
-                "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide",
-                "click");
+        tester.executeAjaxEvent("styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:hide", "click");
 
         // Refresh the state of the FormTester after the executeAjaxEvent
         form = tester.newFormTester("styleForm", false);
@@ -783,8 +699,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
         tester.assertComponent("styleForm:context:panel", OpenLayersPreviewPanel.class);
         OpenLayersPreviewPanel previewPanel =
-                (OpenLayersPreviewPanel)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel");
+                (OpenLayersPreviewPanel) tester.getComponentFromLastRenderedPage("styleForm:context:panel");
         assertFalse(previewPanel.isPreviewStyleGroup);
 
         FormTester form = tester.newFormTester("styleForm");
@@ -799,8 +714,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         StyleInfo styleInfo = new StyleInfoImpl(null);
         styleInfo.setName("point");
         styleInfo.setFilename("test.sld");
-        GeoServerApplication app =
-                (GeoServerApplication) applicationContext.getBean("webApplication");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
         WicketTester styleTest = new WicketTester(app, false);
 
         StyleEditPage page = new StyleEditPage(styleInfo);
@@ -813,8 +727,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         StyleInfo styleInfo = new StyleInfoImpl(null);
         styleInfo.setName("point");
         styleInfo.setFilename("test.sld");
-        GeoServerApplication app =
-                (GeoServerApplication) applicationContext.getBean("webApplication");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
         WicketTester styleTest = new WicketTester(app, false);
 
         StyleEditPage page = new StyleEditPage(styleInfo);
@@ -824,35 +737,31 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testPreviewSLD11Legend() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
-                        + "xmlns:se=\"http://www.opengis.net/se\">\n"
-                        + "  <NamedLayer>\n"
-                        + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                        + "    <UserStyle>\n"
-                        + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                        + "      <se:FeatureTypeStyle>\n"
-                        + "        <se:Rule>\n"
-                        + "          <se:Name>Single symbol</se:Name>\n"
-                        + "          <se:PolygonSymbolizer>\n"
-                        + "            <se:Fill>\n"
-                        + "              <se:SvgParameter name=\"fill\">#ff0000</se:SvgParameter>\n"
-                        + "            </se:Fill>\n"
-                        + "          </se:PolygonSymbolizer>\n"
-                        + "        </se:Rule>\n"
-                        + "      </se:FeatureTypeStyle>\n"
-                        + "    </UserStyle>\n"
-                        + "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" "
+                + "xmlns:se=\"http://www.opengis.net/se\">\n"
+                + "  <NamedLayer>\n"
+                + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                + "    <UserStyle>\n"
+                + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                + "      <se:FeatureTypeStyle>\n"
+                + "        <se:Rule>\n"
+                + "          <se:Name>Single symbol</se:Name>\n"
+                + "          <se:PolygonSymbolizer>\n"
+                + "            <se:Fill>\n"
+                + "              <se:SvgParameter name=\"fill\">#ff0000</se:SvgParameter>\n"
+                + "            </se:Fill>\n"
+                + "          </se:PolygonSymbolizer>\n"
+                + "        </se:Rule>\n"
+                + "      </se:FeatureTypeStyle>\n"
+                + "    </UserStyle>\n"
+                + "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>";
 
         // tester.debugComponentTrees();
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
         tester.clickLink("styleForm:context:panel:preview", true);
-        StyleAdminPanel panel =
-                (StyleAdminPanel)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel");
+        StyleAdminPanel panel = (StyleAdminPanel) tester.getComponentFromLastRenderedPage("styleForm:context:panel");
         // check the SvgParameter has been interpreted and we get a red fill, not a gray one
         assertPixel(panel.legendImage, 10, 10, Color.RED);
     }
@@ -867,17 +776,15 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testStyleTabExtensionPoint()
-            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-                    InstantiationException {
+            throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         StyleInfo styleInfo = new StyleInfoImpl(null);
         styleInfo.setName("point");
         styleInfo.setFilename("test.sld");
 
         StyleEditPage page = new StyleEditPage(styleInfo);
-        Object tabPanel =
-                StyleEditTabPanelTest.class
-                        .getConstructor(String.class, AbstractStylePage.class)
-                        .newInstance("someid", page);
+        Object tabPanel = StyleEditTabPanelTest.class
+                .getConstructor(String.class, AbstractStylePage.class)
+                .newInstance("someid", page);
         Assert.notNull(tabPanel, "Constructor for plugin tab panels has a broken signature.");
     }
 
@@ -894,21 +801,16 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
             String uri = resource.file().toURI().toString();
 
             tester.executeAjaxEvent(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show",
-                    "click");
+                    "styleForm:context:panel:legendPanel:externalGraphicContainer:showhide:show", "click");
 
             // Set a URI of an actual file outside data directory
             FormTester form = tester.newFormTester("styleForm", false);
-            form.setValue(
-                    "context:panel:legendPanel:externalGraphicContainer:list:onlineResource", uri);
-            tester.clickLink(
-                    "styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill",
-                    true);
+            form.setValue("context:panel:legendPanel:externalGraphicContainer:list:onlineResource", uri);
+            tester.clickLink("styleForm:context:panel:legendPanel:externalGraphicContainer:list:autoFill", true);
 
             // assert that error is thrown complaining file not being inside style directory
             tester.assertErrorMessages(
-                    "Could not find legend image in the styles directory",
-                    "Could not access legend image");
+                    "Could not find legend image in the styles directory", "Could not access legend image");
 
         } finally {
             // clean up
@@ -919,75 +821,71 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testValidateLineSymbolizerVendorOption() throws Exception {
 
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
-                        + "<StyledLayerDescriptor version=\"1.0.0\"\n"
-                        + "                       xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\n"
-                        + "                       xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                        + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>line_vendor</Name>\n"
-                        + "    <UserStyle>\n"
-                        + "      <Title>A gold line style</Title>\n"
-                        + "      <FeatureTypeStyle>\n"
-                        + "        <Rule> \n"
-                        + "          <Name>Vendor Style</Name> \n"
-                        + "          <LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
-                        + "            <Stroke> \n"
-                        + "              <GraphicStroke> \n"
-                        + "                <Graphic> \n"
-                        + "                  <Mark> \n"
-                        + "                    <WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</WellKnownName> \n"
-                        + "                  </Mark> \n"
-                        + "                  <Size>1</Size> \n"
-                        + "                </Graphic> \n"
-                        + "              </GraphicStroke> \n"
-                        + "            </Stroke> \n"
-                        + "            <VendorOption name=\"markAlongLine\">true</VendorOption> \n"
-                        + "          </LineSymbolizer> \n"
-                        + "        </Rule> \n"
-                        + "      </FeatureTypeStyle>\n"
-                        + "    </UserStyle>\n"
-                        + "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>\n";
+        String xml = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+                + "<StyledLayerDescriptor version=\"1.0.0\"\n"
+                + "                       xsi:schemaLocation=\"http://www.opengis.net/sld http://schemas.opengis.net/sld/1.0.0/StyledLayerDescriptor.xsd\"\n"
+                + "                       xmlns=\"http://www.opengis.net/sld\" xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n"
+                + "  <NamedLayer>\n"
+                + "    <Name>line_vendor</Name>\n"
+                + "    <UserStyle>\n"
+                + "      <Title>A gold line style</Title>\n"
+                + "      <FeatureTypeStyle>\n"
+                + "        <Rule> \n"
+                + "          <Name>Vendor Style</Name> \n"
+                + "          <LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
+                + "            <Stroke> \n"
+                + "              <GraphicStroke> \n"
+                + "                <Graphic> \n"
+                + "                  <Mark> \n"
+                + "                    <WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</WellKnownName> \n"
+                + "                  </Mark> \n"
+                + "                  <Size>1</Size> \n"
+                + "                </Graphic> \n"
+                + "              </GraphicStroke> \n"
+                + "            </Stroke> \n"
+                + "            <VendorOption name=\"markAlongLine\">true</VendorOption> \n"
+                + "          </LineSymbolizer> \n"
+                + "        </Rule> \n"
+                + "      </FeatureTypeStyle>\n"
+                + "    </UserStyle>\n"
+                + "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>\n";
 
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
 
-        String xml11 =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" xmlns:se=\"http://www.opengis.net/se\">\n"
-                        + "  <NamedLayer>\n"
-                        + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                        + "    <UserStyle>\n"
-                        + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
-                        + "      <se:FeatureTypeStyle>\n"
-                        + "        <se:Rule>\n"
-                        + "          <se:Name>Single symbol</se:Name>\n"
-                        + "          <se:LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
-                        + "            <se:Stroke> \n"
-                        + "              <se:GraphicStroke> \n"
-                        + "                <se:Graphic> \n"
-                        + "                  <se:Mark> \n"
-                        + "                    <se:WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</se:WellKnownName> \n"
-                        + "                  </se:Mark> \n"
-                        + "                  <se:Size>1</se:Size> \n"
-                        + "                </se:Graphic> \n"
-                        + "              </se:GraphicStroke> \n"
-                        + "            </se:Stroke> \n"
-                        + "            <se:VendorOption name=\"markAlongLine\">true</se:VendorOption> \n"
-                        + "          </se:LineSymbolizer> \n"
-                        + "        </se:Rule>\n"
-                        + "      </se:FeatureTypeStyle>\n"
-                        + "    </UserStyle>\n"
-                        + "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>";
+        String xml11 = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" version=\"1.1.0\" xmlns:se=\"http://www.opengis.net/se\">\n"
+                + "  <NamedLayer>\n"
+                + "    <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                + "    <UserStyle>\n"
+                + "      <se:Name>ne_110m_admin_0_countries</se:Name>\n"
+                + "      <se:FeatureTypeStyle>\n"
+                + "        <se:Rule>\n"
+                + "          <se:Name>Single symbol</se:Name>\n"
+                + "          <se:LineSymbolizer uom=\"http://www.opengeospatial.org/se/units/metre\">\n"
+                + "            <se:Stroke> \n"
+                + "              <se:GraphicStroke> \n"
+                + "                <se:Graphic> \n"
+                + "                  <se:Mark> \n"
+                + "                    <se:WellKnownName>wkt://COMPOUNDCURVE(CIRCULARSTRING(0 0, 0.5 0.5, 1 0), CIRCULARSTRING(1 0, 1.5 -0.5, 2 0))</se:WellKnownName> \n"
+                + "                  </se:Mark> \n"
+                + "                  <se:Size>1</se:Size> \n"
+                + "                </se:Graphic> \n"
+                + "              </se:GraphicStroke> \n"
+                + "            </se:Stroke> \n"
+                + "            <se:VendorOption name=\"markAlongLine\">true</se:VendorOption> \n"
+                + "          </se:LineSymbolizer> \n"
+                + "        </se:Rule>\n"
+                + "      </se:FeatureTypeStyle>\n"
+                + "    </UserStyle>\n"
+                + "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>";
 
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", xml11);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", xml11);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
@@ -996,20 +894,17 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testStyleComponents() {
         // Reload the page
-        tester.startPage(
-                new StyleEditPage(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart())));
+        tester.startPage(new StyleEditPage(getCatalog().getStyleByName(MockData.BUILDINGS.getLocalPart())));
 
         // check for correct bean initialization
         getGeoServerApplication().getApplicationContext().getBean("style-component-mock");
 
         // check for correct registration by Extension
-        List<StyleComponentInfo> compInfo =
-                getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
+        List<StyleComponentInfo> compInfo = getGeoServerApplication().getBeansOfType(StyleComponentInfo.class);
         assertEquals(1, compInfo.size());
 
         // check for correct embedding in page
-        tester.assertComponent(
-                "styleForm:style-component-mock", StyleEditPageTest.MockStyleComponent.class);
+        tester.assertComponent("styleForm:style-component-mock", StyleEditPageTest.MockStyleComponent.class);
     }
 
     @Test
@@ -1025,9 +920,8 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         Style style = (Style) duplicatingStyleVisitor.getCopy();
         FeatureTypeStyle typeStyle = style.featureTypeStyles().get(0);
         for (int i = 0; i < 30; i++) {
-            FeatureTypeStyle fts =
-                    styleBuilder.createFeatureTypeStyle(
-                            typeStyle.getName() + i, typeStyle.rules().get(0));
+            FeatureTypeStyle fts = styleBuilder.createFeatureTypeStyle(
+                    typeStyle.getName() + i, typeStyle.rules().get(0));
             style.featureTypeStyles().add(fts);
         }
         SLDTransformer transformer = new SLDTransformer();
@@ -1036,8 +930,7 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
         String sld = writer.toString();
 
         // test that the Mark invalid error message not appears doesn't occur
-        tester.newFormTester("styleForm")
-                .setValue("styleEditor:editorContainer:editorParent:editor", sld);
+        tester.newFormTester("styleForm").setValue("styleEditor:editorContainer:editorParent:editor", sld);
 
         tester.executeAjaxEvent("validate", "click");
         tester.assertNoErrorMessage();
@@ -1045,42 +938,41 @@ public class StyleEditPageTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testVendorOptionInsidePolygonSymbolizer() {
-        final String polygonSymbolizerXml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\"\n"
-                        + "                       xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                        + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-                        + "                       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-                        + "                       version=\"1.0.0\"\n"
-                        + "                       xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\">\n"
-                        + "  <NamedLayer>\n"
-                        + "    <Name>test</Name>\n"
-                        + "    <UserStyle>\n"
-                        + "      <Name>test</Name>\n"
-                        + "      <Title>test</Title>\n"
-                        + "      <FeatureTypeStyle>\n"
-                        + "        <Rule>\n"
-                        + "          <Name>test</Name>\n"
-                        + "          <Title>test\n"
-                        + "          </Title>\n"
-                        + "          <PolygonSymbolizer>\n"
-                        + "            <Fill>\n"
-                        + "              <GraphicFill>\n"
-                        + "                <Graphic>\n"
-                        + "                  <ExternalGraphic>\n"
-                        + "                    <OnlineResource xlink:type=\"simple\" xlink:href=\"rectangle.png\"/>\n"
-                        + "                    <Format>image/png</Format>\n"
-                        + "                  </ExternalGraphic>\n"
-                        + "                </Graphic>\n"
-                        + "              </GraphicFill>\n"
-                        + "            </Fill>\n"
-                        + "            <VendorOption name=\"graphic-margin\">10</VendorOption>\n"
-                        + "          </PolygonSymbolizer>\n"
-                        + "        </Rule>\n"
-                        + "      </FeatureTypeStyle>\n"
-                        + "    </UserStyle>\n"
-                        + "  </NamedLayer>\n"
-                        + "</StyledLayerDescriptor>\n";
+        final String polygonSymbolizerXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\"\n"
+                + "                       xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                + "                       xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+                + "                       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+                + "                       version=\"1.0.0\"\n"
+                + "                       xsi:schemaLocation=\"http://www.opengis.net/sld StyledLayerDescriptor.xsd\">\n"
+                + "  <NamedLayer>\n"
+                + "    <Name>test</Name>\n"
+                + "    <UserStyle>\n"
+                + "      <Name>test</Name>\n"
+                + "      <Title>test</Title>\n"
+                + "      <FeatureTypeStyle>\n"
+                + "        <Rule>\n"
+                + "          <Name>test</Name>\n"
+                + "          <Title>test\n"
+                + "          </Title>\n"
+                + "          <PolygonSymbolizer>\n"
+                + "            <Fill>\n"
+                + "              <GraphicFill>\n"
+                + "                <Graphic>\n"
+                + "                  <ExternalGraphic>\n"
+                + "                    <OnlineResource xlink:type=\"simple\" xlink:href=\"rectangle.png\"/>\n"
+                + "                    <Format>image/png</Format>\n"
+                + "                  </ExternalGraphic>\n"
+                + "                </Graphic>\n"
+                + "              </GraphicFill>\n"
+                + "            </Fill>\n"
+                + "            <VendorOption name=\"graphic-margin\">10</VendorOption>\n"
+                + "          </PolygonSymbolizer>\n"
+                + "        </Rule>\n"
+                + "      </FeatureTypeStyle>\n"
+                + "    </UserStyle>\n"
+                + "  </NamedLayer>\n"
+                + "</StyledLayerDescriptor>\n";
 
         tester.newFormTester("styleForm")
                 .setValue("styleEditor:editorContainer:editorParent:editor", polygonSymbolizerXml);

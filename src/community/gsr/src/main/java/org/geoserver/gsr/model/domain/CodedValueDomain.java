@@ -17,7 +17,8 @@ public class CodedValueDomain extends Domain {
 
     private String name;
 
-    @XStreamImplicit private Set<CodedValue> codedValues;
+    @XStreamImplicit
+    private Set<CodedValue> codedValues;
 
     public String getName() {
         return name;

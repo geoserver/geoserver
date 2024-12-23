@@ -34,13 +34,11 @@ public class CSPPolicyPanel extends Panel {
 
     private static final Property<CSPPolicy> ENABLED = new BeanProperty<>("enabled", "enabled");
     private static final Property<CSPPolicy> NAME = new BeanProperty<>("name", "name");
-    private static final Property<CSPPolicy> DESCRIPTION =
-            new BeanProperty<>("description", "description");
+    private static final Property<CSPPolicy> DESCRIPTION = new BeanProperty<>("description", "description");
     private static final Property<CSPPolicy> REMOVE = new PropertyPlaceholder<>("remove");
 
     /** The properties for the policies table. */
-    private static final List<Property<CSPPolicy>> PROPERTIES =
-            List.of(ENABLED, NAME, DESCRIPTION, REMOVE);
+    private static final List<Property<CSPPolicy>> PROPERTIES = List.of(ENABLED, NAME, DESCRIPTION, REMOVE);
 
     private CSPConfiguration config = null;
 
@@ -49,16 +47,15 @@ public class CSPPolicyPanel extends Panel {
     public CSPPolicyPanel(String id, CSPConfiguration config) {
         super(id);
         this.config = config;
-        add(
-                new AjaxLink<Void>("add") {
-                    private static final long serialVersionUID = 5518438243807007190L;
+        add(new AjaxLink<Void>("add") {
+            private static final long serialVersionUID = 5518438243807007190L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        CSPPolicyPage page = new CSPPolicyPage(new CSPPolicy(), config);
-                        setResponsePage(page.setReturnPage(getPage()));
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                CSPPolicyPage page = new CSPPolicyPage(new CSPPolicy(), config);
+                setResponsePage(page.setReturnPage(getPage()));
+            }
+        });
         this.tablePanel = new CSPPolicyTablePanel("table", config.getPolicies());
         add(this.tablePanel);
     }
@@ -120,10 +117,7 @@ public class CSPPolicyPanel extends Panel {
 
         private Component removeLink(String id, CSPPolicy policy) {
             ImageAjaxLink<Void> link =
-                    new ImageAjaxLink<>(
-                            id,
-                            new PackageResourceReference(
-                                    getClass(), "../img/icons/silk/delete.png")) {
+                    new ImageAjaxLink<>(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
                         private static final long serialVersionUID = 190400999968840349L;
 
                         @Override
@@ -132,11 +126,7 @@ public class CSPPolicyPanel extends Panel {
                             target.add(CSPPolicyPanel.this.tablePanel);
                         }
                     };
-            link.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel("th.remove", CSPPolicyPanel.this)));
+            link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("th.remove", CSPPolicyPanel.this)));
             return link;
         }
     }

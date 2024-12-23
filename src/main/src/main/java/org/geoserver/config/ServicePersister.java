@@ -31,10 +31,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
         XStreamServiceLoader loader = findServiceLoader(service);
 
@@ -63,8 +60,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         try {
             // TODO: handle workspace move, factor this class out into
             // separate persister class
-            Resource directory =
-                    service.getWorkspace() != null ? dir(service.getWorkspace()) : null;
+            Resource directory = service.getWorkspace() != null ? dir(service.getWorkspace()) : null;
             loader.save(service, geoServer, directory);
         } catch (Throwable t) {
             throw new RuntimeException(t);
@@ -77,9 +73,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         XStreamServiceLoader loader = findServiceLoader(service);
         try {
             Resource dir =
-                    service.getWorkspace() != null
-                            ? dir(service.getWorkspace())
-                            : resourceLoader.get(Paths.BASE);
+                    service.getWorkspace() != null ? dir(service.getWorkspace()) : resourceLoader.get(Paths.BASE);
             dir.get(loader.getFilename()).delete();
         } catch (Throwable t) {
             throw new RuntimeException(t);

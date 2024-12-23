@@ -56,9 +56,7 @@ public class CoverageViewEditPage extends CoverageViewAbstractPage {
             setResponsePage(previousPage);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create feature type", e);
-            error(
-                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
-                            .getString());
+            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
         }
     }
 

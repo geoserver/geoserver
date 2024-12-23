@@ -29,8 +29,7 @@ import org.geotools.gce.image.WorldImageWriter;
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author $Author: Simone Giannecchini (simboss1@gmail.com) $ (last modification)
  */
-public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate {
+public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate implements CoverageResponseDelegate {
 
     public IMGCoverageResponseDelegate(GeoServer geoserver) {
         super(
@@ -61,8 +60,7 @@ public class IMGCoverageResponseDelegate extends BaseCoverageResponseDelegate
             OutputStream output)
             throws ServiceException, IOException {
         if (sourceCoverage == null) {
-            throw new IllegalStateException(
-                    "It seems prepare() has not been called or has not succeed");
+            throw new IllegalStateException("It seems prepare() has not been called or has not succeed");
         }
 
         final WorldImageWriter writer = new WorldImageWriter(output);

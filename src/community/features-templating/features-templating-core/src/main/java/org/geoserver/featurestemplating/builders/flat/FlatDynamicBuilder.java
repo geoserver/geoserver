@@ -15,8 +15,7 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
 
     private AttributeNameHelper nameHelper;
 
-    public FlatDynamicBuilder(
-            String key, String expression, NamespaceSupport namespaces, String separator) {
+    public FlatDynamicBuilder(String key, String expression, NamespaceSupport namespaces, String separator) {
         super(key, expression, namespaces);
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
@@ -27,11 +26,9 @@ public class FlatDynamicBuilder extends DynamicValueBuilder implements FlatBuild
     }
 
     @Override
-    protected void writeValue(
-            TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+    protected void writeValue(TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
             throws IOException {
-        writer.writeElementNameAndValue(
-                nameHelper.getFinalAttributeName(context), value, getEncodingHints());
+        writer.writeElementNameAndValue(nameHelper.getFinalAttributeName(context), value, getEncodingHints());
     }
 
     @Override

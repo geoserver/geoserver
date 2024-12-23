@@ -7,10 +7,9 @@ package org.geoserver.ogcapi;
 import org.springframework.http.HttpStatus;
 
 /**
- * A OGC API specific exception class, supports creation of JSON exceptions. The standard used to
- * mandate JSON payloads for exceptions, now it is not any longer, this could be a good reference
- * https://tools.ietf.org/html/rfc7807. See also
- * https://github.com/opengeospatial/oapi_common/issues/73
+ * A OGC API specific exception class, supports creation of JSON exceptions. The standard used to mandate JSON payloads
+ * for exceptions, now it is not any longer, this could be a good reference https://tools.ietf.org/html/rfc7807. See
+ * also https://github.com/opengeospatial/oapi_common/issues/73
  */
 public class APIException extends RuntimeException {
 

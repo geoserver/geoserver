@@ -10,8 +10,7 @@ import org.geoserver.data.test.MockData;
 import org.geotools.data.complex.AppSchemaDataAccess;
 
 /**
- * Mock data for testing use of geometryless data sources {@link AppSchemaDataAccess} with
- * GeoServer.
+ * Mock data for testing use of geometryless data sources {@link AppSchemaDataAccess} with GeoServer.
  *
  * <p>Inspired by {@link MockData}.
  *

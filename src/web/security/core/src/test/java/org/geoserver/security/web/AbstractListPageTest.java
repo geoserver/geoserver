@@ -69,7 +69,8 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
     }
 
     protected Component getFromList(String columnPath, Object columnValue, Property<T> property) {
-        MarkupContainer listView = (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
+        MarkupContainer listView =
+                (MarkupContainer) tester.getLastRenderedPage().get(ITEMS_PATH);
 
         Iterator<Component> it = listView.iterator();
 
@@ -105,8 +106,7 @@ public abstract class AbstractListPageTest<T> extends AbstractSecurityWicketTest
 
         String selectAllPath = "table:listContainer:selectAllContainer:selectAll";
         tester.assertComponent(selectAllPath, CheckBox.class);
-        CheckBox selectAllComponent =
-                (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
+        CheckBox selectAllComponent = (CheckBox) tester.getComponentFromLastRenderedPage(selectAllPath);
 
         setFormComponentValue(selectAllComponent, "true");
         tester.executeAjaxEvent(selectAllPath, "click");

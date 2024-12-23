@@ -24,8 +24,7 @@ public class StyleThumbnailTest extends StylesTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        testData.addStyle(
-                BUILDINGS_LAKES, "buildingsLakes.sld", StyleThumbnailTest.class, getCatalog());
+        testData.addStyle(BUILDINGS_LAKES, "buildingsLakes.sld", StyleThumbnailTest.class, getCatalog());
     }
 
     @Test
@@ -39,16 +38,13 @@ public class StyleThumbnailTest extends StylesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/Lakes/metadata", 200);
         assertThat(
                 readSingle(json, "links[?(@.rel=='preview')].href"),
-                equalTo(
-                        "http://localhost:8080/geoserver/ogc/styles/v1/styles/Lakes/thumbnail?f=image%2Fpng"));
+                equalTo("http://localhost:8080/geoserver/ogc/styles/v1/styles/Lakes/thumbnail?f=image%2Fpng"));
     }
 
     @Test
     public void testThumbnailBuildingLakes() throws Exception {
-        BufferedImage image =
-                getAsImage("ogc/styles/v1/styles/buildingsLakes/thumbnail", "image/png");
-        ImageAssert.assertEquals(
-                new File("./src/test/resources/thumbnails/buildingsLakes.png"), image, 0);
+        BufferedImage image = getAsImage("ogc/styles/v1/styles/buildingsLakes/thumbnail", "image/png");
+        ImageAssert.assertEquals(new File("./src/test/resources/thumbnails/buildingsLakes.png"), image, 0);
     }
 
     @Test
@@ -56,15 +52,13 @@ public class StyleThumbnailTest extends StylesTestSupport {
         DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/buildingsLakes/metadata", 200);
         assertThat(
                 readSingle(json, "links[?(@.rel=='preview')].href"),
-                equalTo(
-                        "http://localhost:8080/geoserver/ogc/styles/v1/styles/buildingsLakes/thumbnail?f=image%2Fpng"));
+                equalTo("http://localhost:8080/geoserver/ogc/styles/v1/styles/buildingsLakes/thumbnail?f=image%2Fpng"));
     }
 
     @Test
     public void testThumbnailPolygonCommentNoLink() throws Exception {
         // a style with no layers associated
-        DocumentContext json =
-                getAsJSONPath("ogc/styles/v1/styles/" + POLYGON_COMMENT + "/metadata", 200);
+        DocumentContext json = getAsJSONPath("ogc/styles/v1/styles/" + POLYGON_COMMENT + "/metadata", 200);
         List items = json.read("[?(@.links.rel=='preview')]");
         assertThat(items.isEmpty(), Matchers.equalTo(true));
     }

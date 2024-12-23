@@ -89,13 +89,11 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
         }
     }
     /**
-     * Insert a disabled conformance checkbox indicating of functionality is built-in, or simply not
-     * implemented.
+     * Insert a disabled conformance checkbox indicating of functionality is built-in, or simply not implemented.
      *
      * @param key
      * @param conformance
-     * @param implemented if true, the conformance is built-in, if false, the conformance is
-     *     not-implemented.
+     * @param implemented if true, the conformance is built-in, if false, the conformance is not-implemented.
      * @return checkbox component to be used if further customization is required
      */
     protected CheckBox addConformance(String key, APIConformance conformance, boolean implemented) {
@@ -112,15 +110,11 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
      * @param key Wicket id of checkbox, also used to obtained internationalization text
      * @param conformance Conformance class to be represented by the checkbox
      * @param booleanModel Model, often backed by WFSInfo, to store checkbox value.
-     * @param enabled Lambda used to determine in conformance is enanbled (i.e. implemented and
-     *     configurable)
+     * @param enabled Lambda used to determine in conformance is enanbled (i.e. implemented and configurable)
      * @return checkbox component to be used if further customization is required
      */
     protected CheckBox addConformance(
-            String key,
-            final APIConformance conformance,
-            IModel<Boolean> booleanModel,
-            final IModel<Boolean> enabled) {
+            String key, final APIConformance conformance, IModel<Boolean> booleanModel, final IModel<Boolean> enabled) {
         WFSInfo info = (WFSInfo) getDefaultModel().getObject();
         boolean stable = conformance.getLevel().isStable();
         boolean endorsed = conformance.getLevel().isEndorsed();
@@ -135,21 +129,20 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
 
         Label level = new Label(key + "Level", level(conformance.getLevel()));
         level.add(new AttributeModifier("title", recommendation(conformance.getLevel())));
-        final ThreeStateAjaxCheckBox checkBox =
-                new ThreeStateAjaxCheckBox(key, booleanModel) {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
+        final ThreeStateAjaxCheckBox checkBox = new ThreeStateAjaxCheckBox(key, booleanModel) {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
 
-                        Label uriLabel = (Label) FeatureServiceAdminPanel.this.get(key + "Label");
+                Label uriLabel = (Label) FeatureServiceAdminPanel.this.get(key + "Label");
 
-                        Boolean modelValue = getModelObject();
+                Boolean modelValue = getModelObject();
 
-                        boolean visible = modelValue == null || modelValue.booleanValue();
-                        uriLabel.setVisible(visible);
-                        uriLabel.setDefaultModelObject(conformance.getId());
-                        target.add(uriLabel);
-                    }
-                };
+                boolean visible = modelValue == null || modelValue.booleanValue();
+                uriLabel.setVisible(visible);
+                uriLabel.setDefaultModelObject(conformance.getId());
+                target.add(uriLabel);
+            }
+        };
         checkBox.add(new AttributeModifier("title", conformance.getId()));
 
         if (info.isCiteCompliant()) {
@@ -199,10 +192,8 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
 
         // formats - optional
         addConformance(
-                "gml321",
-                FeatureConformance.GML321,
-                new PropertyModel<>(featuresInfo, "gml321"),
-                () -> features(info).gml321((WFSInfo) info.getObject()));
+                "gml321", FeatureConformance.GML321, new PropertyModel<>(featuresInfo, "gml321"), () -> features(info)
+                        .gml321((WFSInfo) info.getObject()));
 
         // formats - not implemented
         addConformance("gmlsf0", FeatureConformance.GMLSF0, false);
@@ -216,10 +207,8 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 () -> features(info).crsByReference((WFSInfo) info.getObject()));
 
         addConformance(
-                "filter",
-                FeatureConformance.FILTER,
-                new PropertyModel<>(featuresInfo, "filter"),
-                () -> features(info).filter((WFSInfo) info.getObject()));
+                "filter", FeatureConformance.FILTER, new PropertyModel<>(featuresInfo, "filter"), () -> features(info)
+                        .filter((WFSInfo) info.getObject()));
 
         addConformance(
                 "featuresFilter",
@@ -233,52 +222,33 @@ public class FeatureServiceAdminPanel extends AdminPagePanel {
                 new PropertyModel<>(featuresInfo, "queryables"),
                 () -> features(info).queryables((WFSInfo) info.getObject()));
 
+        addConformance("ids", FeatureConformance.IDS, new PropertyModel<>(featuresInfo, "ids"), () -> features(info)
+                .ids((WFSInfo) info.getObject()));
         addConformance(
-                "ids",
-                FeatureConformance.IDS,
-                new PropertyModel<>(featuresInfo, "ids"),
-                () -> features(info).ids((WFSInfo) info.getObject()));
+                "search", FeatureConformance.SEARCH, new PropertyModel<>(featuresInfo, "search"), () -> features(info)
+                        .search((WFSInfo) info.getObject()));
         addConformance(
-                "search",
-                FeatureConformance.SEARCH,
-                new PropertyModel<>(featuresInfo, "search"),
-                () -> features(info).search((WFSInfo) info.getObject()));
-        addConformance(
-                "sortBy",
-                FeatureConformance.SORTBY,
-                new PropertyModel<>(featuresInfo, "sortBy"),
-                () -> features(info).sortBy((WFSInfo) info.getObject()));
+                "sortBy", FeatureConformance.SORTBY, new PropertyModel<>(featuresInfo, "sortBy"), () -> features(info)
+                        .sortBy((WFSInfo) info.getObject()));
     }
 
     private void ecqlSettings(IModel<?> info) {
         ECQLConformance ecqlInfo = ecql(info);
         // ECQL
-        addConformance(
-                "ecql",
-                ECQLConformance.ECQL,
-                new PropertyModel<>(ecqlInfo, "ecql"),
-                () -> ecql(info).ecql((WFSInfo) info.getObject()));
-        addConformance(
-                "ecqlText",
-                ECQLConformance.ECQL_TEXT,
-                new PropertyModel<>(ecqlInfo, "text"),
-                () -> ecql(info).text((WFSInfo) info.getObject()));
+        addConformance("ecql", ECQLConformance.ECQL, new PropertyModel<>(ecqlInfo, "ecql"), () -> ecql(info)
+                .ecql((WFSInfo) info.getObject()));
+        addConformance("ecqlText", ECQLConformance.ECQL_TEXT, new PropertyModel<>(ecqlInfo, "text"), () -> ecql(info)
+                .text((WFSInfo) info.getObject()));
     }
 
     private void cql2Settings(IModel<?> info) {
         CQL2Conformance cql2Info = cql2(info);
 
         // CQL2
-        addConformance(
-                "cql2Text",
-                CQL2Conformance.CQL2_TEXT,
-                new PropertyModel<>(cql2Info, "text"),
-                () -> cql2(info).text((WFSInfo) info.getObject()));
-        addConformance(
-                "cql2JSON",
-                CQL2Conformance.CQL2_JSON,
-                new PropertyModel<>(cql2Info, "json"),
-                () -> cql2(info).json((WFSInfo) info.getObject()));
+        addConformance("cql2Text", CQL2Conformance.CQL2_TEXT, new PropertyModel<>(cql2Info, "text"), () -> cql2(info)
+                .text((WFSInfo) info.getObject()));
+        addConformance("cql2JSON", CQL2Conformance.CQL2_JSON, new PropertyModel<>(cql2Info, "json"), () -> cql2(info)
+                .json((WFSInfo) info.getObject()));
 
         // built-in conformance
         addConformance("cql2Advanced", CQL2Conformance.CQL2_ADVANCED, true);

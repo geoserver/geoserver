@@ -59,20 +59,18 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.util.factory.GeoTools;
 
 /**
- * A {@link DispatcherCallback} which intercepts a getLegendGraphicRequest and check whether that
- * request involve a dynamicColorRamp rendering transformation. In that case, it setup a legend
- * based on the dynamic values coming from the request. The callback works under the assumption that
- * there is only one style and one layer involved, it won't work for a multilayer/multistyle request
- * (that could be arranged, but we'd need to open an extension point in the legend graphics builder
- * to treat rendering transformations instead).
+ * A {@link DispatcherCallback} which intercepts a getLegendGraphicRequest and check whether that request involve a
+ * dynamicColorRamp rendering transformation. In that case, it setup a legend based on the dynamic values coming from
+ * the request. The callback works under the assumption that there is only one style and one layer involved, it won't
+ * work for a multilayer/multistyle request (that could be arranged, but we'd need to open an extension point in the
+ * legend graphics builder to treat rendering transformations instead).
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatcherCallback {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    DynamicGetLegendGraphicDispatcherCallback.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            DynamicGetLegendGraphicDispatcherCallback.class.getPackage().getName());
 
     private Catalog catalog;
 
@@ -89,12 +87,9 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         // only intercepting getLegendGraphic invokation
         if (id.equalsIgnoreCase("getLegendGraphic")) {
             final Object[] params = operation.getParameters();
-            if (params != null
-                    && params.length > 0
-                    && params[0] instanceof GetLegendGraphicRequest) {
+            if (params != null && params.length > 0 && params[0] instanceof GetLegendGraphicRequest) {
 
-                final GetLegendGraphicRequest getLegendRequest =
-                        (GetLegendGraphicRequest) params[0];
+                final GetLegendGraphicRequest getLegendRequest = (GetLegendGraphicRequest) params[0];
 
                 try {
                     for (LegendRequest legend : getLegendRequest.getLegends()) {
@@ -103,8 +98,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                             LayerInfo layer = legend.getLayerInfo();
                             if (layer != null && layer.getResource() instanceof CoverageInfo) {
                                 CoverageInfo coverageInfo = (CoverageInfo) layer.getResource();
-                                List<CoverageDimensionInfo> dimensions =
-                                        coverageInfo.getDimensions();
+                                List<CoverageDimensionInfo> dimensions = coverageInfo.getDimensions();
                                 String unit = "";
                                 if (dimensions != null && !dimensions.isEmpty()) {
                                     CoverageDimensionInfo dimensionInfo = dimensions.get(0);
@@ -129,9 +123,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         return operation;
     }
 
-    /**
-     * Look for a ColorRamp string definition used by a {@link FilterFunction_svgColorMap} if any.
-     */
+    /** Look for a ColorRamp string definition used by a {@link FilterFunction_svgColorMap} if any. */
     private ProcessFunction getDynamicColorMapTransformation(LegendRequest legendRequest) {
         if (legendRequest.getStyle() != null) {
             final Style style = legendRequest.getStyle();
@@ -156,10 +148,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         return null;
     }
 
-    /**
-     * Look for a ColorRamp definition used by a {@link DynamicColorMapProcess} rendering
-     * transformation.
-     */
+    /** Look for a ColorRamp definition used by a {@link DynamicColorMapProcess} rendering transformation. */
     private Style getDynamicStyle(CoverageInfo coverageInfo, ProcessFunction transformation)
             throws IOException, ParseException {
 
@@ -167,10 +156,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         try {
 
             // Getting coverage to parse statistics
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            coverageInfo.getGridCoverageReader(
-                                    new NullProgressListener(), GeoTools.getDefaultHints());
+            GridCoverage2DReader reader = (GridCoverage2DReader)
+                    coverageInfo.getGridCoverageReader(new NullProgressListener(), GeoTools.getDefaultHints());
 
             GeneralParameterValue[] parameters = parseReadParameters(coverageInfo, reader);
             coverage = (GridCoverage2D) reader.read(parameters);
@@ -205,8 +192,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
     }
 
     /**
-     * Parse the read parameter from the getLegendGraphicRequest in order to access the proper
-     * coverage slice to retrieve the proper statistics.
+     * Parse the read parameter from the getLegendGraphicRequest in order to access the proper coverage slice to
+     * retrieve the proper statistics.
      *
      * @param coverageInfo the coverage to be accessed
      * @param map the request parameters
@@ -214,17 +201,14 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
      * @return parameters setup on top of requested values.
      */
     private GeneralParameterValue[] parseReadParameters(
-            final CoverageInfo coverageInfo, final GridCoverage2DReader reader)
-            throws IOException, ParseException {
+            final CoverageInfo coverageInfo, final GridCoverage2DReader reader) throws IOException, ParseException {
 
         // Parameters
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
         GeneralParameterValue[] readParameters =
-                CoverageUtils.getParameters(
-                        readParametersDescriptor, coverageInfo.getParameters(), false);
-        final List<GeneralParameterDescriptor> parameterDescriptors =
-                new ArrayList<GeneralParameterDescriptor>(
-                        readParametersDescriptor.getDescriptor().descriptors());
+                CoverageUtils.getParameters(readParametersDescriptor, coverageInfo.getParameters(), false);
+        final List<GeneralParameterDescriptor> parameterDescriptors = new ArrayList<GeneralParameterDescriptor>(
+                readParametersDescriptor.getDescriptor().descriptors());
 
         // add the descriptors for custom dimensions
         Set<ParameterDescriptor<List>> dynamicParameters = reader.getDynamicParameters();
@@ -237,24 +221,21 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         final ReferencedEnvelope testEnvelope = createTestEnvelope(coverageInfo);
         final GridGeometry2D gridGeometry =
                 new GridGeometry2D(new GridEnvelope2D(new Rectangle(0, 0, 2, 2)), testEnvelope);
-        readParameters =
-                CoverageUtils.mergeParameter(
-                        parameterDescriptors,
-                        readParameters,
-                        gridGeometry,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
+        readParameters = CoverageUtils.mergeParameter(
+                parameterDescriptors,
+                readParameters,
+                gridGeometry,
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString());
 
         // Parse Time
         Map<String, Object> map = Dispatcher.REQUEST.get().getKvp();
         readParameters = parseTimeParameter(metadata, readParameters, parameterDescriptors, map);
 
         // Parse Elevation
-        readParameters =
-                parseElevationParameter(metadata, readParameters, parameterDescriptors, map);
+        readParameters = parseElevationParameter(metadata, readParameters, parameterDescriptors, map);
 
         // Parse custom domains
-        readParameters =
-                parseCustomDomains(dimensions, metadata, readParameters, parameterDescriptors, map);
+        readParameters = parseCustomDomains(dimensions, metadata, readParameters, parameterDescriptors, map);
         return readParameters;
     }
 
@@ -277,12 +258,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                     name = caseInsensitiveLookup(customDomains, name);
                     if (name != null) {
                         final DimensionInfo customInfo =
-                                metadata.get(
-                                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + name,
-                                        DimensionInfo.class);
-                        if (dimensions.hasDomain(name)
-                                && customInfo != null
-                                && customInfo.isEnabled()) {
+                                metadata.get(ResourceInfo.CUSTOM_DIMENSION_PREFIX + name, DimensionInfo.class);
+                        if (dimensions.hasDomain(name) && customInfo != null && customInfo.isEnabled()) {
                             final ArrayList<String> val = new ArrayList<String>(1);
                             String value = (String) map.get(paramName);
                             if (value.indexOf(",") > 0) {
@@ -292,8 +269,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
                                 val.add(value);
                             }
                             readParameters =
-                                    CoverageUtils.mergeParameter(
-                                            parameterDescriptors, readParameters, val, name);
+                                    CoverageUtils.mergeParameter(parameterDescriptors, readParameters, val, name);
                         }
                     }
                 }
@@ -316,20 +292,18 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
             GeneralParameterValue[] readParameters,
             final List<GeneralParameterDescriptor> parameterDescriptors,
             final Map<String, Object> map) {
-        final DimensionInfo elevationInfo =
-                metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        final DimensionInfo elevationInfo = metadata.get(ResourceInfo.ELEVATION, DimensionInfo.class);
         if (elevationInfo != null && elevationInfo.isEnabled()) {
             // handle "current"
             Set<String> params = map.keySet();
             for (String param : params) {
                 if (param.equalsIgnoreCase("elevation")) {
-                    readParameters =
-                            CoverageUtils.mergeParameter(
-                                    parameterDescriptors,
-                                    readParameters,
-                                    Double.valueOf((String) map.get(param)),
-                                    "ELEVATION",
-                                    "Elevation");
+                    readParameters = CoverageUtils.mergeParameter(
+                            parameterDescriptors,
+                            readParameters,
+                            Double.valueOf((String) map.get(param)),
+                            "ELEVATION",
+                            "Elevation");
                     break;
                 }
             }
@@ -358,13 +332,12 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
             for (String param : params) {
                 if (param.equalsIgnoreCase("time")) {
                     // pass down the parameters
-                    readParameters =
-                            CoverageUtils.mergeParameter(
-                                    parameterDescriptors,
-                                    readParameters,
-                                    parser.parse((String) map.get(param)),
-                                    "TIME",
-                                    "Time");
+                    readParameters = CoverageUtils.mergeParameter(
+                            parameterDescriptors,
+                            readParameters,
+                            parser.parse((String) map.get(param)),
+                            "TIME",
+                            "Time");
                     break;
                 }
             }
@@ -382,10 +355,7 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         return null;
     }
 
-    /**
-     * Create a small 2x2 envelope to be used to read a small coverage in order to retrieve
-     * statistics from it
-     */
+    /** Create a small 2x2 envelope to be used to read a small coverage in order to retrieve statistics from it */
     private ReferencedEnvelope createTestEnvelope(final CoverageInfo coverageInfo) {
         final ReferencedEnvelope envelope = coverageInfo.getNativeBoundingBox();
         final GridGeometry geometry = coverageInfo.getGrid();
@@ -397,13 +367,8 @@ public class DynamicGetLegendGraphicDispatcherCallback extends AbstractDispatche
         final double scaleY = XAffineTransform.getScaleY0((AffineTransform) transform);
         final double minX = envelope.getMinimum(0);
         final double minY = envelope.getMinimum(1);
-        final ReferencedEnvelope newEnvelope =
-                new ReferencedEnvelope(
-                        minX,
-                        minX + scaleX * 2,
-                        minY,
-                        minY + scaleY * 2,
-                        envelope.getCoordinateReferenceSystem());
+        final ReferencedEnvelope newEnvelope = new ReferencedEnvelope(
+                minX, minX + scaleX * 2, minY, minY + scaleY * 2, envelope.getCoordinateReferenceSystem());
         return newEnvelope;
     }
 }

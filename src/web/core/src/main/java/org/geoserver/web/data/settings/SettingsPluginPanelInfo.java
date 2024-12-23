@@ -19,22 +19,19 @@ import org.geoserver.web.admin.GlobalSettingsPage;
 import org.geoserver.web.data.workspace.WorkspaceEditPage;
 
 /**
- * This class must be used for implementing new Components which must be added to the {@link
- * ListView}s inside the {@link WorkspaceEditPage} and {@link GlobalSettingsPage}.
+ * This class must be used for implementing new Components which must be added to the {@link ListView}s inside the
+ * {@link WorkspaceEditPage} and {@link GlobalSettingsPage}.
  *
  * @author Nicola Lagomarsini Geosolutions S.A.S.
  */
-public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel>
-        implements ExtensionPriority {
+public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel> implements ExtensionPriority {
     private static final long serialVersionUID = 3630664243092125954L;
     private int priority = 50;
 
     public SettingsPluginPanel getPluginPanel(String id, IModel<SettingsInfo> model)
-            throws IllegalArgumentException, SecurityException, InstantiationException,
-                    IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        return getComponentClass()
-                .getConstructor(String.class, IModel.class)
-                .newInstance("content", model);
+            throws IllegalArgumentException, SecurityException, InstantiationException, IllegalAccessException,
+                    InvocationTargetException, NoSuchMethodException {
+        return getComponentClass().getConstructor(String.class, IModel.class).newInstance("content", model);
     }
 
     @Override
@@ -42,23 +39,19 @@ public class SettingsPluginPanelInfo extends ComponentInfo<SettingsPluginPanel>
         return priority;
     }
 
-    /**
-     * Method for setting the priority of the Object. This is used for ordering the various plugin
-     * panels.
-     */
+    /** Method for setting the priority of the Object. This is used for ordering the various plugin panels. */
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
     /**
-     * This method creates a pluggable ListView which can store various panels. All the elements
-     * must implement the {@link SettingsPluginPanelInfo} class.
+     * This method creates a pluggable ListView which can store various panels. All the elements must implement the
+     * {@link SettingsPluginPanelInfo} class.
      */
     public static ListView<SettingsPluginPanelInfo> createExtensions(
             String id, final IModel<SettingsInfo> model, GeoServerApplication application) {
         // List of all the pluggable components
-        List<SettingsPluginPanelInfo> panels =
-                application.getBeansOfType(SettingsPluginPanelInfo.class);
+        List<SettingsPluginPanelInfo> panels = application.getBeansOfType(SettingsPluginPanelInfo.class);
 
         return new ListView<>(id, panels) {
 

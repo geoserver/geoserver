@@ -16,11 +16,9 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.InitializingBean;
 
 /** @author ETj (etj at geo-solutions.it) */
-public class GeoFenceSecurityProvider extends GeoServerSecurityProvider
-        implements InitializingBean {
+public class GeoFenceSecurityProvider extends GeoServerSecurityProvider implements InitializingBean {
 
-    private static final Logger LOGGER =
-            Logging.getLogger(GeoFenceSecurityProvider.class.getName());
+    private static final Logger LOGGER = Logging.getLogger(GeoFenceSecurityProvider.class.getName());
 
     private RuleReaderService ruleReaderService;
 
@@ -34,8 +32,7 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider
     }
 
     @Override
-    public GeoFenceAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoFenceAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         GeoFenceAuthenticationProvider authProv = new GeoFenceAuthenticationProvider();
         authProv.setRuleReaderService(ruleReaderService);
         return authProv;
@@ -67,14 +64,12 @@ public class GeoFenceSecurityProvider extends GeoServerSecurityProvider
         }
 
         try {
-            SecurityAuthProviderConfig loadedConfig =
-                    securityManager.loadAuthenticationProviderConfig("geofence");
+            SecurityAuthProviderConfig loadedConfig = securityManager.loadAuthenticationProviderConfig("geofence");
             if (loadedConfig == null) {
                 LOGGER.warning("Configuration file not found, creating default config");
 
                 // config: create a default one
-                GeoFenceAuthenticationProviderConfig defaultConfig =
-                        new GeoFenceAuthenticationProviderConfig();
+                GeoFenceAuthenticationProviderConfig defaultConfig = new GeoFenceAuthenticationProviderConfig();
                 defaultConfig.setName("geofence");
                 defaultConfig.setClassName(GeoFenceAuthenticationProvider.class.getName());
                 securityManager.saveAuthenticationProvider(defaultConfig);

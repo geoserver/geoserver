@@ -20,8 +20,7 @@ import org.geotools.api.style.Style;
 import org.geotools.util.URLs;
 
 /**
- * Stores the values of dynamic style properties needed to generate an icon for a particular
- * feature.
+ * Stores the values of dynamic style properties needed to generate an icon for a particular feature.
  *
  * @author David Winslow, OpenGeo
  * @author Kevin Smith, OpenGeo
@@ -46,10 +45,7 @@ public abstract class IconProperties {
     public abstract boolean isExternal();
 
     public static IconProperties generator(
-            final Double opacity,
-            final Double scale,
-            final Double heading,
-            final Map<String, String> styleProperties) {
+            final Double opacity, final Double scale, final Double heading, final Map<String, String> styleProperties) {
         return new IconProperties() {
             @Override
             public Double getOpacity() {
@@ -75,18 +71,12 @@ public abstract class IconProperties {
             public String href(String baseURL, String workspace, String styleName) {
                 String stylePathFragment;
                 if (workspace != null) {
-                    stylePathFragment =
-                            ResponseUtils.urlEncode(workspace)
-                                    + "/"
-                                    + ResponseUtils.urlEncode(styleName);
+                    stylePathFragment = ResponseUtils.urlEncode(workspace) + "/" + ResponseUtils.urlEncode(styleName);
                 } else {
                     stylePathFragment = ResponseUtils.urlEncode(styleName);
                 }
                 return ResponseUtils.buildURL(
-                        baseURL,
-                        "kml/icon/" + stylePathFragment,
-                        styleProperties,
-                        URLType.RESOURCE);
+                        baseURL, "kml/icon/" + stylePathFragment, styleProperties, URLType.RESOURCE);
             }
 
             @Override
@@ -153,17 +143,15 @@ public abstract class IconProperties {
 
                         if (file.isAbsolute()) {
                             GeoServerDataDirectory dataDir =
-                                    (GeoServerDataDirectory)
-                                            GeoServerExtensions.bean("dataDirectory");
+                                    (GeoServerDataDirectory) GeoServerExtensions.bean("dataDirectory");
                             // we grab the canonical path to make sure we can compare them, no
                             // relative parts in them and so on
                             styles = dataDir.getStyles().dir().getCanonicalFile();
                             file = graphicFile = file.getCanonicalFile();
                             if (file.getAbsolutePath().startsWith(styles.getAbsolutePath())) {
                                 // ok, part of the styles directory, extract only the relative path
-                                String relativePath =
-                                        file.getAbsolutePath()
-                                                .substring(styles.getAbsolutePath().length() + 1);
+                                String relativePath = file.getAbsolutePath()
+                                        .substring(styles.getAbsolutePath().length() + 1);
                                 file = new File(relativePath);
                             } else {
                                 // we wont' transform this, other dirs are not published
@@ -183,12 +171,8 @@ public abstract class IconProperties {
                             }
                         }
                         return ResponseUtils.buildURL(
-                                baseURL,
-                                "styles/" + target.getPath(),
-                                Collections.emptyMap(),
-                                URLType.RESOURCE);
-                    } else if (!("http".equals(graphicProtocol)
-                            || "https".equals(graphicProtocol))) {
+                                baseURL, "styles/" + target.getPath(), Collections.emptyMap(), URLType.RESOURCE);
+                    } else if (!("http".equals(graphicProtocol) || "https".equals(graphicProtocol))) {
                         return null;
                     }
 

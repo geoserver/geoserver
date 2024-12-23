@@ -32,8 +32,7 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         Document dom = getAsDOM("rest/cluster.xml");
         // print(dom);
         // checking a property that's unlikely to change
-        assertXpathEvaluatesTo(
-                "VirtualTopic.geoserver", "/properties/property[@name='topicName']/@value", dom);
+        assertXpathEvaluatesTo("VirtualTopic.geoserver", "/properties/property[@name='topicName']/@value", dom);
     }
 
     @Test
@@ -53,9 +52,7 @@ public class ClusterControllerTest extends GeoServerSystemTestSupport {
         assertThat(jsonObject.get("properties"), notNullValue());
         assertThat(jsonObject.get("properties"), instanceOf(JSONObject.class));
         assertThat(jsonObject.getJSONObject("properties").get("property"), notNullValue());
-        assertThat(
-                jsonObject.getJSONObject("properties").get("property"),
-                instanceOf(JSONArray.class));
+        assertThat(jsonObject.getJSONObject("properties").get("property"), instanceOf(JSONArray.class));
         JSONArray properties = jsonObject.getJSONObject("properties").getJSONArray("property");
         assertThat(properties.size(), is(15));
         // check properties exist

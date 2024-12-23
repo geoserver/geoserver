@@ -65,8 +65,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
-    public List<ServiceDescription> getServices(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
 
         List<ServiceDescription> descriptions = new ArrayList<>();
         WMTSInfo info = info(workspaceInfo, layerInfo);
@@ -116,9 +115,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
                     + workspaceInfo.getName()
                     + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
         }
-        return "../"
-                + layerInfo.getName()
-                + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
+        return "../" + layerInfo.getName() + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
     }
 
     private String createLinkTMS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
@@ -126,11 +123,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             return "../gwc/service/tms/1.0.0";
         }
         if ((workspaceInfo != null) && (layerInfo != null)) {
-            return "../"
-                    + workspaceInfo.getName()
-                    + "/"
-                    + layerInfo.getName()
-                    + "/gwc/service/tms/1.0.0";
+            return "../" + workspaceInfo.getName() + "/" + layerInfo.getName() + "/gwc/service/tms/1.0.0";
         }
         if ((workspaceInfo != null)) {
             return "../" + workspaceInfo.getName() + "/gwc/service/tms/1.0.0";
@@ -139,8 +132,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
     }
 
     @Override
-    public List<ServiceLinkDescription> getServiceLinks(
-            WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
+    public List<ServiceLinkDescription> getServiceLinks(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
 
         List<ServiceLinkDescription> links = new ArrayList<>();
 
@@ -155,14 +147,13 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         try {
             if (gwcConfig.isWMSCEnabled() && null != app.getBean("gwcServiceWMS")) {
-                links.add(
-                        new ServiceLinkDescription(
-                                SERVICE_TYPE,
-                                new Version("1.1.1"),
-                                createLinkWMSC(workspaceInfo, layerInfo),
-                                workspaceInfo != null ? workspaceInfo.getName() : null,
-                                layerInfo != null ? layerInfo.getName() : null,
-                                "WMS-C"));
+                links.add(new ServiceLinkDescription(
+                        SERVICE_TYPE,
+                        new Version("1.1.1"),
+                        createLinkWMSC(workspaceInfo, layerInfo),
+                        workspaceInfo != null ? workspaceInfo.getName() : null,
+                        layerInfo != null ? layerInfo.getName() : null,
+                        "WMS-C"));
             }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception
@@ -170,28 +161,26 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
         try {
             if (info.isEnabled() && null != app.getBean("gwcServiceWMTS")) {
-                links.add(
-                        new ServiceLinkDescription(
-                                SERVICE_TYPE,
-                                new Version("1.1.1"),
-                                createLinkWMTS(workspaceInfo, layerInfo),
-                                workspaceInfo != null ? workspaceInfo.getName() : null,
-                                layerInfo != null ? layerInfo.getName() : null,
-                                "WMTS"));
+                links.add(new ServiceLinkDescription(
+                        SERVICE_TYPE,
+                        new Version("1.1.1"),
+                        createLinkWMTS(workspaceInfo, layerInfo),
+                        workspaceInfo != null ? workspaceInfo.getName() : null,
+                        layerInfo != null ? layerInfo.getName() : null,
+                        "WMTS"));
             }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception
         }
         try {
             if (gwcConfig.isTMSEnabled() && null != app.getBean("gwcServiceTMS")) {
-                links.add(
-                        new ServiceLinkDescription(
-                                SERVICE_TYPE,
-                                new Version("1.0.0"),
-                                createLinkTMS(workspaceInfo, layerInfo),
-                                workspaceInfo != null ? workspaceInfo.getName() : null,
-                                layerInfo != null ? layerInfo.getName() : null,
-                                "TMS"));
+                links.add(new ServiceLinkDescription(
+                        SERVICE_TYPE,
+                        new Version("1.0.0"),
+                        createLinkTMS(workspaceInfo, layerInfo),
+                        workspaceInfo != null ? workspaceInfo.getName() : null,
+                        layerInfo != null ? layerInfo.getName() : null,
+                        "TMS"));
             }
         } catch (NoSuchBeanDefinitionException e) {
             // service not found, ignore exception

@@ -27,7 +27,6 @@ public class SqlViewNewPageTest extends AbstractSqlViewPageTest {
         // print(tester.getLastRenderedPage(), true, true);
 
         // check it did not crash and the param has been guessed
-        tester.assertModelValue(
-                "form:parameters:listContainer:items:1:itemProperties:0:component:text", "FOO");
+        tester.assertModelValue("form:parameters:listContainer:items:1:itemProperties:0:component:text", "FOO");
     }
 }

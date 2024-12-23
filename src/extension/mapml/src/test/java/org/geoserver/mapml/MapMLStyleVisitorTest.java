@@ -29,10 +29,8 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         testData.addStyle("polygonSymbolizer", "polygonSymbolizer.sld", getClass(), catalog);
         testData.addStyle("polygonFilterSymbolizer", "polygonFilter.sld", getClass(), catalog);
         testData.addStyle("simpleLineSymbolizer", "simpleLineSymbolizer.sld", getClass(), catalog);
-        testData.addStyle(
-                "simplePointSymbolizer", "simplePointSymbolizer.sld", getClass(), catalog);
-        testData.addStyle(
-                "simplePolygonSymbolizer", "simplePolygonSymbolizer.sld", getClass(), catalog);
+        testData.addStyle("simplePointSymbolizer", "simplePointSymbolizer.sld", getClass(), catalog);
+        testData.addStyle("simplePolygonSymbolizer", "simplePolygonSymbolizer.sld", getClass(), catalog);
         testData.addStyle("lakeScale", "lakeScale.sld", getClass(), catalog);
     }
 
@@ -53,26 +51,24 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("lakeScale"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.LAKES.getLocalPart())
-                        .bbox("0,-0.002,0.00451,0")
-                        .srs("EPSG:4326")
-                        .styles("lakeScale")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.LAKES.getLocalPart())
+                .bbox("0,-0.002,0.00451,0")
+                .srs("EPSG:4326")
+                .styles("lakeScale")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "No features are returned because the scale denominator is not within the range of the style",
                 0,
                 mapmlFeatures.getBody().getFeatures().size());
-        mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.LAKES.getLocalPart())
-                        .bbox("-50,-50,50,50")
-                        .srs("EPSG:4326")
-                        .styles("lakeScale")
-                        .feature(true)
-                        .getAsMapML();
+        mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.LAKES.getLocalPart())
+                .bbox("-50,-50,50,50")
+                .srs("EPSG:4326")
+                .styles("lakeScale")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "Feature is returned because scale is between minscaledenominator and maxscaledenominator",
                 1,
@@ -92,14 +88,13 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("polygonSymbolizer"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox("0,0,0.01,0.01")
-                        .srs("EPSG:4326")
-                        .styles("polygonSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox("0,0,0.01,0.01")
+                .srs("EPSG:4326")
+                .styles("polygonSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "Style classes string",
                 ".bbox {display:none} .polygonSymbolizer-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:2.0; fill:#000080; fill-opacity:0.5; stroke:#FFFFFF; stroke-linecap:butt} .polygonSymbolizer-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:4.0; fill:#033080; fill-opacity:0.74; stroke:#FF66FF; stroke-linecap:butt}",
@@ -123,14 +118,13 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("polygonFilterSymbolizer"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox("0,0,0.01,0.01")
-                        .srs("EPSG:4326")
-                        .styles("polygonFilterSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox("0,0,0.01,0.01")
+                .srs("EPSG:4326")
+                .styles("polygonFilterSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "Style classes string",
                 ".bbox {display:none} .polygonFilterSymbolizer-r1-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:0.5; fill:#0033cc; fill-opacity:1.0; stroke:#000000; stroke-linecap:butt} .polygonFilterSymbolizer-r2-s1{stroke-opacity:1.0; stroke-dashoffset:0; stroke-width:0.7; fill:#8833cc; fill-opacity:1.0; stroke:#001200; stroke-linecap:butt}",
@@ -156,13 +150,12 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("simplePointSymbolizer"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .srs("EPSG:4326")
-                        .styles("simpleLineSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .srs("EPSG:4326")
+                .styles("simpleLineSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "The polygon features are represented as is because line sybolizers can paint a polygon too",
                 "class org.geoserver.mapml.xml.MultiPolygon",
@@ -175,13 +168,12 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .getDeclaredType()
                         .toString());
 
-        mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .srs("EPSG:4326")
-                        .styles("simplePointSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .srs("EPSG:4326")
+                .styles("simplePointSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "The polygon features are represented as points because the style has a point symbolizer",
                 "class org.geoserver.mapml.xml.Point",
@@ -205,13 +197,12 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("simplePolygonSymbolizer"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.STREAMS.getLocalPart())
-                        .srs("EPSG:4326")
-                        .styles("simplePolygonSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.STREAMS.getLocalPart())
+                .srs("EPSG:4326")
+                .styles("simplePolygonSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "The line features are represented as polygons because the style has a polygon symbolizer",
                 "class org.geoserver.mapml.xml.Polygon",
@@ -224,13 +215,12 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                         .getDeclaredType()
                         .toString());
 
-        mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.STREAMS.getLocalPart())
-                        .srs("EPSG:4326")
-                        .styles("simplePointSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.STREAMS.getLocalPart())
+                .srs("EPSG:4326")
+                .styles("simplePointSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "The line features are represented as points because the style has a point symbolizer",
                 "class org.geoserver.mapml.xml.Point",
@@ -254,27 +244,25 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("simplePolygonSymbolizer"));
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.POINTS.getLocalPart())
-                        .bbox("166021.44,0.0,833978.56,9329005.18")
-                        .srs("EPSG:32615")
-                        .styles("simpleLineSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.POINTS.getLocalPart())
+                .bbox("166021.44,0.0,833978.56,9329005.18")
+                .srs("EPSG:32615")
+                .styles("simpleLineSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "No features are returned because points are not converted to line representations",
                 0,
                 mapmlFeatures.getBody().getFeatures().size());
 
-        mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.POINTS.getLocalPart())
-                        .bbox("166021.44,0.0,833978.56,9329005.18")
-                        .srs("EPSG:32615")
-                        .styles("simplePolygonSymbolizer")
-                        .feature(true)
-                        .getAsMapML();
+        mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.POINTS.getLocalPart())
+                .bbox("166021.44,0.0,833978.56,9329005.18")
+                .srs("EPSG:32615")
+                .styles("simplePolygonSymbolizer")
+                .feature(true)
+                .getAsMapML();
         assertEquals(
                 "The point features are represented as polygons because the style has a polygon symbolizer",
                 "class org.geoserver.mapml.xml.Polygon",

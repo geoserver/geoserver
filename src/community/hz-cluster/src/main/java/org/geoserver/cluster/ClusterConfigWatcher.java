@@ -26,15 +26,14 @@ public class ClusterConfigWatcher {
     }
 
     public ClusterConfigWatcher(Resource file) {
-        watcher =
-                new PropertyFileWatcher(file) {
-                    @Override
-                    protected Properties parseFileContents(InputStream in) throws IOException {
-                        ClusterConfig config = getNewClusterConfig();
-                        config.putAll(super.parseFileContents(in));
-                        return config;
-                    }
-                };
+        watcher = new PropertyFileWatcher(file) {
+            @Override
+            protected Properties parseFileContents(InputStream in) throws IOException {
+                ClusterConfig config = getNewClusterConfig();
+                config.putAll(super.parseFileContents(in));
+                return config;
+            }
+        };
     }
 
     public ClusterConfig get() {

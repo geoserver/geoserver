@@ -69,24 +69,21 @@ public final class EchoParametersDaoTest extends TestSupport {
     public void testEchoParameterCrud() {
         // create the echo parameters to be used, echo parameter C is an update of echo parameter B
         // (the id is the same)
-        EchoParameter echoParameterA =
-                new EchoParameterBuilder()
-                        .withId("0")
-                        .withActivated(true)
-                        .withParameter("cql_filter")
-                        .build();
-        EchoParameter echoParameterB =
-                new EchoParameterBuilder()
-                        .withId("1")
-                        .withActivated(true)
-                        .withParameter("bbox")
-                        .build();
-        EchoParameter echoParameterC =
-                new EchoParameterBuilder()
-                        .withId("1")
-                        .withActivated(false)
-                        .withParameter("bbox")
-                        .build();
+        EchoParameter echoParameterA = new EchoParameterBuilder()
+                .withId("0")
+                .withActivated(true)
+                .withParameter("cql_filter")
+                .build();
+        EchoParameter echoParameterB = new EchoParameterBuilder()
+                .withId("1")
+                .withActivated(true)
+                .withParameter("bbox")
+                .build();
+        EchoParameter echoParameterC = new EchoParameterBuilder()
+                .withId("1")
+                .withActivated(false)
+                .withParameter("bbox")
+                .build();
         // get the existing echo parameters, this should return an empty list
         List<EchoParameter> echoParameters = getEchoParameters();
         assertThat(echoParameters.size(), is(0));

@@ -48,15 +48,13 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                "classpath:/org/geoserver/wcs2_0/ResourceAccessManagerContext.xml");
+        springContextLocations.add("classpath:/org/geoserver/wcs2_0/ResourceAccessManagerContext.xml");
     }
 
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     /** Add the users */
@@ -82,48 +80,32 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
 
         // a raster with dimensions
         Catalog catalog = getCatalog();
-        testData.addRasterLayer(
-                WATTEMP, "watertemp.zip", null, null, SystemTestData.class, catalog);
-        setupRasterDimension(
-                WATTEMP,
-                ResourceInfo.ELEVATION,
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupRasterDimension(
-                WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, catalog);
+        setupRasterDimension(WATTEMP, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupRasterDimension(WATTEMP, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         // populate the access manager
         TestResourceAccessManager tam =
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         CoverageInfo waterTemp = catalog.getCoverageByName(getLayerId(WATTEMP));
-        tam.putLimits(
-                "cite",
-                waterTemp,
-                new CoverageAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE, null, null));
+        tam.putLimits("cite", waterTemp, new CoverageAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE, null, null));
     }
 
     /**
-     * DescribeCoverage requires a special exemption to run as it needs to access actual data to
-     * fill in the time and elevation
+     * DescribeCoverage requires a special exemption to run as it needs to access actual data to fill in the time and
+     * elevation
      */
     @Test
     public void testDescribeWithTimeElevation() throws Exception {
         setRequestAuth("cite", "cite");
-        Document dom =
-                getAsDOM(
-                        "wcs?request=DescribeCoverage&service=WCS&version=2.0.0&coverageId=sf__watertemp");
+        Document dom = getAsDOM("wcs?request=DescribeCoverage&service=WCS&version=2.0.0&coverageId=sf__watertemp");
         print(dom);
 
         // print(dom);
         checkValidationErrors(dom, getWcs20Schema());
 
         // check that metadata contains a list of times
-        assertXpathEvaluatesTo(
-                "2",
-                "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant)",
-                dom);
+        assertXpathEvaluatesTo("2", "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant)", dom);
         assertXpathEvaluatesTo(
                 "sf__watertemp_td_0",
                 "//gmlcov:metadata/gmlcov:Extension/wcsgs:TimeDomain/gml:TimeInstant[1]/@gml:id",
@@ -142,12 +124,8 @@ public class ResourceAccessManagerWCSTest extends WCSTestSupport {
                 dom);
         // and a list of elevations
         assertXpathEvaluatesTo(
-                "2",
-                "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/wcsgs:SingleValue)",
-                dom);
-        assertXpathEvaluatesTo(
-                "0.0", "//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/@default", dom);
-        assertXpathEvaluatesTo(
-                "ft", "//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/@uom", dom);
+                "2", "count(//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/wcsgs:SingleValue)", dom);
+        assertXpathEvaluatesTo("0.0", "//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/@default", dom);
+        assertXpathEvaluatesTo("ft", "//gmlcov:metadata/gmlcov:Extension/wcsgs:ElevationDomain/@uom", dom);
     }
 }

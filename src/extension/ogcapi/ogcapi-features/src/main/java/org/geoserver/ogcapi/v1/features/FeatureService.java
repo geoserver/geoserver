@@ -85,11 +85,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /** Implementation of OGC Features API service */
-@APIService(
-        service = "Features",
-        version = "1.0.1",
-        landingPage = "ogc/features/v1",
-        serviceClass = WFSInfo.class)
+@APIService(service = "Features", version = "1.0.1", landingPage = "ogc/features/v1", serviceClass = WFSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features/v1")
 public class FeatureService {
 
@@ -117,14 +113,12 @@ public class FeatureService {
     }
 
     /** Returns the provided CRS list, unless the feature type has its own local override */
-    public static List<String> getFeatureTypeCRS(
-            FeatureTypeInfo featureType, List<String> defaultCRS) {
+    public static List<String> getFeatureTypeCRS(FeatureTypeInfo featureType, List<String> defaultCRS) {
         // by default use the provided list, unless there is an override
         if (featureType.isOverridingServiceSRS()) {
-            List<String> result =
-                    featureType.getResponseSRS().stream()
-                            .map(c -> mapResponseSRS(c))
-                            .collect(Collectors.toList());
+            List<String> result = featureType.getResponseSRS().stream()
+                    .map(c -> mapResponseSRS(c))
+                    .collect(Collectors.toList());
             result.remove(FeatureService.DEFAULT_CRS);
             result.add(0, FeatureService.DEFAULT_CRS);
             return result;
@@ -188,30 +182,29 @@ public class FeatureService {
      * @return List of implemented conformance available for use
      */
     public List<APIConformance> getConformances() {
-        List<APIConformance> conformances =
-                Arrays.asList(
-                        FeatureConformance.CORE,
-                        FeatureConformance.OAS30,
-                        FeatureConformance.HTML,
-                        FeatureConformance.GEOJSON,
-                        FeatureConformance.GMLSF2,
-                        FeatureConformance.CRS_BY_REFERENCE,
-                        FeatureConformance.FEATURES_FILTER,
-                        FeatureConformance.FILTER,
-                        FeatureConformance.QUERYABLES,
-                        FeatureConformance.IDS,
-                        FeatureConformance.SEARCH,
-                        FeatureConformance.SORTBY,
-                        ECQLConformance.ECQL,
-                        ECQLConformance.ECQL_TEXT,
-                        CQL2Conformance.CQL2_TEXT,
-                        CQL2Conformance.CQL2_ADVANCED,
-                        CQL2Conformance.CQL2_ARITHMETIC,
-                        CQL2Conformance.CQL2_BASIC,
-                        CQL2Conformance.CQL2_BASIC_SPATIAL,
-                        CQL2Conformance.CQL2_FUNCTIONS,
-                        CQL2Conformance.CQL2_PROPERTY_PROPERTY,
-                        CQL2Conformance.CQL2_SPATIAL);
+        List<APIConformance> conformances = Arrays.asList(
+                FeatureConformance.CORE,
+                FeatureConformance.OAS30,
+                FeatureConformance.HTML,
+                FeatureConformance.GEOJSON,
+                FeatureConformance.GMLSF2,
+                FeatureConformance.CRS_BY_REFERENCE,
+                FeatureConformance.FEATURES_FILTER,
+                FeatureConformance.FILTER,
+                FeatureConformance.QUERYABLES,
+                FeatureConformance.IDS,
+                FeatureConformance.SEARCH,
+                FeatureConformance.SORTBY,
+                ECQLConformance.ECQL,
+                ECQLConformance.ECQL_TEXT,
+                CQL2Conformance.CQL2_TEXT,
+                CQL2Conformance.CQL2_ADVANCED,
+                CQL2Conformance.CQL2_ARITHMETIC,
+                CQL2Conformance.CQL2_BASIC,
+                CQL2Conformance.CQL2_BASIC_SPATIAL,
+                CQL2Conformance.CQL2_FUNCTIONS,
+                CQL2Conformance.CQL2_PROPERTY_PROPERTY,
+                CQL2Conformance.CQL2_SPATIAL);
         // FeatureConformance.GMLSF0, // does not use the gmlsf namespace
         // CQL2Conformance.CQL2_JSON, // Very different from the binding we have
         // CQL2Conformance.CQL2_ARRAY, // excluded, no support for array operations now
@@ -233,11 +226,7 @@ public class FeatureService {
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {OPEN_API_MEDIA_TYPE_VALUE, APPLICATION_YAML_VALUE, MediaType.TEXT_XML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -259,9 +248,7 @@ public class FeatureService {
         CQL2Conformance cql2 = CQL2Conformance.configuration(wfs);
         if (!cql2.functions(wfs)) {
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    "Functions not supported by the service.",
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, "Functions not supported by the service.", HttpStatus.NOT_FOUND);
         }
         return new FunctionsDocument();
     }
@@ -269,8 +256,7 @@ public class FeatureService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         CollectionDocument collection =
                 new CollectionDocument(geoServer, ft, getFeatureTypeCRS(ft, getServiceCRSList()));
@@ -284,17 +270,13 @@ public class FeatureService {
             produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
-    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        String id =
-                ResponseUtils.buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/features/v1/collections/"
-                                + ResponseUtils.urlEncode(collectionId)
-                                + "/queryables",
-                        null,
-                        URLMangler.URLType.RESOURCE);
+        String id = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/features/v1/collections/" + ResponseUtils.urlEncode(collectionId) + "/queryables",
+                null,
+                URLMangler.URLType.RESOURCE);
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
         queryables.addSelfLinks("ogc/features/v1/collections/" + collectionId + "/queryables");
         return queryables;
@@ -320,10 +302,7 @@ public class FeatureService {
         // single collection
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(collectionId);
         if (featureType == null) {
-            throw new APIException(
-                    APIException.NOT_FOUND,
-                    "Unknown collection " + collectionId,
-                    HttpStatus.NOT_FOUND);
+            throw new APIException(APIException.NOT_FOUND, "Unknown collection " + collectionId, HttpStatus.NOT_FOUND);
         }
         return featureType;
     }
@@ -350,8 +329,7 @@ public class FeatureService {
         // only advertise what is actually implemented
         // conformances.retainAll(getConformances());
 
-        List<String> classes =
-                conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
+        List<String> classes = conformances.stream().map(APIConformance::getId).collect(Collectors.toList());
 
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
@@ -361,8 +339,7 @@ public class FeatureService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse item(
             @PathVariable(name = "collectionId") String collectionId,
-            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
-                    BigInteger startIndex,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
@@ -391,8 +368,7 @@ public class FeatureService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
-            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
-                    BigInteger startIndex,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
@@ -411,8 +387,7 @@ public class FeatureService {
 
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        GetFeatureRequest request =
-                GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
+        GetFeatureRequest request = GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
         Query query = request.createQuery();
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
         List<Filter> filters = new ArrayList<>();
@@ -435,11 +410,9 @@ public class FeatureService {
             if (features.ids(wfs)) {
                 filters.add(buildIdsFilter(ids));
             } else {
-                LOGGER.warning(
-                        () ->
-                                "The ids parameter is not supported by the service, requires "
-                                        + FeatureConformance.IDS.getId()
-                                        + " conformance to be enabled.");
+                LOGGER.warning(() -> "The ids parameter is not supported by the service, requires "
+                        + FeatureConformance.IDS.getId()
+                        + " conformance to be enabled.");
             }
         }
         if (filter != null) {
@@ -458,11 +431,9 @@ public class FeatureService {
                     filters.add(parsedFilter);
                 }
             } else {
-                LOGGER.warning(
-                        () ->
-                                "The filter parameter is not supported by the service, requires "
-                                        + FeatureConformance.FILTER.getId()
-                                        + " conformance to be enabled.");
+                LOGGER.warning(() -> "The filter parameter is not supported by the service, requires "
+                        + FeatureConformance.FILTER.getId()
+                        + " conformance to be enabled.");
             }
         }
         query.setFilter(mergeFiltersAnd(filters));
@@ -470,11 +441,9 @@ public class FeatureService {
             if (features.sortBy(wfs)) {
                 query.setSortBy(ImmutableList.copyOf(sortBy));
             } else {
-                LOGGER.warning(
-                        () ->
-                                "The sortby parameter is not supported by the service, requires "
-                                        + FeatureConformance.SORTBY.getId()
-                                        + " conformance to be enabled.");
+                LOGGER.warning(() -> "The sortby parameter is not supported by the service, requires "
+                        + FeatureConformance.SORTBY.getId()
+                        + " conformance to be enabled.");
             }
         }
 
@@ -482,11 +451,9 @@ public class FeatureService {
             if (features.crsByReference(wfs)) {
                 query.setSrsName(new URI(crs));
             } else {
-                LOGGER.warning(
-                        () ->
-                                "The crs parameter is not supported by the service, requires "
-                                        + FeatureConformance.CRS_BY_REFERENCE.getId()
-                                        + " conformance to be enabled.");
+                LOGGER.warning(() -> "The crs parameter is not supported by the service, requires "
+                        + FeatureConformance.CRS_BY_REFERENCE.getId()
+                        + " conformance to be enabled.");
 
                 query.setSrsName(new URI("EPSG:4326"));
             }
@@ -518,12 +485,11 @@ public class FeatureService {
 
     private static void ignoreFilterLanguage(String filterLanguage, APIConformance conformance) {
         if (LOGGER.isLoggable(Level.WARNING)) {
-            LOGGER.warning(
-                    "The filter language '"
-                            + filterLanguage
-                            + "' is not supported by the service, requires "
-                            + conformance.getId()
-                            + " conformance to be enabled.");
+            LOGGER.warning("The filter language '"
+                    + filterLanguage
+                    + "' is not supported by the service, requires "
+                    + conformance.getId()
+                    + " conformance to be enabled.");
         }
     }
 
@@ -531,16 +497,13 @@ public class FeatureService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse search(
-            @PathVariable(name = "collectionId") String collectionId,
-            @RequestBody APISearchQuery query)
+            @PathVariable(name = "collectionId") String collectionId, @RequestBody APISearchQuery query)
             throws Exception {
         WFSInfo wfsInfo = getServiceInfo();
         FeatureConformance featureServiceInfo = FeatureConformance.configuration(wfsInfo);
         if (!featureServiceInfo.search(wfsInfo)) {
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    "Search is not supported by the service.",
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, "Search is not supported by the service.", HttpStatus.NOT_FOUND);
         }
         // WARNING:
         // This endpoint is part of the draft proposal "OGC API - Features - Part 5". The syntax and
@@ -563,8 +526,7 @@ public class FeatureService {
     }
 
     /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */
-    private Filter buildTimeFilter(FeatureTypeInfo ft, String time)
-            throws ParseException, IOException {
+    private Filter buildTimeFilter(FeatureTypeInfo ft, String time) throws ParseException, IOException {
         Collection times = timeParser.parse(time);
         if (times.isEmpty() || times.size() > 1) {
             throw new ServiceException(
@@ -604,11 +566,10 @@ public class FeatureService {
     }
 
     private Id buildIdsFilter(List<String> ids) {
-        FeatureId[] featureIds =
-                ids.stream()
-                        .map((id) -> FF.featureId(id))
-                        .collect(Collectors.toList())
-                        .toArray(new FeatureId[ids.size()]);
+        FeatureId[] featureIds = ids.stream()
+                .map((id) -> FF.featureId(id))
+                .collect(Collectors.toList())
+                .toArray(new FeatureId[ids.size()]);
 
         return FF.id(featureIds);
     }

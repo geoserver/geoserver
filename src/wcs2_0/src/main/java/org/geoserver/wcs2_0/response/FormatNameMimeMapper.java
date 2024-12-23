@@ -11,8 +11,8 @@ import org.geotools.api.coverage.grid.GridCoverageReader;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
- * An implementation of {@link CoverageMimeTypeMapper} based on the {@link GridCoverage2D} class
- * associated to the CoverageInfo
+ * An implementation of {@link CoverageMimeTypeMapper} based on the {@link GridCoverage2D} class associated to the
+ * CoverageInfo
  *
  * @author Andrea Aime - GeoSolutions
  */

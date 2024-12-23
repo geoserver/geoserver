@@ -91,18 +91,17 @@ public class BilTest extends WMSTestSupport {
 
     private byte[] getStandardRequest(String mimeType) throws Exception {
         String layer = getLayerId(AUS_DEM);
-        String request =
-                "wms?service=wms&request=GetMap&version=1.1.1"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=108.3,-46.3,160.3,-4.2"
-                        + "&width="
-                        + width
-                        + "&height="
-                        + height
-                        + "&format="
-                        + mimeType
-                        + "&srs=EPSG:4326";
+        String request = "wms?service=wms&request=GetMap&version=1.1.1"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=108.3,-46.3,160.3,-4.2"
+                + "&width="
+                + width
+                + "&height="
+                + height
+                + "&format="
+                + mimeType
+                + "&srs=EPSG:4326";
 
         MockHttpServletResponse servletResponse = getAsServletResponse(request);
         return getBinary(servletResponse);
@@ -111,12 +110,11 @@ public class BilTest extends WMSTestSupport {
     @Test
     public void testLargeRequest() throws Exception {
         String layer = getLayerId(AUS_DEM);
-        String request =
-                "wms?service=wms&request=GetMap&version=1.1.1"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=600&height=600"
-                        + "&format=image/bil&srs=EPSG:4326";
+        String request = "wms?service=wms&request=GetMap&version=1.1.1"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=108.3,-46.3,160.3,-4.2&width=600&height=600"
+                + "&format=image/bil&srs=EPSG:4326";
 
         String exceptstr = getAsString(request);
         assertTrue("testLargeRequest", exceptstr.contains("512x512"));
@@ -126,16 +124,15 @@ public class BilTest extends WMSTestSupport {
     public void testWms13Request() throws Exception {
         String layer = getLayerId(AUS_DEM);
 
-        String request =
-                "wms?service=wms&request=GetMap&version=1.3.0"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-46.3,108.3,-4.2,160.3"
-                        + "&width="
-                        + width
-                        + "&height="
-                        + height
-                        + "&format=application/bil&crs=EPSG:4326";
+        String request = "wms?service=wms&request=GetMap&version=1.3.0"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-46.3,108.3,-4.2,160.3"
+                + "&width="
+                + width
+                + "&height="
+                + height
+                + "&format=application/bil&crs=EPSG:4326";
 
         MockHttpServletResponse servletResponse = getAsServletResponse(request);
         byte[] bytes1_3_0 = getBinary(servletResponse);
@@ -180,10 +177,7 @@ public class BilTest extends WMSTestSupport {
         setConfiguration(AUS_DEM, BilConfig.BYTE_ORDER, ByteOrder.BIG_ENDIAN.toString());
         byte[] bytesBigEndian = getStandardRequest("application/bil16");
 
-        assertArrayEquals(
-                "Big endian byte order should return same result as default",
-                bytesDefault,
-                bytesBigEndian);
+        assertArrayEquals("Big endian byte order should return same result as default", bytesDefault, bytesBigEndian);
 
         // Change byte order of big endian response to get expected little endian response.
         ShortBuffer expected =
@@ -193,10 +187,7 @@ public class BilTest extends WMSTestSupport {
         byte[] bytesLittleEndian = getStandardRequest("application/bil16");
         ShortBuffer actual = ByteBuffer.wrap(bytesLittleEndian).asShortBuffer();
 
-        assertEquals(
-                "Little endian byte order should return reverse of big endian byte order",
-                expected,
-                actual);
+        assertEquals("Little endian byte order should return reverse of big endian byte order", expected, actual);
     }
 
     @Test
@@ -206,16 +197,15 @@ public class BilTest extends WMSTestSupport {
 
         String layer = getLayerId(SF_DEM);
 
-        String request =
-                "wms?service=wms&request=GetMap&version=1.1.0"
-                        + "&layers="
-                        + layer
-                        + "&bbox=-103.871,44.370,-103.629,44.501"
-                        + "&width="
-                        + width
-                        + "&height="
-                        + width
-                        + "&format=application/bil32&crs=EPSG:4326";
+        String request = "wms?service=wms&request=GetMap&version=1.1.0"
+                + "&layers="
+                + layer
+                + "&bbox=-103.871,44.370,-103.629,44.501"
+                + "&width="
+                + width
+                + "&height="
+                + width
+                + "&format=application/bil32&crs=EPSG:4326";
 
         // Issue request without no-data translation.
         MockHttpServletResponse servletResponse = getAsServletResponse(request);
@@ -229,10 +219,7 @@ public class BilTest extends WMSTestSupport {
         FloatBuffer translated = ByteBuffer.wrap(bytes).asFloatBuffer();
 
         // Content length should be the same, though content will be different.
-        assertEquals(
-                "Unexpected content length after translating no-data values",
-                orig.limit(),
-                translated.limit());
+        assertEquals("Unexpected content length after translating no-data values", orig.limit(), translated.limit());
 
         // Assert that each no-data value was recoded properly.
         int noDataCount = 0;
@@ -252,17 +239,16 @@ public class BilTest extends WMSTestSupport {
         String layer = getLayerId(AUS_DEM);
 
         String bbox = "0,0,10,10"; // Does not intersection coverage area
-        String request =
-                "wms?service=wms&request=GetMap&version=1.1.1"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox="
-                        + bbox
-                        + "&width="
-                        + width
-                        + "&height="
-                        + height
-                        + "&format=application/bil16&srs=EPSG:4326";
+        String request = "wms?service=wms&request=GetMap&version=1.1.1"
+                + "&layers="
+                + layer
+                + "&styles=&bbox="
+                + bbox
+                + "&width="
+                + width
+                + "&height="
+                + height
+                + "&format=application/bil16&srs=EPSG:4326";
 
         MockHttpServletResponse servletResponse = getAsServletResponse(request);
         byte[] response = getBinary(servletResponse);

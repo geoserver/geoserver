@@ -68,8 +68,7 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutAsJSON() throws Exception {
         String json = "{'wms': {'id':'wms','enabled':'false','name':'WMS'}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", json, "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -82,16 +81,14 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml =
-                "<wms>"
-                        + "<id>wms</id>"
-                        + "<enabled>false</enabled>"
-                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wms>";
+        String xml = "<wms>"
+                + "<id>wms</id>"
+                + "<enabled>false</enabled>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wms>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
@@ -101,15 +98,10 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testRoundTripJSON() throws Exception {
-        JSONObject original =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/settings.json");
+        JSONObject original = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/settings.json");
         assertNotNull(original);
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings",
-                        original.toString(),
-                        "text/json");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wms/settings", original.toString(), "text/json");
         assertEquals(200, response.getStatus());
         JSON updated = getAsJSON(RestBaseController.ROOT_PATH + "/services/wms/settings.json");
         assertEquals(original, updated);
@@ -121,11 +113,8 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("wms", original.getDocumentElement().getLocalName());
         String originalString = documentToString(original);
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings",
-                        originalString,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wms/settings", originalString, "text/xml");
         assertEquals(200, response.getStatus());
         Document updated = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         assertEquals(originalString, documentToString(updated));
@@ -147,15 +136,13 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         WMSInfo i = geoServer.getService(WMSInfo.class);
         i.setEnabled(true);
         geoServer.save(i);
-        String xml =
-                "<wms>"
-                        + "<id>wms</id>"
-                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wms>";
+        String xml = "<wms>"
+                + "<id>wms</id>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wms>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
@@ -175,31 +162,26 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDisableDefaultStyleOption() throws Exception {
-        String xml =
-                "<wms>"
-                        + "<id>wms</id>"
-                        + "<enabled>true</enabled>"
-                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wms>";
+        String xml = "<wms>"
+                + "<id>wms</id>"
+                + "<enabled>true</enabled>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wms>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         // default should be true
         assertXpathEvaluatesTo("true", "/wms/defaultGroupStyleEnabled", dom);
-        String xml2 =
-                "<wms>"
-                        + "<id>wms</id>"
-                        + "<enabled>true</enabled>"
-                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "<defaultGroupStyleEnabled>false</defaultGroupStyleEnabled>"
-                        + "</wms>";
-        response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml2, "text/xml");
+        String xml2 = "<wms>"
+                + "<id>wms</id>"
+                + "<enabled>true</enabled>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "<defaultGroupStyleEnabled>false</defaultGroupStyleEnabled>"
+                + "</wms>";
+        response = putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", xml2, "text/xml");
         assertEquals(200, response.getStatus());
 
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
@@ -216,23 +198,20 @@ public class WMSSettingsControllerTest extends CatalogRESTTestSupport {
         getGeoServer().save(wmsInfo);
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");
         assertEquals("wms", dom.getDocumentElement().getLocalName());
-        assertXpathEvaluatesTo(
-                "i18n english root layer title", "/wms/internationalRootLayerTitle/en", dom);
+        assertXpathEvaluatesTo("i18n english root layer title", "/wms/internationalRootLayerTitle/en", dom);
     }
 
     @Test
     public void testPutRootLayerAbstract() throws Exception {
-        String xml =
-                "<wms>"
-                        + "<id>wms</id>"
-                        + "<enabled>false</enabled>"
-                        + "<name>WMS</name><title>GeoServer Web Map Service</title>"
-                        + "<internationalRootLayerAbstract><en>en abstract</en><it>it abstract</it></internationalRootLayerAbstract>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wms>";
+        String xml = "<wms>"
+                + "<id>wms</id>"
+                + "<enabled>false</enabled>"
+                + "<name>WMS</name><title>GeoServer Web Map Service</title>"
+                + "<internationalRootLayerAbstract><en>en abstract</en><it>it abstract</it></internationalRootLayerAbstract>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wms>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wms/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wms/settings.xml");

@@ -40,9 +40,7 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     @Test
     public void testXsdMapping() throws Exception {
         Resources.copy(
-                getClass().getResourceAsStream("schema.xsd"),
-                getDataDirectory().get(getDividedRoutes()),
-                "schema.xsd");
+                getClass().getResourceAsStream("schema.xsd"), getDataDirectory().get(getDividedRoutes()), "schema.xsd");
 
         reloadCatalogAndConfiguration();
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");
@@ -52,9 +50,7 @@ public class SchemaMappingTest extends GeoServerSystemTestSupport {
     @Test
     public void testXmlMapping() throws Exception {
         Resources.copy(
-                getClass().getResourceAsStream("schema.xml"),
-                getDataDirectory().get(getDividedRoutes()),
-                "schema.xml");
+                getClass().getResourceAsStream("schema.xml"), getDataDirectory().get(getDividedRoutes()), "schema.xml");
 
         reloadCatalogAndConfiguration();
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName("DividedRoutes");

@@ -121,12 +121,8 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             FeatureTypeStyle fts = assumeSingleElement(result.featureTypeStyles());
             Rule rule = assumeSingleElement(fts.rules());
             PointSymbolizer symb = assertSingleElement(rule.symbolizers(), PointSymbolizer.class);
-            ExternalGraphic eg =
-                    assertSingleElement(
-                            symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
-            assertThat(
-                    eg.getOnlineResource().getLinkage().toString(),
-                    is("http://example.com/foo.png"));
+            ExternalGraphic eg = assertSingleElement(symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
+            assertThat(eg.getOnlineResource().getLinkage().toString(), is("http://example.com/foo.png"));
         }
     }
 
@@ -134,8 +130,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
     public void testSubstitutedGraphicStyle() throws Exception {
         Style result;
         {
-            Symbolizer symb =
-                    this.externalGraphic("http://example.com/${PROV_ABBR}.png", "image/png");
+            Symbolizer symb = this.externalGraphic("http://example.com/${PROV_ABBR}.png", "image/png");
             Style input = styleFromRules(catchAllRule(symb));
             Map<String, String> properties = new HashMap<>();
             properties.put("0.0.0", "");
@@ -147,12 +142,8 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             FeatureTypeStyle fts = assumeSingleElement(result.featureTypeStyles());
             Rule rule = assumeSingleElement(fts.rules());
             PointSymbolizer symb = assertSingleElement(rule.symbolizers(), PointSymbolizer.class);
-            ExternalGraphic eg =
-                    assertSingleElement(
-                            symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
-            assertThat(
-                    eg.getOnlineResource().getLinkage().toString(),
-                    is("http://example.com/BC.png"));
+            ExternalGraphic eg = assertSingleElement(symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
+            assertThat(eg.getOnlineResource().getLinkage().toString(), is("http://example.com/BC.png"));
         }
     }
 
@@ -172,12 +163,8 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             FeatureTypeStyle fts = assumeSingleElement(result.featureTypeStyles());
             Rule rule = assumeSingleElement(fts.rules());
             PointSymbolizer symb = assertSingleElement(rule.symbolizers(), PointSymbolizer.class);
-            ExternalGraphic eg =
-                    assertSingleElement(
-                            symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
-            assertThat(
-                    eg.getOnlineResource().getLinkage().toString(),
-                    is("http://example.com/NF.png"));
+            ExternalGraphic eg = assertSingleElement(symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
+            assertThat(eg.getOnlineResource().getLinkage().toString(), is("http://example.com/NF.png"));
         }
     }
 
@@ -208,9 +195,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         Style result;
         {
             Filter f1 = filterFactory.less(filterFactory.property("foo"), filterFactory.literal(4));
-            Filter f2 =
-                    filterFactory.greaterOrEqual(
-                            filterFactory.property("foo"), filterFactory.literal(4));
+            Filter f2 = filterFactory.greaterOrEqual(filterFactory.property("foo"), filterFactory.literal(4));
             PointSymbolizer symb1 = externalGraphic("http://example.com/foo.png", "image/png");
             PointSymbolizer symb2 = externalGraphic("http://example.com/bar.png", "image/png");
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
@@ -224,12 +209,8 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             FeatureTypeStyle fts = assumeSingleElement(result.featureTypeStyles());
             Rule rule = assertSingleElement(fts.rules());
             PointSymbolizer symb = assertSingleElement(rule.symbolizers(), PointSymbolizer.class);
-            ExternalGraphic eg =
-                    assertSingleElement(
-                            symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
-            assertThat(
-                    eg.getOnlineResource().getLinkage().toString(),
-                    is("http://example.com/foo.png"));
+            ExternalGraphic eg = assertSingleElement(symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
+            assertThat(eg.getOnlineResource().getLinkage().toString(), is("http://example.com/foo.png"));
         }
     }
 
@@ -238,9 +219,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         Style result;
         {
             Filter f1 = filterFactory.less(filterFactory.property("foo"), filterFactory.literal(4));
-            Filter f2 =
-                    filterFactory.greaterOrEqual(
-                            filterFactory.property("foo"), filterFactory.literal(4));
+            Filter f2 = filterFactory.greaterOrEqual(filterFactory.property("foo"), filterFactory.literal(4));
             PointSymbolizer symb1 = externalGraphic("http://example.com/foo.png", "image/png");
             PointSymbolizer symb2 = externalGraphic("http://example.com/bar.png", "image/png");
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
@@ -254,12 +233,8 @@ public class IconPropertyInjectorTest extends IconTestSupport {
             FeatureTypeStyle fts = assumeSingleElement(result.featureTypeStyles());
             Rule rule = assertSingleElement(fts.rules());
             PointSymbolizer symb = assertSingleElement(rule.symbolizers(), PointSymbolizer.class);
-            ExternalGraphic eg =
-                    assertSingleElement(
-                            symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
-            assertThat(
-                    eg.getOnlineResource().getLinkage().toString(),
-                    is("http://example.com/bar.png"));
+            ExternalGraphic eg = assertSingleElement(symb.getGraphic().graphicalSymbols(), ExternalGraphic.class);
+            assertThat(eg.getOnlineResource().getLinkage().toString(), is("http://example.com/bar.png"));
         }
     }
 
@@ -268,9 +243,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         Style result;
         {
             Filter f1 = filterFactory.less(filterFactory.property("foo"), filterFactory.literal(4));
-            Filter f2 =
-                    filterFactory.greaterOrEqual(
-                            filterFactory.property("foo"), filterFactory.literal(4));
+            Filter f2 = filterFactory.greaterOrEqual(filterFactory.property("foo"), filterFactory.literal(4));
             PointSymbolizer symb1 = mark("arrow", Color.BLACK, Color.RED, 1f, 16);
             PointSymbolizer symb2 = mark("arrow", Color.BLACK, Color.BLUE, 1f, 16);
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));
@@ -294,9 +267,7 @@ public class IconPropertyInjectorTest extends IconTestSupport {
         Style result;
         {
             Filter f1 = filterFactory.less(filterFactory.property("foo"), filterFactory.literal(4));
-            Filter f2 =
-                    filterFactory.greaterOrEqual(
-                            filterFactory.property("foo"), filterFactory.literal(4));
+            Filter f2 = filterFactory.greaterOrEqual(filterFactory.property("foo"), filterFactory.literal(4));
             PointSymbolizer symb1 = mark("arrow", Color.BLACK, Color.RED, 1f, 16);
             PointSymbolizer symb2 = mark("arrow", Color.BLACK, Color.BLUE, 1f, 16);
             Style input = styleFromRules(rule(f1, symb1), rule(f2, symb2));

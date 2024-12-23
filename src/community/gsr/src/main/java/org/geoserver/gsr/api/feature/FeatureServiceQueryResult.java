@@ -11,8 +11,7 @@ public class FeatureServiceQueryResult {
     private final List<FeatureLayer> layers;
 
     public FeatureServiceQueryResult(LayersAndTables layersAndTables) {
-        this.layers =
-                layersAndTables.layers.stream().map(FeatureLayer::new).collect(Collectors.toList());
+        this.layers = layersAndTables.layers.stream().map(FeatureLayer::new).collect(Collectors.toList());
     }
 
     public List<FeatureLayer> getLayers() {

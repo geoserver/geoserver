@@ -24,9 +24,7 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         ListView loginForms = (ListView) tester.getLastRenderedPage().get("loginforms");
         String responseTxt = ComponentRenderer.renderComponent(loginForms).toString();
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals(
-                "http://localhost/context/j_spring_security_check",
-                tagTester.getAttribute("action"));
+        assertEquals("http://localhost/context/j_spring_security_check", tagTester.getAttribute("action"));
     }
 
     @Test
@@ -41,9 +39,7 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
         Component logoutforms = tester.getLastRenderedPage().get("logoutform");
         String responseTxt = ComponentRenderer.renderComponent(logoutforms).toString();
         TagTester tagTester = TagTester.createTagByName(responseTxt, "form");
-        assertEquals(
-                "http://localhost/context/j_spring_security_logout",
-                tagTester.getAttribute("action"));
+        assertEquals("http://localhost/context/j_spring_security_logout", tagTester.getAttribute("action"));
     }
 
     @Test
@@ -59,8 +55,7 @@ public class GeoServerBasePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testDefaultNodeInfoLoggedIn() throws Exception {
         login();
-        System.setProperty(
-                DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS, "id:test;background:red;color:black");
+        System.setProperty(DefaultGeoServerNodeInfo.GEOSERVER_NODE_OPTS, "id:test;background:red;color:black");
         DefaultGeoServerNodeInfo.initializeFromEnviroment();
 
         tester.startPage(GeoServerHomePage.class);

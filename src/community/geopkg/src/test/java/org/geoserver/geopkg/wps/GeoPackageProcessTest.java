@@ -93,14 +93,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     @Override
     protected String getLogConfiguration() {
         // needed for a test on logging capabilities
-        GeoServerResourceLoader loader =
-                new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
 
         Resource resource = loader.get("logs/GPKG_LOGGING.properties");
         if (resource.getType() == Resource.Type.UNDEFINED) {
             try {
-                loader.copyFromClassPath(
-                        "/GPKG_LOGGING.properties", "logs/GPKG_LOGGING.properties");
+                loader.copyFromClassPath("/GPKG_LOGGING.properties", "logs/GPKG_LOGGING.properties");
             } catch (IOException e) {
                 LOGGER.fine("Unable to configure with GPKG_LOGGING");
                 return "TEST_LOGGING";
@@ -239,8 +237,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
         // style for fifteen was not exported
         PortrayalExtension portrayal = gpkg.getExtension(PortrayalExtension.class);
-        SemanticAnnotationsExtension annotations =
-                gpkg.getExtension(SemanticAnnotationsExtension.class);
+        SemanticAnnotationsExtension annotations = gpkg.getExtension(SemanticAnnotationsExtension.class);
         assertEquals(4, portrayal.getStyles().size()); // default style plus one alternative each
         GeoPkgStyle fifteenStyle = portrayal.getStyle("Fifteen");
         assertNull(fifteenStyle);
@@ -263,10 +260,9 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertEquals(1, lakesStylesheets.size());
         GeoPkgStyleSheet lakesStylesheet = lakesStylesheets.get(0);
         assertEquals("application/vnd.ogc.sld+xml", lakesStylesheet.getFormat());
-        String expectedFill =
-                "                        <CssParameter name=\"fill\">\n"
-                        + "                            <ogc:Literal>#4040C0</ogc:Literal>\n"
-                        + "                        </CssParameter>\n";
+        String expectedFill = "                        <CssParameter name=\"fill\">\n"
+                + "                            <ogc:Literal>#4040C0</ogc:Literal>\n"
+                + "                        </CssParameter>\n";
         assertThat(lakesStylesheet.getStylesheet(), CoreMatchers.containsString(expectedFill));
 
         // the symbology
@@ -291,8 +287,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertNotNull(lakesAnnotation);
         assertEquals(PortrayalExtension.SA_TYPE_STYLE, lakesAnnotation.getType());
         assertEquals("Lakes", lakesAnnotation.getTitle());
-        List<GeoPkgAnnotationReference> references =
-                annotations.getReferencesForAnnotation(lakesAnnotation);
+        List<GeoPkgAnnotationReference> references = annotations.getReferencesForAnnotation(lakesAnnotation);
         assertEquals(2, references.size());
         GeoPkgAnnotationReference lakesReference1 = references.get(0);
         assertEquals("Lakes", lakesReference1.getTableName());
@@ -361,17 +356,10 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                     assertLinkedMetadata(metadataExt, metadata);
                     break;
                 case 3:
-                    assertFeatureMetadata(
-                            metadataExt,
-                            annotations,
-                            metadata,
-                            "Fifteen",
-                            "fifteen",
-                            "cdf%3AFifteen");
+                    assertFeatureMetadata(metadataExt, annotations, metadata, "Fifteen", "fifteen", "cdf%3AFifteen");
                     break;
                 case 4:
-                    assertFeatureMetadata(
-                            metadataExt, annotations, metadata, "Lakes", "lakes", "cite%3ALakes");
+                    assertFeatureMetadata(metadataExt, annotations, metadata, "Lakes", "lakes", "cite%3ALakes");
                     break;
                 case 5:
                 case 6:
@@ -384,9 +372,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     }
 
     private void assertStylesheetsMetadata(
-            GeoPkgMetadataExtension metadataExt,
-            SemanticAnnotationsExtension annotations,
-            GeoPkgMetadata metadata)
+            GeoPkgMetadataExtension metadataExt, SemanticAnnotationsExtension annotations, GeoPkgMetadata metadata)
             throws SQLException {
         JSONObject json = assertGeoJSONMetadata(metadata, GeoPkgMetadata.Scope.Undefined);
         // print(json);
@@ -416,8 +402,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         assertNull(reference.getMetadataParent());
 
         // check the semantic annotations
-        List<GeoPkgSemanticAnnotation> sas =
-                annotations.getAnnotationsByURI(OWSContextWriter.STYLESHEET_SA_URI);
+        List<GeoPkgSemanticAnnotation> sas = annotations.getAnnotationsByURI(OWSContextWriter.STYLESHEET_SA_URI);
         boolean found = false;
         String expectedTitle = "OGC OWS Context GeoJSON for " + title;
         for (GeoPkgSemanticAnnotation sa : sas) {
@@ -427,11 +412,10 @@ public class GeoPackageProcessTest extends WPSTestSupport {
                 List<GeoPkgAnnotationReference> ars = annotations.getReferencesForAnnotation(sa);
                 assertThat(
                         ars,
-                        hasItem(
-                                allOf(
-                                        hasProperty("tableName", equalTo("gpkg_metadata")),
-                                        hasProperty("keyColumnName", equalTo("id")),
-                                        hasProperty("keyValue", equalTo(metadata.getId())))));
+                        hasItem(allOf(
+                                hasProperty("tableName", equalTo("gpkg_metadata")),
+                                hasProperty("keyColumnName", equalTo("id")),
+                                hasProperty("keyValue", equalTo(metadata.getId())))));
             }
         }
         if (!found) {
@@ -439,8 +423,8 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         }
     }
 
-    private GeoPkgSemanticAnnotation assertProvenanceAnnotation(
-            SemanticAnnotationsExtension annotations) throws SQLException {
+    private GeoPkgSemanticAnnotation assertProvenanceAnnotation(SemanticAnnotationsExtension annotations)
+            throws SQLException {
         List<GeoPkgSemanticAnnotation> provenances =
                 annotations.getAnnotationsByURI(OWSContextWriter.PROVENANCE_SA_URI);
         assertEquals(1, provenances.size());
@@ -457,16 +441,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
         // first feature, fifteen (OWS context lists layers top to bottom, opposite of WMS)
         JSONObject f0 = features.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cdf:Fifteen",
-                f0.getString("id"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cdf:Fifteen", f0.getString("id"));
         JSONObject f0p = f0.getJSONObject("properties");
         assertEquals("Fifteen", f0p.getString("title"));
         JSONArray offerings0 = f0p.getJSONArray("offerings");
         JSONObject offering0 = offerings0.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features",
-                offering0.getString("code"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features", offering0.getString("code"));
         JSONObject operation0 = offering0.getJSONArray("operations").getJSONObject(0);
         assertEquals("GPKG", operation0.getString("code"));
         assertEquals("test.gpkg", operation0.getString("href"));
@@ -484,25 +464,20 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
         // second feature, lakes
         JSONObject f1 = features.getJSONObject(1);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cite:Lakes", f1.getString("id"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cite:Lakes", f1.getString("id"));
         JSONObject f1p = f1.getJSONObject("properties");
         assertEquals("Lakes", f1p.getString("title"));
         JSONArray offerings1 = f1p.getJSONArray("offerings");
         JSONObject offering1 = offerings1.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features",
-                offering1.getString("code"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features", offering1.getString("code"));
         JSONObject operation1 = offering1.getJSONArray("operations").getJSONObject(0);
         assertEquals("GPKG", operation1.getString("code"));
         assertEquals("test.gpkg", operation1.getString("href"));
-        assertEquals(
-                "SELECT * FROM lakes;", operation1.getJSONObject("request").getString("content"));
+        assertEquals("SELECT * FROM lakes;", operation1.getJSONObject("request").getString("content"));
         JSONObject style1 = offering1.getJSONArray("styles").getJSONObject(0);
         assertEquals("burg", style1.getString("name"));
         assertEquals("A small red flag", style1.getString("title"));
-        assertEquals(
-                "A sample of how to use an SVG based symbolizer", style1.getString("abstract"));
+        assertEquals("A sample of how to use an SVG based symbolizer", style1.getString("abstract"));
         assertEquals(
                 "SELECT stylesheet, format FROM gpkgext_stylesheets WHERE style_id = (SELECT id FROM gpkgext_styles where style = 'burg');",
                 style1.getJSONObject("content").getString("content"));
@@ -515,20 +490,16 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
         // first feature, lakes (OWS context lists layers top to bottom, opposite of WMS)
         JSONObject f0 = features.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cite:Lakes", f0.getString("id"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cite:Lakes", f0.getString("id"));
         JSONObject f0p = f0.getJSONObject("properties");
         assertEquals("Lakes", f0p.getString("title"));
         JSONArray offerings0 = f0p.getJSONArray("offerings");
         JSONObject offering0 = offerings0.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features",
-                offering0.getString("code"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features", offering0.getString("code"));
         JSONObject operation0 = offering0.getJSONArray("operations").getJSONObject(0);
         assertEquals("GPKG", operation0.getString("code"));
         assertEquals("test.gpkg", operation0.getString("href"));
-        assertEquals(
-                "SELECT * FROM lakes;", operation0.getJSONObject("request").getString("content"));
+        assertEquals("SELECT * FROM lakes;", operation0.getJSONObject("request").getString("content"));
         JSONObject style0 = offering0.getJSONArray("styles").getJSONObject(0);
         assertEquals("Lakes", style0.getString("name"));
         assertEquals("Default Styler", style0.getString("title"));
@@ -539,16 +510,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
         // second feature, fifteen
         JSONObject f1 = features.getJSONObject(1);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cdf:Fifteen",
-                f1.getString("id"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/cdf:Fifteen", f1.getString("id"));
         JSONObject f1p = f1.getJSONObject("properties");
         assertEquals("Fifteen", f1p.getString("title"));
         JSONArray offerings1 = f1p.getJSONArray("offerings");
         JSONObject offering1 = offerings1.getJSONObject(0);
-        assertEquals(
-                "http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features",
-                offering1.getString("code"));
+        assertEquals("http://www.opengis.net/spec/owc-json/1.0/req/gpkg/1.2/opt/features", offering1.getString("code"));
         JSONObject operation1 = offering1.getJSONArray("operations").getJSONObject(0);
         assertEquals("GPKG", operation1.getString("code"));
         assertEquals("test.gpkg", operation1.getString("href"));
@@ -566,16 +533,12 @@ public class GeoPackageProcessTest extends WPSTestSupport {
     private JSONObject assertGeoJSONMetadata(GeoPkgMetadata metadata, GeoPkgMetadata.Scope scope) {
         assertEquals(scope, metadata.getScope());
         assertEquals("application/geo+json", metadata.getMimeType());
-        assertEquals(
-                "https://portal.opengeospatial.org/files/?artifact_id=68826",
-                metadata.getStandardURI());
+        assertEquals("https://portal.opengeospatial.org/files/?artifact_id=68826", metadata.getStandardURI());
         return (JSONObject) JSONSerializer.toJSON(metadata.getMetadata());
     }
 
     private void assertRequestContext(
-            GeoPkgMetadataExtension metadataExt,
-            SemanticAnnotationsExtension annotations,
-            GeoPkgMetadata metadata)
+            GeoPkgMetadataExtension metadataExt, SemanticAnnotationsExtension annotations, GeoPkgMetadata metadata)
             throws Exception {
         JSONObject json = assertGeoJSONMetadata(metadata, GeoPkgMetadata.Scope.Undefined);
 
@@ -598,10 +561,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         JSONArray offerings = featureProperties.getJSONArray("offerings");
         // ... first offering
         JSONObject offering = offerings.getJSONObject(0);
-        assertEquals(
-                "code",
-                "http://www.opengis.net/spec/owc-geojson/1.0/req/wps",
-                offering.getString("code"));
+        assertEquals("code", "http://www.opengis.net/spec/owc-geojson/1.0/req/wps", offering.getString("code"));
         JSONArray operations = offering.getJSONArray("operations");
         // caps
         JSONObject caps = operations.getJSONObject(0);
@@ -631,9 +591,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         Document dom = dom(new ByteArrayInputStream(xml.getBytes()));
         // check the request has been properly encoded
         XpathEngine engine = XMLUnit.newXpathEngine();
-        String actualXML =
-                engine.evaluate(
-                        "/wps:Execute/wps:DataInputs/wps:Input/wps:Data/wps:ComplexData", dom);
+        String actualXML = engine.evaluate("/wps:Execute/wps:DataInputs/wps:Input/wps:Data/wps:ComplexData", dom);
         assertEquals(getXMLInnerRequest(), actualXML);
 
         // check the reference
@@ -651,11 +609,10 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         List<GeoPkgAnnotationReference> ars = annotations.getReferencesForAnnotation(provenance);
         assertThat(
                 ars,
-                hasItem(
-                        allOf(
-                                hasProperty("tableName", equalTo("gpkg_metadata")),
-                                hasProperty("keyColumnName", equalTo("id")),
-                                hasProperty("keyValue", equalTo(metadata.getId())))));
+                hasItem(allOf(
+                        hasProperty("tableName", equalTo("gpkg_metadata")),
+                        hasProperty("keyColumnName", equalTo("id")),
+                        hasProperty("keyValue", equalTo(metadata.getId())))));
     }
 
     private void assertFeatureMetadata(
@@ -679,10 +636,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         JSONArray offerings = featureProperties.getJSONArray("offerings");
         // ... first offering
         JSONObject offering = offerings.getJSONObject(0);
-        assertEquals(
-                "code",
-                "http://www.opengis.net/spec/owc-geojson/1.0/req/wfs",
-                offering.getString("code"));
+        assertEquals("code", "http://www.opengis.net/spec/owc-geojson/1.0/req/wfs", offering.getString("code"));
         JSONArray operations = offering.getJSONArray("operations");
         // caps
         JSONObject caps = operations.getJSONObject(0);
@@ -718,11 +672,10 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         List<GeoPkgAnnotationReference> ars = annotations.getReferencesForAnnotation(provenance);
         assertThat(
                 ars,
-                hasItem(
-                        allOf(
-                                hasProperty("tableName", equalTo("gpkg_metadata")),
-                                hasProperty("keyColumnName", equalTo("id")),
-                                hasProperty("keyValue", equalTo(metadata.getId())))));
+                hasItem(allOf(
+                        hasProperty("tableName", equalTo("gpkg_metadata")),
+                        hasProperty("keyColumnName", equalTo("id")),
+                        hasProperty("keyValue", equalTo(metadata.getId())))));
     }
 
     private void assertLinkedMetadata(GeoPkgMetadataExtension metadataExt, GeoPkgMetadata metadata)
@@ -743,41 +696,39 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Test
     public void testGeoPackageProcessValidationError() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
-                        + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
-                        + "  <wps:DataInputs>"
-                        + "    <wps:Input>"
-                        + "      <ows:Identifier>contents</ows:Identifier>"
-                        + "      <wps:Data>"
-                        + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
-                        + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
-                        + "  <features name=\"lakes\" identifier=\"lakes1\">"
-                        + "    <description>lakes description</description>"
-                        + "    <featuretype>cite:Lakes</featuretype>"
-                        + "    <indexed>HELLO WORLD</indexed>"
-                        + "   </features>"
-                        + "</geopackage>"
-                        + "]]></wps:ComplexData>"
-                        + "      </wps:Data>"
-                        + "    </wps:Input>"
-                        + "  </wps:DataInputs>"
-                        + "  <wps:ResponseForm>"
-                        + "    <wps:RawDataOutput>"
-                        + "      <ows:Identifier>geopackage</ows:Identifier>"
-                        + "    </wps:RawDataOutput>"
-                        + "  </wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
+                + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
+                + "  <wps:DataInputs>"
+                + "    <wps:Input>"
+                + "      <ows:Identifier>contents</ows:Identifier>"
+                + "      <wps:Data>"
+                + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
+                + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <features name=\"lakes\" identifier=\"lakes1\">"
+                + "    <description>lakes description</description>"
+                + "    <featuretype>cite:Lakes</featuretype>"
+                + "    <indexed>HELLO WORLD</indexed>"
+                + "   </features>"
+                + "</geopackage>"
+                + "]]></wps:ComplexData>"
+                + "      </wps:Data>"
+                + "    </wps:Input>"
+                + "  </wps:DataInputs>"
+                + "  <wps:ResponseForm>"
+                + "    <wps:RawDataOutput>"
+                + "      <ows:Identifier>geopackage</ows:Identifier>"
+                + "    </wps:RawDataOutput>"
+                + "  </wps:ResponseForm>"
+                + "</wps:Execute>";
         Document d = postAsDOM("wps", xml);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
-        String message =
-                XMLUnit.newXpathEngine()
-                        .evaluate(
-                                "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
-                                        + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
-                                d);
+        String message = XMLUnit.newXpathEngine()
+                .evaluate(
+                        "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
+                                + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
+                        d);
         assertThat(message, containsString("org.xml.sax.SAXParseException"));
         assertThat(message, containsString("HELLO WORLD"));
     }
@@ -790,50 +741,49 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         global.setXmlExternalEntitiesEnabled(false);
         gs.save(global);
 
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
-                        + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
-                        + "  <wps:DataInputs>"
-                        + "    <wps:Input>"
-                        + "      <ows:Identifier>contents</ows:Identifier>"
-                        + "      <wps:Data>"
-                        + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
-                        + "<!DOCTYPE indexed ["
-                        + "<!ELEMENT indexed ANY >"
-                        + "<!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\" >]>"
-                        + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
-                        + "  <features name=\"lakes\" identifier=\"lakes1\">"
-                        + "    <description>lakes description</description>"
-                        + "    <featuretype>cite:Lakes</featuretype>"
-                        + "    <indexed>&xxe;</indexed>"
-                        + "   </features>"
-                        + "</geopackage>"
-                        + "]]></wps:ComplexData>"
-                        + "      </wps:Data>"
-                        + "    </wps:Input>"
-                        + "  </wps:DataInputs>"
-                        + "  <wps:ResponseForm>"
-                        + "    <wps:RawDataOutput>"
-                        + "      <ows:Identifier>geopackage</ows:Identifier>"
-                        + "    </wps:RawDataOutput>"
-                        + "  </wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">"
+                + "  <ows:Identifier>gs:GeoPackage</ows:Identifier>"
+                + "  <wps:DataInputs>"
+                + "    <wps:Input>"
+                + "      <ows:Identifier>contents</ows:Identifier>"
+                + "      <wps:Data>"
+                + "        <wps:ComplexData mimeType=\"text/xml; subtype=geoserver/geopackage\"><![CDATA["
+                + "<!DOCTYPE indexed ["
+                + "<!ELEMENT indexed ANY >"
+                + "<!ENTITY xxe SYSTEM \"file:///this/file/does/not/exist\" >]>"
+                + "<geopackage name=\"test\" xmlns=\"http://www.opengis.net/gpkg\">"
+                + "  <features name=\"lakes\" identifier=\"lakes1\">"
+                + "    <description>lakes description</description>"
+                + "    <featuretype>cite:Lakes</featuretype>"
+                + "    <indexed>&xxe;</indexed>"
+                + "   </features>"
+                + "</geopackage>"
+                + "]]></wps:ComplexData>"
+                + "      </wps:Data>"
+                + "    </wps:Input>"
+                + "  </wps:DataInputs>"
+                + "  <wps:ResponseForm>"
+                + "    <wps:RawDataOutput>"
+                + "      <ows:Identifier>geopackage</ows:Identifier>"
+                + "    </wps:RawDataOutput>"
+                + "  </wps:ResponseForm>"
+                + "</wps:Execute>";
         Document d = postAsDOM("wps", xml);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
-        String message =
-                XMLUnit.newXpathEngine()
-                        .evaluate(
-                                "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
-                                        + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
-                                d);
+        String message = XMLUnit.newXpathEngine()
+                .evaluate(
+                        "//wps:ExecuteResponse/wps:Status/wps:ProcessFailed"
+                                + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText/text()",
+                        d);
         assertThat(message, containsString("Entity resolution disallowed"));
     }
 
     @Test
     public void testGeoPackageVectorOverviews() throws Exception {
-        String urlPath = string(post("wps", getXml(getXMLInnerRequestOverviews()))).trim();
+        String urlPath =
+                string(post("wps", getXml(getXMLInnerRequestOverviews()))).trim();
         String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletResponse response = getAsServletResponse(resourceUrl);
         File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
@@ -856,15 +806,13 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         JDBCDataStore store = GeoPackageProcess.getStoreFromPackage(gpkg, false);
         // get base level geometry, check srid
         ContentFeatureSource fs = store.getFeatureSource("RoadSegments");
-        SimpleFeature mainStreet =
-                DataUtilities.first(fs.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        SimpleFeature mainStreet = DataUtilities.first(fs.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
         MultiLineString baseGeometry = (MultiLineString) mainStreet.getDefaultGeometry();
         assertEquals(4326, baseGeometry.getSRID());
         // first overview, all features (no filter) and
         ContentFeatureSource fs_ov1 = store.getFeatureSource("roads_ov1");
         assertEquals(5, fs_ov1.getCount(Query.ALL));
-        SimpleFeature mainStreetOv1 =
-                DataUtilities.first(fs_ov1.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        SimpleFeature mainStreetOv1 = DataUtilities.first(fs_ov1.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
         MultiLineString ov1Geometry = (MultiLineString) mainStreetOv1.getDefaultGeometry();
         assertEquals(4326, ov1Geometry.getSRID());
         assertEquals(3, ov1Geometry.getNumPoints());
@@ -874,8 +822,7 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         // second overview, just a single feature, and more simplified
         ContentFeatureSource fs_ov2 = store.getFeatureSource("roads_ov2");
         assertEquals(1, fs_ov2.getCount(Query.ALL));
-        SimpleFeature mainStreetOv2 =
-                DataUtilities.first(fs_ov2.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
+        SimpleFeature mainStreetOv2 = DataUtilities.first(fs_ov2.getFeatures(ECQL.toFilter("NAME = 'Main Street'")));
         MultiLineString ov2Geometry = (MultiLineString) mainStreetOv2.getDefaultGeometry();
         assertEquals(4326, ov2Geometry.getSRID());
         assertEquals(2, ov2Geometry.getNumPoints());
@@ -906,7 +853,8 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Test
     public void testGeoPackageSortNameFID() throws Exception {
-        String urlPath = string(post("wps", getXml(getXMLInnerRequestSortNameFID()))).trim();
+        String urlPath =
+                string(post("wps", getXml(getXMLInnerRequestSortNameFID()))).trim();
         String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletResponse response = getAsServletResponse(resourceUrl);
         File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
@@ -932,7 +880,8 @@ public class GeoPackageProcessTest extends WPSTestSupport {
 
     @Test
     public void testGeoPackageSortGeoHash() throws Exception {
-        String urlPath = string(post("wps", getXml(getXMLInnerRequestSortGeoHash()))).trim();
+        String urlPath =
+                string(post("wps", getXml(getXMLInnerRequestSortGeoHash()))).trim();
         String resourceUrl = urlPath.substring("http://localhost:8080/geoserver/".length());
         MockHttpServletResponse response = getAsServletResponse(resourceUrl);
         File file = new File(getDataDirectory().findOrCreateDir("tmp"), "test.gpkg");
@@ -1026,27 +975,25 @@ public class GeoPackageProcessTest extends WPSTestSupport {
         // grab logger
         AtomicBoolean foundExecution = new AtomicBoolean(false);
         AtomicBoolean foundCancel = new AtomicBoolean(false);
-        AppenderSkeleton appender =
-                new AppenderSkeleton() {
-                    @Override
-                    public void close() {}
+        AppenderSkeleton appender = new AppenderSkeleton() {
+            @Override
+            public void close() {}
 
-                    @Override
-                    public boolean requiresLayout() {
-                        return false;
-                    }
+            @Override
+            public boolean requiresLayout() {
+                return false;
+            }
 
-                    @Override
-                    protected void append(LoggingEvent event) {
-                        String message = event.getRenderedMessage();
+            @Override
+            protected void append(LoggingEvent event) {
+                String message = event.getRenderedMessage();
 
-                        if (message != null) {
-                            if (message.contains("Creating tile entry")) foundExecution.set(true);
-                            else if (message.contains("request has been canceled"))
-                                foundCancel.set(true);
-                        }
-                    }
-                };
+                if (message != null) {
+                    if (message.contains("Creating tile entry")) foundExecution.set(true);
+                    else if (message.contains("request has been canceled")) foundCancel.set(true);
+                }
+            }
+        };
         // relevant logging happens on the get tiled map logger
         org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger("org.geoserver.tiles");
         logger.setLevel(Level.DEBUG);

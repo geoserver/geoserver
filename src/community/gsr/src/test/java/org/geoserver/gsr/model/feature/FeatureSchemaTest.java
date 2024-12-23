@@ -34,9 +34,7 @@ public class FeatureSchemaTest extends JsonSchemaTest {
         attributes.add(new Attribute("OWNER", "Joe Smith"));
         attributes.add(new Attribute("VALUE", 94820.37));
         attributes.add(new Attribute("APPROVED", true));
-        attributes.add(
-                new Attribute(
-                        "LASTUPDATE", 1227663551096L)); // Date encoded as milliseconds since epoch
+        attributes.add(new Attribute("LASTUPDATE", 1227663551096L)); // Date encoded as milliseconds since epoch
         Feature feature = new Feature(geometry, null, "1");
         String json = getJson(feature);
         // System.out.println(json);

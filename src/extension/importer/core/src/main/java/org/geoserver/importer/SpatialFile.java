@@ -92,16 +92,13 @@ public class SpatialFile extends FileData {
         prjFile = null;
         styleFile = null;
 
-        final List<String> styleExtensions =
-                Lists.transform(
-                        Styles.handlers(),
-                        new Function<>() {
-                            @Nullable
-                            @Override
-                            public String apply(@Nullable StyleHandler input) {
-                                return input.getFileExtension();
-                            }
-                        });
+        final List<String> styleExtensions = Lists.transform(Styles.handlers(), new Function<>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler input) {
+                return input.getFileExtension();
+            }
+        });
 
         // getBaseName only gets the LAST extension so beware for .shp.aux.xml stuff
         final String baseName = getBaseName(file.getName());

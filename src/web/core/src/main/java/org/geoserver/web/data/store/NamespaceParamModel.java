@@ -12,10 +12,7 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.util.MapModel;
 
-/**
- * Model to wrap and unwrap a {@link NamespaceInfo} to and from a String for the Datastore's
- * "namespace" parameter
- */
+/** Model to wrap and unwrap a {@link NamespaceInfo} to and from a String for the Datastore's "namespace" parameter */
 public class NamespaceParamModel implements IModel<NamespaceInfo> {
 
     MapModel<Serializable> delegate;
@@ -27,8 +24,7 @@ public class NamespaceParamModel implements IModel<NamespaceInfo> {
     @Override
     public NamespaceInfo getObject() {
         String nsUri = (String) delegate.getObject();
-        NamespaceInfo namespaceInfo =
-                GeoServerApplication.get().getCatalog().getNamespaceByURI(nsUri);
+        NamespaceInfo namespaceInfo = GeoServerApplication.get().getCatalog().getNamespaceByURI(nsUri);
         return namespaceInfo;
     }
 

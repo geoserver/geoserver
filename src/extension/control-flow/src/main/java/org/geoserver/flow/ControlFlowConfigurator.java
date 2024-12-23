@@ -24,9 +24,6 @@ public interface ControlFlowConfigurator {
      */
     long getTimeout();
 
-    /**
-     * Returns true if the set of flow controllers changed since last invocation of {@link
-     * #buildFlowControllers()}
-     */
+    /** Returns true if the set of flow controllers changed since last invocation of {@link #buildFlowControllers()} */
     boolean isStale();
 }

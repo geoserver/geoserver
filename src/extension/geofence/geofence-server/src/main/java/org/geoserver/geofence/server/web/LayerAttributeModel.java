@@ -15,8 +15,7 @@ public class LayerAttributeModel extends GeoServerDataProvider<LayerAttribute> {
 
     public static final Property<LayerAttribute> NAME = new BeanProperty<>("name", "name");
 
-    public static final Property<LayerAttribute> DATATYPE =
-            new BeanProperty<>("datatype", "datatype");
+    public static final Property<LayerAttribute> DATATYPE = new BeanProperty<>("datatype", "datatype");
 
     public static final Property<LayerAttribute> ACCESS = new BeanProperty<>("access", "access");
 

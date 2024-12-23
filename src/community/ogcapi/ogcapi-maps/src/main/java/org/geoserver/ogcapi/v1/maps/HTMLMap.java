@@ -9,8 +9,8 @@ import org.geoserver.wms.WebMap;
 import org.springframework.http.MediaType;
 
 /**
- * Support object to encode HTML maps (needed to respect Spring class oriented wiring. The object is
- * encoded by {@link HTMLMapMessageConverter}
+ * Support object to encode HTML maps (needed to respect Spring class oriented wiring. The object is encoded by
+ * {@link HTMLMapMessageConverter}
  */
 public class HTMLMap extends WebMap {
     /** @param context the map context, can be {@code null} is there's _really_ no context around */

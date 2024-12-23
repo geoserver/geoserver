@@ -8,8 +8,7 @@ import org.junit.After;
 
 public class DirectFeatureWrapperTest extends FeatureWrapperTest {
 
-    private DirectTemplateFeatureCollectionFactory fac =
-            new DirectTemplateFeatureCollectionFactory();
+    private DirectTemplateFeatureCollectionFactory fac = new DirectTemplateFeatureCollectionFactory();
 
     @Override
     public FeatureWrapper createWrapper() {

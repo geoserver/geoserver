@@ -26,8 +26,7 @@ public class DefaultParameterFilterSubform extends AbstractParameterFilterSubfor
     public DefaultParameterFilterSubform(String id, IModel<ParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue =
-                new Label("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue = new Label("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final Component legalValueList =

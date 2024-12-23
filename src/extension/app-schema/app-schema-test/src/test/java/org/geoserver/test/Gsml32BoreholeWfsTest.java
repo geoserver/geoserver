@@ -48,32 +48,18 @@ public class Gsml32BoreholeWfsTest extends AbstractAppSchemaTestSupport {
                 "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/@srsName",
                 doc);
         assertXpathEvaluatesTo(
-                "1",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/"
-                        + lineStringPath
-                        + "/@srsDimension",
-                doc);
+                "1", "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/@srsDimension", doc);
         assertXpathEvaluatesTo(
-                "m",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/@uomLabels",
-                doc);
+                "m", "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/@uomLabels", doc);
         assertXpathEvaluatesTo(
-                "57.9 66.4",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/gml:posList",
-                doc);
+                "57.9 66.4", "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/gml:posList", doc);
         // test empty Curve
         assertXpathEvaluatesTo(
                 "borehole.shape.GA.17322",
                 "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/sams:shape/gml:Curve/@gml:id",
                 doc);
-        assertXpathCount(
-                0,
-                "/gsmlbh:Borehole[@gml:id='borehole.GA.17322']/sams:shape/gml:Curve/@srsName",
-                doc);
-        assertXpathCount(
-                0,
-                "/gsmlbh:Borehole[@gml:id='borehole.GA.17322']/sams:shape/gml:Curve/@srsDimension",
-                doc);
+        assertXpathCount(0, "/gsmlbh:Borehole[@gml:id='borehole.GA.17322']/sams:shape/gml:Curve/@srsName", doc);
+        assertXpathCount(0, "/gsmlbh:Borehole[@gml:id='borehole.GA.17322']/sams:shape/gml:Curve/@srsDimension", doc);
 
         // Second borehole
         assertXpathCount(1, "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']", doc);
@@ -86,31 +72,17 @@ public class Gsml32BoreholeWfsTest extends AbstractAppSchemaTestSupport {
                 "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/" + lineStringPath + "/@srsName",
                 doc);
         assertXpathEvaluatesTo(
-                "1",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/"
-                        + lineStringPath
-                        + "/@srsDimension",
-                doc);
+                "1", "//gsmlbh:Borehole[@gml:id='borehole.GA.17322']/" + lineStringPath + "/@srsDimension", doc);
         assertXpathEvaluatesTo(
-                "m",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/" + lineStringPath + "/@uomLabels",
-                doc);
+                "m", "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/" + lineStringPath + "/@uomLabels", doc);
         assertXpathEvaluatesTo(
-                "85.3 89.6",
-                "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/" + lineStringPath + "/gml:posList",
-                doc);
+                "85.3 89.6", "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/" + lineStringPath + "/gml:posList", doc);
         assertXpathEvaluatesTo(
                 "borehole.shape.GA.17338",
                 "//gsmlbh:Borehole[@gml:id='borehole.GA.17338']/sams:shape/gml:Curve/@gml:id",
                 doc);
-        assertXpathCount(
-                0,
-                "/gsmlbh:Borehole[@gml:id='borehole.GA.17338']/sams:shape/gml:Curve/@srsName",
-                doc);
-        assertXpathCount(
-                0,
-                "/gsmlbh:Borehole[@gml:id='borehole.GA.17338']/sams:shape/gml:Curve/@srsDimension",
-                doc);
+        assertXpathCount(0, "/gsmlbh:Borehole[@gml:id='borehole.GA.17338']/sams:shape/gml:Curve/@srsName", doc);
+        assertXpathCount(0, "/gsmlbh:Borehole[@gml:id='borehole.GA.17338']/sams:shape/gml:Curve/@srsDimension", doc);
     }
 
     // TODO: Reenable after GEOT-4519 is fixed.

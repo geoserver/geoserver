@@ -18,24 +18,20 @@ public class GetStylesTest extends TilesTestSupport {
     public void testMapLinks() throws Exception {
         // this one only has rendered formats associated
         String lakesId = getLayerId(MockData.LAKES);
-        DocumentContext json =
-                getAsJSONPath("ogc/tiles/v1/collections/" + lakesId + "/styles", 200);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + lakesId + "/styles", 200);
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:Lakes/styles/map/tiles?f=application%2Fjson",
                 readSingle(
                         json,
-                        "styles[0].links[?(@.rel=='"
-                                + REL_TILESETS_MAP
-                                + "' && @.type=='application/json')].href"));
+                        "styles[0].links[?(@.rel=='" + REL_TILESETS_MAP + "' && @.type=='application/json')].href"));
     }
 
     @Test
     public void testOnlyDataLinks() throws Exception {
         // this one only has vector tiles associated, should not have a styles
         String forestsId = getLayerId(MockData.FORESTS);
-        DocumentContext json =
-                getAsJSONPath("ogc/tiles/v1/collections/" + forestsId + "/styles", 200);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + forestsId + "/styles", 200);
 
         // no tile links should be available from here
         assertEquals(

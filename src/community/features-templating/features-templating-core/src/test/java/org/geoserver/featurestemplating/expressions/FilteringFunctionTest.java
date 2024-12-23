@@ -16,16 +16,13 @@ public class FilteringFunctionTest extends ListFunctionsTestSupport {
 
     @Test
     public void testFilteringFunction() {
-        Expression filtering =
-                ff.function("filter", ff.literal("stringValue = \"A\" OR doubleValue > 5.5 "));
+        Expression filtering = ff.function("filter", ff.literal("stringValue = \"A\" OR doubleValue > 5.5 "));
         @SuppressWarnings("unchecked")
         List<Object> result = (List<Object>) filtering.evaluate(featureList);
         assertEquals(5, result.size());
         for (Object o : result) {
             SimpleFeature f = (SimpleFeature) o;
-            assertTrue(
-                    f.getAttribute("stringValue").equals("A")
-                            || (Double) f.getAttribute("doubleValue") > 5.5);
+            assertTrue(f.getAttribute("stringValue").equals("A") || (Double) f.getAttribute("doubleValue") > 5.5);
         }
     }
 }

@@ -22,10 +22,9 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
- * Allows one to manage the rules used by the service layer security subsystem TODO: consider
- * splitting the persistence of properties into two strategies, and in memory one, and a file system
- * one (this class is so marginal that I did not do so right away, in memory access is mostly handy
- * for testing)
+ * Allows one to manage the rules used by the service layer security subsystem TODO: consider splitting the persistence
+ * of properties into two strategies, and in memory one, and a file system one (this class is so marginal that I did not
+ * do so right away, in memory access is mostly handy for testing)
  */
 public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRule> {
     private static final Logger LOGGER = Logging.getLogger(ServiceAccessRuleDAO.class);
@@ -67,12 +66,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
             ServiceAccessRule rule = parseServiceAccessRule(ruleKey, ruleValue);
             if (rule != null) {
                 if (result.contains(rule))
-                    LOGGER.warning(
-                            "Rule "
-                                    + ruleKey
-                                    + "."
-                                    + ruleValue
-                                    + " overwrites another rule on the same path");
+                    LOGGER.warning("Rule " + ruleKey + "." + ruleValue + " overwrites another rule on the same path");
                 result.add(rule);
             }
         }
@@ -85,20 +79,14 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
         rules = result;
     }
 
-    /**
-     * Parses a single layer.properties line into a {@link DataAccessRule}, returns false if the
-     * rule is not valid
-     */
+    /** Parses a single layer.properties line into a {@link DataAccessRule}, returns false if the rule is not valid */
     ServiceAccessRule parseServiceAccessRule(String ruleKey, String ruleValue) {
         final String rule = ruleKey + "=" + ruleValue;
 
         // parse
         String[] elements = parseElements(ruleKey);
         if (elements.length != 2) {
-            LOGGER.warning(
-                    "Invalid rule "
-                            + rule
-                            + ", the expected format is service.method=role1,role2,...");
+            LOGGER.warning("Invalid rule " + rule + ", the expected format is service.method=role1,role2,...");
             return null;
         }
         String service = elements[0];
@@ -108,12 +96,11 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
         // check ANY usage sanity
         if (ANY.equals(service)) {
             if (!ANY.equals(method)) {
-                LOGGER.warning(
-                        "Invalid rule "
-                                + rule
-                                + ", when namespace "
-                                + "is * then also layer must be *. Skipping rule "
-                                + rule);
+                LOGGER.warning("Invalid rule "
+                        + rule
+                        + ", when namespace "
+                        + "is * then also layer must be *. Skipping rule "
+                        + rule);
                 return null;
             }
         }
@@ -141,8 +128,7 @@ public class ServiceAccessRuleDAO extends AbstractAccessRuleDAO<ServiceAccessRul
     /** Returns a sorted set of rules associated to the role */
     public SortedSet<ServiceAccessRule> getRulesAssociatedWithRole(String role) {
         SortedSet<ServiceAccessRule> result = new TreeSet<>();
-        for (ServiceAccessRule rule : getRules())
-            if (rule.getRoles().contains(role)) result.add(rule);
+        for (ServiceAccessRule rule : getRules()) if (rule.getRoles().contains(role)) result.add(rule);
         return result;
     }
 }

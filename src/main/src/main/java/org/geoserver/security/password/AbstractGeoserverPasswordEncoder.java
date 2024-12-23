@@ -17,8 +17,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Abstract base implementation, delegating the encoding to third party encoders implementing {@link
- * PasswordEncoder}
+ * Abstract base implementation, delegating the encoding to third party encoders implementing {@link PasswordEncoder}
  *
  * @author christian
  */
@@ -123,8 +122,7 @@ public abstract class AbstractGeoserverPasswordEncoder implements GeoServerPassw
     }
 
     @Override
-    public boolean isPasswordValid(String encPass, String rawPass, Object salt)
-            throws DataAccessException {
+    public boolean isPasswordValid(String encPass, String rawPass, Object salt) throws DataAccessException {
         if (encPass == null) return false;
         return getStringEncoder().matches(rawPass, stripPrefix(encPass));
     }

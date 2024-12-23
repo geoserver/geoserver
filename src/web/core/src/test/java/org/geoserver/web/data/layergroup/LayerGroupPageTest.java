@@ -33,8 +33,7 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
 
         @SuppressWarnings("unchecked")
         DataView<LayerGroupInfo> dv =
-                (DataView<LayerGroupInfo>)
-                        tester.getComponentFromLastRenderedPage("table:listContainer:items");
+                (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(getCatalog().getLayerGroups().size(), dv.size());
         LayerGroupInfo lg = dv.getDataProvider().iterator(0, 1).next();
 
@@ -58,8 +57,7 @@ public class LayerGroupPageTest extends LayerGroupBaseTest {
 
         @SuppressWarnings("unchecked")
         DataView<LayerGroupInfo> dv =
-                (DataView<LayerGroupInfo>)
-                        tester.getComponentFromLastRenderedPage("table:listContainer:items");
+                (DataView<LayerGroupInfo>) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         LayerGroupProvider provider = (LayerGroupProvider) dv.getDataProvider();
 

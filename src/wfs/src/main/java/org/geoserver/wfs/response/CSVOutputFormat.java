@@ -48,8 +48,8 @@ import org.geotools.feature.type.DateUtil;
 import org.geotools.xsd.EMFUtils;
 
 /**
- * WFS output format for a GetFeature operation in which the outputFormat is "csv". The refence
- * specification for this format can be found in this RFC: http://www.rfc-editor.org/rfc/rfc4180.txt
+ * WFS output format for a GetFeature operation in which the outputFormat is "csv". The refence specification for this
+ * format can be found in this RFC: http://www.rfc-editor.org/rfc/rfc4180.txt
  *
  * @author Justin Deoliveira, OpenGeo, jdeolive@opengeo.org
  * @author Sebastian Benthall, OpenGeo, seb@opengeo.org
@@ -87,8 +87,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
     /** @see WFSGetFeatureOutputFormat#write(Object, OutputStream, Operation) */
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         // write out content here
 
@@ -98,9 +97,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
         CSV_ESCAPES = Pattern.compile("[\"\n\r\t" + csvSeparator + "]");
 
         // create a writer
-        BufferedWriter w =
-                new BufferedWriter(
-                        new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset()));
+        BufferedWriter w = new BufferedWriter(
+                new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset()));
 
         // get the feature collection
         FeatureCollection<?, ?> fc = featureCollection.getFeature().get(0);
@@ -232,8 +230,7 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
 
         String separator = null;
         if (EMFUtils.has((EObject) o, "formatOptions")) {
-            HashMap<String, String> hashMap =
-                    (HashMap<String, String>) EMFUtils.get((EObject) o, "formatOptions");
+            HashMap<String, String> hashMap = (HashMap<String, String>) EMFUtils.get((EObject) o, "formatOptions");
             separator = hashMap.get("CSVSEPARATOR");
         }
 
@@ -273,11 +270,10 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
                 } else if (java.sql.Time.class.isAssignableFrom(binding)) {
                     formatters[i] = sqlTimeFormatter;
                 } else if (java.util.Date.class.isAssignableFrom(binding)) {
-                    formatters[i] =
-                            Optional.ofNullable(gs.getService(WFSInfo.class))
-                                    .map(WFSInfo::getCsvDateFormat)
-                                    .map(format -> (AttrFormatter) new CustomDateFormatter(format))
-                                    .orElse(juDateFormatter);
+                    formatters[i] = Optional.ofNullable(gs.getService(WFSInfo.class))
+                            .map(WFSInfo::getCsvDateFormat)
+                            .map(format -> (AttrFormatter) new CustomDateFormatter(format))
+                            .orElse(juDateFormatter);
                 } else {
                     formatters[i] = defaultFormatter;
                 }
@@ -368,10 +364,8 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
             value = coordFormatter.format(att);
         } else if (att instanceof Date) {
             // serialize dates in ISO format
-            if (att instanceof java.sql.Date)
-                value = DateUtil.serializeSqlDate((java.sql.Date) att);
-            else if (att instanceof java.sql.Time)
-                value = DateUtil.serializeSqlTime((java.sql.Time) att);
+            if (att instanceof java.sql.Date) value = DateUtil.serializeSqlDate((java.sql.Date) att);
+            else if (att instanceof java.sql.Time) value = DateUtil.serializeSqlTime((java.sql.Time) att);
             else value = DateUtil.serializeDateTime((Date) att);
         } else {
             // everything else we just "toString"
@@ -414,24 +408,21 @@ public class CSVOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     /**
-     * Checks if the used namespace prefix is available on GeoServer namespaces, and replace the
-     * namespace URI with the prefix name found.
+     * Checks if the used namespace prefix is available on GeoServer namespaces, and replace the namespace URI with the
+     * prefix name found.
      *
      * @param attributeName the current attribute name
      * @return the fixed prefixed name, of the original attribute name if no namespace is found
      */
     String resolveNamespacePrefixName(String attributeName) {
-        if (StringUtils.isBlank(attributeName)
-                || !attributeName.contains(":")
-                || attributeName.endsWith(":")) {
+        if (StringUtils.isBlank(attributeName) || !attributeName.contains(":") || attributeName.endsWith(":")) {
             return attributeName;
         }
         int lastIndexOfSeparator = attributeName.lastIndexOf(":");
         String namespaceUri = attributeName.substring(0, lastIndexOfSeparator);
         NamespaceInfo namespace = this.gs.getCatalog().getNamespaceByURI(namespaceUri);
         if (namespace != null) {
-            String localName =
-                    attributeName.substring(lastIndexOfSeparator + 1, attributeName.length());
+            String localName = attributeName.substring(lastIndexOfSeparator + 1, attributeName.length());
             return namespace.getPrefix() + ":" + localName;
         }
         return attributeName;

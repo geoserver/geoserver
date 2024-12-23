@@ -67,8 +67,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
         globalInfoModel = getGlobalInfoModel();
         loggingInfoModel = getLoggingInfoModel();
 
-        CompoundPropertyModel<GeoServerInfo> globalModel =
-                new CompoundPropertyModel<>(globalInfoModel);
+        CompoundPropertyModel<GeoServerInfo> globalModel = new CompoundPropertyModel<>(globalInfoModel);
         PropertyModel<SettingsInfo> settingsModel = new PropertyModel<>(globalModel, "settings");
         PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(globalInfoModel, "metadata");
         Form<GeoServerInfo> form = new Form<>("form", globalModel);
@@ -76,52 +75,32 @@ public class GlobalSettingsPage extends ServerAdminPage {
         add(form);
 
         form.add(new CheckBox("verbose", new PropertyModel<>(settingsModel, "verbose")));
-        form.add(
-                new CheckBox(
-                        "verboseExceptions",
-                        new PropertyModel<>(settingsModel, "verboseExceptions")));
+        form.add(new CheckBox("verboseExceptions", new PropertyModel<>(settingsModel, "verboseExceptions")));
         form.add(new CheckBox("globalServices"));
-        form.add(
-                new TextField<>("numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
-                        .add(RangeValidator.minimum(0)));
-        form.add(
-                new Select2DropDownChoice<>(
-                        "charset",
-                        new PropertyModel<>(settingsModel, "charset"),
-                        AVAILABLE_CHARSETS));
-        form.add(
-                new Select2DropDownChoice<>(
-                        "resourceErrorHandling",
-                        Arrays.asList(ResourceErrorHandling.values()),
-                        new ResourceErrorHandlingRenderer()));
-        form.add(
-                new TextField<>(
-                        "proxyBaseUrl", new PropertyModel<>(settingsModel, "proxyBaseUrl")));
+        form.add(new TextField<>("numDecimals", new PropertyModel<>(settingsModel, "numDecimals"))
+                .add(RangeValidator.minimum(0)));
+        form.add(new Select2DropDownChoice<>(
+                "charset", new PropertyModel<>(settingsModel, "charset"), AVAILABLE_CHARSETS));
+        form.add(new Select2DropDownChoice<>(
+                "resourceErrorHandling",
+                Arrays.asList(ResourceErrorHandling.values()),
+                new ResourceErrorHandlingRenderer()));
+        form.add(new TextField<>("proxyBaseUrl", new PropertyModel<>(settingsModel, "proxyBaseUrl")));
         form.add(new CheckBox("useHeadersProxyURL"));
 
         logLevelsAppend(form, loggingInfoModel);
-        form.add(
-                new CheckBox(
-                        "stdOutLogging", new PropertyModel<>(loggingInfoModel, "stdOutLogging")));
-        form.add(
-                new TextField<>(
-                        "loggingLocation", new PropertyModel<>(loggingInfoModel, "location")));
+        form.add(new CheckBox("stdOutLogging", new PropertyModel<>(loggingInfoModel, "stdOutLogging")));
+        form.add(new TextField<>("loggingLocation", new PropertyModel<>(loggingInfoModel, "location")));
 
-        TextField<String> xmlPostRequestLogBufferSize =
-                new TextField<>(
-                        "xmlPostRequestLogBufferSize",
-                        new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
+        TextField<String> xmlPostRequestLogBufferSize = new TextField<>(
+                "xmlPostRequestLogBufferSize", new PropertyModel<>(globalInfoModel, "xmlPostRequestLogBufferSize"));
         xmlPostRequestLogBufferSize.add(RangeValidator.minimum(0));
         form.add(xmlPostRequestLogBufferSize);
-        CheckBox logBodiesCheckBox =
-                new CheckBox(
-                        "requestLoggingBodies",
-                        new MetadataMapModel<>(metadataModel, LOG_BODIES_ENABLED, Boolean.class));
+        CheckBox logBodiesCheckBox = new CheckBox(
+                "requestLoggingBodies", new MetadataMapModel<>(metadataModel, LOG_BODIES_ENABLED, Boolean.class));
         form.add(logBodiesCheckBox);
-        CheckBox logHeadersCheckBox =
-                new CheckBox(
-                        "requestLoggingHeaders",
-                        new MetadataMapModel<>(metadataModel, LOG_HEADERS_ENABLED, Boolean.class));
+        CheckBox logHeadersCheckBox = new CheckBox(
+                "requestLoggingHeaders", new MetadataMapModel<>(metadataModel, LOG_HEADERS_ENABLED, Boolean.class));
         WebMarkupContainer wmc = new WebMarkupContainer("requestLoggingSub");
         wmc.setOutputMarkupId(true);
         wmc.add(logBodiesCheckBox);
@@ -137,17 +116,16 @@ public class GlobalSettingsPage extends ServerAdminPage {
         wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
         form.add(wmc);
 
-        AjaxCheckBox requestCheckBox =
-                new AjaxCheckBox("requestLogging", requestCheckModel) {
+        AjaxCheckBox requestCheckBox = new AjaxCheckBox("requestLogging", requestCheckModel) {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
-                        logBodiesCheckBox.getModel().setObject(false);
-                        logHeadersCheckBox.getModel().setObject(false);
-                        target.add(wmc);
-                    }
-                };
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                wmc.setEnabled(Boolean.TRUE.equals(requestCheckModel.getObject()));
+                logBodiesCheckBox.getModel().setObject(false);
+                logHeadersCheckBox.getModel().setObject(false);
+                target.add(wmc);
+            }
+        };
 
         form.add(requestCheckBox);
 
@@ -160,76 +138,57 @@ public class GlobalSettingsPage extends ServerAdminPage {
         IModel<String> lockProviderModel = new PropertyModel<>(globalInfoModel, "lockProviderName");
         ApplicationContext applicationContext = GeoServerApplication.get().getApplicationContext();
         List<String> providers =
-                new ArrayList<>(
-                        Arrays.asList(applicationContext.getBeanNamesForType(LockProvider.class)));
+                new ArrayList<>(Arrays.asList(applicationContext.getBeanNamesForType(LockProvider.class)));
         providers.remove("lockProvider"); // remove the global lock provider
         Collections.sort(providers);
 
-        DropDownChoice<String> lockProviderChoice =
-                new Select2DropDownChoice<>(
-                        "lockProvider",
-                        lockProviderModel,
-                        providers,
-                        new LocalizedChoiceRenderer(this));
+        DropDownChoice<String> lockProviderChoice = new Select2DropDownChoice<>(
+                "lockProvider", lockProviderModel, providers, new LocalizedChoiceRenderer(this));
 
         form.add(lockProviderChoice);
 
-        IModel<GeoServerInfo.WebUIMode> webUIModeModel =
-                new PropertyModel<>(globalInfoModel, "webUIMode");
+        IModel<GeoServerInfo.WebUIMode> webUIModeModel = new PropertyModel<>(globalInfoModel, "webUIMode");
         if (webUIModeModel.getObject() == null) {
             webUIModeModel.setObject(GeoServerInfo.WebUIMode.DEFAULT);
         }
-        DropDownChoice<GeoServerInfo.WebUIMode> webUIModeChoice =
-                new Select2DropDownChoice<>(
-                        "webUIMode",
-                        webUIModeModel,
-                        Arrays.asList(GeoServerInfo.WebUIMode.values()));
+        DropDownChoice<GeoServerInfo.WebUIMode> webUIModeChoice = new Select2DropDownChoice<>(
+                "webUIMode", webUIModeModel, Arrays.asList(GeoServerInfo.WebUIMode.values()));
 
         form.add(webUIModeChoice);
 
-        form.add(
-                new CheckBox(
-                        "allowStoredQueriesPerWorkspace",
-                        new PropertyModel<>(globalInfoModel, "allowStoredQueriesPerWorkspace")));
+        form.add(new CheckBox(
+                "allowStoredQueriesPerWorkspace",
+                new PropertyModel<>(globalInfoModel, "allowStoredQueriesPerWorkspace")));
 
         // Extension plugin for Global Settings
         // Loading of the settings from the Global Info
         ListView extensions =
-                SettingsPluginPanelInfo.createExtensions(
-                        "extensions", settingsModel, getGeoServerApplication());
+                SettingsPluginPanelInfo.createExtensions("extensions", settingsModel, getGeoServerApplication());
         form.add(extensions);
 
-        form.add(
-                new CheckBox(
-                        "showCreatedTimeCols",
-                        new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
+        form.add(new CheckBox(
+                "showCreatedTimeCols", new PropertyModel<>(settingsModel, "showCreatedTimeColumnsInAdminList")));
 
-        form.add(
-                new CheckBox(
-                        "showModifiedTimeCols",
-                        new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
+        form.add(new CheckBox(
+                "showModifiedTimeCols", new PropertyModel<>(settingsModel, "showModifiedTimeColumnsInAdminList")));
 
-        form.add(
-                new LocalesDropdown(
-                        "defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
-        Button submit =
-                new Button("submit") {
-                    @Override
-                    public void onSubmit() {
-                        onSave(true);
-                    }
-                };
+        form.add(new LocalesDropdown("defaultLocale", new PropertyModel<>(settingsModel, "defaultLocale")));
+        Button submit = new Button("submit") {
+            @Override
+            public void onSubmit() {
+                onSave(true);
+            }
+        };
         form.add(submit);
 
         form.add(applyLink(form));
 
-        Button cancel =
-                new Button("cancel") {
-                    @Override
-                    public void onSubmit() {
-                        doReturn();
-                    }
-                };
+        Button cancel = new Button("cancel") {
+            @Override
+            public void onSubmit() {
+                doReturn();
+            }
+        };
         form.add(cancel);
     }
 
@@ -265,25 +224,20 @@ public class GlobalSettingsPage extends ServerAdminPage {
 
     private void logLevelsAppend(Form<GeoServerInfo> form, IModel<LoggingInfo> loggingInfoModel) {
         // search for *LOGGING xml and properties files in the data directory
-        GeoServerResourceLoader loader =
-                GeoServerApplication.get().getBeanOfType(GeoServerResourceLoader.class);
+        GeoServerResourceLoader loader = GeoServerApplication.get().getBeanOfType(GeoServerResourceLoader.class);
         List<String> logProfiles = null;
         try {
             Resource logsDirectory = loader.get("logs");
             if (logsDirectory.getType() == Type.DIRECTORY) {
                 logProfiles = new ArrayList<>();
-                List<Resource> xmlFiles =
-                        Resources.list(
-                                logsDirectory,
-                                obj -> obj.name().toLowerCase().endsWith("_logging.xml"));
+                List<Resource> xmlFiles = Resources.list(
+                        logsDirectory, obj -> obj.name().toLowerCase().endsWith("_logging.xml"));
                 for (Resource res : xmlFiles) {
                     logProfiles.add(Paths.sidecar(res.name(), null));
                 }
 
-                List<Resource> propertiesFiles =
-                        Resources.list(
-                                logsDirectory,
-                                obj -> obj.name().toLowerCase().endsWith("_logging.properties"));
+                List<Resource> propertiesFiles = Resources.list(
+                        logsDirectory, obj -> obj.name().toLowerCase().endsWith("_logging.properties"));
                 for (Resource res : propertiesFiles) {
                     logProfiles.add(res.name());
                 }
@@ -291,10 +245,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 logProfiles.sort(String.CASE_INSENSITIVE_ORDER);
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not load the list of log configurations from the data directory",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not load the list of log configurations from the data directory", e);
         }
         // if none is found use the default set
         if (logProfiles == null || logProfiles.isEmpty()) {
@@ -314,11 +265,7 @@ public class GlobalSettingsPage extends ServerAdminPage {
                 }
             }
         }
-        form.add(
-                new ListChoice<>(
-                        "log4jConfigFile",
-                        new PropertyModel<>(loggingInfoModel, "level"),
-                        logProfiles));
+        form.add(new ListChoice<>("log4jConfigFile", new PropertyModel<>(loggingInfoModel, "level"), logProfiles));
     }
 
     class ResourceErrorHandlingRenderer extends ChoiceRenderer<ResourceErrorHandling> {

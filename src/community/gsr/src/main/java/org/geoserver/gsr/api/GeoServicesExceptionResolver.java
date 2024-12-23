@@ -25,8 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
 
 /**
- * Resolves unhandled exceptions by converting them to {@link ServiceErrorWrapper}, then encoding
- * that to json via {@link GeoServicesJacksonJsonConverter}
+ * Resolves unhandled exceptions by converting them to {@link ServiceErrorWrapper}, then encoding that to json via
+ * {@link GeoServicesJacksonJsonConverter}
  *
  * <p>TODO: If this ever supports more than f=json, look up the right converter programmatically.
  */
@@ -36,15 +36,16 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(GeoServicesExceptionResolver.class);
 
-    @Autowired GeoServicesJacksonJsonConverter converter;
+    @Autowired
+    GeoServicesJacksonJsonConverter converter;
 
     public GeoServicesExceptionResolver() {
         setOrder(0);
     }
 
     /**
-     * Checks if the ServletPath of the {@link HttpServletRequest} is "/gsr", in which case it
-     * applies this exception handler
+     * Checks if the ServletPath of the {@link HttpServletRequest} is "/gsr", in which case it applies this exception
+     * handler
      */
     @Override
     protected boolean shouldApplyTo(HttpServletRequest request, Object handler) {
@@ -53,20 +54,13 @@ public class GeoServicesExceptionResolver extends AbstractHandlerExceptionResolv
 
     @Override
     protected ModelAndView doResolveException(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Object handler,
-            Exception ex) {
+            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         ServiceErrorWrapper exception;
         if (ex instanceof ServiceException) {
             exception = new ServiceErrorWrapper(((ServiceException) ex).error);
         } else {
-            exception =
-                    new ServiceErrorWrapper(
-                            new ServiceError(
-                                    500,
-                                    "Internal Server Error",
-                                    Collections.singletonList(ex.getMessage())));
+            exception = new ServiceErrorWrapper(
+                    new ServiceError(500, "Internal Server Error", Collections.singletonList(ex.getMessage())));
         }
         // Log the full stack trace, since the response just has the error message.
         LOGGER.log(Level.INFO, "Error handling request", ex);

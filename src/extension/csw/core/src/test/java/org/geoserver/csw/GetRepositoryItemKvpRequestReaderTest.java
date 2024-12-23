@@ -36,12 +36,7 @@ public class GetRepositoryItemKvpRequestReaderTest {
     public void setUp() throws Exception {
         geoServerImpl = new GeoServerImpl();
         List<String> operations = new ArrayList<>();
-        csw =
-                new Service(
-                        "csw",
-                        new DefaultWebCatalogService(geoServerImpl),
-                        new Version("2.0.2"),
-                        operations);
+        csw = new Service("csw", new DefaultWebCatalogService(geoServerImpl), new Version("2.0.2"), operations);
 
         params = new HashMap<>();
     }
@@ -56,8 +51,7 @@ public class GetRepositoryItemKvpRequestReaderTest {
         return getRequest(rawKvp, new HashMap<>(rawKvp));
     }
 
-    private GetRepositoryItemType getRequest(Map<String, Object> rawKvp, Map<String, Object> kvp)
-            throws Exception {
+    private GetRepositoryItemType getRequest(Map<String, Object> rawKvp, Map<String, Object> kvp) throws Exception {
 
         GetRepositoryItemKvpRequestReader reader = new GetRepositoryItemKvpRequestReader(csw);
         GetRepositoryItemType req = (GetRepositoryItemType) reader.createRequest();

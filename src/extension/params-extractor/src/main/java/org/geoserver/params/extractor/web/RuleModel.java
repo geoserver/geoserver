@@ -65,17 +65,16 @@ public class RuleModel implements Serializable {
     }
 
     public Rule toRule() {
-        RuleBuilder ruleBuilder =
-                new RuleBuilder()
-                        .withId(id)
-                        .withActivated(activated)
-                        .withPosition(position)
-                        .withMatch(match)
-                        .withActivation(activation)
-                        .withParameter(parameter)
-                        .withRemove(remove)
-                        .withCombine(combine)
-                        .withRepeat(repeat);
+        RuleBuilder ruleBuilder = new RuleBuilder()
+                .withId(id)
+                .withActivated(activated)
+                .withPosition(position)
+                .withMatch(match)
+                .withActivation(activation)
+                .withParameter(parameter)
+                .withRemove(remove)
+                .withCombine(combine)
+                .withRepeat(repeat);
         if (position != null && transform != null) {
             ruleBuilder.withTransform(transform.replace("{PARAMETER}", "$2"));
         } else {

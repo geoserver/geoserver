@@ -88,8 +88,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         //        getSecurityManager().setActiveUserGroupService(userService);
         GeoServerUserGroupService userService =
                 getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
-        GeoServerRoleService roleService =
-                getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
+        GeoServerRoleService roleService = getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
 
         assertEquals(3, userService.getUsers().size());
         assertEquals(3, userService.getUserCount());
@@ -115,8 +114,7 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         assertTrue(enc.isPasswordValid(disabledUser.getPassword(), "nah", null));
         assertFalse(disabledUser.isEnabled());
 
-        GeoServerRole role_admin =
-                roleService.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
+        GeoServerRole role_admin = roleService.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
         assertNotNull(role_admin);
         GeoServerRole role_wfs_read = roleService.getRoleByName("ROLE_WFS_READ");
         assertNotNull(role_wfs_read);
@@ -146,18 +144,14 @@ public class XMLUserDetailsServiceTest extends AbstractUserDetailsServiceTest {
         File userfileOld = new File(securityManager.get("security").dir(), "users.properties.old");
         assertTrue(userfileOld.exists());
 
-        File roleXSD =
-                new File(
-                        new File(securityManager.get("security/role").dir(), roleService.getName()),
-                        XMLConstants.FILE_RR_SCHEMA);
+        File roleXSD = new File(
+                new File(securityManager.get("security/role").dir(), roleService.getName()),
+                XMLConstants.FILE_RR_SCHEMA);
         assertTrue(roleXSD.exists());
 
-        File userXSD =
-                new File(
-                        new File(
-                                securityManager.get("security/usergroup").dir(),
-                                userService.getName()),
-                        XMLConstants.FILE_UR_SCHEMA);
+        File userXSD = new File(
+                new File(securityManager.get("security/usergroup").dir(), userService.getName()),
+                XMLConstants.FILE_UR_SCHEMA);
         assertTrue(userXSD.exists());
 
         /* does not work from the command line

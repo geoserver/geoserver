@@ -34,8 +34,7 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
     private static final List<String> WCS_FORMATS =
             Arrays.asList("GIF", "PNG", "JPEG", "TIFF", "GEOTIFF", "IMAGEMOSAIC");
-    private static final List<String> INTERPOLATIONS =
-            Arrays.asList("nearest neighbor", "bilinear", "bicubic");
+    private static final List<String> INTERPOLATIONS = Arrays.asList("nearest neighbor", "bilinear", "bicubic");
 
     @SuppressFBWarnings("NP_UNWRITTEN_FIELD") // wicket field reflection
     private List<String> selectedRequestSRSs;
@@ -50,77 +49,65 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         super(id, model);
 
         final CoverageInfo coverage = (CoverageInfo) getPublishedInfo().getResource();
-        add(
-                new ListMultipleChoice<>(
-                        "requestSRS",
-                        new PropertyModel<>(this, "selectedRequestSRSs"),
-                        coverage.getRequestSRS()));
+        add(new ListMultipleChoice<>(
+                "requestSRS", new PropertyModel<>(this, "selectedRequestSRSs"), coverage.getRequestSRS()));
 
         add(new TextField<>("newRequestSRS", new PropertyModel<>(this, "newRequestSRS")));
 
-        add(
-                new Button("deleteSelectedRequestSRSs") {
-                    private static final long serialVersionUID = 8363252127939759315L;
+        add(new Button("deleteSelectedRequestSRSs") {
+            private static final long serialVersionUID = 8363252127939759315L;
 
-                    @Override
-                    public void onSubmit() {
-                        coverage.getRequestSRS().removeAll(selectedRequestSRSs);
-                        selectedRequestSRSs.clear();
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                coverage.getRequestSRS().removeAll(selectedRequestSRSs);
+                selectedRequestSRSs.clear();
+            }
+        });
 
-        add(
-                new Button("addNewRequestSRS") {
-                    private static final long serialVersionUID = -3493317500980471055L;
+        add(new Button("addNewRequestSRS") {
+            private static final long serialVersionUID = -3493317500980471055L;
 
-                    @Override
-                    public void onSubmit() {
-                        coverage.getRequestSRS().add(newRequestSRS);
-                        newRequestSRS = "";
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                coverage.getRequestSRS().add(newRequestSRS);
+                newRequestSRS = "";
+            }
+        });
 
-        add(
-                new ListMultipleChoice<>(
-                        "responseSRS",
-                        new PropertyModel<>(this, "selectedResponseSRSs"),
-                        coverage.getResponseSRS()));
+        add(new ListMultipleChoice<>(
+                "responseSRS", new PropertyModel<>(this, "selectedResponseSRSs"), coverage.getResponseSRS()));
 
         add(new TextField<>("newResponseSRS", new PropertyModel<>(this, "newResponseSRS")));
 
-        add(
-                new Button("deleteSelectedResponseSRSs") {
-                    private static final long serialVersionUID = -8727831157546262491L;
+        add(new Button("deleteSelectedResponseSRSs") {
+            private static final long serialVersionUID = -8727831157546262491L;
 
-                    @Override
-                    public void onSubmit() {
-                        coverage.getResponseSRS().removeAll(selectedResponseSRSs);
-                        selectedResponseSRSs.clear();
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                coverage.getResponseSRS().removeAll(selectedResponseSRSs);
+                selectedResponseSRSs.clear();
+            }
+        });
 
-        add(
-                new Button("addNewResponseSRS") {
-                    private static final long serialVersionUID = -2888152896129259019L;
+        add(new Button("addNewResponseSRS") {
+            private static final long serialVersionUID = -2888152896129259019L;
 
-                    @Override
-                    public void onSubmit() {
-                        coverage.getResponseSRS().add(newResponseSRS);
-                        newResponseSRS = "";
-                    }
-                });
+            @Override
+            public void onSubmit() {
+                coverage.getResponseSRS().add(newResponseSRS);
+                newResponseSRS = "";
+            }
+        });
 
-        add(
-                new DropDownChoice<>(
-                        "defaultInterpolationMethod",
-                        new PropertyModel<>(coverage, "defaultInterpolationMethod"),
-                        new WCSInterpolationModel()));
+        add(new DropDownChoice<>(
+                "defaultInterpolationMethod",
+                new PropertyModel<>(coverage, "defaultInterpolationMethod"),
+                new WCSInterpolationModel()));
 
         Palette<String> interpolationMethods =
                 new Palette<>(
                         "interpolationMethods",
-                        LiveCollectionModel.list(
-                                new PropertyModel<>(coverage, "interpolationMethods")),
+                        LiveCollectionModel.list(new PropertyModel<>(coverage, "interpolationMethods")),
                         new WCSInterpolationModel(),
                         new SimpleChoiceRenderer<>(),
                         7,
@@ -130,25 +117,20 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("InterpolationMethodsPalette.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("InterpolationMethodsPalette.selectedHeader"));
                     }
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("InterpolationMethodsPalette.availableHeader"));
+                        return new Label(componentId, new ResourceModel("InterpolationMethodsPalette.availableHeader"));
                     }
                 };
         interpolationMethods.add(new DefaultTheme());
         add(interpolationMethods);
 
         // don't allow editing the native format
-        TextField<String> nativeFormat =
-                new TextField<>("nativeFormat", new PropertyModel<>(coverage, "nativeFormat"));
+        TextField<String> nativeFormat = new TextField<>("nativeFormat", new PropertyModel<>(coverage, "nativeFormat"));
         nativeFormat.setEnabled(false);
         add(nativeFormat);
 
@@ -165,15 +147,13 @@ public class WCSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("FormatsPalette.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("FormatsPalette.selectedHeader"));
                     }
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("FormatsPalette.availableHeader"));
+                        return new Label(componentId, new ResourceModel("FormatsPalette.availableHeader"));
                     }
                 };
         formatPalette.add(new DefaultTheme());

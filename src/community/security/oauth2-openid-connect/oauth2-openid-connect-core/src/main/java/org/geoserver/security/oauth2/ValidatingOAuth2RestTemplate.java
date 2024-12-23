@@ -18,10 +18,7 @@ import org.springframework.security.oauth2.provider.token.store.jwk.JwkTokenStor
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-/**
- * Rest template that is able to make OpenID Connect REST requests with resource {@link
- * OpenIdConnectFilterConfig}.
- */
+/** Rest template that is able to make OpenID Connect REST requests with resource {@link OpenIdConnectFilterConfig}. */
 class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
 
     private static final Logger LOGGER = Logging.getLogger(ValidatingOAuth2RestTemplate.class);
@@ -59,21 +56,15 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
                     AccessTokenRequest accessTokenRequest = oauth2Context.getAccessTokenRequest();
                     if ((accessTokenRequest.getAuthorizationCode() != null)
                             && (!accessTokenRequest.getAuthorizationCode().isEmpty())) {
-                        LOGGER.fine(
-                                "OIDC: received a CODE from Identity Provider - handing it in for ID/Access Token");
+                        LOGGER.fine("OIDC: received a CODE from Identity Provider - handing it in for ID/Access Token");
                         LOGGER.fine("OIDC: CODE=" + accessTokenRequest.getAuthorizationCode());
                         if (result != null) {
-                            LOGGER.fine(
-                                    "OIDC: Identity Provider returned Token, type="
-                                            + result.getTokenType());
+                            LOGGER.fine("OIDC: Identity Provider returned Token, type=" + result.getTokenType());
                             LOGGER.fine("OIDC: SCOPES=" + String.join(" ", result.getScope()));
                             LOGGER.fine("OIDC: ACCESS TOKEN:" + saferJWT(result.getValue()));
                             if (result.getAdditionalInformation().containsKey("id_token")) {
-                                String idToken =
-                                        saferJWT(
-                                                (String)
-                                                        result.getAdditionalInformation()
-                                                                .get("id_token"));
+                                String idToken = saferJWT((String)
+                                        result.getAdditionalInformation().get("id_token"));
                                 LOGGER.fine("OIDC: ID TOKEN:" + idToken);
                             }
                         }
@@ -84,9 +75,9 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
     }
 
     /**
-     * logs the string value of a token if its a JWT token - it should be in 3 parts, separated by a
-     * "." These 3 sections are: header, claims, signature We only log the 2nd (claims) part. This
-     * is safer because without the signature the token will not validate.
+     * logs the string value of a token if its a JWT token - it should be in 3 parts, separated by a "." These 3
+     * sections are: header, claims, signature We only log the 2nd (claims) part. This is safer because without the
+     * signature the token will not validate.
      *
      * <p>We don't log the token directly because it can be used to access protected resources.
      *
@@ -119,8 +110,8 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
                     LOGGER.warning("Failed to validate ID token: " + e.getMessage());
                     if (config.isEnforceTokenValidation()) {
                         /**
-                         * If the token is invalid, we should throw an exception to prevent the
-                         * request from being processed. This is the default behavior.
+                         * If the token is invalid, we should throw an exception to prevent the request from being
+                         * processed. This is the default behavior.
                          */
                         throw e;
                     }

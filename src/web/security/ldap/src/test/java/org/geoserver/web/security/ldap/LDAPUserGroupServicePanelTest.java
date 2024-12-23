@@ -63,7 +63,8 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
     private static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
     private static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
 
-    @ClassRule public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
+    @ClassRule
+    public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
 
     @After
     public void tearDown() throws Exception {}
@@ -105,8 +106,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
                             @Override
                             public Component buildComponent(String id) {
 
-                                return current =
-                                        new LDAPUserGroupServicePanel(id, new Model<>(config));
+                                return current = new LDAPUserGroupServicePanel(id, new Model<>(config));
                             }
                         },
                         new CompoundPropertyModel<>(config)) {
@@ -130,8 +130,7 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         checkBaseConfig();
 
         assertNull(tester.getComponentFromLastRenderedPage("form:panel:authenticationPanel:user"));
-        assertNull(
-                tester.getComponentFromLastRenderedPage("form:panel:authenticationPanel:password"));
+        assertNull(tester.getComponentFromLastRenderedPage("form:panel:authenticationPanel:password"));
     }
 
     @Test
@@ -141,12 +140,11 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
 
         tester.newFormTester("form").submit();
 
-        tester.assertErrorMessages(
-                new String[] {
-                    "Field 'Server URL' is required.",
-                    "Field 'Group search base' is required.",
-                    "Field 'User search base' is required."
-                });
+        tester.assertErrorMessages(new String[] {
+            "Field 'Server URL' is required.",
+            "Field 'Group search base' is required.",
+            "Field 'User search base' is required."
+        });
     }
 
     @Test
@@ -183,7 +181,6 @@ public class LDAPUserGroupServicePanelTest extends AbstractSecurityWicketTestSup
         tester.assertModelValue("form:panel:serverURL", getServerURL());
         tester.assertModelValue("form:panel:groupSearchBase", GROUPS_BASE);
         tester.assertModelValue("form:panel:groupSearchFilter", GROUP_SEARCH_FILTER);
-        tester.assertModelValue(
-                "form:panel:allGroupsSearchFilter", config.getAllGroupsSearchFilter());
+        tester.assertModelValue("form:panel:allGroupsSearchFilter", config.getAllGroupsSearchFilter());
     }
 }

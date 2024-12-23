@@ -27,13 +27,10 @@ public class AbstractGeometryEncoderTest {
     @Test
     public void testRingOrientation() throws ParseException {
         // a polygon with flipped ring orientations, shell is CCW and hole is CW
-        Geometry geometry =
-                reader.read(
-                        "POLYGON((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 1 2, 2 2, 2" + " 1, 1 1))");
+        Geometry geometry = reader.read("POLYGON((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 1 2, 2 2, 2" + " 1, 1 1))");
 
         // to ESRI format
-        org.geoserver.gsr.model.geometry.Geometry esriGeometry =
-                new GeometryEncoder().toRepresentation(geometry, null);
+        org.geoserver.gsr.model.geometry.Geometry esriGeometry = new GeometryEncoder().toRepresentation(geometry, null);
         assertThat(esriGeometry, CoreMatchers.instanceOf(Polygon.class));
 
         Polygon polygon = (Polygon) esriGeometry;
@@ -54,15 +51,12 @@ public class AbstractGeometryEncoderTest {
 
     @Test
     public void testRoundTripPolyHoles() throws ParseException {
-        Geometry geometry =
-                reader.read(
-                        "POLYGON((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 2 1, 2 2, 1"
-                                + " 2, "
-                                + "1 1), (4 4, 5 4, 5 5, 5 5, 4 4))");
+        Geometry geometry = reader.read("POLYGON((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 2 1, 2 2, 1"
+                + " 2, "
+                + "1 1), (4 4, 5 4, 5 5, 5 5, 4 4))");
 
         // to ESRI format
-        org.geoserver.gsr.model.geometry.Geometry esriGeometry =
-                new GeometryEncoder().toRepresentation(geometry, null);
+        org.geoserver.gsr.model.geometry.Geometry esriGeometry = new GeometryEncoder().toRepresentation(geometry, null);
         assertThat(esriGeometry, CoreMatchers.instanceOf(Polygon.class));
 
         // and back (will not have the same layout due to ring orientations)
@@ -72,15 +66,12 @@ public class AbstractGeometryEncoderTest {
 
     @Test
     public void testNestedHoles() throws ParseException {
-        Geometry geometry =
-                reader.read(
-                        "MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 9 1, 9 9, 1"
-                                + " 9, "
-                                + "1 1)), ((2 2, 8 2, 8 8, 2 8, 2 2), (3 3, 7 3, 7 7, 3 7, 3 3)))");
+        Geometry geometry = reader.read("MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0), (1 1, 9 1, 9 9, 1"
+                + " 9, "
+                + "1 1)), ((2 2, 8 2, 8 8, 2 8, 2 2), (3 3, 7 3, 7 7, 3 7, 3 3)))");
 
         // to ESRI format
-        org.geoserver.gsr.model.geometry.Geometry esriGeometry =
-                new GeometryEncoder().toRepresentation(geometry, null);
+        org.geoserver.gsr.model.geometry.Geometry esriGeometry = new GeometryEncoder().toRepresentation(geometry, null);
         assertThat(esriGeometry, CoreMatchers.instanceOf(Polygon.class));
 
         // and back (will not have the same layout due to ring orientations)

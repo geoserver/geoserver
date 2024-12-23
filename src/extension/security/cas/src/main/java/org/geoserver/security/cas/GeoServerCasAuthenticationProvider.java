@@ -59,8 +59,7 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new CasFilterConfigValidator(securityManager);
     }
 
@@ -69,10 +68,9 @@ public class GeoServerCasAuthenticationProvider extends AbstractFilterProvider {
 
         if (filterChain.getRequestChainByName(PROXYRECEPTORCHAIN) != null) return;
 
-        RequestFilterChain casChain =
-                new ConstantFilterChain(
-                        GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
-                        GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN + "/");
+        RequestFilterChain casChain = new ConstantFilterChain(
+                GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN,
+                GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN + "/");
         casChain.setFilterNames(pgtCallback.getName());
         casChain.setName(PROXYRECEPTORCHAIN);
         filterChain.getRequestChains().add(0, casChain);

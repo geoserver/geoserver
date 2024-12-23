@@ -29,8 +29,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         target.add(auth);
     }
 
-    private void addIdentifier(
-            final String authName, final String id, List<LayerIdentifierInfo> target) {
+    private void addIdentifier(final String authName, final String id, List<LayerIdentifierInfo> target) {
         LayerIdentifierInfo identifier = new LayerIdentifier();
         identifier.setAuthority(authName);
         identifier.setIdentifier(id);
@@ -48,33 +47,25 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
 
         Document doc = getAsDOM("/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
 
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth1']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth1']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth1",
                 "/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth1']/OnlineResource/@xlink:href",
                 doc);
 
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth2']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth2']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth2",
                 "/WMT_MS_Capabilities/Capability/Layer/AuthorityURL[@name = 'rootAuth2']/OnlineResource/@xlink:href",
                 doc);
 
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']", doc);
         assertXpathEvaluatesTo(
-                "rootId1",
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']",
-                doc);
+                "rootId1", "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth1']", doc);
 
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
         assertXpathEvaluatesTo(
-                "rootId2",
-                "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']",
-                doc);
+                "rootId2", "/WMT_MS_Capabilities/Capability/Layer/Identifier[@authority = 'rootAuth2']", doc);
     }
 
     @Test
@@ -87,25 +78,16 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         getCatalog().save(layer);
 
         String layerName = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
-        Document doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0",
-                        true);
+        Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.0", true);
 
-        assertXpathExists(
-                "//Layer[Name='" + layerName + "']/AuthorityURL[@name = 'layerAuth1']", doc);
+        assertXpathExists("//Layer[Name='" + layerName + "']/AuthorityURL[@name = 'layerAuth1']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth1",
-                "//Layer[Name='"
-                        + layerName
-                        + "']/AuthorityURL[@name = 'layerAuth1']/OnlineResource/@xlink:href",
+                "//Layer[Name='" + layerName + "']/AuthorityURL[@name = 'layerAuth1']/OnlineResource/@xlink:href",
                 doc);
 
-        assertXpathExists(
-                "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']", doc);
+        assertXpathExists("//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']", doc);
         assertXpathEvaluatesTo(
-                "layerId1",
-                "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']",
-                doc);
+                "layerId1", "//Layer[Name='" + layerName + "']/Identifier[@authority = 'layerAuth1']", doc);
     }
 }

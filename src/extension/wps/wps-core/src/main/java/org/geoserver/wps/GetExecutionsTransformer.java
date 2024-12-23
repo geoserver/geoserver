@@ -117,8 +117,7 @@ public class GetExecutionsTransformer extends TransformerBase {
                     wps.getGeoServer().getGlobal().getSettings().getProxyBaseUrl();
             final String baseUrl = proxyBaseUrl != null ? proxyBaseUrl : "/";
             String serviceInstance =
-                    ResponseUtils.appendQueryString(
-                            ResponseUtils.buildURL(baseUrl, "ows", null, URLType.SERVICE), "");
+                    ResponseUtils.appendQueryString(ResponseUtils.buildURL(baseUrl, "ows", null, URLType.SERVICE), "");
 
             attributes.addAttribute("", "xml:lang", "xml:lang", "", "en");
             attributes.addAttribute(
@@ -142,19 +141,16 @@ public class GetExecutionsTransformer extends TransformerBase {
             end("wps:GetExecutionsResponse");
         }
 
-        private void encodeExecute(
-                AttributesImpl attributes, ExecutionStatus status, ExecuteType execute) {
+        private void encodeExecute(AttributesImpl attributes, ExecutionStatus status, ExecuteType execute) {
             try {
                 if (execute == null) {
                     execute = resources.getStoredRequestObject(status.getExecutionId());
                 }
                 if (execute == null) {
                     throw new WPSException(
-                            "Could not locate the original request for execution id: "
-                                    + status.getExecutionId());
+                            "Could not locate the original request for execution id: " + status.getExecutionId());
                 } else {
-                    ExecuteResponseBuilder builder =
-                            new ExecuteResponseBuilder(execute, ctx, status);
+                    ExecuteResponseBuilder builder = new ExecuteResponseBuilder(execute, ctx, status);
                     ExecuteResponseType responseType = builder.build();
 
                     start("wps:ExecuteResponse");
@@ -164,9 +160,13 @@ public class GetExecutionsTransformer extends TransformerBase {
                             "wps:processVersion",
                             responseType.getProcess().getProcessVersion());
                     start("wps:Process", processAttributes);
-                    element("ows:Identifier", responseType.getProcess().getIdentifier().getValue());
+                    element(
+                            "ows:Identifier",
+                            responseType.getProcess().getIdentifier().getValue());
                     element("ows:Title", responseType.getProcess().getTitle().getValue());
-                    element("ows:Abstract", responseType.getProcess().getAbstract().getValue());
+                    element(
+                            "ows:Abstract",
+                            responseType.getProcess().getAbstract().getValue());
                     end("wps:Process");
 
                     final AttributesImpl statusAttributes = new AttributesImpl();
@@ -177,38 +177,31 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 responseType.getStatus().getCreationTime().toString());
                     }
                     if (status.getCompletionTime() != null) {
-                        addAttribute(
-                                statusAttributes,
-                                "completionTime",
-                                getISOTme(status.getCompletionTime()));
+                        addAttribute(statusAttributes, "completionTime", getISOTme(status.getCompletionTime()));
                     }
                     if (status.getLastUpdated() != null) {
-                        addAttribute(
-                                statusAttributes,
-                                "lastUpdated",
-                                getISOTme(status.getLastUpdated()));
+                        addAttribute(statusAttributes, "lastUpdated", getISOTme(status.getLastUpdated()));
                     }
                     start("wps:Status", statusAttributes);
                     element("wps:JobID", status.getExecutionId());
-                    element("wps:Identifier", responseType.getProcess().getIdentifier().getValue());
+                    element(
+                            "wps:Identifier",
+                            responseType.getProcess().getIdentifier().getValue());
                     element("wps:Owner", status.getUserName());
                     element("wps:Status", status.getPhase().name());
                     if (status.getEstimatedCompletion() != null) {
-                        element(
-                                "wps:EstimatedCompletion",
-                                getISOTme(status.getEstimatedCompletion()));
+                        element("wps:EstimatedCompletion", getISOTme(status.getEstimatedCompletion()));
                     }
                     element("wps:ExpirationDate", getISOTme(status.getExpirationDate()));
                     element("wps:NextPoll", getISOTme(status.getNextPoll()));
                     element("wps:PercentCompleted", String.valueOf(status.getProgress()));
                     if (status.getException() != null) {
                         StringBuffer stackTrace = new StringBuffer();
-                        EList exceptions =
-                                responseType
-                                        .getStatus()
-                                        .getProcessFailed()
-                                        .getExceptionReport()
-                                        .getException();
+                        EList exceptions = responseType
+                                .getStatus()
+                                .getProcessFailed()
+                                .getExceptionReport()
+                                .getException();
                         for (Object ex : exceptions) {
                             if (ex instanceof ExceptionType) {
                                 stackTrace.append(((ExceptionType) ex).getExceptionCode());
@@ -219,17 +212,13 @@ public class GetExecutionsTransformer extends TransformerBase {
                         }
                         element("wps:ProcessFailed", stackTrace.toString());
                     } else if (status.getPhase() == ProcessState.QUEUED) {
-                        element(
-                                "wps:ProcessAccepted",
-                                responseType.getStatus().getProcessAccepted());
+                        element("wps:ProcessAccepted", responseType.getStatus().getProcessAccepted());
                     } else if (status.getPhase() == ProcessState.RUNNING) {
                         element(
                                 "wps:ProcessStarted",
                                 responseType.getStatus().getProcessStarted().getValue());
                     } else {
-                        element(
-                                "wps:ProcessSucceeded",
-                                responseType.getStatus().getProcessSucceeded());
+                        element("wps:ProcessSucceeded", responseType.getStatus().getProcessSucceeded());
                     }
 
                     // status location, if asynch
@@ -268,7 +257,8 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         private String getISOTme(Date completionTime) {
-            return Converters.convert(completionTime, XMLGregorianCalendar.class).toString();
+            return Converters.convert(completionTime, XMLGregorianCalendar.class)
+                    .toString();
         }
 
         private void declarePrefixes(NamespaceSupport namespaces) {
@@ -284,8 +274,7 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         /** Encodes {@link ExecuteType} to XML */
-        protected void encodeExecuteRequest(
-                ExecutionStatus status, ExecuteType exec, AttributesImpl attributes) {
+        protected void encodeExecuteRequest(ExecutionStatus status, ExecuteType exec, AttributesImpl attributes) {
             final AttributesImpl executeTypeAttributes = new AttributesImpl(attributes);
             start("wps:Execute", executeTypeAttributes);
             element("ows:Identifier", exec.getIdentifier().getValue());
@@ -304,12 +293,10 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 "", "encoding", "encoding", "", rawDataOutput.getEncoding());
                     }
                     if (rawDataOutput.getSchema() != null) {
-                        rawDataOutputAttributes.addAttribute(
-                                "", "schema", "schema", "", rawDataOutput.getSchema());
+                        rawDataOutputAttributes.addAttribute("", "schema", "schema", "", rawDataOutput.getSchema());
                     }
                     if (rawDataOutput.getUom() != null) {
-                        rawDataOutputAttributes.addAttribute(
-                                "", "uom", "uom", "", rawDataOutput.getUom());
+                        rawDataOutputAttributes.addAttribute("", "uom", "uom", "", rawDataOutput.getUom());
                     }
                     start("wps:RawDataOutput", rawDataOutputAttributes);
                     element("ows:Identifier", rawDataOutput.getIdentifier().getValue());
@@ -321,11 +308,7 @@ public class GetExecutionsTransformer extends TransformerBase {
                             exec.getResponseForm().getResponseDocument();
                     final AttributesImpl responseDocumentAttributes = new AttributesImpl();
                     responseDocumentAttributes.addAttribute(
-                            "",
-                            "status",
-                            "status",
-                            "",
-                            String.valueOf(responseDocument.isSetStatus()));
+                            "", "status", "status", "", String.valueOf(responseDocument.isSetStatus()));
                     responseDocumentAttributes.addAttribute(
                             "",
                             "storeExecuteResponse",
@@ -333,11 +316,7 @@ public class GetExecutionsTransformer extends TransformerBase {
                             "",
                             String.valueOf(responseDocument.isSetStoreExecuteResponse()));
                     responseDocumentAttributes.addAttribute(
-                            "",
-                            "lineage",
-                            "lineage",
-                            "",
-                            String.valueOf(responseDocument.isSetLineage()));
+                            "", "lineage", "lineage", "", String.valueOf(responseDocument.isSetLineage()));
                     start("wps:ResponseDocument", responseDocumentAttributes);
                     end("wps:ResponseDocument");
                 }
@@ -347,8 +326,7 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         /** Encode Data Inputs from "lineage" as XML */
-        protected void encodeDataInputs(
-                ExecutionStatus status, EList inputs, AttributesImpl attributes) {
+        protected void encodeDataInputs(ExecutionStatus status, EList inputs, AttributesImpl attributes) {
             start("wps:DataInputs");
             for (Object input : inputs) {
                 // Encode Inputs on the Status Response
@@ -386,18 +364,14 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 }
                                 // get the input descriptors
                                 Name processName = status.getProcessName();
-                                ProcessFactory pf =
-                                        GeoServerProcessors.createProcessFactory(processName, true);
-                                final Map<String, Parameter<?>> parameters =
-                                        pf.getParameterInfo(processName);
+                                ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
+                                final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
                                 String inputId = ii.getIdentifier().getValue();
                                 List<ProcessParameterIO> ppio =
-                                        ProcessParameterIO.findEncoder(
-                                                parameters.get(inputId), ctx);
+                                        ProcessParameterIO.findEncoder(parameters.get(inputId), ctx);
                                 final ProcessParameterIO processParameterIO = ppio.get(0);
                                 if (ppio != null && !ppio.isEmpty()) {
-                                    if (processParameterIO.isComplex(
-                                            parameters.get(inputId), ctx)) {
+                                    if (processParameterIO.isComplex(parameters.get(inputId), ctx)) {
                                         element(
                                                 "wps:ComplexData",
                                                 "<![CDATA[" + complexData.toString() + "]]",
@@ -408,8 +382,7 @@ public class GetExecutionsTransformer extends TransformerBase {
                                         try {
                                             element(
                                                     "wps:LiteralData",
-                                                    ((LiteralPPIO) processParameterIO)
-                                                            .encode(complexData),
+                                                    ((LiteralPPIO) processParameterIO).encode(complexData),
                                                     inputAttributes);
                                         } catch (Exception e) {
                                             LOGGER.log(Level.WARNING, "", e);
@@ -431,7 +404,11 @@ public class GetExecutionsTransformer extends TransformerBase {
                             }
                             if (data.getLiteralData().getUom() != null) {
                                 inputAttributes.addAttribute(
-                                        "", "uom", "uom", "", data.getLiteralData().getUom());
+                                        "",
+                                        "uom",
+                                        "uom",
+                                        "",
+                                        data.getLiteralData().getUom());
                             }
                             start("wps:Data", inputAttributes);
                             element("wps:LiteralData", data.getLiteralData().getValue());
@@ -443,11 +420,17 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 addAttribute(
                                         inputAttributes,
                                         "dimensions",
-                                        data.getBoundingBoxData().getDimensions().toString());
+                                        data.getBoundingBoxData()
+                                                .getDimensions()
+                                                .toString());
                             }
                             if (data.getBoundingBoxData().getCrs() != null) {
                                 inputAttributes.addAttribute(
-                                        "", "crs", "crs", "", data.getBoundingBoxData().getCrs());
+                                        "",
+                                        "crs",
+                                        "crs",
+                                        "",
+                                        data.getBoundingBoxData().getCrs());
                             }
                             start("wps:BoundingBoxData", inputAttributes);
                             if (data.getBoundingBoxData().getLowerCorner() != null) {
@@ -455,14 +438,18 @@ public class GetExecutionsTransformer extends TransformerBase {
                                 for (Object coord : data.getBoundingBoxData().getLowerCorner()) {
                                     lowerCorner.append(coord).append(" ");
                                 }
-                                element("ows:LowerCorner", lowerCorner.toString().trim());
+                                element(
+                                        "ows:LowerCorner",
+                                        lowerCorner.toString().trim());
                             }
                             if (data.getBoundingBoxData().getUpperCorner() != null) {
                                 StringBuffer upperCorner = new StringBuffer();
                                 for (Object coord : data.getBoundingBoxData().getUpperCorner()) {
                                     upperCorner.append(coord).append(" ");
                                 }
-                                element("ows:UpperCorner", upperCorner.toString().trim());
+                                element(
+                                        "ows:UpperCorner",
+                                        upperCorner.toString().trim());
                             }
                             end("wps:BoundingBoxData");
                         }
@@ -474,18 +461,13 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         private void encodeReference(
-                ExecutionStatus status,
-                AttributesImpl attributes,
-                InputType ii,
-                InputReferenceType reference) {
+                ExecutionStatus status, AttributesImpl attributes, InputType ii, InputReferenceType reference) {
             final AttributesImpl inputAttributes = new AttributesImpl();
             if (reference.getHref() != null) {
-                inputAttributes.addAttribute(
-                        "", "xlink:href", "xlink:href", "", reference.getHref());
+                inputAttributes.addAttribute("", "xlink:href", "xlink:href", "", reference.getHref());
             }
             if (reference.getMimeType() != null) {
-                inputAttributes.addAttribute(
-                        "", "mimeType", "mimeType", "", reference.getMimeType());
+                inputAttributes.addAttribute("", "mimeType", "mimeType", "", reference.getMimeType());
             }
             if (reference.getSchema() != null) {
                 inputAttributes.addAttribute("", "schema", "schema", "", reference.getSchema());
@@ -505,23 +487,15 @@ public class GetExecutionsTransformer extends TransformerBase {
                 ProcessFactory pf = GeoServerProcessors.createProcessFactory(processName, true);
                 final Map<String, Parameter<?>> parameters = pf.getParameterInfo(processName);
                 String inputId = ii.getIdentifier().getValue();
-                List<ProcessParameterIO> ppios =
-                        ProcessParameterIO.findDecoder(parameters.get(inputId), ctx);
+                List<ProcessParameterIO> ppios = ProcessParameterIO.findDecoder(parameters.get(inputId), ctx);
                 if (ppios != null && !ppios.isEmpty()) {
                     for (ProcessParameterIO ppio : ppios) {
                         if (ppio.isComplex(parameters.get(inputId), ctx)) {
-                            encodeComplexInput(
-                                    status,
-                                    attributes,
-                                    reference,
-                                    inputAttributes,
-                                    (ComplexPPIO) ppio);
+                            encodeComplexInput(status, attributes, reference, inputAttributes, (ComplexPPIO) ppio);
                         } else {
                             if (ppio instanceof LiteralPPIO) {
                                 try {
-                                    element(
-                                            "wps:LiteralData",
-                                            ((LiteralPPIO) ppio).encode(reference.getBody()));
+                                    element("wps:LiteralData", ((LiteralPPIO) ppio).encode(reference.getBody()));
                                 } catch (Exception e) {
                                     LOGGER.log(Level.WARNING, "", e);
                                 }
@@ -532,7 +506,9 @@ public class GetExecutionsTransformer extends TransformerBase {
                 end("wps:Body");
             }
             if (reference.getBodyReference() != null) {
-                element("wps:BodyReference", ii.getReference().getBodyReference().getHref());
+                element(
+                        "wps:BodyReference",
+                        ii.getReference().getBodyReference().getHref());
             }
             end("wps:Reference");
         }
@@ -553,18 +529,14 @@ public class GetExecutionsTransformer extends TransformerBase {
                 } else if (out instanceof GetFeatureType) {
                     encodeGetFeatureType(inputAttributes, (GetFeatureType) out);
                 } else {
-                    element(
-                            "wps:ComplexData",
-                            "<![CDATA[" + out.toString() + "]]",
-                            inputAttributes);
+                    element("wps:ComplexData", "<![CDATA[" + out.toString() + "]]", inputAttributes);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.WARNING, "", e);
             }
         }
 
-        private void encodeGetFeatureType(AttributesImpl inputAttributes, GetFeatureType out)
-                throws Exception {
+        private void encodeGetFeatureType(AttributesImpl inputAttributes, GetFeatureType out) throws Exception {
             GetFeatureType features = out;
             final AttributesImpl atts = new AttributesImpl(inputAttributes);
             if (features.getService() != null) {
@@ -608,8 +580,7 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         /** Encode Data Outputs from "lineage" as XML */
-        protected void encodeDataOutputs(
-                ExecutionStatus status, EList outputs, AttributesImpl attributes) {
+        protected void encodeDataOutputs(ExecutionStatus status, EList outputs, AttributesImpl attributes) {
             start("wps:DataOutputs");
             for (Object output : outputs) {
                 // Encode Outputs on the Status Response
@@ -617,26 +588,18 @@ public class GetExecutionsTransformer extends TransformerBase {
                     DocumentOutputDefinitionType oo = (DocumentOutputDefinitionType) output;
                     final AttributesImpl outputDefinitionTypeAttributes = new AttributesImpl();
                     outputDefinitionTypeAttributes.addAttribute(
-                            "",
-                            "asReference",
-                            "asReference",
-                            "",
-                            String.valueOf(oo.isSetAsReference()));
+                            "", "asReference", "asReference", "", String.valueOf(oo.isSetAsReference()));
                     if (oo.getMimeType() != null) {
-                        outputDefinitionTypeAttributes.addAttribute(
-                                "", "mimeType", "mimeType", "", oo.getMimeType());
+                        outputDefinitionTypeAttributes.addAttribute("", "mimeType", "mimeType", "", oo.getMimeType());
                     }
                     if (oo.getEncoding() != null) {
-                        outputDefinitionTypeAttributes.addAttribute(
-                                "", "encoding", "encoding", "", oo.getEncoding());
+                        outputDefinitionTypeAttributes.addAttribute("", "encoding", "encoding", "", oo.getEncoding());
                     }
                     if (oo.getSchema() != null) {
-                        outputDefinitionTypeAttributes.addAttribute(
-                                "", "schema", "schema", "", oo.getSchema());
+                        outputDefinitionTypeAttributes.addAttribute("", "schema", "schema", "", oo.getSchema());
                     }
                     if (oo.getUom() != null) {
-                        outputDefinitionTypeAttributes.addAttribute(
-                                "", "uom", "uom", "", oo.getUom());
+                        outputDefinitionTypeAttributes.addAttribute("", "uom", "uom", "", oo.getUom());
                     }
                     start("wps:Output", outputDefinitionTypeAttributes);
                     if (oo.getIdentifier() != null) {
@@ -656,22 +619,20 @@ public class GetExecutionsTransformer extends TransformerBase {
         }
 
         /**
-         * Set Pagination accordingly to the GSIP-169: - if number less or equal than
-         * MAX_FEATURES_PER_PAGE, then go ahead - if number greater than MAX_FEATURES_PER_PAGE --
-         * add "count" attribute to the GetExecutionsResponse, representing the total number of
-         * elements -- add "next" attribute to the GetExecutionsResponse, representing the URL of
-         * the next page; it this is not present then there are no more pages available -- add
-         * "previous" attribute to the GetExecutionsResponse, representing the URL of the previous
-         * page; it this is not present then we are at the first page
+         * Set Pagination accordingly to the GSIP-169: - if number less or equal than MAX_FEATURES_PER_PAGE, then go
+         * ahead - if number greater than MAX_FEATURES_PER_PAGE -- add "count" attribute to the GetExecutionsResponse,
+         * representing the total number of elements -- add "next" attribute to the GetExecutionsResponse, representing
+         * the URL of the next page; it this is not present then there are no more pages available -- add "previous"
+         * attribute to the GetExecutionsResponse, representing the URL of the previous page; it this is not present
+         * then we are at the first page
          */
         protected void getPaginationAttributes(String serviceInstance, AttributesImpl attributes) {
-            String baseRequestUrl =
-                    serviceInstance
-                            + "service="
-                            + request.service
-                            + "&version="
-                            + request.version
-                            + "&request=GetExecutions&";
+            String baseRequestUrl = serviceInstance
+                    + "service="
+                    + request.service
+                    + "&version="
+                    + request.version
+                    + "&request=GetExecutions&";
             if (request.identifier != null) {
                 baseRequestUrl += "identifier=" + request.identifier;
             }
@@ -696,26 +657,17 @@ public class GetExecutionsTransformer extends TransformerBase {
                             "previous",
                             "previous",
                             "",
-                            baseRequestUrl
-                                    + "&startIndex="
-                                    + (index - Math.min(maxFeatures, index)));
+                            baseRequestUrl + "&startIndex=" + (index - Math.min(maxFeatures, index)));
                 }
 
                 if ((total - maxFeatures) > index) {
                     attributes.addAttribute(
-                            "",
-                            "next",
-                            "next",
-                            "",
-                            baseRequestUrl + "&startIndex=" + (index + maxFeatures));
+                            "", "next", "next", "", baseRequestUrl + "&startIndex=" + (index + maxFeatures));
                 }
             }
         }
 
-        /**
-         * Register all namespaces as xmlns:xxx attributes for the top level element of a xml
-         * document
-         */
+        /** Register all namespaces as xmlns:xxx attributes for the top level element of a xml document */
         protected void registerNamespaces(NamespaceSupport ns, AttributesImpl attributes) {
             Enumeration declaredPrefixes = ns.getDeclaredPrefixes();
             while (declaredPrefixes.hasMoreElements()) {

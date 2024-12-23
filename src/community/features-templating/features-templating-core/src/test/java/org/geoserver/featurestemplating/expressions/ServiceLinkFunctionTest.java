@@ -45,25 +45,21 @@ public class ServiceLinkFunctionTest {
 
     @Test
     public void testPathParams() {
-        Function f =
-                FF.function(
-                        "serviceLink",
-                        FF.literal("ogc/features/collections/%s/items/%s"),
-                        FF.literal("states"),
-                        FF.literal("states.1"));
+        Function f = FF.function(
+                "serviceLink",
+                FF.literal("ogc/features/collections/%s/items/%s"),
+                FF.literal("states"),
+                FF.literal("states.1"));
         String url = f.evaluate(null, String.class);
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/features/collections/states/items/states.1",
-                url);
+        assertEquals("http://localhost:8080/geoserver/ogc/features/collections/states/items/states.1", url);
     }
 
     @Test
     public void testKvpParams() {
-        Function f =
-                FF.function(
-                        "serviceLink",
-                        FF.literal("ows?service=WFS&version=1.0.0&request=GetFeature&featureId=%s"),
-                        FF.literal("myType.1"));
+        Function f = FF.function(
+                "serviceLink",
+                FF.literal("ows?service=WFS&version=1.0.0&request=GetFeature&featureId=%s"),
+                FF.literal("myType.1"));
         String url = f.evaluate(null, String.class);
         assertEquals(
                 "http://localhost:8080/geoserver/ows?service=WFS&version=1.0.0&request=GetFeature&featureId=myType.1",

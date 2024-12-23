@@ -88,15 +88,13 @@ public class StyleDocumentCallback implements DocumentCallback {
                 // can we encode the style in this format?
                 if ((style.getFormat() != null
                                 && sh.getFormat().equals(style.getFormat())
-                                && (ver.equals(style.getFormatVersion())
-                                        || style.getFormatVersion() == null))
+                                && (ver.equals(style.getFormatVersion()) || style.getFormatVersion() == null))
                         || sh.supportsEncoding(ver)) {
-                    String styleURL =
-                            buildURL(
-                                    info.getBaseURL(),
-                                    "ogc/styles/v1/styles/" + styleIdPathElement,
-                                    Collections.singletonMap("f", sh.mimeType(ver)),
-                                    URLMangler.URLType.SERVICE);
+                    String styleURL = buildURL(
+                            info.getBaseURL(),
+                            "ogc/styles/v1/styles/" + styleIdPathElement,
+                            Collections.singletonMap("f", sh.mimeType(ver)),
+                            URLMangler.URLType.SERVICE);
 
                     Link link = new Link(styleURL, "stylesheet", sh.mimeType(ver), null);
                     styleDocument.addLink(link);
@@ -108,14 +106,12 @@ public class StyleDocumentCallback implements DocumentCallback {
         Collection<MediaType> metadataFormats =
                 APIRequestInfo.get().getProducibleMediaTypes(StyleMetadataDocument.class, true);
         for (MediaType format : metadataFormats) {
-            String metadataURL =
-                    buildURL(
-                            info.getBaseURL(),
-                            "ogc/styles/v1/styles/" + styleIdPathElement + "/metadata",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            Link link =
-                    new Link(metadataURL, "describedBy", format.toString(), "The style metadata");
+            String metadataURL = buildURL(
+                    info.getBaseURL(),
+                    "ogc/styles/v1/styles/" + styleIdPathElement + "/metadata",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            Link link = new Link(metadataURL, "describedBy", format.toString(), "The style metadata");
             styleDocument.addLink(link);
         }
     }

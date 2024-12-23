@@ -51,9 +51,6 @@ public class RandomColorRamp implements ColorRamp {
     private void createRamp() throws Exception {
         for (int i = 0; i < classNum; i++)
             colors.add(
-                    new Color(
-                            (int) (Math.random() * 255),
-                            (int) (Math.random() * 255),
-                            (int) (Math.random() * 255)));
+                    new Color((int) (Math.random() * 255), (int) (Math.random() * 255), (int) (Math.random() * 255)));
     }
 }

@@ -16,8 +16,8 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates all methods to the provided delegate. Suclasses will override methods in order to
- * perform their decoration work
+ * Delegates all methods to the provided delegate. Suclasses will override methods in order to perform their decoration
+ * work
  *
  * @author Andrea Aime - TOPP
  * @param <T>

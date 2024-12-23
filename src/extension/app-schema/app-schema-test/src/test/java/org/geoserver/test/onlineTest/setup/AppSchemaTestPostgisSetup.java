@@ -36,67 +36,65 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
     public static final String ONLINE_DB_SCHEMA = "appschematest";
 
     /** Mapping file database parameters */
-    public static String DB_PARAMS =
-            "<parameters>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>dbtype</name>\n" //
-                    + "<value>postgis</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>host</name>\n" //
-                    + "<value>${host}</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>port</name>\n" //
-                    + "<value>${port}</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>database</name>\n" //
-                    + "<value>${database}</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>user</name>\n" //
-                    + "<value>${user}</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n" //
-                    + "<name>passwd</name>\n" //
-                    + "<value>${passwd}</value>" //
-                    + "\n</Parameter>" //
-                    + "\n<Parameter>\n"
-                    + "<name>Expose primary keys</name>"
-                    + "<value>true</value>"
-                    + "\n</Parameter>" //
-                    // only for postgis because it's just the public schema for oracle
-                    // because you have to have sys dba rights to create schemas in oracle
-                    + "\n<Parameter>\n" //
-                    + "<name>schema</name>\n" //
-                    + "<value>" //
-                    + ONLINE_DB_SCHEMA //
-                    + "</value>" //
-                    + "\n</Parameter>" //
-                    + "\n</parameters>"; //
+    public static String DB_PARAMS = "<parameters>" //
+            + "\n<Parameter>\n" //
+            + "<name>dbtype</name>\n" //
+            + "<value>postgis</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n" //
+            + "<name>host</name>\n" //
+            + "<value>${host}</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n" //
+            + "<name>port</name>\n" //
+            + "<value>${port}</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n" //
+            + "<name>database</name>\n" //
+            + "<value>${database}</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n" //
+            + "<name>user</name>\n" //
+            + "<value>${user}</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n" //
+            + "<name>passwd</name>\n" //
+            + "<value>${passwd}</value>" //
+            + "\n</Parameter>" //
+            + "\n<Parameter>\n"
+            + "<name>Expose primary keys</name>"
+            + "<value>true</value>"
+            + "\n</Parameter>" //
+            // only for postgis because it's just the public schema for oracle
+            // because you have to have sys dba rights to create schemas in oracle
+            + "\n<Parameter>\n" //
+            + "<name>schema</name>\n" //
+            + "<value>" //
+            + ONLINE_DB_SCHEMA //
+            + "</value>" //
+            + "\n</Parameter>" //
+            + "\n</parameters>"; //
 
     private String sql;
 
     /**
-     * Ensure the app-schema properties file is loaded with the database parameters. Also create
-     * corresponding tables on the database based on data from properties files.
+     * Ensure the app-schema properties file is loaded with the database parameters. Also create corresponding tables on
+     * the database based on data from properties files.
      *
      * @param propertyFiles Property file name and its feature type directory map
      */
-    public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles)
-            throws Exception {
+    public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles) throws Exception {
         return new AppSchemaTestPostgisSetup(propertyFiles, true);
     }
 
     /**
-     * Ensure the app-schema properties file is loaded with the database parameters. Also create
-     * corresponding tables on the database based on data from properties files.
+     * Ensure the app-schema properties file is loaded with the database parameters. Also create corresponding tables on
+     * the database based on data from properties files.
      *
      * @param propertyFiles Property file name and its feature type directory map
      */
-    public static AppSchemaTestPostgisSetup getInstance(
-            Map<String, File> propertyFiles, boolean createPrimaryKey) throws Exception {
+    public static AppSchemaTestPostgisSetup getInstance(Map<String, File> propertyFiles, boolean createPrimaryKey)
+            throws Exception {
         return new AppSchemaTestPostgisSetup(propertyFiles, createPrimaryKey);
     }
 
@@ -105,8 +103,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
      *
      * @param propertyFiles Property file name and its parent directory map
      */
-    public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles, boolean createPrimaryKey)
-            throws Exception {
+    public AppSchemaTestPostgisSetup(Map<String, File> propertyFiles, boolean createPrimaryKey) throws Exception {
         configureFixture();
         createTables(propertyFiles, createPrimaryKey);
     }
@@ -168,16 +165,15 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                 buf.append(StringUtils.join(createParams.iterator(), ", "));
                 buf.append(");\n");
                 if (createPrimaryKey) {
-                    buf.append(
-                            "ALTER TABLE "
-                                    + ONLINE_DB_SCHEMA
-                                    + ".\""
-                                    + tableName
-                                    + "\" ADD CONSTRAINT "
-                                    + tableName
-                                    + "_PK PRIMARY KEY (\""
-                                    + pkFieldName
-                                    + "\")\n");
+                    buf.append("ALTER TABLE "
+                            + ONLINE_DB_SCHEMA
+                            + ".\""
+                            + tableName
+                            + "\" ADD CONSTRAINT "
+                            + tableName
+                            + "_PK PRIMARY KEY (\""
+                            + pkFieldName
+                            + "\")\n");
                 }
 
                 // add geometry columns
@@ -224,9 +220,9 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                             // use wkt writer to convert geometry to string, so third dimension can
                             // be supported if present.
                             Geometry geom = (Geometry) value;
-                            value =
-                                    new WKTWriter(Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
-                                            .write(geom);
+                            value = new WKTWriter(
+                                            Double.isNaN(geom.getCoordinate().getZ()) ? 2 : 3)
+                                    .write(geom);
                         }
                         if (value == null || value.toString().equalsIgnoreCase("null")) {
                             values[valueIndex] = "null";
@@ -234,8 +230,7 @@ public class AppSchemaTestPostgisSetup extends ReferenceDataPostgisSetup {
                             int srid = getSrid(((GeometryType) prop.getType()));
                             if (srid > -1) {
                                 // attach srid
-                                values[valueIndex] =
-                                        "ST_GeomFromText('" + value + "', " + srid + ")";
+                                values[valueIndex] = "ST_GeomFromText('" + value + "', " + srid + ")";
                             } else {
                                 values[valueIndex] = "ST_GeomFromText('" + value + "')";
                             }

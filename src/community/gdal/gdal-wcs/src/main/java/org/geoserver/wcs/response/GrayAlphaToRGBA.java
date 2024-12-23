@@ -31,15 +31,14 @@ public class GrayAlphaToRGBA implements FormatAdapter<GridCoverage2D> {
             RenderedImage alphaBand = new ImageWorker(image).retainLastBand().getRenderedImage();
             iw.addBand(alphaBand, false);
             RenderedImage converted = iw.getRenderedImage();
-            GridCoverage2D adapted =
-                    CoverageFactoryFinder.getGridCoverageFactory(null)
-                            .create(
-                                    input.getName(),
-                                    converted,
-                                    input.getGridGeometry(),
-                                    null,
-                                    new GridCoverage2D[] {input},
-                                    input.getProperties());
+            GridCoverage2D adapted = CoverageFactoryFinder.getGridCoverageFactory(null)
+                    .create(
+                            input.getName(),
+                            converted,
+                            input.getGridGeometry(),
+                            null,
+                            new GridCoverage2D[] {input},
+                            input.getProperties());
             return adapted;
         }
 

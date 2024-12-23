@@ -27,20 +27,15 @@ public class ResponseUtilsTest {
 
     @Test
     public void testPathQueryString() {
-        String url =
-                "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities";
+        String url = "http://localhost:8080/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities";
         assertEquals("/geoserver/wfs", ResponseUtils.getPath(url));
-        assertEquals(
-                "service=WFS&version=1.0.0&request=GetCapabilities",
-                ResponseUtils.getQueryString(url));
+        assertEquals("service=WFS&version=1.0.0&request=GetCapabilities", ResponseUtils.getQueryString(url));
     }
 
     @Test
     public void testIncompleteURL() {
         String url = "/geoserver/wfs?service=WFS&version=1.0.0&request=GetCapabilities";
         assertEquals("/geoserver/wfs", ResponseUtils.getPath(url));
-        assertEquals(
-                "service=WFS&version=1.0.0&request=GetCapabilities",
-                ResponseUtils.getQueryString(url));
+        assertEquals("service=WFS&version=1.0.0&request=GetCapabilities", ResponseUtils.getQueryString(url));
     }
 }

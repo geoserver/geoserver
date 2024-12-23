@@ -35,8 +35,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
 public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport {
-    private final WrapperPolicy policy =
-            WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
+    private final WrapperPolicy policy = WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
     private static final String FEATURE_TYPE_NAME = "testType";
     private FeatureVisitor lastVisitor = null;
 
@@ -62,37 +61,31 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(ft);
         b.add(p);
 
-        ListFeatureCollection visitorCollection =
-                new ListFeatureCollection(ft) {
-                    @Override
-                    public void accepts(FeatureVisitor visitor, ProgressListener progress) {
-                        lastVisitor = visitor;
-                    }
+        ListFeatureCollection visitorCollection = new ListFeatureCollection(ft) {
+            @Override
+            public void accepts(FeatureVisitor visitor, ProgressListener progress) {
+                lastVisitor = visitor;
+            }
 
-                    @Override
-                    public SimpleFeatureCollection subCollection(Filter filter) {
-                        if (filter == Filter.INCLUDE) {
-                            return this;
-                        } else {
-                            return super.subCollection(filter);
-                        }
-                    }
-                };
+            @Override
+            public SimpleFeatureCollection subCollection(Filter filter) {
+                if (filter == Filter.INCLUDE) {
+                    return this;
+                } else {
+                    return super.subCollection(filter);
+                }
+            }
+        };
         SimpleFeatureSource featureSource = DataUtilities.source(visitorCollection);
 
-        maxVisitorCollections =
-                Arrays.asList(
-                        new FeatureSizeFeatureCollection(
-                                visitorCollection, featureSource, Query.ALL),
-                        new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE));
-        countVisitorCollections =
-                Arrays.asList(
-                        new FeatureSizeFeatureCollection(
-                                visitorCollection, featureSource, Query.ALL),
-                        new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE),
-                        new RetypingFeatureCollection(
-                                visitorCollection, visitorCollection.getSchema()),
-                        SecuredObjects.secure(visitorCollection, policy));
+        maxVisitorCollections = Arrays.asList(
+                new FeatureSizeFeatureCollection(visitorCollection, featureSource, Query.ALL),
+                new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE));
+        countVisitorCollections = Arrays.asList(
+                new FeatureSizeFeatureCollection(visitorCollection, featureSource, Query.ALL),
+                new FilteringSimpleFeatureCollection(visitorCollection, Filter.INCLUDE),
+                new RetypingFeatureCollection(visitorCollection, visitorCollection.getSchema()),
+                SecuredObjects.secure(visitorCollection, policy));
     }
 
     @Test
@@ -108,17 +101,15 @@ public class FeatureCollectionDelegationTest extends GeoServerSystemTestSupport 
         assertOptimalVisit(visitor, countVisitorCollections);
     }
 
-    private void assertOptimalVisit(
-            FeatureVisitor visitor, List<SimpleFeatureCollection> collections) {
-        collections.forEach(
-                simpleFeatureCollection -> {
-                    try {
-                        lastVisitor = null;
-                        simpleFeatureCollection.accepts(visitor, null);
-                    } catch (Exception e) {
-                        Assert.fail();
-                    }
-                    Assert.assertSame(lastVisitor, visitor);
-                });
+    private void assertOptimalVisit(FeatureVisitor visitor, List<SimpleFeatureCollection> collections) {
+        collections.forEach(simpleFeatureCollection -> {
+            try {
+                lastVisitor = null;
+                simpleFeatureCollection.accepts(visitor, null);
+            } catch (Exception e) {
+                Assert.fail();
+            }
+            Assert.assertSame(lastVisitor, visitor);
+        });
     }
 }

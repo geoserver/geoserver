@@ -121,8 +121,7 @@ public class LockFeatureTypeBinding extends AbstractComplexBinding {
 
         // &lt;xsd:attribute name="expiry" type="xsd:positiveInteger" use="optional"/&gt;
         if (node.hasAttribute("expiry")) {
-            lockFeature.setExpiry(
-                    BigInteger.valueOf(((Number) node.getAttributeValue("expiry")).longValue()));
+            lockFeature.setExpiry(BigInteger.valueOf(((Number) node.getAttributeValue("expiry")).longValue()));
         }
 
         // &lt;xsd:attribute name="lockAction" type="wfs:AllSomeType" use="optional"&gt;

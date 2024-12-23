@@ -43,9 +43,7 @@ public class CSPPredicatePropertyTest {
     @Test
     public void testConstructorPropertyNotAllowed() {
         String name = "java.version";
-        Exception e =
-                assertThrows(
-                        IllegalArgumentException.class, () -> new CSPPredicateProperty(name, "^$"));
+        Exception e = assertThrows(IllegalArgumentException.class, () -> new CSPPredicateProperty(name, "^$"));
         assertEquals("Property key not allowed: " + name, e.getMessage());
     }
 

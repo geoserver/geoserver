@@ -27,10 +27,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 
-/**
- * Tests for {@link org.geoserver.security.keycloak.KeycloakRoleService}. Does not test the load
- * method.
- */
+/** Tests for {@link org.geoserver.security.keycloak.KeycloakRoleService}. Does not test the load method. */
 public class KeycloakRoleServiceTest {
 
     private static WireMockServer keycloakSrv;
@@ -40,96 +37,64 @@ public class KeycloakRoleServiceTest {
 
     @BeforeClass
     public static void beforeClass() {
-        keycloakSrv =
-                new WireMockServer(
-                        wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)));
+        keycloakSrv = new WireMockServer(wireMockConfig().dynamicPort().notifier(new ConsoleNotifier(true)));
         keycloakSrv.start();
         authService = "http://localhost:" + keycloakSrv.port();
 
-        keycloakSrv.stubFor(
-                WireMock.post(urlEqualTo("/auth/realms/master/protocol/openid-connect/token"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_token_response.json")));
+        keycloakSrv.stubFor(WireMock.post(urlEqualTo("/auth/realms/master/protocol/openid-connect/token"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_token_response.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(urlEqualTo("/auth/admin/realms/master/roles"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_roles.json")));
-        keycloakSrv.stubFor(
-                WireMock.get(urlEqualTo("/auth/admin/realms/master/clients/client_id1/roles"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_client_roles.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/roles"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_roles.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/clients/client_id1/roles"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_client_roles.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(urlEqualTo("/auth/admin/realms/master/clients/client_id2/roles"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_client2_roles.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/clients/client_id2/roles"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_client2_roles.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(
-                                urlEqualTo(
-                                        "/auth/admin/realms/master/users?exact=true&username=user1"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_users.json")));
-        keycloakSrv.stubFor(
-                WireMock.get(
-                                urlEqualTo(
-                                        "/auth/admin/realms/master/users/0e72c14e-53d8-4619-a05a-a605dc2102b9/role-mappings/realm"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_user_roles.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/users?exact=true&username=user1"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_users.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo(
+                        "/auth/admin/realms/master/users/0e72c14e-53d8-4619-a05a-a605dc2102b9/role-mappings/realm"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_user_roles.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(
-                                urlEqualTo(
-                                        "/auth/admin/realms/master/users/0e72c14e-53d8-4619-a05a-a605dc2102b9/role-mappings/clients/client_id2"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_client2_roles.json")));
+        keycloakSrv.stubFor(WireMock.get(
+                        urlEqualTo(
+                                "/auth/admin/realms/master/users/0e72c14e-53d8-4619-a05a-a605dc2102b9/role-mappings/clients/client_id2"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_client2_roles.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(urlEqualTo("/auth/admin/realms/master/roles/test-create"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_one_role.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/roles/test-create"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_one_role.json")));
 
-        keycloakSrv.stubFor(
-                WireMock.get(urlEqualTo("/auth/admin/realms/master/roles/client2-role2/users"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader(
-                                                "Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                                        .withBodyFile("keycloak_two_users.json")));
+        keycloakSrv.stubFor(WireMock.get(urlEqualTo("/auth/admin/realms/master/roles/client2-role2/users"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
+                        .withBodyFile("keycloak_two_users.json")));
     }
 
     @Before
@@ -151,8 +116,7 @@ public class KeycloakRoleServiceTest {
     public void testGetRoles() throws IOException {
         SortedSet<GeoServerRole> roles = service.getRoles();
         assertEquals(7, roles.size());
-        List<String> strRoles =
-                roles.stream().map(r -> r.getAuthority()).collect(Collectors.toList());
+        List<String> strRoles = roles.stream().map(r -> r.getAuthority()).collect(Collectors.toList());
         assertTrue(strRoles.contains("admin"));
         assertTrue(strRoles.contains("realm-role1"));
         assertTrue(strRoles.contains("realm-role2"));
@@ -166,8 +130,7 @@ public class KeycloakRoleServiceTest {
     public void testGetUserRoles() throws IOException {
         SortedSet<GeoServerRole> roles = service.getRolesForUser("user1");
         assertEquals(3, roles.size());
-        List<String> strRoles =
-                roles.stream().map(r -> r.getAuthority()).collect(Collectors.toList());
+        List<String> strRoles = roles.stream().map(r -> r.getAuthority()).collect(Collectors.toList());
         assertTrue(strRoles.contains("client2-role1"));
         assertTrue(strRoles.contains("client2-role2"));
         assertTrue(strRoles.contains("admin"));

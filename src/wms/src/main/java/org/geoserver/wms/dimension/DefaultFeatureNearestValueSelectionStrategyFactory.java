@@ -11,15 +11,13 @@ import org.geoserver.wms.dimension.impl.FeatureNearestValueSelectionStrategyImpl
 /**
  * Default implementation of NearestValueStrategyFactory for feature (vector) resources.
  *
- * <p>Extend / replace this class in the WMS application context binding of
- * featureNearestValueStrategyFactory property of {@link
- * DimensionDefaultValueSelectionStrategyFactoryImpl} to change the implementations used for
- * selecting the dimension default values for feature resources using the NEAREST strategy.
+ * <p>Extend / replace this class in the WMS application context binding of featureNearestValueStrategyFactory property
+ * of {@link DimensionDefaultValueSelectionStrategyFactoryImpl} to change the implementations used for selecting the
+ * dimension default values for feature resources using the NEAREST strategy.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class DefaultFeatureNearestValueSelectionStrategyFactory
-        implements NearestValueStrategyFactory {
+public class DefaultFeatureNearestValueSelectionStrategyFactory implements NearestValueStrategyFactory {
 
     @Override
     public DimensionDefaultValueSelectionStrategy createNearestValueStrategy(Object toMatch) {

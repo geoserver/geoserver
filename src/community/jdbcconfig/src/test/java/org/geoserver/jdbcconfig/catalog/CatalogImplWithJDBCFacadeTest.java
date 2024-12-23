@@ -104,8 +104,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         LayerInfo l1 = newLayer(ft1, s1);
         catalog.add(l1);
         CloseableIterator<LayerInfo> it =
-                catalog.list(
-                        LayerInfo.class, ff.equals(ff.property("advertised"), ff.literal(true)));
+                catalog.list(LayerInfo.class, ff.equals(ff.property("advertised"), ff.literal(true)));
         assertFalse(it.hasNext());
 
         ft1 = catalog.getFeatureTypeByName("ft1");
@@ -182,9 +181,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         LayerInfo l1 = newLayer(ft1, s1);
         catalog.add(l1);
         CloseableIterator<LayerInfo> it =
-                catalog.list(
-                        LayerInfo.class,
-                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
+                catalog.list(LayerInfo.class, ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
         assertTrue(it.hasNext());
         assertEquals(l1.getName(), it.next().getName());
 
@@ -194,16 +191,10 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
 
         l1 = catalog.getLayerByName("renamed_ft1");
 
-        it =
-                catalog.list(
-                        LayerInfo.class,
-                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:renamed_ft1")));
+        it = catalog.list(LayerInfo.class, ff.equals(ff.property("prefixedName"), ff.literal("wsName:renamed_ft1")));
         assertTrue(it.hasNext());
         assertEquals(l1.getName(), it.next().getName());
-        it =
-                catalog.list(
-                        LayerInfo.class,
-                        ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
+        it = catalog.list(LayerInfo.class, ff.equals(ff.property("prefixedName"), ff.literal("wsName:ft1")));
         assertFalse(it.hasNext());
     }
 
@@ -282,15 +273,14 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         expected = Lists.newArrayList(l1, l2, l3);
 
         // testOrderBy(LayerInfo.class, filter, null, null, sortOrder, expected);
-        CloseableIterator<LayerInfo> it =
-                facade.list(
-                        LayerInfo.class,
-                        filter,
-                        null,
-                        null,
-                        asc("resource.SRS"),
-                        asc("defaultStyle.name"),
-                        asc("resource.name"));
+        CloseableIterator<LayerInfo> it = facade.list(
+                LayerInfo.class,
+                filter,
+                null,
+                null,
+                asc("resource.SRS"),
+                asc("defaultStyle.name"),
+                asc("resource.name"));
         try {
             assertThat(it.next(), is(l4));
             assertThat(it.next(), is(l8));
@@ -307,8 +297,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
 
     @Test
     public void testUpgradeLock() {
-        GeoServerConfigurationLock configurationLock =
-                GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        GeoServerConfigurationLock configurationLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
         configurationLock.lock(LockType.READ);
         catalog.getNamespaces();
         assertEquals(LockType.READ, configurationLock.getCurrentLock());
@@ -331,24 +320,22 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
     }
 
     /**
-     * Allow execution of a single test method with a hard-coded DBConfig. Due to the way
-     * junit/maven work with parameterized tests, running a single test was not possible at the time
-     * of the change.
+     * Allow execution of a single test method with a hard-coded DBConfig. Due to the way junit/maven work with
+     * parameterized tests, running a single test was not possible at the time of the change.
      *
-     * <p>To do so, use the public constructor of DBConfig, create your test, call setUp and then
-     * the test(s) of interest as in the example below.
+     * <p>To do so, use the public constructor of DBConfig, create your test, call setUp and then the test(s) of
+     * interest as in the example below.
      */
     public static void main(String[] args) throws Exception {
         Logging.getLogger("").getHandlers()[0].setLevel(Level.ALL);
         Logging.getLogger("org.geoserver.jdbcconfig.internal").setLevel(Level.ALL);
 
-        JDBCConfigTestSupport.DBConfig config =
-                new JDBCConfigTestSupport.DBConfig(
-                        "oracle",
-                        "oracle.jdbc.OracleDriver",
-                        "jdbc:oracle:thin:system/oracle@//localhost:49161/xe",
-                        "system",
-                        "oracle");
+        JDBCConfigTestSupport.DBConfig config = new JDBCConfigTestSupport.DBConfig(
+                "oracle",
+                "oracle.jdbc.OracleDriver",
+                "jdbc:oracle:thin:system/oracle@//localhost:49161/xe",
+                "system",
+                "oracle");
         CatalogImplWithJDBCFacadeTest test = new CatalogImplWithJDBCFacadeTest(config);
         test.setUp();
         test.testOrderBy();
@@ -378,14 +365,11 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         ExecutorService tp = Executors.newFixedThreadPool(LOAD_FACTOR);
         List<Future<?>> futures = new ArrayList<>();
         for (int i = 0; i < LAYER_COUNT; i++) {
-            futures.add(
-                    tp.submit(
-                            () -> {
-                                try (CloseableIterator<LayerInfo> layers =
-                                        catalog.list(LayerInfo.class, Filter.INCLUDE)) {
-                                    while (layers.hasNext()) layers.next();
-                                }
-                            }));
+            futures.add(tp.submit(() -> {
+                try (CloseableIterator<LayerInfo> layers = catalog.list(LayerInfo.class, Filter.INCLUDE)) {
+                    while (layers.hasNext()) layers.next();
+                }
+            }));
         }
         // here, it should not deadlock, nor throw exceptions
         for (Future<?> future : futures) {
@@ -417,8 +401,7 @@ public class CatalogImplWithJDBCFacadeTest extends org.geoserver.catalog.impl.Ca
         String layerName = resource.getName();
         ResourceInfo resourceByName = catalog.getResourceByName(ns, layerName, ResourceInfo.class);
         assertEquals(resource, resourceByName);
-        WMTSLayerInfo wmtsLayerByName =
-                catalog.getResourceByName(ns, layerName, WMTSLayerInfo.class);
+        WMTSLayerInfo wmtsLayerByName = catalog.getResourceByName(ns, layerName, WMTSLayerInfo.class);
         assertEquals(resource, wmtsLayerByName);
     }
 

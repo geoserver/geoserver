@@ -13,8 +13,7 @@ public class GoogleOAuth2FilterConfig extends GeoServerOAuth2FilterConfig {
         this.redirectUri = "http://localhost:8080/geoserver";
         this.checkTokenEndpointUrl = "https://www.googleapis.com/oauth2/v1/tokeninfo";
         this.logoutUri = "https://accounts.google.com/logout";
-        this.scopes =
-                "https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile";
+        this.scopes = "https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile";
         this.enableRedirectAuthenticationEntryPoint = false;
         this.forceAccessTokenUriHttps = true;
         this.forceUserAuthorizationUriHttps = true;

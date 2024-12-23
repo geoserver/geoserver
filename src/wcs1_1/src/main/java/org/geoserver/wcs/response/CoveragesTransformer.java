@@ -15,8 +15,8 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WCS
- * 1.1.1 Coverages document (for a single coverage with no metadata)
+ * Based on the <code>org.geotools.xml.transform</code> framework, does the job of encoding a WCS 1.1.1 Coverages
+ * document (for a single coverage with no metadata)
  *
  * @author Andrea Aime, TOPP
  */
@@ -64,8 +64,9 @@ public class CoveragesTransformer extends TransformerBase {
         public void encode(Object o) throws IllegalArgumentException {
             try {
                 if (!(o instanceof CoverageInfo)) {
-                    throw new IllegalArgumentException(
-                            new StringBuffer("Not a GetCapabilitiesType: ").append(o).toString());
+                    throw new IllegalArgumentException(new StringBuffer("Not a GetCapabilitiesType: ")
+                            .append(o)
+                            .toString());
                 }
 
                 CoverageInfo info = (CoverageInfo) o;
@@ -73,23 +74,19 @@ public class CoveragesTransformer extends TransformerBase {
                 final AttributesImpl attributes = new AttributesImpl();
                 attributes.addAttribute("", "xmlns:wcs", "xmlns:wcs", "", WCS_URI);
 
-                attributes.addAttribute(
-                        "", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
-                attributes.addAttribute(
-                        "", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
-                attributes.addAttribute(
-                        "", "xmlns:ows", "xmlns:ows", "", "http://www.opengis.net/ows/1.1");
-                attributes.addAttribute(
-                        "", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
+                attributes.addAttribute("", "xmlns:xlink", "xmlns:xlink", "", "http://www.w3.org/1999/xlink");
+                attributes.addAttribute("", "xmlns:ogc", "xmlns:ogc", "", "http://www.opengis.net/ogc");
+                attributes.addAttribute("", "xmlns:ows", "xmlns:ows", "", "http://www.opengis.net/ows/1.1");
+                attributes.addAttribute("", "xmlns:gml", "xmlns:gml", "", "http://www.opengis.net/gml");
 
-                final String prefixDef = new StringBuffer("xmlns:").append(XSI_PREFIX).toString();
+                final String prefixDef =
+                        new StringBuffer("xmlns:").append(XSI_PREFIX).toString();
                 attributes.addAttribute("", prefixDef, prefixDef, "", XSI_URI);
 
                 final String locationAtt =
                         new StringBuffer(XSI_PREFIX).append(":schemaLocation").toString();
 
-                final String locationDef =
-                        buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsCoverages.xsd");
+                final String locationDef = buildSchemaURL(request.getBaseUrl(), "wcs/1.1.1/wcsCoverages.xsd");
 
                 attributes.addAttribute("", locationAtt, locationAtt, "", locationDef);
 
@@ -97,8 +94,7 @@ public class CoveragesTransformer extends TransformerBase {
                 handleCoverage(info);
                 end("wcs:Coverages");
             } catch (Exception e) {
-                throw new RuntimeException(
-                        "Unexpected error occurred during describe coverage xml encoding", e);
+                throw new RuntimeException("Unexpected error occurred during describe coverage xml encoding", e);
             }
         }
 

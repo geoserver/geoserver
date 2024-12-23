@@ -21,15 +21,13 @@ class AttributesProvider extends GeoServerDataProvider<AttributeDescription> {
 
     static final Property<AttributeDescription> BINDING = new BeanProperty<>("binding", "binding");
 
-    static final Property<AttributeDescription> NULLABLE =
-            new BeanProperty<>("nullable", "nullable");
+    static final Property<AttributeDescription> NULLABLE = new BeanProperty<>("nullable", "nullable");
 
     static final Property<AttributeDescription> SIZE = new BeanProperty<>("size", "size");
 
     static final Property<AttributeDescription> CRS = new BeanProperty<>("crs", "crs");
 
-    static final PropertyPlaceholder<AttributeDescription> UPDOWN =
-            new PropertyPlaceholder<>("upDown");
+    static final PropertyPlaceholder<AttributeDescription> UPDOWN = new PropertyPlaceholder<>("upDown");
 
     public AttributesProvider() {}
 

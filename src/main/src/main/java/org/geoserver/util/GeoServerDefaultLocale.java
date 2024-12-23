@@ -7,8 +7,8 @@ package org.geoserver.util;
 import java.util.Locale;
 
 /**
- * A utility class that provide methods that act on the private ThreadLocal in order to set, get and
- * remove the default GeoServer locale.
+ * A utility class that provide methods that act on the private ThreadLocal in order to set, get and remove the default
+ * GeoServer locale.
  */
 public class GeoServerDefaultLocale {
 
@@ -19,9 +19,7 @@ public class GeoServerDefaultLocale {
         DEFAULT_LOCALE.set(locale);
     }
 
-    /**
-     * @return the default GeoServer locale if set. Otherwise returns {@link Locale#getDefault()}.
-     */
+    /** @return the default GeoServer locale if set. Otherwise returns {@link Locale#getDefault()}. */
     public static Locale get() {
         return DEFAULT_LOCALE.get();
     }

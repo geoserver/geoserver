@@ -42,9 +42,8 @@ public class GZIPFilter implements Filter {
             HttpServletResponse response = (HttpServletResponse) res;
             String ae = request.getHeader("accept-encoding");
             if (ae != null && ae.indexOf("gzip") != -1) {
-                GZIPResponseWrapper wrappedResponse =
-                        new GZIPResponseWrapper(
-                                response, myCompressedTypes, request.getRequestURL().toString());
+                GZIPResponseWrapper wrappedResponse = new GZIPResponseWrapper(
+                        response, myCompressedTypes, request.getRequestURL().toString());
                 chain.doFilter(req, wrappedResponse);
                 wrappedResponse.finishResponse();
                 return;
@@ -58,8 +57,7 @@ public class GZIPFilter implements Filter {
     public void init(FilterConfig filterConfig) {
         try {
             String compressedTypes = filterConfig.getInitParameter("compressed-types");
-            String[] typeNames =
-                    (compressedTypes == null ? new String[0] : compressedTypes.split(","));
+            String[] typeNames = (compressedTypes == null ? new String[0] : compressedTypes.split(","));
             // TODO: Are commas allowed in mimetypes?
             myCompressedTypes = new HashSet<>();
             for (String typeName : typeNames) {

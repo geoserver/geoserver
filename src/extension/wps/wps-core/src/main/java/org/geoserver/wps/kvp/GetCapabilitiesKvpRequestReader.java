@@ -28,8 +28,7 @@ public class GetCapabilitiesKvpRequestReader extends WPSKvpRequestReader {
         // make sure we get the right accepts versions param -> workaround for GEOS-1719
         if (rawKvp.containsKey("acceptVersions")) {
             OWS11AcceptVersionsKvpParser avp = new OWS11AcceptVersionsKvpParser();
-            AcceptVersionsType avt =
-                    (AcceptVersionsType) avp.parse((String) rawKvp.get("acceptVersions"));
+            AcceptVersionsType avt = (AcceptVersionsType) avp.parse((String) rawKvp.get("acceptVersions"));
             kvp.put("acceptVersions", avt);
         }
         request = super.read(request, kvp, rawKvp);

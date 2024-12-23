@@ -64,8 +64,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
 
     private static final String MIME_PATTERN = "png|jpeg";
 
-    public static final Pattern mimePattern =
-            Pattern.compile(MIME_PATTERN, Pattern.CASE_INSENSITIVE);
+    public static final Pattern mimePattern = Pattern.compile(MIME_PATTERN, Pattern.CASE_INSENSITIVE);
 
     DropDownChoice<String> mime;
 
@@ -78,36 +77,28 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
     public MapMLLayerConfigurationPanel(final String panelId, final IModel<LayerInfo> model) {
         super(panelId, model);
 
-        MapModel<String> licenseTitleModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.LICENSE_TITLE);
-        TextField<String> licenseTitle =
-                new TextField<>(MapMLConstants.LICENSE_TITLE2, licenseTitleModel);
+        MapModel<String> licenseTitleModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.LICENSE_TITLE);
+        TextField<String> licenseTitle = new TextField<>(MapMLConstants.LICENSE_TITLE2, licenseTitleModel);
         add(licenseTitle);
 
-        MapModel<String> licenseLinkModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.LICENSE_LINK);
+        MapModel<String> licenseLinkModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.LICENSE_LINK);
         TextField<String> licenseLink = new TextField<>(MapMLConstants.LICENSE, licenseLinkModel);
         add(licenseLink);
 
         // add the checkbox to select tiled or not
-        MapModel<Boolean> useTilesModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.MAPML_USE_TILES);
+        MapModel<Boolean> useTilesModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_TILES);
         CheckBox useTiles = new CheckBox(MapMLConstants.USE_TILES, useTilesModel);
-        useTiles.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
-                        ajaxRequestTarget.add(mime);
-                        boolean useTilesChecked = useTiles.getConvertedInput();
-                        mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
-                    }
-                });
+        useTiles.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                ajaxRequestTarget.add(mime);
+                boolean useTilesChecked = useTiles.getConvertedInput();
+                mime.setChoices(getAvailableMimeTypes(model.getObject(), useTilesChecked));
+            }
+        });
         add(useTiles);
 
         // Remote client requests
@@ -115,54 +106,37 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         add(remoteClientRequestContainer);
 
         // add the checkbox to select features or not
-        MapModel<Boolean> useFeaturesModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.MAPML_USE_FEATURES);
+        MapModel<Boolean> useFeaturesModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_FEATURES);
         CheckBox useFeatures = new CheckBox(MapMLConstants.USE_FEATURES, useFeaturesModel);
         if (model.getObject() != null && model.getObject() instanceof PublishedInfo) {
             if (model.getObject().getType() == PublishedType.RASTER) {
                 useFeatures.setEnabled(false);
             }
         }
-        useFeatures.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        target.add(mime);
-                        // if we are using features, we don't use a default mime type
-                        mime.setEnabled(!useFeatures.getConvertedInput());
-                    }
-                });
+        useFeatures.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(mime);
+                // if we are using features, we don't use a default mime type
+                mime.setEnabled(!useFeatures.getConvertedInput());
+            }
+        });
         add(useFeatures);
 
-        MapModel<String> dimensionModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.MAPML_DIMENSION);
-        DropDownChoice<String> dimension =
-                new DropDownChoice<>(
-                        MapMLConstants.DIMENSION,
-                        dimensionModel,
-                        getEnabledDimensionNames(model.getObject()));
+        MapModel<String> dimensionModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_DIMENSION);
+        DropDownChoice<String> dimension = new DropDownChoice<>(
+                MapMLConstants.DIMENSION, dimensionModel, getEnabledDimensionNames(model.getObject()));
         dimension.setNullValid(true);
         add(dimension);
 
         MapModel<String> mimeModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.MAPML_MIME);
-        boolean useTilesFromModel =
-                Boolean.TRUE.equals(
-                        model.getObject()
-                                .getResource()
-                                .getMetadata()
-                                .get(MAPML_USE_TILES, Boolean.class));
-        mime =
-                new DropDownChoice<>(
-                        MapMLConstants.MIME,
-                        mimeModel,
-                        getAvailableMimeTypes(model.getObject(), useTilesFromModel));
+                new MapModel<>(new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_MIME);
+        boolean useTilesFromModel = Boolean.TRUE.equals(
+                model.getObject().getResource().getMetadata().get(MAPML_USE_TILES, Boolean.class));
+        mime = new DropDownChoice<>(
+                MapMLConstants.MIME, mimeModel, getAvailableMimeTypes(model.getObject(), useTilesFromModel));
         mime.setOutputMarkupId(true);
         mime.setNullValid(false);
         // if we are using features, we don't use a mime type
@@ -173,31 +147,23 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         }
         add(mime);
 
-        featureCaptionAttributes =
-                new ListMultipleChoice<>(
-                        MapMLConstants.FEATURE_CAPTION_ATTRIBUTES,
-                        new Model<>(),
-                        getAttributeNames(model.getObject()));
+        featureCaptionAttributes = new ListMultipleChoice<>(
+                MapMLConstants.FEATURE_CAPTION_ATTRIBUTES, new Model<>(), getAttributeNames(model.getObject()));
         featureCaptionAttributes.setOutputMarkupId(false);
         add(featureCaptionAttributes);
 
-        MapModel<String> featureCaptionModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.FEATURE_CAPTION);
+        MapModel<String> featureCaptionModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.FEATURE_CAPTION);
         TextArea<String> featureCaptionTemplate =
                 new TextArea<>(MapMLConstants.FEATURE_CAPTION_TEMPLATE, featureCaptionModel);
         add(featureCaptionTemplate);
     }
 
     private WebMarkupContainer setupRemoteClientRequestContainer(IModel<LayerInfo> model) {
-        WebMarkupContainer remoteClientRequestContainer =
-                new WebMarkupContainer("RemoteClientRequestsConfiguration");
+        WebMarkupContainer remoteClientRequestContainer = new WebMarkupContainer("RemoteClientRequestsConfiguration");
         LayerInfo layerInfo = model.getObject();
-        MapModel<Boolean> useRemoteModel =
-                new MapModel<>(
-                        new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA),
-                        MapMLConstants.MAPML_USE_REMOTE);
+        MapModel<Boolean> useRemoteModel = new MapModel<>(
+                new PropertyModel<>(model, MapMLConstants.RESOURCE_METADATA), MapMLConstants.MAPML_USE_REMOTE);
         CheckBox useRemote = new CheckBox(MapMLConstants.USE_REMOTE, useRemoteModel);
         remoteClientRequestContainer.setOutputMarkupId(true);
         remoteClientRequestContainer.setVisible(MapMLDocumentBuilder.isWMSOrWMTSStore(layerInfo));
@@ -222,10 +188,10 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
                     if (tileLayer instanceof GeoServerTileLayer && tileLayer.isEnabled()) {
                         GeoServerTileLayer geoServerTileLayer = (GeoServerTileLayer) tileLayer;
                         GeoServerTileLayerInfo info = geoServerTileLayer.getInfo();
-                        mimeTypes.addAll(
-                                info.getMimeFormats().stream()
-                                        .filter(mimeType -> mimePattern.matcher(mimeType).find())
-                                        .collect(Collectors.toList()));
+                        mimeTypes.addAll(info.getMimeFormats().stream()
+                                .filter(mimeType ->
+                                        mimePattern.matcher(mimeType).find())
+                                .collect(Collectors.toList()));
                         return mimeTypes;
                     }
                 } catch (IllegalArgumentException e) {
@@ -236,10 +202,9 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         // if the useTiles flag is not set or the tile cache is not enabled we get WMS mime types
         WMS wms = WMS.get();
         if (wms != null) {
-            mimeTypes.addAll(
-                    wms.getAllowedMapFormatNames().stream()
-                            .filter(mimeType -> mimePattern.matcher(mimeType).find())
-                            .collect(Collectors.toList()));
+            mimeTypes.addAll(wms.getAllowedMapFormatNames().stream()
+                    .filter(mimeType -> mimePattern.matcher(mimeType).find())
+                    .collect(Collectors.toList()));
         }
 
         return mimeTypes;
@@ -251,7 +216,8 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
      */
     List<String> getEnabledDimensionNames(LayerInfo layer) {
         List<String> dimensionNames = new ArrayList<>();
-        for (Map.Entry<String, Serializable> entry : layer.getResource().getMetadata().entrySet()) {
+        for (Map.Entry<String, Serializable> entry :
+                layer.getResource().getMetadata().entrySet()) {
             String key = entry.getKey();
             Serializable md = entry.getValue();
             if (md instanceof DimensionInfo) {
@@ -310,9 +276,7 @@ public class MapMLLayerConfigurationPanel extends PublishedConfigurationPanel<La
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, MapMLConstants.LIST_FAILED, e);
             String error =
-                    new ParamResourceModel(
-                                    MapMLConstants.ATTRIBUTE_LIST_FAILED, this, e.getMessage())
-                            .getString();
+                    new ParamResourceModel(MapMLConstants.ATTRIBUTE_LIST_FAILED, this, e.getMessage()).getString();
             this.getPage().error(error);
             return Collections.emptyList();
         }

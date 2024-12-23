@@ -59,16 +59,14 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     private static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
     private static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
 
-    @ClassRule public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
+    @ClassRule
+    public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
 
     @After
     public void tearDown() throws Exception {}
 
     protected void setupPanel(
-            final String userDnPattern,
-            String userFilter,
-            String userFormat,
-            String userGroupService) {
+            final String userDnPattern, String userFilter, String userFormat, String userGroupService) {
         config = new LDAPSecurityServiceConfig();
         config.setName("test");
         config.setServerURL(getServerURL());
@@ -94,18 +92,17 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
 
     protected void setupPanel(LDAPSecurityServiceConfig theConfig) {
         this.config = theConfig;
-        tester.startPage(
-                new LDAPFormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 7319919840443122283L;
+        tester.startPage(new LDAPFormTestPage(
+                new ComponentBuilder() {
+                    private static final long serialVersionUID = 7319919840443122283L;
 
-                            @Override
-                            public Component buildComponent(String id) {
+                    @Override
+                    public Component buildComponent(String id) {
 
-                                return current = new LDAPAuthProviderPanel(id, new Model<>(config));
-                            }
-                        },
-                        new CompoundPropertyModel<>(config)));
+                        return current = new LDAPAuthProviderPanel(id, new Model<>(config));
+                    }
+                },
+                new CompoundPropertyModel<>(config)));
     }
 
     @Test
@@ -147,11 +144,8 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
         authenticate("admin", "admin");
 
         tester.assertNoErrorMessage();
-        String success =
-                new StringResourceModel(
-                                LDAPAuthProviderPanel.class.getSimpleName()
-                                        + ".connectionSuccessful")
-                        .getObject();
+        String success = new StringResourceModel(LDAPAuthProviderPanel.class.getSimpleName() + ".connectionSuccessful")
+                .getObject();
         tester.assertInfoMessages(new String[] {success});
     }
 
@@ -163,19 +157,16 @@ public class LDAPAuthProviderPanelTest extends AbstractSecurityWicketTestSupport
     }
 
     private void authenticate(String username, String password) {
-        TextField<?> userField =
-                ((TextField<?>) tester.getComponentFromLastRenderedPage(base + "testCx:username"));
+        TextField<?> userField = ((TextField<?>) tester.getComponentFromLastRenderedPage(base + "testCx:username"));
         userField.setDefaultModel(new Model<>(username));
-        TextField<?> passwordField =
-                ((TextField<?>) tester.getComponentFromLastRenderedPage(base + "testCx:password"));
+        TextField<?> passwordField = ((TextField<?>) tester.getComponentFromLastRenderedPage(base + "testCx:password"));
         passwordField.setDefaultModel(new Model<>(password));
 
         Map<String, String> map = new HashMap<>();
         map.put("username", username);
         map.put("password", password);
 
-        tester.getComponentFromLastRenderedPage("form:panel:testCx")
-                .setDefaultModel(new MapModel<>(map));
+        tester.getComponentFromLastRenderedPage("form:panel:testCx").setDefaultModel(new MapModel<>(map));
 
         tester.clickLink(base + "testCx:test", true);
     }

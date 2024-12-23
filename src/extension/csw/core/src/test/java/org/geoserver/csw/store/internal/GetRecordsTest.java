@@ -27,8 +27,7 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         // insert extra metadata
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
         forestInfo.getMetadata().put("date", "09/10/2012");
-        forestInfo.setLatLonBoundingBox(
-                new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
+        forestInfo.setLatLonBoundingBox(new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
         getCatalog().save(forestInfo);
     }
 
@@ -45,9 +44,8 @@ public class GetRecordsTest extends CSWInternalTestSupport {
 
     @Test
     public void testAllRecordsPaged() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full";
 
         Document d = getAsDOM(request);
         // print(d);
@@ -66,9 +64,8 @@ public class GetRecordsTest extends CSWInternalTestSupport {
 
     @Test
     public void testAllRecords() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
@@ -84,39 +81,20 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         assertXpathEvaluatesTo("29", "count(//csw:SearchResults/*)", d);
 
         // check contents Forests record
-        assertXpathEvaluatesTo(
-                "abstract about Forests", "//csw:Record[dc:title='Forests']/dct:abstract", d);
-        assertXpathEvaluatesTo(
-                "description about Forests", "//csw:Record[dc:title='Forests']/dc:description", d);
+        assertXpathEvaluatesTo("abstract about Forests", "//csw:Record[dc:title='Forests']/dct:abstract", d);
+        assertXpathEvaluatesTo("description about Forests", "//csw:Record[dc:title='Forests']/dc:description", d);
         assertXpathEvaluatesTo("Forests", "//csw:Record[dc:title='Forests']/dc:subject", d);
+        assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Dataset", "//csw:Record[dc:title='Forests']/dc:type", d);
         assertXpathEvaluatesTo(
-                "http://purl.org/dc/dcmitype/Dataset",
-                "//csw:Record[dc:title='Forests']/dc:type",
-                d);
-        assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:EPSG:6.11:4326",
-                "//csw:Record[dc:title='Forests']/ows:BoundingBox/@crs",
-                d);
-        assertXpathEvaluatesTo(
-                "-100.0 -200.0",
-                "//csw:Record[dc:title='Forests']/ows:BoundingBox/ows:LowerCorner",
-                d);
-        assertXpathEvaluatesTo(
-                "-90.0 -180.0",
-                "//csw:Record[dc:title='Forests']/ows:BoundingBox/ows:UpperCorner",
-                d);
+                "urn:x-ogc:def:crs:EPSG:6.11:4326", "//csw:Record[dc:title='Forests']/ows:BoundingBox/@crs", d);
+        assertXpathEvaluatesTo("-100.0 -200.0", "//csw:Record[dc:title='Forests']/ows:BoundingBox/ows:LowerCorner", d);
+        assertXpathEvaluatesTo("-90.0 -180.0", "//csw:Record[dc:title='Forests']/ows:BoundingBox/ows:UpperCorner", d);
         // custom metadata
         assertXpathEvaluatesTo("09/10/2012", "//csw:Record[dc:title='Forests']/dc:date", d);
         // scheme attribute
-        assertXpathEvaluatesTo(
-                "http://www.digest.org/2.1",
-                "//csw:Record[dc:title='Forests']/dc:subject/@scheme",
-                d);
+        assertXpathEvaluatesTo("http://www.digest.org/2.1", "//csw:Record[dc:title='Forests']/dc:subject/@scheme", d);
         // test url.base
-        assertXpathEvaluatesTo(
-                "http://localhost:8080/geoserver/test",
-                "//csw:Record[dc:title='Forests']/dc:source",
-                d);
+        assertXpathEvaluatesTo("http://localhost:8080/geoserver/test", "//csw:Record[dc:title='Forests']/dc:source", d);
     }
 
     @Test
@@ -206,9 +184,8 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     @Test
     public void testFilterBBox() throws Exception {
 
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                        + "&constraint=BBOX(ows:BoundingBox, -250, -250, -190, -100)&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
+                + "&constraint=BBOX(ows:BoundingBox, -250, -250, -190, -100)&maxRecords=100";
         Document d = getAsDOM(request);
         checkValidationErrors(d, new CSWConfiguration());
         // print(d);
@@ -224,14 +201,11 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         assertXpathExists("//csw:SummaryRecord[dc:title='Forests']", d);
     }
 
-    /**
-     * From CITE compliance, throw an error if a non spatial property is used in a spatial filter
-     */
+    /** From CITE compliance, throw an error if a non spatial property is used in a spatial filter */
     @Test
     public void testSpatialFilterNonGeomProperty() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
-                        + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, -250, -250, -190, -100)";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record&resultType=results"
+                + "&elementName=dc:identifier,ows:BoundingBox&constraint=BBOX(dct:spatial, -250, -250, -190, -100)";
         Document d = getAsDOM(request);
         // print(d);
         checkOws10Exception(d);
@@ -254,9 +228,8 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         forests.setAdvertised(false);
         getCatalog().save(forests);
 
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
@@ -281,9 +254,8 @@ public class GetRecordsTest extends CSWInternalTestSupport {
         forests.setEnabled(false);
         getCatalog().save(forests);
 
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());
@@ -304,13 +276,13 @@ public class GetRecordsTest extends CSWInternalTestSupport {
     @Test
     public void testDisabledStore() throws Exception {
         // disabled layer's store
-        StoreInfo store = getCatalog().getResourceByName("Forests", ResourceInfo.class).getStore();
+        StoreInfo store =
+                getCatalog().getResourceByName("Forests", ResourceInfo.class).getStore();
         store.setEnabled(false);
         getCatalog().save(store);
 
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
-                        + "&resultType=results&elementSetName=full&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=csw:Record"
+                + "&resultType=results&elementSetName=full&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         checkValidationErrors(d, new CSWConfiguration());

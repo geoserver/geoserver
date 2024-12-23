@@ -43,24 +43,17 @@ public abstract class AbstractCatalogController extends RestBaseController {
      * @param message Possibly incomplete ResourceInfo used to update resource
      * @param resource Original resource (to be saved in catalog after modification)
      */
-    protected void calculateOptionalFields(
-            ResourceInfo message, ResourceInfo resource, String calculate) {
+    protected void calculateOptionalFields(ResourceInfo message, ResourceInfo resource, String calculate) {
         List<String> fieldsToCalculate;
         if (calculate == null || calculate.isEmpty()) {
             boolean changedProjection =
                     message.getSRS() == null || !message.getSRS().equals(resource.getSRS());
-            boolean changedProjectionPolicy =
-                    message.getProjectionPolicy() == null
-                            || !message.getProjectionPolicy()
-                                    .equals(resource.getProjectionPolicy());
-            boolean changedNativeBounds =
-                    message.getNativeBoundingBox() == null
-                            || !message.getNativeBoundingBox()
-                                    .equals(resource.getNativeBoundingBox());
-            boolean changedLatLonBounds =
-                    message.getLatLonBoundingBox() == null
-                            || !message.getLatLonBoundingBox()
-                                    .equals(resource.getLatLonBoundingBox());
+            boolean changedProjectionPolicy = message.getProjectionPolicy() == null
+                    || !message.getProjectionPolicy().equals(resource.getProjectionPolicy());
+            boolean changedNativeBounds = message.getNativeBoundingBox() == null
+                    || !message.getNativeBoundingBox().equals(resource.getNativeBoundingBox());
+            boolean changedLatLonBounds = message.getLatLonBoundingBox() == null
+                    || !message.getLatLonBoundingBox().equals(resource.getLatLonBoundingBox());
             boolean changedNativeInterpretation = changedProjectionPolicy || changedProjection;
             fieldsToCalculate = new ArrayList<>();
             if (changedNativeInterpretation && !changedNativeBounds) {
@@ -86,11 +79,9 @@ public abstract class AbstractCatalogController extends RestBaseController {
             CatalogBuilder builder = new CatalogBuilder(catalog);
             try {
                 message.setLatLonBoundingBox(
-                        builder.getLatLonBounds(
-                                message.getNativeBoundingBox(), resolveCRS(message.getSRS())));
+                        builder.getLatLonBounds(message.getNativeBoundingBox(), resolveCRS(message.getSRS())));
             } catch (IOException e) {
-                String errorMessage =
-                        "Error while calculating lat/lon bounds for featuretype: " + message;
+                String errorMessage = "Error while calculating lat/lon bounds for featuretype: " + message;
                 throw new RestException(errorMessage, HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
         }
@@ -118,28 +109,22 @@ public abstract class AbstractCatalogController extends RestBaseController {
         try {
             return CRS.decode(srs);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "This is unexpected, the layer seems to be mis-configured", e);
+            throw new RuntimeException("This is unexpected, the layer seems to be mis-configured", e);
         }
     }
 
     /** Determines if the current user is authenticated as full administrator. */
     protected boolean isAuthenticatedAsAdmin() {
         return SecurityContextHolder.getContext() != null
-                && GeoServerExtensions.bean(GeoServerSecurityManager.class)
-                        .checkAuthenticationForAdminRole();
+                && GeoServerExtensions.bean(GeoServerSecurityManager.class).checkAuthenticationForAdminRole();
     }
 
-    /**
-     * Validates the current user can edit the resource (full admin required if workspaceName is
-     * null)
-     */
+    /** Validates the current user can edit the resource (full admin required if workspaceName is null) */
     protected void checkFullAdminRequired(String workspaceName) {
         // global workspaces/styles can only be edited by a full admin
         if (workspaceName == null && !isAuthenticatedAsAdmin()) {
             throw new RestException(
-                    "Cannot edit global resource , full admin credentials required",
-                    HttpStatus.METHOD_NOT_ALLOWED);
+                    "Cannot edit global resource , full admin credentials required", HttpStatus.METHOD_NOT_ALLOWED);
         }
     }
 }

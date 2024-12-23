@@ -25,8 +25,7 @@ public class UserGroupFileWatcher extends FileWatcher implements UserGroupLoaded
         checkAndConfigure();
     }
 
-    public UserGroupFileWatcher(
-            Resource resource, GeoServerUserGroupService service, long lastModified) {
+    public UserGroupFileWatcher(Resource resource, GeoServerUserGroupService service, long lastModified) {
         super(resource);
         this.service = service;
         this.lastModified = lastModified;

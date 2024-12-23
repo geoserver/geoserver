@@ -52,23 +52,19 @@ public class ClusterPage extends GeoServerSecuredPage {
                 new Form<Properties>("form", new CompoundPropertyModel<Properties>(configurations));
 
         // add broker URL setting
-        final TextField<String> brokerURL =
-                new TextField<String>(BrokerConfiguration.BROKER_URL_KEY, String.class);
+        final TextField<String> brokerURL = new TextField<String>(BrokerConfiguration.BROKER_URL_KEY, String.class);
         form.add(brokerURL);
 
         // add group name setting
-        final TextField<String> instanceName =
-                new TextField<String>(JMSConfiguration.INSTANCE_NAME_KEY, String.class);
+        final TextField<String> instanceName = new TextField<String>(JMSConfiguration.INSTANCE_NAME_KEY, String.class);
         form.add(instanceName);
 
         // add instance name setting
-        final TextField<String> group =
-                new TextField<String>(JMSConfiguration.GROUP_KEY, String.class);
+        final TextField<String> group = new TextField<String>(JMSConfiguration.GROUP_KEY, String.class);
         form.add(group);
 
         // add topic name setting
-        final TextField<String> topicName =
-                new TextField<String>(TopicConfiguration.TOPIC_NAME_KEY, String.class);
+        final TextField<String> topicName = new TextField<String>(TopicConfiguration.TOPIC_NAME_KEY, String.class);
         topicName.setType(String.class);
         form.add(topicName);
 
@@ -84,53 +80,40 @@ public class ClusterPage extends GeoServerSecuredPage {
         connectionInfo.setEnabled(false);
         form.add(connectionInfo);
 
-        final AjaxButton connection =
-                new AjaxButton("connectionB") {
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+        final AjaxButton connection = new AjaxButton("connectionB") {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        // the container to use
-                        final JMSContainer c = getJMSContainer();
-                        if (c.isRunning()) {
-                            fp.info("Disconnecting...");
-                            if (c.disconnect()) {
-                                fp.info("Succesfully un-registered from the destination topic");
-                                fp.warn(
-                                        "You will (probably) loose next incoming events from other instances!!! (depending on how you have configured the broker)");
-                                connectionInfo
-                                        .getModel()
-                                        .setObject(
-                                                ConnectionConfigurationStatus.disabled.toString());
-                            } else {
-                                fp.error("Disconnection error!");
-                                connectionInfo
-                                        .getModel()
-                                        .setObject(
-                                                ConnectionConfigurationStatus.enabled.toString());
-                            }
-                        } else {
-                            fp.info("Connecting...");
-                            if (c.connect()) {
-                                fp.info("Now GeoServer is registered with the destination");
-                                connectionInfo
-                                        .getModel()
-                                        .setObject(
-                                                ConnectionConfigurationStatus.enabled.toString());
-                            } else {
-                                fp.error("Connection error!");
-                                fp.error("Registration aborted due to a connection problem");
-                                connectionInfo
-                                        .getModel()
-                                        .setObject(
-                                                ConnectionConfigurationStatus.disabled.toString());
-                            }
-                        }
-                        target.add(connectionInfo);
-                        target.add(fp);
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                // the container to use
+                final JMSContainer c = getJMSContainer();
+                if (c.isRunning()) {
+                    fp.info("Disconnecting...");
+                    if (c.disconnect()) {
+                        fp.info("Succesfully un-registered from the destination topic");
+                        fp.warn(
+                                "You will (probably) loose next incoming events from other instances!!! (depending on how you have configured the broker)");
+                        connectionInfo.getModel().setObject(ConnectionConfigurationStatus.disabled.toString());
+                    } else {
+                        fp.error("Disconnection error!");
+                        connectionInfo.getModel().setObject(ConnectionConfigurationStatus.enabled.toString());
                     }
-                };
+                } else {
+                    fp.info("Connecting...");
+                    if (c.connect()) {
+                        fp.info("Now GeoServer is registered with the destination");
+                        connectionInfo.getModel().setObject(ConnectionConfigurationStatus.enabled.toString());
+                    } else {
+                        fp.error("Connection error!");
+                        fp.error("Registration aborted due to a connection problem");
+                        connectionInfo.getModel().setObject(ConnectionConfigurationStatus.disabled.toString());
+                    }
+                }
+                target.add(connectionInfo);
+                target.add(fp);
+            }
+        };
         connection.setOutputMarkupId(true);
         connection.setOutputMarkupPlaceholderTag(true);
         form.add(connection);
@@ -154,8 +137,7 @@ public class ClusterPage extends GeoServerSecuredPage {
                 fp);
 
         // add Read Only switch
-        final TextField<String> readOnlyInfo =
-                new TextField<String>(ReadOnlyConfiguration.READ_ONLY_KEY);
+        final TextField<String> readOnlyInfo = new TextField<String>(ReadOnlyConfiguration.READ_ONLY_KEY);
 
         // https://issues.apache.org/jira/browse/WICKET-2426
         readOnlyInfo.setType(String.class);
@@ -165,44 +147,41 @@ public class ClusterPage extends GeoServerSecuredPage {
         readOnlyInfo.setEnabled(false);
         form.add(readOnlyInfo);
 
-        final AjaxButton readOnly =
-                new AjaxButton("readOnlyB") {
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+        final AjaxButton readOnly = new AjaxButton("readOnlyB") {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        ReadOnlyGeoServerLoader loader = getReadOnlyGeoServerLoader();
-                        if (loader.isEnabled()) {
-                            readOnlyInfo.getModel().setObject("disabled");
-                            loader.enable(false);
-                        } else {
-                            readOnlyInfo.getModel().setObject("enabled");
-                            loader.enable(true);
-                        }
-                        target.add(this.getParent());
-                    }
-                };
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                ReadOnlyGeoServerLoader loader = getReadOnlyGeoServerLoader();
+                if (loader.isEnabled()) {
+                    readOnlyInfo.getModel().setObject("disabled");
+                    loader.enable(false);
+                } else {
+                    readOnlyInfo.getModel().setObject("enabled");
+                    loader.enable(true);
+                }
+                target.add(this.getParent());
+            }
+        };
         form.add(readOnly);
 
-        final Button save =
-                new Button("saveB") {
+        final Button save = new Button("saveB") {
 
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            getConfig().storeConfig();
-                            fp.info("Configuration saved");
-                        } catch (IOException e) {
-                            if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                                LOGGER.severe(e.getLocalizedMessage());
-                            fp.error(e.getLocalizedMessage());
-                        }
-                    }
-                };
+            @Override
+            public void onSubmit() {
+                try {
+                    getConfig().storeConfig();
+                    fp.info("Configuration saved");
+                } catch (IOException e) {
+                    if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe(e.getLocalizedMessage());
+                    fp.error(e.getLocalizedMessage());
+                }
+            }
+        };
         form.add(save);
 
         // add Read Only switch
@@ -217,38 +196,35 @@ public class ClusterPage extends GeoServerSecuredPage {
         embeddedBrokerInfo.setEnabled(false);
         form.add(embeddedBrokerInfo);
 
-        final AjaxButton embeddedBroker =
-                new AjaxButton("embeddedBrokerB") {
-                    /** serialVersionUID */
-                    private static final long serialVersionUID = 1L;
+        final AjaxButton embeddedBroker = new AjaxButton("embeddedBrokerB") {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        JMSFactory factory = getJMSFactory();
-                        if (!factory.isEmbeddedBrokerStarted()) {
-                            try {
-                                if (factory.startEmbeddedBroker(configurations)) {
-                                    embeddedBrokerInfo.getModel().setObject("enabled");
-                                }
-                            } catch (Exception e) {
-                                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                                    LOGGER.severe(e.getLocalizedMessage());
-                                fp.error(e.getLocalizedMessage());
-                            }
-                        } else {
-                            try {
-                                if (factory.stopEmbeddedBroker()) {
-                                    embeddedBrokerInfo.getModel().setObject("disabled");
-                                }
-                            } catch (Exception e) {
-                                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                                    LOGGER.severe(e.getLocalizedMessage());
-                                fp.error(e.getLocalizedMessage());
-                            }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                JMSFactory factory = getJMSFactory();
+                if (!factory.isEmbeddedBrokerStarted()) {
+                    try {
+                        if (factory.startEmbeddedBroker(configurations)) {
+                            embeddedBrokerInfo.getModel().setObject("enabled");
                         }
-                        target.add(this.getParent());
+                    } catch (Exception e) {
+                        if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe(e.getLocalizedMessage());
+                        fp.error(e.getLocalizedMessage());
                     }
-                };
+                } else {
+                    try {
+                        if (factory.stopEmbeddedBroker()) {
+                            embeddedBrokerInfo.getModel().setObject("disabled");
+                        }
+                    } catch (Exception e) {
+                        if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe(e.getLocalizedMessage());
+                        fp.error(e.getLocalizedMessage());
+                    }
+                }
+                target.add(this.getParent());
+            }
+        };
         form.add(embeddedBroker);
 
         // add the form
@@ -256,12 +232,10 @@ public class ClusterPage extends GeoServerSecuredPage {
 
         // make sure all text fields are not set to null in case of empty string, the
         // property model is based on HastTable, that cannot handle null values
-        form.visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    TextField tf = (TextField) component;
-                    tf.setConvertEmptyInputStringToNull(false);
-                });
+        form.visitChildren(TextField.class, (component, visit) -> {
+            TextField tf = (TextField) component;
+            tf.setConvertEmptyInputStringToNull(false);
+        });
 
         // add the status monitor
         add(fp);
@@ -286,43 +260,38 @@ public class ClusterPage extends GeoServerSecuredPage {
         toggleInfo.setEnabled(false);
         form.add(toggleInfo);
 
-        final AjaxButton toggle =
-                new AjaxButton(buttonId) {
-                    private static final long serialVersionUID = 1L;
+        final AjaxButton toggle = new AjaxButton(buttonId) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        fp.error("ERROR");
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                fp.error("ERROR");
 
-                        target.add(fp);
-                    };
+                target.add(fp);
+            }
+            ;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        final boolean switchTo =
-                                !Boolean.parseBoolean(toggleInfo.getModel().getObject());
-                        final ApplicationContext ctx =
-                                getGeoServerApplication().getApplicationContext();
-                        ctx.publishEvent(new ToggleEvent(switchTo, type));
-                        // getConfig().putConfiguration(configKey,
-                        // Boolean.toString(switchTo));
-                        if (switchTo) {
-                            fp.info("The " + type + " toggle is now ENABLED");
-                        } else {
-                            fp.warn(
-                                    "The "
-                                            + type
-                                            + " toggle is now DISABLED no event will be posted/received to/from the broker");
-                            fp.info(
-                                    "Note that the "
-                                            + type
-                                            + " is still registered to the topic destination");
-                        }
-                        toggleInfo.getModel().setObject(Boolean.toString(switchTo));
-                        target.add(toggleInfo);
-                        target.add(fp);
-                    }
-                };
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                final boolean switchTo =
+                        !Boolean.parseBoolean(toggleInfo.getModel().getObject());
+                final ApplicationContext ctx = getGeoServerApplication().getApplicationContext();
+                ctx.publishEvent(new ToggleEvent(switchTo, type));
+                // getConfig().putConfiguration(configKey,
+                // Boolean.toString(switchTo));
+                if (switchTo) {
+                    fp.info("The " + type + " toggle is now ENABLED");
+                } else {
+                    fp.warn("The "
+                            + type
+                            + " toggle is now DISABLED no event will be posted/received to/from the broker");
+                    fp.info("Note that the " + type + " is still registered to the topic destination");
+                }
+                toggleInfo.getModel().setObject(Boolean.toString(switchTo));
+                target.add(toggleInfo);
+                target.add(fp);
+            }
+        };
         toggle.setRenderBodyOnly(false);
 
         form.add(toggle);
@@ -347,7 +316,6 @@ public class ClusterPage extends GeoServerSecuredPage {
     }
 
     protected JMSContainerHandlerExceptionListenerImpl getJMSContainerExceptionHandler() {
-        return getGeoServerApplication()
-                .getBeanOfType(JMSContainerHandlerExceptionListenerImpl.class);
+        return getGeoServerApplication().getBeanOfType(JMSContainerHandlerExceptionListenerImpl.class);
     }
 }

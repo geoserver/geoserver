@@ -40,20 +40,16 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
     public void testNotAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth(null, null);
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
+        assertXpathEvaluatesTo("0", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
         assertXpathEvaluatesTo(
-                "0", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
-        assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:Exception[contains(ows:ExceptionText,'No such process: JTS:buffer')])",
-                d);
+                "1", "count(//ows:Exception[contains(ows:ExceptionText,'No such process: JTS:buffer')])", d);
     }
 
     @Test
     public void testAuthenticatedDescribeProcessPermission() throws Exception {
         setRequestAuth("test", "test");
         Document d = getAsDOM("wps?service=wps&request=describeprocess&identifier=JTS:buffer");
-        assertXpathEvaluatesTo(
-                "1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
+        assertXpathEvaluatesTo("1", "count(//ProcessDescription[ows:Identifier = 'JTS:buffer'])", d);
     }
 
     // Execute process
@@ -64,9 +60,7 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
         Document d = postAsDOM("wps", executeRequestXml);
         checkValidationErrors(d);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:Exception[contains(ows:ExceptionText,'Unknown process JTS:buffer')])",
-                d);
+                "1", "count(//ows:Exception[contains(ows:ExceptionText,'Unknown process JTS:buffer')])", d);
     }
 
     @Test
@@ -76,9 +70,7 @@ public class WPSAccessHideTest extends AbstractWPSAccessTest {
         checkValidationErrors(d);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
-        assertXpathExists(
-                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon",
-                d);
+        assertXpathExists("/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/gml:Polygon", d);
     }
 
     @Override

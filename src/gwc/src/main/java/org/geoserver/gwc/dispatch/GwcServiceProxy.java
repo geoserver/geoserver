@@ -26,8 +26,8 @@ import org.geowebcache.GeoWebCacheDispatcher;
 import org.geowebcache.GeoWebCacheExtensions;
 
 /**
- * Service bean used as service implementation for the GeoServer {@link Dispatcher} when processing
- * GWC service requests.
+ * Service bean used as service implementation for the GeoServer {@link Dispatcher} when processing GWC service
+ * requests.
  *
  * <p>See the package documentation for more insights on how these all fit together.
  */
@@ -38,13 +38,12 @@ public class GwcServiceProxy {
     private final GeoWebCacheDispatcher gwcDispatcher;
 
     public GwcServiceProxy() {
-        serviceInfo =
-                new ServiceInfoImpl() {
-                    @Override
-                    public String getType() {
-                        return "WMTS";
-                    }
-                };
+        serviceInfo = new ServiceInfoImpl() {
+            @Override
+            public String getType() {
+                return "WMTS";
+            }
+        };
         serviceInfo.setId("gwc");
         serviceInfo.setName("gwc");
         serviceInfo.setEnabled(true);
@@ -53,32 +52,29 @@ public class GwcServiceProxy {
     }
 
     /**
-     * This method is here to assist the {@link DisabledServiceCheck} callback, that uses reflection
-     * to find such a method and check if the returned service info is {@link
-     * ServiceInfo#isEnabled() enabled} (and hence avoid the WARNING message it spits out if this
-     * method is not found); not though, that in the interest of keeping a single {@link
-     * GwcServiceProxy} to proxy all gwc provided services (wmts, tms, etc), the service info
-     * returned here will always be enabled, we already have a GWC {@link
-     * GWCServiceEnablementInterceptor service interceptor} aspect that decorates specific gwc
-     * services to check for enablement.
+     * This method is here to assist the {@link DisabledServiceCheck} callback, that uses reflection to find such a
+     * method and check if the returned service info is {@link ServiceInfo#isEnabled() enabled} (and hence avoid the
+     * WARNING message it spits out if this method is not found); not though, that in the interest of keeping a single
+     * {@link GwcServiceProxy} to proxy all gwc provided services (wmts, tms, etc), the service info returned here will
+     * always be enabled, we already have a GWC {@link GWCServiceEnablementInterceptor service interceptor} aspect that
+     * decorates specific gwc services to check for enablement.
      */
     public ServiceInfo getServiceInfo() {
         return serviceInfo;
     }
 
     /**
-     * This method is the only operation defined for the {@link org.geoserver.platform.Service} bean
-     * descriptor, and is meant to execute all requests to /gwc/service/*, delegating to the {@code
-     * GeoWebCacheDispatcher}'s {@link GeoWebCacheDispatcher#handleRequest(HttpServletRequest,
-     * HttpServletResponse) handleRequest(HttpServletRequest, HttpServletResponse)} method, and
-     * return a response object so that the GeoServer {@link Dispatcher} looks up a {@link Response}
-     * that finally writes the result down to the client response stream.
+     * This method is the only operation defined for the {@link org.geoserver.platform.Service} bean descriptor, and is
+     * meant to execute all requests to /gwc/service/*, delegating to the {@code GeoWebCacheDispatcher}'s
+     * {@link GeoWebCacheDispatcher#handleRequest(HttpServletRequest, HttpServletResponse)
+     * handleRequest(HttpServletRequest, HttpServletResponse)} method, and return a response object so that the
+     * GeoServer {@link Dispatcher} looks up a {@link Response} that finally writes the result down to the client
+     * response stream.
      *
      * @see GwcOperationProxy
      * @see GwcResponseProxy
      */
-    public GwcOperationProxy dispatch(HttpServletRequest rawRequest, HttpServletResponse rawRespose)
-            throws Exception {
+    public GwcOperationProxy dispatch(HttpServletRequest rawRequest, HttpServletResponse rawRespose) throws Exception {
 
         //        DispatcherController.BASE_URL.set(ResponseUtils.baseURL(rawRequest));
 

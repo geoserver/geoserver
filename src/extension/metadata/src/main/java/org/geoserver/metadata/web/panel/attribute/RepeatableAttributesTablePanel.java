@@ -24,8 +24,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
- * Generate the gui as a list of simple inputs (text, double, dropdown, ..). Add ui components to
- * manage the list.
+ * Generate the gui as a list of simple inputs (text, double, dropdown, ..). Add ui components to manage the list.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -75,8 +74,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                     public void onSubmit(AjaxRequestTarget target) {
                         dataProvider.addField();
                         updateTable(dataProvider);
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         target.add(tablePanel);
                         target.add(RepeatableAttributesTablePanel.this);
                     }
@@ -84,8 +82,7 @@ public class RepeatableAttributesTablePanel extends Panel {
     }
 
     private GeoServerTablePanel<ComplexMetadataAttribute<String>> createAttributesTablePanel(
-            RepeatableAttributeDataProvider<String> dataProvider,
-            Map<String, List<Integer>> derivedAtts) {
+            RepeatableAttributeDataProvider<String> dataProvider, Map<String, List<Integer>> derivedAtts) {
 
         GeoServerTablePanel<ComplexMetadataAttribute<String>> tablePanel =
                 new GeoServerTablePanel<>("attributesTablePanel", dataProvider) {
@@ -99,16 +96,12 @@ public class RepeatableAttributesTablePanel extends Panel {
                     protected Component getComponentForProperty(
                             String id,
                             IModel<ComplexMetadataAttribute<String>> itemModel,
-                            GeoServerDataProvider.Property<ComplexMetadataAttribute<String>>
-                                    property) {
-                        AttributeConfiguration attributeConfiguration =
-                                dataProvider.getConfiguration();
+                            GeoServerDataProvider.Property<ComplexMetadataAttribute<String>> property) {
+                        AttributeConfiguration attributeConfiguration = dataProvider.getConfiguration();
                         boolean enableInput = true;
                         // disable input values from template
-                        if (derivedAtts != null
-                                && derivedAtts.containsKey(attributeConfiguration.getKey())) {
-                            List<Integer> indexes =
-                                    derivedAtts.get(attributeConfiguration.getKey());
+                        if (derivedAtts != null && derivedAtts.containsKey(attributeConfiguration.getKey())) {
+                            List<Integer> indexes = derivedAtts.get(attributeConfiguration.getKey());
                             if (indexes.contains(itemModel.getObject().getIndex())) {
                                 enableInput = false;
                                 disabledValue = itemModel;
@@ -116,54 +109,49 @@ public class RepeatableAttributesTablePanel extends Panel {
                         }
                         if (property.getName().equals(RepeatableAttributeDataProvider.KEY_VALUE)) {
 
-                            Component component =
-                                    EditorFactory.getInstance()
-                                            .create(
-                                                    attributeConfiguration,
-                                                    id,
-                                                    itemModel.getObject(),
-                                                    dataProvider.getModel(),
-                                                    rInfo);
+                            Component component = EditorFactory.getInstance()
+                                    .create(
+                                            attributeConfiguration,
+                                            id,
+                                            itemModel.getObject(),
+                                            dataProvider.getModel(),
+                                            rInfo);
 
                             if (component != null) {
                                 component.setEnabled(enableInput);
                             }
                             return component;
 
-                        } else if (property.getName()
-                                .equals(RepeatableAttributeDataProvider.KEY_REMOVE_ROW)) {
+                        } else if (property.getName().equals(RepeatableAttributeDataProvider.KEY_REMOVE_ROW)) {
                             if (itemModel.equals(disabledValue)) {
                                 // If the object is for a row that is not editable don't show the
                                 // remove button
                                 disabledValue = null;
                                 return new Label(id, "");
                             } else {
-                                AjaxSubmitLink deleteAction =
-                                        new AjaxSubmitLink(id) {
+                                AjaxSubmitLink deleteAction = new AjaxSubmitLink(id) {
 
-                                            private static final long serialVersionUID =
-                                                    -8829474855848647384L;
+                                    private static final long serialVersionUID = -8829474855848647384L;
 
-                                            @Override
-                                            public void onSubmit(AjaxRequestTarget target) {
-                                                removeFields(target, itemModel);
-                                            }
-                                        };
+                                    @Override
+                                    public void onSubmit(AjaxRequestTarget target) {
+                                        removeFields(target, itemModel);
+                                    }
+                                };
                                 deleteAction.add(new AttributeAppender("class", "remove-link"));
                                 deleteAction.setVisible(isEnabledInHierarchy());
                                 return deleteAction;
                             }
-                        } else if (property.getName()
-                                .equals(RepeatableAttributeDataProvider.KEY_UPDOWN_ROW)) {
+                        } else if (property.getName().equals(RepeatableAttributeDataProvider.KEY_UPDOWN_ROW)) {
                             return new AttributePositionPanel(
                                             id,
                                             (IModel<ComplexMetadataMap>)
-                                                    RepeatableAttributesTablePanel.this
-                                                            .getDefaultModel(),
+                                                    RepeatableAttributesTablePanel.this.getDefaultModel(),
                                             dataProvider.getConfiguration(),
                                             itemModel.getObject().getIndex(),
-                                            getDerivedAtts(
-                                                    dataProvider.getConfiguration().getKey()),
+                                            getDerivedAtts(dataProvider
+                                                    .getConfiguration()
+                                                    .getKey()),
                                             this)
                                     .setVisible(isEnabledInHierarchy());
                         }
@@ -171,8 +159,7 @@ public class RepeatableAttributesTablePanel extends Panel {
                     }
 
                     private void removeFields(
-                            AjaxRequestTarget target,
-                            IModel<ComplexMetadataAttribute<String>> itemModel) {
+                            AjaxRequestTarget target, IModel<ComplexMetadataAttribute<String>> itemModel) {
                         ComplexMetadataAttribute<String> object = itemModel.getObject();
                         dataProvider.removeField(object);
                         updateTable(dataProvider);

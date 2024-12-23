@@ -46,10 +46,7 @@ public class GeometryArray extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public GeometryArray(
-            GeometryTypeEnum geometryType,
-            Geometry[] geometries,
-            SpatialReference spatialReference) {
+    public GeometryArray(GeometryTypeEnum geometryType, Geometry[] geometries, SpatialReference spatialReference) {
         this.geometryType = geometryType;
         this.geometries = geometries;
         this.spatialReference = spatialReference;

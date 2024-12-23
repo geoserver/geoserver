@@ -17,8 +17,8 @@ import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.GeometryFactory;
 
 /**
- * Collects all geometries provided in a list into a single {@link GeometryCollection} object (a
- * type specific subclass of it if possible)
+ * Collects all geometries provided in a list into a single {@link GeometryCollection} object (a type specific subclass
+ * of it if possible)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -26,12 +26,10 @@ public class CollectGeometriesFunction extends FunctionImpl {
 
     long maxCoordinates;
 
-    public CollectGeometriesFunction(
-            Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
+    public CollectGeometriesFunction(Name name, List<Expression> args, Literal fallback, long maxCoordinates) {
         if (args == null || args.size() != 1) {
             throw new IllegalArgumentException(
-                    "CollectGeometries function requires a single"
-                            + " argument, a collection of geometries");
+                    "CollectGeometries function requires a single" + " argument, a collection of geometries");
         }
 
         functionName = new FunctionNameImpl(name, args.size());

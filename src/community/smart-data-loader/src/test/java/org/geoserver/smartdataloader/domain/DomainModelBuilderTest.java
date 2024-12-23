@@ -104,7 +104,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
 
         // check build domainmodel
         int rootMeteoParametersRelationsSize = dm.getRootEntity().getRelations().size();
-        DomainRelation meteoParameterRelation = dm.getRootEntity().getRelations().get(0);
+        DomainRelation meteoParameterRelation =
+                dm.getRootEntity().getRelations().get(0);
         String containingEntityNameMeteoParametersRelation =
                 meteoParameterRelation.getContainingEntity().getName();
         String destinationEntityNameMeteoParametersRelation =
@@ -140,7 +141,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         LOGGER.log(Level.INFO, dm.toString());
 
         // check build domainmodel
-        int rootMeteoObservationsRelationsSize = dm.getRootEntity().getRelations().size();
+        int rootMeteoObservationsRelationsSize =
+                dm.getRootEntity().getRelations().size();
         // check we have 2 relations
         assertEquals(2, rootMeteoObservationsRelationsSize);
         // check relations containing and destination entity, as much as relations from that
@@ -154,7 +156,8 @@ public abstract class DomainModelBuilderTest extends AbstractJDBCSmartDataLoader
         DomainRelation relationSt = map.get("meteo_stations");
         DomainRelation relationParam = map.get("meteo_parameters");
         int relationSizeSt = relationSt.getDestinationEntity().getRelations().size();
-        int relationSizeParam = relationParam.getDestinationEntity().getRelations().size();
+        int relationSizeParam =
+                relationParam.getDestinationEntity().getRelations().size();
         assertEquals(1, relationSizeSt);
         assertEquals(0, relationSizeParam);
         String stContainingEntity = relationSt.getContainingEntity().getName();

@@ -31,8 +31,7 @@ public class JSONLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
      * @see GetLegendGraphicProducer#writeTo(java.io.OutputStream)
      */
     @Override
-    public void write(Object legend, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object legend, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(JSONLegendGraphic.class, legend);
 
         JSONObject json = (JSONObject) ((LegendGraphic) legend).getLegend();

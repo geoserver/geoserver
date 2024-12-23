@@ -105,28 +105,25 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         li.getResource().getMetadata().put(MAPML_USE_TILES, false);
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BASIC_POLYGONS.getLocalPart())
-                        .bbox("-180,-90,180,90")
-                        .srs("EPSG:4326")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BASIC_POLYGONS.getLocalPart())
+                .bbox("-180,-90,180,90")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
 
         assertEquals(
                 "Basic Polygons layer has three features, so one should show up in the conversion",
                 3,
                 mapmlFeatures.getBody().getFeatures().size());
 
-        Polygon polygon =
-                (Polygon)
-                        mapmlFeatures
-                                .getBody()
-                                .getFeatures()
-                                .get(0)
-                                .getGeometry()
-                                .getGeometryContent()
-                                .getValue();
+        Polygon polygon = (Polygon) mapmlFeatures
+                .getBody()
+                .getFeatures()
+                .get(0)
+                .getGeometry()
+                .getGeometryContent()
+                .getValue();
         assertEquals(
                 "Polygons layer coordinates should match original feature's coordinates",
                 "0 -1 1 0 0 1 -1 0 0 -1",
@@ -144,28 +141,26 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         li.setDefaultStyle(cat.getStyleByName("polygonOneFilter"));
         cat.save(li);
         String bbox = "-0.1,-0.1,0.1,0.1";
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox(bbox)
-                        .srs("EPSG:4326")
-                        .styles("polygonOneFilter")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox(bbox)
+                .srs("EPSG:4326")
+                .styles("polygonOneFilter")
+                .feature(true)
+                .getAsMapML();
 
         assertEquals(
                 "Buildings layer has two features, only one should show up after the SLD is applied",
                 1,
                 mapmlFeatures.getBody().getFeatures().size());
 
-        Mapml mapmlFeaturesElse =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox(bbox)
-                        .srs("EPSG:4326")
-                        .styles("polygonElseFilter")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeaturesElse = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox(bbox)
+                .srs("EPSG:4326")
+                .styles("polygonElseFilter")
+                .feature(true)
+                .getAsMapML();
 
         assertEquals(
                 "Buildings layer has two features, both should show up after the SLD with elseFilter is applied",
@@ -209,23 +204,21 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         cat.save(li);
 
         // test small bbox, the two features are big enough that they should both be returned
-        Mapml mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox("-0.1,-0.1,0.1,0.1")
-                        .srs("EPSG:4326")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox("-0.1,-0.1,0.1,0.1")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
         assertEquals(2, mapmlFeatures.getBody().getFeatures().size());
 
         // test larger bbox, this time they are smaller than a pixel, only one remains
-        mapmlFeatures =
-                new MapMLWMSRequest()
-                        .name(MockData.BUILDINGS.getLocalPart())
-                        .bbox("-10,-10,10,10")
-                        .srs("EPSG:4326")
-                        .feature(true)
-                        .getAsMapML();
+        mapmlFeatures = new MapMLWMSRequest()
+                .name(MockData.BUILDINGS.getLocalPart())
+                .bbox("-10,-10,10,10")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
         assertEquals(1, mapmlFeatures.getBody().getFeatures().size());
     }
 
@@ -239,13 +232,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         cat.save(li);
 
         // test with a small bbox, that should still lead to a geometric simplification
-        Mapml mapml =
-                new MapMLWMSRequest()
-                        .name(MockData.ROAD_SEGMENTS.getLocalPart())
-                        .bbox("-0.1,-0.1,0.1,0.1")
-                        .srs("EPSG:4326")
-                        .feature(true)
-                        .getAsMapML();
+        Mapml mapml = new MapMLWMSRequest()
+                .name(MockData.ROAD_SEGMENTS.getLocalPart())
+                .bbox("-0.1,-0.1,0.1,0.1")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
         List<Feature> features = mapml.getBody().getFeatures();
         assertEquals(5, features.size());
         for (Feature feature : features) {
@@ -253,7 +245,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             // all lines are small enough that they are simplified to start/end
             if (geometry instanceof LineString) {
                 LineString ls = (LineString) geometry;
-                String lscoords = ls.getCoordinates().get(0).getCoordinates().get(0).toString();
+                String lscoords =
+                        ls.getCoordinates().get(0).getCoordinates().get(0).toString();
                 assertEquals(4, lscoords.split(" ").length);
             } else if (geometry instanceof MultiLineString) {
                 MultiLineString mls = (MultiLineString) geometry;
@@ -272,14 +265,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         SimpleFeatureType polyType = DataUtilities.createType("polygons", polyTypeSpec);
         DataStore ds = DataUtilities.dataStore(new EmptyFeatureCollection(polyType));
         ReferencedEnvelope mapBounds =
-                new ReferencedEnvelope(
-                        0, 0.005, 0, 0.005, CRS.decode("urn:x-ogc:def:crs:EPSG:4326"));
+                new ReferencedEnvelope(0, 0.005, 0, 0.005, CRS.decode("urn:x-ogc:def:crs:EPSG:4326"));
         Rectangle renderingArea = new Rectangle(256, 256);
 
-        FeatureLayer layer =
-                new FeatureLayer(
-                        ds.getFeatureSource("polygons"),
-                        cat.getStyleByName("polygonOneFilter").getStyle());
+        FeatureLayer layer = new FeatureLayer(
+                ds.getFeatureSource("polygons"),
+                cat.getStyleByName("polygonOneFilter").getStyle());
 
         WMSMapContent mapContent = createMapContent(mapBounds, renderingArea, 0, layer);
         Query q = StyleQueryUtil.getStyleQuery(layer, mapContent);
@@ -287,10 +278,9 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 "Query filter should include the SLD filter",
                 q.getFilter().toString().contains("ADDRESS = 123 Main Street"));
 
-        FeatureLayer layerElse =
-                new FeatureLayer(
-                        ds.getFeatureSource("polygons"),
-                        cat.getStyleByName("polygonElseFilter").getStyle());
+        FeatureLayer layerElse = new FeatureLayer(
+                ds.getFeatureSource("polygons"),
+                cat.getStyleByName("polygonElseFilter").getStyle());
         WMSMapContent mapContentElse = createMapContent(mapBounds, renderingArea, 0, layerElse);
         Query qElse = StyleQueryUtil.getStyleQuery(layerElse, mapContentElse);
         assertFalse(
@@ -308,8 +298,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             li.getResource().getMetadata().put(MAPML_USE_TILES, false);
             cat.save(li);
             String layerId = getLayerId(MockData.BRIDGES);
-            FeatureTypeInfo resource =
-                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, MAPML_FEATURE_HEAD_FTL);
             FileUtils.write(
@@ -320,13 +309,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                             + "</map-head>\n"
                             + "</mapml->\n",
                     "UTF-8");
-            Mapml mapmlFeatures =
-                    new MapMLWMSRequest()
-                            .name(MockData.BRIDGES.getLocalPart())
-                            .bbox("-180,-90,180,90")
-                            .srs("EPSG:4326")
-                            .feature(true)
-                            .getAsMapML();
+            Mapml mapmlFeatures = new MapMLWMSRequest()
+                    .name(MockData.BRIDGES.getLocalPart())
+                    .bbox("-180,-90,180,90")
+                    .srs("EPSG:4326")
+                    .feature(true)
+                    .getAsMapML();
 
             String mapmlStyle = mapmlFeatures.getHead().getStyle();
             assertTrue(mapmlStyle.contains(".desired {stroke-dashoffset:3}"));
@@ -347,8 +335,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             li.getResource().getMetadata().put(MAPML_USE_TILES, false);
             cat.save(li);
             String layerId = getLayerId(MockData.BRIDGES);
-            FeatureTypeInfo resource =
-                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
@@ -376,23 +363,20 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                             + "</map-body>\n"
                             + "</mapml->\n",
                     "UTF-8");
-            Mapml mapmlFeatures =
-                    new MapMLWMSRequest()
-                            .name(MockData.BRIDGES.getLocalPart())
-                            .bbox("-180,-90,180,90")
-                            .srs("EPSG:4326")
-                            .feature(true)
-                            .getAsMapML();
+            Mapml mapmlFeatures = new MapMLWMSRequest()
+                    .name(MockData.BRIDGES.getLocalPart())
+                    .bbox("-180,-90,180,90")
+                    .srs("EPSG:4326")
+                    .feature(true)
+                    .getAsMapML();
 
-            Feature feature2 =
-                    mapmlFeatures
-                            .getBody()
-                            .getFeatures()
-                            .get(0); // get the first feature, which has a class
+            Feature feature2 = mapmlFeatures.getBody().getFeatures().get(0); // get the first feature, which has a class
             String attributes = feature2.getProperties().getAnyElement();
             assertTrue(attributes.contains("UPDATED NAME"));
-            Point featurePoint = (Point) feature2.getGeometry().getGeometryContent().getValue();
-            Span span = ((Span) featurePoint.getCoordinates().get(0).getCoordinates().get(0));
+            Point featurePoint =
+                    (Point) feature2.getGeometry().getGeometryContent().getValue();
+            Span span = ((Span)
+                    featurePoint.getCoordinates().get(0).getCoordinates().get(0));
             assertEquals("desired", span.getClazz());
         } finally {
             if (template != null) {
@@ -411,8 +395,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             li.getResource().getMetadata().put(MAPML_USE_TILES, false);
             cat.save(li);
             String layerId = getLayerId(MockData.MLINES);
-            FeatureTypeInfo resource =
-                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
@@ -431,22 +414,19 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                             + "</map-body>\n"
                             + "</mapml->\n",
                     "UTF-8");
-            Mapml mapmlFeatures =
-                    new MapMLWMSRequest()
-                            .name(MockData.MLINES.getLocalPart())
-                            .bbox("500000,500000,500999,500999")
-                            .srs("EPSG:32615")
-                            .feature(true)
-                            .getAsMapML();
+            Mapml mapmlFeatures = new MapMLWMSRequest()
+                    .name(MockData.MLINES.getLocalPart())
+                    .bbox("500000,500000,500999,500999")
+                    .srs("EPSG:32615")
+                    .feature(true)
+                    .getAsMapML();
 
             Feature feature2 =
-                    mapmlFeatures
-                            .getBody()
-                            .getFeatures()
-                            .get(0); // get the second feature, which has a class
+                    mapmlFeatures.getBody().getFeatures().get(0); // get the second feature, which has a class
             LineString featureLine =
                     (LineString) feature2.getGeometry().getGeometryContent().getValue();
-            Span span = (Span) featureLine.getCoordinates().get(0).getCoordinates().get(1);
+            Span span =
+                    (Span) featureLine.getCoordinates().get(0).getCoordinates().get(1);
             assertEquals("desired", span.getClazz());
         } finally {
             if (template != null) {
@@ -465,8 +445,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             li.getResource().getMetadata().put(MAPML_USE_TILES, false);
             cat.save(li);
             String layerId = getLayerId(MockData.POLYGONS);
-            FeatureTypeInfo resource =
-                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
@@ -491,28 +470,22 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                             + "</map-body>\n"
                             + "</mapml- >\n",
                     "UTF-8");
-            Mapml mapmlFeatures =
-                    new MapMLWMSRequest()
-                            .name(MockData.POLYGONS.getLocalPart())
-                            .bbox("500000,500000,500999,500999")
-                            .srs("EPSG:32615")
-                            .feature(true)
-                            .getAsMapML();
+            Mapml mapmlFeatures = new MapMLWMSRequest()
+                    .name(MockData.POLYGONS.getLocalPart())
+                    .bbox("500000,500000,500999,500999")
+                    .srs("EPSG:32615")
+                    .feature(true)
+                    .getAsMapML();
 
             Feature feature2 =
-                    mapmlFeatures
-                            .getBody()
-                            .getFeatures()
-                            .get(0); // get the second feature, which has a class
+                    mapmlFeatures.getBody().getFeatures().get(0); // get the second feature, which has a class
             Polygon featurePolygon =
                     (Polygon) feature2.getGeometry().getGeometryContent().getValue();
-            Span span =
-                    (Span)
-                            featurePolygon
-                                    .getThreeOrMoreCoordinatePairs()
-                                    .get(0)
-                                    .getCoordinates()
-                                    .get(0);
+            Span span = (Span) featurePolygon
+                    .getThreeOrMoreCoordinatePairs()
+                    .get(0)
+                    .getCoordinates()
+                    .get(0);
             assertEquals("desired", span.getClazz());
         } finally {
             if (template != null) {
@@ -531,8 +504,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
             li.getResource().getMetadata().put(MAPML_USE_TILES, false);
             cat.save(li);
             String layerId = getLayerId(MockData.NAMED_PLACES);
-            FeatureTypeInfo resource =
-                    getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
+            FeatureTypeInfo resource = getCatalog().getResourceByName(layerId, FeatureTypeInfo.class);
             File parent = getDataDirectory().get(resource).dir();
             template = new File(parent, MAPML_FEATURE_FTL);
             FileUtils.write(
@@ -581,30 +553,23 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                             + "</map-body>\n"
                             + "</mapml- >\n",
                     "UTF-8");
-            Mapml mapmlFeatures =
-                    new MapMLWMSRequest()
-                            .name(MockData.NAMED_PLACES.getLocalPart())
-                            .bbox("-180,-90,180,90")
-                            .srs("EPSG:4326")
-                            .feature(true)
-                            .getAsMapML();
+            Mapml mapmlFeatures = new MapMLWMSRequest()
+                    .name(MockData.NAMED_PLACES.getLocalPart())
+                    .bbox("-180,-90,180,90")
+                    .srs("EPSG:4326")
+                    .feature(true)
+                    .getAsMapML();
 
-            Feature feature2 =
-                    mapmlFeatures
-                            .getBody()
-                            .getFeatures()
-                            .get(0); // get the first feature, which has a class
+            Feature feature2 = mapmlFeatures.getBody().getFeatures().get(0); // get the first feature, which has a class
             MultiPolygon featureMultiPolygon =
                     (MultiPolygon) feature2.getGeometry().getGeometryContent().getValue();
-            Span span =
-                    (Span)
-                            featureMultiPolygon
-                                    .getPolygon()
-                                    .get(0)
-                                    .getThreeOrMoreCoordinatePairs()
-                                    .get(0)
-                                    .getCoordinates()
-                                    .get(0);
+            Span span = (Span) featureMultiPolygon
+                    .getPolygon()
+                    .get(0)
+                    .getThreeOrMoreCoordinatePairs()
+                    .get(0)
+                    .getCoordinates()
+                    .get(0);
             assertEquals("desired", span.getClazz());
         } finally {
             if (template != null) {
@@ -624,17 +589,15 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         lgi.getMetadata().put(MAPML_USE_FEATURES, true);
         lgi.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(lgi);
-        String response =
-                new MapMLWMSRequest()
-                        .name("layerGroup" + "," + MockData.BASIC_POLYGONS.getLocalPart())
-                        .srs("EPSG:4326")
-                        .feature(true)
-                        .getAsString();
+        String response = new MapMLWMSRequest()
+                .name("layerGroup" + "," + MockData.BASIC_POLYGONS.getLocalPart())
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsString();
 
         assertTrue(
                 "MapML response contains an exception due to multiple feature types",
-                response.contains(
-                        "MapML WMS Feature format does not currently support Multiple Feature Type output."));
+                response.contains("MapML WMS Feature format does not currently support Multiple Feature Type output."));
     }
 
     @Test
@@ -644,21 +607,18 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         liRaster.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
         liRaster.getResource().getMetadata().put(MAPML_USE_TILES, false);
         cat.save(liRaster);
-        String response =
-                new MapMLWMSRequest()
-                        .name(MockData.WORLD.getLocalPart())
-                        .srs("EPSG:3857")
-                        .feature(true)
-                        .getAsString();
+        String response = new MapMLWMSRequest()
+                .name(MockData.WORLD.getLocalPart())
+                .srs("EPSG:3857")
+                .feature(true)
+                .getAsString();
 
         assertTrue(
                 "MapML response contains an exception due to non-vector type",
-                response.contains(
-                        "MapML WMS Feature format does not currently support non-vector layers."));
+                response.contains("MapML WMS Feature format does not currently support non-vector layers."));
     }
 
-    protected static SimpleFeature feature(SimpleFeatureType type, String id, Object... values)
-            throws ParseException {
+    protected static SimpleFeature feature(SimpleFeatureType type, String id, Object... values) throws ParseException {
 
         SimpleFeatureBuilder builder = new SimpleFeatureBuilder(type);
 
@@ -675,8 +635,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     private WMSMapContent createMapContent(
-            ReferencedEnvelope mapBounds, Rectangle renderingArea, Integer buffer, Layer... layers)
-            throws Exception {
+            ReferencedEnvelope mapBounds, Rectangle renderingArea, Integer buffer, Layer... layers) throws Exception {
 
         GetMapRequest mapRequest = createGetMapRequest(mapBounds, renderingArea, buffer);
 
@@ -697,8 +656,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
     }
 
     protected GetMapRequest createGetMapRequest(
-            ReferencedEnvelope requestEnvelope, Rectangle renderingArea, Integer buffer)
-            throws FactoryException {
+            ReferencedEnvelope requestEnvelope, Rectangle renderingArea, Integer buffer) throws FactoryException {
         GetMapRequest request = new GetMapRequest();
         request.setBaseUrl("http://localhost:8080/geoserver");
 
@@ -709,8 +667,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         request.setStyles(styles);
         request.setBbox(requestEnvelope);
         request.setCrs(requestEnvelope.getCoordinateReferenceSystem());
-        if (requestEnvelope.getCoordinateReferenceSystem()
-                == CRS.decode("urn:x-ogc:def:crs:EPSG:4326")) {
+        if (requestEnvelope.getCoordinateReferenceSystem() == CRS.decode("urn:x-ogc:def:crs:EPSG:4326")) {
             request.setSRS("EPSG:4326");
         } else if (requestEnvelope.getCoordinateReferenceSystem() == CRS.decode("EPSG:3857")) {
             request.setSRS("EPSG:3857");

@@ -16,8 +16,7 @@ public class CatalogPropertyAccessorFactory implements PropertyAccessorFactory {
     private static final CatalogPropertyAccessor INSTANCE = new CatalogPropertyAccessor();
 
     @Override
-    public PropertyAccessor createPropertyAccessor(
-            Class<?> type, String xpath, Class<?> target, Hints hints) {
+    public PropertyAccessor createPropertyAccessor(Class<?> type, String xpath, Class<?> target, Hints hints) {
         if (Info.class.isAssignableFrom(type)) {
             return INSTANCE;
         }

@@ -10,9 +10,8 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 
 /**
- * A class executing a feature count, but also able to return a pre-computed one. Used as an
- * accessory to compute the numberMatched attribute for WFS 2.0, and running the actual counts only
- * when strictly necessary
+ * A class executing a feature count, but also able to return a pre-computed one. Used as an accessory to compute the
+ * numberMatched attribute for WFS 2.0, and running the actual counts only when strictly necessary
  *
  * @author Andrea Aime - GeoSolutions
  */

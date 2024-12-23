@@ -14,15 +14,13 @@ import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationEvent;
 
 /**
- * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer
- * implementations
+ * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer implementations
  *
  * @see {@link JMSAbstractProducer}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class JMSAbstractGeoServerProducer extends JMSAbstractProducer {
-    private static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(JMSAbstractGeoServerProducer.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSAbstractGeoServerProducer.class);
 
     public JMSAbstractGeoServerProducer() {
         super();
@@ -31,11 +29,10 @@ public abstract class JMSAbstractGeoServerProducer extends JMSAbstractProducer {
     }
 
     /**
-     * This should be called before each message send to add options (coming form the dispatcher
-     * callback) to the message
+     * This should be called before each message send to add options (coming form the dispatcher callback) to the
+     * message
      *
-     * @return a copy of the configuration object updated with others options coming from the
-     *     RestDispatcherCallback<br>
+     * @return a copy of the configuration object updated with others options coming from the RestDispatcherCallback<br>
      *     TODO use also options coming from the GUI DispatcherCallback
      */
     protected Properties getProperties() {

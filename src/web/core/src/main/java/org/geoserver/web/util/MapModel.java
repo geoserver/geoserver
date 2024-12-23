@@ -11,8 +11,8 @@ import org.apache.wicket.model.IModel;
 /**
  * A model which backs onto an underlying map.
  *
- * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel}
- * except for that expressions map to keys of a map rather than java bean property names.
+ * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel} except for that
+ * expressions map to keys of a map rather than java bean property names.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

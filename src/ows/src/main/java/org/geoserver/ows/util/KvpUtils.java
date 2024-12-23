@@ -38,23 +38,22 @@ import org.geoserver.platform.ServiceException;
  */
 public class KvpUtils {
     /** Class logger */
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests.readers");
 
     /**
-     * Comparator used to compare two parsers matching the same service/version/request
-     * specification, and returning the most specific one (nulls are high, put at the end of list)
+     * Comparator used to compare two parsers matching the same service/version/request specification, and returning the
+     * most specific one (nulls are high, put at the end of list)
      */
-    private static final Comparator<KvpParser> KVP_PARSER_COMPARATOR =
-            Comparator.comparing(KvpParser::getService, new NullComparator<>())
-                    .thenComparing(KvpParser::getVersion, new NullComparator<>())
-                    .thenComparing(KvpParser::getRequest, new NullComparator<>());
+    private static final Comparator<KvpParser> KVP_PARSER_COMPARATOR = Comparator.comparing(
+                    KvpParser::getService, new NullComparator<>())
+            .thenComparing(KvpParser::getVersion, new NullComparator<>())
+            .thenComparing(KvpParser::getRequest, new NullComparator<>());
 
     /**
      * Defines how to tokenize a string by using some sort of delimiter.
      *
-     * <p>Default implementation uses {@link String#split(String)} with the regular expression
-     * provided at the constructor. More specialized subclasses may just override <code>
+     * <p>Default implementation uses {@link String#split(String)} with the regular expression provided at the
+     * constructor. More specialized subclasses may just override <code>
      * readFlat(String)</code>.
      *
      * @author Gabriel Roldan
@@ -95,25 +94,24 @@ public class KvpUtils {
     public static final Tokenizer VALUE_DELIMITER = new Tokenizer("=");
 
     /** Delimeter for outer value lists in the KVPs */
-    public static final Tokenizer OUTER_DELIMETER =
-            new Tokenizer("\\)\\(") {
-                @Override
-                public List<String> readFlat(final String rawList) {
-                    List<String> list = new ArrayList<>(super.readFlat(rawList));
-                    final int len = list.size();
-                    if (len > 0) {
-                        String first = list.get(0);
-                        if (first.startsWith("(")) {
-                            list.set(0, first.substring(1));
-                        }
-                        String last = list.get(len - 1);
-                        if (last.endsWith(")")) {
-                            list.set(len - 1, last.substring(0, last.length() - 1));
-                        }
-                    }
-                    return list;
+    public static final Tokenizer OUTER_DELIMETER = new Tokenizer("\\)\\(") {
+        @Override
+        public List<String> readFlat(final String rawList) {
+            List<String> list = new ArrayList<>(super.readFlat(rawList));
+            final int len = list.size();
+            if (len > 0) {
+                String first = list.get(0);
+                if (first.startsWith("(")) {
+                    list.set(0, first.substring(1));
                 }
-            };
+                String last = list.get(len - 1);
+                if (last.endsWith(")")) {
+                    list.set(len - 1, last.substring(0, last.length() - 1));
+                }
+            }
+            return list;
+        }
+    };
 
     /** Delimeter for inner value lists in the KVPs */
     public static final Tokenizer INNER_DELIMETER = new Tokenizer(",");
@@ -125,11 +123,11 @@ public class KvpUtils {
     public static final Tokenizer SPACE_DELIMETER = new Tokenizer(" ");
 
     /**
-     * Attempts to parse out the proper typeNames from the FeatureId filters. It simply uses the
-     * value before the '.' character.
+     * Attempts to parse out the proper typeNames from the FeatureId filters. It simply uses the value before the '.'
+     * character.
      *
-     * @param rawFidList the strings after the FEATUREID url component. Should be found using
-     *     kvpPairs.get("FEATUREID") in this class or one of its children
+     * @param rawFidList the strings after the FEATUREID url component. Should be found using kvpPairs.get("FEATUREID")
+     *     in this class or one of its children
      * @return A list of typenames, made from the featureId filters.
      */
     public static List getTypesFromFids(String rawFidList) {
@@ -162,14 +160,13 @@ public class KvpUtils {
     /**
      * Reads a tokenized string and turns it into a list.
      *
-     * <p>In this method, the tokenizer is actually responsible to scan the string, so this method
-     * is just a convenience to maintain backwards compatibility with the old {@link
-     * #readFlat(String, String)} and to easy the use of the default tokenizers {@link
-     * #KEYWORD_DELIMITER}, {@link #INNER_DELIMETER}, {@link #OUTER_DELIMETER} and {@link
-     * #VALUE_DELIMITER}.
+     * <p>In this method, the tokenizer is actually responsible to scan the string, so this method is just a convenience
+     * to maintain backwards compatibility with the old {@link #readFlat(String, String)} and to easy the use of the
+     * default tokenizers {@link #KEYWORD_DELIMITER}, {@link #INNER_DELIMETER}, {@link #OUTER_DELIMETER} and
+     * {@link #VALUE_DELIMITER}.
      *
-     * <p>Note that if the list is unspecified (ie. is null) or is unconstrained (ie. is ''), then
-     * the method returns an empty list.
+     * <p>Note that if the list is unspecified (ie. is null) or is unconstrained (ie. is ''), then the method returns an
+     * empty list.
      *
      * @param rawList The tokenized string.
      * @param tokenizer The delimeter for the string tokens.
@@ -181,15 +178,14 @@ public class KvpUtils {
     }
 
     /**
-     * Reads a tokenized string and turns it into a list. In this method, the tokenizer is quite
-     * flexible. Note that if the list is unspecified (ie. is null) or is unconstrained (ie. is ''),
-     * then the method returns an empty list.
+     * Reads a tokenized string and turns it into a list. In this method, the tokenizer is quite flexible. Note that if
+     * the list is unspecified (ie. is null) or is unconstrained (ie. is ''), then the method returns an empty list.
      *
      * <p>If possible, use the method version that receives a well known {@link #readFlat(String,
-     * org.geoserver.ows.util.KvpUtils.Tokenizer) Tokenizer}, as there might be special cases to
-     * catch out, like for the {@link #OUTER_DELIMETER outer delimiter "()"}. If this method
-     * delimiter argument does not match a well known Tokenizer, it'll use a simple string
-     * tokenization based on splitting out the strings with the raw passed in delimiter.
+     * org.geoserver.ows.util.KvpUtils.Tokenizer) Tokenizer}, as there might be special cases to catch out, like for the
+     * {@link #OUTER_DELIMETER outer delimiter "()"}. If this method delimiter argument does not match a well known
+     * Tokenizer, it'll use a simple string tokenization based on splitting out the strings with the raw passed in
+     * delimiter.
      *
      * @param rawList The tokenized string.
      * @param delimiter The delimeter for the string tokens.
@@ -216,10 +212,9 @@ public class KvpUtils {
     }
 
     /**
-     * Reads a nested tokenized string and turns it into a list. This method is much more specific
-     * to the KVP get request syntax than the more general readFlat method. In this case, the outer
-     * tokenizer '()' and inner tokenizer ',' are both from the specification. Returns a list of
-     * lists.
+     * Reads a nested tokenized string and turns it into a list. This method is much more specific to the KVP get
+     * request syntax than the more general readFlat method. In this case, the outer tokenizer '()' and inner tokenizer
+     * ',' are both from the specification. Returns a list of lists.
      *
      * @param rawList The tokenized string.
      * @return A list of lists, containing outer and inner elements.
@@ -351,8 +346,8 @@ public class KvpUtils {
     }
 
     /**
-     * Converts a raw KVP with potential String[] values into one with String values, if multiple
-     * string values are actually present an exception will be thrown
+     * Converts a raw KVP with potential String[] values into one with String values, if multiple string values are
+     * actually present an exception will be thrown
      *
      * @param kvp
      * @return
@@ -375,8 +370,8 @@ public class KvpUtils {
     }
 
     /**
-     * Converts a raw KVP based on String values to one with object values. Here to help trade with
-     * parts of the code assuming <code>KvpMap<String, String></code> and <code>
+     * Converts a raw KVP based on String values to one with object values. Here to help trade with parts of the code
+     * assuming <code>KvpMap<String, String></code> and <code>
      * KvpMap<String, Object></code>
      *
      * @param kvp
@@ -403,8 +398,7 @@ public class KvpUtils {
      *
      * <p>This routine performs a lookup of {@link KvpParser} to parse the kvp entries.
      *
-     * <p>If an individual parse fails, this method saves the exception, and adds it to the list
-     * that is returned.
+     * <p>If an individual parse fails, this method saves the exception, and adds it to the list that is returned.
      *
      * @param kvp raw or unparsed kvp.
      * @return A list of errors that occured.
@@ -464,17 +458,13 @@ public class KvpUtils {
     /**
      * Strip out parsers which do not match current service/request/version
      *
-     * @param parsers list of {@link KvpParser} to purge (see {@link
-     *     GeoServerExtensions#extensions(Class)})
+     * @param parsers list of {@link KvpParser} to purge (see {@link GeoServerExtensions#extensions(Class)})
      * @param service the service parameter from the kvp (can be null)
      * @param version the version parameter from the kvp (can be null)
      * @param request the request parameter from the kvp (can be null)
      */
     public static void purgeParsers(
-            List<KvpParser> parsers,
-            final String service,
-            final String version,
-            final String request) {
+            List<KvpParser> parsers, final String service, final String version, final String request) {
         for (Iterator<KvpParser> p = parsers.iterator(); p.hasNext(); ) {
             KvpParser parser = p.next();
 
@@ -483,8 +473,7 @@ public class KvpUtils {
             } else if (parser.getVersion() != null
                     && !parser.getVersion().toString().equals(version)) {
                 p.remove();
-            } else if (parser.getRequest() != null
-                    && !parser.getRequest().equalsIgnoreCase(request)) {
+            } else if (parser.getRequest() != null && !parser.getRequest().equalsIgnoreCase(request)) {
                 p.remove();
             }
         }
@@ -524,8 +513,7 @@ public class KvpUtils {
                     int result = KVP_PARSER_COMPARATOR.compare(candidate, parser);
                     if (result == 0)
                         // ambiguous, unable to match
-                        throw new IllegalStateException(
-                                "Multiple kvp parsers: " + parser + "," + candidate);
+                        throw new IllegalStateException("Multiple kvp parsers: " + parser + "," + candidate);
                     else if (result < 0) parser = candidate;
                     // else skip, current parser is a better match
                 }
@@ -543,8 +531,7 @@ public class KvpUtils {
      * @param service the service parameter from the kvp (can be null)
      * @param version the version parameter from the kvp (can be null)
      * @param request the request parameter from the kvp (can be null)
-     * @param parsers the purged parsers list (see {@link #purgeParsers(List, String, String,
-     *     String)}
+     * @param parsers the purged parsers list (see {@link #purgeParsers(List, String, String, String)}
      * @return the parsed value or null (if no parser is found)
      * @throws Exception if the selected parser throws an exception
      * @throws IllegalStateException if more than one candidate parser is found
@@ -566,8 +553,8 @@ public class KvpUtils {
     }
 
     /**
-     * Returns a single value for the specified key from the raw KVP, or throws an exception if
-     * multiple different values are found
+     * Returns a single value for the specified key from the raw KVP, or throws an exception if multiple different
+     * values are found
      *
      * @param kvp map of key value pairs
      * @param key key used to lookup a single value
@@ -601,8 +588,8 @@ public class KvpUtils {
     }
 
     /**
-     * Parses the parameters in the path query string. Normally this is done by the servlet
-     * container but in a few cases (testing for example) we need to emulate the container instead.
+     * Parses the parameters in the path query string. Normally this is done by the servlet container but in a few cases
+     * (testing for example) we need to emulate the container instead.
      *
      * @param path a url in the form path?k1=v1&amp;k2=v2&amp;,,,
      */
@@ -667,8 +654,8 @@ public class KvpUtils {
     }
 
     /**
-     * Tokenize a String using the specified separator character and the backslash as an escape
-     * character (see OGC WFS 1.1.0 14.2.2). Escape characters within the tokens are not resolved.
+     * Tokenize a String using the specified separator character and the backslash as an escape character (see OGC WFS
+     * 1.1.0 14.2.2). Escape characters within the tokens are not resolved.
      *
      * @param s the String to parse
      * @param separator the character that separates tokens
@@ -679,13 +666,13 @@ public class KvpUtils {
     }
 
     /**
-     * Tokenize a String using the specified separator character and the backslash as an escape
-     * character (see OGC WFS 1.1.0 14.2.2). Escape characters within the tokens are not resolved.
+     * Tokenize a String using the specified separator character and the backslash as an escape character (see OGC WFS
+     * 1.1.0 14.2.2). Escape characters within the tokens are not resolved.
      *
      * @param s the String to parse
      * @param separator the character that separates tokens
-     * @param maxTokens ignoring escaped separators, the maximum number of tokens to return. A value
-     *     of 0 has no maximum.
+     * @param maxTokens ignoring escaped separators, the maximum number of tokens to return. A value of 0 has no
+     *     maximum.
      * @return list of tokens
      */
     public static List<String> escapedTokens(String s, char separator, int maxTokens) {
@@ -722,8 +709,7 @@ public class KvpUtils {
             }
         }
         if (escaped) {
-            throw new IllegalStateException(
-                    "The specified String ends with an incomplete escape sequence.");
+            throw new IllegalStateException("The specified String ends with an incomplete escape sequence.");
         }
         ret.add(sb.toString());
         return ret;
@@ -754,8 +740,7 @@ public class KvpUtils {
             }
         }
         if (escaped) {
-            throw new IllegalArgumentException(
-                    "The specified String ends with an incomplete escape sequence.");
+            throw new IllegalArgumentException("The specified String ends with an incomplete escape sequence.");
         }
         return sb.toString();
     }
@@ -768,12 +753,9 @@ public class KvpUtils {
             if (entry.getKey() instanceof String) {
                 if (paramname.equalsIgnoreCase((String) entry.getKey())) {
                     Object obj = entry.getValue();
-                    value =
-                            obj instanceof String
-                                    ? (String) obj
-                                    : (obj instanceof String[])
-                                            ? ((String[]) obj)[0].toLowerCase()
-                                            : value;
+                    value = obj instanceof String
+                            ? (String) obj
+                            : (obj instanceof String[]) ? ((String[]) obj)[0].toLowerCase() : value;
                 }
             }
         }
@@ -789,8 +771,8 @@ public class KvpUtils {
     }
 
     /**
-     * Extracts the first value for the specified parameter (the kvp can contain either a single
-     * string, or an array of values)
+     * Extracts the first value for the specified parameter (the kvp can contain either a single string, or an array of
+     * values)
      *
      * @param kvp map of key value pairs
      * @param param retrieve the first value for the parameter

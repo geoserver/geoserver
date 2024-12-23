@@ -8,9 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * A list that is meant to contain either {@link java.util.Date} or {@link
- * org.geotools.util.DateRange} objects. Currently does not check its contents, it's used as a type
- * target for MVC converters only.
+ * A list that is meant to contain either {@link java.util.Date} or {@link org.geotools.util.DateRange} objects.
+ * Currently does not check its contents, it's used as a type target for MVC converters only.
  */
 public class DateTimeList extends ArrayList<Object> {
 

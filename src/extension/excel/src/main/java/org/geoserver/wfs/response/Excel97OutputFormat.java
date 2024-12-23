@@ -17,8 +17,8 @@ import org.geoserver.config.GeoServer;
 public class Excel97OutputFormat extends ExcelOutputFormat {
 
     /**
-     * Constructor setting the format type as "excel" in addition to file extension, mime type, and
-     * row and column limits
+     * Constructor setting the format type as "excel" in addition to file extension, mime type, and row and column
+     * limits
      */
     public Excel97OutputFormat(GeoServer gs) {
         super(gs, "excel");

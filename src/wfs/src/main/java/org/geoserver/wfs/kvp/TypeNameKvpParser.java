@@ -14,8 +14,7 @@ import org.geoserver.wfs.WFSInfo;
 /**
  * Parses a {@code typeName} GetFeature parameter the form "([prefix:]local)+".
  *
- * <p>This parser will parse strings of the above format into a list of {@link
- * javax.xml.namespace.QName}
+ * <p>This parser will parse strings of the above format into a list of {@link javax.xml.namespace.QName}
  *
  * @author Justin Deoliveira, The Open Planning Project
  * @author groldan

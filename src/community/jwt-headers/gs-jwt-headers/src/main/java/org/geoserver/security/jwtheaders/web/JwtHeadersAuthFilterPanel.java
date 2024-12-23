@@ -34,26 +34,21 @@ import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
 import org.geoserver.web.wicket.HelpLink;
 
 /** Jwt Headers auth panel Wicket */
-public class JwtHeadersAuthFilterPanel
-        extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
+public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
 
     static String jwtHeadersAuthFilterPanelCSS;
     static String jwtHeadersAuthFilterPanelJS;
 
     static {
         try {
-            jwtHeadersAuthFilterPanelCSS =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    JwtHeadersAuthFilterPanel.class.getResourceAsStream(
-                                            "/org/geoserver/security/jwtheaders/web/css/jwt-headers-auth-filter-panel.css"),
-                                    Charsets.UTF_8));
-            jwtHeadersAuthFilterPanelJS =
-                    CharStreams.toString(
-                            new InputStreamReader(
-                                    JwtHeadersAuthFilterPanel.class.getResourceAsStream(
-                                            "/org/geoserver/security/jwtheaders/web/js/jwt-headers-auth-filter-panel.js"),
-                                    Charsets.UTF_8));
+            jwtHeadersAuthFilterPanelCSS = CharStreams.toString(new InputStreamReader(
+                    JwtHeadersAuthFilterPanel.class.getResourceAsStream(
+                            "/org/geoserver/security/jwtheaders/web/css/jwt-headers-auth-filter-panel.css"),
+                    Charsets.UTF_8));
+            jwtHeadersAuthFilterPanelJS = CharStreams.toString(new InputStreamReader(
+                    JwtHeadersAuthFilterPanel.class.getResourceAsStream(
+                            "/org/geoserver/security/jwtheaders/web/js/jwt-headers-auth-filter-panel.js"),
+                    Charsets.UTF_8));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -85,11 +80,10 @@ public class JwtHeadersAuthFilterPanel
         add(new TextField("validateTokenAudienceClaimName").setRequired(false));
         add(new TextField("validateTokenAudienceClaimValue").setRequired(false));
 
-        userNameFormatChoice =
-                new DropDownChoice(
-                        "userNameFormatChoice",
-                        Arrays.asList(JwtConfiguration.UserNameHeaderFormat.values()),
-                        new UserNameFormatChoiceRenderer());
+        userNameFormatChoice = new DropDownChoice(
+                "userNameFormatChoice",
+                Arrays.asList(JwtConfiguration.UserNameHeaderFormat.values()),
+                new UserNameFormatChoiceRenderer());
 
         add(userNameFormatChoice);
     }
@@ -99,27 +93,21 @@ public class JwtHeadersAuthFilterPanel
         super.renderHead(response);
         // Content-Security-Policy: inline styles must be nonce=...
         String css = "  ul.horizontal div {\n" + "            display: inline;\n" + "        }";
-        response.render(
-                CssHeaderItem.forCSS(
-                        css, "org-geoserver-security-web-data-JwtHeadersAuthFilterPanel"));
+        response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-JwtHeadersAuthFilterPanel"));
 
         // add css
-        response.render(
-                CssHeaderItem.forCSS(jwtHeadersAuthFilterPanelCSS, "jwtHeadersAuthFilterPanelCSS"));
+        response.render(CssHeaderItem.forCSS(jwtHeadersAuthFilterPanelCSS, "jwtHeadersAuthFilterPanelCSS"));
 
         // add js script
         response.render(
-                JavaScriptContentHeaderItem.forScript(
-                        jwtHeadersAuthFilterPanelJS, "jwtHeadersAuthFilterPanelJS"));
+                JavaScriptContentHeaderItem.forScript(jwtHeadersAuthFilterPanelJS, "jwtHeadersAuthFilterPanelJS"));
 
         // setup onchange handlers
         // setup onClick events (Content-security-policy doesn't allow onClick events in the HTML)
         String script = "\n";
 
-        script +=
-                "$('#userNameFormatSelect').on('change',function() { usernameFormatChanged(); } \n);\n\n";
-        script +=
-                "$('#validateToken').on('change',function() { showTokenValidationChanged(); } \n);\n\n";
+        script += "$('#userNameFormatSelect').on('change',function() { usernameFormatChanged(); } \n);\n\n";
+        script += "$('#validateToken').on('change',function() { showTokenValidationChanged(); } \n);\n\n";
 
         script +=
                 "$('#validateTokenSignature').on('change',function() { toggleVisible(this,'validateTokenSignatureURLDiv'); } \n);\n\n";
@@ -141,13 +129,8 @@ public class JwtHeadersAuthFilterPanel
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
         List<RoleSource> sources =
-                new ArrayList<>(
-                        Arrays.asList(
-                                GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
-        sources.addAll(
-                Arrays.asList(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .values()));
+                new ArrayList<>(Arrays.asList(GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
+        sources.addAll(Arrays.asList(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.values()));
         return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
     }
 
@@ -175,20 +158,16 @@ public class JwtHeadersAuthFilterPanel
             // elements are in the dom.  This is so the converter is run
             // when the page first loads (and table is updated).
             String script = " roleConverterStringChanged();\n";
-            script +=
-                    "$('#roleConverterString').on('input',function() { roleConverterStringChanged(this); } \n);\n\n";
+            script += "$('#roleConverterString').on('input',function() { roleConverterStringChanged(this); } \n);\n\n";
 
             response.render(OnDomReadyHeaderItem.forScript(script));
 
             // Content-Security-Policy: inline styles must be nonce=...
-            String css =
-                    "  #roleConverterStringTable table, th, td {\n"
-                            + "            border: black 1px solid !important;\n"
-                            + "        }";
-            response.render(
-                    CssHeaderItem.forCSS(
-                            css,
-                            "org-geoserver-security-web-data-JwtHeaderAuthFilterPanel-JsonClaimPanel"));
+            String css = "  #roleConverterStringTable table, th, td {\n"
+                    + "            border: black 1px solid !important;\n"
+                    + "        }";
+            response.render(CssHeaderItem.forCSS(
+                    css, "org-geoserver-security-web-data-JwtHeaderAuthFilterPanel-JsonClaimPanel"));
         }
     }
 }

@@ -12,8 +12,7 @@ public interface DGGSInfo extends ServiceInfo {
     static final int DEFAULT_MAX_NEIGHBOR_DISTANCE = 50;
 
     /**
-     * Get the maximum number of zones to be displayed in a preview. Can be defined by the user. By
-     * default, 50.
+     * Get the maximum number of zones to be displayed in a preview. Can be defined by the user. By default, 50.
      *
      * @return maxNumberOfZonesForPreview
      */

@@ -43,46 +43,39 @@ public class TemplateRulesTablePanel extends Panel {
         super(id);
         MapModel<TemplateLayerConfig> mapModelLayerConf =
                 new MapModel<>(metadataModel, TemplateLayerConfig.METADATA_KEY);
-        if (mapModelLayerConf.getObject() == null)
-            mapModelLayerConf.setObject(new TemplateLayerConfig());
-        this.model =
-                LiveCollectionModel.set(
-                        new PropertyModel<Set<TemplateRule>>(mapModelLayerConf, "templateRules"));
+        if (mapModelLayerConf.getObject() == null) mapModelLayerConf.setObject(new TemplateLayerConfig());
+        this.model = LiveCollectionModel.set(new PropertyModel<Set<TemplateRule>>(mapModelLayerConf, "templateRules"));
         GeoServerDataProvider<TemplateRule> dataProvider = new TemplateRuleProvider(model);
         table = new TemplateRuleTable("table", dataProvider, true);
         table.setOutputMarkupId(true);
         add(
-                remove =
-                        new AjaxLink<Object>("removeSelected") {
-                            private static final long serialVersionUID = 2421854498051377608L;
+                remove = new AjaxLink<Object>("removeSelected") {
+                    private static final long serialVersionUID = 2421854498051377608L;
 
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                Set<TemplateRule> rules =
-                                        TemplateRulesTablePanel.this.getModel().getObject();
-                                Set<TemplateRule> updated = new HashSet<>(rules);
-                                updated.removeAll(table.getSelection());
-                                TemplateRulesTablePanel.this.getModel().setObject(updated);
-                                TemplateRulesTablePanel.this.modelChanged();
-                                table.modelChanged();
-                                target.add(table);
-                            }
-                        });
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        Set<TemplateRule> rules =
+                                TemplateRulesTablePanel.this.getModel().getObject();
+                        Set<TemplateRule> updated = new HashSet<>(rules);
+                        updated.removeAll(table.getSelection());
+                        TemplateRulesTablePanel.this.getModel().setObject(updated);
+                        TemplateRulesTablePanel.this.modelChanged();
+                        table.modelChanged();
+                        target.add(table);
+                    }
+                });
         add(table);
     }
 
     public class TemplateRuleTable extends GeoServerTablePanel<TemplateRule> {
 
-        public TemplateRuleTable(
-                String id, GeoServerDataProvider<TemplateRule> dataProvider, boolean selectable) {
+        public TemplateRuleTable(String id, GeoServerDataProvider<TemplateRule> dataProvider, boolean selectable) {
             super(id, dataProvider, selectable);
         }
 
         @Override
         protected Component getComponentForProperty(
-                String id,
-                IModel<TemplateRule> itemModel,
-                GeoServerDataProvider.Property<TemplateRule> property) {
+                String id, IModel<TemplateRule> itemModel, GeoServerDataProvider.Property<TemplateRule> property) {
             if (property.equals(PRIORITY)) {
                 return new Label(id, PRIORITY.getModel(itemModel));
             }
@@ -103,12 +96,9 @@ public class TemplateRulesTablePanel extends Panel {
                         target.add(configurationPanel.panelLabel);
                     }
                 };
-            else if (property.equals(OUTPUT_FORMAT))
-                return new Label(id, OUTPUT_FORMAT.getModel(itemModel));
-            else if (property.equals(CQL_FILTER))
-                return new Label(id, CQL_FILTER.getModel(itemModel));
-            else if (property.equals(PROFILE_FILTER))
-                return new Label(id, PROFILE_FILTER.getModel(itemModel));
+            else if (property.equals(OUTPUT_FORMAT)) return new Label(id, OUTPUT_FORMAT.getModel(itemModel));
+            else if (property.equals(CQL_FILTER)) return new Label(id, CQL_FILTER.getModel(itemModel));
+            else if (property.equals(PROFILE_FILTER)) return new Label(id, PROFILE_FILTER.getModel(itemModel));
             return null;
         }
     }

@@ -12,8 +12,8 @@ import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
 /**
- * Base class for parsers able to evaluate include and merge directives. Is agnostic regarding the
- * file type. It simply host methods and logic meant to be shared among implementations
+ * Base class for parsers able to evaluate include and merge directives. Is agnostic regarding the file type. It simply
+ * host methods and logic meant to be shared among implementations
  */
 public class RecursiveTemplateResourceParser {
 
@@ -22,16 +22,15 @@ public class RecursiveTemplateResourceParser {
     protected Resource resource;
 
     /**
-     * List of file watchers one for each expanded resource. This allows the affected template to
-     * know when resources it depends onto have been modified
+     * List of file watchers one for each expanded resource. This allows the affected template to know when resources it
+     * depends onto have been modified
      */
     private List<FileWatcher<Object>> watchers;
 
     protected static final int MAX_RECURSION_DEPTH =
             Integer.parseInt(System.getProperty("GEOSERVER_FT_MAX_DEPTH", "50"));
 
-    public RecursiveTemplateResourceParser(
-            Resource resource, RecursiveTemplateResourceParser parent) {
+    public RecursiveTemplateResourceParser(Resource resource, RecursiveTemplateResourceParser parent) {
         this.resource = resource;
         validateResource(resource);
         this.parent = parent;
@@ -53,8 +52,7 @@ public class RecursiveTemplateResourceParser {
     }
 
     /**
-     * Returns the list of inclusions/merges, starting from the top-most parent and walking down to
-     * the current reader
+     * Returns the list of inclusions/merges, starting from the top-most parent and walking down to the current reader
      */
     protected List<String> getExpansionChain() {
         List<String> resources = new ArrayList<>();
@@ -100,10 +98,7 @@ public class RecursiveTemplateResourceParser {
         int depth = getDepth();
         if (depth > MAX_RECURSION_DEPTH)
             throw new RuntimeException(
-                    "Went beyond maximum expansion depth ("
-                            + depth
-                            + "), chain is: "
-                            + getExpansionChain());
+                    "Went beyond maximum expansion depth (" + depth + "), chain is: " + getExpansionChain());
     }
 
     private void addFileWatcher(Resource resource) {
@@ -116,9 +111,8 @@ public class RecursiveTemplateResourceParser {
     }
 
     /**
-     * A {@link FileWatcher} that is used to check if included templates needs to be reloaded. The
-     * isModified() method makes sure to return false if the FileWatcher never execute a check
-     * still.
+     * A {@link FileWatcher} that is used to check if included templates needs to be reloaded. The isModified() method
+     * makes sure to return false if the FileWatcher never execute a check still.
      */
     private class IncludedTemplateWatcher extends FileWatcher<Object> {
 

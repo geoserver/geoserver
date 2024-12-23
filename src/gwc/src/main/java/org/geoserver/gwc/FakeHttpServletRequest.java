@@ -46,22 +46,15 @@ class FakeHttpServletRequest implements HttpServletRequest {
         this(parameterMap, cookies, null);
     }
 
-    public FakeHttpServletRequest(
-            Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
-        this.parameterMap =
-                parameterMap.entrySet().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        Map.Entry::getKey, e -> new String[] {e.getValue()}));
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
+        this.parameterMap = parameterMap.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> new String[] {e.getValue()}));
         this.cookies = cookies;
         this.workspace = workspace;
         // grab the original request from Spring to forward security related attributes
         // such as requests host, ports and headers
-        this.original =
-                Optional.ofNullable(
-                                (ServletRequestAttributes)
-                                        RequestContextHolder.getRequestAttributes())
-                        .map(ServletRequestAttributes::getRequest);
+        this.original = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .map(ServletRequestAttributes::getRequest);
     }
 
     /** Standard interface */
@@ -92,8 +85,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public Enumeration<String> getHeaderNames() {
-        return original.map(HttpServletRequest::getHeaderNames)
-                .orElse(Collections.emptyEnumeration());
+        return original.map(HttpServletRequest::getHeaderNames).orElse(Collections.emptyEnumeration());
     }
 
     @Override

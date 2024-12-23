@@ -89,15 +89,14 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
     Catalog catalog;
     boolean generateBounds;
     /**
-     * Boolean property which controls whether the FeatureCollection should be encoded with multiple
-     * featureMember as opposed to a single featureMembers
+     * Boolean property which controls whether the FeatureCollection should be encoded with multiple featureMember as
+     * opposed to a single featureMembers
      */
     boolean encodeFeatureMember;
 
     private Encoder encoder;
 
-    public FeatureCollectionTypeBinding(
-            WfsFactory wfsfactory, Catalog catalog, Configuration configuration) {
+    public FeatureCollectionTypeBinding(WfsFactory wfsfactory, Catalog catalog, Configuration configuration) {
         this(wfsfactory, catalog, configuration, null);
     }
 
@@ -106,10 +105,8 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
         this.wfsfactory = wfsfactory;
         this.catalog = catalog;
         this.encoder = encoder;
-        this.generateBounds =
-                !configuration.getProperties().contains(GMLConfiguration.NO_FEATURE_BOUNDS);
-        this.encodeFeatureMember =
-                configuration.getProperties().contains(GMLConfiguration.ENCODE_FEATURE_MEMBER);
+        this.generateBounds = !configuration.getProperties().contains(GMLConfiguration.NO_FEATURE_BOUNDS);
+        this.encodeFeatureMember = configuration.getProperties().contains(GMLConfiguration.ENCODE_FEATURE_MEMBER);
     }
 
     @Override
@@ -221,7 +218,8 @@ public class FeatureCollectionTypeBinding extends AbstractComplexEMFBinding {
             result = new CompositeFeatureCollection<>(featureCollection.getFeature());
         } else {
             // just return the single
-            result = (FeatureCollection) featureCollection.getFeature().iterator().next();
+            result = (FeatureCollection)
+                    featureCollection.getFeature().iterator().next();
         }
 
         if (isSimpleFeatureCollection(result)

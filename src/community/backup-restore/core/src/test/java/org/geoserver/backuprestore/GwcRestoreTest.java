@@ -53,9 +53,7 @@ public class GwcRestoreTest extends BackupRestoreTestSupport {
         assertNotNull(restoreCatalog);
 
         int cnt = 0;
-        while (cnt < 100
-                && (restoreExecution.getStatus() != BatchStatus.COMPLETED
-                        || !restoreExecution.isRunning())) {
+        while (cnt < 100 && (restoreExecution.getStatus() != BatchStatus.COMPLETED || !restoreExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -75,8 +73,7 @@ public class GwcRestoreTest extends BackupRestoreTestSupport {
             backupFacade.stopExecution(restoreExecution.getId());
         }
 
-        final TileLayerCatalog gwcCatalog =
-                (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
+        final TileLayerCatalog gwcCatalog = (TileLayerCatalog) GeoServerExtensions.bean("GeoSeverTileLayerCatalog");
         assertNotNull(gwcCatalog.getLayerByName("sf:AggregateGeoFeature"));
         assertEquals(30, gwcCatalog.getLayerNames().size());
     }

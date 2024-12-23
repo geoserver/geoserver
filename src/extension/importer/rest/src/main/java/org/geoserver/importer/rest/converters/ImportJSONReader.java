@@ -64,8 +64,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link
- * ImportTask} objects from JSON
+ * {@link BaseMessageConverter} implementation for reading {@link ImportContext} and {@link ImportTask} objects from
+ * JSON
  */
 @Component
 public class ImportJSONReader {
@@ -133,12 +133,10 @@ public class ImportJSONReader {
                 context.setArchive(json.getBoolean("archive"));
             }
             if (json.has("targetWorkspace")) {
-                context.setTargetWorkspace(
-                        fromJSON(json.getJSONObject("targetWorkspace"), WorkspaceInfo.class));
+                context.setTargetWorkspace(fromJSON(json.getJSONObject("targetWorkspace"), WorkspaceInfo.class));
             }
             if (json.has("targetStore")) {
-                context.setTargetStore(
-                        fromJSON(json.getJSONObject("targetStore"), StoreInfo.class));
+                context.setTargetStore(fromJSON(json.getJSONObject("targetStore"), StoreInfo.class));
             }
             if (json.has("data")) {
                 context.setData(data(json.getJSONObject("data")));
@@ -275,8 +273,7 @@ public class ImportJSONReader {
         TransformChain chain = null;
         if ("vector".equalsIgnoreCase(type) || "VectorTransformChain".equalsIgnoreCase(type)) {
             chain = new VectorTransformChain();
-        } else if ("raster".equalsIgnoreCase(type)
-                || "RasterTransformChain".equalsIgnoreCase(type)) {
+        } else if ("raster".equalsIgnoreCase(type) || "RasterTransformChain".equalsIgnoreCase(type)) {
             chain = new RasterTransformChain();
         } else {
             throw new IOException("Unable to parse transformChain of type " + type);
@@ -309,12 +306,11 @@ public class ImportJSONReader {
         ImportTransform transform;
         String type = json.getString("type");
         if ("DateFormatTransform".equalsIgnoreCase(type)) {
-            transform =
-                    new DateFormatTransform(
-                            json.getString("field"),
-                            json.optString("format", null),
-                            json.optString("enddate", null),
-                            json.optString("presentation", null));
+            transform = new DateFormatTransform(
+                    json.getString("field"),
+                    json.optString("format", null),
+                    json.optString("enddate", null),
+                    json.optString("presentation", null));
         } else if ("IntegerFieldToDateTransform".equalsIgnoreCase(type)) {
             transform = new IntegerFieldToDateTransform(json.getString("field"));
         } else if ("CreateIndexTransform".equalsIgnoreCase(type)) {
@@ -324,8 +320,7 @@ public class ImportJSONReader {
             try {
                 clazz = Class.forName(json.getString("target"));
             } catch (ClassNotFoundException cnfe) {
-                throw new ValidationException(
-                        "unable to locate target class " + json.getString("target"));
+                throw new ValidationException("unable to locate target class " + json.getString("target"));
             }
             transform = new AttributeRemapTransform(json.getString("field"), clazz);
         } else if ("AttributeComputeTransform".equalsIgnoreCase(type)) {
@@ -333,13 +328,10 @@ public class ImportJSONReader {
             try {
                 clazz = Class.forName(json.getString("fieldType"));
             } catch (ClassNotFoundException cnfe) {
-                throw new ValidationException(
-                        "unable to locate target class " + json.getString("type"));
+                throw new ValidationException("unable to locate target class " + json.getString("type"));
             }
             try {
-                transform =
-                        new AttributeComputeTransform(
-                                json.getString("field"), clazz, json.getString("cql"));
+                transform = new AttributeComputeTransform(json.getString("field"), clazz, json.getString("cql"));
             } catch (CQLException e) {
                 throw new IOException(e);
             }
@@ -349,17 +341,11 @@ public class ImportJSONReader {
             String pointFieldName = (String) json.get("pointFieldName");
             String preserveGeometry = (String) json.get("preserveGeometry");
 
-            transform =
-                    new AttributesToPointGeometryTransform(
-                            latField,
-                            lngField,
-                            pointFieldName,
-                            Boolean.parseBoolean(preserveGeometry));
+            transform = new AttributesToPointGeometryTransform(
+                    latField, lngField, pointFieldName, Boolean.parseBoolean(preserveGeometry));
         } else if ("ReprojectTransform".equalsIgnoreCase(type)) {
-            CoordinateReferenceSystem source =
-                    json.has("source") ? crs(json.getString("source")) : null;
-            CoordinateReferenceSystem target =
-                    json.has("target") ? crs(json.getString("target")) : null;
+            CoordinateReferenceSystem source = json.has("source") ? crs(json.getString("source")) : null;
+            CoordinateReferenceSystem target = json.has("target") ? crs(json.getString("target")) : null;
 
             try {
                 transform = new ReprojectTransform(source, target);
@@ -444,8 +430,7 @@ public class ImportJSONReader {
             // return FileData.createFromFile(new File(file));
             // return new FileData(new File(file));
         } else {
-            throw new IOException(
-                    "Could not find 'file' entry in data, mandatory for file type data");
+            throw new IOException("Could not find 'file' entry in data, mandatory for file type data");
         }
     }
 
@@ -464,17 +449,15 @@ public class ImportJSONReader {
             }
             return data;
         } else {
-            throw new IOException(
-                    "Could not find 'location' entry in data, mandatory for remote type data");
+            throw new IOException("Could not find 'location' entry in data, mandatory for remote type data");
         }
     }
 
     Mosaic mosaic(JSONObject json) throws IOException {
-        Mosaic m =
-                new Mosaic(
-                        json.has("location")
-                                ? new File(json.getString("location"))
-                                : Directory.createNew(importer.getUploadRoot()).getFile());
+        Mosaic m = new Mosaic(
+                json.has("location")
+                        ? new File(json.getString("location"))
+                        : Directory.createNew(importer.getUploadRoot()).getFile());
         if (json.has("name")) {
             m.setName(json.getString("name"));
         }
@@ -482,9 +465,7 @@ public class ImportJSONReader {
             Map<String, Object> time = jsonAsMap(json);
             if (!time.containsKey("mode")) {
                 throw new IllegalArgumentException(
-                        "time object must specific mode property as "
-                                + "one of "
-                                + Arrays.asList(TimeMode.values()));
+                        "time object must specific mode property as " + "one of " + Arrays.asList(TimeMode.values()));
             }
 
             m.setTimeMode(TimeMode.valueOf(((String) time.get("mode")).toUpperCase()));
@@ -517,17 +498,11 @@ public class ImportJSONReader {
     ReferencedEnvelope bbox(JSONObject json) {
         CoordinateReferenceSystem crs = null;
         if (json.has("crs")) {
-            crs =
-                    (CoordinateReferenceSystem)
-                            new XStreamPersister.CRSConverter().fromString(json.getString("crs"));
+            crs = (CoordinateReferenceSystem) new XStreamPersister.CRSConverter().fromString(json.getString("crs"));
         }
 
         return new ReferencedEnvelope(
-                json.getDouble("minx"),
-                json.getDouble("maxx"),
-                json.getDouble("miny"),
-                json.getDouble("maxy"),
-                crs);
+                json.getDouble("minx"), json.getDouble("maxx"), json.getDouble("miny"), json.getDouble("maxy"), crs);
     }
 
     CoordinateReferenceSystem crs(String srs) {

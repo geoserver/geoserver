@@ -123,8 +123,7 @@ public abstract class TransactionRequest extends RequestObject {
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList<>();
-            for (Iterator it = ((TransactionType) adaptee).getGroup().valueListIterator();
-                    it.hasNext(); ) {
+            for (Iterator it = ((TransactionType) adaptee).getGroup().valueListIterator(); it.hasNext(); ) {
                 EObject el = (EObject) it.next();
                 if (el instanceof DeleteElementType) {
                     list.add(new Delete.WFS11(el));
@@ -196,8 +195,7 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public Replace createReplace() {
-            throw new UnsupportedOperationException(
-                    "Replace not supported in WFS 1.1 transactions");
+            throw new UnsupportedOperationException("Replace not supported in WFS 1.1 transactions");
         }
 
         @SuppressWarnings("unchecked") // EMF model without generics
@@ -212,10 +210,7 @@ public abstract class TransactionRequest extends RequestObject {
             tx.setVersion(request.getVersion());
             tx.setHandle(request.getHandle());
             tx.setLockId(request.getLockId());
-            tx.setReleaseAction(
-                    request.isReleaseActionAll()
-                            ? AllSomeType.ALL_LITERAL
-                            : AllSomeType.SOME_LITERAL);
+            tx.setReleaseAction(request.isReleaseActionAll() ? AllSomeType.ALL_LITERAL : AllSomeType.SOME_LITERAL);
             tx.setBaseUrl(request.getBaseUrl());
             tx.setExtendedProperties(request.getExtendedProperties());
 
@@ -279,23 +274,20 @@ public abstract class TransactionRequest extends RequestObject {
 
         @Override
         public void setReleaseActionAll() {
-            ((net.opengis.wfs20.TransactionType) adaptee)
-                    .setReleaseAction(net.opengis.wfs20.AllSomeType.ALL);
+            ((net.opengis.wfs20.TransactionType) adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.ALL);
         }
 
         @Override
         public void setReleaseActionSome() {
-            ((net.opengis.wfs20.TransactionType) adaptee)
-                    .setReleaseAction(net.opengis.wfs20.AllSomeType.SOME);
+            ((net.opengis.wfs20.TransactionType) adaptee).setReleaseAction(net.opengis.wfs20.AllSomeType.SOME);
         }
 
         @Override
         public List<TransactionElement> getElements() {
             List<TransactionElement> list = new ArrayList<>();
-            Iterator it =
-                    ((net.opengis.wfs20.TransactionType) adaptee)
-                            .getAbstractTransactionAction()
-                            .iterator();
+            Iterator it = ((net.opengis.wfs20.TransactionType) adaptee)
+                    .getAbstractTransactionAction()
+                    .iterator();
             while (it.hasNext()) {
                 EObject el = (EObject) it.next();
                 if (el instanceof DeleteType) {
@@ -318,8 +310,7 @@ public abstract class TransactionRequest extends RequestObject {
         @Override
         public void setElements(List<TransactionElement> elements) {
             net.opengis.wfs20.TransactionType tx = (net.opengis.wfs20.TransactionType) adaptee;
-            EList<AbstractTransactionActionType> transactionElements =
-                    tx.getAbstractTransactionAction();
+            EList<AbstractTransactionActionType> transactionElements = tx.getAbstractTransactionAction();
             transactionElements.clear();
             elements.stream()
                     .map(e -> (AbstractTransactionActionType) e.getAdaptee())
@@ -373,10 +364,9 @@ public abstract class TransactionRequest extends RequestObject {
             if (pElement == null) {
                 return false;
             }
-            Iterator<AbstractTransactionActionType> it =
-                    ((net.opengis.wfs20.TransactionType) adaptee)
-                            .getAbstractTransactionAction()
-                            .iterator();
+            Iterator<AbstractTransactionActionType> it = ((net.opengis.wfs20.TransactionType) adaptee)
+                    .getAbstractTransactionAction()
+                    .iterator();
             while (it.hasNext()) {
                 EObject el = it.next();
                 if (pElement.getAdaptee() == el) {

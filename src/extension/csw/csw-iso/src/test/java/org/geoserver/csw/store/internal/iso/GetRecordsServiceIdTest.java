@@ -29,24 +29,18 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         ResourceInfo forestInfo = getCatalog().getLayerByName("Forests").getResource();
-        forestInfo.setLatLonBoundingBox(
-                new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
+        forestInfo.setLatLonBoundingBox(new ReferencedEnvelope(-200, -180, -100, -90, CRS.decode("EPSG:4326")));
         getCatalog().save(forestInfo);
     }
 
     @Before
     public void load() {
         // copy service queryables into the data directory
-        queryables =
-                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata.queryables.properties");
+        queryables = new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata.queryables.properties");
         serviceQueryablesIgnore =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "csw/MD_Metadata.service.queryables.properties.ignore");
+                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata.service.queryables.properties.ignore");
         originalQueryablesIgnore =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "csw/MD_Metadata.original.queryables.properties.ignore");
+                new File(testData.getDataDirectoryRoot(), "csw/MD_Metadata.original.queryables.properties.ignore");
 
         queryables.renameTo(originalQueryablesIgnore);
         serviceQueryablesIgnore.renameTo(queryables);
@@ -60,9 +54,8 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
 
     @Test
     public void testAllRecordsPaged() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
 
         Document d = getAsDOM(request);
         // print(d);
@@ -81,10 +74,9 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
 
     @Test
     public void testAllRecords() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&maxRecords=100";
         Document d = getAsDOM(request);
         // print(d);
         // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
@@ -188,10 +180,9 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
 
     @Test
     public void testAllRecordsBrief() throws Exception {
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd"
-                        + "&maxRecords=100";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=brief&outputSchema=http://www.isotc211.org/2005/gmd"
+                + "&maxRecords=100";
         Document d = getAsDOM(request);
         print(d);
         // validateSchema(d.getElementsByTagName("//gmd:MD_MetaData"));
@@ -338,9 +329,8 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
     @Test
     public void testLayerDisabledServiceRecords() throws Exception {
         disableCWSOnLinesLayer();
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
         Document doc = getAsDOM(request);
 
         assertXpathEvaluatesTo(
@@ -356,9 +346,8 @@ public class GetRecordsServiceIdTest extends MDTestSupport {
     @Test
     public void testLayerEnabledServiceRecords() throws Exception {
         enableCWSOnLinesLayer();
-        String request =
-                "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
-                        + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
+        String request = "csw?service=CSW&version=2.0.2&request=GetRecords&typeNames=gmd:MD_Metadata"
+                + "&resultType=results&elementSetName=full&outputSchema=http://www.isotc211.org/2005/gmd";
         Document doc = getAsDOM(request);
 
         assertXpathEvaluatesTo(

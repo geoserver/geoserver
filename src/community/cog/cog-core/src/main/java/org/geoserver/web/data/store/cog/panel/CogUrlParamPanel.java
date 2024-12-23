@@ -41,8 +41,7 @@ public class CogUrlParamPanel extends Panel implements ParamPanel {
             IModel<Boolean> controlFlag,
             boolean required,
             IValidator<? super String>[] validators) {
-        return new CogInput(
-                "cogInput", paramValue, paramLabelModel, controlFlag, required, validators);
+        return new CogInput("cogInput", paramValue, paramLabelModel, controlFlag, required, validators);
     }
 
     /** The text field stored inside the panel. */

@@ -13,8 +13,8 @@ import java.util.stream.Stream;
 import org.geoserver.security.csp.CSPHttpRequestWrapper;
 
 /**
- * CSP predicate that tests if the HTTP request query parameters that match the provided key regular
- * expression has a value that matches the provided value regular expression.
+ * CSP predicate that tests if the HTTP request query parameters that match the provided key regular expression has a
+ * value that matches the provided value regular expression.
  */
 public class CSPPredicateParameter implements CSPPredicate {
 
@@ -35,8 +35,8 @@ public class CSPPredicateParameter implements CSPPredicate {
     }
 
     /**
-     * Gets the values of all query parameters with keys that match the key regular expression and
-     * tests them all against the value regular expression.
+     * Gets the values of all query parameters with keys that match the key regular expression and tests them all
+     * against the value regular expression.
      *
      * @return whether the query parameter values match the regular expression
      */
@@ -47,19 +47,18 @@ public class CSPPredicateParameter implements CSPPredicate {
     }
 
     /**
-     * Gets the values of all query parameters with keys that match the key regular expression.
-     * Returns an empty string if no query parameter matched the regular expression.
+     * Gets the values of all query parameters with keys that match the key regular expression. Returns an empty string
+     * if no query parameter matched the regular expression.
      *
      * @param request the HTTP request
      * @return the query parameter values
      */
     private Stream<String> getQueryParameters(CSPHttpRequestWrapper request) {
-        List<String> values =
-                request.getParameterMap().entrySet().stream()
-                        .filter(e -> this.keyRegex.matcher(e.getKey()).matches())
-                        .map(Entry::getValue)
-                        .flatMap(Arrays::stream)
-                        .collect(Collectors.toList());
+        List<String> values = request.getParameterMap().entrySet().stream()
+                .filter(e -> this.keyRegex.matcher(e.getKey()).matches())
+                .map(Entry::getValue)
+                .flatMap(Arrays::stream)
+                .collect(Collectors.toList());
         return values.isEmpty() ? Stream.of("") : values.stream();
     }
 }

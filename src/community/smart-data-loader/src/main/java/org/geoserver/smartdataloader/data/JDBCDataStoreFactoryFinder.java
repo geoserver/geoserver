@@ -15,8 +15,7 @@ public class JDBCDataStoreFactoryFinder {
      * @return the JDBCDataStoreFactory
      */
     public JDBCDataStoreFactory getFactoryFromType(String type) {
-        if (type.toUpperCase().contains(SupportedStoreType.POSTGIS.name()))
-            return new PostgisNGDataStoreFactory();
+        if (type.toUpperCase().contains(SupportedStoreType.POSTGIS.name())) return new PostgisNGDataStoreFactory();
         throw new RuntimeException("Unsupported DataStore type " + type);
     }
 

@@ -56,8 +56,11 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         ft.submit("submit");
         tester.assertRenderedPage(GeoServerHomePage.class);
 
-        ContactInfo info =
-                getGeoServerApplication().getGeoServer().getGlobal().getSettings().getContact();
+        ContactInfo info = getGeoServerApplication()
+                .getGeoServer()
+                .getGlobal()
+                .getSettings()
+                .getContact();
         assertEquals("newAddress1", info.getAddress());
     }
 
@@ -71,8 +74,11 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         ft.submit("apply");
         tester.assertRenderedPage(ContactPage.class);
 
-        ContactInfo info =
-                getGeoServerApplication().getGeoServer().getGlobal().getSettings().getContact();
+        ContactInfo info = getGeoServerApplication()
+                .getGeoServer()
+                .getGlobal()
+                .getSettings()
+                .getContact();
         assertEquals("newAddress2", info.getAddress());
     }
 
@@ -85,12 +91,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // contact person
         ft.setValue("contact:contactPerson:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:contactPerson:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:contactPerson:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:contactPerson:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactPerson:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:contactPerson:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactPerson:internationalField:container:addNew", "click");
         ft.select(
                 "contact:contactPerson:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -101,12 +104,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         // organization
         ft.setValue("contact:contactOrganization:labelContainer:labelContainer_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:contact:contactOrganization:labelContainer:labelContainer_i18nCheckbox",
-                "change");
-        tester.executeAjaxEvent(
-                "form:contact:contactOrganization:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:contactOrganization:internationalField:container:addNew", "click");
+                "form:contact:contactOrganization:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:contactOrganization:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactOrganization:internationalField:container:addNew", "click");
         ft.select(
                 "contact:contactOrganization:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -116,12 +116,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // email
         ft.setValue("contact:contactEmail:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:contactEmail:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:contactEmail:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:contactEmail:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactEmail:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:contactEmail:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactEmail:internationalField:container:addNew", "click");
 
         ft.select(
                 "contact:contactEmail:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
@@ -132,13 +129,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // contactFax
         ft.setValue("contact:contactFacsimile:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:contactFacsimile:labelContainer:labelContainer_i18nCheckbox",
-                "change");
-        tester.executeAjaxEvent(
-                "form:contact:contactFacsimile:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:contactFacsimile:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactFacsimile:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:contactFacsimile:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactFacsimile:internationalField:container:addNew", "click");
         ft.select(
                 "contact:contactFacsimile:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -148,12 +141,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // contactVoice
         ft.setValue("contact:contactVoice:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:contactVoice:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:contactVoice:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:contactVoice:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactVoice:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:contactVoice:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:contactVoice:internationalField:container:addNew", "click");
         ft.select(
                 "contact:contactVoice:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -163,12 +153,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // addressType
         ft.setValue("contact:addressType:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:addressType:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:addressType:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:addressType:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressType:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:addressType:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressType:internationalField:container:addNew", "click");
         ft.select(
                 "contact:addressType:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -179,10 +166,8 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         // address
 
         ft.setValue("contact:address:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:address:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:address:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:address:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:address:internationalField:container:addNew", "click");
 
         ft.select(
                 "contact:address:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
@@ -194,12 +179,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
         // addressCity
 
         ft.setValue("contact:addressCity:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:addressCity:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:addressCity:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:addressCity:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressCity:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:addressCity:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressCity:internationalField:container:addNew", "click");
         ft.select(
                 "contact:addressCity:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -209,12 +191,9 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
         // addressCountry
         ft.setValue("contact:addressCountry:labelContainer:labelContainer_i18nCheckbox", true);
-        tester.executeAjaxEvent(
-                "form:contact:addressCountry:labelContainer:labelContainer_i18nCheckbox", "change");
-        tester.executeAjaxEvent(
-                "form:contact:addressCountry:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:addressCountry:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressCountry:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:addressCountry:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressCountry:internationalField:container:addNew", "click");
         ft.select(
                 "contact:addressCountry:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -223,15 +202,11 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
                 22);
 
         // addressDeliveryPoint
-        ft.setValue(
-                "contact:addressDeliveryPoint:labelContainer:labelContainer_i18nCheckbox", true);
+        ft.setValue("contact:addressDeliveryPoint:labelContainer:labelContainer_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:contact:addressDeliveryPoint:labelContainer:labelContainer_i18nCheckbox",
-                "change");
-        tester.executeAjaxEvent(
-                "form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
-        tester.executeAjaxEvent(
-                "form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
+                "form:contact:addressDeliveryPoint:labelContainer:labelContainer_i18nCheckbox", "change");
+        tester.executeAjaxEvent("form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
+        tester.executeAjaxEvent("form:contact:addressDeliveryPoint:internationalField:container:addNew", "click");
         ft.select(
                 "contact:addressDeliveryPoint:internationalField:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 20);
@@ -324,6 +299,7 @@ public class ContactPageTest extends GeoServerWicketTestSupport {
 
     private void assertI18NContent(InternationalString internationalString) {
         GrowableInternationalString growable = (GrowableInternationalString) internationalString;
-        growable.getLocales().forEach(l -> assertFalse(internationalString.toString(l).isEmpty()));
+        growable.getLocales()
+                .forEach(l -> assertFalse(internationalString.toString(l).isEmpty()));
     }
 }

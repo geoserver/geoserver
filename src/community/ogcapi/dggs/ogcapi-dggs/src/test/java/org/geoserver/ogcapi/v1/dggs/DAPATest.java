@@ -20,9 +20,7 @@ public class DAPATest extends DGGSTestSupport {
         DocumentContext doc = getAsJSONPath("ogc/dggs/v1/collections/H3/dapa/variables", 200);
 
         // check one field
-        assertEquals(
-                "Field of type String",
-                readSingle(doc, "variables[?(@.id == 'shape')].description"));
+        assertEquals("Field of type String", readSingle(doc, "variables[?(@.id == 'shape')].description"));
         // self link
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/dggs/v1/collections/H3/dapa/variables?f=application%2Fjson",
@@ -30,23 +28,20 @@ public class DAPATest extends DGGSTestSupport {
         // collection link
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/dggs/v1/collections/H3?f=application%2Fjson",
-                readSingle(
-                        doc, "links[?(@.rel=='collection' && @.type == 'application/json')].href"));
+                readSingle(doc, "links[?(@.rel=='collection' && @.type == 'application/json')].href"));
     }
 
     @Test
     public void testH3GetMaxSpaceTime() throws Exception {
         // uses a fake datetime, h3 does not really have it, right now there is no test store
         // that has time information
-        DocumentContext doc =
-                getAsJSONPath(
-                        "ogc/dggs/v1/collections/H3/dapa/area:aggregate-space-time?bbox=-10,-10,10,"
-                                + "10&datetime=2000/2020&functions=min,max&variables=shape",
-                        200);
+        DocumentContext doc = getAsJSONPath(
+                "ogc/dggs/v1/collections/H3/dapa/area:aggregate-space-time?bbox=-10,-10,10,"
+                        + "10&datetime=2000/2020&functions=min,max&variables=shape",
+                200);
         // geometry is the aggregation one
         JSONArray coordinates = doc.read("features[0].geometry.coordinates", JSONArray.class);
-        assertEquals(
-                "[[[-10,-10],[10,-10],[10,10],[-10,10],[-10,-10]]]", coordinates.toJSONString());
+        assertEquals("[[[-10,-10],[10,-10],[10,10],[-10,10],[-10,-10]]]", coordinates.toJSONString());
         // check properties
         JSONObject properties = doc.read("features[0].properties", JSONObject.class);
         // aggregation time

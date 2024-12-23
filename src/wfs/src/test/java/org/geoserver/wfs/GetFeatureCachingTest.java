@@ -10,8 +10,8 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 
 /**
- * Test making sure GetFeature still works when the caching machinery is off (since most test
- * datasets will actually be cached in memory)
+ * Test making sure GetFeature still works when the caching machinery is off (since most test datasets will actually be
+ * cached in memory)
  */
 public class GetFeatureCachingTest extends GetFeatureTest {
 
@@ -23,7 +23,6 @@ public class GetFeatureCachingTest extends GetFeatureTest {
 
     @AfterClass
     public static void disableCaching() {
-        FeatureSizeFeatureCollection.setFeatureCacheLimit(
-                FeatureSizeFeatureCollection.DEFAULT_CACHE_SIZE);
+        FeatureSizeFeatureCollection.setFeatureCacheLimit(FeatureSizeFeatureCollection.DEFAULT_CACHE_SIZE);
     }
 }

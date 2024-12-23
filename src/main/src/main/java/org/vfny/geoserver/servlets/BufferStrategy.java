@@ -15,8 +15,7 @@ import org.geoserver.ows.ServiceStrategy;
 /**
  * A safe Service strategy that buffers output until writeTo completes.
  *
- * <p>This strategy wastes memory, for saftey. It represents a middle ground between SpeedStrategy
- * and FileStrategy
+ * <p>This strategy wastes memory, for saftey. It represents a middle ground between SpeedStrategy and FileStrategy
  *
  * @author jgarnett
  */

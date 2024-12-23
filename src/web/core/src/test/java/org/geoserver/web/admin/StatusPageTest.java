@@ -52,8 +52,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertLabel("tabs:panel:locks", "0");
         tester.assertLabel("tabs:panel:jai.memory.used", "0 KB");
 
-        Label resourceCache =
-                (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
+        Label resourceCache = (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
         assertNotEquals("0", resourceCache.getDefaultModelObjectAsString());
     }
 
@@ -88,8 +87,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.clickLink("tabs:panel:free.memory.jai", false);
 
         tester.assertRenderedPage(StatusPage.class);
-        Label resourceCache =
-                (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
+        Label resourceCache = (Label) tester.getComponentFromLastRenderedPage("tabs:panel:resourceCache");
         int before = Integer.valueOf(resourceCache.getDefaultModelObjectAsString());
 
         tester.clickLink("tabs:panel:clear.resourceCache", true);
@@ -137,14 +135,10 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(StatusPage.class);
         tester.clickLink("tabs:tabs-container:tabs:1:link", true);
         tester.assertContains("gs-main");
-        Component component =
-                tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules");
+        Component component = tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules");
         assertThat(component, instanceOf(ListView.class));
-        List<String> modules =
-                ((ListView<ModuleStatus>) component)
-                        .getList().stream()
-                                .map(ModuleStatus::getModule)
-                                .collect(Collectors.toList());
+        List<String> modules = ((ListView<ModuleStatus>) component)
+                .getList().stream().map(ModuleStatus::getModule).collect(Collectors.toList());
 
         // verify that the expected modules are present
         assertThat(modules, hasItem("gs-main"));
@@ -164,15 +158,14 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         tester.assertContains("jvm");
 
         @SuppressWarnings("unchecked")
-        ListView<ModuleStatus> modules =
-                (ListView<ModuleStatus>)
-                        tester.getComponentFromLastRenderedPage(
-                                "tabs:panel:listViewContainer:modules");
+        ListView<ModuleStatus> modules = (ListView<ModuleStatus>)
+                tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules");
         int index = 0;
         int found = -1;
         for (ModuleStatus item : modules.getList()) {
             if (item.getModule().equals("jvm")) {
-                assertEquals(System.getProperty("java.version"), item.getVersion().get());
+                assertEquals(
+                        System.getProperty("java.version"), item.getVersion().get());
                 found = index;
             }
             index++;
@@ -181,12 +174,12 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
             fail("Module jvm not found, required for version check");
         }
         Component version =
-                tester.getComponentFromLastRenderedPage(
-                        "tabs:panel:listViewContainer:modules:" + found + ":version");
+                tester.getComponentFromLastRenderedPage("tabs:panel:listViewContainer:modules:" + found + ":version");
         assertTrue(version instanceof Label);
         assertNotNull(version.getDefaultModelObjectAsString());
         assertEquals(
-                System.getProperty("java.version"), version.getDefaultModelObjectAsString().trim());
+                System.getProperty("java.version"),
+                version.getDefaultModelObjectAsString().trim());
     }
 
     @Test
@@ -211,8 +204,7 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
         // check that extra tab content was rendered
         tester.assertContains("extra tab content");
         // check that the tab has the correct title
-        Component component =
-                tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:4:link:title");
+        Component component = tester.getComponentFromLastRenderedPage("tabs:tabs-container:tabs:4:link:title");
         assertThat(component, instanceOf(Label.class));
         Label label = (Label) component;
         assertThat(label.getDefaultModel(), notNullValue());
@@ -236,10 +228,8 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
     @Test
     public void redirectUnauthorizedToLogin() throws Exception {
         logout();
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "web/wicket/bookmarkable/org.geoserver.web.admin"
-                                + ".StatusPage?29-1.ILinkListener-tabs-tabs~container-tabs-1-link");
+        MockHttpServletResponse response = getAsServletResponse("web/wicket/bookmarkable/org.geoserver.web.admin"
+                + ".StatusPage?29-1.ILinkListener-tabs-tabs~container-tabs-1-link");
         assertEquals(HttpStatus.FOUND.value(), response.getStatus());
         assertEquals("./org.geoserver.web.GeoServerLoginPage", response.getHeader("Location"));
     }

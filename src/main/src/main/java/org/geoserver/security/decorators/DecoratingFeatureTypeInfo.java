@@ -34,13 +34,12 @@ import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.factory.Hints;
 
 /**
- * Delegates every method to the delegate feature type info. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the delegate feature type info. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime
  */
-public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<FeatureTypeInfo>
-        implements FeatureTypeInfo {
+public abstract class DecoratingFeatureTypeInfo extends AbstractDecorator<FeatureTypeInfo> implements FeatureTypeInfo {
 
     public DecoratingFeatureTypeInfo(FeatureTypeInfo info) {
         super(info);

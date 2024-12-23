@@ -21,8 +21,7 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 @SuppressWarnings("serial")
 public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
 
-    public static final Property<GeoServerUser> USERNAME =
-            new BeanProperty<>("username", "username");
+    public static final Property<GeoServerUser> USERNAME = new BeanProperty<>("username", "username");
     public static final Property<GeoServerUser> ENABLED = new BeanProperty<>("enabled", "enabled");
     protected String userGroupServiceName;
 
@@ -68,41 +67,39 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
         };
 
     */
-    public static final Property<GeoServerUser> HASATTRIBUTES =
-            new Property<>() {
+    public static final Property<GeoServerUser> HASATTRIBUTES = new Property<>() {
 
-                @Override
-                public String getName() {
-                    return "hasattributes";
-                }
+        @Override
+        public String getName() {
+            return "hasattributes";
+        }
 
-                @Override
-                public Object getPropertyValue(GeoServerUser item) {
-                    if (item.getProperties().isEmpty()) return Boolean.FALSE;
-                    else return Boolean.TRUE;
-                }
+        @Override
+        public Object getPropertyValue(GeoServerUser item) {
+            if (item.getProperties().isEmpty()) return Boolean.FALSE;
+            else return Boolean.TRUE;
+        }
 
-                @Override
-                public IModel getModel(IModel itemModel) {
-                    return new Model<>(
-                            (Boolean) getPropertyValue((GeoServerUser) itemModel.getObject()));
-                }
+        @Override
+        public IModel getModel(IModel itemModel) {
+            return new Model<>((Boolean) getPropertyValue((GeoServerUser) itemModel.getObject()));
+        }
 
-                @Override
-                public Comparator<GeoServerUser> getComparator() {
-                    return new PropertyComparator<>(this);
-                }
+        @Override
+        public Comparator<GeoServerUser> getComparator() {
+            return new PropertyComparator<>(this);
+        }
 
-                @Override
-                public boolean isVisible() {
-                    return true;
-                }
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
 
-                @Override
-                public boolean isSearchable() {
-                    return true;
-                }
-            };
+        @Override
+        public boolean isSearchable() {
+            return true;
+        }
+    };
 
     /*
         public static final Property<GeoserverUser> ADMIN = new Property<GeoserverUser>() {
@@ -146,10 +143,7 @@ public class UserListProvider extends GeoServerDataProvider<GeoServerUser> {
         try {
             GeoServerUserGroupService service = null;
             if (userGroupServiceName != null)
-                service =
-                        getApplication()
-                                .getSecurityManager()
-                                .loadUserGroupService(userGroupServiceName);
+                service = getApplication().getSecurityManager().loadUserGroupService(userGroupServiceName);
 
             if (service == null) users = new TreeSet<>();
             else users = service.getUsers();

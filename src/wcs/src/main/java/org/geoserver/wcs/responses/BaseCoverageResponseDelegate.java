@@ -105,8 +105,8 @@ public abstract class BaseCoverageResponseDelegate implements CoverageResponseDe
     }
 
     /**
-     * Provides a fallback, a value that looks like a GMLCOV conformance class. Delegates that can
-     * be actually associated to an official conformance class should override this method
+     * Provides a fallback, a value that looks like a GMLCOV conformance class. Delegates that can be actually
+     * associated to an official conformance class should override this method
      */
     @Override
     public String getConformanceClass(String format) {

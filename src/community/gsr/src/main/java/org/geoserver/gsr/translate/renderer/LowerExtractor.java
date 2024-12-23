@@ -18,8 +18,7 @@ class LowerExtractor implements PropertyRangeExtractor {
 
     @Override
     public PropertyRange getRange(Filter filter) {
-        if (!(filter instanceof PropertyIsLessThanOrEqualTo
-                || filter instanceof PropertyIsLessThan)) return null;
+        if (!(filter instanceof PropertyIsLessThanOrEqualTo || filter instanceof PropertyIsLessThan)) return null;
         BinaryComparisonOperator upperBound = (BinaryComparisonOperator) filter;
         Expression property = upperBound.getExpression1();
 
@@ -34,7 +33,6 @@ class LowerExtractor implements PropertyRangeExtractor {
         }
         Double maxAsDouble = max.evaluate(null, double.class);
 
-        return new PropertyRange(
-                propertyName, new NumberRange(Double.class, -Double.MAX_VALUE, maxAsDouble));
+        return new PropertyRange(propertyName, new NumberRange(Double.class, -Double.MAX_VALUE, maxAsDouble));
     }
 }

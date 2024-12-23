@@ -27,8 +27,7 @@ public class BackupRestoreLayersIndexModel extends LoadableDetachableModel<List<
 
     private ResourceFilePanel resourceFilePanel;
 
-    public BackupRestoreLayersIndexModel(
-            StoreModel<StoreInfo> storeModel, ResourceFilePanel resourceFilePanel) {
+    public BackupRestoreLayersIndexModel(StoreModel<StoreInfo> storeModel, ResourceFilePanel resourceFilePanel) {
         super();
         this.storeInfo = storeModel;
         this.resourceFilePanel = resourceFilePanel;

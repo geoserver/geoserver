@@ -36,82 +36,60 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
         info.setExtension("xhtml");
         TemplateInfoDAO.get().saveOrUpdate(info);
 
-        String json =
-                "{\n"
-                        + "    \"Rule\": {\n"
-                        + "        \"priority\": 1,\n"
-                        + "        \"templateName\": \"test-rules\",\n"
-                        + "        \"outputFormat\": \"HTML\",\n"
-                        + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
-                        + "    }\n"
-                        + "}";
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules",
-                        json,
-                        MediaType.APPLICATION_JSON_VALUE);
+        String json = "{\n"
+                + "    \"Rule\": {\n"
+                + "        \"priority\": 1,\n"
+                + "        \"templateName\": \"test-rules\",\n"
+                + "        \"outputFormat\": \"HTML\",\n"
+                + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
+                + "    }\n"
+                + "}";
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules",
+                json,
+                MediaType.APPLICATION_JSON_VALUE);
         assertEquals(201, response.getStatus());
         FeatureTypeInfo fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
         TemplateLayerConfig templateLayerConfig =
-                fifteen.getMetadata()
-                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+                fifteen.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
         TemplateRule rule = new ArrayList<>(templateLayerConfig.getTemplateRules()).get(0);
         String id = rule.getRuleId();
-        JSONObject result =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
-                                        + id
-                                        + ".json");
+        JSONObject result = (JSONObject) getAsJSON(
+                RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules/" + id + ".json");
         JSONObject ruleJSON = result.getJSONObject("Rule");
         assertEquals(1, ruleJSON.getInt("priority"));
         assertEquals("test-rules", ruleJSON.getString("templateName"));
         assertEquals("HTML", ruleJSON.getString("outputFormat"));
         assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-        String xmlRule =
-                " <Rule>\n"
-                        + "        <priority>2</priority>\n"
-                        + "        <templateName>test-rules</templateName>\n"
-                        + "        <outputFormat>HTML</outputFormat>\n"
-                        + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
-                        + "    </Rule>";
+        String xmlRule = " <Rule>\n"
+                + "        <priority>2</priority>\n"
+                + "        <templateName>test-rules</templateName>\n"
+                + "        <outputFormat>HTML</outputFormat>\n"
+                + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
+                + "    </Rule>";
 
-        response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
-                                + rule.getRuleId(),
-                        xmlRule,
-                        MediaType.APPLICATION_XML_VALUE);
+        response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules/" + rule.getRuleId(),
+                xmlRule,
+                MediaType.APPLICATION_XML_VALUE);
         assertEquals(201, response.getStatus());
 
-        result =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
-                                        + id
-                                        + ".json");
+        result = (JSONObject) getAsJSON(
+                RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/templaterules/" + id + ".json");
         ruleJSON = result.getJSONObject("Rule");
         assertEquals(2, ruleJSON.getInt("priority"));
         assertEquals("test-rules", ruleJSON.getString("templateName"));
         assertEquals("HTML", ruleJSON.getString("outputFormat"));
         assertEquals("requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-        response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
-                                + rule.getRuleId());
+        response = deleteAsServletResponse(RestBaseController.ROOT_PATH
+                + "/workspaces/cdf/featuretypes/Fifteen/templaterules/"
+                + rule.getRuleId());
         assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
 
         fifteen = catalog.getFeatureTypeByName("cdf", "Fifteen");
-        templateLayerConfig =
-                fifteen.getMetadata()
-                        .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+        templateLayerConfig = fifteen.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
         assertTrue(templateLayerConfig.getTemplateRules().isEmpty());
     }
 
@@ -124,69 +102,57 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             info.setExtension("xhtml");
             TemplateInfoDAO.get().saveOrUpdate(info);
 
-            String json =
-                    "{\n"
-                            + "    \"Rule\": {\n"
-                            + "        \"priority\": 1,\n"
-                            + "        \"templateName\": \"test-rules2\",\n"
-                            + "        \"outputFormat\": \"HTML\",\n"
-                            + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
-                            + "    }\n"
-                            + "}";
-            MockHttpServletResponse response =
-                    postAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/workspaces/cite/featuretypes/Forests/templaterules",
-                            json,
-                            MediaType.APPLICATION_JSON_VALUE);
+            String json = "{\n"
+                    + "    \"Rule\": {\n"
+                    + "        \"priority\": 1,\n"
+                    + "        \"templateName\": \"test-rules2\",\n"
+                    + "        \"outputFormat\": \"HTML\",\n"
+                    + "        \"cqlFilter\": \"requestParam('myRequestParam')='true'\",\n"
+                    + "    }\n"
+                    + "}";
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/workspaces/cite/featuretypes/Forests/templaterules",
+                    json,
+                    MediaType.APPLICATION_JSON_VALUE);
             assertEquals(201, response.getStatus());
             FeatureTypeInfo forests = catalog.getFeatureTypeByName("cite", "Forests");
             TemplateLayerConfig templateLayerConfig =
-                    forests.getMetadata()
-                            .get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
-            TemplateRule rule = templateLayerConfig.getTemplateRules().iterator().next();
+                    forests.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
+            TemplateRule rule =
+                    templateLayerConfig.getTemplateRules().iterator().next();
             String id = rule.getRuleId();
-            JSONObject result =
-                    (JSONObject)
-                            getAsJSON(
-                                    RestBaseController.ROOT_PATH
-                                            + "/workspaces/cite/featuretypes/Forests/templaterules/"
-                                            + id
-                                            + ".json");
+            JSONObject result = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH
+                    + "/workspaces/cite/featuretypes/Forests/templaterules/"
+                    + id
+                    + ".json");
             JSONObject ruleJSON = result.getJSONObject("Rule");
             assertEquals(1, ruleJSON.getInt("priority"));
             assertEquals("test-rules2", ruleJSON.getString("templateName"));
             assertEquals("HTML", ruleJSON.getString("outputFormat"));
             assertEquals("requestParam('myRequestParam')='true'", ruleJSON.getString("cqlFilter"));
 
-            String xmlRule =
-                    " <Rule>\n"
-                            + "        <priority>2</priority>\n"
-                            + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
-                            + "    </Rule>";
+            String xmlRule = " <Rule>\n"
+                    + "        <priority>2</priority>\n"
+                    + "        <cqlFilter>requestParam('otherRequestParam')='true'</cqlFilter>\n"
+                    + "    </Rule>";
 
-            response =
-                    patchAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/workspaces/cite/featuretypes/Forests/templaterules/"
-                                    + rule.getRuleId(),
-                            xmlRule,
-                            MediaType.APPLICATION_XML_VALUE);
+            response = patchAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cite/featuretypes/Forests/templaterules/"
+                            + rule.getRuleId(),
+                    xmlRule,
+                    MediaType.APPLICATION_XML_VALUE);
             assertEquals(200, response.getStatus());
 
-            result =
-                    (JSONObject)
-                            getAsJSON(
-                                    RestBaseController.ROOT_PATH
-                                            + "/workspaces/cite/featuretypes/Forests/templaterules/"
-                                            + id
-                                            + ".json");
+            result = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH
+                    + "/workspaces/cite/featuretypes/Forests/templaterules/"
+                    + id
+                    + ".json");
             ruleJSON = result.getJSONObject("Rule");
             assertEquals(2, ruleJSON.getInt("priority"));
             assertEquals("test-rules2", ruleJSON.getString("templateName"));
             assertEquals("HTML", ruleJSON.getString("outputFormat"));
-            assertEquals(
-                    "requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
+            assertEquals("requestParam('otherRequestParam')='true'", ruleJSON.getString("cqlFilter"));
         } finally {
             cleanup(getCatalog().getFeatureTypeByName("cite", "Forests"));
         }
@@ -233,11 +199,8 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             places.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
             getCatalog().save(places);
 
-            JSONObject result =
-                    (JSONObject)
-                            getAsJSON(
-                                    RestBaseController.ROOT_PATH
-                                            + "/workspaces/cite/featuretypes/NamedPlaces/templaterules.json");
+            JSONObject result = (JSONObject) getAsJSON(
+                    RestBaseController.ROOT_PATH + "/workspaces/cite/featuretypes/NamedPlaces/templaterules.json");
             JSONArray array = result.getJSONObject("RulesList").getJSONArray("Rules");
             assertEquals(3, array.size());
             for (int i = 0; i < array.size(); i++) {
@@ -281,27 +244,24 @@ public class TemplateRuleRestControllerTest extends CatalogRESTTestSupport {
             places.getMetadata().put(TemplateLayerConfig.METADATA_KEY, templateLayerConfig);
             getCatalog().save(places);
 
-            String xmlRule =
-                    " <Rule>\n"
-                            + "        <priority>2</priority>\n"
-                            + "        <cqlFilter xs:nil=\"true\"/>\n"
-                            + "    </Rule>";
-            MockHttpServletResponse response =
-                    patchAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/workspaces/cite/featuretypes/Lakes/templaterules/"
-                                    + rule.getRuleId(),
-                            xmlRule,
-                            MediaType.APPLICATION_XML_VALUE);
+            String xmlRule = " <Rule>\n"
+                    + "        <priority>2</priority>\n"
+                    + "        <cqlFilter xs:nil=\"true\"/>\n"
+                    + "    </Rule>";
+            MockHttpServletResponse response = patchAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cite/featuretypes/Lakes/templaterules/"
+                            + rule.getRuleId(),
+                    xmlRule,
+                    MediaType.APPLICATION_XML_VALUE);
             assertEquals(HttpStatus.OK.value(), response.getStatus());
             String json = "{\"Rule\":{\"outputFormat\":\"HTML\",\"cqlFilter\":null}}";
-            response =
-                    patchAsServletResponse(
-                            RestBaseController.ROOT_PATH
-                                    + "/workspaces/cite/featuretypes/Lakes/templaterules/"
-                                    + rule2.getRuleId(),
-                            json,
-                            MediaType.APPLICATION_JSON_VALUE);
+            response = patchAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cite/featuretypes/Lakes/templaterules/"
+                            + rule2.getRuleId(),
+                    json,
+                    MediaType.APPLICATION_JSON_VALUE);
             assertEquals(HttpStatus.OK.value(), response.getStatus());
             FeatureTypeInfo fti = catalog.getFeatureTypeByName("cite", "Lakes");
             TemplateRuleService service = new TemplateRuleService(fti);

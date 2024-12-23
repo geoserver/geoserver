@@ -64,10 +64,8 @@ public class StylesClientSldIT {
         this.dataStores = support.client().dataStores();
         this.stylesClient = support.client().styles();
 
-        String wsname1 =
-                String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
-        String wsname2 =
-                String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname1 = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname2 = String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         this.workspaces.create(wsname1);
         this.workspaces.create(wsname2);
@@ -110,11 +108,10 @@ public class StylesClientSldIT {
         List<Link> globalStyles = stylesClient.getStyles();
         assertNotNull(globalStyles);
         assertFalse(globalStyles.isEmpty());
-        globalStyles.forEach(
-                l -> {
-                    assertNotNull(l.getName());
-                    assertNotNull(l.getLink());
-                });
+        globalStyles.forEach(l -> {
+            assertNotNull(l.getName());
+            assertNotNull(l.getLink());
+        });
         Set<String> names = globalStyles.stream().map(Link::getName).collect(Collectors.toSet());
         // test only default styles
         assertTrue(names.contains("line"));
@@ -217,9 +214,7 @@ public class StylesClientSldIT {
         assertEquals(FormatEnum.SLD, styleInfo.getFormat());
         assertEquals(name + ".sld", styleInfo.getFilename());
         Version version =
-                styleInfo.getFormatVersion() == null
-                        ? styleInfo.getLanguageVersion()
-                        : styleInfo.getFormatVersion();
+                styleInfo.getFormatVersion() == null ? styleInfo.getLanguageVersion() : styleInfo.getFormatVersion();
         assertEquals("1.0.0", version.getVersion());
         assertNull(styleInfo.getWorkspace());
 
@@ -231,17 +226,13 @@ public class StylesClientSldIT {
         final String requestBody = loadResource("v1/styles/generic.sld");
         final String name = "generic_style";
 
-        final @NonNull StyleInfo styleWs1 =
-                createSLDStyleWorkspace(this.ws1.getName(), name, requestBody);
-        final @NonNull StyleInfo styleWs2 =
-                createSLDStyleWorkspace(this.ws2.getName(), name, requestBody);
+        final @NonNull StyleInfo styleWs1 = createSLDStyleWorkspace(this.ws1.getName(), name, requestBody);
+        final @NonNull StyleInfo styleWs2 = createSLDStyleWorkspace(this.ws2.getName(), name, requestBody);
 
-        String style1SLD =
-                stylesClient.getBody(ws1.getName(), styleWs1.getName(), StyleFormat.SLD_1_0_0);
+        String style1SLD = stylesClient.getBody(ws1.getName(), styleWs1.getName(), StyleFormat.SLD_1_0_0);
         assertThat(style1SLD, StringContains.containsString("<sld:StyledLayerDescriptor"));
 
-        String style2SLD =
-                stylesClient.getBody(ws2.getName(), styleWs2.getName(), StyleFormat.SLD_1_0_0);
+        String style2SLD = stylesClient.getBody(ws2.getName(), styleWs2.getName(), StyleFormat.SLD_1_0_0);
         assertThat(style2SLD, StringContains.containsString("<sld:StyledLayerDescriptor"));
     }
 
@@ -255,17 +246,14 @@ public class StylesClientSldIT {
         createSLDStyleWorkspace(this.ws1.getName(), "malformed-style", body);
     }
 
-    private @NonNull StyleInfo createSLDStyleWorkspace(
-            String workspaceName, String name, String styleBody) {
+    private @NonNull StyleInfo createSLDStyleWorkspace(String workspaceName, String name, String styleBody) {
         StyleInfo styleInfo = stylesClient.createSLDStyle(workspaceName, name, styleBody);
         assertNotNull(styleInfo);
         assertEquals(name, styleInfo.getName());
         assertEquals(FormatEnum.SLD, styleInfo.getFormat());
         assertEquals(name + ".sld", styleInfo.getFilename());
         Version version =
-                styleInfo.getFormatVersion() == null
-                        ? styleInfo.getLanguageVersion()
-                        : styleInfo.getFormatVersion();
+                styleInfo.getFormatVersion() == null ? styleInfo.getLanguageVersion() : styleInfo.getFormatVersion();
         assertEquals("1.0.0", version.getVersion());
         assertNotNull(styleInfo.getWorkspace());
         assertEquals(workspaceName, styleInfo.getWorkspace().getName());
@@ -317,11 +305,9 @@ public class StylesClientSldIT {
         final String requestBody = loadResource("v1/styles/point.sld");
         final String name = "modifyStyleBody";
 
-        final @NonNull StyleInfo styleWs1 =
-                createSLDStyleWorkspace(this.ws1.getName(), name, requestBody);
+        final @NonNull StyleInfo styleWs1 = createSLDStyleWorkspace(this.ws1.getName(), name, requestBody);
 
-        String style1Body =
-                stylesClient.getBody(ws1.getName(), styleWs1.getName(), StyleFormat.SLD_1_0_0);
+        String style1Body = stylesClient.getBody(ws1.getName(), styleWs1.getName(), StyleFormat.SLD_1_0_0);
         assertThat(style1Body, StringContains.containsString("StyledLayerDescriptor"));
 
         String updatedBody = loadResource("v1/styles/line.sld");
@@ -370,9 +356,7 @@ public class StylesClientSldIT {
                 throw new IOException("Resouce " + name + " not found");
             }
             String content =
-                    new BufferedReader(new InputStreamReader(in, UTF_8))
-                            .lines()
-                            .collect(Collectors.joining("\n"));
+                    new BufferedReader(new InputStreamReader(in, UTF_8)).lines().collect(Collectors.joining("\n"));
             return content;
         }
     }

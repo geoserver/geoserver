@@ -17,14 +17,12 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
 
     private AttributeNameHelper nameHelper;
 
-    public FlatStaticBuilder(
-            String key, JsonNode value, NamespaceSupport namespaces, String separator) {
+    public FlatStaticBuilder(String key, JsonNode value, NamespaceSupport namespaces, String separator) {
         super(key, value, namespaces);
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
-    public FlatStaticBuilder(
-            String key, String strValue, NamespaceSupport namespaces, String separator) {
+    public FlatStaticBuilder(String key, String strValue, NamespaceSupport namespaces, String separator) {
         super(key, strValue, namespaces);
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
@@ -35,17 +33,14 @@ public class FlatStaticBuilder extends StaticBuilder implements FlatBuilder {
     }
 
     @Override
-    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    protected void evaluateInternal(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         GeoJSONWriter geoJsonWriter = (GeoJSONWriter) writer;
         if (strValue != null)
             geoJsonWriter.writeStaticContent(
                     nameHelper.getFinalAttributeName(context), strValue, nameHelper.getSeparator());
         else
             geoJsonWriter.writeStaticContent(
-                    nameHelper.getFinalAttributeName(context),
-                    staticValue,
-                    nameHelper.getSeparator());
+                    nameHelper.getFinalAttributeName(context), staticValue, nameHelper.getSeparator());
     }
 
     @Override

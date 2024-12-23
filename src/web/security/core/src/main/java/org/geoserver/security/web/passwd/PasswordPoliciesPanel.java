@@ -29,8 +29,7 @@ public class PasswordPoliciesPanel extends SecurityNamedServicesPanel<PasswordPo
 
     @Override
     public void validateRemoveConfig(PasswordPolicyConfig config) throws SecurityConfigException {
-        SecurityConfigValidator.getConfigurationValiator(
-                        PasswordValidator.class, config.getClassName())
+        SecurityConfigValidator.getConfigurationValiator(PasswordValidator.class, config.getClassName())
                 .validateRemovePasswordPolicy(config);
     }
 

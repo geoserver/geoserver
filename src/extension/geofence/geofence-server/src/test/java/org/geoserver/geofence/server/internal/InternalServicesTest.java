@@ -42,32 +42,8 @@ public class InternalServicesTest extends ServicesTest {
             }
         }
 
-        Rule citeRule =
-                new Rule(
-                        0,
-                        "cite",
-                        null,
-                        null,
-                        null,
-                        "wms",
-                        null,
-                        null,
-                        "cite",
-                        null,
-                        GrantType.ALLOW);
-        Rule sfRule =
-                new Rule(
-                        1,
-                        "cite",
-                        null,
-                        null,
-                        null,
-                        "wms",
-                        null,
-                        null,
-                        "sf",
-                        null,
-                        GrantType.ALLOW);
+        Rule citeRule = new Rule(0, "cite", null, null, null, "wms", null, null, "cite", null, GrantType.ALLOW);
+        Rule sfRule = new Rule(1, "cite", null, null, null, "wms", null, null, "sf", null, GrantType.ALLOW);
         adminService.insert(citeRule);
         adminService.insert(sfRule);
     }
@@ -84,32 +60,17 @@ public class InternalServicesTest extends ServicesTest {
     public void testAllowedAreaSRIDIsPreserved() throws ParseException {
         // test that when retrieving an AccessInfo from the rule service,
         // the original SRID is returned in the AllowedArea wkt representation.
-        Rule rule1 =
-                new Rule(
-                        999, null, null, null, null, null, null, null, null, null, GrantType.ALLOW);
+        Rule rule1 = new Rule(999, null, null, null, null, null, null, null, null, null, GrantType.ALLOW);
         adminService.insert(rule1);
 
-        Rule rule2 =
-                new Rule(
-                        0,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        "layerGroup",
-                        GrantType.LIMIT);
+        Rule rule2 = new Rule(0, null, null, null, null, null, null, null, null, "layerGroup", GrantType.LIMIT);
         Long idRule2 = adminService.insert(rule2);
         RuleLimits ruleLimits = new RuleLimits();
         ruleLimits.setCatalogMode(CatalogMode.HIDE);
-        MultiPolygon mp =
-                (MultiPolygon)
-                        new WKTReader()
-                                .read(
-                                        "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))");
+        MultiPolygon mp = (MultiPolygon)
+                new WKTReader()
+                        .read(
+                                "MULTIPOLYGON(((0.0016139656066815888 -0.0006386457758059581,0.0019599705696027314 -0.0006386457758059581,0.0019599705696027314 -0.0008854090051601674,0.0016139656066815888 -0.0008854090051601674,0.0016139656066815888 -0.0006386457758059581)))");
         mp.setSRID(3857);
         ruleLimits.setAllowedArea(mp);
         adminService.setLimits(idRule2, ruleLimits);

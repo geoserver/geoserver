@@ -50,15 +50,15 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     void setName(String name);
 
     /**
-     * @return The {@link BlobStoreInfo#getId() blob store id} for this layer's tiles, or {@code
-     *     null} if whatever the default blob store is shall be used
+     * @return The {@link BlobStoreInfo#getId() blob store id} for this layer's tiles, or {@code null} if whatever the
+     *     default blob store is shall be used
      */
     @Nullable
     String getBlobStoreId();
 
     /**
-     * @param blobStoreId the {@link BlobStoreInfo#getId() blob store id} for this layer's tiles, or
-     *     {@code null} if whatever the default blob store is shall be used
+     * @param blobStoreId the {@link BlobStoreInfo#getId() blob store id} for this layer's tiles, or {@code null} if
+     *     whatever the default blob store is shall be used
      */
     void setBlobStoreId(@Nullable String blobStoreId);
 
@@ -117,8 +117,8 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     void setExpireClients(int seconds);
 
     /**
-     * Derived property from {@link #getParameterFilters()}, returns the configured allowable values
-     * for a parameter filter over the {@code STYLE} key, if exists, or the empty set.
+     * Derived property from {@link #getParameterFilters()}, returns the configured allowable values for a parameter
+     * filter over the {@code STYLE} key, if exists, or the empty set.
      *
      * <p>The returned set is immutable and dettached from this object's internal state
      *
@@ -133,16 +133,14 @@ public interface GeoServerTileLayerInfo extends Serializable, Cloneable {
     Set<String> getMimeFormats();
 
     /**
-     * Get the list of cached {@link org.geowebcache.grid.GridSubset}s for the {@link
-     * GeoServerTileLayer}
+     * Get the list of cached {@link org.geowebcache.grid.GridSubset}s for the {@link GeoServerTileLayer}
      *
      * @return The grid subsets
      */
     Set<XMLGridSubset> getGridSubsets();
 
     /**
-     * Set the list of cached {@link org.geowebcache.grid.GridSubset}s for the {@link
-     * GeoServerTileLayer}
+     * Set the list of cached {@link org.geowebcache.grid.GridSubset}s for the {@link GeoServerTileLayer}
      *
      * @param gridSubsets list of grid subsets to cache
      */

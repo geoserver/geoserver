@@ -24,8 +24,7 @@ public class DirectDownloadKvpRequestReader extends KvpRequestReader {
     }
 
     @Override
-    public Object read(Object req, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object req, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
 
         // Force the ResourceID element to be a simple String instead of an array
         Object resourceId = kvp.get(DownloadLinkHandler.RESOURCE_ID_PARAMETER);
@@ -33,9 +32,7 @@ public class DirectDownloadKvpRequestReader extends KvpRequestReader {
             kvp.put(DownloadLinkHandler.RESOURCE_ID_PARAMETER, ((List) resourceId).get(0));
         }
         Object fileParameter = kvp.get(DownloadLinkHandler.FILE_PARAMETER);
-        if (fileParameter != null
-                && fileParameter instanceof List
-                && !((List) fileParameter).isEmpty()) {
+        if (fileParameter != null && fileParameter instanceof List && !((List) fileParameter).isEmpty()) {
             kvp.put(DownloadLinkHandler.FILE_PARAMETER, ((List) fileParameter).get(0));
         }
         DirectDownloadType request = (DirectDownloadType) super.read(req, kvp, rawKvp);

@@ -35,8 +35,6 @@ public class WebServiceBodyResponseUserGroupServicePanel
         super.renderHead(response);
         String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
         response.render(
-                CssHeaderItem.forCSS(
-                        css,
-                        "org-geoserver-security-web-WebServiceBodyResponseUserGroupServicePanel"));
+                CssHeaderItem.forCSS(css, "org-geoserver-security-web-WebServiceBodyResponseUserGroupServicePanel"));
     }
 }

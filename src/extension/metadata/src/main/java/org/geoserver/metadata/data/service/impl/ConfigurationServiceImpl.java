@@ -44,22 +44,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Service responsible for interaction with yaml files. It will search for all *.yaml files in a
- * given directory and try to parse the files. Yaml files that cannot do parsed will be ignored.
+ * Service responsible for interaction with yaml files. It will search for all *.yaml files in a given directory and try
+ * to parse the files. Yaml files that cannot do parsed will be ignored.
  *
  * @author Timothy De Bock
  */
 @Component
 public class ConfigurationServiceImpl implements ConfigurationService {
 
-    private static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(ConfigurationServiceImpl.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(ConfigurationServiceImpl.class);
 
     private static final String SEPARATOR = ";";
 
-    @Autowired private GeoServerDataDirectory dataDirectory;
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
-    @Autowired private Application application;
+    @Autowired
+    private Application application;
 
     private MetadataConfiguration configuration;
 
@@ -75,14 +76,12 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     public void init() {
         readCustomTranslations();
         readConfiguration();
-        getFolder()
-                .addListener(
-                        new ResourceListener() {
-                            @Override
-                            public void changed(ResourceNotification notify) {
-                                readConfiguration();
-                            }
-                        });
+        getFolder().addListener(new ResourceListener() {
+            @Override
+            public void changed(ResourceNotification notify) {
+                readConfiguration();
+            }
+        });
     }
 
     public void reload() {
@@ -90,28 +89,19 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private void readCustomTranslations() {
-        application
-                .getApplicationListeners()
-                .add(
-                        new IApplicationListener() {
+        application.getApplicationListeners().add(new IApplicationListener() {
 
-                            @Override
-                            public void onAfterInitialized(Application application) {
-                                Resource metadataFolder =
-                                        dataDirectory.get(MetadataConstants.DIRECTORY);
-                                WicketResourceResourceLoader loader =
-                                        new WicketResourceResourceLoader(
-                                                metadataFolder, "metadata");
-                                loader.setShouldThrowException(false);
-                                application
-                                        .getResourceSettings()
-                                        .getStringResourceLoaders()
-                                        .add(0, loader);
-                            }
+            @Override
+            public void onAfterInitialized(Application application) {
+                Resource metadataFolder = dataDirectory.get(MetadataConstants.DIRECTORY);
+                WicketResourceResourceLoader loader = new WicketResourceResourceLoader(metadataFolder, "metadata");
+                loader.setShouldThrowException(false);
+                application.getResourceSettings().getStringResourceLoaders().add(0, loader);
+            }
 
-                            @Override
-                            public void onBeforeDestroyed(Application application) {}
-                        });
+            @Override
+            public void onBeforeDestroyed(Application application) {}
+        });
     }
 
     @Override
@@ -159,16 +149,14 @@ public class ConfigurationServiceImpl implements ConfigurationService {
             }
         }
         // add feature catalog
-        try (InputStream in =
-                getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
+        try (InputStream in = getClass().getResourceAsStream(MetadataConstants.FEATURE_CATALOG_CONFIG_FILE)) {
             readConfiguration(in, mapper);
         } catch (IOException e) {
             LOGGER.log(Level.FINE, e.getMessage(), e);
         }
         // add WCS field
         if (configuration.isWcsField()) {
-            try (InputStream in =
-                    getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
+            try (InputStream in = getClass().getResourceAsStream(MetadataConstants.WCS_FIELD_CONFIG_FILE)) {
                 readConfiguration(in, mapper);
             } catch (IOException e) {
                 LOGGER.log(Level.FINE, e.getMessage(), e);
@@ -182,13 +170,9 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         }
     }
 
-    private void readingCustomNativeMapping(InputStream in, ObjectMapper mapper)
-            throws IOException {
-        CustomNativeMappingsConfiguration config =
-                mapper.readValue(in, CustomNativeMappingsConfiguration.class);
-        customNativeMappingsConfig
-                .getCustomNativeMappings()
-                .addAll(config.getCustomNativeMappings());
+    private void readingCustomNativeMapping(InputStream in, ObjectMapper mapper) throws IOException {
+        CustomNativeMappingsConfiguration config = mapper.readValue(in, CustomNativeMappingsConfiguration.class);
+        customNativeMappingsConfig.getCustomNativeMappings().addAll(config.getCustomNativeMappings());
     }
 
     private void readConfiguration(InputStream in, ObjectMapper mapper) throws IOException {
@@ -197,8 +181,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
         Set<String> attributeKeys = new HashSet<>();
         for (AttributeConfiguration attribute : config.getAttributes()) {
             if (attribute.getKey() == null) {
-                throw new IOException(
-                        "The key of an attribute may not be null. " + attribute.getLabel());
+                throw new IOException("The key of an attribute may not be null. " + attribute.getLabel());
             }
             if (attribute.getLabel() == null) {
                 attribute.setLabel(attribute.getKey());
@@ -246,8 +229,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
     }
 
     private void readMapping(InputStream in, ObjectMapper mapper) throws IOException {
-        GeonetworkMappingConfiguration config =
-                mapper.readValue(in, GeonetworkMappingConfigurationImpl.class);
+        GeonetworkMappingConfiguration config = mapper.readValue(in, GeonetworkMappingConfigurationImpl.class);
         for (AttributeMappingConfiguration mapping : config.getGeonetworkmapping()) {
             geonetworkMappingConfig.getGeonetworkmapping().add(mapping);
         }
@@ -280,8 +262,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                     }
                     String[] splitLine = br == null ? null : line.split(SEPARATOR);
                     if (splitLine != null && splitLine.length > 0) {
-                        AttributeConfiguration[] configs =
-                                new AttributeConfiguration[splitLine.length];
+                        AttributeConfiguration[] configs = new AttributeConfiguration[splitLine.length];
                         for (int i = 0; i < splitLine.length; i++) {
                             configs[i] = mapping.findAttribute(splitLine[i].trim());
                             if (configs[i] != null) {
@@ -293,9 +274,7 @@ public class ConfigurationServiceImpl implements ConfigurationService {
                             splitLine = line.split(SEPARATOR);
                             for (int i = 0; i < configs.length; i++) {
                                 if (configs[i] != null)
-                                    configs[i]
-                                            .getValues()
-                                            .add(i < splitLine.length ? splitLine[i].trim() : null);
+                                    configs[i].getValues().add(i < splitLine.length ? splitLine[i].trim() : null);
                             }
                         }
                     }

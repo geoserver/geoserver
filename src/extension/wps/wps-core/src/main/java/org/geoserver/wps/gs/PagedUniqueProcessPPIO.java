@@ -21,10 +21,7 @@ public class PagedUniqueProcessPPIO extends CDataPPIO {
     static final ObjectMapper MAPPER = new ObjectMapper();
 
     protected PagedUniqueProcessPPIO() {
-        super(
-                PagedUniqueProcess.Results.class,
-                PagedUniqueProcess.Results.class,
-                "application/json");
+        super(PagedUniqueProcess.Results.class, PagedUniqueProcess.Results.class, "application/json");
     }
 
     @Override

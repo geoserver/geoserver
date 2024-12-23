@@ -38,10 +38,9 @@ public class PropertiesParser {
     protected void validate(List<String> names) throws IOException {
         if (resource instanceof FeatureTypeInfo) {
             FeatureType schema = ((FeatureTypeInfo) resource).getFeatureType();
-            Set<String> availableNames =
-                    schema.getDescriptors().stream()
-                            .map(p -> p.getName().getLocalPart())
-                            .collect(Collectors.toSet());
+            Set<String> availableNames = schema.getDescriptors().stream()
+                    .map(p -> p.getName().getLocalPart())
+                    .collect(Collectors.toSet());
             if (!availableNames.containsAll(names)) {
                 throw new IOException("Names does not match schema");
             }

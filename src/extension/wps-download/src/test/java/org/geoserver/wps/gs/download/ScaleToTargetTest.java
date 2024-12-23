@@ -136,12 +136,7 @@ public class ScaleToTargetTest {
         final double[] expectedReadResolution = EXP_NATIVE_RES;
         final int[] expectedGridSize = {360, 360}; // full size image
 
-        testFullSize(
-                targetSizeX,
-                targetSizeY,
-                expectedRequestedResolution,
-                expectedReadResolution,
-                expectedGridSize);
+        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
     @Test
@@ -151,12 +146,7 @@ public class ScaleToTargetTest {
         final double[] expectedReadResolution = expectedRequestedResolution;
         final int[] expectedGridSize = {targetSizeX, targetSizeY}; // matches 90x90 overview
 
-        testFullSize(
-                targetSizeX,
-                targetSizeY,
-                expectedRequestedResolution,
-                expectedReadResolution,
-                expectedGridSize);
+        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
     @Test
@@ -166,12 +156,7 @@ public class ScaleToTargetTest {
         final double[] expectedReadResolution = {0.0166666667, 0.0166666667};
         final int[] expectedGridSize = {90, 90}; // closest overview: 90x90
 
-        testFullSize(
-                targetSizeX,
-                targetSizeY,
-                expectedRequestedResolution,
-                expectedReadResolution,
-                expectedGridSize);
+        testFullSize(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion") // envelope equality with tolerance
@@ -237,12 +222,7 @@ public class ScaleToTargetTest {
         final double[] expectedReadResolution = expectedRequestedResolution;
         final int[] expectedGridSize = {180, 60}; // matches 180x180 overview
 
-        testROI(
-                targetSizeX,
-                targetSizeY,
-                expectedRequestedResolution,
-                expectedReadResolution,
-                expectedGridSize);
+        testROI(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
     @Test
@@ -252,12 +232,7 @@ public class ScaleToTargetTest {
         final double[] expectedReadResolution = {0.0083333333, 0.0083333333};
         final int[] expectedGridSize = {180, 60}; // targetSize * requestedRes / readRes
 
-        testROI(
-                targetSizeX,
-                targetSizeY,
-                expectedRequestedResolution,
-                expectedReadResolution,
-                expectedGridSize);
+        testROI(targetSizeX, targetSizeY, expectedRequestedResolution, expectedReadResolution, expectedGridSize);
     }
 
     @SuppressWarnings("PMD.SimplifiableTestAssertion") // envelope equality with tolerance
@@ -357,19 +332,17 @@ public class ScaleToTargetTest {
         assertEquals(expectedResolution[1], actualResolution[1], DELTA);
     }
 
-    private GeneralParameterValue[] getReaderParams(
-            GridCoverage2DReader reader, GridGeometry2D gridGeometry) {
+    private GeneralParameterValue[] getReaderParams(GridCoverage2DReader reader, GridGeometry2D gridGeometry) {
         // setup reader parameters to have it exploit overviews
         final ParameterValueGroup readParametersDescriptor = reader.getFormat().getReadParameters();
         final List<GeneralParameterDescriptor> parameterDescriptors =
                 readParametersDescriptor.getDescriptor().descriptors();
         GeneralParameterValue[] readParameters = {};
-        readParameters =
-                CoverageUtils.mergeParameter(
-                        parameterDescriptors,
-                        readParameters,
-                        gridGeometry,
-                        AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
+        readParameters = CoverageUtils.mergeParameter(
+                parameterDescriptors,
+                readParameters,
+                gridGeometry,
+                AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().getCode());
 
         return readParameters;
     }

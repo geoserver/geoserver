@@ -28,8 +28,7 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
  * @author Justin Deoliveira, OpenGeo
  */
 // TODO WICKET8 - Verify this page works OK
-public class JDBCAuthProviderPanel
-        extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
+public class JDBCAuthProviderPanel extends AuthenticationProviderPanel<JDBCConnectAuthProviderConfig> {
 
     private static final long serialVersionUID = 1L;
     FeedbackPanel feedbackPanel;
@@ -59,12 +58,8 @@ public class JDBCAuthProviderPanel
                     protected void onSubmit(AjaxRequestTarget target) {
                         try {
                             test();
-                            info(
-                                    new StringResourceModel(
-                                                    "connectionSuccessful",
-                                                    JDBCAuthProviderPanel.this,
-                                                    null)
-                                            .getObject());
+                            info(new StringResourceModel("connectionSuccessful", JDBCAuthProviderPanel.this, null)
+                                    .getObject());
                         } catch (Exception e) {
                             error(e);
                             LOGGER.log(Level.WARNING, "Connection error", e);
@@ -89,11 +84,10 @@ public class JDBCAuthProviderPanel
 
         // do the test
         Class.forName(get("driverClassName").getDefaultModelObjectAsString());
-        try (Connection fx =
-                DriverManager.getConnection(
-                        get("connectURL").getDefaultModelObjectAsString(),
-                        get("username").getDefaultModelObjectAsString(),
-                        get("password").getDefaultModelObjectAsString())) {}
+        try (Connection fx = DriverManager.getConnection(
+                get("connectURL").getDefaultModelObjectAsString(),
+                get("username").getDefaultModelObjectAsString(),
+                get("password").getDefaultModelObjectAsString())) {}
     }
 
     public String getUsername() {

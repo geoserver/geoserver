@@ -53,31 +53,26 @@ public class MosaicIndex {
     }
 
     public void delete() throws IOException {
-        File[] files =
-                mosaic.getFile()
-                        .listFiles(
-                                (dir, name) -> {
-                                    if ("sample_image".equalsIgnoreCase(name)) {
-                                        return true;
-                                    }
+        File[] files = mosaic.getFile().listFiles((dir, name) -> {
+            if ("sample_image".equalsIgnoreCase(name)) {
+                return true;
+            }
 
-                                    if (!mosaic.getName()
-                                            .equalsIgnoreCase(FilenameUtils.getBaseName(name))) {
-                                        return false;
-                                    }
+            if (!mosaic.getName().equalsIgnoreCase(FilenameUtils.getBaseName(name))) {
+                return false;
+            }
 
-                                    String ext = FilenameUtils.getExtension(name);
-                                    ShpFileType shpFileType = null;
-                                    if (ext != null) {
-                                        try {
-                                            shpFileType = ShpFileType.valueOf(ext.toUpperCase());
-                                        } catch (IllegalArgumentException iae) {
-                                            // the extension is not matching
-                                        }
-                                    }
-                                    return "properties".equalsIgnoreCase(ext)
-                                            || shpFileType != null;
-                                });
+            String ext = FilenameUtils.getExtension(name);
+            ShpFileType shpFileType = null;
+            if (ext != null) {
+                try {
+                    shpFileType = ShpFileType.valueOf(ext.toUpperCase());
+                } catch (IllegalArgumentException iae) {
+                    // the extension is not matching
+                }
+            }
+            return "properties".equalsIgnoreCase(ext) || shpFileType != null;
+        });
         if (files != null) {
             for (File f : files) {
                 if (!f.delete()) {
@@ -100,13 +95,9 @@ public class MosaicIndex {
             return;
         }
 
-        Granule first =
-                Iterators.find(
-                        granules.iterator(),
-                        input ->
-                                input.getEnvelope() != null
-                                        && input.getEnvelope().getCoordinateReferenceSystem()
-                                                != null);
+        Granule first = Iterators.find(
+                granules.iterator(),
+                input -> input.getEnvelope() != null && input.getEnvelope().getCoordinateReferenceSystem() != null);
         if (first == null) {
             throw new IOException("Unable to determine CRS for mosaic");
         }
@@ -136,11 +127,8 @@ public class MosaicIndex {
 
         // create a new shapefile feature store
         ShapefileDataStoreFactory shpFactory = new ShapefileDataStoreFactory();
-        DirectoryDataStore dir =
-                new DirectoryDataStore(
-                        mosaic.getFile(),
-                        new ShapefileDataStoreFactory.ShpFileStoreFactory(
-                                shpFactory, new HashMap<>()));
+        DirectoryDataStore dir = new DirectoryDataStore(
+                mosaic.getFile(), new ShapefileDataStoreFactory.ShpFileStoreFactory(shpFactory, new HashMap<>()));
 
         try {
             dir.createSchema(typeBuilder.buildFeatureType());
@@ -149,8 +137,7 @@ public class MosaicIndex {
                     dir.getFeatureWriterAppend(mosaic.getName(), Transaction.AUTO_COMMIT)) {
                 for (Granule g : mosaic.granules()) {
                     if (g.getEnvelope() == null) {
-                        LOGGER.warning(
-                                "Skipping " + g.getFile().getAbsolutePath() + ", no envelope");
+                        LOGGER.warning("Skipping " + g.getFile().getAbsolutePath() + ", no envelope");
                     }
 
                     SimpleFeature f = w.next();

@@ -16,9 +16,7 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.ProjectedCRS;
 
-/**
- * Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 3 client
- */
+/** Subclass of {@link OpenLayersMapOutputFormat} allowing to explictly request a OpenLayers 3 client */
 public class OpenLayers3MapOutputFormat extends AbstractOpenLayersMapOutputFormat {
 
     /** The freemarker template for OL3 */
@@ -31,8 +29,7 @@ public class OpenLayers3MapOutputFormat extends AbstractOpenLayersMapOutputForma
     public static final String MIME_TYPE = "text/html; subtype=openlayers3";
 
     /** The formats accepted in a GetMap request for this producer and stated in getcaps */
-    private static final Set<String> OUTPUT_FORMATS =
-            new HashSet<>(Arrays.asList(OL3_FORMAT, MIME_TYPE));
+    private static final Set<String> OUTPUT_FORMATS = new HashSet<>(Arrays.asList(OL3_FORMAT, MIME_TYPE));
 
     public OpenLayers3MapOutputFormat(WMS wms) {
         super(wms);
@@ -73,8 +70,8 @@ public class OpenLayers3MapOutputFormat extends AbstractOpenLayersMapOutputForma
     }
 
     /**
-     * OL3 does support a very limited set of unit types, we have to try and return one of those,
-     * otherwise the scale won't be shown.
+     * OL3 does support a very limited set of unit types, we have to try and return one of those, otherwise the scale
+     * won't be shown.
      */
     @Override
     protected String getUnits(WMSMapContent mapContent) {

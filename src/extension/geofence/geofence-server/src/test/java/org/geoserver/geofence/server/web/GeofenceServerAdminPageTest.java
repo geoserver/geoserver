@@ -42,10 +42,7 @@ public class GeofenceServerAdminPageTest extends GeoServerWicketTestSupport {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
         }
     }
 
@@ -65,8 +62,7 @@ public class GeofenceServerAdminPageTest extends GeoServerWicketTestSupport {
         // check the rules model
         @SuppressWarnings("unchecked")
         GeoServerTablePanel<ShortAdminRule> rulesPanel =
-                (GeoServerTablePanel<ShortAdminRule>)
-                        tester.getComponentFromLastRenderedPage("rulesPanel");
+                (GeoServerTablePanel<ShortAdminRule>) tester.getComponentFromLastRenderedPage("rulesPanel");
         assertEquals(1, rulesPanel.getDataProvider().size());
     }
 }

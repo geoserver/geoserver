@@ -48,11 +48,14 @@ public class CSWServiceDescriptionProviderTest {
 
     private static final String DESCRIPTION = "Test CSW Abstract";
 
-    @Mock private GeoServer geoserver;
+    @Mock
+    private GeoServer geoserver;
 
-    @InjectMocks private CSWServiceDescriptionProvider provider;
+    @InjectMocks
+    private CSWServiceDescriptionProvider provider;
 
-    @Mock private WebCatalogService csw;
+    @Mock
+    private WebCatalogService csw;
 
     private AutoCloseable mocks;
 
@@ -150,8 +153,7 @@ public class CSWServiceDescriptionProviderTest {
         assertEquals(SERVICE_TYPE, actual.getServiceType());
         assertEquals(SERVICE_TYPE, actual.getProtocol());
         assertEquals(VERSION, actual.getVersion());
-        assertEquals(
-                "../foo/ows?service=CSW&version=2.0.2&request=GetCapabilities", actual.getLink());
+        assertEquals("../foo/ows?service=CSW&version=2.0.2&request=GetCapabilities", actual.getLink());
         assertEquals("foo", actual.getWorkspace());
         assertNull(actual.getLayer());
     }

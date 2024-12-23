@@ -22,10 +22,8 @@ public class MeteoStationsPostGISTestSetUp extends PostGISTestSetUp {
     protected void setUpData() throws Exception {
         super.setUpData();
 
-        String sql =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("./mockdata/" + METEOS_SQL_SCRIPT),
-                        Charset.defaultCharset());
+        String sql = IOUtils.toString(
+                getClass().getResourceAsStream("./mockdata/" + METEOS_SQL_SCRIPT), Charset.defaultCharset());
         run(sql);
     }
 
@@ -33,6 +31,7 @@ public class MeteoStationsPostGISTestSetUp extends PostGISTestSetUp {
     @Override
     public void tearDown() throws Exception {
         dropSchema();
-        if (!getDataSource().getConnection().isClosed()) getDataSource().getConnection().close();
+        if (!getDataSource().getConnection().isClosed())
+            getDataSource().getConnection().close();
     }
 }

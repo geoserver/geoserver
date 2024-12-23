@@ -25,8 +25,7 @@ public class XmlObjectEncodingResponse extends Response {
     protected String elementName;
     protected Class<?> xmlConfiguration;
 
-    public XmlObjectEncodingResponse(
-            Class<?> binding, String elementName, Class<?> xmlConfiguration) {
+    public XmlObjectEncodingResponse(Class<?> binding, String elementName, Class<?> xmlConfiguration) {
         super(binding);
         this.elementName = elementName;
         this.xmlConfiguration = xmlConfiguration;
@@ -38,8 +37,7 @@ public class XmlObjectEncodingResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         try {
             Configuration c =
                     (Configuration) xmlConfiguration.getDeclaredConstructor().newInstance();
@@ -62,8 +60,7 @@ public class XmlObjectEncodingResponse extends Response {
      * @param elementName Element being configured
      * @param xmlConfiguration Configuration
      */
-    protected void configureEncoder(
-            Encoder encoder, String elementName, Class<?> xmlConfiguration) {
+    protected void configureEncoder(Encoder encoder, String elementName, Class<?> xmlConfiguration) {
         // nothing to do here, subclasses will do their own magic
     }
 

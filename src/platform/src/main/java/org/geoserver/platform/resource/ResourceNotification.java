@@ -19,16 +19,15 @@ import java.util.List;
  *
  * <ul>
  *   <li>Listeners on a single resource will be notified on resource change to that resource.
- *       <p>A listener to path="user_projections/epsg.properties" receive notification on change to
- *       the <b>epsg.properties</b> file. This notification will consist of of delta=<code>
+ *       <p>A listener to path="user_projections/epsg.properties" receive notification on change to the
+ *       <b>epsg.properties</b> file. This notification will consist of of delta=<code>
  *       user_projections/epsg.properties</code>
- *   <li>Listeners on a directory will be notified on any resource change in the directory. The
- *       delta will include any modified directories. A listener on path="style" is notified on
- *       change to <b>style/pophatch.sld</b> and <b>style/icons/city.png</b>. The change to these
- *       two files is represented with delta consisting of delta=<code>
+ *   <li>Listeners on a directory will be notified on any resource change in the directory. The delta will include any
+ *       modified directories. A listener on path="style" is notified on change to <b>style/pophatch.sld</b> and
+ *       <b>style/icons/city.png</b>. The change to these two files is represented with delta consisting of delta=<code>
  *       style,style/icons,style/icons/city.png,style/pophatch.sld</code>
- *   <li>Removed resources may be represented in notification, but will have reverted to {@link
- *       Resource.Type#UNDEFINED} since the content is no longer present.
+ *   <li>Removed resources may be represented in notification, but will have reverted to {@link Resource.Type#UNDEFINED}
+ *       since the content is no longer present.
  * </ul>
  *
  * @author Jody Garnett (Boundless)
@@ -118,10 +117,7 @@ public class ResourceNotification implements Serializable {
     private final long timestamp;
 
     public static List<Event> delta(
-            File baseDirectory,
-            Collection<String> created,
-            Collection<String> removed,
-            Collection<String> modified) {
+            File baseDirectory, Collection<String> created, Collection<String> removed, Collection<String> modified) {
 
         created = created == null ? Collections.emptyList() : created;
         removed = removed == null ? Collections.emptyList() : removed;
@@ -168,11 +164,7 @@ public class ResourceNotification implements Serializable {
     public ResourceNotification(String path, Kind kind, long timestamp, List<Event> delta) {
         this.path = path;
         this.kind = kind;
-        this.delta =
-                (List<Event>)
-                        (delta != null
-                                ? Collections.unmodifiableList(delta)
-                                : Collections.emptyList());
+        this.delta = (List<Event>) (delta != null ? Collections.unmodifiableList(delta) : Collections.emptyList());
         this.timestamp = timestamp;
     }
 

@@ -31,8 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Allows the geoserver-native attributes keywords, metadatalinks, and identifiers to be
- * automatically updated based on custom attributes.
+ * Allows the geoserver-native attributes keywords, metadatalinks, and identifiers to be automatically updated based on
+ * custom attributes.
  *
  * @author Niels Charlier
  */
@@ -100,27 +100,23 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
         abstract String getValue(Object object);
     }
 
-    private static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(CustomNativeMappingServiceImpl.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(CustomNativeMappingServiceImpl.class);
 
     private static final String VALUE = "value";
 
-    @Autowired private ConfigurationService configService;
+    @Autowired
+    private ConfigurationService configService;
 
     @Override
     public void mapCustomToNative(LayerInfo layer) {
-        CustomNativeMappingsConfiguration config =
-                configService.getCustomNativeMappingsConfiguration();
+        CustomNativeMappingsConfiguration config = configService.getCustomNativeMappingsConfiguration();
 
         Map<String, List<Integer>> indexMap = new HashMap<>();
         @SuppressWarnings("unchecked")
-        Map<String, List<String>> custom =
-                convert(
-                        (Map<String, Serializable>)
-                                layer.getResource()
-                                        .getMetadata()
-                                        .get(MetadataConstants.CUSTOM_METADATA_KEY),
-                        indexMap);
+        Map<String, List<String>> custom = convert(
+                (Map<String, Serializable>)
+                        layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY),
+                indexMap);
 
         if (custom != null) {
             Set<MappingTypeEnum> cleared = new HashSet<>();
@@ -131,51 +127,42 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
                     mappingType.list(layer).clear();
                     cleared.add(mappingType);
                 }
-                mappingType
-                        .list(layer)
-                        .addAll(build(mapping.getMapping(), mappingType, custom, indexMap));
+                mappingType.list(layer).addAll(build(mapping.getMapping(), mappingType, custom, indexMap));
             }
         }
     }
 
     @Override
     public void mapNativeToCustom(LayerInfo layer, List<Integer> indexes) {
-        CustomNativeMappingsConfiguration config =
-                configService.getCustomNativeMappingsConfiguration();
+        CustomNativeMappingsConfiguration config = configService.getCustomNativeMappingsConfiguration();
 
         @SuppressWarnings("unchecked")
-        Map<String, Serializable> custom =
-                (Map<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .computeIfAbsent(
-                                        MetadataConstants.CUSTOM_METADATA_KEY,
-                                        key -> new HashMap<>());
+        Map<String, Serializable> custom = (Map<String, Serializable>) layer.getResource()
+                .getMetadata()
+                .computeIfAbsent(MetadataConstants.CUSTOM_METADATA_KEY, key -> new HashMap<>());
 
         for (int i = 0; i < config.getCustomNativeMappings().size(); i++) {
             if (indexes == null || indexes.contains(i)) {
-                CustomNativeMappingConfiguration mapping = config.getCustomNativeMappings().get(i);
+                CustomNativeMappingConfiguration mapping =
+                        config.getCustomNativeMappings().get(i);
                 MappingTypeEnum mappingType = MappingTypeEnum.valueOf(mapping.getType());
 
                 for (Object item : mappingType.list(layer)) {
                     Map<String, String> mappedRecord = new HashMap<>();
-                    for (Entry<String, String> mappingEntry : mapping.getMapping().entrySet()) {
+                    for (Entry<String, String> mappingEntry :
+                            mapping.getMapping().entrySet()) {
                         try {
-                            Map<String, String> mappedProperties =
-                                    PlaceHolderUtil.reversePlaceHolders(
-                                            mappingEntry.getValue(),
-                                            VALUE.equals(mappingEntry.getKey())
-                                                    ? mappingType.getValue(item)
-                                                    : BeanUtils.getProperty(
-                                                            item, mappingEntry.getKey()));
+                            Map<String, String> mappedProperties = PlaceHolderUtil.reversePlaceHolders(
+                                    mappingEntry.getValue(),
+                                    VALUE.equals(mappingEntry.getKey())
+                                            ? mappingType.getValue(item)
+                                            : BeanUtils.getProperty(item, mappingEntry.getKey()));
                             if (mappedProperties == null) {
                                 mappedRecord = null;
                                 break;
                             }
                             mappedRecord.putAll(mappedProperties);
-                        } catch (IllegalAccessException
-                                | InvocationTargetException
-                                | NoSuchMethodException e) {
+                        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                             LOGGER.log(Level.WARNING, e.getMessage(), e);
                         }
                     }
@@ -204,10 +191,7 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
         for (Entry<String, String> entry : mapping.entrySet()) {
             if (!VALUE.equals(entry.getKey())) {
                 values = PlaceHolderUtil.replacePlaceHolder(entry.getValue(), custom);
-                for (int i = 0;
-                        i < result.size()
-                                && (values == null || indexList != null || i < values.size());
-                        i++) {
+                for (int i = 0; i < result.size() && (values == null || indexList != null || i < values.size()); i++) {
                     try {
                         BeanUtils.setProperty(
                                 result.get(i),
@@ -286,9 +270,7 @@ public class CustomNativeMappingServiceImpl implements CustomNativeMappingServic
             } else {
                 dest.put(
                         entry.getKey(),
-                        target == null
-                                ? entry.getValue()
-                                : Lists.newArrayList(target, entry.getValue()));
+                        target == null ? entry.getValue() : Lists.newArrayList(target, entry.getValue()));
             }
         }
     }

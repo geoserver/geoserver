@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ItemsHTMLMessageConverter extends AbstractItemsHTMLMessageConverter<ItemsResponse> {
 
-    public ItemsHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public ItemsHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(ItemsResponse.class, templateSupport, geoServer);
     }
 

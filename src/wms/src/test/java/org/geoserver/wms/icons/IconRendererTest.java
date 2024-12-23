@@ -34,45 +34,17 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        Mark m =
-                sfact.mark(
-                        ffact.literal("circle"),
-                        sfact.fill(null, ffact.literal("#FF0000"), null),
-                        sfact.stroke(
-                                ffact.literal("#000000"),
-                                null,
-                                ffact.literal(1),
-                                null,
-                                null,
-                                null,
-                                null));
+        Mark m = sfact.mark(
+                ffact.literal("circle"),
+                sfact.fill(null, ffact.literal("#FF0000"), null),
+                sfact.stroke(ffact.literal("#000000"), null, ffact.literal(1), null, null, null, null));
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(m),
-                        Expression.NIL,
-                        Expression.NIL,
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(m), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -92,45 +64,17 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        Mark m =
-                sfact.mark(
-                        ffact.literal("square"),
-                        sfact.fill(null, ffact.literal("#0000FF"), null),
-                        sfact.stroke(
-                                ffact.literal("#000000"),
-                                null,
-                                ffact.literal(1),
-                                null,
-                                null,
-                                null,
-                                null));
+        Mark m = sfact.mark(
+                ffact.literal("square"),
+                sfact.fill(null, ffact.literal("#0000FF"), null),
+                sfact.stroke(ffact.literal("#000000"), null, ffact.literal(1), null, null, null, null));
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(m),
-                        Expression.NIL,
-                        Expression.NIL,
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(m), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -150,45 +94,17 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        Mark m =
-                sfact.mark(
-                        ffact.literal("square"),
-                        sfact.fill(null, ffact.literal("#0000FF"), null),
-                        sfact.stroke(
-                                ffact.literal("#000000"),
-                                null,
-                                ffact.literal(1),
-                                null,
-                                null,
-                                null,
-                                null));
+        Mark m = sfact.mark(
+                ffact.literal("square"),
+                sfact.fill(null, ffact.literal("#0000FF"), null),
+                sfact.stroke(ffact.literal("#000000"), null, ffact.literal(1), null, null, null, null));
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(m),
-                        Expression.NIL,
-                        Expression.NIL,
-                        ffact.literal(45.0),
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(m), Expression.NIL, Expression.NIL, ffact.literal(45.0), null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -200,8 +116,7 @@ public class IconRendererTest {
         assertEquals(size, img.getHeight());
         assertEquals(size, img.getWidth());
 
-        BufferedImage expected =
-                ImageIO.read(this.getClass().getResource("square-blue-16-x4-45deg.png"));
+        BufferedImage expected = ImageIO.read(this.getClass().getResource("square-blue-16-x4-45deg.png"));
 
         ImageAssert.assertEquals(expected, img, THRESHOLD);
     }
@@ -211,36 +126,14 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("arrow-16.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(this.getClass().getResource("arrow-16.png"), "image/png");
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(gs),
-                        Expression.NIL,
-                        Expression.NIL,
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -260,36 +153,14 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("arrow-16.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(this.getClass().getResource("arrow-16.png"), "image/png");
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(gs),
-                        Expression.NIL,
-                        Expression.NIL,
-                        ffact.literal(45.0),
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, ffact.literal(45.0), null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -311,36 +182,14 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(this.getClass().getResource("planet-42.png"), "image/png");
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(gs),
-                        Expression.NIL,
-                        Expression.NIL,
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -360,36 +209,14 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(this.getClass().getResource("planet-42.png"), "image/png");
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(gs),
-                        Expression.NIL,
-                        ffact.literal(42),
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, ffact.literal(42), Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);
@@ -409,36 +236,14 @@ public class IconRendererTest {
         StyleFactory sfact = CommonFactoryFinder.getStyleFactory();
         FilterFactory ffact = CommonFactoryFinder.getFilterFactory();
 
-        GraphicalSymbol gs =
-                sfact.createExternalGraphic(
-                        this.getClass().getResource("planet-42.png"), "image/png");
+        GraphicalSymbol gs = sfact.createExternalGraphic(this.getClass().getResource("planet-42.png"), "image/png");
 
-        Graphic g =
-                sfact.graphic(
-                        Arrays.asList(gs),
-                        Expression.NIL,
-                        Expression.NIL,
-                        Expression.NIL,
-                        null,
-                        null);
+        Graphic g = sfact.graphic(Arrays.asList(gs), Expression.NIL, Expression.NIL, Expression.NIL, null, null);
         Symbolizer symb = sfact.pointSymbolizer(null, ffact.property((String) null), null, null, g);
-        Rule r =
-                sfact.rule(
-                        null,
-                        null,
-                        null,
-                        Float.NEGATIVE_INFINITY,
-                        Float.POSITIVE_INFINITY,
-                        Arrays.asList(symb),
-                        null);
-        FeatureTypeStyle fts =
-                sfact.featureTypeStyle(
-                        null,
-                        null,
-                        null,
-                        Collections.emptySet(),
-                        Collections.emptySet(),
-                        Arrays.asList(r));
+        Rule r = sfact.rule(
+                null, null, null, Float.NEGATIVE_INFINITY, Float.POSITIVE_INFINITY, Arrays.asList(symb), null);
+        FeatureTypeStyle fts = sfact.featureTypeStyle(
+                null, null, null, Collections.emptySet(), Collections.emptySet(), Arrays.asList(r));
         Style s = sfact.style(null, null, true, Arrays.asList(fts), null);
 
         BufferedImage img = IconRenderer.renderIcon(s);

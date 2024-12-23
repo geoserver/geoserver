@@ -49,8 +49,7 @@ import org.w3c.dom.Element;
 /** @author christian */
 public class XMLUserGroupStore extends AbstractUserGroupStore {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
 
     protected Resource userResource;
     // TODO: use resource locking system
@@ -239,15 +238,13 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
     }
 
     @Override
-    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         ensureLock();
         super.associateUserToGroup(user, group);
     }
 
     @Override
-    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         ensureLock();
         super.disAssociateUserFromGroup(user, group);
     }
@@ -259,8 +256,7 @@ public class XMLUserGroupStore extends AbstractUserGroupStore {
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         XMLGeoserverUser user = new XMLGeoserverUser(username);
         user.setEnabled(isEnabled);
         user.setPassword(password);

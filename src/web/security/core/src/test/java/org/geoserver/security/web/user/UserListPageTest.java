@@ -31,24 +31,19 @@ public class UserListPageTest extends AbstractTabbedListPageTest<GeoServerUser> 
 
     @Override
     protected Page newPage(AbstractSecurityPage page, Object... params) {
-        if (params.length == 0)
-            return new NewUserPage(getUserGroupServiceName()).setReturnPage(page);
+        if (params.length == 0) return new NewUserPage(getUserGroupServiceName()).setReturnPage(page);
         else return new NewUserPage((String) params[0]).setReturnPage(page);
     }
 
     @Override
     protected Page editPage(AbstractSecurityPage page, Object... params) {
         if (params.length == 0) {
-            return new EditUserPage(getUserGroupServiceName(), new GeoServerUser("dummyuser"))
-                    .setReturnPage(page);
+            return new EditUserPage(getUserGroupServiceName(), new GeoServerUser("dummyuser")).setReturnPage(page);
         }
 
         if (params.length == 1)
-            return new EditUserPage(getUserGroupServiceName(), (GeoServerUser) params[0])
-                    .setReturnPage(page);
-        else
-            return new EditUserPage((String) params[0], (GeoServerUser) params[1])
-                    .setReturnPage(page);
+            return new EditUserPage(getUserGroupServiceName(), (GeoServerUser) params[0]).setReturnPage(page);
+        else return new EditUserPage((String) params[0], (GeoServerUser) params[1]).setReturnPage(page);
     }
 
     @Override
@@ -94,10 +89,7 @@ public class UserListPageTest extends AbstractTabbedListPageTest<GeoServerUser> 
     protected void simulateDeleteSubmit() throws Exception {
         SelectionUserRemovalLink link =
                 (SelectionUserRemovalLink) (withRoles ? getRemoveLinkWithRoles() : getRemoveLink());
-        Method m =
-                link.delegate
-                        .getClass()
-                        .getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
+        Method m = link.delegate.getClass().getDeclaredMethod("onSubmit", AjaxRequestTarget.class, Component.class);
         m.invoke(link.delegate, null, null);
 
         SortedSet<GeoServerUser> users = ugService.getUsers();

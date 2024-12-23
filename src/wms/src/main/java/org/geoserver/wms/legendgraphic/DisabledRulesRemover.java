@@ -10,8 +10,8 @@ import org.geotools.filter.FilterAttributeExtractor;
 import org.geotools.styling.visitor.DuplicatingStyleVisitor;
 
 /**
- * Removes static rules that are statically off, possibly due to an env variable, function call
- * (e.g. language comparison)
+ * Removes static rules that are statically off, possibly due to an env variable, function call (e.g. language
+ * comparison)
  */
 class DisabledRulesRemover extends DuplicatingStyleVisitor {
 

@@ -47,17 +47,13 @@ public class AdminRulesRestController extends RestBaseController {
     }
 
     @ExceptionHandler(NotFoundServiceEx.class)
-    public void ruleNotFound(
-            NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
+    public void ruleNotFound(NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(404, exception.getMessage());
     }
 
     @ExceptionHandler(DuplicateKeyException.class)
-    public void rule(
-            DuplicateKeyException exception,
-            HttpServletRequest request,
-            HttpServletResponse response)
+    public void rule(DuplicateKeyException exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(409, exception.getMessage());
     }
@@ -76,9 +72,7 @@ public class AdminRulesRestController extends RestBaseController {
             @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
             @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter =
-                buildFilter(
-                        userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
 
         return new JaxbAdminRuleList(adminService.getListFull(filter, page, entries));
     }
@@ -102,9 +96,7 @@ public class AdminRulesRestController extends RestBaseController {
             @RequestParam(value = "roleAny", required = false) Boolean roleDefault,
             @RequestParam(value = "workspace", required = false) String workspace,
             @RequestParam(value = "workspaceAny", required = false) Boolean workspaceDefault) {
-        RuleFilter filter =
-                buildFilter(
-                        userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
+        RuleFilter filter = buildFilter(userName, userDefault, roleName, roleDefault, workspace, workspaceDefault);
 
         return new JaxbAdminRuleList(adminService.count(filter));
     }
@@ -120,12 +112,8 @@ public class AdminRulesRestController extends RestBaseController {
         return new ResponseEntity<>(adminService.insert(rule.toRule()), HttpStatus.CREATED);
     }
 
-    @RequestMapping(
-            value = "/adminrules/id/{id}",
-            method = RequestMethod.POST,
-            produces = MediaType.TEXT_PLAIN_VALUE)
-    public @ResponseStatus(HttpStatus.OK) void update(
-            @PathVariable("id") Long id, @RequestBody JaxbAdminRule rule) {
+    @RequestMapping(value = "/adminrules/id/{id}", method = RequestMethod.POST, produces = MediaType.TEXT_PLAIN_VALUE)
+    public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbAdminRule rule) {
         if (rule.getPriority() != null) {
             ShortAdminRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
             if (priorityRule != null && priorityRule.getId().longValue() != id) {
@@ -173,9 +161,8 @@ public class AdminRulesRestController extends RestBaseController {
     }
 
     /**
-     * Move the provided rules to the target priority. Rules will be sorted by their priority, first
-     * rule will be updated with a priority equal to the target priority and the next ones will get
-     * an incremented priority value.
+     * Move the provided rules to the target priority. Rules will be sorted by their priority, first rule will be
+     * updated with a priority equal to the target priority and the next ones will get an incremented priority value.
      */
     @RequestMapping(
             value = "/adminrules/move",
@@ -205,21 +192,19 @@ public class AdminRulesRestController extends RestBaseController {
     /** Helper method that will parse and retrieve the provided rules sorted by their priority. */
     private List<AdminRule> findRules(String rulesIds) {
         return Arrays.stream(rulesIds.split(","))
-                .map(
-                        ruleId -> {
-                            try {
-                                // parsing the rule id
-                                return Long.parseLong(ruleId);
-                            } catch (NumberFormatException exception) {
-                                // error parsing the rule id
-                                throw new InvalidRulesIds();
-                            }
-                        })
-                .map(
-                        ruleId -> {
-                            // search the rule by id
-                            return adminService.get(ruleId);
-                        })
+                .map(ruleId -> {
+                    try {
+                        // parsing the rule id
+                        return Long.parseLong(ruleId);
+                    } catch (NumberFormatException exception) {
+                        // error parsing the rule id
+                        throw new InvalidRulesIds();
+                    }
+                })
+                .map(ruleId -> {
+                    // search the rule by id
+                    return adminService.get(ruleId);
+                })
                 .filter(rule -> rule != null)
                 .sorted((ruleA, ruleB) -> Long.compare(ruleA.getPriority(), ruleB.getPriority()))
                 .collect(Collectors.toList());

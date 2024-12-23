@@ -117,10 +117,9 @@ public class ProcessStandaloneSLDVisitor extends GeoServerSLDVisitor {
                 s = catalog.getStyleByName("raster");
                 if (s == null) {
                     // nope, no default raster style either. Give up.
-                    throw new ServiceException(
-                            failMessage
-                                    + "  Also tried to use "
-                                    + "the generic raster style 'raster', but it wasn't available.");
+                    throw new ServiceException(failMessage
+                            + "  Also tried to use "
+                            + "the generic raster style 'raster', but it wasn't available.");
                 }
             } else {
                 throw new ServiceException(failMessage);

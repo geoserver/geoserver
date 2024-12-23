@@ -89,8 +89,7 @@ class KeycloakUrlBuilder {
     /**
      * Add the roles path part when requesting user's roles.
      *
-     * @param realmOnly if true will append the realm path part to limit the result to realm roles
-     *     only.
+     * @param realmOnly if true will append the realm path part to limit the result to realm roles only.
      * @return this builder.
      */
     KeycloakUrlBuilder allUserRoles(boolean realmOnly) {

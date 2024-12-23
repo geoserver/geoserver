@@ -16,8 +16,7 @@ import org.geoserver.security.web.SecurityNamedServicesPanel;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class MasterPasswordProvidersPanel
-        extends SecurityNamedServicesPanel<MasterPasswordProviderConfig> {
+public class MasterPasswordProvidersPanel extends SecurityNamedServicesPanel<MasterPasswordProviderConfig> {
 
     public MasterPasswordProvidersPanel(String id) {
         super(id, new MasterPasswordProviderProvider());
@@ -29,10 +28,8 @@ public class MasterPasswordProvidersPanel
     }
 
     @Override
-    protected void validateRemoveConfig(MasterPasswordProviderConfig config)
-            throws SecurityConfigException {
-        SecurityConfigValidator.getConfigurationValiator(
-                        MasterPasswordProvider.class, config.getClassName())
+    protected void validateRemoveConfig(MasterPasswordProviderConfig config) throws SecurityConfigException {
+        SecurityConfigValidator.getConfigurationValiator(MasterPasswordProvider.class, config.getClassName())
                 .validateRemoveMasterPasswordProvider(config);
     }
 

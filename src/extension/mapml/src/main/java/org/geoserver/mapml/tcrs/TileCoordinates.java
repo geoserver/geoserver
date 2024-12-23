@@ -5,8 +5,8 @@
 package org.geoserver.mapml.tcrs;
 
 /**
- * Represents a 'coordinate' in a tiled coordinate system, where the origin is at the upper left,
- * and x is postive to the right, y is positive down. The left/top edge is the coordinate value.
+ * Represents a 'coordinate' in a tiled coordinate system, where the origin is at the upper left, and x is postive to
+ * the right, y is positive down. The left/top edge is the coordinate value.
  */
 public class TileCoordinates {
 

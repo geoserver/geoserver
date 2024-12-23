@@ -139,17 +139,14 @@ public class CollectionLayer {
     }
 
     /**
-     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYERS} property of a
-     * Collection feature.
+     * Builds a CollectionLayer bean from the {@link OpenSearchAccess#LAYERS} property of a Collection feature.
      *
      * @return The layer, or null if the property was not found
      */
-    public static List<CollectionLayer> buildCollectionLayersFromFeature(Feature feature)
-            throws IOException {
+    public static List<CollectionLayer> buildCollectionLayersFromFeature(Feature feature) throws IOException {
         // map to a single bean
         List<CollectionLayer> result = new ArrayList<>();
-        Collection<Property> layers =
-                feature.getProperties(org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS);
+        Collection<Property> layers = feature.getProperties(org.geoserver.opensearch.eo.store.OpenSearchAccess.LAYERS);
         if (layers != null) {
             for (Property p : layers) {
                 Feature lf = (Feature) p;
@@ -159,12 +156,10 @@ public class CollectionLayer {
                 layer.setSeparateBands(Boolean.TRUE.equals(getAttribute(lf, "separateBands")));
                 layer.setBands((String[]) getAttribute(lf, "bands"));
                 layer.setBrowseBands((String[]) getAttribute(lf, "browseBands"));
-                layer.setHeterogeneousCRS(
-                        Boolean.TRUE.equals(getAttribute(lf, "heterogeneousCRS")));
+                layer.setHeterogeneousCRS(Boolean.TRUE.equals(getAttribute(lf, "heterogeneousCRS")));
                 layer.setMosaicCRS((String) getAttribute(lf, "mosaicCRS"));
-                layer.setDefaultLayer(
-                        Optional.ofNullable((Boolean) getAttribute(lf, "defaultLayer"))
-                                .orElse(false));
+                layer.setDefaultLayer(Optional.ofNullable((Boolean) getAttribute(lf, "defaultLayer"))
+                        .orElse(false));
                 result.add(layer);
             }
         }

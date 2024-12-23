@@ -57,9 +57,8 @@ public class StylesTest extends GeoServerSystemTestSupport {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         props.store(bout, null);
 
-        StyledLayerDescriptor sld =
-                Styles.handler(PropertyStyleHandler.FORMAT)
-                        .parse(new ByteArrayInputStream(bout.toByteArray()), null, null, null);
+        StyledLayerDescriptor sld = Styles.handler(PropertyStyleHandler.FORMAT)
+                .parse(new ByteArrayInputStream(bout.toByteArray()), null, null, null);
         assertNotNull(sld);
 
         Style style = Styles.style(sld);
@@ -84,10 +83,8 @@ public class StylesTest extends GeoServerSystemTestSupport {
         store.setLockProvider(new MemoryLockProvider());
         // parse twice to check we are not locking on it
         Resource resource = getDataDirectory().style(style);
-        Styles.handler(style.getFormat())
-                .parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
-        Styles.handler(style.getFormat())
-                .parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
+        Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
+        Styles.handler(style.getFormat()).parse(resource, style.getFormatVersion(), new DefaultResourceLocator(), null);
     }
 
     @Test
@@ -108,10 +105,8 @@ public class StylesTest extends GeoServerSystemTestSupport {
     public void testVendorOptionsInNormalize() throws Exception {
         URL url = getClass().getResource("../data/test/normalized.sld");
         try {
-            List<Exception> exceptions =
-                    Styles.handler("SLD")
-                            .validate(
-                                    url, null, getCatalog().getResourcePool().getEntityResolver());
+            List<Exception> exceptions = Styles.handler("SLD")
+                    .validate(url, null, getCatalog().getResourcePool().getEntityResolver());
             assertThat("Exceptions found", exceptions.isEmpty());
         } catch (Exception e) {
             fail("Should allow normaize to contain vendor options");

@@ -55,11 +55,7 @@ public class TemplateInfoDaoTest extends GeoServerSystemTestSupport {
         FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(MockData.FIFTEEN.getLocalPart());
         List<TemplateInfo> infos = dao.findByFeatureTypeInfo(fti);
 
-        assertFalse(
-                infos.stream()
-                        .anyMatch(
-                                i ->
-                                        i.getWorkspace() != null
-                                                && i.getWorkspace().equals(MockData.CITE_PREFIX)));
+        assertFalse(infos.stream()
+                .anyMatch(i -> i.getWorkspace() != null && i.getWorkspace().equals(MockData.CITE_PREFIX)));
     }
 }

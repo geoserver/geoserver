@@ -35,14 +35,10 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         dmc.setRootEntityName("meteo_observations");
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
-        AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-observations-gml.xsd");
+        AppSchemaVisitor dmv = new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-observations-gml.xsd");
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-observations-appschema.xml")) {
+        try (InputStream is = JDBCAppSchemaVisitorTest.class.getResourceAsStream("meteo-observations-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -69,13 +65,10 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         dmc.setRootEntityName("meteo_stations");
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
-        AppSchemaVisitor dmv =
-                new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-stations-gml.xsd");
+        AppSchemaVisitor dmv = new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-stations-gml.xsd");
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-stations-appschema.xml")) {
+        try (InputStream is = JDBCAppSchemaVisitorTest.class.getResourceAsStream("meteo-stations-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -101,14 +94,10 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         dmc.setRootEntityName("meteo_parameters");
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
-        AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-parameters-gml.xsd");
+        AppSchemaVisitor dmv = new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-parameters-gml.xsd");
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-parameters-appschema.xml")) {
+        try (InputStream is = JDBCAppSchemaVisitorTest.class.getResourceAsStream("meteo-parameters-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -135,14 +124,10 @@ public abstract class JDBCAppSchemaVisitorTest extends AbstractJDBCSmartDataLoad
         dmc.setRootEntityName("meteo_maintainers");
         DomainModelBuilder dmb = new DomainModelBuilder(dsm, dmc);
         DomainModel dm = dmb.buildDomainModel();
-        AppSchemaVisitor dmv =
-                new AppSchemaVisitor(
-                        NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-maintainers-gml.xsd");
+        AppSchemaVisitor dmv = new AppSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE, "meteo-maintainers-gml.xsd");
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCAppSchemaVisitorTest.class.getResourceAsStream(
-                        "meteo-maintainers-appschema.xml")) {
+        try (InputStream is = JDBCAppSchemaVisitorTest.class.getResourceAsStream("meteo-maintainers-appschema.xml")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);

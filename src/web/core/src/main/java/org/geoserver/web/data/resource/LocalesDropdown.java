@@ -17,33 +17,31 @@ public class LocalesDropdown extends Select2DropDownChoice<Locale> {
 
     public LocalesDropdown(String id, IModel<Locale> model) {
         super(id, model, getLocales());
-        ChoiceRenderer<Locale> locales =
-                new ChoiceRenderer<>() {
-                    @Override
-                    public Object getDisplayValue(Locale object) {
-                        String languageTag = object.toLanguageTag();
-                        String displayName = object.getDisplayName(object);
-                        return languageTag + " - " + displayName;
-                    }
+        ChoiceRenderer<Locale> locales = new ChoiceRenderer<>() {
+            @Override
+            public Object getDisplayValue(Locale object) {
+                String languageTag = object.toLanguageTag();
+                String displayName = object.getDisplayName(object);
+                return languageTag + " - " + displayName;
+            }
 
-                    @Override
-                    public String getIdValue(Locale object, int index) {
-                        return object.toLanguageTag();
-                    }
-                };
+            @Override
+            public String getIdValue(Locale object, int index) {
+                return object.toLanguageTag();
+            }
+        };
         this.setChoiceRenderer(locales);
     }
 
     private static List<Locale> getLocales() {
         return Stream.of(Locale.getAvailableLocales())
                 .filter(l -> l != null)
-                .sorted(
-                        new Comparator<>() {
-                            @Override
-                            public int compare(Locale o1, Locale o2) {
-                                return o1.toLanguageTag().compareTo(o2.toLanguageTag());
-                            }
-                        })
+                .sorted(new Comparator<>() {
+                    @Override
+                    public int compare(Locale o1, Locale o2) {
+                        return o1.toLanguageTag().compareTo(o2.toLanguageTag());
+                    }
+                })
                 .collect(Collectors.toList());
     }
 }

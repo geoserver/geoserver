@@ -31,9 +31,7 @@ public abstract class AbstractProductRequestKvpReader extends KvpRequestReader {
         String uid = (String) rawKvp.get("uid");
         if (uid == null) {
             throw new OWS20Exception(
-                    "Missing mandatory uid parameter",
-                    OWS20Exception.OWSExceptionCode.MissingParameterValue,
-                    "uid");
+                    "Missing mandatory uid parameter", OWS20Exception.OWSExceptionCode.MissingParameterValue, "uid");
         }
         apr.setId(uid);
 

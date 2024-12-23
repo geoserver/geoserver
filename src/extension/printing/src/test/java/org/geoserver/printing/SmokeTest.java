@@ -42,12 +42,10 @@ public class SmokeTest extends GeoServerSystemTestSupport {
         assertTrue(obj.containsKey("printURL"));
         assertTrue(obj.containsKey("createURL"));
 
-        json =
-                json(
-                        postAsServletResponse(
-                                "/pdf/create.json",
-                                "{\"app\":\"test\",\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
-                                "application/json"));
+        json = json(postAsServletResponse(
+                "/pdf/create.json",
+                "{\"app\":\"test\",\"units\":\"m\",\"srs\":\"EPSG:900913\",\"layout\":\"A4 portrait\",\"dpi\":75,\"outputFilename\":\"mapstore-print\",\"layers\":[],\"legends\":[],\"pages\":[{\"mapTitle\":\"\",\"center\":[1263949.7576605,5859225.6448425],\"scale\":200000,\"rotation\":0,\"comment\":\"\"}]}",
+                "application/json"));
 
         assertTrue(json instanceof JSONObject);
 

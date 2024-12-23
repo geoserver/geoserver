@@ -27,8 +27,7 @@ import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
 public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
-    private static final QName LAMBERTMOSAIC =
-            new QName(CiteTestData.WCS_URI, "lambert", CiteTestData.WCS_PREFIX);
+    private static final QName LAMBERTMOSAIC = new QName(CiteTestData.WCS_URI, "lambert", CiteTestData.WCS_PREFIX);
 
     @BeforeClass
     public static void init() {
@@ -47,8 +46,7 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
         // workaround to add our custom multi dimensional format
 
         super.onSetUp(testData);
-        testData.addRasterLayer(
-                LAMBERTMOSAIC, "lambertmosaic.zip", null, null, this.getClass(), getCatalog());
+        testData.addRasterLayer(LAMBERTMOSAIC, "lambertmosaic.zip", null, null, this.getClass(), getCatalog());
         String coverageName = getLayerId(LAMBERTMOSAIC);
         setupRasterDimension(coverageName, ResourceInfo.TIME, DimensionPresentation.LIST, null);
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
@@ -68,42 +66,37 @@ public class WCSMultiDimSubsetTest extends WCSNetCDFBaseTest {
 
             // === slicing on Y axis
             // source
-            CoverageInfo coverageInfo =
-                    this.getCatalog().getCoverageByName(LAMBERTMOSAIC.getLocalPart());
+            CoverageInfo coverageInfo = this.getCatalog().getCoverageByName(LAMBERTMOSAIC.getLocalPart());
             coverageReader = coverageInfo.getGridCoverageReader(null, null);
-            final ParameterValue<Boolean> useJAI =
-                    ImageMosaicFormat.USE_JAI_IMAGEREAD.createValue();
+            final ParameterValue<Boolean> useJAI = ImageMosaicFormat.USE_JAI_IMAGEREAD.createValue();
             useJAI.setValue(false);
             sourceCoverage = (GridCoverage2D) coverageReader.read(useJAI);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample using the original extension
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__lambert&&Format=application/custom"
-                                    + "&subset=E,http://www.opengis.net/def/crs/EPSG/0/31300("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + 25)
-                                    + ")"
-                                    + "&subset=N,http://www.opengis.net/def/crs/EPSG/0/31300("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + 25)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__lambert&&Format=application/custom"
+                    + "&subset=E,http://www.opengis.net/def/crs/EPSG/0/31300("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + 25)
+                    + ")"
+                    + "&subset=N,http://www.opengis.net/def/crs/EPSG/0/31300("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + 25)
+                    + ")");
 
             assertNotNull(response);
             targetCoverage =
                     applicationContext.getBean(WCSResponseInterceptor.class).getLastResult();
 
-            assertTrue(
-                    CRS.equalsIgnoreMetadata(
-                            sourceCoverage.getCoordinateReferenceSystem(),
-                            targetCoverage.getCoordinateReferenceSystem()));
+            assertTrue(CRS.equalsIgnoreMetadata(
+                    sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem()));
 
             assertTrue(targetCoverage instanceof GranuleStack);
-            GridCoverage2D firstResult = ((GranuleStack) targetCoverage).getGranules().get(0);
+            GridCoverage2D firstResult =
+                    ((GranuleStack) targetCoverage).getGranules().get(0);
 
             // checks
             assertEquals(1, firstResult.getGridGeometry().getGridRange().getSpan(0));

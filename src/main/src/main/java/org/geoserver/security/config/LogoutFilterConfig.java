@@ -17,8 +17,7 @@ public class LogoutFilterConfig extends SecurityFilterConfig {
     private static final long serialVersionUID = 1L;
 
     /**
-     * Optional, redirect URL after a successful logout If empty, the client will receive an HTTP
-     * 200 response.
+     * Optional, redirect URL after a successful logout If empty, the client will receive an HTTP 200 response.
      *
      * <p>This URL can be an absolute URL or relative to the GeoServer root context like the default
      * {@link GeoServerLogoutFilter#URL_AFTER_LOGOUT}

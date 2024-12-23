@@ -26,8 +26,7 @@ public class FileBackedRawMapResponse extends AbstractMapResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         // offset work to FileBackedRawMap's writeTo() method
         Assert.isInstanceOf(FileBackedRawMap.class, value);
 

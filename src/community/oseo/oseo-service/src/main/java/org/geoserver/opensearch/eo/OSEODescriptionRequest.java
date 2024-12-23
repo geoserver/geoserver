@@ -8,8 +8,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 /**
- * Description request for a 2 step search OpenSearch for EO. May have no parameters for collection
- * search, or a parent collection identifier for collection searches
+ * Description request for a 2 step search OpenSearch for EO. May have no parameters for collection search, or a parent
+ * collection identifier for collection searches
  *
  * @author Andrea Aime - GeoSolutions
  */

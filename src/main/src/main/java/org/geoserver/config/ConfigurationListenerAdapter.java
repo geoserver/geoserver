@@ -10,8 +10,7 @@ import java.util.List;
 /**
  * Adapter for ConfigurationListener.
  *
- * <p>Configuration listeners can implement this class to pick and choose the events they wish to
- * handle.
+ * <p>Configuration listeners can implement this class to pick and choose the events they wish to handle.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -19,10 +18,7 @@ public class ConfigurationListenerAdapter implements ConfigurationListener {
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostGlobalChange(GeoServerInfo global) {}
@@ -32,10 +28,7 @@ public class ConfigurationListenerAdapter implements ConfigurationListener {
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handleSettingsPostModified(SettingsInfo settings) {}
@@ -45,10 +38,7 @@ public class ConfigurationListenerAdapter implements ConfigurationListener {
 
     @Override
     public void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostLoggingChange(LoggingInfo logging) {}
@@ -58,10 +48,7 @@ public class ConfigurationListenerAdapter implements ConfigurationListener {
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handleServiceRemove(ServiceInfo service) {}

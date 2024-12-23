@@ -41,23 +41,20 @@ public class ControlFlowCallbackProxy implements InvocationHandler, BeanPostProc
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName)
-            throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if ("ControlFlowCallback".equals(bean.getClass().getSimpleName())) {
             // wrap the control flow in a proxy
-            bean =
-                    Proxy.newProxyInstance(
-                            bean.getClass().getClassLoader(),
-                            new Class[] {DispatcherCallback.class},
-                            new ControlFlowCallbackProxy(monitor, bean));
+            bean = Proxy.newProxyInstance(
+                    bean.getClass().getClassLoader(),
+                    new Class[] {DispatcherCallback.class},
+                    new ControlFlowCallbackProxy(monitor, bean));
         }
 
         return bean;
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName)
-            throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
 

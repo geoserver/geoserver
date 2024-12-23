@@ -13,8 +13,7 @@ import org.junit.Test;
 
 public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupport {
 
-    public static QName HYPER =
-            new QName(SystemTestData.WCS_URI, "Hyper", SystemTestData.WCS_PREFIX);
+    public static QName HYPER = new QName(SystemTestData.WCS_URI, "Hyper", SystemTestData.WCS_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -28,23 +27,19 @@ public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupp
         // one layer with "normal" bands
         testData.addDefaultRasterLayer(SystemTestData.TASMANIA_BM, getCatalog());
         // one with 300+ bands
-        testData.addRasterLayer(
-                HYPER, "hyper.tiff", "tiff", null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(HYPER, "hyper.tiff", "tiff", null, SystemTestData.class, getCatalog());
     }
 
     @Test
     public void testBands() throws Exception {
-        CoverageInfo coverage =
-                getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_BM));
+        CoverageInfo coverage = getCatalog().getCoverageByName(getLayerId(SystemTestData.TASMANIA_BM));
         Model<CoverageInfo> model = new Model<>(coverage);
 
         FormTestPage page = new FormTestPage(id -> new CoverageBandsConfigurationPanel(id, model));
         tester.startPage(page);
 
         MarkupContainer container =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:bands:listContainer:items");
+                (MarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:bands:listContainer:items");
         assertEquals(3, container.size());
     }
 
@@ -57,9 +52,7 @@ public class CoverageBandsConfigurationPanelTest extends GeoServerWicketTestSupp
         tester.startPage(page);
 
         MarkupContainer container =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:panel:bands:listContainer:items");
+                (MarkupContainer) tester.getComponentFromLastRenderedPage("form:panel:bands:listContainer:items");
 
         // set to non pageable, we don't have support for editing a paging table right now
         assertEquals(326, container.size());

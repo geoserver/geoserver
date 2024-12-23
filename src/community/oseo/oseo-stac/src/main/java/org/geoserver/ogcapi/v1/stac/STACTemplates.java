@@ -52,8 +52,7 @@ public class STACTemplates extends AbstractTemplates {
 
     ResourcePatternResolver resourceResolver = new PathMatchingResourcePatternResolver();
 
-    public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider)
-            throws IOException {
+    public STACTemplates(GeoServerDataDirectory dd, OpenSearchAccessProvider accessProvider) throws IOException {
         super(dd, accessProvider);
     }
 
@@ -61,8 +60,7 @@ public class STACTemplates extends AbstractTemplates {
     protected void copyHTMLTemplates() throws IOException {
         Resource stac = dd.get("templates/ogc/stac/v1");
         stac.dir();
-        String path =
-                "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/*.ftl";
+        String path = "classpath:/" + getClass().getPackage().getName().replace(".", "/") + "/*.ftl";
         for (org.springframework.core.io.Resource r : resourceResolver.getResources(path)) {
             Resource target = stac.get(r.getFilename());
             if (target.getType() == Resource.Type.UNDEFINED) {
@@ -108,21 +106,18 @@ public class STACTemplates extends AbstractTemplates {
         return namespaces;
     }
 
-    private void reloadItemTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
-            throws IOException {
+    private void reloadItemTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {
         // setup the items template
         Resource items = dd.get("templates/ogc/stac/v1/items.json");
         copyDefault(items, "items.json");
         this.defaultItemTemplate = new Template(items, new TemplateReaderConfiguration(namespaces));
     }
 
-    private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces)
-            throws IOException {
+    private void reloadCollectionTemplate(GeoServerDataDirectory dd, NamespaceSupport namespaces) throws IOException {
         // setup the collections template
         Resource collections = dd.get("templates/ogc/stac/v1/collections.json");
         copyDefault(collections, "collections.json");
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(namespaces, COLLECTIONS);
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(namespaces, COLLECTIONS);
         this.defaultCollectionTemplate = new Template(collections, configuration);
     }
 
@@ -134,15 +129,13 @@ public class STACTemplates extends AbstractTemplates {
         Template template = defaultCollectionTemplate;
         // See if a collection specific template has been setup, if so use it as an override
         if (collectionId != null) {
-            Resource resource =
-                    dd.get("templates/ogc/stac/v1/collections-" + collectionId + ".json");
+            Resource resource = dd.get("templates/ogc/stac/v1/collections-" + collectionId + ".json");
             if (resource.getType().equals(Resource.Type.RESOURCE)) {
                 template = collectionTemplates.get(collectionId);
                 if (template == null) {
                     OpenSearchAccess access = accessProvider.getOpenSearchAccess();
                     TemplateReaderConfiguration configuration =
-                            new TemplateReaderConfiguration(
-                                    getNamespaces(access.getProductSource()), COLLECTIONS);
+                            new TemplateReaderConfiguration(getNamespaces(access.getProductSource()), COLLECTIONS);
                     template = new Template(resource, configuration);
                     collectionTemplates.put(collectionId, template);
                 }
@@ -177,19 +170,17 @@ public class STACTemplates extends AbstractTemplates {
         Resource resource = dd.get("templates/ogc/stac/v1/");
         if (resource.getType() != Resource.Type.DIRECTORY) return Collections.emptySet();
 
-        Set<String> candidates =
-                resource.list().stream()
-                        .filter(r -> r.getType() == Resource.Type.RESOURCE)
-                        .map(r -> r.name())
-                        .filter(n -> n.startsWith("items-") && n.endsWith(".json"))
-                        .map(n -> n.substring(6, n.length() - 5))
-                        .collect(Collectors.toSet());
+        Set<String> candidates = resource.list().stream()
+                .filter(r -> r.getType() == Resource.Type.RESOURCE)
+                .map(r -> r.name())
+                .filter(n -> n.startsWith("items-") && n.endsWith(".json"))
+                .map(n -> n.substring(6, n.length() - 5))
+                .collect(Collectors.toSet());
 
         // TODO: make this visit optimizable
         FeatureSource<FeatureType, Feature> collections =
                 accessProvider.getOpenSearchAccess().getCollectionSource();
-        UniqueVisitor visitor =
-                new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
+        UniqueVisitor visitor = new UniqueVisitor(FF.property("eo:identifier", getNamespaces(collections)));
         collections.getFeatures().accepts(visitor, null);
         candidates.retainAll(getCollectionNames(visitor));
 
@@ -221,11 +212,8 @@ public class STACTemplates extends AbstractTemplates {
                 template = itemTemplates.get(collectionId);
                 if (template == null) {
                     OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-                    template =
-                            new Template(
-                                    resource,
-                                    new TemplateReaderConfiguration(
-                                            getNamespaces(access.getProductSource())));
+                    template = new Template(
+                            resource, new TemplateReaderConfiguration(getNamespaces(access.getProductSource())));
                     itemTemplates.put(collectionId, template);
                 }
             }

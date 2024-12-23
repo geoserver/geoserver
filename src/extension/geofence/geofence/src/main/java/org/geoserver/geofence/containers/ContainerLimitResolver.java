@@ -32,10 +32,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * This class is responsible to handle the limit resolving (allowed areas and catalog mode) for a
- * resource when it is contained in one or more layer groups. The methods in this class ensure that
- * if we restrict access when rule are found for the same role, and we enlarge when rules are
- * defined for different roles.
+ * This class is responsible to handle the limit resolving (allowed areas and catalog mode) for a resource when it is
+ * contained in one or more layer groups. The methods in this class ensure that if we restrict access when rule are
+ * found for the same role, and we enlarge when rules are defined for different roles.
  */
 public class ContainerLimitResolver {
 
@@ -67,8 +66,7 @@ public class ContainerLimitResolver {
     }
 
     /**
-     * @param groups the layer groups containing the resource in the context of a WMS request
-     *     targeting a layer group.
+     * @param groups the layer groups containing the resource in the context of a WMS request targeting a layer group.
      * @param ruleService the GeoFence rule service.
      * @param authentication the Authentication object bounded to this request.
      * @param layer the layer being requested.
@@ -89,8 +87,8 @@ public class ContainerLimitResolver {
     }
 
     /**
-     * @param groups the layer groups containing the resource in the context of a WMS request
-     *     directly targeting a layer contained in one or more layer groups.
+     * @param groups the layer groups containing the resource in the context of a WMS request directly targeting a layer
+     *     contained in one or more layer groups.
      * @param ruleService the GeoFence rule service.
      * @param authentication the Authentication object bounded to this request.
      * @param layer the layer being requested.
@@ -128,8 +126,7 @@ public class ContainerLimitResolver {
     /**
      * Resolve the resource limits taking in consideration the limits of a layer group.
      *
-     * @return the result of the resolving containing the catalog mode, the allowed area and the
-     *     clip area.
+     * @return the result of the resolving containing the catalog mode, the allowed area and the clip area.
      */
     ProcessingResult resolveResourceInGroupLimits() {
         Map<String, AccessInfo> publishedAccessByRole = new HashMap<>();
@@ -150,19 +147,16 @@ public class ContainerLimitResolver {
         return unionAccesses(restrictionResults);
     }
 
-    private ProcessingResult unionAccesses(
-            ListMultimap<RestrictionType, ProcessingResult> restrictionResults) {
+    private ProcessingResult unionAccesses(ListMultimap<RestrictionType, ProcessingResult> restrictionResults) {
 
         // groups results
         List<ProcessingResult> bothGroup = restrictionResults.get(RestrictionType.GROUP_BOTH);
-        List<ProcessingResult> intersectsGroup =
-                restrictionResults.get(RestrictionType.GROUP_INTERSECT);
+        List<ProcessingResult> intersectsGroup = restrictionResults.get(RestrictionType.GROUP_INTERSECT);
         List<ProcessingResult> clipGroup = restrictionResults.get(RestrictionType.GROUP_CLIP);
 
         // layers results
         List<ProcessingResult> bothLayer = restrictionResults.get(RestrictionType.LAYER_BOTH);
-        List<ProcessingResult> intersectsLayer =
-                restrictionResults.get(RestrictionType.LAYER_INTERSECT);
+        List<ProcessingResult> intersectsLayer = restrictionResults.get(RestrictionType.LAYER_INTERSECT);
         List<ProcessingResult> clipLayer = restrictionResults.get(RestrictionType.LAYER_CLIP);
 
         // enlarge each result type separately
@@ -187,11 +181,8 @@ public class ContainerLimitResolver {
         if (clipProcessG != null) {
             LOGGER.fine(() -> "Processing group areas with clip type");
             clipArea = unionOrReturnIfNull(() -> clipProcessG.getClipArea(), clipArea, false);
-            intersectArea =
-                    unionOrReturnIfNull(
-                            () -> clipProcessG.getIntersectArea(), intersectArea, false);
-            catalogModeDTO =
-                    AccessInfoUtils.getLarger(catalogModeDTO, clipProcessG.getCatalogModeDTO());
+            intersectArea = unionOrReturnIfNull(() -> clipProcessG.getIntersectArea(), intersectArea, false);
+            catalogModeDTO = AccessInfoUtils.getLarger(catalogModeDTO, clipProcessG.getCatalogModeDTO());
         }
 
         if (bothProcessG != null) {
@@ -199,45 +190,33 @@ public class ContainerLimitResolver {
             // if in context of a direct access to the layer, we apply the container limits
             // only if there is no group with null limits.
             boolean favourNull = groupSummaries != null;
-            intersectArea =
-                    unionOrReturnIfNull(
-                            () -> bothProcessG.getIntersectArea(), intersectArea, favourNull);
+            intersectArea = unionOrReturnIfNull(() -> bothProcessG.getIntersectArea(), intersectArea, favourNull);
             clipArea = unionOrReturnIfNull(() -> bothProcessG.getClipArea(), clipArea, favourNull);
-            catalogModeDTO =
-                    AccessInfoUtils.getLarger(catalogModeDTO, bothProcessG.getCatalogModeDTO());
+            catalogModeDTO = AccessInfoUtils.getLarger(catalogModeDTO, bothProcessG.getCatalogModeDTO());
         }
 
         if (intersectProcessL != null) {
             LOGGER.fine(() -> "Processing layer intersect areas if present");
-            intersectArea =
-                    unionOrReturnIfNull(
-                            () -> intersectProcessL.getIntersectArea(), intersectArea, false);
-            catalogModeDTO =
-                    AccessInfoUtils.getLarger(
-                            catalogModeDTO, intersectProcessL.getCatalogModeDTO());
+            intersectArea = unionOrReturnIfNull(() -> intersectProcessL.getIntersectArea(), intersectArea, false);
+            catalogModeDTO = AccessInfoUtils.getLarger(catalogModeDTO, intersectProcessL.getCatalogModeDTO());
         }
         if (clipProcessL != null) {
             LOGGER.fine(() -> "Processing layer clip areas if present");
             clipArea = unionOrReturnIfNull(() -> clipProcessL.getClipArea(), clipArea, false);
-            catalogModeDTO =
-                    AccessInfoUtils.getLarger(catalogModeDTO, clipProcessL.getCatalogModeDTO());
+            catalogModeDTO = AccessInfoUtils.getLarger(catalogModeDTO, clipProcessL.getCatalogModeDTO());
         }
 
         if (bothProcessL != null) {
             LOGGER.fine(() -> "Processing layer areas with both intersects and clip types");
-            intersectArea =
-                    unionOrReturnIfNull(
-                            () -> bothProcessL.getIntersectArea(), intersectArea, false);
+            intersectArea = unionOrReturnIfNull(() -> bothProcessL.getIntersectArea(), intersectArea, false);
             clipArea = unionOrReturnIfNull(() -> bothProcessL.getClipArea(), clipArea, false);
-            catalogModeDTO =
-                    AccessInfoUtils.getLarger(catalogModeDTO, bothProcessL.getCatalogModeDTO());
+            catalogModeDTO = AccessInfoUtils.getLarger(catalogModeDTO, bothProcessL.getCatalogModeDTO());
         }
 
         return new ProcessingResult(intersectArea, clipArea, catalogModeDTO);
     }
 
-    private Geometry unionOrReturnIfNull(
-            Supplier<Geometry> supplier, Geometry area, boolean favourNull) {
+    private Geometry unionOrReturnIfNull(Supplier<Geometry> supplier, Geometry area, boolean favourNull) {
         if (area != null) area = GeomHelper.reprojectAndUnion(supplier.get(), area, favourNull);
         else area = supplier.get();
         return area;
@@ -259,8 +238,7 @@ public class ContainerLimitResolver {
                 intersectArea = allowedArea;
                 clipArea = allowedAreaClip;
             } else {
-                intersectArea =
-                        GeomHelper.reprojectAndUnion(intersectArea, allowedArea, favourNull);
+                intersectArea = GeomHelper.reprojectAndUnion(intersectArea, allowedArea, favourNull);
                 clipArea = GeomHelper.reprojectAndUnion(clipArea, allowedAreaClip, favourNull);
             }
         }
@@ -269,16 +247,15 @@ public class ContainerLimitResolver {
     }
 
     /**
-     * Resolve all the AccessInfo beloging to the same role restricting the access for allowed areas
-     * (intersection) and catalog mode.
+     * Resolve all the AccessInfo beloging to the same role restricting the access for allowed areas (intersection) and
+     * catalog mode.
      *
      * @param resourceAccessInfo the resource access infos by role
      * @param groupAccessInfoByRole groups access infos by role.
      * @return a Multimap<String,AccessInfo> gathering all the AccessInfo grouped by role.
      */
     private ListMultimap<RestrictionType, ProcessingResult> intersectAccesses(
-            Map<String, AccessInfo> resourceAccessInfo,
-            ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
+            Map<String, AccessInfo> resourceAccessInfo, ListMultimap<String, AccessInfo> groupAccessInfoByRole) {
         ListMultimap<RestrictionType, ProcessingResult> multiMap = ArrayListMultimap.create();
         for (String key : resourceAccessInfo.keySet()) {
             List<AccessInfo> infos = groupAccessInfoByRole.get(key);
@@ -290,10 +267,8 @@ public class ContainerLimitResolver {
     /**
      * Restrict the access for all the access info being passed.
      *
-     * @param resAccessInfo the resource accessInfo. Provide the base point from which resolve the
-     *     container limits.
-     * @param groupsAccessInfo the groups access info for same role. To be resolved on top of the
-     *     resource access info.
+     * @param resAccessInfo the resource accessInfo. Provide the base point from which resolve the container limits.
+     * @param groupsAccessInfo the groups access info for same role. To be resolved on top of the resource access info.
      * @param multiMap to be filled with the result.
      */
     private void intersectAccesses(
@@ -324,17 +299,12 @@ public class ContainerLimitResolver {
                     groupsIntersectArea = area;
                     groupClipArea = clipArea;
                 } else {
-                    groupsIntersectArea =
-                            GeomHelper.reprojectAndIntersect(
-                                    groupsIntersectArea, area, lessRestrictive);
-                    groupClipArea =
-                            GeomHelper.reprojectAndIntersect(
-                                    groupClipArea, clipArea, lessRestrictive);
+                    groupsIntersectArea = GeomHelper.reprojectAndIntersect(groupsIntersectArea, area, lessRestrictive);
+                    groupClipArea = GeomHelper.reprojectAndIntersect(groupClipArea, clipArea, lessRestrictive);
                 }
             }
         }
-        resIntersectArea =
-                GeomHelper.reprojectAndIntersect(resIntersectArea, groupsIntersectArea, false);
+        resIntersectArea = GeomHelper.reprojectAndIntersect(resIntersectArea, groupsIntersectArea, false);
         resClipArea = GeomHelper.reprojectAndIntersect(resClipArea, groupClipArea, false);
 
         ProcessingResult result = new ProcessingResult(resIntersectArea, resClipArea, catalogMode);
@@ -344,8 +314,7 @@ public class ContainerLimitResolver {
         if (groupOnClip && groupOnIntersect) multiMap.put(RestrictionType.GROUP_BOTH, result);
         else if (groupOnClip) multiMap.put(RestrictionType.GROUP_CLIP, result);
         else if (groupOnIntersect) multiMap.put(RestrictionType.GROUP_INTERSECT, result);
-        else if (resIntersectArea != null && resClipArea != null)
-            multiMap.put(RestrictionType.LAYER_BOTH, result);
+        else if (resIntersectArea != null && resClipArea != null) multiMap.put(RestrictionType.LAYER_BOTH, result);
         else if (resIntersectArea != null) multiMap.put(RestrictionType.LAYER_INTERSECT, result);
         else if (resClipArea != null) multiMap.put(RestrictionType.LAYER_CLIP, result);
     }
@@ -353,12 +322,10 @@ public class ContainerLimitResolver {
     // collect the containers area by role.
     private ListMultimap<String, AccessInfo> collectContainersAccessInfoByRole() {
         ListMultimap<String, AccessInfo> groupAccessInfoByRole = ArrayListMultimap.create();
-        if (groupSummaries == null)
-            collectGroupAccessInfoByRole(groupList, authentication, groupAccessInfoByRole);
+        if (groupSummaries == null) collectGroupAccessInfoByRole(groupList, authentication, groupAccessInfoByRole);
         else
             // in context of a direct access to a layer contained in some tree group
-            collectGroupSummaryAccessInfoByRole(
-                    groupSummaries, authentication.getAuthorities(), groupAccessInfoByRole);
+            collectGroupSummaryAccessInfoByRole(groupSummaries, authentication.getAuthorities(), groupAccessInfoByRole);
         return groupAccessInfoByRole;
     }
 
@@ -416,21 +383,15 @@ public class ContainerLimitResolver {
             // if this query result in allowing the user no need to go on with the
             // limit enlargement/restriction for this group.
             RuleFilterBuilder builder = new RuleFilterBuilder(configuration);
-            RuleFilter filter =
-                    builder.withUser(authentication)
-                            .withIpAddress(callerIp)
-                            .withWorkspace(workspace)
-                            .withLayer(layer)
-                            .withRequest(Dispatcher.REQUEST.get())
-                            .build();
+            RuleFilter filter = builder.withUser(authentication)
+                    .withIpAddress(callerIp)
+                    .withWorkspace(workspace)
+                    .withLayer(layer)
+                    .withRequest(Dispatcher.REQUEST.get())
+                    .build();
             AccessInfo accessInfo = ruleService.getAccessInfo(filter);
-            LOGGER.log(
-                    Level.FINE,
-                    () ->
-                            "User allowed for the entire layer group. No limit processing is needed.");
-            return isAllow(accessInfo)
-                    && accessInfo.getAreaWkt() == null
-                    && accessInfo.getClipAreaWkt() == null;
+            LOGGER.log(Level.FINE, () -> "User allowed for the entire layer group. No limit processing is needed.");
+            return isAllow(accessInfo) && accessInfo.getAreaWkt() == null && accessInfo.getClipAreaWkt() == null;
         }
         return false;
     }
@@ -463,8 +424,7 @@ public class ContainerLimitResolver {
         private Geometry clipArea;
         private CatalogModeDTO catalogModeDTO;
 
-        public ProcessingResult(
-                Geometry intersectArea, Geometry clipArea, CatalogModeDTO catalogModeDTO) {
+        public ProcessingResult(Geometry intersectArea, Geometry clipArea, CatalogModeDTO catalogModeDTO) {
             this.intersectArea = intersectArea;
             this.clipArea = clipArea;
             this.catalogModeDTO = catalogModeDTO;
@@ -495,21 +455,19 @@ public class ContainerLimitResolver {
             GrantedAuthority grantedAuthority, String workspace, String layer, String ipAddress) {
         RuleFilterBuilder builder = new RuleFilterBuilder(configuration);
         Request request = Dispatcher.REQUEST.get();
-        builder =
-                builder.withLayer(layer)
-                        .withWorkspace(workspace)
-                        .withIpAddress(ipAddress)
-                        .withRequest(request);
+        builder = builder.withLayer(layer)
+                .withWorkspace(workspace)
+                .withIpAddress(ipAddress)
+                .withRequest(request);
         RuleFilter filter = builder.build();
         // filter is invalid if the role name is not among configured one
         // use roles to filter option is set.
         if (filterIsInValid(builder, grantedAuthority.getAuthority())) {
             LOGGER.log(
                     Level.FINE,
-                    () ->
-                            "Skipping layegroup limits resolution for role "
-                                    + grantedAuthority.getAuthority()
-                                    + " because not among allowed ones");
+                    () -> "Skipping layegroup limits resolution for role "
+                            + grantedAuthority.getAuthority()
+                            + " because not among allowed ones");
             return null;
         }
         // is valid then we set role and user name.

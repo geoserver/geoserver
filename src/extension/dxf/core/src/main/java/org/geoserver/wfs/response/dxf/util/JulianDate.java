@@ -29,14 +29,13 @@ public class JulianDate {
         double m = month + 12 * a - 3;
 
         // julian day number
-        double jdn =
-                day
-                        + Math.floor((153 * m + 2) / 5)
-                        + 365 * y
-                        + Math.floor(y / 4)
-                        - Math.floor(y / 100)
-                        + Math.floor(y / 400)
-                        - 32045;
+        double jdn = day
+                + Math.floor((153 * m + 2) / 5)
+                + 365 * y
+                + Math.floor(y / 4)
+                - Math.floor(y / 100)
+                + Math.floor(y / 400)
+                - 32045;
 
         int hour = calendar.get(Calendar.HOUR_OF_DAY);
         int minutes = calendar.get(Calendar.MINUTE);

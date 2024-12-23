@@ -42,8 +42,7 @@ public class CasFormAuthenticationHelper extends CasAuthenticationHelper {
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
         String responseString = readResponse(conn);
         String execution = extractFormParameter(responseString, "\"execution\"");
-        if (execution == null)
-            throw new IOException(" No hidden execution field for: " + loginUrl.toString());
+        if (execution == null) throw new IOException(" No hidden execution field for: " + loginUrl.toString());
 
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("username", username);

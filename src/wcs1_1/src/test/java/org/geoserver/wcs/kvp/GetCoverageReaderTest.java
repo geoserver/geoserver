@@ -101,9 +101,9 @@ public class GetCoverageReaderTest extends WCSTestSupport {
     }
 
     /**
-     * According to WFS 1.1 spec, the store parameter must be "True" or "False". CITE test
-     * "GetCoverage_Store_Bogus" tests that an exception is thrown. This test does the same - makes
-     * a request with a bad "store" parameter and expects a WcsException.
+     * According to WFS 1.1 spec, the store parameter must be "True" or "False". CITE test "GetCoverage_Store_Bogus"
+     * tests that an exception is thrown. This test does the same - makes a request with a bad "store" parameter and
+     * expects a WcsException.
      */
     @Test
     public void testWrongStoreParameter() throws Exception {
@@ -133,8 +133,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("store", "false");
         raw.put("GridBaseCRS", "urn:ogc:def:crs:EPSG:6.6:4326");
 
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(layerId, getCoverage.getIdentifier().getValue());
         assertEquals("image/tiff", getCoverage.getOutput().getFormat());
         assertFalse(getCoverage.getOutput().isStore());
@@ -169,8 +168,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
 
         raw.put("gridType", GridType.GT2dGridIn2dCrs.getXmlConstant());
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(
                 GridType.GT2dGridIn2dCrs.getXmlConstant(),
                 getCoverage.getOutput().getGridCRS().getGridType());
@@ -216,8 +214,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
 
         raw.put("GridCS", GridCS.GCSGrid2dSquare.getXmlConstant());
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         assertEquals(
                 GridCS.GCSGrid2dSquare.getXmlConstant(),
                 getCoverage.getOutput().getGridCRS().getGridCS());
@@ -247,8 +244,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
         raw.put("GridOrigin", "10.5,-30.2");
 
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] origin = (Double[]) getCoverage.getOutput().getGridCRS().getGridOrigin();
         assertEquals(2, origin.length);
         assertEquals(0, Double.compare(10.5, origin[0]));
@@ -284,8 +280,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
 
         raw.put("GridOffsets", "10.5,-30.2");
         raw.put("GridType", GridType.GT2dSimpleGrid.getXmlConstant());
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         Double[] offsets = (Double[]) getCoverage.getOutput().getGridCRS().getGridOffsets();
         assertEquals(2, offsets.length);
         assertEquals(0, Double.compare(10.5, offsets[0]));
@@ -362,8 +357,7 @@ public class GetCoverageReaderTest extends WCSTestSupport {
         raw.put("BoundingBox", "-45,146,-42,147");
         raw.put("rangeSubset", "BlueMarble:" + interpolation + "[Bands[Red_band]]");
 
-        GetCoverageType getCoverage =
-                (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
+        GetCoverageType getCoverage = (GetCoverageType) reader.read(reader.createRequest(), parseKvp(raw), raw);
         RangeSubsetType rs = getCoverage.getRangeSubset();
         FieldSubsetType field = (FieldSubsetType) rs.getFieldSubset().get(0);
         AxisSubsetType axis = (AxisSubsetType) field.getAxisSubset().get(0);

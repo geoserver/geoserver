@@ -20,13 +20,12 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * This class is just a mean trick to smuggle in the resource name in to a FeatureCollection, when
- * returned as result of a GetFeatureInfo request Previously this was assumed to be equal to the
- * name of the type of the FeatureCollection But this is not the case for complex features in
- * app-schema.
+ * This class is just a mean trick to smuggle in the resource name in to a FeatureCollection, when returned as result of
+ * a GetFeatureInfo request Previously this was assumed to be equal to the name of the type of the FeatureCollection But
+ * this is not the case for complex features in app-schema.
  *
- * <p>The other thing this does is providing an implementation of size(), since the app-schema one
- * always returns 0. This is used for limiting features to a maximum.
+ * <p>The other thing this does is providing an implementation of size(), since the app-schema one always returns 0.
+ * This is used for limiting features to a maximum.
  *
  * <p>The decorator never needs to be used for SimpleFeatureCollections.
  *

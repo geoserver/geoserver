@@ -38,16 +38,14 @@ public class PaletteManager {
     public static final String QUANTIZER = "quantizer";
 
     /**
-     * Safe palette, a 6x6x6 color cube, followed by a 39 elements gray scale, and a final
-     * transparent element. See the internet safe color palette for a reference <a
-     * href="http://www.intuitive.com/coolweb/colors.html">
+     * Safe palette, a 6x6x6 color cube, followed by a 39 elements gray scale, and a final transparent element. See the
+     * internet safe color palette for a reference <a href="http://www.intuitive.com/coolweb/colors.html">
      */
     public static final String SAFE = "SAFE";
 
     public static final IndexColorModel safePalette = buildDefaultPalette();
     static SoftValueHashMap<String, PaletteCacheEntry> paletteCache = new SoftValueHashMap<>();
-    static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache =
-            new SoftValueHashMap<>();
+    static SoftValueHashMap<IndexColorModelKey, InverseColorMapOp> opCache = new SoftValueHashMap<>();
 
     /** TODO: we should probably provide the data directory as a constructor parameter here */
     private PaletteManager() {}
@@ -83,9 +81,7 @@ public class PaletteManager {
         Resource palettes = loader.get("palettes");
 
         Set<String> names = new HashSet<>();
-        names.addAll(
-                Arrays.asList(
-                        new String[] {name + ".gif", name + ".png", name + ".pal", name + ".tif"}));
+        names.addAll(Arrays.asList(new String[] {name + ".gif", name + ".png", name + ".pal", name + ".tif"}));
 
         List<Resource> paletteFiles = new ArrayList<>();
         for (Resource item : palettes.list()) {
@@ -120,10 +116,9 @@ public class PaletteManager {
                     }
                 }
             }
-            LOG.warning(
-                    "Skipping paletteInverter file "
-                            + fileName
-                            + " since color model is not indexed (no 256 colors paletteInverter)");
+            LOG.warning("Skipping paletteInverter file "
+                    + fileName
+                    + " since color model is not indexed (no 256 colors paletteInverter)");
         }
 
         return null;
@@ -199,9 +194,8 @@ public class PaletteManager {
     }
 
     /**
-     * IndexColorModel has a broken hashcode implementation (inherited from ColorModel and not
-     * overridden), use a custom key that leverages identity hash code instead (a full equals would
-     * be expensive, palettes can have 65k entries)
+     * IndexColorModel has a broken hashcode implementation (inherited from ColorModel and not overridden), use a custom
+     * key that leverages identity hash code instead (a full equals would be expensive, palettes can have 65k entries)
      */
     private static class IndexColorModelKey {
         IndexColorModel icm;

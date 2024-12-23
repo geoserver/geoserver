@@ -64,8 +64,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Validates a document against the */
-    protected void checkValidationErrors(Document dom, Configuration configuration)
-            throws Exception {
+    protected void checkValidationErrors(Document dom, Configuration configuration) throws Exception {
         Parser p = new Parser(configuration);
         p.setValidating(true);
         p.parse(new DOMSource(dom));
@@ -73,8 +72,7 @@ public abstract class CSWTestSupport extends GeoServerSystemTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                LOGGER.severe(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.severe(ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }

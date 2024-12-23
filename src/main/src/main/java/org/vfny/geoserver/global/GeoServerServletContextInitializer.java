@@ -16,8 +16,8 @@ import org.springframework.web.context.WebApplicationContext;
 /**
  * Places a GeoServer module into the servlet context.
  *
- * <p>This class is only around to maintain backwards compatability for hte struts ui stuff which
- * requires application modules to be placed into the servlet context.
+ * <p>This class is only around to maintain backwards compatability for hte struts ui stuff which requires application
+ * modules to be placed into the servlet context.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */

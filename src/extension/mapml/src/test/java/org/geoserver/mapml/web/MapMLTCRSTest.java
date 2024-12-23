@@ -54,8 +54,7 @@ public class MapMLTCRSTest extends GeoServerWicketTestSupport {
         tester.startPage(settingsPage);
         tester.assertRenderedPage(MapMLTCRSSettingsPage.class);
         FormTester ft = tester.newFormTester("form");
-        Palette<?> palette =
-                (Palette<?>) tester.getComponentFromLastRenderedPage("form:mapMLTCRS:tcrspalette");
+        Palette<?> palette = (Palette<?>) tester.getComponentFromLastRenderedPage("form:mapMLTCRS:tcrspalette");
         List<String> selectedItems = (List<String>) new ArrayList<>(palette.getModelObject());
         selectedItems.add("UTM31WGS84Quad"); // Add your choice to the selected items
         palette.setDefaultModelObject(selectedItems);

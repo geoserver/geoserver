@@ -34,10 +34,7 @@ public class RemoteDocumentReaderImpl implements RemoteDocumentReader {
                 doc.getDocumentElement().normalize();
                 return doc;
             }
-        } catch (MalformedURLException
-                | ParserConfigurationException
-                | SAXException
-                | IllegalStateException e) {
+        } catch (MalformedURLException | ParserConfigurationException | SAXException | IllegalStateException e) {
             LOGGER.log(Level.WARNING, "", e);
         }
         throw new IOException("Could not read metadata from:" + url);

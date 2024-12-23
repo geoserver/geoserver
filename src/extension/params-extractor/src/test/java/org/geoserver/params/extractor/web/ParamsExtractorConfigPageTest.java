@@ -44,17 +44,13 @@ public class ParamsExtractorConfigPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(ParamsExtractorConfigPage.class);
 
         // two rules loaded
-        DataView table =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage("rulesPanel:listContainer:items");
+        DataView table = (DataView) tester.getComponentFromLastRenderedPage("rulesPanel:listContainer:items");
         assertEquals(2, table.getItemCount());
         // match of the first rule
         tester.assertModelValue(
-                "rulesPanel:listContainer:items:1:itemProperties:1:component",
-                "^.*?(/([^/]+?))/[^/]+$");
+                "rulesPanel:listContainer:items:1:itemProperties:1:component", "^.*?(/([^/]+?))/[^/]+$");
         // parameter of the second rule
-        tester.assertModelValue(
-                "rulesPanel:listContainer:items:2:itemProperties:3:component", "CQL_FILTER");
+        tester.assertModelValue("rulesPanel:listContainer:items:2:itemProperties:3:component", "CQL_FILTER");
     }
 
     @Test

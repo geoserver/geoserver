@@ -13,11 +13,11 @@ import org.geoserver.catalog.PublishedInfo;
 /**
  * A panel created to configure one aspect of a {@link PublishedInfo} object.
  *
- * <p>Typically there will be one panel dealing generically with {@link PublishedInfo} and one extra
- * panel to deal with the specifics of each service publishing the data (WMS, WCS, WFS, ...).
+ * <p>Typically there will be one panel dealing generically with {@link PublishedInfo} and one extra panel to deal with
+ * the specifics of each service publishing the data (WMS, WCS, WFS, ...).
  *
- * <p>All the components in the panel must be contained in a {@link Form} to make sure the whole tab
- * switch and page submit workflow function properly
+ * <p>All the components in the panel must be contained in a {@link Form} to make sure the whole tab switch and page
+ * submit workflow function properly
  *
  * @author Niels Charlier
  */
@@ -33,10 +33,7 @@ public class PublishedConfigurationPanel<T extends PublishedInfo> extends Panel 
         return (T) getDefaultModelObject();
     }
 
-    /**
-     * Allows subclasses to override in case they need to save any other state than the {@link
-     * PublishedInfo} itself
-     */
+    /** Allows subclasses to override in case they need to save any other state than the {@link PublishedInfo} itself */
     public void save() {
         // do nothing by default
     }

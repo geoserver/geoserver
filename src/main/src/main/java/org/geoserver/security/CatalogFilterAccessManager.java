@@ -34,8 +34,7 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
 
     private DataAccessLimits hide(ResourceInfo info) {
         if (info instanceof FeatureTypeInfo) {
-            return new VectorAccessLimits(
-                    CatalogMode.HIDE, null, Filter.EXCLUDE, null, Filter.EXCLUDE);
+            return new VectorAccessLimits(CatalogMode.HIDE, null, Filter.EXCLUDE, null, Filter.EXCLUDE);
         } else if (info instanceof CoverageInfo) {
             return new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null);
         } else if (info instanceof WMSLayerInfo) {
@@ -55,8 +54,7 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
     }
 
     @Override
-    public DataAccessLimits getAccessLimits(
-            Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
+    public DataAccessLimits getAccessLimits(Authentication user, LayerInfo layer, List<LayerGroupInfo> containers) {
         if (hideLayer(layer) || hideResource(layer.getResource())) {
             return hide(layer.getResource());
         }
@@ -160,10 +158,7 @@ public class CatalogFilterAccessManager extends ResourceAccessManagerWrapper {
         return filters;
     }
 
-    /**
-     * Designed for testing, allows to manually configure the catalog filters bypassing the Spring
-     * context lookup
-     */
+    /** Designed for testing, allows to manually configure the catalog filters bypassing the Spring context lookup */
     public void setCatalogFilters(List<? extends CatalogFilter> filters) {
         this.filters = filters;
     }

@@ -21,9 +21,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Test the gmsl:Borehole is encoded in the right order, in particular this test is created for
-     * an encoding order issue with gsml:indexData according to the schema
-     * http://www.geosciml.org/geosciml/2.0/xsd/borehole.xsd
+     * Test the gmsl:Borehole is encoded in the right order, in particular this test is created for an encoding order
+     * issue with gsml:indexData according to the schema http://www.geosciml.org/geosciml/2.0/xsd/borehole.xsd
      */
     @Test
     public void testPropertyEncodingOrder_Borehole() throws Exception {
@@ -55,7 +54,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
 
         Node posList = shape.getFirstChild().getFirstChild();
         assertEquals("gml:posList", posList.getNodeName());
-        assertEquals("-28.4139 121.142 -28.4139 121.142", posList.getFirstChild().getNodeValue());
+        assertEquals(
+                "-28.4139 121.142 -28.4139 121.142", posList.getFirstChild().getNodeValue());
 
         // gsml:collarLocation
         Node collarLocation = shape.getNextSibling();
@@ -86,7 +86,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         assertEquals("gsml:BoreholeDetails", boreholeDetails.getNodeName());
 
         Node operator = boreholeDetails.getFirstChild();
-        assertEquals("GSWA", operator.getAttributes().getNamedItem("xlink:title").getNodeValue());
+        assertEquals(
+                "GSWA", operator.getAttributes().getNamedItem("xlink:title").getNodeValue());
 
         Node dateOfDrilling = operator.getNextSibling();
         assertEquals("2004-09-17", dateOfDrilling.getFirstChild().getNodeValue());
@@ -122,8 +123,8 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Test the gmsl:PlanarOrientation is encoded in the order of aziumth, convention, dip, polarity
-     * according to the schema CGI_Value.xsd
+     * Test the gmsl:PlanarOrientation is encoded in the order of aziumth, convention, dip, polarity according to the
+     * schema CGI_Value.xsd
      */
     @Test
     public void testPropertyEncodingOrder_PlanarOrientation() throws Exception {
@@ -136,8 +137,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         assertEquals("er:MineralOccurrence", feature.getNodeName());
 
         // check for gml:id
-        assertXpathEvaluatesTo(
-                "er.mineraloccurrence.S0032895", "//er:MineralOccurrence/@gml:id", doc);
+        assertXpathEvaluatesTo("er.mineraloccurrence.S0032895", "//er:MineralOccurrence/@gml:id", doc);
 
         Node name = feature.getFirstChild();
         assertEquals("gml:name", name.getNodeName());
@@ -190,20 +190,15 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // validateGet(path);
     }
 
-    /**
-     * Test elements are encoded in the order as defined in the schema GeologicUnit is tested here
-     */
+    /** Test elements are encoded in the order as defined in the schema GeologicUnit is tested here */
     @Test
     public void testPropertyEncodingOrder_GeologicUnit() throws Exception {
         WFSInfo wfs = getGeoServer().getService(WFSInfo.class);
         wfs.setEncodeFeatureMember(true);
         getGeoServer().save(wfs);
-        String path =
-                "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gu.25699";
+        String path = "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&featureid=gu.25699";
         Document doc = getAsDOM(path);
-        LOGGER.info(
-                "WFS GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699:\n"
-                        + prettyString(doc));
+        LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit&featureid=gu.25699:\n" + prettyString(doc));
 
         assertEquals(1, doc.getElementsByTagName("gml:featureMember").getLength());
         assertXpathCount(1, "//gsml:GeologicUnit[@gml:id='gu.25699']", doc);
@@ -223,10 +218,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // name1
         Node name1 = description.getNextSibling();
         assertEquals("gml:name", name1.getNodeName());
-        assertXpathEvaluatesTo(
-                "Yaugher Volcanic Group",
-                "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:name[1]",
-                doc);
+        assertXpathEvaluatesTo("Yaugher Volcanic Group", "//gsml:GeologicUnit[@gml:id='gu.25699']/gml:name[1]", doc);
 
         // name2
         Node name2 = name1.getNextSibling();
@@ -248,8 +240,7 @@ public class PropertyEncodingOrderTest extends AbstractAppSchemaTestSupport {
         // purpose
         Node purpose = observationMethod.getNextSibling();
         assertEquals("gsml:purpose", purpose.getNodeName());
-        assertXpathEvaluatesTo(
-                "instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose", doc);
+        assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose", doc);
 
         // occurrence
         Node occurrence = purpose.getNextSibling();

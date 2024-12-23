@@ -41,12 +41,12 @@ public class NetworkLinkMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * Initializes the KML encoder. None of the map production is done here, it is done in
-     * writeTo(). This way the output can be streamed directly to the output response and not
-     * written to disk first, then loaded in and then sent to the response.
+     * Initializes the KML encoder. None of the map production is done here, it is done in writeTo(). This way the
+     * output can be streamed directly to the output response and not written to disk first, then loaded in and then
+     * sent to the response.
      *
-     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to
-     *     be used when producing the map.
+     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to be used when
+     *     producing the map.
      * @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent)
      */
     @Override

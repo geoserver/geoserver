@@ -34,8 +34,7 @@ import org.xml.sax.SAXException;
 
 public class XMLRoleService extends AbstractRoleService {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     protected DocumentBuilder builder;
     protected Resource roleResource;
 
@@ -66,8 +65,7 @@ public class XMLRoleService extends AbstractRoleService {
             // copy schema file
             Resource xsdFile = getConfigRoot().get(XMLConstants.FILE_RR_SCHEMA);
             if (xsdFile.getType() == Type.UNDEFINED) {
-                IOUtils.copy(
-                        getClass().getResourceAsStream(XMLConstants.FILE_RR_SCHEMA), xsdFile.out());
+                IOUtils.copy(getClass().getResourceAsStream(XMLConstants.FILE_RR_SCHEMA), xsdFile.out());
             }
         }
 
@@ -82,8 +80,7 @@ public class XMLRoleService extends AbstractRoleService {
             }
 
             if (roleResource.getType() == Type.UNDEFINED) {
-                IOUtils.copy(
-                        getClass().getResourceAsStream("rolesTemplate.xml"), roleResource.out());
+                IOUtils.copy(getClass().getResourceAsStream("rolesTemplate.xml"), roleResource.out());
             }
         } else {
             throw new IOException("Cannot initialize from " + config.getClass().getName());
@@ -132,25 +129,19 @@ public class XMLRoleService extends AbstractRoleService {
 
             clearMaps();
 
-            NodeList roleNodes =
-                    (NodeList)
-                            xmlXPath.getRoleListExpression().evaluate(doc, XPathConstants.NODESET);
+            NodeList roleNodes = (NodeList) xmlXPath.getRoleListExpression().evaluate(doc, XPathConstants.NODESET);
 
             for (int i = 0; i < roleNodes.getLength(); i++) {
                 Node roleNode = roleNodes.item(i);
 
                 String roleName = xmlXPath.getRoleNameExpression().evaluate(roleNode);
                 NodeList propertyNodes =
-                        (NodeList)
-                                xmlXPath.getRolePropertiesExpression()
-                                        .evaluate(roleNode, XPathConstants.NODESET);
+                        (NodeList) xmlXPath.getRolePropertiesExpression().evaluate(roleNode, XPathConstants.NODESET);
                 Properties roleProps = new Properties();
                 for (int j = 0; j < propertyNodes.getLength(); j++) {
                     Node propertyNode = propertyNodes.item(j);
-                    String propertyName =
-                            xmlXPath.getPropertyNameExpression().evaluate(propertyNode);
-                    String propertyValue =
-                            xmlXPath.getPropertyValueExpression().evaluate(propertyNode);
+                    String propertyName = xmlXPath.getPropertyNameExpression().evaluate(propertyNode);
+                    String propertyValue = xmlXPath.getPropertyValueExpression().evaluate(propertyNode);
                     roleProps.put(propertyName, propertyValue);
                 }
                 GeoServerRole role = createRoleObject(roleName);
@@ -167,50 +158,40 @@ public class XMLRoleService extends AbstractRoleService {
                 String roleName = xmlXPath.getRoleNameExpression().evaluate(roleNode);
                 String parentName = xmlXPath.getParentExpression().evaluate(roleNode);
                 if (parentName != null && !parentName.isEmpty()) {
-                    helper.role_parentMap.put(
-                            helper.roleMap.get(roleName), helper.roleMap.get(parentName));
+                    helper.role_parentMap.put(helper.roleMap.get(roleName), helper.roleMap.get(parentName));
                 }
             }
 
             // user roles
             NodeList userRolesNodes =
-                    (NodeList)
-                            xmlXPath.getUserRolesExpression().evaluate(doc, XPathConstants.NODESET);
+                    (NodeList) xmlXPath.getUserRolesExpression().evaluate(doc, XPathConstants.NODESET);
             for (int i = 0; i < userRolesNodes.getLength(); i++) {
                 Node userRolesNode = userRolesNodes.item(i);
                 String userName = xmlXPath.getUserNameExpression().evaluate(userRolesNode);
                 SortedSet<GeoServerRole> roleSet = new TreeSet<>();
                 helper.user_roleMap.put(userName, roleSet);
                 NodeList userRolesRefNodes =
-                        (NodeList)
-                                xmlXPath.getUserRolRefsExpression()
-                                        .evaluate(userRolesNode, XPathConstants.NODESET);
+                        (NodeList) xmlXPath.getUserRolRefsExpression().evaluate(userRolesNode, XPathConstants.NODESET);
                 for (int j = 0; j < userRolesRefNodes.getLength(); j++) {
                     Node userRolesRefNode = userRolesRefNodes.item(j);
-                    String roleRef =
-                            xmlXPath.getUserRolRefNameExpression().evaluate(userRolesRefNode);
+                    String roleRef = xmlXPath.getUserRolRefNameExpression().evaluate(userRolesRefNode);
                     roleSet.add(helper.roleMap.get(roleRef));
                 }
             }
 
             // group roles
             NodeList groupRolesNodes =
-                    (NodeList)
-                            xmlXPath.getGroupRolesExpression()
-                                    .evaluate(doc, XPathConstants.NODESET);
+                    (NodeList) xmlXPath.getGroupRolesExpression().evaluate(doc, XPathConstants.NODESET);
             for (int i = 0; i < groupRolesNodes.getLength(); i++) {
                 Node groupRolesNode = groupRolesNodes.item(i);
                 String groupName = xmlXPath.getGroupNameExpression().evaluate(groupRolesNode);
                 SortedSet<GeoServerRole> roleSet = new TreeSet<>();
                 helper.group_roleMap.put(groupName, roleSet);
-                NodeList groupRolesRefNodes =
-                        (NodeList)
-                                xmlXPath.getGroupRolRefsExpression()
-                                        .evaluate(groupRolesNode, XPathConstants.NODESET);
+                NodeList groupRolesRefNodes = (NodeList)
+                        xmlXPath.getGroupRolRefsExpression().evaluate(groupRolesNode, XPathConstants.NODESET);
                 for (int j = 0; j < groupRolesRefNodes.getLength(); j++) {
                     Node groupRolesRefNode = groupRolesRefNodes.item(j);
-                    String roleRef =
-                            xmlXPath.getGroupRolRefNameExpression().evaluate(groupRolesRefNode);
+                    String roleRef = xmlXPath.getGroupRolRefNameExpression().evaluate(groupRolesRefNode);
                     roleSet.add(helper.roleMap.get(roleRef));
                 }
             }

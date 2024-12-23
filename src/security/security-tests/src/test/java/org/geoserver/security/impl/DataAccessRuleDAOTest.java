@@ -148,12 +148,8 @@ public class DataAccessRuleDAOTest {
     @Test
     public void testStoreEscapedDots() throws Exception {
         dao.clear();
-        dao.addRule(
-                new DataAccessRule(
-                        "it.geosolutions",
-                        "layer.dots",
-                        AccessMode.READ,
-                        Collections.singleton("ROLE_ABC")));
+        dao.addRule(new DataAccessRule(
+                "it.geosolutions", "layer.dots", AccessMode.READ, Collections.singleton("ROLE_ABC")));
         Properties ps = dao.toProperties();
 
         assertEquals(2, ps.size());

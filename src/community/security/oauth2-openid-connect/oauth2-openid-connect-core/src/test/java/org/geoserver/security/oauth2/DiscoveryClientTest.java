@@ -22,7 +22,9 @@ import org.springframework.web.client.RestTemplate;
 @RunWith(MockitoJUnitRunner.class)
 public class DiscoveryClientTest {
 
-    @Mock RestTemplate restTemplate;
+    @Mock
+    RestTemplate restTemplate;
+
     JSONObject discovery;
 
     @Before
@@ -43,23 +45,17 @@ public class DiscoveryClientTest {
 
     private void testDiscoveryClient(String location) {
         DiscoveryClient client = new DiscoveryClient(location, restTemplate);
-        Mockito.when(
-                        restTemplate.getForObject(
-                                "https://server.example.com/.well-known/openid-configuration",
-                                Map.class))
+        Mockito.when(restTemplate.getForObject(
+                        "https://server.example.com/.well-known/openid-configuration", Map.class))
                 .thenReturn(discovery);
         OpenIdConnectFilterConfig config = new OpenIdConnectFilterConfig();
         client.autofill(config);
 
-        assertEquals(
-                "https://server.example.com/connect/userinfo", config.getCheckTokenEndpointUrl());
+        assertEquals("https://server.example.com/connect/userinfo", config.getCheckTokenEndpointUrl());
         assertEquals("https://server.example.com/jwks.json", config.getJwkURI());
-        assertEquals(
-                "https://server.example.com/connect/authorize", config.getUserAuthorizationUri());
+        assertEquals("https://server.example.com/connect/authorize", config.getUserAuthorizationUri());
         assertEquals("https://server.example.com/connect/token", config.getAccessTokenUri());
         assertEquals("openid profile email address phone offline_access", config.getScopes());
-        assertEquals(
-                "https://server.example.com/connect/introspect",
-                config.getIntrospectionEndpointUrl());
+        assertEquals("https://server.example.com/connect/introspect", config.getIntrospectionEndpointUrl());
     }
 }

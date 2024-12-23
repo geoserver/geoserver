@@ -19,8 +19,7 @@ import java.util.List;
 public class Queryables extends Schema<Object> {
 
     public static final String REL = "http://www.opengis.net/def/rel/ogc/1.0/queryables";
-    public static final String JSON_SCHEMA_DRAFT_2020_12 =
-            "https://json-schema.org/draft/2020-12/schema";
+    public static final String JSON_SCHEMA_DRAFT_2020_12 = "https://json-schema.org/draft/2020-12/schema";
 
     private final String schema = JSON_SCHEMA_DRAFT_2020_12;
 
@@ -78,20 +77,17 @@ public class Queryables extends Schema<Object> {
 
     public void addSelfLinks(String path) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
-        List<Link> links =
-                new LinksBuilder(getClass(), path)
-                        .rel(Link.REL_ALTERNATE)
-                        .title("This document as ")
-                        .updater(
-                                (mt, l) -> {
-                                    if (requestInfo.isFormatRequested(
-                                            mt, JSONSchemaMessageConverter.SCHEMA_TYPE)) {
-                                        l.setRel(Link.REL_SELF);
-                                        l.setClassification(Link.REL_SELF);
-                                        l.setTitle("This document");
-                                    }
-                                })
-                        .build();
+        List<Link> links = new LinksBuilder(getClass(), path)
+                .rel(Link.REL_ALTERNATE)
+                .title("This document as ")
+                .updater((mt, l) -> {
+                    if (requestInfo.isFormatRequested(mt, JSONSchemaMessageConverter.SCHEMA_TYPE)) {
+                        l.setRel(Link.REL_SELF);
+                        l.setClassification(Link.REL_SELF);
+                        l.setTitle("This document");
+                    }
+                })
+                .build();
         linksHolder.getLinks().addAll(links);
     }
 }

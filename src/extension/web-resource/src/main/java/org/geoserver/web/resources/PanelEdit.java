@@ -30,18 +30,17 @@ public class PanelEdit extends Panel {
             throw new IllegalStateException("Path location not supported by Resource Browser");
         }
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        add(
-                new TextField<>("resource", new Model<>(resource.toString())) {
-                    private static final long serialVersionUID = 1019950718780805835L;
+        add(new TextField<>("resource", new Model<>(resource.toString())) {
+            private static final long serialVersionUID = 1019950718780805835L;
 
-                    @Override
-                    protected void onComponentTag(final ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        if (!isNew) {
-                            tag.put("readonly", "readonly");
-                        }
-                    }
-                });
+            @Override
+            protected void onComponentTag(final ComponentTag tag) {
+                super.onComponentTag(tag);
+                if (!isNew) {
+                    tag.put("readonly", "readonly");
+                }
+            }
+        });
         add(new WebMarkupContainer("createDirectory").setVisible(isNew));
         add(new TextArea<>("contents", new Model<>(contents)));
     }

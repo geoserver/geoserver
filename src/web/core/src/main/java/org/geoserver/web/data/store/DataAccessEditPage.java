@@ -46,10 +46,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
 
         if (dsi == null) {
             getSession()
-                    .error(
-                            new ParamResourceModel(
-                                            "DataAccessEditPage.notFound", this, storeName, wsName)
-                                    .getString());
+                    .error(new ParamResourceModel("DataAccessEditPage.notFound", this, storeName, wsName).getString());
             doReturn(StorePage.class);
             return;
         }
@@ -96,15 +93,12 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             final String wsId = dataStoreInfo.getWorkspace().getId();
             workspacePanel
                     .getFormComponent()
-                    .add(
-                            new CheckExistingResourcesInWorkspaceValidator(
-                                    dataStoreInfo.getId(), wsId));
+                    .add(new CheckExistingResourcesInWorkspaceValidator(dataStoreInfo.getId(), wsId));
         }
     }
 
     /**
-     * Callback method called when the submit button have been hit and the parameters validation has
-     * succeed.
+     * Callback method called when the submit button have been hit and the parameters validation has succeed.
      *
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
@@ -125,11 +119,10 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             DataAccess<? extends FeatureType, ? extends Feature> dataStore;
             try {
                 dataStore = catalog.getResourcePool().getDataStore(info);
-                LOGGER.finer(
-                        "connection parameters verified for store "
-                                + info.getName()
-                                + ". Got a "
-                                + dataStore.getClass().getName());
+                LOGGER.finer("connection parameters verified for store "
+                        + info.getName()
+                        + ". Got a "
+                        + dataStore.getClass().getName());
                 if (!doSaveStore(info)) return;
 
                 if (doReturn) {
@@ -150,9 +143,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
 
     @SuppressWarnings("serial")
     private void confirmSaveOnConnectionFailure(
-            final DataStoreInfo info,
-            final AjaxRequestTarget requestTarget,
-            final Exception error) {
+            final DataStoreInfo info, final AjaxRequestTarget requestTarget, final Exception error) {
 
         getCatalog().getResourcePool().clear(info);
 
@@ -165,37 +156,34 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             exceptionMessage = message;
         }
 
-        dialog.showOkCancel(
-                requestTarget,
-                new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
 
-                    boolean accepted = false;
+            boolean accepted = false;
 
-                    @Override
-                    protected Component getContents(String id) {
-                        return new StoreConnectionFailedInformationPanel(
-                                id, info.getName(), exceptionMessage);
-                    }
+            @Override
+            protected Component getContents(String id) {
+                return new StoreConnectionFailedInformationPanel(id, info.getName(), exceptionMessage);
+            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        doSaveStore(info);
-                        accepted = true;
-                        return true;
-                    }
+            @Override
+            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                doSaveStore(info);
+                accepted = true;
+                return true;
+            }
 
-                    @Override
-                    protected boolean onCancel(AjaxRequestTarget target) {
-                        return true;
-                    }
+            @Override
+            protected boolean onCancel(AjaxRequestTarget target) {
+                return true;
+            }
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        if (accepted) {
-                            doReturn(StorePage.class);
-                        }
-                    }
-                });
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                if (accepted) {
+                    doReturn(StorePage.class);
+                }
+            }
+        });
     }
 
     /**
@@ -208,9 +196,9 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             final Catalog catalog = getCatalog();
 
             // The namespace may have changed, in which case we need to update the store resources
-            NamespaceInfo namespace = catalog.getNamespaceByPrefix(info.getWorkspace().getName());
-            List<FeatureTypeInfo> configuredResources =
-                    catalog.getResourcesByStore(info, FeatureTypeInfo.class);
+            NamespaceInfo namespace =
+                    catalog.getNamespaceByPrefix(info.getWorkspace().getName());
+            List<FeatureTypeInfo> configuredResources = catalog.getResourcesByStore(info, FeatureTypeInfo.class);
             for (FeatureTypeInfo alreadyConfigured : configuredResources) {
                 alreadyConfigured.setNamespace(namespace);
             }
@@ -231,9 +219,7 @@ public class DataAccessEditPage extends AbstractDataAccessPage implements Serial
             LOGGER.finer("Saved store " + info.getName());
         } catch (FileSandboxEnforcer.SandboxException e) {
             // this one is non recoverable, give up and inform the user
-            error(
-                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
-                            .getString());
+            error(new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath()).getString());
             return false;
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error saving data store to catalog", e);

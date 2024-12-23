@@ -13,15 +13,15 @@ import org.junit.Before;
 /**
  * Abstract class for tests that do need to run a one time setup/teardown phase.
  *
- * <p>Candidate tests are the ones that setup an expensive test fixture that happens to be reusable
- * in subsequent tests (that is, its state is not modified running the tests).
+ * <p>Candidate tests are the ones that setup an expensive test fixture that happens to be reusable in subsequent tests
+ * (that is, its state is not modified running the tests).
  *
- * <p>Such tests can extend this class, implement the expensive setup/teardown phases in {@link
- * #oneTimeSetUp()} and {@link #oneTimeTearDown()}, and eventual per method setup/teardown in {@link
- * #setUpInternal()} and {@link #tearDownInternal()}.
+ * <p>Such tests can extend this class, implement the expensive setup/teardown phases in {@link #oneTimeSetUp()} and
+ * {@link #oneTimeTearDown()}, and eventual per method setup/teardown in {@link #setUpInternal()} and
+ * {@link #tearDownInternal()}.
  *
- * <p>In order to activate the one time setup the generic MyOneTimeSetupTest class will also have to
- * add the following static method:
+ * <p>In order to activate the one time setup the generic MyOneTimeSetupTest class will also have to add the following
+ * static method:
  *
  * <pre>
  * public static Test suite() {
@@ -76,9 +76,9 @@ public abstract class OneTimeSetupTest {
     }
 
     /**
-     * This provides the one time setup for the expensive fixture. The fields making up the fixture
-     * will have to be static ones, to avoid loosing their values as JUnit goes through the test
-     * methods (for each one a new instance of the class will be created)
+     * This provides the one time setup for the expensive fixture. The fields making up the fixture will have to be
+     * static ones, to avoid loosing their values as JUnit goes through the test methods (for each one a new instance of
+     * the class will be created)
      */
     protected abstract void oneTimeSetUp() throws Exception;
 
@@ -86,15 +86,14 @@ public abstract class OneTimeSetupTest {
     protected abstract void oneTimeTearDown() throws Exception;
 
     /**
-     * Provides the proper behavior so that the one time setup is run once matter how the test is
-     * started. If you need to implement a per test method setup, override {@link #setUpInternal()}
+     * Provides the proper behavior so that the one time setup is run once matter how the test is started. If you need
+     * to implement a per test method setup, override {@link #setUpInternal()}
      */
     @Before
     public final void setUp() throws Exception {
         if (inSetup)
-            throw new RuntimeException(
-                    "setUpInternal seems to call back to super.setUp(). "
-                            + "It should call super.setUpInternal instead");
+            throw new RuntimeException("setUpInternal seems to call back to super.setUp(). "
+                    + "It should call super.setUpInternal instead");
         try {
             inSetup = true;
 
@@ -111,16 +110,14 @@ public abstract class OneTimeSetupTest {
     }
 
     /**
-     * Provides the proper behavior so that the one time tear down is once no matter how the test is
-     * started. If you need to implement a per test method setup, overide {@link
-     * #tearDownInternal()}
+     * Provides the proper behavior so that the one time tear down is once no matter how the test is started. If you
+     * need to implement a per test method setup, overide {@link #tearDownInternal()}
      */
     @After
     public final void tearDown() throws Exception {
         if (inTearDown)
-            throw new RuntimeException(
-                    "tearDownInternal seems to call back to super.tearDown(). "
-                            + "It should call super.tearDownInternal instead");
+            throw new RuntimeException("tearDownInternal seems to call back to super.tearDown(). "
+                    + "It should call super.tearDownInternal instead");
 
         try {
             inTearDown = true;

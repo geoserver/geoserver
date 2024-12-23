@@ -38,21 +38,20 @@ public final class Decimator {
     private double spany = -1;
 
     /**
-     * djb - noticed that the old way of finding out the decimation is based on the (0,0) location
-     * of the image. This is often wildly unrepresentitive of the scale of the entire map.
+     * djb - noticed that the old way of finding out the decimation is based on the (0,0) location of the image. This is
+     * often wildly unrepresentitive of the scale of the entire map.
      *
-     * <p>A better thing to do is to decimate this on a per-shape basis (and use the shape's
-     * center). Another option would be to sample the image at different locations (say 9) and
-     * choose the smallest spanx/spany you find.
+     * <p>A better thing to do is to decimate this on a per-shape basis (and use the shape's center). Another option
+     * would be to sample the image at different locations (say 9) and choose the smallest spanx/spany you find.
      *
-     * <p>Also, if the xform is an affine Xform, you can be a bit more aggressive in the decimation.
-     * If its not an affine xform (ie. its actually doing a CRS xform), you may find this is a bit
-     * too aggressive due to any number of mathematical issues.
+     * <p>Also, if the xform is an affine Xform, you can be a bit more aggressive in the decimation. If its not an
+     * affine xform (ie. its actually doing a CRS xform), you may find this is a bit too aggressive due to any number of
+     * mathematical issues.
      *
      * <p>This is just a simple method that uses the centre of the given rectangle instead of (0,0).
      *
-     * <p>NOTE: this could need more work based on CRS, but the rectangle is in pixels so it should
-     * be fairly immune to all but crazy projections.
+     * <p>NOTE: this could need more work based on CRS, but the rectangle is in pixels so it should be fairly immune to
+     * all but crazy projections.
      */
     public Decimator(MathTransform screenToWorld, Rectangle paintArea) {
         if (screenToWorld != null) {
@@ -87,8 +86,7 @@ public final class Decimator {
                 decimateTransformGeneralize(collection.getGeometryN(i), transform);
             }
         } else if (geometry instanceof Point) {
-            LiteCoordinateSequence seq =
-                    (LiteCoordinateSequence) ((Point) geometry).getCoordinateSequence();
+            LiteCoordinateSequence seq = (LiteCoordinateSequence) ((Point) geometry).getCoordinateSequence();
             decimateTransformGeneralize(seq, transform);
         } else if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
@@ -98,8 +96,7 @@ public final class Decimator {
                 decimateTransformGeneralize(polygon.getInteriorRingN(i), transform);
             }
         } else if (geometry instanceof LineString) {
-            LiteCoordinateSequence seq =
-                    (LiteCoordinateSequence) ((LineString) geometry).getCoordinateSequence();
+            LiteCoordinateSequence seq = (LiteCoordinateSequence) ((LineString) geometry).getCoordinateSequence();
             decimateTransformGeneralize(seq, transform);
         }
     }
@@ -180,11 +177,11 @@ public final class Decimator {
     }
 
     /**
-     * 1. remove any points that are within the spanx,spany. We ALWAYS keep 1st and last point 2.
-     * transform to screen coordinates 3. remove any points that are close (span <1)
+     * 1. remove any points that are within the spanx,spany. We ALWAYS keep 1st and last point 2. transform to screen
+     * coordinates 3. remove any points that are close (span <1)
      */
-    private final void decimateTransformGeneralize(
-            LiteCoordinateSequence seq, MathTransform transform) throws TransformException {
+    private final void decimateTransformGeneralize(LiteCoordinateSequence seq, MathTransform transform)
+            throws TransformException {
         // decimates before XFORM
         int ncoords = seq.size();
         double[] originalOrds = seq.getXYArray(); // 2*#of points
@@ -308,8 +305,7 @@ public final class Decimator {
     }
 
     /** */
-    private int copyCoordinate(
-            double[] coords, int dimension, int readDoubles, int currentDoubles) {
+    private int copyCoordinate(double[] coords, int dimension, int readDoubles, int currentDoubles) {
         for (int i = 0; i < dimension; i++) {
             coords[readDoubles + i] = coords[currentDoubles + i];
         }

@@ -39,8 +39,7 @@ public class DataSourceFactoryBeanTest {
         expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:test"));
         ds.setUrl("jdbc:test");
         expectLastCall();
-        expect(config.getProperty("driverClassName"))
-                .andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
+        expect(config.getProperty("driverClassName")).andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
         ds.setDriverClassName("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
         expectLastCall();
         expect(config.getProperty("username")).andStubReturn("testUser");
@@ -75,14 +74,13 @@ public class DataSourceFactoryBeanTest {
         expectVerifyConnect(ds);
         replay(ds, config);
 
-        DataSourceFactoryBean fact =
-                new DataSourceFactoryBean(config) {
+        DataSourceFactoryBean fact = new DataSourceFactoryBean(config) {
 
-                    @Override
-                    protected BasicDataSource createBasicDataSource() {
-                        return ds;
-                    }
-                };
+            @Override
+            protected BasicDataSource createBasicDataSource() {
+                return ds;
+            }
+        };
 
         // Check that we get the DataSource
         assertThat(fact.getObject(), is((DataSource) ds));
@@ -154,8 +152,7 @@ public class DataSourceFactoryBeanTest {
         expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:test"));
         ds.setUrl("jdbc:test");
         expectLastCall();
-        expect(config.getProperty("driverClassName"))
-                .andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
+        expect(config.getProperty("driverClassName")).andStubReturn("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
         ds.setDriverClassName("org.geoserver.jdbcconfig.internal.MockJDBCDriver");
         expectLastCall();
         expect(config.getProperty("username")).andStubReturn("testUser");
@@ -191,14 +188,13 @@ public class DataSourceFactoryBeanTest {
 
         replay(ds, config, jndi);
 
-        DataSourceFactoryBean fact =
-                new DataSourceFactoryBean(config) {
+        DataSourceFactoryBean fact = new DataSourceFactoryBean(config) {
 
-                    @Override
-                    protected BasicDataSource createBasicDataSource() {
-                        return ds;
-                    }
-                };
+            @Override
+            protected BasicDataSource createBasicDataSource() {
+                return ds;
+            }
+        };
 
         // Check that we get the DataSource
         assertThat(fact.getObject(), is((DataSource) ds));

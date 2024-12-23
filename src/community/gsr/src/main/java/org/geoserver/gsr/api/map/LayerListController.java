@@ -26,9 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the Map Service layers list endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/MapServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/MapServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class LayerListController extends AbstractGSRController {
 
     @Autowired
@@ -41,12 +39,10 @@ public class LayerListController extends AbstractGSRController {
     public LayersAndTables getLayers(@PathVariable String workspaceName) {
         LayersAndTables layers = LayerDAO.find(catalog, workspaceName);
         layers.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "MapServer", "MapServer")));
-        layers.getInterfaces()
-                .add(new Link(workspaceName + "/" + "MapServer/layers?f=json&pretty=true", "REST"));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "MapServer", "MapServer")));
+        layers.getInterfaces().add(new Link(workspaceName + "/" + "MapServer/layers?f=json&pretty=true", "REST"));
         return layers;
     }
 }

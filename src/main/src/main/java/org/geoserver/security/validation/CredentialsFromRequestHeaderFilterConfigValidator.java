@@ -16,41 +16,34 @@ import org.geoserver.security.config.SecurityNamedServiceConfig;
  */
 public class CredentialsFromRequestHeaderFilterConfigValidator extends FilterConfigValidator {
 
-    public CredentialsFromRequestHeaderFilterConfigValidator(
-            GeoServerSecurityManager securityManager) {
+    public CredentialsFromRequestHeaderFilterConfigValidator(GeoServerSecurityManager securityManager) {
         super(securityManager);
     }
 
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
         if (config instanceof CredentialsFromRequestHeaderFilterConfig)
             validateFilterConfig((CredentialsFromRequestHeaderFilterConfig) config);
         else super.validateFilterConfig(config);
     }
 
-    public void validateFilterConfig(CredentialsFromRequestHeaderFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(CredentialsFromRequestHeaderFilterConfig config) throws FilterConfigException {
         if (config.getUserNameHeaderName() == null || "".equals(config.getUserNameHeaderName())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_HEADER_REQUIRED,
-                    null);
+                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_HEADER_REQUIRED, null);
         }
         if (config.getUserNameRegex() == null || "".equals(config.getUserNameRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED,
-                    null);
+                    CredentialsFromRequestHeaderFilterConfigException.USERNAME_REGEX_REQUIRED, null);
         }
         if (config.getPasswordHeaderName() == null || "".equals(config.getPasswordHeaderName())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_HEADER_REQUIRED,
-                    null);
+                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_HEADER_REQUIRED, null);
         }
         if (config.getPasswordRegex() == null || "".equals(config.getPasswordRegex())) {
             throw new CredentialsFromRequestHeaderFilterConfigException(
-                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED,
-                    null);
+                    CredentialsFromRequestHeaderFilterConfigException.PASSWORD_REGEX_REQUIRED, null);
         }
     }
 }

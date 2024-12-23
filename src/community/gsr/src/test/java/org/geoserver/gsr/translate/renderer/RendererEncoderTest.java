@@ -54,8 +54,7 @@ public class RendererEncoderTest extends ControllerTest {
         assertNotNull(polygonInfo);
         Style polygon = polygonInfo.getStyle();
         assertNotNull(polygon);
-        Renderer polygonRenderer =
-                StyleEncoder.styleToRenderer((org.geotools.api.style.Style) polygon);
+        Renderer polygonRenderer = StyleEncoder.styleToRenderer((org.geotools.api.style.Style) polygon);
         assertNotNull(polygonRenderer);
         JSONBuilder json = new JSONStringer();
         StyleEncoder.encodeRenderer(json, polygonRenderer);
@@ -238,27 +237,33 @@ public class RendererEncoderTest extends ControllerTest {
         UniqueValueRenderer uvr = (UniqueValueRenderer) renderer;
 
         // first is solid
-        SimpleLineSymbol line0 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(0).getSymbol();
+        SimpleLineSymbol line0 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(0).getSymbol();
         assertEquals(SimpleLineSymbolEnum.SOLID, line0.getStyle());
 
         // second recognized as dash
-        SimpleLineSymbol line1 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(1).getSymbol();
+        SimpleLineSymbol line1 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(1).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH, line1.getStyle());
 
         // third recognized as dot
-        SimpleLineSymbol line2 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(2).getSymbol();
+        SimpleLineSymbol line2 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(2).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DOT, line2.getStyle());
 
         // fourth recognized as dash dot
-        SimpleLineSymbol line3 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(3).getSymbol();
+        SimpleLineSymbol line3 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(3).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH_DOT, line3.getStyle());
 
         // fourth recognized as dash dot dot
-        SimpleLineSymbol line4 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(4).getSymbol();
+        SimpleLineSymbol line4 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(4).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH_DOT_DOT, line4.getStyle());
 
         // fifth not recognized, assigned as a dash as default
-        SimpleLineSymbol line5 = (SimpleLineSymbol) uvr.getUniqueValueInfos().get(5).getSymbol();
+        SimpleLineSymbol line5 =
+                (SimpleLineSymbol) uvr.getUniqueValueInfos().get(5).getSymbol();
         assertEquals(SimpleLineSymbolEnum.DASH, line5.getStyle());
     }
 

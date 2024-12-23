@@ -39,8 +39,7 @@ class ClickHouseDialect extends BasicSQLDialect {
     }
 
     @Override
-    public void encodeGeometryValue(Geometry value, int dimension, int srid, StringBuffer sql)
-            throws IOException {
+    public void encodeGeometryValue(Geometry value, int dimension, int srid, StringBuffer sql) throws IOException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
     }
 
@@ -50,8 +49,7 @@ class ClickHouseDialect extends BasicSQLDialect {
     }
 
     @Override
-    public Envelope decodeGeometryEnvelope(ResultSet rs, int column, Connection cx)
-            throws SQLException, IOException {
+    public Envelope decodeGeometryEnvelope(ResultSet rs, int column, Connection cx) throws SQLException, IOException {
         throw new UnsupportedOperationException(GEOMETRY_NOT_SUPPORTED);
     }
 

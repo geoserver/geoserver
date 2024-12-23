@@ -14,9 +14,8 @@ import org.apache.wicket.model.IModel;
 import org.geoserver.web.data.store.panel.ParamPanel;
 
 /**
- * A DataStore parameter panel that presents a simple dropdown choice. Created to avoid use of
- * DropDownChoiceParamPanel since it contains a Select2DropDownChoice which have a bug when multiple
- * dropdowns are rendered on same panel.
+ * A DataStore parameter panel that presents a simple dropdown choice. Created to avoid use of DropDownChoiceParamPanel
+ * since it contains a Select2DropDownChoice which have a bug when multiple dropdowns are rendered on same panel.
  */
 public class SimpleDropDownChoiceParamPanel extends Panel implements ParamPanel {
 

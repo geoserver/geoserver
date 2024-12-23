@@ -56,10 +56,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
     }
 
     protected String getAdminRoleName() {
-        return formTester
-                .getForm()
-                .get("details:config.adminRoleName")
-                .getDefaultModelObjectAsString();
+        return formTester.getForm().get("details:config.adminRoleName").getDefaultModelObjectAsString();
     }
 
     protected void setFileName(String fileName) {
@@ -75,11 +72,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
     }
 
     protected Integer getCheckInterval() {
-        String temp =
-                formTester
-                        .getForm()
-                        .get("details:config.checkInterval")
-                        .getDefaultModelObjectAsString();
+        String temp = formTester.getForm().get("details:config.checkInterval").getDefaultModelObjectAsString();
         if (temp == null || temp.isEmpty()) return 0;
         return Integer.valueOf(temp);
     }
@@ -89,11 +82,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
     }
 
     protected Boolean getValidating() {
-        String temp =
-                formTester
-                        .getForm()
-                        .get("details:config.validating")
-                        .getDefaultModelObjectAsString();
+        String temp = formTester.getForm().get("details:config.validating").getDefaultModelObjectAsString();
         return Boolean.valueOf(temp);
     }
 
@@ -150,8 +139,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
         assertEquals(3, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
 
-        XMLRoleServiceConfig xmlConfig =
-                (XMLRoleServiceConfig) getSecurityNamedServiceConfig("default2");
+        XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) getSecurityNamedServiceConfig("default2");
         assertNotNull(xmlConfig);
         assertEquals("default2", xmlConfig.getName());
         assertEquals(XMLRoleService.class.getName(), xmlConfig.getClassName());
@@ -202,8 +190,7 @@ public class XMLRoleConfigDetailsPanelTest extends AbstractSecurityNamedServiceP
 
         xmlConfig = (XMLRoleServiceConfig) getSecurityNamedServiceConfig("default");
         assertEquals(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE, xmlConfig.getAdminRoleName());
-        assertEquals(
-                XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE, xmlConfig.getGroupAdminRoleName());
+        assertEquals(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE, xmlConfig.getGroupAdminRoleName());
         assertEquals("roles.xml", xmlConfig.getFileName());
         assertEquals(10000, xmlConfig.getCheckInterval());
         assertTrue(xmlConfig.isValidating());

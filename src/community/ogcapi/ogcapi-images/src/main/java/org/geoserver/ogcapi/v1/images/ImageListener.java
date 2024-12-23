@@ -8,11 +8,11 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geotools.api.feature.simple.SimpleFeature;
 
 /**
- * Allows implementer to listen to the addition/removal of granules in a {@link
- * org.geotools.coverage.grid.io.StructuredGridCoverage2DReader}.
+ * Allows implementer to listen to the addition/removal of granules in a
+ * {@link org.geotools.coverage.grid.io.StructuredGridCoverage2DReader}.
  *
- * <p>This is a temporary setup, if the checkpoint service survives experimentation it should be
- * replaced by events directly issued by the {@link org.geoserver.catalog.ResourcePool}
+ * <p>This is a temporary setup, if the checkpoint service survives experimentation it should be replaced by events
+ * directly issued by the {@link org.geoserver.catalog.ResourcePool}
  */
 public interface ImageListener {
 
@@ -20,8 +20,7 @@ public interface ImageListener {
      * An image has been added to the <code>ci</code>.
      *
      * @param ci The coverage backed by a StructuredGridCoverage2DReader
-     * @param feature The feature representing the image in the {@link
-     *     org.geotools.coverage.grid.io.GranuleSource}
+     * @param feature The feature representing the image in the {@link org.geotools.coverage.grid.io.GranuleSource}
      */
     void imageAdded(CoverageInfo ci, SimpleFeature feature);
 
@@ -29,8 +28,7 @@ public interface ImageListener {
      * An image has been removed from the <code>ci</code>.
      *
      * @param ci The coverage backed by a StructuredGridCoverage2DReader
-     * @param feature The feature representing the image in the {@link
-     *     org.geotools.coverage.grid.io.GranuleSource}
+     * @param feature The feature representing the image in the {@link org.geotools.coverage.grid.io.GranuleSource}
      */
     void imageRemoved(CoverageInfo ci, SimpleFeature feature);
 

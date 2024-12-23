@@ -33,8 +33,7 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
         xp.getXStream().alias("userGroupService", XMLUserGroupServiceConfig.class);
         xp.getXStream().alias("roleService", XMLRoleServiceConfig.class);
         xp.getXStream().alias("passwordPolicy", PasswordPolicyConfig.class);
-        xp.getXStream()
-                .alias("usernamePassword", UsernamePasswordAuthenticationProviderConfig.class);
+        xp.getXStream().alias("usernamePassword", UsernamePasswordAuthenticationProviderConfig.class);
     }
 
     @Override
@@ -43,8 +42,7 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return new XMLUserGroupService();
     }
 
@@ -54,8 +52,7 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new XMLRoleService();
     }
 
@@ -67,11 +64,10 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
     }
 
     /**
-     * Returns the specific class of the password validator created by {@link
-     * #createPasswordValidator(PasswordPolicyConfig)}.
+     * Returns the specific class of the password validator created by
+     * {@link #createPasswordValidator(PasswordPolicyConfig)}.
      *
-     * <p>If the extension does not provide a user group service this method should simply return
-     * <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
      */
     @Override
     public Class<? extends PasswordValidator> getPasswordValidatorClass() {
@@ -81,21 +77,20 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
     /**
      * Creates an authentication provider.
      *
-     * <p>If the extension does not provide an authentication provider this method should simply
-     * return <code>null</code>.
+     * <p>If the extension does not provide an authentication provider this method should simply return <code>null
+     * </code>.
      */
     @Override
-    public GeoServerAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         return new UsernamePasswordAuthenticationProvider();
     }
 
     /**
-     * Returns the concrete class of authentication provider created by {@link
-     * #createAuthenticationProvider(SecurityNamedServiceConfig)}.
+     * Returns the concrete class of authentication provider created by
+     * {@link #createAuthenticationProvider(SecurityNamedServiceConfig)}.
      *
-     * <p>If the extension does not provide an authentication provider this method should simply
-     * return <code>null</code>.
+     * <p>If the extension does not provide an authentication provider this method should simply return <code>null
+     * </code>.
      */
     @Override
     public Class<? extends GeoServerAuthenticationProvider> getAuthenticationProviderClass() {
@@ -113,8 +108,7 @@ public class XMLSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new XMLSecurityConfigValidator(securityManager);
     }
 }

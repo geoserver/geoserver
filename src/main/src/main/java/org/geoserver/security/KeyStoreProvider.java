@@ -27,9 +27,7 @@ public interface KeyStoreProvider {
     /** Gets the {@link Key} object for this alias <code>null</code> if the alias does not exist */
     Key getKey(String alias) throws IOException;
 
-    /**
-     * Gets the key for encrypting passwords stored in configuration files, may be <code>null</code>
-     */
+    /** Gets the key for encrypting passwords stored in configuration files, may be <code>null</code> */
     byte[] getConfigPasswordKey() throws IOException;
 
     /** Checks if a such a key is available without presenting the key itself */
@@ -39,8 +37,8 @@ public interface KeyStoreProvider {
     boolean containsAlias(String alias) throws IOException;
 
     /**
-     * Returns the key for a {@link org.geoserver.security.GeoServerUserGroupService} service Name.
-     * Needed if the service uses symmetric password encryption
+     * Returns the key for a {@link org.geoserver.security.GeoServerUserGroupService} service Name. Needed if the
+     * service uses symmetric password encryption
      *
      * <p>may be <code>null</code>
      */
@@ -50,24 +48,21 @@ public interface KeyStoreProvider {
     boolean hasUserGroupKey(String serviceName) throws IOException;
 
     /**
-     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not
-     * exist
+     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
     SecretKey getSecretKey(String name) throws IOException;
 
     /**
-     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not
-     * exist
+     * Gets the {@link SecretKey} object for this alias <code>null</code> if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
     PublicKey getPublicKey(String name) throws IOException;
 
     /**
-     * Gets the {@link PrivateKey} object for this alias <code>null</code> if the alias does not
-     * exist
+     * Gets the {@link PrivateKey} object for this alias <code>null</code> if the alias does not exist
      *
      * @throws IOException if the key exists but has the wrong type
      */
@@ -75,8 +70,7 @@ public interface KeyStoreProvider {
 
     /**
      * @param serviceName for a {@link org.geoserver.security.GeoServerUserGroupService}
-     * @return the following String {@link #USERGROUP_PREFIX}+serviceName+{@value
-     *     #USERGROUP_POSTFIX}
+     * @return the following String {@link #USERGROUP_PREFIX}+serviceName+{@value #USERGROUP_POSTFIX}
      */
     String aliasForGroupService(String serviceName);
 
@@ -96,14 +90,14 @@ public interface KeyStoreProvider {
     void storeKeyStore() throws IOException;
 
     /**
-     * Prepares a master password change. The new password is used to encrypt the {@link KeyStore}
-     * and each {@link Entry};
+     * Prepares a master password change. The new password is used to encrypt the {@link KeyStore} and each
+     * {@link Entry};
      *
      * <p>The new password is assumed to be already validated by the {@link PasswordValidator} named
      * {@link PasswordValidator#MASTERPASSWORD_NAME}
      *
-     * <p>A new key store named {@link #PREPARED_FILE_NAME} is created. All keys a re-encrypted with
-     * the new password and stored in the new key store.
+     * <p>A new key store named {@link #PREPARED_FILE_NAME} is created. All keys a re-encrypted with the new password
+     * and stored in the new key store.
      */
     void prepareForMasterPasswordChange(char[] oldPassword, char[] newPassword) throws IOException;
 
@@ -112,13 +106,12 @@ public interface KeyStoreProvider {
 
     /**
      * if {@link #DEFAULT_FILE_NAME} and {@link #PREPARED_FILE_NAME} exist, this method checks if
-     * {@link #PREPARED_FILE_NAME} can be used with new {@link
-     * MasterPasswordProvider#getMasterPassword()} method.
+     * {@link #PREPARED_FILE_NAME} can be used with new {@link MasterPasswordProvider#getMasterPassword()} method.
      *
      * <p>YES: replace the old keystore with the new one
      *
-     * <p>NO: Do nothing, log the problem and use the old configuration A reason may be that the new
-     * master password is not properly injected at startup
+     * <p>NO: Do nothing, log the problem and use the old configuration A reason may be that the new master password is
+     * not properly injected at startup
      */
     void commitMasterPasswordChange() throws IOException;
 }

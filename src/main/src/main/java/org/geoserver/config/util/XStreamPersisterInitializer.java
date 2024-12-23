@@ -6,8 +6,8 @@
 package org.geoserver.config.util;
 
 /**
- * Extension point allowing {@link XStreamPersister} customization, plug-ins can use this to add
- * aliases and custom converters for their own configuration objects
+ * Extension point allowing {@link XStreamPersister} customization, plug-ins can use this to add aliases and custom
+ * converters for their own configuration objects
  *
  * @author Andrea Aime - GeoSolutions
  */

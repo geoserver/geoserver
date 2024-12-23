@@ -67,8 +67,7 @@ import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Encoder;
 import org.w3c.dom.Document;
 
-public class GML3OutputFormat extends WFSGetFeatureOutputFormat
-        implements ComplexFeatureAwareFormat {
+public class GML3OutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
 
     /** Enables the optimized encoders */
     public static final boolean OPTIMIZED_ENCODING =
@@ -84,12 +83,9 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument =
-                    docFactory
-                            .newDocumentBuilder()
-                            .parse(
-                                    GML3OutputFormat.class.getResourceAsStream(
-                                            "/ChangeNumberOfFeature.xslt"));
+            xsdDocument = docFactory
+                    .newDocumentBuilder()
+                    .parse(GML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {
             xslt = null;
@@ -98,14 +94,10 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
     }
 
     public GML3OutputFormat(GeoServer geoServer, WFSConfiguration configuration) {
-        this(
-                new HashSet<>(Arrays.asList("gml3", "text/xml; subtype=gml/3.1.1")),
-                geoServer,
-                configuration);
+        this(new HashSet<>(Arrays.asList("gml3", "text/xml; subtype=gml/3.1.1")), geoServer, configuration);
     }
 
-    public GML3OutputFormat(
-            Set<String> outputFormats, GeoServer geoServer, WFSConfiguration configuration) {
+    public GML3OutputFormat(Set<String> outputFormats, GeoServer geoServer, WFSConfiguration configuration) {
         super(geoServer, outputFormats);
 
         this.geoServer = geoServer;
@@ -125,8 +117,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse results, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse results, OutputStream output, Operation getFeature)
             throws ServiceException, IOException, UnsupportedEncodingException {
         List featureCollections = results.getFeature();
 
@@ -146,17 +137,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                 // may have multiple type names in each query, so add them all
                 for (QName name : queryType.getTypeNames()) {
                     // get a feature type name from the query
-                    Name featureTypeName =
-                            new NameImpl(name.getNamespaceURI(), name.getLocalPart());
-                    ResourceInfo meta =
-                            catalog.getResourceByName(featureTypeName, ResourceInfo.class);
+                    Name featureTypeName = new NameImpl(name.getNamespaceURI(), name.getLocalPart());
+                    ResourceInfo meta = catalog.getResourceByName(featureTypeName, ResourceInfo.class);
 
                     if (meta == null) {
                         throw new WFSException(
                                 request,
-                                "Could not find feature type "
-                                        + featureTypeName
-                                        + " in the GeoServer catalog");
+                                "Could not find feature type " + featureTypeName + " in the GeoServer catalog");
                     }
 
                     // add it to the map
@@ -169,8 +156,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                     metas.add(meta);
                 }
             } else {
-                FeatureType featureType =
-                        ((FeatureCollection) featureCollections.get(fcIndex)).getSchema();
+                FeatureType featureType = ((FeatureCollection) featureCollections.get(fcIndex)).getSchema();
 
                 // load the metadata for the feature type
                 String namespaceURI = featureType.getName().getNamespaceURI();
@@ -179,9 +165,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
                 if (meta == null)
                     throw new WFSException(
                             request,
-                            "Could not find feature type "
-                                    + featureType.getName()
-                                    + " in the GeoServer catalog");
+                            "Could not find feature type " + featureType.getName() + " in the GeoServer catalog");
 
                 // add it to the map
                 Set<ResourceInfo> metas = ns2metas.get(namespaceURI);
@@ -238,8 +222,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
 
         Configuration configuration = customizeConfiguration(this.configuration, ns2metas, gft);
         boolean encodeMeasures = encodeMeasures(featureCollections, catalog);
-        updateConfiguration(
-                configuration, numDecimals, padWithZeros, forcedDecimal, encodeMeasures);
+        updateConfiguration(configuration, numDecimals, padWithZeros, forcedDecimal, encodeMeasures);
         Encoder encoder = createEncoder(configuration, ns2metas, gft);
 
         encoder.setEncoding(Charset.forName(geoServer.getSettings().getCharset()));
@@ -257,20 +240,13 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
             encoder.setSchemaLocation(getWfsNamespace(), getCanonicalWfsSchemaLocation());
         } else {
             encoder.setSchemaLocation(
-                    getWfsNamespace(),
-                    buildSchemaURL(request.getBaseURL(), getRelativeWfsSchemaLocation()));
+                    getWfsNamespace(), buildSchemaURL(request.getBaseURL(), getRelativeWfsSchemaLocation()));
         }
 
         // declare application schema namespaces
 
         Map<String, String> params =
-                params(
-                        "service",
-                        "WFS",
-                        "version",
-                        request.getVersion(),
-                        "request",
-                        "DescribeFeatureType");
+                params("service", "WFS", "version", request.getVersion(), "request", "DescribeFeatureType");
         for (Map.Entry<String, Set<ResourceInfo>> stringSetEntry : ns2metas.entrySet()) {
             Map.Entry entry = stringSetEntry;
 
@@ -305,13 +281,11 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
             if (typeNames.length() > 0) {
                 params.put("typeName", typeNames.toString());
                 // set the made up schema location for types not provided by the user
-                String schemaLocation =
-                        buildURL(request.getBaseURL(), "wfs", params, URLType.SERVICE);
-                LOGGER.finer(
-                        "Unable to find user-defined schema location for: "
-                                + namespaceURI
-                                + ". Using a built schema location by default: "
-                                + schemaLocation);
+                String schemaLocation = buildURL(request.getBaseURL(), "wfs", params, URLType.SERVICE);
+                LOGGER.finer("Unable to find user-defined schema location for: "
+                        + namespaceURI
+                        + ". Using a built schema location by default: "
+                        + schemaLocation);
                 encoder.setSchemaLocation(namespaceURI, schemaLocation);
             }
         }
@@ -382,18 +356,15 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
             // let's just instantiate the encoder
             return new Encoder(configuration, schema.getSchema());
         } catch (IOException exception) {
-            throw new RuntimeException(
-                    "Error generating the XSD schema during the encoder instantiation.", exception);
+            throw new RuntimeException("Error generating the XSD schema during the encoder instantiation.", exception);
         }
     }
 
-    protected void setAdditionalSchemaLocations(
-            Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
+    protected void setAdditionalSchemaLocations(Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
         // hook for subclasses
     }
 
-    protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
-            throws IOException {
+    protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder) throws IOException {
         encoder.encode(
                 results.unadapt(FeatureCollectionType.class),
                 org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION,
@@ -404,8 +375,7 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         return GML3OutputFormat.xslt;
     }
 
-    private void complexFeatureStreamIntercept(
-            FeatureCollectionResponse results, OutputStream output, Encoder encoder)
+    private void complexFeatureStreamIntercept(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
             throws IOException {
         if (this.getXSLT() == null) {
             throw new FileNotFoundException("Unable to locate xslt resource file");
@@ -451,11 +421,9 @@ public class GML3OutputFormat extends WFSGetFeatureOutputFormat
         return hasComplex;
     }
 
-    public void transform(InputStream in, DOMSource xslt, OutputStream out)
-            throws TransformerException {
+    public void transform(InputStream in, DOMSource xslt, OutputStream out) throws TransformerException {
         TransformerFactory factory = TransformerFactory.newInstance();
-        Transformer transformer =
-                (xslt == null ? factory.newTransformer() : factory.newTransformer(xslt));
+        Transformer transformer = (xslt == null ? factory.newTransformer() : factory.newTransformer(xslt));
         transformer.setErrorListener(new TransformerErrorListener());
         transformer.transform(new StreamSource(in), new StreamResult(out));
     }

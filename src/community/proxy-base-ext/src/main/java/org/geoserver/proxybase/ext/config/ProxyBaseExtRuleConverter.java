@@ -19,8 +19,7 @@ import org.geoserver.proxybase.ext.ProxyBaseExtensionRuleBuilder;
 /** Converts a {@link ProxyBaseExtensionRule} to and from XML. */
 public class ProxyBaseExtRuleConverter implements Converter {
     @Override
-    public void marshal(
-            Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         ProxyBaseExtensionRule rule = (ProxyBaseExtensionRule) source;
         String[] properties = {"id", "activated", "matcher", "transformer", "position"};
         for (String property : properties) {
@@ -36,9 +35,8 @@ public class ProxyBaseExtRuleConverter implements Converter {
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         ProxyBaseExtensionRuleBuilder builder = new ProxyBaseExtensionRuleBuilder();
-        builder.withId(
-                Optional.ofNullable(reader.getAttribute("id"))
-                        .orElse(UUID.randomUUID().toString()));
+        builder.withId(Optional.ofNullable(reader.getAttribute("id"))
+                .orElse(UUID.randomUUID().toString()));
         addParameter(reader, "activated", builder::withActivated, Boolean::valueOf);
         addParameter(reader, "matcher", builder::withMatcher);
         addParameter(reader, "transformer", builder::withTransformer);
@@ -46,8 +44,7 @@ public class ProxyBaseExtRuleConverter implements Converter {
         return builder.build();
     }
 
-    private <T> void addParameter(
-            HierarchicalStreamReader reader, String attributeName, Consumer<T> consumer) {
+    private <T> void addParameter(HierarchicalStreamReader reader, String attributeName, Consumer<T> consumer) {
         addParameter(reader, attributeName, consumer, null);
     }
 

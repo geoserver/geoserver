@@ -39,13 +39,11 @@ import org.geotools.styling.visitor.DuplicatingStyleVisitor;
  * Prepares a style for a UTFGrid generation, in particular:
  *
  * <ul>
- *   <li>Removes all feature type styles with a transform function that is known not to return
- *       vector data
+ *   <li>Removes all feature type styles with a transform function that is known not to return vector data
  *   <li>
  *   <li>Replaces all colors with the {@link UTFGridColorFunction}
- *   <li>Replaces all external graphics with an "equivalent" solid color mark (ideally this would be
- *       a black and white version of the external graphic, with the same shape, but it's hard, so
- *       we use a square instead)
+ *   <li>Replaces all external graphics with an "equivalent" solid color mark (ideally this would be a black and white
+ *       version of the external graphic, with the same shape, but it's hard, so we use a square instead)
  *   <li>Removes all text symbolizers
  * </ul>
  *
@@ -106,8 +104,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
             transformations = true;
             Function f = (Function) fts.getTransformation();
             Class<?> returnType = getFunctionReturnType(f);
-            if (Object.class.equals(returnType)
-                    || FeatureCollection.class.isAssignableFrom(returnType)) {
+            if (Object.class.equals(returnType) || FeatureCollection.class.isAssignableFrom(returnType)) {
                 vectorTransformations = true;
                 super.visit(fts);
             } else {
@@ -167,26 +164,16 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
                 symbolsCopy.add(markCopy);
             } else if (gs instanceof ExternalGraphic) {
                 if (gr.getSize() != null && !Expression.NIL.equals(gr.getSize())) {
-                    Mark mark =
-                            sf.createMark(
-                                    ff.literal("square"),
-                                    null,
-                                    sf.createFill(colorFunction),
-                                    sizeCopy,
-                                    Expression.NIL);
+                    Mark mark = sf.createMark(
+                            ff.literal("square"), null, sf.createFill(colorFunction), sizeCopy, Expression.NIL);
                     symbolsCopy.add(mark);
                 } else {
                     // it's using the default size, compute it if possible (might be using dynamic
                     // symbolizers...)
                     ExternalGraphic eg = (ExternalGraphic) gs;
                     Literal sizeExpression = estimateGraphicSize(eg);
-                    Mark mark =
-                            sf.createMark(
-                                    ff.literal("square"),
-                                    null,
-                                    sf.createFill(colorFunction),
-                                    sizeExpression,
-                                    Expression.NIL);
+                    Mark mark = sf.createMark(
+                            ff.literal("square"), null, sf.createFill(colorFunction), sizeExpression, Expression.NIL);
                     symbolsCopy.add(mark);
                 }
             }
@@ -211,13 +198,7 @@ class UTFGridStyleVisitor extends DuplicatingStyleVisitor {
 
     private Literal estimateGraphicSize(ExternalGraphic eg) {
         Graphic testGraphic =
-                sf.createGraphic(
-                        new ExternalGraphic[] {eg},
-                        null,
-                        null,
-                        LITERAL_ONE,
-                        Expression.NIL,
-                        ff.literal(0));
+                sf.createGraphic(new ExternalGraphic[] {eg}, null, null, LITERAL_ONE, Expression.NIL, ff.literal(0));
         PointSymbolizer testSymbolizer = sf.createPointSymbolizer(testGraphic, null);
         Style2D style = sldFactory.createStyle(null, testSymbolizer);
         int size = SLDStyleFactory.DEFAULT_MARK_SIZE;

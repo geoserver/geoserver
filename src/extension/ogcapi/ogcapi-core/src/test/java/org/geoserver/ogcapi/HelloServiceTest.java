@@ -87,9 +87,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
         assertEquals(200, response.getStatus());
         assertEquals(APPLICATION_YAML_VALUE, response.getContentType());
-        assertEquals(
-                "inline; filename=\"Message.yaml\"",
-                response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
+        assertEquals("inline; filename=\"Message.yaml\"", response.getHeader(HttpHeaders.CONTENT_DISPOSITION));
         assertEquals("message: hello\n", response.getContentAsString());
     }
 
@@ -169,14 +167,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
     public void testDispatcherCallbackOperationName() throws Exception {
         APIDispatcher dispatcher = getAPIDispatcher();
         AtomicReference<Request> requestReference = new AtomicReference<>();
-        TestDispatcherCallback callback =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        requestReference.set(request);
-                        return operation;
-                    }
-                };
+        TestDispatcherCallback callback = new TestDispatcherCallback() {
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                requestReference.set(request);
+                return operation;
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -195,14 +192,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Request init(Request request) {
-                        dispatcherStatus.set(Status.INIT);
-                        throw new RuntimeException("TestDispatcherCallbackFailInit");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Request init(Request request) {
+                dispatcherStatus.set(Status.INIT);
+                throw new RuntimeException("TestDispatcherCallbackFailInit");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -213,9 +209,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
         dispatcher.handleRequest(request, response);
 
-        checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailInit\"}");
+        checkInternalError(response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailInit\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callbackFail.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
@@ -226,14 +220,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Service serviceDispatched(Request request, Service service) {
-                        dispatcherStatus.set(Status.SERVICE_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Service serviceDispatched(Request request, Service service) {
+                dispatcherStatus.set(Status.SERVICE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailServiceDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -245,8 +238,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailServiceDispatched\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailServiceDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -256,14 +248,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Operation operationDispatched(Request request, Operation operation) {
-                        dispatcherStatus.set(Status.OPERATION_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Operation operationDispatched(Request request, Operation operation) {
+                dispatcherStatus.set(Status.OPERATION_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -285,15 +276,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Object operationExecuted(
-                            Request request, Operation operation, Object result) {
-                        dispatcherStatus.set(Status.OPERATION_EXECUTED);
-                        throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Object operationExecuted(Request request, Operation operation, Object result) {
+                dispatcherStatus.set(Status.OPERATION_EXECUTED);
+                throw new RuntimeException("TestDispatcherCallbackFailOperationExecuted");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -305,8 +294,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationExecuted\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailOperationExecuted\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -316,18 +304,13 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         APIDispatcher dispatcher = getAPIDispatcher();
         final TestDispatcherCallback callback1 = new TestDispatcherCallback();
         final TestDispatcherCallback callback2 = new TestDispatcherCallback();
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public Response responseDispatched(
-                            Request request,
-                            Operation operation,
-                            Object result,
-                            Response response) {
-                        dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
-                        throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
-                    }
-                };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
+                dispatcherStatus.set(Status.RESPONSE_DISPATCHED);
+                throw new RuntimeException("TestDispatcherCallbackFailResponseDispatched");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -339,8 +322,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         dispatcher.handleRequest(request, response);
 
         checkInternalError(
-                response,
-                "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailResponseDispatched\"}");
+                response, "{\"type\":\"NoApplicableCode\",\"title\":\"TestDispatcherCallbackFailResponseDispatched\"}");
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback1.dispatcherStatus.get());
         assertEquals(TestDispatcherCallback.Status.FINISHED, callback2.dispatcherStatus.get());
     }
@@ -350,23 +332,21 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         APIDispatcher dispatcher = getAPIDispatcher();
         final AtomicBoolean firedCallback = new AtomicBoolean(false);
         TestDispatcherCallback callback1 = new TestDispatcherCallback();
-        TestDispatcherCallback callback2 =
-                new TestDispatcherCallback() {
-                    @Override
-                    public void finished(Request request) {
-                        firedCallback.set(true);
-                        super.finished(request);
-                    }
-                };
-        TestDispatcherCallback callbackFail =
-                new TestDispatcherCallback() {
-                    @Override
-                    public void finished(Request request) {
-                        dispatcherStatus.set(Status.FINISHED);
-                        // cleanups must continue even if an error was thrown
-                        throw new Error("TestDispatcherCallbackFailFinished");
-                    }
-                };
+        TestDispatcherCallback callback2 = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                firedCallback.set(true);
+                super.finished(request);
+            }
+        };
+        TestDispatcherCallback callbackFail = new TestDispatcherCallback() {
+            @Override
+            public void finished(Request request) {
+                dispatcherStatus.set(Status.FINISHED);
+                // cleanups must continue even if an error was thrown
+                throw new Error("TestDispatcherCallbackFailFinished");
+            }
+        };
 
         MockHttpServletRequest request = setupHelloRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
@@ -401,8 +381,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHttpErrorCodeExceptionWithContentType() throws Exception {
-        CodeExpectingHttpServletResponse rsp =
-                assertHttpErrorCode("errorWithPayload", HttpServletResponse.SC_OK);
+        CodeExpectingHttpServletResponse rsp = assertHttpErrorCode("errorWithPayload", HttpServletResponse.SC_OK);
         assertEquals("application/json", rsp.getContentType());
     }
 
@@ -423,8 +402,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
                 assertEquals(
                         "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fjson",
                         link.getString("href"));
-            } else if ("alternate".equals(link.getString("rel"))
-                    && "application/yaml".equals(link.getString("type"))) {
+            } else if ("alternate".equals(link.getString("rel")) && "application/yaml".equals(link.getString("type"))) {
                 assertEquals("This document as application/yaml", link.getString("title"));
                 assertEquals(
                         "http://localhost:8080/geoserver/ogc/hello/v1/document?f=application%2Fyaml",
@@ -433,8 +411,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
                 assertEquals("This document as text/html", link.getString("title"));
                 assertEquals("text/html", link.getString("type"));
                 assertEquals(
-                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=text%2Fhtml",
-                        link.getString("href"));
+                        "http://localhost:8080/geoserver/ogc/hello/v1/document?f=text%2Fhtml", link.getString("href"));
             } else {
                 fail("Unexpected link: " + link);
             }
@@ -449,16 +426,15 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         // - the message is in the body
         // - service link generation
         // - resource link generation
-        String expected =
-                "<html>\n"
-                        + "<head>\n"
-                        + "    <script src=\"http://localhost:8080/geoserver/webresources/ogcapi/hello.js\"></script>\n"
-                        + "</head>\n"
-                        + "<body>\n"
-                        + "  <p>The message: hello</p>\n"
-                        + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
-                        + "</body>\n"
-                        + "</html>";
+        String expected = "<html>\n"
+                + "<head>\n"
+                + "    <script src=\"http://localhost:8080/geoserver/webresources/ogcapi/hello.js\"></script>\n"
+                + "</head>\n"
+                + "<body>\n"
+                + "  <p>The message: hello</p>\n"
+                + "  <p><a class=\"wmsCapabilities\" href=\"http://localhost:8080/geoserver/wms?request=GetCapabilities&amp;service=WMS\">Capabilities URL</a></p>\n"
+                + "</body>\n"
+                + "</html>";
         // windows line endings are normalized to unix
         String normalizedResponse = response.getContentAsString().replaceAll("\r\n", "\n");
         assertEquals(expected, normalizedResponse);
@@ -484,8 +460,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         }
     }
 
-    private CodeExpectingHttpServletResponse assertHttpErrorCode(String path, int expectedCode)
-            throws Exception {
+    private CodeExpectingHttpServletResponse assertHttpErrorCode(String path, int expectedCode) throws Exception {
         APIDispatcher dispatcher = getAPIDispatcher();
 
         MockHttpServletRequest request = setupRequestBase();
@@ -493,8 +468,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         request.setPathInfo("/geoserver/ogc/hello/v1/" + path);
         request.setRequestURI("/geoserver/ogc/hello/v1/" + path);
 
-        CodeExpectingHttpServletResponse response =
-                new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
+        CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
 
         dispatcher.handleRequest(request, response);
         assertEquals(expectedCode, response.getStatusCode());
@@ -548,25 +522,24 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
     }
 
     private MockHttpServletRequest setupRequestBase(String... params) {
-        MockHttpServletRequest request =
-                new MockHttpServletRequest() {
-                    String encoding;
+        MockHttpServletRequest request = new MockHttpServletRequest() {
+            String encoding;
 
-                    @Override
-                    public int getServerPort() {
-                        return 8080;
-                    }
+            @Override
+            public int getServerPort() {
+                return 8080;
+            }
 
-                    @Override
-                    public String getCharacterEncoding() {
-                        return encoding;
-                    }
+            @Override
+            public String getCharacterEncoding() {
+                return encoding;
+            }
 
-                    @Override
-                    public void setCharacterEncoding(String encoding) {
-                        this.encoding = encoding;
-                    }
-                };
+            @Override
+            public void setCharacterEncoding(String encoding) {
+                this.encoding = encoding;
+            }
+        };
 
         request.setScheme("http");
         request.setServerName("localhost");
@@ -577,8 +550,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         if (params != null) {
             Map<String, String> map = toMap(params);
             map.forEach((k, v) -> request.addParameter(k, v));
-            request.setQueryString(
-                    map.entrySet().stream().map(Object::toString).collect(Collectors.joining("&")));
+            request.setQueryString(map.entrySet().stream().map(Object::toString).collect(Collectors.joining("&")));
         }
 
         RequestContextHolder.setRequestAttributes(new DispatcherServletWebRequest(request));
@@ -591,8 +563,7 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
         return map;
     }
 
-    private void checkInternalError(MockHttpServletResponse response, String s)
-            throws UnsupportedEncodingException {
+    private void checkInternalError(MockHttpServletResponse response, String s) throws UnsupportedEncodingException {
         assertEquals(MediaType.APPLICATION_JSON_VALUE, response.getContentType());
         assertEquals(500, response.getStatus());
         assertEquals(s, response.getContentAsString());

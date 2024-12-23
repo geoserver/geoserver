@@ -52,9 +52,7 @@ public class DuplicateTypeTest extends AbstractAppSchemaTestSupport {
         // test that targetAttributeNode works when mapping gsml:positionalAccuracy to
         // gsml:CGI_NumericValue
         assertXpathEvaluatesTo(
-                "",
-                "(//gsml:MappedFeature)[1]/gsml:positionalAccuracy/gsml:CGI_TermValue/gsml:value",
-                doc);
+                "", "(//gsml:MappedFeature)[1]/gsml:positionalAccuracy/gsml:CGI_TermValue/gsml:value", doc);
         assertXpathEvaluatesTo(
                 "200.0",
                 "(//gsml:MappedFeature)[1]/gsml:positionalAccuracy/gsml:CGI_NumericValue/gsml:principalValue",

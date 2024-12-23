@@ -125,8 +125,7 @@ public class XlinkPropertyNameBinding extends AbstractComplexBinding {
         // &lt;xsd:attribute name="traverseXlinkExpiry"
         //      type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkExpiry")) {
-            property.setTraverseXlinkExpiry(
-                    (BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
+            property.setTraverseXlinkExpiry((BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
         }
 
         return property;

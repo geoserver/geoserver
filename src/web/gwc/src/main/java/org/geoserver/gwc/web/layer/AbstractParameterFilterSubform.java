@@ -20,8 +20,7 @@ import org.geowebcache.filter.parameters.ParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public abstract class AbstractParameterFilterSubform<T extends ParameterFilter>
-        extends FormComponentPanel<T> {
+public abstract class AbstractParameterFilterSubform<T extends ParameterFilter> extends FormComponentPanel<T> {
 
     private static final long serialVersionUID = -213688039804104263L;
 
@@ -33,13 +32,12 @@ public abstract class AbstractParameterFilterSubform<T extends ParameterFilter>
 
     @Override
     public void convertInput() {
-        visitChildren(
-                (component, visit) -> {
-                    if (component instanceof FormComponent) {
-                        FormComponent<?> formComponent = (FormComponent<?>) component;
-                        formComponent.processInput();
-                    }
-                });
+        visitChildren((component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
+            }
+        });
         T filter = getModelObject();
         setConvertedInput(filter);
     }
@@ -48,27 +46,22 @@ public abstract class AbstractParameterFilterSubform<T extends ParameterFilter>
      * Adds the {@link CaseNormalizerSubform} component.
      *
      * @implNote Note we're calling {@code filter.setNormalize(filter.getNormalize());} to make the
-     *     {@link CaseNormalizer} instance variable explicitly set, because otherwise a new instance
-     *     is returned upon each invocation of {@link
-     *     CaseNormalizingParameterFilter#getNormalize()}. This is a workaround for a side effect of
-     *     an implementation detail in CaseNormalizingParameterFilter (super class of
-     *     StringParameterFilter and RegExParameterFilter) that makes this form's updated value not
-     *     to be set if a CaseNormalizer wasn't explicitly set before. Rationale being that before
-     *     GWC configuration objects properly implemented equals() and hashCode(),
-     *     CaseNormalizer.equals() always returned false, and hence
-     *     org.apache.wicket.Component.setDefaultModelObject() (from new
-     *     PropertyModel<CaseNormalizer>(model, "normalize") bellow) will always update the model.
-     *     With equals and hashCode properly implemented though, Component.setDefaultModelObject()
-     *     will not enter the {@code if (!getModelComparator().compare(this, object))} condition and
-     *     hence won't reach {@code model.setObject(object);}, since it will be comparing two
-     *     equivalent instances, product of CaseNormalizingParameterFilter.getNormalize() returning
-     *     a new CaseNormalizer instance when a value is not explicitly set.
-     *     <p>This workaround is side effect free since the net result of Filter having an explicit
-     *     value for its normalize instance variable is guaranteed anyways by the way the form
-     *     works.
-     *     <p>In the long run what should happen is that StringParameterFilter and CaseNormalizer
-     *     behave like simple POJOs instead of being clever about returning a new default value on
-     *     each accessor invocation.
+     *     {@link CaseNormalizer} instance variable explicitly set, because otherwise a new instance is returned upon
+     *     each invocation of {@link CaseNormalizingParameterFilter#getNormalize()}. This is a workaround for a side
+     *     effect of an implementation detail in CaseNormalizingParameterFilter (super class of StringParameterFilter
+     *     and RegExParameterFilter) that makes this form's updated value not to be set if a CaseNormalizer wasn't
+     *     explicitly set before. Rationale being that before GWC configuration objects properly implemented equals()
+     *     and hashCode(), CaseNormalizer.equals() always returned false, and hence
+     *     org.apache.wicket.Component.setDefaultModelObject() (from new PropertyModel<CaseNormalizer>(model,
+     *     "normalize") bellow) will always update the model. With equals and hashCode properly implemented though,
+     *     Component.setDefaultModelObject() will not enter the {@code if (!getModelComparator().compare(this, object))}
+     *     condition and hence won't reach {@code model.setObject(object);}, since it will be comparing two equivalent
+     *     instances, product of CaseNormalizingParameterFilter.getNormalize() returning a new CaseNormalizer instance
+     *     when a value is not explicitly set.
+     *     <p>This workaround is side effect free since the net result of Filter having an explicit value for its
+     *     normalize instance variable is guaranteed anyways by the way the form works.
+     *     <p>In the long run what should happen is that StringParameterFilter and CaseNormalizer behave like simple
+     *     POJOs instead of being clever about returning a new default value on each accessor invocation.
      *     <p>This same workaround is applied to RegExParameterFilterSubform
      */
     protected void addNormalize(IModel<? extends CaseNormalizingParameterFilter> model) {

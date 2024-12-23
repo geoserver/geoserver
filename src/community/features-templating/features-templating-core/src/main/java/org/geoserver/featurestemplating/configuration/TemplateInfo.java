@@ -9,8 +9,8 @@ import java.util.Objects;
 import java.util.UUID;
 
 /**
- * This class holds the template metadata, such as the name, the identifier, the template file
- * extension, workspace and featureType.
+ * This class holds the template metadata, such as the name, the identifier, the template file extension, workspace and
+ * featureType.
  */
 public class TemplateInfo implements Serializable, Comparable<TemplateInfo> {
 
@@ -32,11 +32,7 @@ public class TemplateInfo implements Serializable, Comparable<TemplateInfo> {
     }
 
     public TemplateInfo(
-            String identifier,
-            String templateName,
-            String workspace,
-            String featureType,
-            String extension) {
+            String identifier, String templateName, String workspace, String featureType, String extension) {
         this.identifier = identifier;
         this.templateName = templateName;
         this.workspace = workspace;
@@ -102,8 +98,8 @@ public class TemplateInfo implements Serializable, Comparable<TemplateInfo> {
     }
 
     /**
-     * Return the full name of the Template file. By full name is meant the templateName preceded by
-     * the workspace name and featureTypeInfo name if defined for this instance.
+     * Return the full name of the Template file. By full name is meant the templateName preceded by the workspace name
+     * and featureTypeInfo name if defined for this instance.
      *
      * @return
      */
@@ -135,8 +131,7 @@ public class TemplateInfo implements Serializable, Comparable<TemplateInfo> {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                identifier, templateName, description, workspace, featureType, extension);
+        return Objects.hash(identifier, templateName, description, workspace, featureType, extension);
     }
 
     @Override

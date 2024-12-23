@@ -45,8 +45,7 @@ public class AnonymousSystemTest extends GeoServerSystemTestSupport {
     public void testTransactionNotifierIntialization() throws IOException {
         NotificationConfiguration cfg = null;
         int counter = 0;
-        for (TransactionCallback listener :
-                GeoServerExtensions.extensions(TransactionCallback.class)) {
+        for (TransactionCallback listener : GeoServerExtensions.extensions(TransactionCallback.class)) {
             if (listener instanceof INotificationTransactionListener) {
                 counter++;
             }

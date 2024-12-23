@@ -59,9 +59,7 @@ public class DefaultTileLayerCatalogTest {
         new File(baseDirectory, "gwc-layers").mkdir();
 
         Supplier<XStream> xStream =
-                () ->
-                        XMLConfiguration.getConfiguredXStreamWithContext(
-                                new SecureXStream(), null, Context.PERSIST);
+                () -> XMLConfiguration.getConfiguredXStreamWithContext(new SecureXStream(), null, Context.PERSIST);
 
         catalog = new DefaultTileLayerCatalog(resourceLoader, xStream);
         catalog.initialize();
@@ -179,8 +177,7 @@ public class DefaultTileLayerCatalogTest {
     @Test
     public void testEvents() throws IOException, InterruptedException {
 
-        ((FileSystemWatcher) resourceLoader.getResourceNotificationDispatcher())
-                .schedule(50, MILLISECONDS);
+        ((FileSystemWatcher) resourceLoader.getResourceNotificationDispatcher()).schedule(50, MILLISECONDS);
 
         AtomicBoolean hasBeenCreated = new AtomicBoolean(false);
 
@@ -188,22 +185,21 @@ public class DefaultTileLayerCatalogTest {
 
         AtomicBoolean hasBeenDeleted = new AtomicBoolean(false);
 
-        catalog.addListener(
-                (layerId, type) -> {
-                    switch (type) {
-                        case CREATE:
-                            hasBeenCreated.set(true);
-                            break;
-                        case DELETE:
-                            hasBeenDeleted.set(true);
-                            break;
-                        case MODIFY:
-                            hasBeenModified.set(true);
-                            break;
-                        default:
-                            break;
-                    }
-                });
+        catalog.addListener((layerId, type) -> {
+            switch (type) {
+                case CREATE:
+                    hasBeenCreated.set(true);
+                    break;
+                case DELETE:
+                    hasBeenDeleted.set(true);
+                    break;
+                case MODIFY:
+                    hasBeenModified.set(true);
+                    break;
+                default:
+                    break;
+            }
+        });
 
         File file = new File(baseDirectory, "gwc-layers/id1.xml");
 
@@ -216,12 +212,10 @@ public class DefaultTileLayerCatalogTest {
 
         // on linux and older versions of Java the minimim
         long lastModified = file.lastModified();
-        await().atMost(1100, MILLISECONDS)
-                .until(
-                        () -> {
-                            writeFileLayerInfoImpl(file, "newname");
-                            return file.lastModified() > lastModified;
-                        });
+        await().atMost(1100, MILLISECONDS).until(() -> {
+            writeFileLayerInfoImpl(file, "newname");
+            return file.lastModified() > lastModified;
+        });
 
         await().atMost(60, SECONDS).until(hasBeenModified::get);
 

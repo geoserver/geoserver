@@ -41,7 +41,8 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
     public void testGetAllByWorkspace() throws Exception {
         Document dom = getAsDOM(BASEPATH + "/workspaces/sf/featuretypes.xml");
         assertEquals(
-                catalog.getFeatureTypesByNamespace(catalog.getNamespaceByPrefix("sf")).size(),
+                catalog.getFeatureTypesByNamespace(catalog.getNamespaceByPrefix("sf"))
+                        .size(),
                 dom.getElementsByTagName("featureType").getLength());
     }
 
@@ -71,10 +72,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=" + (configureFeatureType ? "all" : "none");
-        put(
-                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
-                zbytes.toByteArray(),
-                "application/zip");
+        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
     }
 
     void addGeomlessPropertyDataStore(boolean configureFeatureType) throws Exception {
@@ -103,10 +101,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=" + (configureFeatureType ? "all" : "none");
-        put(
-                BASEPATH + "/workspaces/gs/datastores/ngpds/file.properties?" + q,
-                zbytes.toByteArray(),
-                "application/zip");
+        put(BASEPATH + "/workspaces/gs/datastores/ngpds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
     }
 
     /** Add a property data store with multiple feature types, but only configure the first. */
@@ -136,10 +131,7 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         zout.close();
 
         String q = "configure=first";
-        put(
-                BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q,
-                zbytes.toByteArray(),
-                "application/zip");
+        put(BASEPATH + "/workspaces/gs/datastores/pds/file.properties?" + q, zbytes.toByteArray(), "application/zip");
     }
 
     @Test
@@ -148,30 +140,26 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addPropertyDataStore(false);
-        String xml =
-                "<featureType>"
-                        + "<name>pdsa</name>"
-                        + "<nativeName>pdsa</nativeName>"
-                        + "<srs>EPSG:4326</srs>"
-                        + "<nativeCRS>EPSG:4326</nativeCRS>"
-                        + "<nativeBoundingBox>"
-                        + "<minx>0.0</minx>"
-                        + "<maxx>1.0</maxx>"
-                        + "<miny>0.0</miny>"
-                        + "<maxy>1.0</maxy>"
-                        + "<crs>EPSG:4326</crs>"
-                        + "</nativeBoundingBox>"
-                        + "<store>pds</store>"
-                        + "</featureType>";
+        String xml = "<featureType>"
+                + "<name>pdsa</name>"
+                + "<nativeName>pdsa</nativeName>"
+                + "<srs>EPSG:4326</srs>"
+                + "<nativeCRS>EPSG:4326</nativeCRS>"
+                + "<nativeBoundingBox>"
+                + "<minx>0.0</minx>"
+                + "<maxx>1.0</maxx>"
+                + "<miny>0.0</miny>"
+                + "<maxy>1.0</maxy>"
+                + "<crs>EPSG:4326</crs>"
+                + "</nativeBoundingBox>"
+                + "<store>pds</store>"
+                + "</featureType>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", xml, "text/xml");
+                postAsServletResponse(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", xml, "text/xml");
 
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith("/workspaces/gs/datastores/pds/featuretypes/pdsa"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/datastores/pds/featuretypes/pdsa"));
 
         dom = getAsDOM("wfs?request=getfeature&typename=gs:pdsa");
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());
@@ -184,21 +172,20 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addPropertyDataStore(false);
-        String xml =
-                "<featureType>"
-                        + "<name>pdsa</name>"
-                        + "<nativeName>pdsa</nativeName>"
-                        + "<srs>EPSG:4326</srs>"
-                        + "<nativeCRS>EPSG:4326</nativeCRS>"
-                        + "<nativeBoundingBox>"
-                        + "<minx>0.0</minx>"
-                        + "<maxx>1.0</maxx>"
-                        + "<miny>0.0</miny>"
-                        + "<maxy>1.0</maxy>"
-                        + "<crs>EPSG:4326</crs>"
-                        + "</nativeBoundingBox>"
-                        + "<store>pds</store>"
-                        + "</featureType>";
+        String xml = "<featureType>"
+                + "<name>pdsa</name>"
+                + "<nativeName>pdsa</nativeName>"
+                + "<srs>EPSG:4326</srs>"
+                + "<nativeCRS>EPSG:4326</nativeCRS>"
+                + "<nativeBoundingBox>"
+                + "<minx>0.0</minx>"
+                + "<maxx>1.0</maxx>"
+                + "<miny>0.0</miny>"
+                + "<maxy>1.0</maxy>"
+                + "<crs>EPSG:4326</crs>"
+                + "</nativeBoundingBox>"
+                + "<store>pds</store>"
+                + "</featureType>";
         MockHttpServletResponse response =
                 postAsServletResponse(BASEPATH + "/workspaces/gs/featuretypes", xml, "text/xml");
 
@@ -217,32 +204,28 @@ public class FeatureTypeControllerWFSTest extends CatalogRESTTestSupport {
         assertEquals("ows:ExceptionReport", dom.getDocumentElement().getNodeName());
 
         addPropertyDataStore(false);
-        String json =
-                "{"
-                        + "'featureType':{"
-                        + "'name':'pdsa',"
-                        + "'nativeName':'pdsa',"
-                        + "'srs':'EPSG:4326',"
-                        + "'nativeBoundingBox':{"
-                        + "'minx':0.0,"
-                        + "'maxx':1.0,"
-                        + "'miny':0.0,"
-                        + "'maxy':1.0,"
-                        + "'crs':'EPSG:4326'"
-                        + "},"
-                        + "'nativeCRS':'EPSG:4326',"
-                        + "'store':'pds'"
-                        + "}"
-                        + "}";
+        String json = "{"
+                + "'featureType':{"
+                + "'name':'pdsa',"
+                + "'nativeName':'pdsa',"
+                + "'srs':'EPSG:4326',"
+                + "'nativeBoundingBox':{"
+                + "'minx':0.0,"
+                + "'maxx':1.0,"
+                + "'miny':0.0,"
+                + "'maxy':1.0,"
+                + "'crs':'EPSG:4326'"
+                + "},"
+                + "'nativeCRS':'EPSG:4326',"
+                + "'store':'pds'"
+                + "}"
+                + "}";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", json, "text/json");
+                postAsServletResponse(BASEPATH + "/workspaces/gs/datastores/pds/featuretypes", json, "text/json");
 
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith("/workspaces/gs/datastores/pds/featuretypes/pdsa"));
+        assertTrue(response.getHeader("Location").endsWith("/workspaces/gs/datastores/pds/featuretypes/pdsa"));
 
         dom = getAsDOM("wfs?request=getfeature&typename=gs:pdsa");
         assertEquals("wfs:FeatureCollection", dom.getDocumentElement().getNodeName());

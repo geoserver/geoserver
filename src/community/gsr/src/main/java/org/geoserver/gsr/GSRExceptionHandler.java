@@ -42,20 +42,14 @@ public class GSRExceptionHandler implements APIExceptionHandler {
         } else {
             error.put(
                     "error",
-                    new ServiceError(
-                            500,
-                            throwable.getMessage(),
-                            Collections.singletonList(throwable.getMessage())));
+                    new ServiceError(500, throwable.getMessage(), Collections.singletonList(throwable.getMessage())));
         }
         try (ServletOutputStream os = httpServletResponse.getOutputStream()) {
             ObjectMapper mapper = new ObjectMapper();
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 }

@@ -10,8 +10,7 @@ import org.apache.qpid.server.Broker;
 import org.apache.qpid.server.BrokerOptions;
 
 public class BrokerManager {
-    private static final String INITIAL_ANONYMOUS_CONFIG_PATH =
-            "src/test/resources/qpid-anonymous-config.json";
+    private static final String INITIAL_ANONYMOUS_CONFIG_PATH = "src/test/resources/qpid-anonymous-config.json";
 
     private static final String INITIAL_CONFIG_PATH = "src/test/resources/qpid-config.json";
 

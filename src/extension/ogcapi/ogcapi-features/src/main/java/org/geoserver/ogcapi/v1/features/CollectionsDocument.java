@@ -26,8 +26,8 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * A class representing the OGC API for Features server "collections" in a way that Jackson can
- * easily translate to JSON/YAML (and can be used as a Freemarker template model)
+ * A class representing the OGC API for Features server "collections" in a way that Jackson can easily translate to
+ * JSON/YAML (and can be used as a Freemarker template model)
  */
 @JacksonXmlRootElement(localName = "Collections", namespace = "http://www.opengis.net/wfs/3.0")
 @JsonPropertyOrder({"links", "collections"})
@@ -47,8 +47,7 @@ public class CollectionsDocument extends AbstractDocument {
         String path = "ogc/features/v1/collections/";
         addSelfLinks(path);
         skipInvalid =
-                geoServer.getGlobal().getResourceErrorHandling()
-                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+                geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @Override
@@ -81,8 +80,7 @@ public class CollectionsDocument extends AbstractDocument {
                             LOGGER.log(Level.WARNING, "Skipping feature type " + featureType);
                         } else {
                             featureTypes.close();
-                            throw new ServiceException(
-                                    "Failed to iterate over the feature types in the catalog", e);
+                            throw new ServiceException("Failed to iterate over the feature types in the catalog", e);
                         }
                     }
                 }
@@ -99,12 +97,9 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     private CollectionDocument getCollectionDocument(
-            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes)
-            throws IOException {
-        List<String> crs =
-                FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
-        CollectionDocument collection =
-                new CollectionDocument(geoServer, featureType, crs, this.crs);
+            FeatureTypeInfo featureType, CloseableIterator<FeatureTypeInfo> featureTypes) throws IOException {
+        List<String> crs = FeatureService.getFeatureTypeCRS(featureType, Collections.singletonList("#/crs"));
+        CollectionDocument collection = new CollectionDocument(geoServer, featureType, crs, this.crs);
         for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
             collectionDecorator.accept(collection);
         }

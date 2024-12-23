@@ -58,20 +58,14 @@ public class GeoServerTileLayerInfoPersistenceTest {
     }
 
     @SuppressWarnings({"unchecked", "PMD.UnnecessaryCast"})
-    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher)
-            throws Exception {
-        Object value =
-                Arrays.stream(
-                                Introspector.getBeanInfo(expected.getClass())
-                                        .getPropertyDescriptors())
-                        .filter(p -> p.getName().equals(property))
-                        .findAny()
-                        .orElseThrow(
-                                () ->
-                                        new IllegalArgumentException(
-                                                "bean expected lacks the property " + property))
-                        .getReadMethod()
-                        .invoke(expected);
+    <T> Matcher<T> sameProperty(T expected, String property, Function<?, Matcher<?>> valueMatcher) throws Exception {
+        Object value = Arrays.stream(
+                        Introspector.getBeanInfo(expected.getClass()).getPropertyDescriptors())
+                .filter(p -> p.getName().equals(property))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("bean expected lacks the property " + property))
+                .getReadMethod()
+                .invoke(expected);
         return hasProperty(property, (Matcher<?>) ((Function) valueMatcher).apply(value));
     }
 
@@ -82,8 +76,7 @@ public class GeoServerTileLayerInfoPersistenceTest {
         xstream.allowTypes(new Class[] {GeoServerTileLayerInfo.class, SortedSet.class});
 
         String marshalled = xstream.toXML(info);
-        GeoServerTileLayerInfo unmarshalled =
-                (GeoServerTileLayerInfo) xstream.fromXML(new StringReader(marshalled));
+        GeoServerTileLayerInfo unmarshalled = (GeoServerTileLayerInfo) xstream.fromXML(new StringReader(marshalled));
 
         assertThat(unmarshalled, notNullValue());
 

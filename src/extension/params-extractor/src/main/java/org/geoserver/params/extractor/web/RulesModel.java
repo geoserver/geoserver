@@ -18,19 +18,18 @@ public class RulesModel extends GeoServerDataProvider<RuleModel> {
     public static final Property<RuleModel> EDIT_BUTTON = new PropertyPlaceholder<>("Edit");
     public static final Property<RuleModel> ACTIVATE_BUTTON = new PropertyPlaceholder<>("Active");
 
-    private static final List<Property<RuleModel>> PROPERTIES =
-            Arrays.asList(
-                    new BeanProperty<>("Position", "position"),
-                    new BeanProperty<>("Match", "match"),
-                    new BeanProperty<>("Activation", "activation"),
-                    new BeanProperty<>("Parameter", "parameter"),
-                    new BeanProperty<>("Transform", "transform"),
-                    new BeanProperty<>("Remove", "remove"),
-                    new BeanProperty<>("Combine", "combine"),
-                    new BeanProperty<>("Repeat", "repeat"),
-                    new BeanProperty<>("Echo", "echo"),
-                    ACTIVATE_BUTTON,
-                    EDIT_BUTTON);
+    private static final List<Property<RuleModel>> PROPERTIES = Arrays.asList(
+            new BeanProperty<>("Position", "position"),
+            new BeanProperty<>("Match", "match"),
+            new BeanProperty<>("Activation", "activation"),
+            new BeanProperty<>("Parameter", "parameter"),
+            new BeanProperty<>("Transform", "transform"),
+            new BeanProperty<>("Remove", "remove"),
+            new BeanProperty<>("Combine", "combine"),
+            new BeanProperty<>("Repeat", "repeat"),
+            new BeanProperty<>("Echo", "echo"),
+            ACTIVATE_BUTTON,
+            EDIT_BUTTON);
 
     @Override
     protected List<Property<RuleModel>> getProperties() {
@@ -67,8 +66,7 @@ public class RulesModel extends GeoServerDataProvider<RuleModel> {
         EchoParametersDao.deleteEchoParameters(rulesIds);
     }
 
-    private static void mergedForwardParameter(
-            List<RuleModel> ruleModels, EchoParameter echoParameter) {
+    private static void mergedForwardParameter(List<RuleModel> ruleModels, EchoParameter echoParameter) {
         for (RuleModel ruleModel : ruleModels) {
             if (ruleModel.getId().equals(echoParameter.getId())) {
                 Utils.checkCondition(

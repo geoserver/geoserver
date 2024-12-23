@@ -66,15 +66,11 @@ public class PreviewLayerProviderTest extends GeoServerWicketTestSupport {
         }
 
         List<String> keysToCheck =
-                Arrays.asList(
-                        "service", "version", "request", "layers", "bbox", "width", "height", "srs",
-                        "styles");
+                Arrays.asList("service", "version", "request", "layers", "bbox", "width", "height", "srs", "styles");
 
         for (String key : keysToCheck) {
             if (!wmsKeys.contains(key)) {
-                Assert.fail(
-                        String.format(
-                                "Parameter '%s' not specified in WmsLink URL of Layer.", key));
+                Assert.fail(String.format("Parameter '%s' not specified in WmsLink URL of Layer.", key));
             }
         }
     }

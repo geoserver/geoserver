@@ -49,9 +49,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Internal Catalog Store Creates a Catalog Store from a GeoServer Catalog instance and a set of
- * Mappings It can map the internal GS catalog data to 1 or more CSW Record Types, based on one
- * mapping per record type
+ * Internal Catalog Store Creates a Catalog Store from a GeoServer Catalog instance and a set of Mappings It can map the
+ * internal GS catalog data to 1 or more CSW Record Types, based on one mapping per record type
  *
  * @author Niels Charlier
  */
@@ -77,13 +76,13 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     public List<CatalogStoreMapping> getMappings(String typeName) {
         List<CatalogStoreMapping> result = new ArrayList<>();
         for (PropertyFileWatcher watcher : watchers.get(typeName)) {
-            String mappingName = FilenameUtils.removeExtension(watcher.getResource().name());
+            String mappingName =
+                    FilenameUtils.removeExtension(watcher.getResource().name());
             if (watcher.isModified()) {
                 try {
                     @SuppressWarnings("unchecked")
                     Map<String, String> properties = (Map) watcher.getProperties();
-                    CatalogStoreMapping mapping =
-                            CatalogStoreMapping.parse(new HashMap<>(properties), mappingName);
+                    CatalogStoreMapping mapping = CatalogStoreMapping.parse(new HashMap<>(properties), mappingName);
                     mappings.put(mappingName, mapping);
                     result.add(mapping);
                 } catch (IOException e) {
@@ -113,8 +112,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                 Expression expr = (Expression) sortby.getPropertyName().accept(unmapper, null);
 
                 if (!(expr instanceof PropertyName)) {
-                    throw new IOException(
-                            "Sorting on " + sortby.getPropertyName() + " is not supported.");
+                    throw new IOException("Sorting on " + sortby.getPropertyName() + " is not supported.");
                 }
 
                 unmappedSortBy[i] = new SortByImpl((PropertyName) expr, sortby.getSortOrder());
@@ -130,8 +128,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
     @Override
     public FeatureCollection<FeatureType, Feature> getRecordsInternal(
-            RecordDescriptor rd, RecordDescriptor rdOutput, Query query, Transaction t)
-            throws IOException {
+            RecordDescriptor rd, RecordDescriptor rdOutput, Query query, Transaction t) throws IOException {
 
         List<FeatureCollection<FeatureType, Feature>> results = new ArrayList<>();
 
@@ -139,17 +136,12 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
         String baseUrl = (String) query.getHints().get(GetRecords.KEY_BASEURL);
         if (baseUrl != null) {
+            interpolationProperties.put("url.wfs", ResponseUtils.buildURL(baseUrl, "wfs", null, URLType.SERVICE));
+            interpolationProperties.put("url.wms", ResponseUtils.buildURL(baseUrl, "wms", null, URLType.SERVICE));
+            interpolationProperties.put("url.wcs", ResponseUtils.buildURL(baseUrl, "wcs", null, URLType.SERVICE));
             interpolationProperties.put(
-                    "url.wfs", ResponseUtils.buildURL(baseUrl, "wfs", null, URLType.SERVICE));
-            interpolationProperties.put(
-                    "url.wms", ResponseUtils.buildURL(baseUrl, "wms", null, URLType.SERVICE));
-            interpolationProperties.put(
-                    "url.wcs", ResponseUtils.buildURL(baseUrl, "wcs", null, URLType.SERVICE));
-            interpolationProperties.put(
-                    "url.wmts",
-                    ResponseUtils.buildURL(baseUrl, "gwc/service/wmts", null, URLType.SERVICE));
-            interpolationProperties.put(
-                    "url.base", ResponseUtils.buildURL(baseUrl, null, null, URLType.SERVICE));
+                    "url.wmts", ResponseUtils.buildURL(baseUrl, "gwc/service/wmts", null, URLType.SERVICE));
+            interpolationProperties.put("url.base", ResponseUtils.buildURL(baseUrl, null, null, URLType.SERVICE));
         }
 
         Collection<CatalogStoreMapping> mappings = getMappings(query.getTypeName());
@@ -165,10 +157,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
             CSWUnmappingFilterVisitor unmapper = new CSWUnmappingFilterVisitor(mapping, rd);
             Query unmapped =
-                    unmap(
-                            prepareQuery(
-                                    query, rd, rd.getQueryablesMapping(mapping.getMappingName())),
-                            unmapper);
+                    unmap(prepareQuery(query, rd, rd.getQueryablesMapping(mapping.getMappingName())), unmapper);
 
             for (CatalogStoreMapping outputMapping : outputMappings) {
                 // we only output mappings with the same name, to avoid duplication of the results
@@ -177,24 +166,21 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                 if (outputMapping.getMappingName().equals(mapping.getMappingName())) {
 
                     if (unmapped.getProperties() != null) {
-                        outputMapping =
-                                outputMapping.subMapping(unmapped.getProperties(), rdOutput);
+                        outputMapping = outputMapping.subMapping(unmapped.getProperties(), rdOutput);
                     }
 
-                    FeatureCollection<FeatureType, Feature> collection =
-                            new CatalogStoreFeatureCollection(
-                                    startIndex,
-                                    unmapped.getMaxFeatures(),
-                                    unmapped.getSortBy(),
-                                    unmapped.getFilter(),
-                                    geoServer.getCatalog(),
-                                    outputMapping,
-                                    rdOutput,
-                                    interpolationProperties);
+                    FeatureCollection<FeatureType, Feature> collection = new CatalogStoreFeatureCollection(
+                            startIndex,
+                            unmapped.getMaxFeatures(),
+                            unmapped.getSortBy(),
+                            unmapped.getFilter(),
+                            geoServer.getCatalog(),
+                            outputMapping,
+                            rdOutput,
+                            interpolationProperties);
 
                     if (unmapper.needsPostFilter()) {
-                        collection =
-                                new FilteringFeatureCollection<>(collection, query.getFilter());
+                        collection = new FilteringFeatureCollection<>(collection, query.getFilter());
                     }
                     results.add(collection);
                 }
@@ -228,7 +214,8 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
     @Override
     public void setApplicationContext(ApplicationContext appContext) throws BeansException {
         // load record descriptors from application context
-        for (RecordDescriptor rd : appContext.getBeansOfType(RecordDescriptor.class).values()) {
+        for (RecordDescriptor rd :
+                appContext.getBeansOfType(RecordDescriptor.class).values()) {
             support(rd);
         }
         // load mappings
@@ -237,16 +224,13 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
         try {
             for (Name name : descriptorByType.keySet()) {
                 String typeName = name.getLocalPart();
-                List<Resource> mappingFiles =
-                        dir.list().stream()
-                                .filter(r -> isMappingFileForType(r.name(), typeName))
-                                .collect(Collectors.toList());
+                List<Resource> mappingFiles = dir.list().stream()
+                        .filter(r -> isMappingFileForType(r.name(), typeName))
+                        .collect(Collectors.toList());
 
                 if (mappingFiles.isEmpty()) {
                     Resource newMapping = dir.get(typeName + ".properties");
-                    IOUtils.copy(
-                            getClass().getResourceAsStream(typeName + ".default.properties"),
-                            newMapping.out());
+                    IOUtils.copy(getClass().getResourceAsStream(typeName + ".default.properties"), newMapping.out());
                     mappingFiles.add(newMapping);
                 }
 
@@ -258,9 +242,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
                     String mappingName = FilenameUtils.removeExtension(mapping.name());
 
-                    mappings.put(
-                            mappingName,
-                            CatalogStoreMapping.parse(new HashMap<>(properties), mappingName));
+                    mappings.put(mappingName, CatalogStoreMapping.parse(new HashMap<>(properties), mappingName));
                 }
             }
         } catch (IOException e) {

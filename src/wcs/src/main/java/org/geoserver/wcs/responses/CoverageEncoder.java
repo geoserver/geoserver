@@ -12,8 +12,7 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
- * Utility class used to encode a grid coverage onto an output stream, used for the Mail MIME
- * encoding
+ * Utility class used to encode a grid coverage onto an output stream, used for the Mail MIME encoding
  *
  * @author Andrea Aime - GeoSolutions
  */

@@ -41,13 +41,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
  * @author Andrea Aime, GeoSolutions
  */
 public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
-    protected static QName TIMERANGES =
-            new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
 
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
 
-    protected static QName SPATIO_TEMPORAL =
-            new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
+    protected static QName SPATIO_TEMPORAL = new QName(MockData.SF_URI, "spatio-temporal", MockData.SF_PREFIX);
 
     protected static QName MULTIDIM = new QName(MockData.SF_URI, "multidim", MockData.SF_PREFIX);
 
@@ -58,9 +56,9 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
     List<GridCoverage> coverages = new ArrayList<>();
 
     /**
-     * Small value for comparaison of sample values. Since most grid coverage implementations in
-     * Geotools 2 store geophysics values as {@code float} numbers, this {@code EPS} value must be
-     * of the order of {@code float} relative precision, not {@code double}.
+     * Small value for comparaison of sample values. Since most grid coverage implementations in Geotools 2 store
+     * geophysics values as {@code float} numbers, this {@code EPS} value must be of the order of {@code float} relative
+     * precision, not {@code double}.
      */
     static final float EPS = 1E-5f;
 
@@ -88,19 +86,10 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addRasterLayer(
-                TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
-        testData.addRasterLayer(
-                WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
-        testData.addRasterLayer(
-                SPATIO_TEMPORAL,
-                "spatio-temporal.zip",
-                null,
-                null,
-                SystemTestData.class,
-                getCatalog());
-        testData.addRasterLayer(
-                MULTIDIM, "multidim.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(SPATIO_TEMPORAL, "spatio-temporal.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(MULTIDIM, "multidim.zip", null, null, SystemTestData.class, getCatalog());
 
         // init xmlunit
         Map<String, String> namespaces = new HashMap<>();
@@ -140,8 +129,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Parses a multipart message from the response */
-    protected Multipart getMultipart(MockHttpServletResponse response)
-            throws MessagingException, IOException {
+    protected Multipart getMultipart(MockHttpServletResponse response) throws MessagingException, IOException {
         MimeMessage body = new MimeMessage(null, getBinaryInputStream(response));
         Multipart multipart = (Multipart) body.getContent();
         return multipart;
@@ -149,10 +137,7 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
 
     /** Configures the specified dimension for a coverage */
     protected void setupRasterDimension(
-            String coverageName,
-            String metadataKey,
-            DimensionPresentation presentation,
-            Double resolution) {
+            String coverageName, String metadataKey, DimensionPresentation presentation, Double resolution) {
         CoverageInfo info = getCatalog().getCoverageByName(coverageName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -199,15 +184,11 @@ public abstract class WCSEOTestSupport extends GeoServerSystemTestSupport {
         enableEODataset(getLayerId(TIMERANGES));
         String spatioTemporal = getLayerId(SPATIO_TEMPORAL);
         enableEODataset(spatioTemporal);
-        setupRasterDimension(
-                spatioTemporal, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        setupRasterDimension(spatioTemporal, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         String multidim = getLayerId(MULTIDIM);
         enableEODataset(multidim);
         setupRasterDimension(multidim, ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
         setupRasterDimension(
-                multidim,
-                ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH",
-                DimensionPresentation.LIST,
-                null);
+                multidim, ResourceInfo.CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", DimensionPresentation.LIST, null);
     }
 }

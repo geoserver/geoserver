@@ -26,16 +26,12 @@ public class AliasStationsMockData extends StationsMockData {
 
     @Override
     public void addFeatureType(
-            String namespacePrefix,
-            String typeName,
-            String mappingFileName,
-            String... supportFileNames) {
+            String namespacePrefix, String typeName, String mappingFileName, String... supportFileNames) {
         File featureTypeDir = getFeatureTypeDir(featureTypesBaseDir, namespacePrefix, typeName);
         String dataStoreName = getDataStoreName(namespacePrefix, typeName);
         try {
             writeInfoFileInternal(namespacePrefix, typeName, featureTypeDir, dataStoreName);
-            copyMappingAndSupportFiles(
-                    namespacePrefix, typeName, mappingFileName, supportFileNames);
+            copyMappingAndSupportFiles(namespacePrefix, typeName, mappingFileName, supportFileNames);
             // if mappingFileName contains directory, eg, dir1/dir2/file.xml, we will ignore the
             // directory from here on
             addDataStore(
@@ -80,8 +76,7 @@ public class AliasStationsMockData extends StationsMockData {
                 writer.write("<featureType datastore=\"" + dataStoreName + "\">");
                 writer.write("<name>" + getLayerName(typeName) + "</name>");
                 writer.write("<nativeName>" + typeName + "</nativeName>");
-                if (params.get(KEY_ALIAS) != null)
-                    writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+                if (params.get(KEY_ALIAS) != null) writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
                 writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
                 // this mock type may have wrong SRS compared to the actual one in the property
                 // files...
@@ -95,28 +90,26 @@ public class AliasStationsMockData extends StationsMockData {
                 writer.write("<keywords>" + typeName + "</keywords>");
                 Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
                 if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-                writer.write(
-                        "<latLonBoundingBox dynamic=\"false\" minx=\""
-                                + llEnvelope.getMinX()
-                                + "\" miny=\""
-                                + llEnvelope.getMinY()
-                                + "\" maxx=\""
-                                + llEnvelope.getMaxX()
-                                + "\" maxy=\""
-                                + llEnvelope.getMaxY()
-                                + "\"/>");
+                writer.write("<latLonBoundingBox dynamic=\"false\" minx=\""
+                        + llEnvelope.getMinX()
+                        + "\" miny=\""
+                        + llEnvelope.getMinY()
+                        + "\" maxx=\""
+                        + llEnvelope.getMaxX()
+                        + "\" maxy=\""
+                        + llEnvelope.getMaxY()
+                        + "\"/>");
                 Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
                 if (nativeEnvelope != null)
-                    writer.write(
-                            "<nativeBBox dynamic=\"false\" minx=\""
-                                    + nativeEnvelope.getMinX()
-                                    + "\" miny=\""
-                                    + nativeEnvelope.getMinY()
-                                    + "\" maxx=\""
-                                    + nativeEnvelope.getMaxX()
-                                    + "\" maxy=\""
-                                    + nativeEnvelope.getMaxY()
-                                    + "\"/>");
+                    writer.write("<nativeBBox dynamic=\"false\" minx=\""
+                            + nativeEnvelope.getMinX()
+                            + "\" miny=\""
+                            + nativeEnvelope.getMinY()
+                            + "\" maxx=\""
+                            + nativeEnvelope.getMaxX()
+                            + "\" maxy=\""
+                            + nativeEnvelope.getMaxY()
+                            + "\"/>");
                 String style = (String) params.get(KEY_STYLE);
                 if (style == null) style = "Default";
                 writer.write("<styles default=\"" + style + "\"/>");

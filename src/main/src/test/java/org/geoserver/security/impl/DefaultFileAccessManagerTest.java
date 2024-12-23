@@ -48,13 +48,9 @@ public class DefaultFileAccessManagerTest extends AbstractFileAccessTest {
         loginAdmin();
         assertEquals(fileAccessManager.getAvailableRoots(), List.of(systemSandbox));
         assertFalse(fileAccessManager.checkAccess(testDirectory));
-        assertTrue(
-                fileAccessManager.checkAccess(
-                        new File("./target/systemSandbox/test/a/b/c").getCanonicalFile()));
+        assertTrue(fileAccessManager.checkAccess(new File("./target/systemSandbox/test/a/b/c").getCanonicalFile()));
         // there is no escaping it
-        assertFalse(
-                fileAccessManager.checkAccess(
-                        new File("./target/systemSandbox/../a/b/c").getCanonicalFile()));
+        assertFalse(fileAccessManager.checkAccess(new File("./target/systemSandbox/../a/b/c").getCanonicalFile()));
     }
 
     @Test

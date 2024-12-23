@@ -18,52 +18,44 @@ import org.junit.Test;
 
 public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
-    private static final QName PROFILE =
-            new QName(MockData.DEFAULT_URI, "dataProfile", MockData.DEFAULT_PREFIX);
-    private static final QName ADJ_LAYER =
-            new QName(MockData.DEFAULT_URI, "AdjustmentLayer", MockData.DEFAULT_PREFIX);
-    private static final String LAYER_NAME =
-            "<wps:Input>\n"
-                    + "      <ows:Identifier>layerName</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:LiteralData>dataProfile</wps:LiteralData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
-    private static final String RESPONSE_FORM =
-            "<wps:ResponseForm>\n"
-                    + "    <wps:RawDataOutput mimeType=\"application/json\">\n"
-                    + "      <ows:Identifier>result</ows:Identifier>\n"
-                    + "    </wps:RawDataOutput>\n"
-                    + "  </wps:ResponseForm>\n";
-    private static final String LINESTRING_FOR_2154 =
-            "<wps:Input>\n"
-                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=2154;LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
+    private static final QName PROFILE = new QName(MockData.DEFAULT_URI, "dataProfile", MockData.DEFAULT_PREFIX);
+    private static final QName ADJ_LAYER = new QName(MockData.DEFAULT_URI, "AdjustmentLayer", MockData.DEFAULT_PREFIX);
+    private static final String LAYER_NAME = "<wps:Input>\n"
+            + "      <ows:Identifier>layerName</ows:Identifier>\n"
+            + "      <wps:Data>\n"
+            + "        <wps:LiteralData>dataProfile</wps:LiteralData>\n"
+            + "      </wps:Data>\n"
+            + "    </wps:Input>\n";
+    private static final String RESPONSE_FORM = "<wps:ResponseForm>\n"
+            + "    <wps:RawDataOutput mimeType=\"application/json\">\n"
+            + "      <ows:Identifier>result</ows:Identifier>\n"
+            + "    </wps:RawDataOutput>\n"
+            + "  </wps:ResponseForm>\n";
+    private static final String LINESTRING_FOR_2154 = "<wps:Input>\n"
+            + "  <ows:Identifier>geometry</ows:Identifier>\n"
+            + "      <wps:Data>\n"
+            + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=2154;LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
+            + "      </wps:Data>\n"
+            + "    </wps:Input>\n";
 
-    private static final String WKT_LINESTRING_FOR_2154 =
-            "<wps:Input>\n"
-                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
+    private static final String WKT_LINESTRING_FOR_2154 = "<wps:Input>\n"
+            + "  <ows:Identifier>geometry</ows:Identifier>\n"
+            + "      <wps:Data>\n"
+            + "        <wps:ComplexData mimeType=\"application/wkt\"><![CDATA[LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)]]></wps:ComplexData>\n"
+            + "      </wps:Data>\n"
+            + "    </wps:Input>\n";
 
-    private static final String LINESTRING_FOR_4326 =
-            "<wps:Input>\n"
-                    + "  <ows:Identifier>geometry</ows:Identifier>\n"
-                    + "      <wps:Data>\n"
-                    + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)]]></wps:ComplexData>\n"
-                    + "      </wps:Data>\n"
-                    + "    </wps:Input>\n";
-    private static final String HEADER =
-            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                    + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                    + "  <ows:Identifier>gs:LongitudinalProfile</ows:Identifier>\n"
-                    + "  <wps:DataInputs>\n"
-                    + "    ";
+    private static final String LINESTRING_FOR_4326 = "<wps:Input>\n"
+            + "  <ows:Identifier>geometry</ows:Identifier>\n"
+            + "      <wps:Data>\n"
+            + "        <wps:ComplexData mimeType=\"application/ewkt\"><![CDATA[SRID=4326;LINESTRING(4.816667349546753 44.86746046117114, 4.820617515841021 44.86445081066109, 4.829431492334357 44.86579440463876, 4.82464829777395 44.869717699053616)]]></wps:ComplexData>\n"
+            + "      </wps:Data>\n"
+            + "    </wps:Input>\n";
+    private static final String HEADER = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+            + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+            + "  <ows:Identifier>gs:LongitudinalProfile</ows:Identifier>\n"
+            + "  <wps:DataInputs>\n"
+            + "    ";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -75,8 +67,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
         props.put(SystemTestData.LayerProperty.STYLE, styleName);
 
-        testData.addRasterLayer(
-                PROFILE, "coverage.zip", null, Collections.emptyMap(), getCatalog());
+        testData.addRasterLayer(PROFILE, "coverage.zip", null, Collections.emptyMap(), getCatalog());
         testData.addVectorLayer(
                 ADJ_LAYER,
                 Map.of(SystemTestData.LayerProperty.SRS, 2154),
@@ -87,22 +78,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
     @Test
     public void testRequiredParams() throws Exception {
-        String requestXml =
-                HEADER
-                        + LAYER_NAME
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + LINESTRING_FOR_2154
-                        + "  </wps:DataInputs>\n"
-                        + "  "
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String requestXml = HEADER
+                + LAYER_NAME
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + LINESTRING_FOR_2154
+                + "  </wps:DataInputs>\n"
+                + "  "
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
@@ -142,22 +132,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
     @Test
     public void testWktWithCrsOfTheLayer() throws Exception {
-        String requestXml =
-                HEADER
-                        + LAYER_NAME
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + WKT_LINESTRING_FOR_2154
-                        + "  </wps:DataInputs>\n"
-                        + "  "
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String requestXml = HEADER
+                + LAYER_NAME
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + WKT_LINESTRING_FOR_2154
+                + "  </wps:DataInputs>\n"
+                + "  "
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
@@ -197,28 +186,27 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
     @Test
     public void testReprojectCRS() throws Exception {
-        String requestXml =
-                HEADER
-                        + LAYER_NAME
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + LINESTRING_FOR_2154
-                        + "   <wps:Input>\n"
-                        + "       <ows:Identifier>targetProjection</ows:Identifier>\n"
-                        + "           <wps:Data>\n"
-                        + "               <wps:LiteralData>EPSG:3857</wps:LiteralData>\n"
-                        + "           </wps:Data>\n"
-                        + "   </wps:Input>"
-                        + "  </wps:DataInputs>\n"
-                        + "  "
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String requestXml = HEADER
+                + LAYER_NAME
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + LINESTRING_FOR_2154
+                + "   <wps:Input>\n"
+                + "       <ows:Identifier>targetProjection</ows:Identifier>\n"
+                + "           <wps:Data>\n"
+                + "               <wps:LiteralData>EPSG:3857</wps:LiteralData>\n"
+                + "           </wps:Data>\n"
+                + "   </wps:Input>"
+                + "  </wps:DataInputs>\n"
+                + "  "
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
@@ -259,39 +247,37 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
     @Test
     public void testCorrectReprojection() throws Exception {
-        String request2154 =
-                HEADER
-                        + LAYER_NAME
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + LINESTRING_FOR_2154
-                        + "  </wps:DataInputs>\n"
-                        + "  "
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String request2154 = HEADER
+                + LAYER_NAME
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + LINESTRING_FOR_2154
+                + "  </wps:DataInputs>\n"
+                + "  "
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
-        String request4326 =
-                HEADER
-                        + LAYER_NAME
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>300</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + LINESTRING_FOR_4326
-                        + "  </wps:DataInputs>\n"
-                        + "  "
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String request4326 = HEADER
+                + LAYER_NAME
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>300</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + LINESTRING_FOR_4326
+                + "  </wps:DataInputs>\n"
+                + "  "
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         JSONObject response2154 = (JSONObject) postAsJSON(root(), request2154, "application/xml");
         JSONObject response4326 = (JSONObject) postAsJSON(root(), request4326, "application/xml");
@@ -314,39 +300,38 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
 
     @Test
     public void testAllParams() throws Exception {
-        String requestXml =
-                HEADER
-                        + LAYER_NAME
-                        + "    <wps:Input>\n"
-                        + "         <ows:Identifier>adjustmentLayerName</ows:Identifier>\n"
-                        + "             <wps:Data>\n"
-                        + "         <wps:LiteralData>AdjustmentLayer</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + "   <wps:Input>\n"
-                        + "     <ows:Identifier>altitudeName</ows:Identifier>\n"
-                        + "         <wps:Data>\n"
-                        + "             <wps:LiteralData>altitude</wps:LiteralData>\n"
-                        + "         </wps:Data>\n"
-                        + "     </wps:Input>"
-                        + "   <wps:Input>\n"
-                        + "      <ows:Identifier>distance</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>200</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>"
-                        + LINESTRING_FOR_2154
-                        + "   <wps:Input>\n"
-                        + "       <ows:Identifier>targetProjection</ows:Identifier>\n"
-                        + "           <wps:Data>\n"
-                        + "               <wps:LiteralData>EPSG:4326</wps:LiteralData>\n"
-                        + "           </wps:Data>\n"
-                        + "   </wps:Input>"
-                        + "  </wps:DataInputs>\n"
-                        + RESPONSE_FORM
-                        + "</wps:Execute>\n"
-                        + "\n"
-                        + "";
+        String requestXml = HEADER
+                + LAYER_NAME
+                + "    <wps:Input>\n"
+                + "         <ows:Identifier>adjustmentLayerName</ows:Identifier>\n"
+                + "             <wps:Data>\n"
+                + "         <wps:LiteralData>AdjustmentLayer</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + "   <wps:Input>\n"
+                + "     <ows:Identifier>altitudeName</ows:Identifier>\n"
+                + "         <wps:Data>\n"
+                + "             <wps:LiteralData>altitude</wps:LiteralData>\n"
+                + "         </wps:Data>\n"
+                + "     </wps:Input>"
+                + "   <wps:Input>\n"
+                + "      <ows:Identifier>distance</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>200</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>"
+                + LINESTRING_FOR_2154
+                + "   <wps:Input>\n"
+                + "       <ows:Identifier>targetProjection</ows:Identifier>\n"
+                + "           <wps:Data>\n"
+                + "               <wps:LiteralData>EPSG:4326</wps:LiteralData>\n"
+                + "           </wps:Data>\n"
+                + "   </wps:Input>"
+                + "  </wps:DataInputs>\n"
+                + RESPONSE_FORM
+                + "</wps:Execute>\n"
+                + "\n"
+                + "";
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");

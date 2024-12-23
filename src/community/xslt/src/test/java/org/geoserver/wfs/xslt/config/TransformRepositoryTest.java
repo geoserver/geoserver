@@ -103,13 +103,12 @@ public class TransformRepositoryTest {
 
     @Test
     public void testLoadInfo() throws IOException {
-        String xml =
-                "<transform>\n" //
-                        + "  <sourceFormat>application/xml</sourceFormat>\n" //
-                        + "  <outputFormat>text/plain</outputFormat>\n" //
-                        + "  <fileExtension>txt</fileExtension>\n" //
-                        + "  <xslt>test-tx.xslt</xslt>\n" //
-                        + "</transform>";
+        String xml = "<transform>\n" //
+                + "  <sourceFormat>application/xml</sourceFormat>\n" //
+                + "  <outputFormat>text/plain</outputFormat>\n" //
+                + "  <fileExtension>txt</fileExtension>\n" //
+                + "  <xslt>test-tx.xslt</xslt>\n" //
+                + "</transform>";
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
@@ -127,13 +126,12 @@ public class TransformRepositoryTest {
     @Test
     public void testRefreshFromFile() throws IOException, InterruptedException {
         // write out the config and make the repo cache it
-        String xml1 =
-                "<transform>\n" //
-                        + "  <sourceFormat>application/xml</sourceFormat>\n" //
-                        + "  <outputFormat>text/plain</outputFormat>\n" //
-                        + "  <fileExtension>txt</fileExtension>\n" //
-                        + "  <xslt>test-tx.xslt</xslt>\n" //
-                        + "</transform>";
+        String xml1 = "<transform>\n" //
+                + "  <sourceFormat>application/xml</sourceFormat>\n" //
+                + "  <outputFormat>text/plain</outputFormat>\n" //
+                + "  <fileExtension>txt</fileExtension>\n" //
+                + "  <xslt>test-tx.xslt</xslt>\n" //
+                + "</transform>";
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
@@ -146,13 +144,12 @@ public class TransformRepositoryTest {
         Thread.sleep((long) (CacheItem.MIN_INTERVALS_CHECK * 1.1));
 
         // write another version
-        String xml2 =
-                "<transform>\n" //
-                        + "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" //
-                        + "  <outputFormat>application/json</outputFormat>\n" //
-                        + "  <fileExtension>json</fileExtension>\n" //
-                        + "  <xslt>json-tx.xslt</xslt>\n" //
-                        + "</transform>";
+        String xml2 = "<transform>\n" //
+                + "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n" //
+                + "  <outputFormat>application/json</outputFormat>\n" //
+                + "  <fileExtension>json</fileExtension>\n" //
+                + "  <xslt>json-tx.xslt</xslt>\n" //
+                + "</transform>";
         FileUtils.writeStringToFile(file, xml2, "UTF-8");
 
         // reload and check
@@ -168,13 +165,12 @@ public class TransformRepositoryTest {
     @Test
     public void testDeleteOnFilesystem() throws IOException, InterruptedException {
         // write out the config and make the repo cache it
-        String xml1 =
-                "<transform>\n" //
-                        + "  <sourceFormat>application/xml</sourceFormat>\n" //
-                        + "  <outputFormat>text/plain</outputFormat>\n" //
-                        + "  <fileExtension>txt</fileExtension>\n" //
-                        + "  <xslt>test-tx.xslt</xslt>\n" //
-                        + "</transform>";
+        String xml1 = "<transform>\n" //
+                + "  <sourceFormat>application/xml</sourceFormat>\n" //
+                + "  <outputFormat>text/plain</outputFormat>\n" //
+                + "  <fileExtension>txt</fileExtension>\n" //
+                + "  <xslt>test-tx.xslt</xslt>\n" //
+                + "</transform>";
 
         testRoot.mkdirs();
         File file = new File(testRoot, "test.xml");
@@ -271,9 +267,7 @@ public class TransformRepositoryTest {
         File xslt = new File(testRoot, "test-tx.xslt");
         assertTrue(xslt.exists());
 
-        String expected =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("test.xslt"), StandardCharsets.UTF_8);
+        String expected = IOUtils.toString(getClass().getResourceAsStream("test.xslt"), StandardCharsets.UTF_8);
         String actual = FileUtils.readFileToString(xslt, "UTF-8");
         assertEquals(expected, actual);
 
@@ -345,8 +339,7 @@ public class TransformRepositoryTest {
             Document dom = (Document) result.getNode();
             XMLAssert.assertXpathEvaluatesTo("12", "count(/html/body/table/tr/td)", dom);
             XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='museum'])", dom);
-            XMLAssert.assertXpathEvaluatesTo(
-                    "1", "count(/html/body/table/tr[td='-74.0104611,40.70758763'])", dom);
+            XMLAssert.assertXpathEvaluatesTo("1", "count(/html/body/table/tr[td='-74.0104611,40.70758763'])", dom);
         }
     }
 

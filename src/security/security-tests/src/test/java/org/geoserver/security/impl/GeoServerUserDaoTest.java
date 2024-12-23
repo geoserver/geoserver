@@ -71,7 +71,8 @@ public class GeoServerUserDaoTest {
         assertEquals("admin", admin.getUsername());
         assertEquals("gs", admin.getPassword());
         assertEquals(1, admin.getAuthorities().size());
-        assertEquals("ROLE_ADMINISTRATOR", admin.getAuthorities().iterator().next().getAuthority());
+        assertEquals(
+                "ROLE_ADMINISTRATOR", admin.getAuthorities().iterator().next().getAuthority());
     }
 
     @Test
@@ -86,19 +87,9 @@ public class GeoServerUserDaoTest {
 
     @Test
     public void testSetUser() throws Exception {
-        dao.setUser(
-                new User(
-                        "wfs",
-                        "pwd",
-                        true,
-                        true,
-                        true,
-                        true,
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_WFS_ALL"),
-                                    new SimpleGrantedAuthority("ROLE_WMS_ALL")
-                                })));
+        dao.setUser(new User("wfs", "pwd", true, true, true, true, Arrays.asList(new GrantedAuthority[] {
+            new SimpleGrantedAuthority("ROLE_WFS_ALL"), new SimpleGrantedAuthority("ROLE_WMS_ALL")
+        })));
         UserDetails user = dao.loadUserByUsername("wfs");
         assertEquals("wfs", user.getUsername());
         assertEquals("pwd", user.getPassword());
@@ -115,18 +106,9 @@ public class GeoServerUserDaoTest {
     @Test
     public void testSetMissingUser() throws Exception {
         try {
-            dao.setUser(
-                    new User(
-                            "notther",
-                            "pwd",
-                            true,
-                            true,
-                            true,
-                            true,
-                            Arrays.asList(
-                                    new GrantedAuthority[] {
-                                        new SimpleGrantedAuthority("ROLE_WFS_ALL")
-                                    })));
+            dao.setUser(new User("notther", "pwd", true, true, true, true, Arrays.asList(new GrantedAuthority[] {
+                new SimpleGrantedAuthority("ROLE_WFS_ALL")
+            })));
             fail("The user is not there, setUser should fail");
         } catch (IllegalArgumentException e) {
             // cool
@@ -135,36 +117,18 @@ public class GeoServerUserDaoTest {
 
     @Test
     public void testAddUser() throws Exception {
-        dao.putUser(
-                new User(
-                        "newuser",
-                        "pwd",
-                        true,
-                        true,
-                        true,
-                        true,
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("ROLE_WFS_ALL")
-                                })));
+        dao.putUser(new User("newuser", "pwd", true, true, true, true, Arrays.asList(new GrantedAuthority[] {
+            new SimpleGrantedAuthority("ROLE_WFS_ALL")
+        })));
         assertNotNull(dao.loadUserByUsername("newuser"));
     }
 
     @Test
     public void addExistingUser() throws Exception {
         try {
-            dao.putUser(
-                    new User(
-                            "admin",
-                            "pwd",
-                            true,
-                            true,
-                            true,
-                            true,
-                            Arrays.asList(
-                                    new GrantedAuthority[] {
-                                        new SimpleGrantedAuthority("ROLE_WFS_ALL")
-                                    })));
+            dao.putUser(new User("admin", "pwd", true, true, true, true, Arrays.asList(new GrantedAuthority[] {
+                new SimpleGrantedAuthority("ROLE_WFS_ALL")
+            })));
             fail("The user is already there, addUser should fail");
         } catch (IllegalArgumentException e) {
             // cool

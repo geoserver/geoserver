@@ -21,8 +21,7 @@ public class DefaultNotificationProcessor implements NotificationProcessor, Seri
     }
 
     /**
-     * Process {@link Notification} using an encoder to generate the payload and a sender to
-     * delivery it to destination
+     * Process {@link Notification} using an encoder to generate the payload and a sender to delivery it to destination
      *
      * @param the encoder to transform {@link Notification} to payload
      * @param the sender to deliver the payload

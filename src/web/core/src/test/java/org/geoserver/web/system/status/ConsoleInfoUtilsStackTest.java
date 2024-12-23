@@ -23,8 +23,8 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /**
- * Test class to ensure the JVM console dumps all the stack elements for each thread. A bit ugly to
- * have name 10 methods named "methodN" but it's an easy way to have a predictable output.
+ * Test class to ensure the JVM console dumps all the stack elements for each thread. A bit ugly to have name 10 methods
+ * named "methodN" but it's an easy way to have a predictable output.
  */
 public class ConsoleInfoUtilsStackTest {
 
@@ -47,22 +47,20 @@ public class ConsoleInfoUtilsStackTest {
         // look for the lines of the stack trace of "myTestThread"
         AtomicBoolean inBlock = new AtomicBoolean(false);
         List<String> testStack;
-        Predicate<String> traceFinder =
-                l -> {
-                    if (!inBlock.get()) {
-                        if (l.startsWith("\"myTestThread\"")) inBlock.set(true);
+        Predicate<String> traceFinder = l -> {
+            if (!inBlock.get()) {
+                if (l.startsWith("\"myTestThread\"")) inBlock.set(true);
 
-                    } else if (l.trim().isEmpty()) {
-                        inBlock.set(false);
-                    }
-                    return inBlock.get();
-                };
+            } else if (l.trim().isEmpty()) {
+                inBlock.set(false);
+            }
+            return inBlock.get();
+        };
         testStack = info.lines().filter(traceFinder).collect(Collectors.toList());
 
         // we used to only have 8 entries plus the title, now we should have at least 10 + title
         assertThat(testStack.size(), greaterThan(11));
-        assertThat(
-                testStack.get(0), allOf(containsString("myTestThread"), containsString("WAITING")));
+        assertThat(testStack.get(0), allOf(containsString("myTestThread"), containsString("WAITING")));
 
         // look for line stack line containing "method1(...)" to avoid changes in the stack trace
         // due to e.g. upgrades of Junit
@@ -78,9 +76,7 @@ public class ConsoleInfoUtilsStackTest {
         for (int i = 1; i <= 10; i++) {
             assertThat(
                     testStack.get(idxFirst + 1 - i),
-                    containsString(
-                            "at org.geoserver.web.system.status.ConsoleInfoUtilsStackTest.method"
-                                    + i));
+                    containsString("at org.geoserver.web.system.status.ConsoleInfoUtilsStackTest.method" + i));
         }
     }
 

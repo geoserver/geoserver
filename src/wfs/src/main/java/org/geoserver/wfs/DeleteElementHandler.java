@@ -58,18 +58,14 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         return Delete.class;
     }
 
-    /**
-     * @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject)
-     */
+    /** @see org.geoserver.wfs.TransactionElementHandler#getTypeNames(org.eclipse.emf.ecore.EObject) */
     @Override
-    public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
-            throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         return new QName[] {element.getTypeName()};
     }
 
     @Override
-    public void checkValidity(TransactionElement delete, Map featureTypeInfos)
-            throws WFSTransactionException {
+    public void checkValidity(TransactionElement delete, Map featureTypeInfos) throws WFSTransactionException {
         if (!getInfo().getServiceLevel().getOps().contains(WFSInfo.Operation.TRANSACTION_DELETE)) {
             throw new WFSException(delete, "Transaction Delete support is not enabled");
         }
@@ -77,8 +73,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
         Filter f = delete.getFilter();
 
         if ((f == null) || Filter.INCLUDE.equals(f)) {
-            throw new WFSTransactionException(
-                    "Must specify filter for delete", "MissingParameterValue");
+            throw new WFSTransactionException("Must specify filter for delete", "MissingParameterValue");
         }
     }
 
@@ -104,15 +99,12 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                     LOGGER.finer("\t" + key.toString());
                 }
             }
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
+            throw new WFSTransactionException(msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
         }
-        SimpleFeatureStore store =
-                DataUtilities.simple((FeatureStore) featureStores.get(elementName));
+        SimpleFeatureStore store = DataUtilities.simple((FeatureStore) featureStores.get(elementName));
 
         if (store == null) {
-            throw new WFSTransactionException(
-                    msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
+            throw new WFSTransactionException(msg, ServiceException.INVALID_PARAMETER_VALUE, handle);
         }
 
         String typeName = store.getSchema().getTypeName();
@@ -128,12 +120,8 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
             filter = WFSReprojectionUtil.normalizeFilterCRS(filter, store.getSchema(), declaredCRS);
 
             // notify listeners
-            TransactionEvent event =
-                    new TransactionEvent(
-                            TransactionEventType.PRE_DELETE,
-                            request,
-                            elementName,
-                            store.getFeatures(filter));
+            TransactionEvent event = new TransactionEvent(
+                    TransactionEventType.PRE_DELETE, request, elementName, store.getFeatures(filter));
             event.setSource(Delete.WFS11.unadapt((Delete) delete));
             listener.dataStoreChange(event);
 
@@ -144,9 +132,7 @@ public class DeleteElementHandler extends AbstractTransactionElementHandler {
                 damaged = store.getFeatures(filter).getBounds();
             }
 
-            if ((request.getLockId() != null)
-                    && store instanceof FeatureLocking
-                    && (request.isReleaseActionSome())) {
+            if ((request.getLockId() != null) && store instanceof FeatureLocking && (request.isReleaseActionSome())) {
                 SimpleFeatureLocking locking = (SimpleFeatureLocking) store;
 
                 // TODO: Revisit Lock/Delete interaction in gt2

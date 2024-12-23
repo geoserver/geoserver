@@ -139,8 +139,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
 
         // manage projection policy
         if (this.projectionPolicy == ProjectionPolicy.FORCE_DECLARED) {
-            final Hints crsHints =
-                    new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
+            final Hints crsHints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
             if (hints != null) hints.putAll(crsHints);
             else hints = crsHints;
         }
@@ -148,13 +147,11 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
     }
 
     @Override
-    public GridCoverage getGridCoverage(
-            ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
+    public GridCoverage getGridCoverage(ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException {
         // manage projection policy
         if (this.projectionPolicy == ProjectionPolicy.FORCE_DECLARED) {
-            final Hints crsHints =
-                    new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
+            final Hints crsHints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
             if (hints != null) hints.putAll(crsHints);
             else hints = crsHints;
         }
@@ -162,12 +159,10 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
     }
 
     @Override
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
-            throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException {
         // manage projection policy
         if (this.projectionPolicy == ProjectionPolicy.FORCE_DECLARED) {
-            final Hints crsHints =
-                    new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
+            final Hints crsHints = new Hints(Hints.DEFAULT_COORDINATE_REFERENCE_SYSTEM, this.getCRS());
             if (hints != null) hints.putAll(crsHints);
             else hints = crsHints;
         }
@@ -203,23 +198,16 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
     public int hashCode() {
         final int prime = 31;
         int result = super.hashCode();
-        result =
-                prime * result
-                        + ((defaultInterpolationMethod == null)
-                                ? 0
-                                : defaultInterpolationMethod.hashCode());
+        result = prime * result + ((defaultInterpolationMethod == null) ? 0 : defaultInterpolationMethod.hashCode());
         result = prime * result + ((dimensions == null) ? 0 : dimensions.hashCode());
         result = prime * result + ((grid == null) ? 0 : grid.hashCode());
-        result =
-                prime * result
-                        + ((interpolationMethods == null) ? 0 : interpolationMethods.hashCode());
+        result = prime * result + ((interpolationMethods == null) ? 0 : interpolationMethods.hashCode());
         result = prime * result + ((nativeFormat == null) ? 0 : nativeFormat.hashCode());
         result = prime * result + ((parameters == null) ? 0 : parameters.hashCode());
         result = prime * result + ((requestSRS == null) ? 0 : requestSRS.hashCode());
         result = prime * result + ((responseSRS == null) ? 0 : responseSRS.hashCode());
         result = prime * result + ((supportedFormats == null) ? 0 : supportedFormats.hashCode());
-        result =
-                prime * result + ((nativeCoverageName == null) ? 0 : nativeCoverageName.hashCode());
+        result = prime * result + ((nativeCoverageName == null) ? 0 : nativeCoverageName.hashCode());
         return result;
     }
 
@@ -235,8 +223,7 @@ public class CoverageInfoImpl extends ResourceInfoImpl implements CoverageInfo {
         final CoverageInfo other = (CoverageInfo) obj;
         if (defaultInterpolationMethod == null) {
             if (other.getDefaultInterpolationMethod() != null) return false;
-        } else if (!defaultInterpolationMethod.equals(other.getDefaultInterpolationMethod()))
-            return false;
+        } else if (!defaultInterpolationMethod.equals(other.getDefaultInterpolationMethod())) return false;
         if (dimensions == null) {
             if (other.getDimensions() != null) return false;
         } else if (!dimensions.equals(other.getDimensions())) return false;

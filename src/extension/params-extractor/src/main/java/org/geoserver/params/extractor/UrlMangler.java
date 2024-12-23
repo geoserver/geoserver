@@ -36,8 +36,7 @@ public class UrlMangler implements URLMangler {
 
     private HttpServletRequest getHttpRequest(Request request) {
         HttpServletRequest httpRequest = request.getHttpRequest();
-        while (httpRequest instanceof HttpServletRequestWrapper
-                && !(httpRequest instanceof RequestWrapper)) {
+        while (httpRequest instanceof HttpServletRequestWrapper && !(httpRequest instanceof RequestWrapper)) {
             ServletRequest servlet = ((HttpServletRequestWrapper) httpRequest).getRequest();
             if (servlet instanceof HttpServletRequest) {
                 httpRequest = (HttpServletRequest) servlet;
@@ -49,13 +48,10 @@ public class UrlMangler implements URLMangler {
     }
 
     @Override
-    public void mangleURL(
-            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Request request = Dispatcher.REQUEST.get();
         if (request == null || !"GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-            Utils.debug(
-                    LOGGER,
-                    "Not a capabilities request, ignored by the parameters extractor URL mangler.");
+            Utils.debug(LOGGER, "Not a capabilities request, ignored by the parameters extractor URL mangler.");
             return;
         }
         forwardOriginalUri(request, path);
@@ -89,8 +85,7 @@ public class UrlMangler implements URLMangler {
             }
             Map.Entry<String, Object> rawParameter =
                     Utils.caseInsensitiveSearch(echoParameter.getParameter(), requestRawKvp);
-            if (rawParameter != null
-                    && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
+            if (rawParameter != null && Utils.caseInsensitiveSearch(echoParameter.getParameter(), kvp) == null) {
                 if (rawParameter.getValue() instanceof String) {
                     kvp.put(rawParameter.getKey(), (String) rawParameter.getValue());
                 }

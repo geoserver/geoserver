@@ -17,8 +17,7 @@ public class RESTAccessRuleDAOTest extends AbstractAccesRuleDAOConcurrencyTest<R
     /** A DAO that won't check the file system */
     static class MemoryRESTAccessRuleDAO extends RESTAccessRuleDAO {
 
-        public MemoryRESTAccessRuleDAO(GeoServerDataDirectory dd, Properties props)
-                throws IOException {
+        public MemoryRESTAccessRuleDAO(GeoServerDataDirectory dd, Properties props) throws IOException {
             super(dd);
             loadRules(props);
         }

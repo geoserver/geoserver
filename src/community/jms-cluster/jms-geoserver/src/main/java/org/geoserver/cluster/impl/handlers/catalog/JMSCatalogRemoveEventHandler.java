@@ -29,8 +29,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
     private final ToggleSwitch producer;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public JMSCatalogRemoveEventHandler(
-            Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
+    public JMSCatalogRemoveEventHandler(Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.producer = producer;
@@ -55,15 +54,13 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
 
             } else {
                 // incoming object not recognized
-                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe("Unrecognized event type");
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
             throw e;
         } finally {
             // re enable the producer
@@ -77,8 +74,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
 
         if (info instanceof LayerGroupInfo) {
 
-            final LayerGroupInfo deserObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+            final LayerGroupInfo deserObject = CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
             catalog.remove(deserObject);
             // catalog.save(CatalogUtils.getProxy(deserObject));
             // info=CatalogUtils.localizeLayerGroup((LayerGroupInfo) info,
@@ -100,8 +96,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof NamespaceInfo) {
 
-            final NamespaceInfo namespace =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+            final NamespaceInfo namespace = CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.remove(namespace);
             // catalog.save(CatalogUtils.getProxy(namespace));
             // info =CatalogUtils.localizeNamespace((NamespaceInfo) info,
@@ -115,8 +110,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
             // info=CatalogUtils.localizeStore((StoreInfo)info,catalog);
         } else if (info instanceof ResourceInfo) {
 
-            final ResourceInfo resource =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+            final ResourceInfo resource = CatalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.remove(resource);
             // catalog.save(CatalogUtils.getProxy(resource));
             // info =CatalogUtils.localizeResource((ResourceInfo)info,catalog);
@@ -143,8 +137,7 @@ public class JMSCatalogRemoveEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof WorkspaceInfo) {
 
-            final WorkspaceInfo workspace =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+            final WorkspaceInfo workspace = CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.remove(workspace);
             // catalog.detach(workspace);
             // info = CatalogUtils.localizeWorkspace((WorkspaceInfo) info,

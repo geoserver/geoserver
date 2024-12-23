@@ -24,18 +24,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * Replacement of the geotools default implementation to use the GeoServer Resource loader to be
- * agnostic of how the resources are stored (on disk or on database) With this implementation it is
- * possible to store the external configuration file into a JDBC Resource store for example
+ * Replacement of the geotools default implementation to use the GeoServer Resource loader to be agnostic of how the
+ * resources are stored (on disk or on database) With this implementation it is possible to store the external
+ * configuration file into a JDBC Resource store for example
  *
  * @author Christian Mueller
  */
-public class GeneralizationInfosProviderImpl
-        extends org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
+public class GeneralizationInfosProviderImpl extends org.geotools.data.gen.info.GeneralizationInfosProviderImpl {
 
     /**
-     * Override the default implementation to use the GeoServer Resource loader to be agnostic of
-     * how the resources are stored (on disk or on database)
+     * Override the default implementation to use the GeoServer Resource loader to be agnostic of how the resources are
+     * stored (on disk or on database)
      */
     @Override
     protected URL deriveURLFromSourceObject(Object source) throws IOException {
@@ -46,8 +45,7 @@ public class GeneralizationInfosProviderImpl
         if (source instanceof String) {
             String path = (String) source;
 
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             Resource resource = loader.get(Paths.convert(path));
 
             URL url = null;
@@ -69,8 +67,8 @@ public class GeneralizationInfosProviderImpl
     }
 
     /**
-     * Override the default implementation to use the GeoServer Resource loader to be agnostic of
-     * how the resources are stored (on disk or on database)
+     * Override the default implementation to use the GeoServer Resource loader to be agnostic of how the resources are
+     * stored (on disk or on database)
      */
     @Override
     protected GeneralizationInfos parseXML(URL url) throws IOException {

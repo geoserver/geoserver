@@ -95,8 +95,7 @@ public class GetFeatureWithLockTypeBinding extends AbstractComplexBinding {
         }
 
         // get the max features
-        BigInteger maxFeatures =
-                WFSBindingUtils.asBigInteger((Number) node.getAttributeValue("maxFeatures"));
+        BigInteger maxFeatures = WFSBindingUtils.asBigInteger((Number) node.getAttributeValue("maxFeatures"));
 
         if (maxFeatures != null) {
             getFeatureWithLock.setMaxFeatures(maxFeatures);

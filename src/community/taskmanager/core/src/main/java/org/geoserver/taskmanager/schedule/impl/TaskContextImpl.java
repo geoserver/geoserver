@@ -24,9 +24,11 @@ import org.springframework.stereotype.Component;
 @Scope("prototype")
 public class TaskContextImpl implements TaskContext {
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
     private Task task;
 

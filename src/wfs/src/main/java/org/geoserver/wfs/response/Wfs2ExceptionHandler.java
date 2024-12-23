@@ -19,8 +19,8 @@ import org.geoserver.wfs.json.JSONType;
  * Handles a WFS 2.0 service exception by producing an exception report.
  *
  * @author Brad Hards, Sigma Bravo
- *     <p>Based on WfsExceptionHandler by Justin Deoliveira - The Open Planning Project and Carlo
- *     Cancellieri - GeoSolutions.
+ *     <p>Based on WfsExceptionHandler by Justin Deoliveira - The Open Planning Project and Carlo Cancellieri -
+ *     GeoSolutions.
  */
 public class Wfs2ExceptionHandler extends OWS11ServiceExceptionHandler {
 

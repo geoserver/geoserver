@@ -21,8 +21,7 @@ public class UsernamePasswordAuthenticationProviderConfig extends BaseSecurityNa
 
     public UsernamePasswordAuthenticationProviderConfig() {}
 
-    public UsernamePasswordAuthenticationProviderConfig(
-            UsernamePasswordAuthenticationProviderConfig other) {
+    public UsernamePasswordAuthenticationProviderConfig(UsernamePasswordAuthenticationProviderConfig other) {
         super(other);
         userGroupServiceName = other.getUserGroupServiceName();
     }

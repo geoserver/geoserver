@@ -69,9 +69,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(GeorectifyCoverage.class);
 
-    private static final Pattern GCP_PATTERN =
-            Pattern.compile(
-                    "\\[((\\+|-)?[0-9]+(.[0-9]+)?),\\s*((\\+|-)?[0-9]+(.[0-9]+)?)(,\\s*((\\+|-)?[0-9]+(.[0-9]+)?))?\\]");
+    private static final Pattern GCP_PATTERN = Pattern.compile(
+            "\\[((\\+|-)?[0-9]+(.[0-9]+)?),\\s*((\\+|-)?[0-9]+(.[0-9]+)?)(,\\s*((\\+|-)?[0-9]+(.[0-9]+)?))?\\]");
 
     GeorectifyConfiguration config;
 
@@ -92,10 +91,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
     public GeorectifyCoverage() {}
 
     @DescribeResults({
-        @DescribeResult(
-                name = "result",
-                description = "Georectified raster",
-                type = GridCoverage2D.class),
+        @DescribeResult(name = "result", description = "Georectified raster", type = GridCoverage2D.class),
         @DescribeResult(
                 name = "path",
                 description = "Pathname of the generated raster on the server",
@@ -105,30 +101,17 @@ public class GeorectifyCoverage implements GeoServerProcess {
             @DescribeParameter(name = "data", description = "Input raster") GridCoverage2D coverage,
             @DescribeParameter(
                             name = "gcp",
-                            description =
-                                    "List of Ground control points.  Points are specified as [x,y] or [x,y,z].")
+                            description = "List of Ground control points.  Points are specified as [x,y] or [x,y,z].")
                     String gcps,
-            @DescribeParameter(name = "bbox", description = "Bounding box for output", min = 0)
-                    Envelope bbox,
+            @DescribeParameter(name = "bbox", description = "Bounding box for output", min = 0) Envelope bbox,
             @DescribeParameter(
                             name = "targetCRS",
-                            description =
-                                    "Coordinate reference system to use for the output raster")
+                            description = "Coordinate reference system to use for the output raster")
                     CoordinateReferenceSystem crs,
-            @DescribeParameter(
-                            name = "width",
-                            description = "Width of output raster in pixels",
-                            min = 0)
-                    Integer width,
-            @DescribeParameter(
-                            name = "height",
-                            description = "Height of output raster in pixels",
-                            min = 0)
+            @DescribeParameter(name = "width", description = "Width of output raster in pixels", min = 0) Integer width,
+            @DescribeParameter(name = "height", description = "Height of output raster in pixels", min = 0)
                     Integer height,
-            @DescribeParameter(
-                            name = "warpOrder",
-                            min = 0,
-                            description = "Order of the warping polynomial (1 to 3)")
+            @DescribeParameter(name = "warpOrder", min = 0, description = "Order of the warping polynomial (1 to 3)")
                     Integer warpOrder,
             @DescribeParameter(
                             name = "transparent",
@@ -139,14 +122,10 @@ public class GeorectifyCoverage implements GeoServerProcess {
             @DescribeParameter(
                             name = "store",
                             min = 0,
-                            description =
-                                    "Indicates whether to keep the output file after processing",
+                            description = "Indicates whether to keep the output file after processing",
                             defaultValue = "false")
                     Boolean store,
-            @DescribeParameter(
-                            name = "outputPath",
-                            min = 0,
-                            description = "Pathname where the output file is stored")
+            @DescribeParameter(name = "outputPath", min = 0, description = "Pathname where the output file is stored")
                     String outputPath)
             throws IOException {
 
@@ -172,8 +151,7 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // STEP 1: Getting the dataset to be georectified
             //
             // //
-            final Object fileSource =
-                    coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
+            final Object fileSource = coverage.getProperty(GridCoverage2DReader.FILE_SOURCE_PROPERTY);
             if (fileSource != null && fileSource instanceof String) {
                 location = (String) fileSource;
             }
@@ -183,15 +161,12 @@ public class GeorectifyCoverage implements GeoServerProcess {
                     ImageWorker iw = new ImageWorker(image);
                     iw.forceComponentColorModel();
                     final ImageLayout tempLayout = new ImageLayout(image);
-                    tempLayout
-                            .unsetValid(ImageLayout.COLOR_MODEL_MASK)
-                            .unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
-                    RenderedImage alpha =
-                            ConstantDescriptor.create(
-                                    Float.valueOf(image.getWidth()),
-                                    Float.valueOf(image.getHeight()),
-                                    new Byte[] {Byte.valueOf((byte) 255)},
-                                    new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
+                    tempLayout.unsetValid(ImageLayout.COLOR_MODEL_MASK).unsetValid(ImageLayout.SAMPLE_MODEL_MASK);
+                    RenderedImage alpha = ConstantDescriptor.create(
+                            Float.valueOf(image.getWidth()),
+                            Float.valueOf(image.getHeight()),
+                            new Byte[] {Byte.valueOf((byte) 255)},
+                            new RenderingHints(JAI.KEY_IMAGE_LAYOUT, tempLayout));
                     iw.addBand(alpha, false);
                     image = iw.getRenderedImage();
                     cm = image.getColorModel();
@@ -208,12 +183,9 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // //
             final int[] gcpNum = new int[1];
             final List<String> gcp = parseGcps(gcps, gcpNum);
-            File vrtFile =
-                    addGroundControlPoints(
-                            location, gcp, splitToList(config.getGdalTranslateParameters()));
+            File vrtFile = addGroundControlPoints(location, gcp, splitToList(config.getGdalTranslateParameters()));
             if (vrtFile == null || !vrtFile.exists() || !vrtFile.canRead()) {
-                throw new IOException(
-                        "Unable to get a valid file with attached Ground Control Points");
+                throw new IOException("Unable to get a valid file with attached Ground Control Points");
             }
             removeFiles.add(vrtFile);
 
@@ -222,18 +194,17 @@ public class GeorectifyCoverage implements GeoServerProcess {
             // STEP 3: Warping
             //
             // //
-            File warpedFile =
-                    warpFile(
-                            vrtFile,
-                            bbox,
-                            crs,
-                            width,
-                            height,
-                            warpOrder,
-                            tempFolder,
-                            loggingFolder,
-                            config.getExecutionTimeout(),
-                            splitToList(config.getGdalTranslateParameters()));
+            File warpedFile = warpFile(
+                    vrtFile,
+                    bbox,
+                    crs,
+                    width,
+                    height,
+                    warpOrder,
+                    tempFolder,
+                    loggingFolder,
+                    config.getExecutionTimeout(),
+                    splitToList(config.getGdalTranslateParameters()));
             if (warpedFile == null || !warpedFile.exists() || !warpedFile.canRead()) {
                 throw new IOException("Unable to get a valid georectified file");
             }
@@ -256,16 +227,14 @@ public class GeorectifyCoverage implements GeoServerProcess {
                 try {
                     File output = resourceManager.getExternalOutputFile(outputPath, null);
                     if (output.exists() && !output.delete()) {
-                        throw new WPSException(
-                                "Output file " + outputPath + " exists but cannot be overwritten");
+                        throw new WPSException("Output file " + outputPath + " exists but cannot be overwritten");
                     }
                     if (!warpedFile.renameTo(output)) {
-                        throw new WPSException(
-                                "Could not move "
-                                        + warpedFile.getAbsolutePath()
-                                        + " to "
-                                        + outputPath
-                                        + ", it's likely a permission issue");
+                        throw new WPSException("Could not move "
+                                + warpedFile.getAbsolutePath()
+                                + " to "
+                                + outputPath
+                                + ", it's likely a permission issue");
                     }
                     warpedFile = output;
                 } catch (Exception e) {
@@ -323,9 +292,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /**
-     * Given a target query and a target grid geometry returns the query to be used to read the
-     * input data of the process involved in rendering. This method will be called only if the input
-     * data is a feature collection.
+     * Given a target query and a target grid geometry returns the query to be used to read the input data of the
+     * process involved in rendering. This method will be called only if the input data is a feature collection.
      *
      * @return The transformed query, or null if no inversion is possible/meaningful
      */
@@ -334,9 +302,9 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /**
-     * Given a target query and a target grid geometry returns the grid geometry to be used to read
-     * the input data of the process involved in rendering. This method will be called only if the
-     * input data is a grid coverage or a grid coverage reader
+     * Given a target query and a target grid geometry returns the grid geometry to be used to read the input data of
+     * the process involved in rendering. This method will be called only if the input data is a grid coverage or a grid
+     * coverage reader
      *
      * @return The transformed query, or null if no inversion is possible/meaningful
      */
@@ -381,16 +349,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
         final String outputFilePath = file.getAbsolutePath();
         final List<String> tEnvelope = parseBBox(targetEnvelope);
         final String tCrs = parseCrs(targetCRS);
-        final List<String> arguments =
-                buildWarpArguments(
-                        tEnvelope,
-                        width,
-                        height,
-                        tCrs,
-                        order,
-                        vrtFilePath,
-                        outputFilePath,
-                        warpingParameters);
+        final List<String> arguments = buildWarpArguments(
+                tEnvelope, width, height, tCrs, order, vrtFilePath, outputFilePath, warpingParameters);
         final String gdalCommand = config.getWarpingCommand();
 
         executeCommand(gdalCommand, arguments, loggingFolder, config.getEnvVariables());
@@ -480,16 +440,14 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /**
-     * First processing step which setup a VRT by adding ground control points to the specified
-     * input file.
+     * First processing step which setup a VRT by adding ground control points to the specified input file.
      *
      * @param originalFilePath the path of the file referring to the original image.
      * @param gcp the Ground Control Points option to be attached to the translating command.
      * @return a File containing the translated dataset.
      */
     private File addGroundControlPoints(
-            final String originalFilePath, final List<String> gcp, final List<String> parameters)
-            throws IOException {
+            final String originalFilePath, final List<String> gcp, final List<String> parameters) throws IOException {
         final File vrtFile = File.createTempFile("vrt_", ".vrt", config.getTempFolder());
         @SuppressWarnings("serial")
         final List<String> arguments = new ArrayList<>();
@@ -521,8 +479,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /**
-     * Execute the following command, given the specified argument and return the File storing
-     * logged error messages (if any).
+     * Execute the following command, given the specified argument and return the File storing logged error messages (if
+     * any).
      */
     private static void executeCommand(
             final String gdalCommand,
@@ -565,15 +523,14 @@ public class GeorectifyCoverage implements GeoServerProcess {
             if (exitValue != 0) {
                 if (logFile.exists() && logFile.canRead()) {
                     String error = getError(logFile);
-                    throw new WPSException(
-                            "Error launching OS command: '"
-                                    + gdalCommand
-                                    + "' with arguments '"
-                                    + arguments
-                                    + "' and env vars '"
-                                    + envVars
-                                    + "': \n"
-                                    + error);
+                    throw new WPSException("Error launching OS command: '"
+                            + gdalCommand
+                            + "' with arguments '"
+                            + arguments
+                            + "' and env vars '"
+                            + envVars
+                            + "': \n"
+                            + error);
                 }
             }
 
@@ -646,9 +603,8 @@ public class GeorectifyCoverage implements GeoServerProcess {
     }
 
     /**
-     * Split a whitespace-separated list into a list of strings, discarding all excess whitespace.
-     * No empty strings are returned. If the string is empty or contains only whitespace, the
-     * returned list will be empty.
+     * Split a whitespace-separated list into a list of strings, discarding all excess whitespace. No empty strings are
+     * returned. If the string is empty or contains only whitespace, the returned list will be empty.
      */
     private static List<String> splitToList(String s) {
         return Splitter.onPattern("\\s+").omitEmptyStrings().splitToList(s);

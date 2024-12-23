@@ -119,94 +119,45 @@ public class XlinkGeometryTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         // test if nodes are empty
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:geometry/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:curve/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:point/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:geometry/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:linestring/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:surface/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:polygon/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:curve/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multicurve/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:point/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipoint/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:linestring/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multilinestring/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:surface/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multisurface/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:polygon/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multicurve/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipoint/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multilinestring/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multisurface/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipolygon/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipolygon/*", doc);
 
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:geometryref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:geometryref/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:curveref/*", doc);
+        assertXpathCount(0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:pointref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:curveref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:linestringref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:pointref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:surfaceref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:linestringref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:polygonref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:surfaceref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multicurveref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:polygonref/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multicurveref/*",
-                doc);
-        assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipointref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipointref/*", doc);
         assertXpathCount(
                 0,
                 "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multilinestringref/*",
                 doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multisurfaceref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multisurfaceref/*", doc);
         assertXpathCount(
-                0,
-                "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipolygonref/*",
-                doc);
+                0, "wfs:FeatureCollection/gml:featureMember/ex:MyTestFeature[@gml:id='2']/ex:multipolygonref/*", doc);
     }
 }

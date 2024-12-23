@@ -54,19 +54,16 @@ public class QueryablesBuilder {
     }
 
     public QueryablesBuilder forType(FeatureType ft) {
-        Map<String, Schema> properties =
-                ft.getDescriptors().stream()
-                        .filter( // ignore feature chaining links, they might be duplicated
-                                ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
-                        .collect(
-                                Collectors.toMap(
-                                        ad -> ad.getName().getLocalPart(),
-                                        ad -> getSchema(ad),
-                                        (u, v) -> {
-                                            throw new IllegalStateException(
-                                                    String.format("Duplicate key %s", u));
-                                        },
-                                        () -> new LinkedHashMap<>()));
+        Map<String, Schema> properties = ft.getDescriptors().stream()
+                .filter( // ignore feature chaining links, they might be duplicated
+                        ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
+                .collect(Collectors.toMap(
+                        ad -> ad.getName().getLocalPart(),
+                        ad -> getSchema(ad),
+                        (u, v) -> {
+                            throw new IllegalStateException(String.format("Duplicate key %s", u));
+                        },
+                        () -> new LinkedHashMap<>()));
         this.queryables.setProperties(properties);
         return this;
     }

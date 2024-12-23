@@ -86,8 +86,7 @@ public class GetCapabilitiesTypeBinding extends AbstractComplexBinding {
      */
     @Override
     public Object parse(ElementInstance instance, Node node, Object value) throws Exception {
-        net.opengis.ows10.GetCapabilitiesType owsGetCapabilities =
-                (net.opengis.ows10.GetCapabilitiesType) value;
+        net.opengis.ows10.GetCapabilitiesType owsGetCapabilities = (net.opengis.ows10.GetCapabilitiesType) value;
         GetCapabilitiesType getCapabilities = wfsfactory.createGetCapabilitiesType();
 
         getCapabilities.setAcceptFormats(owsGetCapabilities.getAcceptFormats());

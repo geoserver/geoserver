@@ -50,7 +50,8 @@ public abstract class Update extends TransactionElement {
         public void setUpdateProperties(List<Property> properties) {
             UpdateElementType update = (UpdateElementType) adaptee;
             update.getProperty().clear();
-            properties.stream().map(p -> p.getAdaptee()).forEach(p -> update.getProperty().add(p));
+            properties.stream().map(p -> p.getAdaptee()).forEach(p -> update.getProperty()
+                    .add(p));
         }
 
         @Override

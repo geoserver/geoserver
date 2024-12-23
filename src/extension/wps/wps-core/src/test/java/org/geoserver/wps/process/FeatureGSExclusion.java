@@ -24,8 +24,7 @@ public class FeatureGSExclusion implements ProcessFilter {
     public ProcessFactory filterFactory(ProcessFactory pf) {
         if (pf instanceof VectorProcessFactory
                 || (pf instanceof DelegatingProcessFactory
-                        && ((DelegatingProcessFactory) pf).getInnermostDelegate()
-                                instanceof VectorProcessFactory)) {
+                        && ((DelegatingProcessFactory) pf).getInnermostDelegate() instanceof VectorProcessFactory)) {
             return null;
         }
         if (pf instanceof DeprecatedProcessFactory) {

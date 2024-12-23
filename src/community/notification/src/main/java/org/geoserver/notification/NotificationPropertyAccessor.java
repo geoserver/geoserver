@@ -34,8 +34,7 @@ public class NotificationPropertyAccessor implements PropertyAccessor {
     }
 
     @Override
-    public <T> void set(Object object, String xpath, T value, Class<T> target)
-            throws IllegalArgumentException {
+    public <T> void set(Object object, String xpath, T value, Class<T> target) throws IllegalArgumentException {
         throw new UnsupportedOperationException();
     }
 }

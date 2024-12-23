@@ -20,10 +20,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapts all output formats able to encode a WFS {@link FeatureCollectionResponse} to a {@link
- * org.springframework.http.converter.HttpMessageConverter} encoding a {@link
- * org.geoserver.wfs.response.FeatureResponse}. Allows to reuse all existing WFS output formats in
- * the OGC Features API implementation.
+ * Adapts all output formats able to encode a WFS {@link FeatureCollectionResponse} to a
+ * {@link org.springframework.http.converter.HttpMessageConverter} encoding a
+ * {@link org.geoserver.wfs.response.FeatureResponse}. Allows to reuse all existing WFS output formats in the OGC
+ * Features API implementation.
  */
 @Component
 public class ImageResponseMessageConverter extends MessageConverterResponseAdapter<ImagesResponse> {
@@ -41,10 +41,7 @@ public class ImageResponseMessageConverter extends MessageConverterResponseAdapt
 
     @Override
     protected void writeResponse(
-            ImagesResponse value,
-            HttpOutputMessage httpOutputMessage,
-            Operation operation,
-            Response response)
+            ImagesResponse value, HttpOutputMessage httpOutputMessage, Operation operation, Response response)
             throws IOException {
         response.write(value.getResponse(), httpOutputMessage.getBody(), operation);
     }
@@ -60,8 +57,6 @@ public class ImageResponseMessageConverter extends MessageConverterResponseAdapt
 
     @Override
     protected Predicate<Response> getResponseFilterPredicate() {
-        return r ->
-                r instanceof WFSGetFeatureOutputFormat
-                        && ((WFSGetFeatureOutputFormat) r).canHandle(V2);
+        return r -> r instanceof WFSGetFeatureOutputFormat && ((WFSGetFeatureOutputFormat) r).canHandle(V2);
     }
 }

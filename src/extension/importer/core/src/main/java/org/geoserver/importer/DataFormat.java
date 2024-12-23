@@ -55,9 +55,7 @@ public abstract class DataFormat implements Serializable {
             } catch (IOException e) {
                 LOG.log(
                         Level.FINER,
-                        String.format(
-                                "Error checking if format %s can read file %s, " + df.getName(),
-                                file.getPath()),
+                        String.format("Error checking if format %s can read file %s, " + df.getName(), file.getPath()),
                         e);
             }
         }
@@ -135,15 +133,13 @@ public abstract class DataFormat implements Serializable {
 
     public abstract boolean canRead(ImportData data) throws IOException;
 
-    public abstract StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
-            throws IOException;
+    public abstract StoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException;
 
-    public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
-            throws IOException;
+    public abstract List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException;
 
     /**
-     * Returns a File from the ImportData, assuming the import data itself is a FileData (a class
-     * cast exception will happen otherwise)
+     * Returns a File from the ImportData, assuming the import data itself is a FileData (a class cast exception will
+     * happen otherwise)
      */
     protected File getFileFromData(ImportData data) {
         assert data instanceof FileData;

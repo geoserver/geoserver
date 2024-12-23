@@ -15,8 +15,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class GeofenceSecurityInterceptor implements HandlerInterceptor {
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         if (request.getServletPath().equalsIgnoreCase("/geofence")) {
             if (!SecurityContextHolder.getContext()

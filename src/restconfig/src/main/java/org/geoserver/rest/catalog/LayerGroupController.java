@@ -63,11 +63,7 @@ import org.springframework.web.util.UriComponentsBuilder;
             RestBaseController.ROOT_PATH + "/layergroups",
             RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/layergroups"
         },
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class LayerGroupController extends AbstractCatalogController {
     private static final Logger LOGGER = Logging.getLogger(LayerGroupController.class);
 
@@ -82,32 +78,28 @@ public class LayerGroupController extends AbstractCatalogController {
         if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
-        List<LayerGroupInfo> layerGroupInfos =
-                workspaceName != null
-                        ? catalog.getLayerGroupsByWorkspace(workspaceName)
-                        : catalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE);
+        List<LayerGroupInfo> layerGroupInfos = workspaceName != null
+                ? catalog.getLayerGroupsByWorkspace(workspaceName)
+                : catalog.getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE);
         return wrapList(layerGroupInfos, LayerGroupInfo.class);
     }
 
     @GetMapping(value = "{layerGroupName}")
     public RestWrapper<?> getLayerGroup(
-            @PathVariable String layerGroupName,
-            @PathVariable(required = false) String workspaceName) {
+            @PathVariable String layerGroupName, @PathVariable(required = false) String workspaceName) {
 
         if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
 
-        LayerGroupInfo layerGroupInfo =
-                workspaceName != null
-                        ? catalog.getLayerGroupByName(workspaceName, layerGroupName)
-                        : catalog.getLayerGroupByName(layerGroupName);
+        LayerGroupInfo layerGroupInfo = workspaceName != null
+                ? catalog.getLayerGroupByName(workspaceName, layerGroupName)
+                : catalog.getLayerGroupByName(layerGroupName);
 
         if (layerGroupInfo == null) {
-            throw new ResourceNotFoundException(
-                    "No such layer group "
-                            + layerGroupName
-                            + (workspaceName == null ? "" : " in workspace " + workspaceName));
+            throw new ResourceNotFoundException("No such layer group "
+                    + layerGroupName
+                    + (workspaceName == null ? "" : " in workspace " + workspaceName));
         }
         return wrapObject(layerGroupInfo, LayerGroupInfo.class);
     }
@@ -186,13 +178,10 @@ public class LayerGroupController extends AbstractCatalogController {
         checkFullAdminRequired(workspaceName);
 
         LOGGER.info(
-                "PUT layer group "
-                        + layerGroupName
-                        + (workspaceName != null ? ", workspace " + workspaceName : ""));
-        LayerGroupInfo original =
-                workspaceName != null
-                        ? catalog.getLayerGroupByName(workspaceName, layerGroupName)
-                        : catalog.getLayerGroupByName(layerGroupName);
+                "PUT layer group " + layerGroupName + (workspaceName != null ? ", workspace " + workspaceName : ""));
+        LayerGroupInfo original = workspaceName != null
+                ? catalog.getLayerGroupByName(workspaceName, layerGroupName)
+                : catalog.getLayerGroupByName(layerGroupName);
 
         // ensure not a name change
         if (lg.getName() != null && !lg.getName().equals(original.getName())) {
@@ -215,93 +204,81 @@ public class LayerGroupController extends AbstractCatalogController {
 
     @DeleteMapping(value = "{layerGroupName}")
     public void layerGroupDelete(
-            @PathVariable(required = false) String workspaceName,
-            @PathVariable String layerGroupName) {
+            @PathVariable(required = false) String workspaceName, @PathVariable String layerGroupName) {
 
         if (workspaceName != null && catalog.getWorkspaceByName(workspaceName) == null) {
             throw new ResourceNotFoundException("Workspace " + workspaceName + " not found");
         }
 
         LOGGER.info("DELETE layer group " + layerGroupName);
-        LayerGroupInfo lg =
-                workspaceName == null
-                        ? catalog.getLayerGroupByName(layerGroupName)
-                        : catalog.getLayerGroupByName(workspaceName, layerGroupName);
+        LayerGroupInfo lg = workspaceName == null
+                ? catalog.getLayerGroupByName(layerGroupName)
+                : catalog.getLayerGroupByName(workspaceName, layerGroupName);
         catalog.remove(lg);
     }
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return LayerGroupInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<LayerGroupInfo> getObjectClass() {
-                        return LayerGroupInfo.class;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<LayerGroupInfo> getObjectClass() {
+                return LayerGroupInfo.class;
+            }
 
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
-                        String layerGroup = uriTemplateVars.get("layerGroupName");
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
+                String layerGroup = uriTemplateVars.get("layerGroupName");
 
-                        if (layerGroup == null) {
-                            return null;
-                        }
-                        return catalog.getLayerGroupByName(workspace, layerGroup);
-                    }
+                if (layerGroup == null) {
+                    return null;
+                }
+                return catalog.getLayerGroupByName(workspace, layerGroup);
+            }
 
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof StyleInfo) {
-                            StringBuilder link = new StringBuilder();
-                            if (prefix != null) {
-                                link.append("/workspaces/").append(converter.encode(prefix));
-                            }
-                            link.append("/styles/").append(converter.encode(ref));
-                            converter.encodeLink(link.toString(), writer);
-                        }
-                        if (obj instanceof LayerInfo) {
-                            converter.encodeLink(
-                                    "/workspaces/" + prefix + "/layers/" + converter.encode(ref),
-                                    writer);
-                        } else if (obj instanceof LayerGroupInfo) {
-                            LayerGroupInfo lg = (LayerGroupInfo) obj;
-                            if (lg.getWorkspace() != null) {
-                                converter.encodeLink(
-                                        "/workspaces/"
-                                                + lg.getWorkspace().getName()
-                                                + "/layergroups/"
-                                                + converter.encode(ref),
-                                        writer);
-                            } else {
-                                converter.encodeLink(
-                                        "/layergroups/" + converter.encode(ref), writer);
-                            }
-                        }
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof StyleInfo) {
+                    StringBuilder link = new StringBuilder();
+                    if (prefix != null) {
+                        link.append("/workspaces/").append(converter.encode(prefix));
                     }
-                });
+                    link.append("/styles/").append(converter.encode(ref));
+                    converter.encodeLink(link.toString(), writer);
+                }
+                if (obj instanceof LayerInfo) {
+                    converter.encodeLink("/workspaces/" + prefix + "/layers/" + converter.encode(ref), writer);
+                } else if (obj instanceof LayerGroupInfo) {
+                    LayerGroupInfo lg = (LayerGroupInfo) obj;
+                    if (lg.getWorkspace() != null) {
+                        converter.encodeLink(
+                                "/workspaces/" + lg.getWorkspace().getName() + "/layergroups/" + converter.encode(ref),
+                                writer);
+                    } else {
+                        converter.encodeLink("/layergroups/" + converter.encode(ref), writer);
+                    }
+                }
+            }
+        });
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
         return new ObjectToMapWrapper<>(LayerGroupInfo.class) {
             @Override
-            protected void wrapInternal(
-                    Map<String, Object> properties, SimpleHash model, LayerGroupInfo layerGroup) {
+            protected void wrapInternal(Map<String, Object> properties, SimpleHash model, LayerGroupInfo layerGroup) {
                 if (properties == null) {
                     properties = hashToProperties(model);
                 }

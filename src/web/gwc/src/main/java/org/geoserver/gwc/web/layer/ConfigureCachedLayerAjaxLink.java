@@ -21,8 +21,8 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 import org.geowebcache.layer.TileLayer;
 
 /**
- * A simple ajax link that links to the edit page for the given {@link GeoServerTileLayer} (that is,
- * either to the layerinfo edit page or layergroup edit page, as appropriate)
+ * A simple ajax link that links to the edit page for the given {@link GeoServerTileLayer} (that is, either to the
+ * layerinfo edit page or layergroup edit page, as appropriate)
  */
 class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
 
@@ -33,11 +33,9 @@ class ConfigureCachedLayerAjaxLink extends SimpleAjaxLink<TileLayer> {
     /**
      * @param id component id
      * @param itemModel model over the tile layer to configure
-     * @param returnPage which page to instruct the LayerInfo or LayerGroupInfo edit page to return
-     *     to
+     * @param returnPage which page to instruct the LayerInfo or LayerGroupInfo edit page to return to
      */
-    public ConfigureCachedLayerAjaxLink(
-            String id, IModel<TileLayer> itemModel, Class<? extends Page> returnPage) {
+    public ConfigureCachedLayerAjaxLink(String id, IModel<TileLayer> itemModel, Class<? extends Page> returnPage) {
         super(id, itemModel, new PropertyModel<>(itemModel, "name"));
         this.returnPage = returnPage;
     }

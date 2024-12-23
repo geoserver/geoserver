@@ -11,9 +11,8 @@ import net.opengis.ows10.OperationsMetadataType;
 import org.geoserver.csw.store.CatalogStore;
 
 /**
- * Adds a output format to the GetRecords element. If the generation is properly isolated, doing so
- * won't result in an accumulation of output formats as the decorate method is called across
- * different GetCapabilities requests
+ * Adds a output format to the GetRecords element. If the generation is properly isolated, doing so won't result in an
+ * accumulation of output formats as the decorate method is called across different GetCapabilities requests
  *
  * @author Andrea Aime - GeoSolution
  */

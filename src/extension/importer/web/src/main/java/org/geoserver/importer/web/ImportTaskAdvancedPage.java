@@ -57,14 +57,13 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         ReprojectTransform reprojectTx = item.getTransform().get(ReprojectTransform.class);
 
         reprojectCheckBox = new CheckBox("enableReprojection", new Model<>(reprojectTx != null));
-        reprojectCheckBox.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        reprojectPanel.setEnabled(reprojectCheckBox.getModelObject());
-                        target.add(reprojectPanel);
-                    }
-                });
+        reprojectCheckBox.add(new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                reprojectPanel.setEnabled(reprojectCheckBox.getModelObject());
+                target.add(reprojectPanel);
+            }
+        });
         form.add(reprojectCheckBox);
 
         if (reprojectTx == null) {
@@ -80,45 +79,43 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
         remapPanel = new AttributeRemappingPanel("remapping", model);
         form.add(remapPanel);
 
-        form.add(
-                new AjaxSubmitLink("save") {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        ImportTask task = model.getObject();
-                        TransformChain<? extends ImportTransform> txChain = task.getTransform();
+        form.add(new AjaxSubmitLink("save") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                ImportTask task = model.getObject();
+                TransformChain<? extends ImportTransform> txChain = task.getTransform();
 
-                        // reprojection
-                        txChain.removeAll(ReprojectTransform.class);
+                // reprojection
+                txChain.removeAll(ReprojectTransform.class);
 
-                        if (reprojectCheckBox.getModelObject()) {
-                            task.addTransform(reprojectPanel.getTransform());
-                        }
+                if (reprojectCheckBox.getModelObject()) {
+                    task.addTransform(reprojectPanel.getTransform());
+                }
 
-                        // remaps
-                        txChain.removeAll(AttributeRemapTransform.class);
-                        remapPanel.remaps.forEach(m -> task.addTransform(m));
+                // remaps
+                txChain.removeAll(AttributeRemapTransform.class);
+                remapPanel.remaps.forEach(m -> task.addTransform(m));
 
-                        try {
-                            ImporterWebUtils.importer().changed(task);
-                        } catch (IOException e) {
-                            error(e);
-                        }
+                try {
+                    ImporterWebUtils.importer().changed(task);
+                } catch (IOException e) {
+                    error(e);
+                }
 
-                        PageParameters pp =
-                                new PageParameters().add("id", task.getContext().getId());
-                        setResponsePage(ImportPage.class, pp);
-                    }
-                });
-        form.add(
-                new AjaxLink("cancel") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        ImportTask task = model.getObject();
-                        PageParameters pp =
-                                new PageParameters().add("id", task.getContext().getId());
-                        setResponsePage(ImportPage.class, pp);
-                    }
-                });
+                PageParameters pp =
+                        new PageParameters().add("id", task.getContext().getId());
+                setResponsePage(ImportPage.class, pp);
+            }
+        });
+        form.add(new AjaxLink("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                ImportTask task = model.getObject();
+                PageParameters pp =
+                        new PageParameters().add("id", task.getContext().getId());
+                setResponsePage(ImportPage.class, pp);
+            }
+        });
     }
 
     static class ReprojectionPanel extends Panel {
@@ -162,104 +159,87 @@ public class ImportTaskAdvancedPage extends GeoServerSecuredPage {
             add(remapContainer);
 
             remaps = itemModel.getObject().getTransform().getAll(AttributeRemapTransform.class);
-            remapList =
-                    new ListView<>("remaps", remaps) {
+            remapList = new ListView<>("remaps", remaps) {
 
+                @Override
+                protected void populateItem(final ListItem<AttributeRemapTransform> item) {
+
+                    final DropDownChoice<String> attChoice =
+                            new DropDownChoice<>("att", new PropertyModel<>(item.getModel(), "field"), atts);
+                    item.add(attChoice);
+
+                    final DropDownChoice<Class<?>> typeChoice = new DropDownChoice<>(
+                            "type", new PropertyModel<>(item.getModel(), "type"), types, new ChoiceRenderer<>() {
+
+                                @Override
+                                public Object getDisplayValue(Class<?> object) {
+                                    return object.getSimpleName();
+                                }
+                            });
+                    item.add(typeChoice);
+
+                    final TextField<String> dateFormatTextField = new TextField<>("dateFormat", new Model<>());
+                    dateFormatTextField.setOutputMarkupId(true);
+                    item.add(dateFormatTextField);
+
+                    typeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
                         @Override
-                        protected void populateItem(final ListItem<AttributeRemapTransform> item) {
-
-                            final DropDownChoice<String> attChoice =
-                                    new DropDownChoice<>(
-                                            "att",
-                                            new PropertyModel<>(item.getModel(), "field"),
-                                            atts);
-                            item.add(attChoice);
-
-                            final DropDownChoice<Class<?>> typeChoice =
-                                    new DropDownChoice<>(
-                                            "type",
-                                            new PropertyModel<>(item.getModel(), "type"),
-                                            types,
-                                            new ChoiceRenderer<>() {
-
-                                                @Override
-                                                public Object getDisplayValue(Class<?> object) {
-                                                    return object.getSimpleName();
-                                                }
-                                            });
-                            item.add(typeChoice);
-
-                            final TextField<String> dateFormatTextField =
-                                    new TextField<>("dateFormat", new Model<>());
-                            dateFormatTextField.setOutputMarkupId(true);
-                            item.add(dateFormatTextField);
-
-                            typeChoice.add(
-                                    new AjaxFormComponentUpdatingBehavior("change") {
-                                        @Override
-                                        protected void onUpdate(AjaxRequestTarget target) {
-                                            dateFormatTextField.setEnabled(
-                                                    Date.class.equals(typeChoice.getModelObject()));
-                                            target.add(dateFormatTextField);
-                                        }
-                                    });
-                            // dateFormatTextField.setVisible(false);
-
-                            item.add(
-                                    new AjaxButton("apply") {
-                                        @Override
-                                        protected void onSubmit(AjaxRequestTarget target) {
-                                            attChoice.processInput();
-                                            typeChoice.processInput();
-                                            dateFormatTextField.processInput();
-
-                                            AttributeRemapTransform tx = item.getModelObject();
-
-                                            String field = tx.getField();
-                                            Class<?> type = typeChoice.getModelObject();
-
-                                            if (Date.class.equals(type)) {
-                                                String dateFormat =
-                                                        dateFormatTextField.getModelObject();
-                                                if (dateFormat == null
-                                                        || "".equals(dateFormat.trim())) {
-                                                    dateFormat = null;
-                                                }
-                                                item.setModelObject(
-                                                        new DateFormatTransform(field, dateFormat));
-                                            } else if (Number.class.isAssignableFrom(type)) {
-                                                @SuppressWarnings("unchecked")
-                                                Class<? extends Number> nt =
-                                                        (Class<? extends Number>) type;
-                                                item.setModelObject(
-                                                        new NumberFormatTransform(field, nt));
-                                            }
-
-                                            target.add(remapContainer);
-                                        }
-                                    }.setDefaultFormProcessing(false));
-
-                            item.add(
-                                    new AjaxButton("cancel") {
-                                        @Override
-                                        protected void onSubmit(AjaxRequestTarget target) {
-                                            remaps.remove(item.getModelObject());
-                                            target.add(remapContainer);
-                                        }
-                                    }.setDefaultFormProcessing(false));
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            dateFormatTextField.setEnabled(Date.class.equals(typeChoice.getModelObject()));
+                            target.add(dateFormatTextField);
                         }
-                    };
+                    });
+                    // dateFormatTextField.setVisible(false);
+
+                    item.add(
+                            new AjaxButton("apply") {
+                                @Override
+                                protected void onSubmit(AjaxRequestTarget target) {
+                                    attChoice.processInput();
+                                    typeChoice.processInput();
+                                    dateFormatTextField.processInput();
+
+                                    AttributeRemapTransform tx = item.getModelObject();
+
+                                    String field = tx.getField();
+                                    Class<?> type = typeChoice.getModelObject();
+
+                                    if (Date.class.equals(type)) {
+                                        String dateFormat = dateFormatTextField.getModelObject();
+                                        if (dateFormat == null || "".equals(dateFormat.trim())) {
+                                            dateFormat = null;
+                                        }
+                                        item.setModelObject(new DateFormatTransform(field, dateFormat));
+                                    } else if (Number.class.isAssignableFrom(type)) {
+                                        @SuppressWarnings("unchecked")
+                                        Class<? extends Number> nt = (Class<? extends Number>) type;
+                                        item.setModelObject(new NumberFormatTransform(field, nt));
+                                    }
+
+                                    target.add(remapContainer);
+                                }
+                            }.setDefaultFormProcessing(false));
+
+                    item.add(
+                            new AjaxButton("cancel") {
+                                @Override
+                                protected void onSubmit(AjaxRequestTarget target) {
+                                    remaps.remove(item.getModelObject());
+                                    target.add(remapContainer);
+                                }
+                            }.setDefaultFormProcessing(false));
+                }
+            };
             remapList.setOutputMarkupId(true);
             remapContainer.add(remapList);
 
-            add(
-                    new AjaxLink<>("add", itemModel) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            remaps.add(new AttributeRemapTransform(null, null));
-                            target.add(remapContainer);
-                        }
-                    });
+            add(new AjaxLink<>("add", itemModel) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    remaps.add(new AttributeRemapTransform(null, null));
+                    target.add(remapContainer);
+                }
+            });
         }
     }
 }

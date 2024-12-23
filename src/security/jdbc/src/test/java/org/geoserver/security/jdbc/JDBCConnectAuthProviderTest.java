@@ -30,8 +30,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderTest {
 
-    protected JDBCConnectAuthProviderConfig createAuthConfg(
-            String name, String userGroupServiceName) {
+    protected JDBCConnectAuthProviderConfig createAuthConfg(String name, String userGroupServiceName) {
         JDBCConnectAuthProviderConfig config = new JDBCConnectAuthProviderConfig();
         config.setName(name);
         config.setClassName(JDBCConnectAuthProvider.class.getName());
@@ -45,11 +44,9 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
     public void testAuthentificationWithoutUserGroupService() throws Exception {
         JDBCConnectAuthProviderConfig config = createAuthConfg("jdbc1", null);
         getSecurityManager().saveAuthenticationProvider(config);
-        GeoServerAuthenticationProvider provider =
-                getSecurityManager().loadAuthenticationProvider("jdbc1");
+        GeoServerAuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider("jdbc1");
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken("sa", "");
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("sa", "");
         token.setDetails("details");
         assertTrue(provider.supports(token.getClass()));
         assertFalse(provider.supports(RememberMeAuthenticationToken.class));
@@ -79,8 +76,7 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         GeoServerUserGroupService ugService = createUserGroupService("jdbc2");
         JDBCConnectAuthProviderConfig config = createAuthConfg("jdbc2", ugService.getName());
         getSecurityManager().saveAuthenticationProvider(config);
-        GeoServerAuthenticationProvider provider =
-                getSecurityManager().loadAuthenticationProvider("jdbc2");
+        GeoServerAuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider("jdbc2");
 
         GeoServerUserGroupStore ugStore = ugService.createStore();
         GeoServerUser sa = ugStore.createUserObject("sa", "", true);
@@ -93,8 +89,7 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         roleStore.store();
         getSecurityManager().setActiveRoleService(roleService);
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken("sa", "");
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("sa", "");
         token.setDetails("details");
         assertTrue(provider.supports(token.getClass()));
         assertFalse(provider.supports(RememberMeAuthenticationToken.class));
@@ -133,8 +128,7 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         GeoServerRoleService roleService = createRoleService("jdbc3");
         JDBCConnectAuthProviderConfig config = createAuthConfg("jdbc3", null);
         getSecurityManager().saveAuthenticationProvider(config);
-        GeoServerAuthenticationProvider provider =
-                getSecurityManager().loadAuthenticationProvider("jdbc3");
+        GeoServerAuthenticationProvider provider = getSecurityManager().loadAuthenticationProvider("jdbc3");
 
         GeoServerRoleStore roleStore = roleService.createStore();
         roleStore.addRole(GeoServerRole.ADMIN_ROLE);
@@ -142,8 +136,7 @@ public class JDBCConnectAuthProviderTest extends AbstractAuthenticationProviderT
         roleStore.store();
         getSecurityManager().setActiveRoleService(roleService);
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken("sa", "");
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("sa", "");
         token.setDetails("details");
         assertTrue(provider.supports(token.getClass()));
         assertFalse(provider.supports(RememberMeAuthenticationToken.class));

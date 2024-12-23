@@ -65,8 +65,7 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         // use emf reflection
         EObject eObject = (EObject) request;
 
@@ -100,8 +99,8 @@ public class EMFKvpRequestReader extends KvpRequestReader {
     }
 
     /**
-     * Sets a value in the target EMF object, adding it to a collection if the target is a
-     * collection, setting it otherwise. Subclasses can override this behavior
+     * Sets a value in the target EMF object, adding it to a collection if the target is a collection, setting it
+     * otherwise. Subclasses can override this behavior
      */
     protected void setValue(EObject eObject, String property, Object value) {
         // check for a collection

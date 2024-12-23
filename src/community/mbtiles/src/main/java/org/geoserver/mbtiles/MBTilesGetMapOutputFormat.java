@@ -99,9 +99,7 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
 
             // save metadata
             metadata.setFormat(
-                    JPEG_MIME_TYPE.equals(imageFormat)
-                            ? MBTilesMetadata.t_format.JPEG
-                            : MBTilesMetadata.t_format.PNG);
+                    JPEG_MIME_TYPE.equals(imageFormat) ? MBTilesMetadata.t_format.JPEG : MBTilesMetadata.t_format.PNG);
             LOGGER.fine("Creating tile entry" + metadata.getName());
             mbTiles.saveMetaData(metadata);
         }
@@ -146,9 +144,7 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
     protected ReferencedEnvelope bounds(GetMapRequest req) {
         ReferencedEnvelope convertedBounds = null;
         try {
-            convertedBounds =
-                    new ReferencedEnvelope(req.getBbox(), req.getCrs())
-                            .transform(SPHERICAL_MERCATOR, true);
+            convertedBounds = new ReferencedEnvelope(req.getBbox(), req.getCrs()).transform(SPHERICAL_MERCATOR, true);
         } catch (Exception e) {
             throw new ServiceException(e);
         }
@@ -166,8 +162,7 @@ public class MBTilesGetMapOutputFormat extends AbstractTilesGetMapOutputFormat {
     }
 
     /** Add tiles to an existing MBtile file */
-    public void addTiles(
-            MBTilesFile mbtiles, GetMapRequest req, String name, ProgressListener listener)
+    public void addTiles(MBTilesFile mbtiles, GetMapRequest req, String name, ProgressListener listener)
             throws IOException {
         addTiles(new MbTilesFileWrapper(mbtiles), req, name, listener);
     }

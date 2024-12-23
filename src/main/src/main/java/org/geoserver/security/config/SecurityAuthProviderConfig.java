@@ -12,8 +12,7 @@ import org.geoserver.security.GeoServerUserGroupService;
 /**
  * {@link GeoServerAuthenticationProvider} configuration object.
  *
- * <p>The {@link #getUserGroupServiceName()} may be null if no {@link GeoServerUserGroupService} is
- * needed.
+ * <p>The {@link #getUserGroupServiceName()} may be null if no {@link GeoServerUserGroupService} is needed.
  */
 public interface SecurityAuthProviderConfig extends SecurityNamedServiceConfig {
 

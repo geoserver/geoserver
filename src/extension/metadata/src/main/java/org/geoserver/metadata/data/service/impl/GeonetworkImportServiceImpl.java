@@ -22,20 +22,22 @@ import org.w3c.dom.Document;
 @Component
 public class GeonetworkImportServiceImpl implements GeonetworkImportService {
 
-    @Autowired private ConfigurationService service;
+    @Autowired
+    private ConfigurationService service;
 
-    @Autowired private RemoteDocumentReader geonetworkReader;
+    @Autowired
+    private RemoteDocumentReader geonetworkReader;
 
-    @Autowired private GeonetworkXmlParser xmlParser;
+    @Autowired
+    private GeonetworkXmlParser xmlParser;
 
-    @Autowired private ComplexMetadataService mapService;
+    @Autowired
+    private ComplexMetadataService mapService;
 
     @Override
-    public void importLayer(
-            ResourceInfo resource, ComplexMetadataMap map, String geonetwork, String uuid)
+    public void importLayer(ResourceInfo resource, ComplexMetadataMap map, String geonetwork, String uuid)
             throws IOException {
-        Document doc =
-                geonetworkReader.readDocument(new URL(generateMetadataUrl(geonetwork, uuid)));
+        Document doc = geonetworkReader.readDocument(new URL(generateMetadataUrl(geonetwork, uuid)));
         xmlParser.parseMetadata(doc, resource, map);
         mapService.init(map); // fix all multi-valued complex fields
     }

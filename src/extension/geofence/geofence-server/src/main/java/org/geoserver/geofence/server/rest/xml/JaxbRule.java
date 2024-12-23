@@ -75,7 +75,8 @@ public class JaxbRule extends AbstractPayload {
                     int areaSRID = -1;
                     if (getAllowedArea().startsWith("SRID")) {
                         areaWKT = getAllowedArea().split(";")[1];
-                        areaSRID = Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
+                        areaSRID =
+                                Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
                     }
                     MultiPolygon area = (MultiPolygon) new WKTReader().read(areaWKT);
                     area.setSRID(areaSRID);
@@ -271,7 +272,8 @@ public class JaxbRule extends AbstractPayload {
                     int areaSRID = -1;
                     if (getAllowedArea().startsWith("SRID")) {
                         areaWKT = getAllowedArea().split(";")[1];
-                        areaSRID = Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
+                        areaSRID =
+                                Integer.parseInt(getAllowedArea().split(";")[0].split("=")[1]);
                     }
                     MultiPolygon area = (MultiPolygon) new WKTReader().read(areaWKT);
                     area.setSRID(areaSRID);
@@ -390,8 +392,7 @@ public class JaxbRule extends AbstractPayload {
             layerDetails.setDefaultStyle(otherDetails.getDefaultStyle());
             if (otherDetails.getType() != null)
                 layerDetails.setLayerType(otherDetails.getType().toString());
-            for (org.geoserver.geofence.core.model.LayerAttribute att :
-                    otherDetails.getAttributes()) {
+            for (org.geoserver.geofence.core.model.LayerAttribute att : otherDetails.getAttributes()) {
                 layerDetails.getAttributes().add(new LayerAttribute(att));
             }
         }
@@ -516,8 +517,7 @@ public class JaxbRule extends AbstractPayload {
         rule.setAccess(GrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
-        rule.setAddressRange(
-                getAddressRange() != null ? new IPAddressRange(getAddressRange()) : null);
+        rule.setAddressRange(getAddressRange() != null ? new IPAddressRange(getAddressRange()) : null);
         rule.setService(getService());
         rule.setRequest(getRequest());
         rule.setSubfield(getSubfield());

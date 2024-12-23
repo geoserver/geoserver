@@ -39,20 +39,14 @@ public class OWS11ServiceExceptionHandlerTest {
     @Before
     public void setUp() throws Exception {
         HelloWorld helloWorld = new HelloWorld();
-        Service service =
-                new Service(
-                        "hello",
-                        helloWorld,
-                        new Version("1.1.1"),
-                        Collections.singletonList("hello"));
+        Service service = new Service("hello", helloWorld, new Version("1.1.1"), Collections.singletonList("hello"));
 
-        request =
-                new MockHttpServletRequest() {
-                    @Override
-                    public int getServerPort() {
-                        return 8080;
-                    }
-                };
+        request = new MockHttpServletRequest() {
+            @Override
+            public int getServerPort() {
+                return 8080;
+            }
+        };
 
         request.setScheme("http");
         request.setServerName("localhost");

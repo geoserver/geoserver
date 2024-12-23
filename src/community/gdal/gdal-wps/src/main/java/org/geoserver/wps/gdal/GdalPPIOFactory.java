@@ -36,14 +36,10 @@ public class GdalPPIOFactory implements PPIOFactory {
             } else {
                 switch (of.getType()) {
                     case BINARY:
-                        ppio =
-                                new GdalBinaryPPIO(
-                                        of.getGeoserverFormat(), delegate, computedMimeType);
+                        ppio = new GdalBinaryPPIO(of.getGeoserverFormat(), delegate, computedMimeType);
                         break;
                     case TEXT:
-                        ppio =
-                                new GdalCDataPPIO(
-                                        of.getGeoserverFormat(), delegate, computedMimeType);
+                        ppio = new GdalCDataPPIO(of.getGeoserverFormat(), delegate, computedMimeType);
                         break;
                     case XML:
                         ppio = new GdalXMLPPIO(of.getGeoserverFormat(), delegate);

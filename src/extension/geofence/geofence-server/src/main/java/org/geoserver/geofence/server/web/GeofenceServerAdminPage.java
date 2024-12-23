@@ -37,56 +37,49 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
 
     public GeofenceServerAdminPage() {
 
-        add(
-                new AjaxLink<>("addNew") {
+        add(new AjaxLink<>("addNew") {
 
-                    private static final long serialVersionUID = -4136656891019857299L;
+            private static final long serialVersionUID = -4136656891019857299L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new GeofenceAdminRulePage(rulesModel.newRule(), rulesModel));
+            }
+        });
+
+        add(
+                remove = new AjaxLink<>("removeSelected") {
+                    private static final long serialVersionUID = 2421854498051377608L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(
-                                new GeofenceAdminRulePage(rulesModel.newRule(), rulesModel));
+                        rulesModel.remove(rulesPanel.getSelection());
+                        target.add(rulesPanel);
                     }
                 });
-
-        add(
-                remove =
-                        new AjaxLink<>("removeSelected") {
-                            private static final long serialVersionUID = 2421854498051377608L;
-
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                rulesModel.remove(rulesPanel.getSelection());
-                                target.add(rulesPanel);
-                            }
-                        });
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
 
         add(
-                rulesPanel =
-                        new GeoServerTablePanel<>(
-                                "rulesPanel", rulesModel = new GeofenceAdminRulesModel(), true) {
+                rulesPanel = new GeoServerTablePanel<>("rulesPanel", rulesModel = new GeofenceAdminRulesModel(), true) {
 
-                            private static final long serialVersionUID = -9041215145551707243L;
+                    private static final long serialVersionUID = -9041215145551707243L;
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<ShortAdminRule> itemModel,
-                                    Property<ShortAdminRule> property) {
-                                if (property == GeofenceAdminRulesModel.BUTTONS) {
-                                    return new ButtonPanel(id, itemModel.getObject());
-                                }
-                                return null;
-                            }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<ShortAdminRule> itemModel, Property<ShortAdminRule> property) {
+                        if (property == GeofenceAdminRulesModel.BUTTONS) {
+                            return new ButtonPanel(id, itemModel.getObject());
+                        }
+                        return null;
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                remove.setEnabled(!rulesPanel.getSelection().isEmpty());
-                                target.add(remove);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        remove.setEnabled(!rulesPanel.getSelection().isEmpty());
+                        target.add(remove);
+                    }
+                });
         rulesPanel.add(new WebTheme());
         rulesPanel.add(new DragSource(Operation.MOVE).drag("tr"));
         rulesPanel.add(
@@ -94,17 +87,14 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
                     private static final long serialVersionUID = -2153630274380471165L;
 
                     @Override
-                    public void onDrop(
-                            AjaxRequestTarget target, Transfer transfer, Location location) {
+                    public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
                         if (location == null
-                                || !(location.getComponent().getDefaultModel().getObject()
-                                        instanceof ShortAdminRule)) {
+                                || !(location.getComponent().getDefaultModel().getObject() instanceof ShortAdminRule)) {
                             return;
                         }
                         ShortAdminRule movedRule = transfer.getData();
-                        ShortAdminRule targetRule =
-                                (ShortAdminRule)
-                                        location.getComponent().getDefaultModel().getObject();
+                        ShortAdminRule targetRule = (ShortAdminRule)
+                                location.getComponent().getDefaultModel().getObject();
                         if (movedRule.getId().equals(targetRule.getId())) {
                             return;
                         }
@@ -132,67 +122,55 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
             super(id);
             this.setOutputMarkupId(true);
 
-            upLink =
-                    new ImageAjaxLink<>(
-                            "up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
-                        private static final long serialVersionUID = -8179503447106596760L;
+            upLink = new ImageAjaxLink<>("up", new PackageResourceReference(getClass(), "img/arrow_up.png")) {
+                private static final long serialVersionUID = -8179503447106596760L;
 
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            rulesModel.moveUp(rule);
-                            target.add(rulesPanel);
-                        }
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    rulesModel.moveUp(rule);
+                    target.add(rulesPanel);
+                }
 
-                        @Override
-                        protected void onComponentTag(ComponentTag tag) {
-                            if (rulesModel.canUp(rule)) {
-                                tag.put("class", "visibility-visible");
-                            } else {
-                                tag.put("class", "visibility-hidden");
-                            }
-                        }
-                    };
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if (rulesModel.canUp(rule)) {
+                        tag.put("class", "visibility-visible");
+                    } else {
+                        tag.put("class", "visibility-hidden");
+                    }
+                }
+            };
             upLink.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel("GeofenceServerAdminPage.up", upLink)));
+                    .add(new AttributeModifier("alt", new ParamResourceModel("GeofenceServerAdminPage.up", upLink)));
             upLink.setOutputMarkupId(true);
             add(upLink);
 
-            downLink =
-                    new ImageAjaxLink<>(
-                            "down",
-                            new PackageResourceReference(getClass(), "img/arrow_down.png")) {
-                        private static final long serialVersionUID = 4640187752303674221L;
+            downLink = new ImageAjaxLink<>("down", new PackageResourceReference(getClass(), "img/arrow_down.png")) {
+                private static final long serialVersionUID = 4640187752303674221L;
 
-                        @Override
-                        protected void onClick(AjaxRequestTarget target) {
-                            rulesModel.moveDown(rule);
-                            target.add(rulesPanel);
-                        }
+                @Override
+                protected void onClick(AjaxRequestTarget target) {
+                    rulesModel.moveDown(rule);
+                    target.add(rulesPanel);
+                }
 
-                        @Override
-                        protected void onComponentTag(ComponentTag tag) {
-                            if (rulesModel.canDown(rule)) {
-                                tag.put("class", "visibility-visible");
-                            } else {
-                                tag.put("class", "visibility-hidden");
-                            }
-                        }
-                    };
+                @Override
+                protected void onComponentTag(ComponentTag tag) {
+                    if (rulesModel.canDown(rule)) {
+                        tag.put("class", "visibility-visible");
+                    } else {
+                        tag.put("class", "visibility-hidden");
+                    }
+                }
+            };
             downLink.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel(
-                                            "GeofenceServerAdminPage.down", downLink)));
+                    .add(new AttributeModifier(
+                            "alt", new ParamResourceModel("GeofenceServerAdminPage.down", downLink)));
             downLink.setOutputMarkupId(true);
             add(downLink);
 
             ImageAjaxLink<Object> editLink =
-                    new ImageAjaxLink<>(
-                            "edit", new PackageResourceReference(getClass(), "img/edit.png")) {
+                    new ImageAjaxLink<>("edit", new PackageResourceReference(getClass(), "img/edit.png")) {
                         private static final long serialVersionUID = 4640187752303674221L;
 
                         @Override
@@ -201,11 +179,8 @@ public class GeofenceServerAdminPage extends GeoServerSecuredPage {
                         }
                     };
             editLink.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel(
-                                            "GeofenceServerAdminPage.edit", editLink)));
+                    .add(new AttributeModifier(
+                            "alt", new ParamResourceModel("GeofenceServerAdminPage.edit", editLink)));
             editLink.setOutputMarkupId(true);
             add(editLink);
         }

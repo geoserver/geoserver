@@ -15,17 +15,15 @@ import org.geotools.referencing.CRS;
 /** Wrap the Projection. In case of a Built-in Projection, it will contain the ProjType enum. */
 public class MapMLProjection {
 
-    Set<String> BUILT_IN_PROJECTION =
-            new HashSet<>(
-                    Arrays.asList(
-                            "EPSG:4326",
-                            "EPSG:3857",
-                            "EPSG:3978",
-                            "EPSG:5936",
-                            "MAPML:OSMTILE",
-                            "MAPML:APSTILE",
-                            "MAPML:CBMTILE",
-                            "MAPML:WGS84"));
+    Set<String> BUILT_IN_PROJECTION = new HashSet<>(Arrays.asList(
+            "EPSG:4326",
+            "EPSG:3857",
+            "EPSG:3978",
+            "EPSG:5936",
+            "MAPML:OSMTILE",
+            "MAPML:APSTILE",
+            "MAPML:CBMTILE",
+            "MAPML:WGS84"));
 
     private boolean isBuiltIn;
 
@@ -64,8 +62,7 @@ public class MapMLProjection {
             projection = proj;
             TiledCRS tiledCRS = getTiledCRS();
             if (tiledCRS == null) {
-                throw new IllegalArgumentException(
-                        "The following projection is not supported: " + proj);
+                throw new IllegalArgumentException("The following projection is not supported: " + proj);
             }
         }
     }

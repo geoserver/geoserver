@@ -56,8 +56,7 @@ class VectorTileOptions {
      * @param mapContent
      */
     VectorTileOptions(Layer layer, WMSMapContent mapContent) {
-        List<LiteFeatureTypeStyle> liteFeatureStyles =
-                StyleQueryUtil.getLiteFeatureStyles(layer, mapContent);
+        List<LiteFeatureTypeStyle> liteFeatureStyles = StyleQueryUtil.getLiteFeatureStyles(layer, mapContent);
         for (LiteFeatureTypeStyle lft : liteFeatureStyles) {
             if (lft.options == null) continue;
             collectVectorTileOptions(lft.options);
@@ -82,21 +81,17 @@ class VectorTileOptions {
     }
 
     /**
-     * Will return true for polygons and multi-polygons, to indicate that the label point must be
-     * generated (the original geometry won't do)
+     * Will return true for polygons and multi-polygons, to indicate that the label point must be generated (the
+     * original geometry won't do)
      *
      * @return
      */
     boolean isPolygonLabelEnabled() {
         Class<?> binding = geometryDescriptor.getType().getBinding();
-        return Polygon.class.isAssignableFrom(binding)
-                || MultiPolygon.class.isAssignableFrom(binding);
+        return Polygon.class.isAssignableFrom(binding) || MultiPolygon.class.isAssignableFrom(binding);
     }
 
-    /**
-     * Parses the value as a comma separated list of values and returns them as a mutable list of
-     * {@link String}
-     */
+    /** Parses the value as a comma separated list of values and returns them as a mutable list of {@link String} */
     private List<String> toStringList(String value) {
         return new ArrayList<>(Arrays.asList(value.split("\\s*,\\s*")));
     }
@@ -107,9 +102,8 @@ class VectorTileOptions {
     }
 
     /**
-     * Whether to generate a separate label layer, or not. Mandatory for polygons, potentially
-     * useful for labels and points if a separate list of attributes is chosen and a (small) subset
-     * of the features needs to be labelled
+     * Whether to generate a separate label layer, or not. Mandatory for polygons, potentially useful for labels and
+     * points if a separate list of attributes is chosen and a (small) subset of the features needs to be labelled
      */
     boolean generateLabelLayer() {
         return labelLayer;
@@ -134,20 +128,15 @@ class VectorTileOptions {
     private SortBy[] getCoalesceSortBy(List<String> attributes, SortBy[] sortBy) {
         Set<PropertyName> sortAttributes;
         if (attributes == null) {
-            sortAttributes =
-                    schema.getDescriptors().stream()
-                            .filter(pd -> !(pd instanceof GeometryDescriptor))
-                            .map(pd -> FF.property(pd.getName()))
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
+            sortAttributes = schema.getDescriptors().stream()
+                    .filter(pd -> !(pd instanceof GeometryDescriptor))
+                    .map(pd -> FF.property(pd.getName()))
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
         } else {
-            sortAttributes =
-                    attributes.stream()
-                            .filter(
-                                    att ->
-                                            !(schema.getDescriptor(att)
-                                                    instanceof GeometryDescriptor))
-                            .map(FF::property)
-                            .collect(Collectors.toCollection(LinkedHashSet::new));
+            sortAttributes = attributes.stream()
+                    .filter(att -> !(schema.getDescriptor(att) instanceof GeometryDescriptor))
+                    .map(FF::property)
+                    .collect(Collectors.toCollection(LinkedHashSet::new));
         }
 
         // remove the sorts we already have
@@ -157,14 +146,12 @@ class VectorTileOptions {
             }
         }
 
-        Stream<SortBy> attributesSort =
-                sortAttributes.stream().map(p -> new SortByImpl(p, SortOrder.ASCENDING));
+        Stream<SortBy> attributesSort = sortAttributes.stream().map(p -> new SortByImpl(p, SortOrder.ASCENDING));
 
         if (sortBy == null) {
             return attributesSort.toArray(n -> new SortBy[n]);
         } else {
-            return Streams.concat(Arrays.stream(sortBy), attributesSort)
-                    .toArray(n -> new SortBy[n]);
+            return Streams.concat(Arrays.stream(sortBy), attributesSort).toArray(n -> new SortBy[n]);
         }
     }
 
@@ -182,10 +169,9 @@ class VectorTileOptions {
     private Filter getNonNullFilter(List<String> attributes) {
         if (attributes.size() == 1) return FF.not(FF.isNull(FF.property(attributes.get(0))));
 
-        List<Filter> filters =
-                attributes.stream()
-                        .map(att -> FF.not(FF.isNull(FF.property(att))))
-                        .collect(Collectors.toList());
+        List<Filter> filters = attributes.stream()
+                .map(att -> FF.not(FF.isNull(FF.property(att))))
+                .collect(Collectors.toList());
         return FF.and(filters);
     }
 

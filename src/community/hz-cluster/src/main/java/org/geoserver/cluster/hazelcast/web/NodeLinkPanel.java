@@ -24,28 +24,24 @@ public class NodeLinkPanel extends Panel {
     public NodeLinkPanel(String id, final HzCluster cluster) {
         super(id);
 
-        add(
-                new SimpleAjaxLink("link", new Model(localIPAsString(cluster.getHz()))) {
+        add(new SimpleAjaxLink("link", new Model(localIPAsString(cluster.getHz()))) {
+            @Override
+            protected void onClick(AjaxRequestTarget target) {
+                // dialog.show(target);
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
                     @Override
-                    protected void onClick(AjaxRequestTarget target) {
-                        // dialog.show(target);
-                        dialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        return true;
+                    }
 
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        return true;
-                                    }
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        return new NodeInfoDialog(id);
-                                    }
-                                });
+                    @Override
+                    protected Component getContents(String id) {
+                        return new NodeInfoDialog(id);
                     }
                 });
+            }
+        });
 
         add(new Label("cluster", cluster.getHz().getConfig().getClusterName()));
 

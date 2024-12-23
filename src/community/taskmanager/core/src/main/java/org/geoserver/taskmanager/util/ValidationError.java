@@ -22,8 +22,7 @@ public class ValidationError {
 
     private String taskType;
 
-    public ValidationError(
-            ValidationErrorType type, String paramName, String paramValue, String taskType) {
+    public ValidationError(ValidationErrorType type, String paramName, String paramValue, String taskType) {
         this.type = type;
         this.paramName = paramName;
         this.paramValue = paramValue;

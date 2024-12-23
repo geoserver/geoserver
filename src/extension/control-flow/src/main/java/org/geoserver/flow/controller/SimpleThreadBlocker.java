@@ -16,9 +16,8 @@ import org.geoserver.ows.Request;
 public class SimpleThreadBlocker implements ThreadBlocker {
 
     /**
-     * This queue contains the requests that are running. The ones waiting are not "visible", are
-     * all blocked on {@link BlockingQueue#offer(Object, long, TimeUnit)}} or {@link
-     * BlockingQueue#put(Object)}
+     * This queue contains the requests that are running. The ones waiting are not "visible", are all blocked on
+     * {@link BlockingQueue#offer(Object, long, TimeUnit)}} or {@link BlockingQueue#put(Object)}
      */
     BlockingQueue<Request> queue;
 

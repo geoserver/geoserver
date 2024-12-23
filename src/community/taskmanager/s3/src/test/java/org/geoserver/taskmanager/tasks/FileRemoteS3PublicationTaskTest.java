@@ -48,8 +48,8 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * To run this test you should have a geoserver running on http://localhost:9090/geoserver. This
- * geoserver must also have be provided with the AWS credentials as below
+ * To run this test you should have a geoserver running on http://localhost:9090/geoserver. This geoserver must also
+ * have be provided with the AWS credentials as below
  *
  * @author Niels Charlier
  */
@@ -78,30 +78,27 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
 
     private static QName REMOTE_COVERAGE = new QName("gs", "world", "gs");
     private static String REMOTE_COVERAGE_FILE_LOCATION = "test/world.tiff";
-    private static String REMOTE_COVERAGE_URL =
-            REMOTE_COVERAGE_ALIAS
-                    + "://"
-                    + REMOTE_COVERAGE_BUCKET
-                    + "/"
-                    + REMOTE_COVERAGE_FILE_LOCATION
-                    + REMOTE_COVERAGE_SUFFIX;
+    private static String REMOTE_COVERAGE_URL = REMOTE_COVERAGE_ALIAS
+            + "://"
+            + REMOTE_COVERAGE_BUCKET
+            + "/"
+            + REMOTE_COVERAGE_FILE_LOCATION
+            + REMOTE_COVERAGE_SUFFIX;
     // private static String REMOTE_COVERAGE_OTHER_BUCKET = "target";
     // private static String OTHER_FILE_SERVICE = S3FileServiceImpl.name(REMOTE_COVERAGE_ALIAS,
     // REMOTE_COVERAGE_OTHER_BUCKET)
     private static String REMOTE_COVERAGE_OTHER_BUCKET = "taskmanagertest2";
-    private static String OTHER_FILE_SERVICE =
-            AWSFileServiceImpl.name(REMOTE_COVERAGE_OTHER_BUCKET);
+    private static String OTHER_FILE_SERVICE = AWSFileServiceImpl.name(REMOTE_COVERAGE_OTHER_BUCKET);
 
     private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN = "test/world.###.tiff";
     private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD = "test/world.41.tif";
     private static String REMOTE_COVERAGE_OTHER_FILE_LOCATION = "test/world.42.tiff";
-    private static String REMOTE_COVERAGE_OTHER_URL =
-            REMOTE_COVERAGE_ALIAS
-                    + "://"
-                    + REMOTE_COVERAGE_OTHER_BUCKET
-                    + "/"
-                    + REMOTE_COVERAGE_OTHER_FILE_LOCATION
-                    + REMOTE_COVERAGE_SUFFIX;
+    private static String REMOTE_COVERAGE_OTHER_URL = REMOTE_COVERAGE_ALIAS
+            + "://"
+            + REMOTE_COVERAGE_OTHER_BUCKET
+            + "/"
+            + REMOTE_COVERAGE_OTHER_FILE_LOCATION
+            + REMOTE_COVERAGE_SUFFIX;
     private static String REMOTE_COVERAGE_TYPE = "S3GeoTiff";
 
     private static final String ATT_LAYER = "layer";
@@ -109,21 +106,29 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_FILE_SERVICE = "fileService";
     private static final String ATT_FILE = "file";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -168,12 +173,9 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
         dataUtil.setTaskParameterToAttribute(
                 task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE_SERVICE, ATT_FILE_SERVICE);
         dataUtil.addTaskToConfiguration(config, task1);
@@ -202,65 +204,47 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void testS3SuccessAndCleanup()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testS3SuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
         dataUtil.setConfigurationAttribute(
-                config,
-                ATT_LAYER,
-                REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
+                config, ATT_LAYER, REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
 
+        assertTrue(restManager
+                .getReader()
+                .existsCoveragestore(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
+        assertTrue(restManager
+                .getReader()
+                .existsCoverage(
+                        REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), REMOTE_COVERAGE.getLocalPart()));
         assertTrue(
-                restManager
-                        .getReader()
-                        .existsCoveragestore(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
-        assertTrue(
-                restManager
-                        .getReader()
-                        .existsCoverage(
-                                REMOTE_COVERAGE.getPrefix(),
-                                REMOTE_COVERAGE.getLocalPart(),
-                                REMOTE_COVERAGE.getLocalPart()));
-        assertTrue(
-                restManager
-                        .getReader()
-                        .existsLayer(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
+                restManager.getReader().existsLayer(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
 
         assertTrue(taskUtil.cleanup(config));
 
+        assertFalse(restManager
+                .getReader()
+                .existsCoveragestore(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
+        assertFalse(restManager
+                .getReader()
+                .existsCoverage(
+                        REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), REMOTE_COVERAGE.getLocalPart()));
         assertFalse(
-                restManager
-                        .getReader()
-                        .existsCoveragestore(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
-        assertFalse(
-                restManager
-                        .getReader()
-                        .existsCoverage(
-                                REMOTE_COVERAGE.getPrefix(),
-                                REMOTE_COVERAGE.getLocalPart(),
-                                REMOTE_COVERAGE.getLocalPart()));
-        assertFalse(
-                restManager
-                        .getReader()
-                        .existsLayer(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
+                restManager.getReader().existsLayer(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
     }
 
     @Test
-    public void testS3ReplaceUrlSuccessAndCleanup()
-            throws SchedulerException, SQLException, IOException {
+    public void testS3ReplaceUrlSuccessAndCleanup() throws SchedulerException, SQLException, IOException {
         FileService otherFileService = null;
         try {
             FileService fileService = fileServices.get(FILE_SERVICE);
@@ -282,67 +266,49 @@ public class FileRemoteS3PublicationTaskTest extends AbstractTaskManagerTest {
         }
 
         dataUtil.setConfigurationAttribute(
-                config,
-                ATT_LAYER,
-                REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
+                config, ATT_LAYER, REMOTE_COVERAGE.getPrefix() + ":" + REMOTE_COVERAGE.getLocalPart());
         dataUtil.setConfigurationAttribute(config, ATT_FILE_SERVICE, OTHER_FILE_SERVICE);
-        dataUtil.setConfigurationAttribute(
-                config, ATT_FILE, REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN);
+        dataUtil.setConfigurationAttribute(config, ATT_FILE, REMOTE_COVERAGE_OTHER_FILE_LOCATION_PATTERN);
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         GeoServerRESTManager restManager = extGeoservers.get("mygs").getRESTManager();
 
-        assertTrue(
-                restManager
-                        .getReader()
-                        .existsCoveragestore(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
+        assertTrue(restManager
+                .getReader()
+                .existsCoveragestore(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
         assertEquals(
                 REMOTE_COVERAGE_OTHER_URL,
                 restManager
                         .getReader()
-                        .getCoverageStore(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart())
+                        .getCoverageStore(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart())
                         .getURL());
+        assertTrue(restManager
+                .getReader()
+                .existsCoverage(
+                        REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), REMOTE_COVERAGE.getLocalPart()));
         assertTrue(
-                restManager
-                        .getReader()
-                        .existsCoverage(
-                                REMOTE_COVERAGE.getPrefix(),
-                                REMOTE_COVERAGE.getLocalPart(),
-                                REMOTE_COVERAGE.getLocalPart()));
-        assertTrue(
-                restManager
-                        .getReader()
-                        .existsLayer(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
+                restManager.getReader().existsLayer(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
 
         assertTrue(taskUtil.cleanup(config));
 
+        assertFalse(restManager
+                .getReader()
+                .existsCoveragestore(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
+        assertFalse(restManager
+                .getReader()
+                .existsCoverage(
+                        REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), REMOTE_COVERAGE.getLocalPart()));
         assertFalse(
-                restManager
-                        .getReader()
-                        .existsCoveragestore(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart()));
-        assertFalse(
-                restManager
-                        .getReader()
-                        .existsCoverage(
-                                REMOTE_COVERAGE.getPrefix(),
-                                REMOTE_COVERAGE.getLocalPart(),
-                                REMOTE_COVERAGE.getLocalPart()));
-        assertFalse(
-                restManager
-                        .getReader()
-                        .existsLayer(
-                                REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
+                restManager.getReader().existsLayer(REMOTE_COVERAGE.getPrefix(), REMOTE_COVERAGE.getLocalPart(), true));
 
         otherFileService.delete(REMOTE_COVERAGE_OTHER_FILE_LOCATION);
         otherFileService.delete(REMOTE_COVERAGE_OTHER_FILE_LOCATION_OLD);

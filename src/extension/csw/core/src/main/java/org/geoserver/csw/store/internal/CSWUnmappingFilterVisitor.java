@@ -21,8 +21,8 @@ import org.geotools.filter.function.FilterFunction_list;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a
- * particular mapping to a filter that can be applied directly onto Geoserver catalog objects.
+ * A Filter visitor that transforms a filter on a CSW Record of the Internal Catalog Store with a particular mapping to
+ * a filter that can be applied directly onto Geoserver catalog objects.
  *
  * @author Niels Charlier
  */
@@ -53,31 +53,22 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
     public Object visit(PropertyName expression, Object extraData) {
 
         XPathUtil.StepList steps =
-                XPathUtil.steps(
-                        rd.getFeatureDescriptor(),
-                        expression.getPropertyName(),
-                        rd.getNamespaceSupport());
+                XPathUtil.steps(rd.getFeatureDescriptor(), expression.getPropertyName(), rd.getNamespaceSupport());
         if (steps.containsPredicate()) { // predicate not supported by unmapped filter
             needsPostFilter = true;
         }
 
-        if (steps.size() == 1
-                && steps.get(0).getName().getLocalPart().equalsIgnoreCase("AnyText")) {
+        if (steps.size() == 1 && steps.get(0).getName().getLocalPart().equalsIgnoreCase("AnyText")) {
 
             Expression result = ff.literal(" ");
 
             for (CatalogStoreMappingElement element : mapping.elements()) {
-                Expression fieldIgnoreNull =
-                        ff.function(
-                                "if_then_else",
-                                ff.function("isNull", element.getContent()),
-                                ff.literal(""),
-                                element.getContent());
-                result =
-                        ff.function(
-                                "strConcat",
-                                result,
-                                ff.function("strConcat", ff.literal(" "), fieldIgnoreNull));
+                Expression fieldIgnoreNull = ff.function(
+                        "if_then_else",
+                        ff.function("isNull", element.getContent()),
+                        ff.literal(""),
+                        element.getContent());
+                result = ff.function("strConcat", result, ff.function("strConcat", ff.literal(" "), fieldIgnoreNull));
             }
 
             return result;
@@ -110,8 +101,7 @@ public class CSWUnmappingFilterVisitor extends DuplicatingFilterVisitor {
             return elements.stream().findFirst().get().getContent();
         } else {
             FilterFunction_list list = new FilterFunction_list();
-            list.setParameters(
-                    elements.stream().map(el -> el.getContent()).collect(Collectors.toList()));
+            list.setParameters(elements.stream().map(el -> el.getContent()).collect(Collectors.toList()));
             return list;
         }
     }

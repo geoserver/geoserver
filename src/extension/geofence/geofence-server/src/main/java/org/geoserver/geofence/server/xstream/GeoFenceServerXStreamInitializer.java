@@ -31,23 +31,20 @@ public class GeoFenceServerXStreamInitializer implements XStreamPersisterInitial
         xs.alias("AdminRules", JaxbAdminRuleList.class);
         xs.alias("Batch", Batch.class);
         xs.alias("BatchOperation", BatchOperation.class);
-        xs.registerLocalConverter(
-                Batch.class, "operations", new CollectionConverter(xs.getMapper()));
+        xs.registerLocalConverter(Batch.class, "operations", new CollectionConverter(xs.getMapper()));
         xs.addImplicitCollection(Batch.class, "operations", BatchOperation.class);
-        xs.registerConverter(
-                new BatchOpXtreamConverter(xs.getMapper(), xs.getReflectionProvider()));
-        xs.allowTypes(
-                new Class[] {
-                    JaxbRule.class,
-                    JaxbAdminRule.class,
-                    JaxbRuleList.class,
-                    JaxbAdminRuleList.class,
-                    MultiPolygonAdapter.class,
-                    JaxbRule.Limits.class,
-                    JaxbRule.LayerDetails.class,
-                    JaxbRule.LayerAttribute.class,
-                    Batch.class,
-                    BatchOperation.class
-                });
+        xs.registerConverter(new BatchOpXtreamConverter(xs.getMapper(), xs.getReflectionProvider()));
+        xs.allowTypes(new Class[] {
+            JaxbRule.class,
+            JaxbAdminRule.class,
+            JaxbRuleList.class,
+            JaxbAdminRuleList.class,
+            MultiPolygonAdapter.class,
+            JaxbRule.Limits.class,
+            JaxbRule.LayerDetails.class,
+            JaxbRule.LayerAttribute.class,
+            Batch.class,
+            BatchOperation.class
+        });
     }
 }

@@ -28,41 +28,38 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
 
     static final String MP_URI_XML = RestBaseController.ROOT_PATH + "/security/masterpw.xml";
 
-    String xmlTemplate =
-            "<"
-                    + MasterPasswordController.XML_ROOT_ELEM
-                    + ">"
-                    + "<"
-                    + MasterPasswordController.MP_CURRENT_KEY
-                    + ">{0}</"
-                    + MasterPasswordController.MP_CURRENT_KEY
-                    + ">"
-                    + "<"
-                    + MasterPasswordController.MP_NEW_KEY
-                    + ">{1}</"
-                    + MasterPasswordController.MP_NEW_KEY
-                    + ">"
-                    + "</"
-                    + MasterPasswordController.XML_ROOT_ELEM
-                    + ">";
+    String xmlTemplate = "<"
+            + MasterPasswordController.XML_ROOT_ELEM
+            + ">"
+            + "<"
+            + MasterPasswordController.MP_CURRENT_KEY
+            + ">{0}</"
+            + MasterPasswordController.MP_CURRENT_KEY
+            + ">"
+            + "<"
+            + MasterPasswordController.MP_NEW_KEY
+            + ">{1}</"
+            + MasterPasswordController.MP_NEW_KEY
+            + ">"
+            + "</"
+            + MasterPasswordController.XML_ROOT_ELEM
+            + ">";
 
-    String jsonTemplate =
-            "{\""
-                    + MasterPasswordController.MP_CURRENT_KEY
-                    + "\":\"%s\","
-                    + "\""
-                    + MasterPasswordController.MP_NEW_KEY
-                    + "\":\"%s\"}";
+    String jsonTemplate = "{\""
+            + MasterPasswordController.MP_CURRENT_KEY
+            + "\":\"%s\","
+            + "\""
+            + MasterPasswordController.MP_NEW_KEY
+            + "\":\"%s\"}";
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
     }
@@ -75,10 +72,7 @@ public class MasterPasswordControllerTest extends SecurityRESTTestSupport {
         assertEquals(
                 "geoserver",
                 xp.evaluate(
-                        "/"
-                                + MasterPasswordController.XML_ROOT_ELEM
-                                + "/"
-                                + MasterPasswordController.MP_CURRENT_KEY,
+                        "/" + MasterPasswordController.XML_ROOT_ELEM + "/" + MasterPasswordController.MP_CURRENT_KEY,
                         dom));
     }
 

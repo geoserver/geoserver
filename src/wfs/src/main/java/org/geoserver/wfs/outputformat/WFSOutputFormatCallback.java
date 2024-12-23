@@ -15,8 +15,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.util.logging.Logging;
 
 /**
- * A callback that will filter the {@link WFSGetFeatureOutputFormat} based on {@link
- * WFSInfo#getGetFeatureOutputTypes()}
+ * A callback that will filter the {@link WFSGetFeatureOutputFormat} based on {@link WFSInfo#getGetFeatureOutputTypes()}
  */
 public class WFSOutputFormatCallback extends AbstractDispatcherCallback {
     private static final Logger LOGGER = Logging.getLogger(WFSOutputFormatCallback.class);
@@ -31,8 +30,8 @@ public class WFSOutputFormatCallback extends AbstractDispatcherCallback {
     }
 
     /**
-     * Filters out Requests whose Output Format are not explicitly enabled if Get Feature Output
-     * Type Checking is enabled
+     * Filters out Requests whose Output Format are not explicitly enabled if Get Feature Output Type Checking is
+     * enabled
      *
      * @param request The request.
      * @param operation The operation for the request.
@@ -59,10 +58,7 @@ public class WFSOutputFormatCallback extends AbstractDispatcherCallback {
         if (outputFormat != null
                 && wfs.getGetFeatureOutputTypes() != null
                 && !wfs.getGetFeatureOutputTypes().contains(outputFormat)) {
-            LOGGER.fine(
-                    "Output Format "
-                            + outputFormat
-                            + " is not enabled for GetFeature due to Global WFS settings");
+            LOGGER.fine("Output Format " + outputFormat + " is not enabled for GetFeature due to Global WFS settings");
             throw InvalidParameterException(outputFormat);
         }
         return operation;
@@ -75,8 +71,7 @@ public class WFSOutputFormatCallback extends AbstractDispatcherCallback {
      */
     public ServiceException InvalidParameterException(String outputFormat) {
         ServiceException e =
-                new ServiceException(
-                        "Invalid Output Format Parameter " + outputFormat, INVALID_PARAMETER_VALUE);
+                new ServiceException("Invalid Output Format Parameter " + outputFormat, INVALID_PARAMETER_VALUE);
         return e;
     }
 }

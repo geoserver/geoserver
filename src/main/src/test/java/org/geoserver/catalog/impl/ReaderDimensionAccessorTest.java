@@ -43,8 +43,7 @@ public class ReaderDimensionAccessorTest {
         }
 
         @Override
-        public GridCoverage2D read(GeneralParameterValue[] parameters)
-                throws IllegalArgumentException, IOException {
+        public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
             return null;
         }
 
@@ -81,12 +80,8 @@ public class ReaderDimensionAccessorTest {
         Date secondEntry = (Date) it.next();
         assertEquals(accessor.getTimeFormat().parse("2016-02-23T06:00:00.000Z"), secondEntry);
         DateRange thirdEntry = (DateRange) it.next();
-        assertEquals(
-                accessor.getTimeFormat().parse("2016-02-23T09:00:00.000Z"),
-                thirdEntry.getMinValue());
-        assertEquals(
-                accessor.getTimeFormat().parse("2016-02-23T12:00:00.000Z"),
-                thirdEntry.getMaxValue());
+        assertEquals(accessor.getTimeFormat().parse("2016-02-23T09:00:00.000Z"), thirdEntry.getMinValue());
+        assertEquals(accessor.getTimeFormat().parse("2016-02-23T12:00:00.000Z"), thirdEntry.getMaxValue());
     }
 
     @Test
@@ -119,13 +114,9 @@ public class ReaderDimensionAccessorTest {
         reader.metadata.put("HAS_MYDIM_DOMAIN", "true");
         reader.metadata.put("MYDIM_DOMAIN_DATATYPE", "java.util.Date");
         ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
-        List<Object> converted =
-                accessor.convertDimensionValue(
-                        "MYDIM",
-                        Arrays.asList(
-                                "2001-05-01T00:00:00.000Z",
-                                "2001-05-02T00:00:00.000Z",
-                                "2001-05-03T00:00:00.000Z"));
+        List<Object> converted = accessor.convertDimensionValue(
+                "MYDIM",
+                Arrays.asList("2001-05-01T00:00:00.000Z", "2001-05-02T00:00:00.000Z", "2001-05-03T00:00:00.000Z"));
         assertEquals(3, converted.size());
         assertEquals(DF.parse("2001-05-01 00:00:00"), converted.get(0));
         assertEquals(DF.parse("2001-05-02 00:00:00"), converted.get(1));
@@ -175,15 +166,11 @@ public class ReaderDimensionAccessorTest {
         assertHasTimes(accessor, format, "2016-02-23T10:00:00.000Z");
         // ... intersecting range from below
         DateRange rangeBelow =
-                new DateRange(
-                        format.parse("2016-02-23T00:00:00.000Z"),
-                        format.parse("2016-02-23T05:00:00.000Z"));
+                new DateRange(format.parse("2016-02-23T00:00:00.000Z"), format.parse("2016-02-23T05:00:00.000Z"));
         assertTrue(accessor.hasAnyTime(Arrays.asList(rangeBelow)));
         // ... intersecting range from above
         DateRange rangeAbove =
-                new DateRange(
-                        format.parse("2016-02-23T11:00:00.000Z"),
-                        format.parse("2016-02-23T15:00:00.000Z"));
+                new DateRange(format.parse("2016-02-23T11:00:00.000Z"), format.parse("2016-02-23T15:00:00.000Z"));
         assertTrue(accessor.hasAnyTime(Arrays.asList(rangeAbove)));
 
         // test a few negative cases
@@ -193,30 +180,22 @@ public class ReaderDimensionAccessorTest {
         assertNoTimes(accessor, format, "2016-02-23T23:00:00.000Z");
         // ... before, mid, and after ranges
         DateRange rangeBefore =
-                new DateRange(
-                        format.parse("2016-02-22T00:00:00.000Z"),
-                        format.parse("2016-02-22T23:00:00.000Z"));
+                new DateRange(format.parse("2016-02-22T00:00:00.000Z"), format.parse("2016-02-22T23:00:00.000Z"));
         assertFalse(accessor.hasAnyTime(Arrays.asList(rangeBefore)));
         DateRange rangeMid =
-                new DateRange(
-                        format.parse("2016-02-23T04:00:00.000Z"),
-                        format.parse("2016-02-23T05:00:00.000Z"));
+                new DateRange(format.parse("2016-02-23T04:00:00.000Z"), format.parse("2016-02-23T05:00:00.000Z"));
         assertFalse(accessor.hasAnyTime(Arrays.asList(rangeMid)));
         DateRange rangeAfter =
-                new DateRange(
-                        format.parse("2016-02-24T00:00:00.000Z"),
-                        format.parse("2016-02-24T23:00:00.000Z"));
+                new DateRange(format.parse("2016-02-24T00:00:00.000Z"), format.parse("2016-02-24T23:00:00.000Z"));
         assertFalse(accessor.hasAnyTime(Arrays.asList(rangeAfter)));
     }
 
-    private static void assertHasTimes(
-            ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
+    private static void assertHasTimes(ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
             throws IOException, ParseException {
         assertTrue(accessor.hasAnyTime(Arrays.asList(format.parse(source))));
     }
 
-    private static void assertNoTimes(
-            ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
+    private static void assertNoTimes(ReaderDimensionsAccessor accessor, SimpleDateFormat format, String source)
             throws IOException, ParseException {
         assertFalse(accessor.hasAnyTime(Arrays.asList(format.parse(source))));
     }

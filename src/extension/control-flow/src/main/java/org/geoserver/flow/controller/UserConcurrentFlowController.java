@@ -17,12 +17,11 @@ import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
 /**
- * A flow controller setting a cookie on HTTP request and making sure the same user cannot do more
- * than X requests in parallel. Warning: if a client does not support cookies this class cannot work
- * properly and will start accumulating queues with just one item inside. As a workaround when too
- * many queues are accumulated a scan starts that purges all queues that are empty and have not been
- * touched within a given amount of time: the idea is that a past that time we're assuming the
- * client is no more working actively against the server and the queue can thus be removed.
+ * A flow controller setting a cookie on HTTP request and making sure the same user cannot do more than X requests in
+ * parallel. Warning: if a client does not support cookies this class cannot work properly and will start accumulating
+ * queues with just one item inside. As a workaround when too many queues are accumulated a scan starts that purges all
+ * queues that are empty and have not been touched within a given amount of time: the idea is that a past that time
+ * we're assuming the client is no more working actively against the server and the queue can thus be removed.
  *
  * @author Andrea Aime - OpenGeo
  * @author Juan Marin, OpenGeo
@@ -30,17 +29,13 @@ import org.geotools.util.logging.Logging;
 public class UserConcurrentFlowController extends QueueController {
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
-    /**
-     * Thread local holding the current request queue id TODO: consider having a user map in {@link
-     * Request} instead
-     */
+    /** Thread local holding the current request queue id TODO: consider having a user map in {@link Request} instead */
     static ThreadLocal<String> QUEUE_ID = new ThreadLocal<>();
 
     CookieKeyGenerator keyGenerator = new CookieKeyGenerator();
 
     /**
-     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have
-     * been accumulated and
+     * Builds a UserFlowController that will trigger stale queue expiration once 100 queues have been accumulated and
      *
      * @param queueSize the maximum amount of per user concurrent requests
      */
@@ -94,23 +89,13 @@ public class UserConcurrentFlowController extends QueueController {
                 queue.put(request);
             }
 
-            request.getHttpResponse()
-                    .addHeader(X_CONCURRENT_LIMIT + "-user", String.valueOf(queueMaxSize));
-            request.getHttpResponse()
-                    .addHeader(X_CONCURRENT_REQUESTS + "-user", String.valueOf(queue.size()));
+            request.getHttpResponse().addHeader(X_CONCURRENT_LIMIT + "-user", String.valueOf(queueMaxSize));
+            request.getHttpResponse().addHeader(X_CONCURRENT_REQUESTS + "-user", String.valueOf(queue.size()));
         } catch (InterruptedException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Unexpected interruption while " + "blocking on the request queue");
+            LOGGER.log(Level.WARNING, "Unexpected interruption while " + "blocking on the request queue");
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "UserFlowController("
-                            + queueMaxSize
-                            + ","
-                            + queueId
-                            + ") queue size "
-                            + queue.size());
+            LOGGER.fine("UserFlowController(" + queueMaxSize + "," + queueId + ") queue size " + queue.size());
         }
 
         // cleanup stale queues if necessary

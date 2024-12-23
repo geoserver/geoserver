@@ -56,17 +56,14 @@ public class AbstractDocument {
     /** Returns all links except the ones matching both classification and type provided */
     public List<Link> getLinksExcept(String classification, String excludedType) {
         return links.stream()
-                .filter(
-                        l ->
-                                classification == null
-                                        || Objects.equals(classification, l.getClassification()))
+                .filter(l -> classification == null || Objects.equals(classification, l.getClassification()))
                 .filter(l -> excludedType == null || !excludedType.equals(l.getType()))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as
-     * the default media type
+     * Same as {@link #addSelfLinks(String, MediaType)} using {@link MediaType#APPLICATION_JSON} as the default media
+     * type
      */
     protected final void addSelfLinks(String path) {
         addSelfLinks(path, MediaType.APPLICATION_JSON);
@@ -76,22 +73,20 @@ public class AbstractDocument {
      * Builds the links back to this document, in its various formats
      *
      * @param path The backlink path
-     * @param defaultFormat The default format (will be used to create a "self" link instead of
-     *     "alternate"
+     * @param defaultFormat The default format (will be used to create a "self" link instead of "alternate"
      */
     protected final void addSelfLinks(String path, MediaType defaultFormat) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         new LinksBuilder(getClass(), path)
                 .rel(Link.REL_ALTERNATE)
                 .title("This document as ")
-                .updater(
-                        (mt, l) -> {
-                            if (requestInfo.isFormatRequested(mt, defaultFormat)) {
-                                l.setRel(Link.REL_SELF);
-                                l.setClassification(Link.REL_SELF);
-                                l.setTitle("This document");
-                            }
-                        })
+                .updater((mt, l) -> {
+                    if (requestInfo.isFormatRequested(mt, defaultFormat)) {
+                        l.setRel(Link.REL_SELF);
+                        l.setClassification(Link.REL_SELF);
+                        l.setTitle("This document");
+                    }
+                })
                 .add(this);
     }
 
@@ -121,8 +116,8 @@ public class AbstractDocument {
     }
 
     /**
-     * Returns the id where the column is replaced by a double underscore. Mostly used to generate
-     * HTML ids for testing purposes
+     * Returns the id where the column is replaced by a double underscore. Mostly used to generate HTML ids for testing
+     * purposes
      */
     @JsonIgnore
     public String getHtmlId() {
@@ -132,9 +127,7 @@ public class AbstractDocument {
         return id.replace(":", "__");
     }
 
-    /**
-     * Returns the title for HTML pages. If not set, uses the id, if also missing, an empty string
-     */
+    /** Returns the title for HTML pages. If not set, uses the id, if also missing, an empty string */
     @JsonIgnore
     public String getHtmlTitle() {
         return htmlTitle != null ? htmlTitle : id != null ? id : "";

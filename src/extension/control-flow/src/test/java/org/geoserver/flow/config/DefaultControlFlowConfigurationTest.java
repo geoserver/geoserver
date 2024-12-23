@@ -55,8 +55,7 @@ public class DefaultControlFlowConfigurationTest {
         p.put("ip.ows.wms.getmap", "100/m;3s");
         p.put("ip.ows.wps.execute", "50/d;60s");
 
-        DefaultControlFlowConfigurator configurator =
-                new DefaultControlFlowConfigurator(new FixedWatcher(p));
+        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(new FixedWatcher(p));
         assertTrue(configurator.isStale());
         List<FlowController> controllers = configurator.buildFlowControllers();
         Collections.sort(controllers, new ControllerPriorityComparator());
@@ -162,8 +161,7 @@ public class DefaultControlFlowConfigurationTest {
     }
 
     private void checkPriorityParsing(Properties p) throws Exception {
-        DefaultControlFlowConfigurator configurator =
-                new DefaultControlFlowConfigurator(new FixedWatcher(p));
+        DefaultControlFlowConfigurator configurator = new DefaultControlFlowConfigurator(new FixedWatcher(p));
         assertTrue(configurator.isStale());
         List<FlowController> controllers = configurator.buildFlowControllers();
         Collections.sort(controllers, new ControllerPriorityComparator());
@@ -184,15 +182,11 @@ public class DefaultControlFlowConfigurationTest {
         assertPriorityThreadBlocker(blocker, "gs-priority", 3);
     }
 
-    public void assertPriorityThreadBlocker(
-            ThreadBlocker blocker, String headerName, int defaultPriority) {
+    public void assertPriorityThreadBlocker(ThreadBlocker blocker, String headerName, int defaultPriority) {
         assertThat(blocker, CoreMatchers.instanceOf(PriorityThreadBlocker.class));
         PriorityThreadBlocker ptb = (PriorityThreadBlocker) blocker;
-        assertThat(
-                ptb.getPriorityProvider(),
-                CoreMatchers.instanceOf(HttpHeaderPriorityProvider.class));
-        HttpHeaderPriorityProvider priorityProvider =
-                (HttpHeaderPriorityProvider) ptb.getPriorityProvider();
+        assertThat(ptb.getPriorityProvider(), CoreMatchers.instanceOf(HttpHeaderPriorityProvider.class));
+        HttpHeaderPriorityProvider priorityProvider = (HttpHeaderPriorityProvider) ptb.getPriorityProvider();
         assertEquals(headerName, priorityProvider.getHeaderName());
         assertEquals(defaultPriority, priorityProvider.getDefaultPriority());
     }

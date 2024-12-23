@@ -53,8 +53,7 @@ public class JMSLoggingHandler extends JMSConfigurationHandler<LoggingInfo> {
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + info);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + info);
             throw e;
         } finally {
             // enable message the producer

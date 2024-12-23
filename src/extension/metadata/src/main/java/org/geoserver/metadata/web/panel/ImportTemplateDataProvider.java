@@ -26,8 +26,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
 
     public static final Property<MetadataTemplate> NAME = new BeanProperty<>("name", "name");
 
-    public static final Property<MetadataTemplate> DESCRIPTION =
-            new BeanProperty<>("description", "description");
+    public static final Property<MetadataTemplate> DESCRIPTION = new BeanProperty<>("description", "description");
 
     private IModel<List<MetadataTemplate>> selectedTemplates;
 
@@ -48,9 +47,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     public void addLink(MetadataTemplate modelObject) {
         selectedTemplates.getObject().add(modelObject);
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         selectedTemplates.getObject().sort(new MetadataTemplateComparator(service.list()));
     }
 
@@ -66,9 +63,7 @@ public class ImportTemplateDataProvider extends GeoServerDataProvider<MetadataTe
     /** The remain values are used in the dropdown. */
     public List<MetadataTemplate> getUnlinkedItems() {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
         List<MetadataTemplate> result = new ArrayList<>(service.list());
         result.removeAll(selectedTemplates.getObject());
         result.sort(new MetadataTemplateComparator(service.list()));

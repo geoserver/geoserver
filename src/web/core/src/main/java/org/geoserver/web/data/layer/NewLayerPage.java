@@ -55,8 +55,8 @@ import org.geotools.ows.wmts.WebMapTileServer;
 import org.geotools.util.decorate.Wrapper;
 
 /**
- * A page listing the resources contained in a store, and whose links will bring the user to a new
- * resource configuration page
+ * A page listing the resources contained in a store, and whose links will bring the user to a new resource
+ * configuration page
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -107,42 +107,36 @@ public class NewLayerPage extends GeoServerSecuredPage {
         provider = new NewLayerPageProvider();
         provider.setStoreId(storeId);
         provider.setShowPublished(true);
-        layers =
-                new GeoServerTablePanel<>("layers", provider) {
+        layers = new GeoServerTablePanel<>("layers", provider) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id, IModel<Resource> itemModel, Property<Resource> property) {
-                        if (property == NewLayerPageProvider.NAME) {
-                            return new Label(id, property.getModel(itemModel));
-                        } else if (property == NewLayerPageProvider.PUBLISHED) {
-                            final Resource resource = itemModel.getObject();
-                            final CatalogIconFactory icons = CatalogIconFactory.get();
-                            if (resource.isPublished()) {
-                                PackageResourceReference icon = icons.getEnabledIcon();
-                                Fragment f = new Fragment(id, "iconFragment", selectLayers);
-                                f.add(new Image("layerIcon", icon));
-                                return f;
-                            } else {
-                                return new Label(id);
-                            }
-                        } else if (property == NewLayerPageProvider.ACTION) {
-                            final Resource resource = itemModel.getObject();
-                            if (resource.isPublished()) {
-                                return resourceChooserLink(
-                                        id,
-                                        itemModel,
-                                        new ParamResourceModel("publishAgain", this));
-                            } else {
-                                return resourceChooserLink(
-                                        id, itemModel, new ParamResourceModel("publish", this));
-                            }
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "Don't know of property " + property.getName());
-                        }
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<Resource> itemModel, Property<Resource> property) {
+                if (property == NewLayerPageProvider.NAME) {
+                    return new Label(id, property.getModel(itemModel));
+                } else if (property == NewLayerPageProvider.PUBLISHED) {
+                    final Resource resource = itemModel.getObject();
+                    final CatalogIconFactory icons = CatalogIconFactory.get();
+                    if (resource.isPublished()) {
+                        PackageResourceReference icon = icons.getEnabledIcon();
+                        Fragment f = new Fragment(id, "iconFragment", selectLayers);
+                        f.add(new Image("layerIcon", icon));
+                        return f;
+                    } else {
+                        return new Label(id);
                     }
-                };
+                } else if (property == NewLayerPageProvider.ACTION) {
+                    final Resource resource = itemModel.getObject();
+                    if (resource.isPublished()) {
+                        return resourceChooserLink(id, itemModel, new ParamResourceModel("publishAgain", this));
+                    } else {
+                        return resourceChooserLink(id, itemModel, new ParamResourceModel("publish", this));
+                    }
+                } else {
+                    throw new IllegalArgumentException("Don't know of property " + property.getName());
+                }
+            }
+        };
         layers.setFilterVisible(true);
 
         selectLayers.add(layers);
@@ -162,8 +156,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         createCoverageViewContainer.add(newCoverageViewLink());
         selectLayersContainer.add(createCoverageViewContainer);
 
-        createCascadedWFSStoredQueryContainer =
-                new WebMarkupContainer("createCascadedWFSStoredQueryContainer");
+        createCascadedWFSStoredQueryContainer = new WebMarkupContainer("createCascadedWFSStoredQueryContainer");
         createCascadedWFSStoredQueryContainer.setVisible(false);
         createCascadedWFSStoredQueryContainer.add(newCascadedWFSStoredQueryLink());
         selectLayersContainer.add(createCascadedWFSStoredQueryContainer);
@@ -191,10 +184,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp =
-                        new PageParameters()
-                                .add("wsName", ds.getWorkspace().getName())
-                                .add("storeName", ds.getName());
+                PageParameters pp = new PageParameters()
+                        .add("wsName", ds.getWorkspace().getName())
+                        .add("storeName", ds.getName());
                 setResponsePage(NewFeatureTypePage.class, pp);
             }
         };
@@ -206,10 +198,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp =
-                        new PageParameters()
-                                .add("wsName", ds.getWorkspace().getName())
-                                .add("storeName", ds.getName());
+                PageParameters pp = new PageParameters()
+                        .add("wsName", ds.getWorkspace().getName())
+                        .add("storeName", ds.getName());
                 setResponsePage(SQLViewNewPage.class, pp);
             }
         };
@@ -221,10 +212,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 CoverageStoreInfo cs = getCatalog().getStore(storeId, CoverageStoreInfo.class);
-                PageParameters pp =
-                        new PageParameters()
-                                .add("wsName", cs.getWorkspace().getName())
-                                .add("storeName", cs.getName());
+                PageParameters pp = new PageParameters()
+                        .add("wsName", cs.getWorkspace().getName())
+                        .add("storeName", cs.getName());
                 setResponsePage(CoverageViewNewPage.class, pp);
             }
         };
@@ -236,10 +226,9 @@ public class NewLayerPage extends GeoServerSecuredPage {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 DataStoreInfo ds = getCatalog().getStore(storeId, DataStoreInfo.class);
-                PageParameters pp =
-                        new PageParameters()
-                                .add("wsName", ds.getWorkspace().getName())
-                                .add("storeName", ds.getName());
+                PageParameters pp = new PageParameters()
+                        .add("wsName", ds.getWorkspace().getName())
+                        .add("storeName", ds.getName());
                 setResponsePage(CascadedWFSStoredQueryNewPage.class, pp);
             }
         };
@@ -268,54 +257,45 @@ public class NewLayerPage extends GeoServerSecuredPage {
     }
 
     private Select2DropDownChoice<StoreInfo> storesDropDown() {
-        final Select2DropDownChoice<StoreInfo> stores =
-                new Select2DropDownChoice<>(
-                        "storesDropDown",
-                        new Model<>(),
-                        new StoreListModel(),
-                        new StoreListChoiceRenderer());
+        final Select2DropDownChoice<StoreInfo> stores = new Select2DropDownChoice<>(
+                "storesDropDown", new Model<>(), new StoreListModel(), new StoreListChoiceRenderer());
         stores.setOutputMarkupId(true);
-        stores.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        stores.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        if (stores.getModelObject() != null) {
-                            StoreInfo store = stores.getModelObject();
-                            NewLayerPage.this.storeId = store.getId();
-                            provider.setStoreId(store.getId());
-                            storeName.setDefaultModelObject(store.getName());
-                            selectLayers.setVisible(true);
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                if (stores.getModelObject() != null) {
+                    StoreInfo store = stores.getModelObject();
+                    NewLayerPage.this.storeId = store.getId();
+                    provider.setStoreId(store.getId());
+                    storeName.setDefaultModelObject(store.getName());
+                    selectLayers.setVisible(true);
 
-                            // make sure we can actually list the contents, it may happen
-                            // the store is actually unreachable, in that case we
-                            // want to display an error message
-                            try {
-                                provider.getItems();
-                            } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.SEVERE,
-                                        "Error retrieving layers for the specified store",
-                                        e);
-                                error(e.getMessage());
-                                selectLayers.setVisible(false);
-                            }
-
-                            updateSpecialFunctionPanels(store);
-
-                        } else {
-                            selectLayers.setVisible(false);
-                            createTypeContainer.setVisible(false);
-                        }
-                        target.add(selectLayersContainer);
-                        addFeedbackPanels(target);
+                    // make sure we can actually list the contents, it may happen
+                    // the store is actually unreachable, in that case we
+                    // want to display an error message
+                    try {
+                        provider.getItems();
+                    } catch (Exception e) {
+                        LOGGER.log(Level.SEVERE, "Error retrieving layers for the specified store", e);
+                        error(e.getMessage());
+                        selectLayers.setVisible(false);
                     }
-                });
+
+                    updateSpecialFunctionPanels(store);
+
+                } else {
+                    selectLayers.setVisible(false);
+                    createTypeContainer.setVisible(false);
+                }
+                target.add(selectLayersContainer);
+                addFeedbackPanels(target);
+            }
+        });
         return stores;
     }
 
-    SimpleAjaxLink<Resource> resourceChooserLink(
-            String id, IModel<Resource> itemModel, IModel<String> label) {
+    SimpleAjaxLink<Resource> resourceChooserLink(String id, IModel<Resource> itemModel, IModel<String> label) {
         return new SimpleAjaxLink<>(id, itemModel, label) {
 
             @Override
@@ -330,8 +310,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
         // at the moment just assume every store can create types
         try {
             createTypeContainer.setVisible(
-                    store instanceof DataStoreInfo
-                            && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
+                    store instanceof DataStoreInfo && ((DataStoreInfo) store).getDataStore(null) instanceof DataStore);
         } catch (IOException e) {
             LOGGER.log(Level.FINEST, e.getMessage());
         }
@@ -355,8 +334,7 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 createSQLViewContainer.setVisible(da instanceof JDBCDataStore);
 
                 if (da instanceof WFSDataStore) {
-                    createCascadedWFSStoredQueryContainer.setVisible(
-                            ((WFSDataStore) da).supportsStoredQueries());
+                    createCascadedWFSStoredQueryContainer.setVisible(((WFSDataStore) da).supportsStoredQueries());
                 }
             } catch (IOException e) {
                 LOGGER.log(Level.FINEST, e.getMessage());
@@ -428,22 +406,18 @@ public class NewLayerPage extends GeoServerSecuredPage {
                 return builder.buildLayer(wli);
             }
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Error occurred while building the resources for the configuration page", e);
+            throw new RuntimeException("Error occurred while building the resources for the configuration page", e);
         }
 
         // handle the case in which the store was not found anymore, or was not
         // of the expected type
-        if (expandedStore == null)
-            throw new IllegalArgumentException("Store is missing from configuration!");
-        else
-            throw new IllegalArgumentException(
-                    "Don't know how to deal with this store " + expandedStore);
+        if (expandedStore == null) throw new IllegalArgumentException("Store is missing from configuration!");
+        else throw new IllegalArgumentException("Don't know how to deal with this store " + expandedStore);
     }
 
     /**
-     * Returns the storeId provided during construction, or the one pointed by the drop down if none
-     * was provided during construction
+     * Returns the storeId provided during construction, or the one pointed by the drop down if none was provided during
+     * construction
      */
     String getSelectedStoreId() {
         // the provider is always up to date

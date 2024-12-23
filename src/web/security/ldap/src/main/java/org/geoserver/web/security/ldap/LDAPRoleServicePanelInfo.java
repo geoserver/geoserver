@@ -9,8 +9,7 @@ import org.geoserver.security.ldap.LDAPRoleService;
 import org.geoserver.security.ldap.LDAPRoleServiceConfig;
 import org.geoserver.security.web.role.RoleServicePanelInfo;
 
-public class LDAPRoleServicePanelInfo
-        extends RoleServicePanelInfo<LDAPRoleServiceConfig, LDAPRoleServicePanel> {
+public class LDAPRoleServicePanelInfo extends RoleServicePanelInfo<LDAPRoleServiceConfig, LDAPRoleServicePanel> {
 
     private static final long serialVersionUID = 2157416730424175291L;
 

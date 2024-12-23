@@ -33,8 +33,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     /**
      * Creates a new datastore configuration page to create a new datastore of the given type
      *
-     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display
-     *     name
+     * @param dataStoreFactDisplayName the type of datastore to create, given by its factory display name
      */
     public DataAccessNewPage(final String dataStoreFactDisplayName) {
         super();
@@ -57,14 +56,12 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
     }
 
     /**
-     * Callback method called when the submit button have been pressed and the parameters validation
-     * has succeed.
+     * Callback method called when the submit button have been pressed and the parameters validation has succeed.
      *
      * @see AbstractDataAccessPage#onSaveDataStore(Form)
      */
     @Override
-    protected final void onSaveDataStore(
-            final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)
+    protected final void onSaveDataStore(final DataStoreInfo info, AjaxRequestTarget target, boolean doReturn)
             throws IllegalArgumentException {
         if (!storeEditPanel.onSave()) {
             return;
@@ -104,9 +101,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
             catalog.add(savedStore);
         } catch (FileSandboxEnforcer.SandboxException e) {
             // this one is non recoverable, give up and inform the user
-            error(
-                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
-                            .getString());
+            error(new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath()).getString());
             return; // do not exit
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Error adding data store to catalog", e);
@@ -115,8 +110,7 @@ public class DataAccessNewPage extends AbstractDataAccessPage {
                 message = e.getCause().getMessage();
             }
 
-            throw new IllegalArgumentException(
-                    "Error creating data store with the provided parameters: " + message);
+            throw new IllegalArgumentException("Error creating data store with the provided parameters: " + message);
         }
 
         final NewLayerPage newLayerPage;

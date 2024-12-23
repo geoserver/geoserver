@@ -44,9 +44,11 @@ public class BatchRestController extends RestBaseController {
 
     private static final Logger LOGGER = Logging.getLogger(BatchRestController.class);
 
-    @Autowired private AdminRulesRestController adminRulesRestController;
+    @Autowired
+    private AdminRulesRestController adminRulesRestController;
 
-    @Autowired private RulesRestController rulesRestController;
+    @Autowired
+    private RulesRestController rulesRestController;
 
     /**
      * Exception handle to hanlde the {@link NotFoundServiceEx} exceptiont throw by the service.
@@ -57,15 +59,13 @@ public class BatchRestController extends RestBaseController {
      * @throws IOException
      */
     @ExceptionHandler(NotFoundServiceEx.class)
-    public void notFound(
-            NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
+    public void notFound(NotFoundServiceEx exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(404, exception.getMessage());
     }
 
     @ExceptionHandler(BadRequestServiceEx.class)
-    public void badRequest(
-            BadRequestServiceEx exception, HttpServletRequest request, HttpServletResponse response)
+    public void badRequest(BadRequestServiceEx exception, HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         response.sendError(400, exception.getMessage());
     }
@@ -101,8 +101,7 @@ public class BatchRestController extends RestBaseController {
             }
             return HttpStatus.OK;
         } catch (DuplicateKeyException e) {
-            throw new BadRequestServiceEx(
-                    "The operation is trying to add a duplicate rule or adminrule");
+            throw new BadRequestServiceEx("The operation is trying to add a duplicate rule or adminrule");
         } catch (WebApplicationException ex) {
             throw ex;
         } catch (Exception ex) {
@@ -122,8 +121,7 @@ public class BatchRestController extends RestBaseController {
                 executeAdminRuleOp(op);
                 break;
             default:
-                throw new NotFoundServiceEx(
-                        "No service found for name " + sn != null ? sn.name() : "");
+                throw new NotFoundServiceEx("No service found for name " + sn != null ? sn.name() : "");
         }
     }
 
@@ -146,9 +144,7 @@ public class BatchRestController extends RestBaseController {
                 break;
             default:
                 throw new BadRequestServiceEx(
-                        "No batch op found in context of rule service, for type " + type != null
-                                ? type.name()
-                                : "");
+                        "No batch op found in context of rule service, for type " + type != null ? type.name() : "");
         }
     }
 
@@ -171,8 +167,7 @@ public class BatchRestController extends RestBaseController {
                 break;
             default:
                 throw new BadRequestServiceEx(
-                        "No batch op found in context of adminrule service, for type " + type
-                                        != null
+                        "No batch op found in context of adminrule service, for type " + type != null
                                 ? type.name()
                                 : "");
         }
@@ -188,14 +183,12 @@ public class BatchRestController extends RestBaseController {
     private void ensureAdminRulePayload(BatchOperation op) {
         AbstractPayload jaxbPayload = op.getPayload();
         if (!(jaxbPayload instanceof JaxbAdminRule)) {
-            throw new BadRequestServiceEx(
-                    "An operation requiring an AdminRule payload doesn't have it");
+            throw new BadRequestServiceEx("An operation requiring an AdminRule payload doesn't have it");
         }
     }
 
     private void ensureId(BatchOperation op, String type) {
-        if (op.getId() == null)
-            throw new BadRequestServiceEx("An id is required for operation type " + type);
+        if (op.getId() == null) throw new BadRequestServiceEx("An id is required for operation type " + type);
     }
 
     private void ensureType(BatchOperation.TypeName typeName) {

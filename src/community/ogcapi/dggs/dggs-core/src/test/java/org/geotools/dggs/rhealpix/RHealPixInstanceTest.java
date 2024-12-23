@@ -68,10 +68,9 @@ public class RHealPixInstanceTest {
 
     @Before
     public void setup() throws IOException {
-        Optional<DGGSFactory> factory =
-                DGGSFactoryFinder.getExtensionFactories()
-                        .filter(d -> "rHEALPix".equalsIgnoreCase(d.getId()))
-                        .findFirst();
+        Optional<DGGSFactory> factory = DGGSFactoryFinder.getExtensionFactories()
+                .filter(d -> "rHEALPix".equalsIgnoreCase(d.getId()))
+                .findFirst();
         Assume.assumeTrue(factory.isPresent());
         rpix = factory.get().createInstance(null);
     }
@@ -100,11 +99,8 @@ public class RHealPixInstanceTest {
 
     @Test
     public void zonesFromEnvelopeAcrossDateline() throws IOException {
-        Iterator<Zone> zonesIterator =
-                rpix.zonesFromEnvelope(
-                        new ReferencedEnvelope(-181, -179, -10, 10, DefaultGeographicCRS.WGS84),
-                        0,
-                        false);
+        Iterator<Zone> zonesIterator = rpix.zonesFromEnvelope(
+                new ReferencedEnvelope(-181, -179, -10, 10, DefaultGeographicCRS.WGS84), 0, false);
         Set<Zone> zones = new HashSet<>();
         zonesIterator.forEachRemaining(zones::add);
         assertEquals(1, zones.size());
@@ -116,12 +112,9 @@ public class RHealPixInstanceTest {
         Zone zone = rpix.getZone("N");
         assertEquals(90, zone.getCenter().getY(), 0d);
         Polygon polygon = zone.getBoundary();
-        Polygon expected =
-                (Polygon)
-                        new WKTReader()
-                                .read(
-                                        "POLYGON ((-180 41.937853904844985, -180 90, 180 90, 180 41.937853904844985, -180"
-                                                + " 41.937853904844985))");
+        Polygon expected = (Polygon) new WKTReader()
+                .read("POLYGON ((-180 41.937853904844985, -180 90, 180 90, 180 41.937853904844985, -180"
+                        + " 41.937853904844985))");
         assertTrue(polygon.equalsExact(expected, 1e-6));
     }
 
@@ -139,22 +132,19 @@ public class RHealPixInstanceTest {
 
     @Test
     public void countZonesFromEnvelopeWorldResTwo() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(-1, 1, -1, 1, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(-1, 1, -1, 1, DefaultGeographicCRS.WGS84);
         assertZoneCount(envelope, 2);
     }
 
     @Test
     public void countZonesCloseToPole() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(102, 103, 88.9, 90, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(102, 103, 88.9, 90, DefaultGeographicCRS.WGS84);
         assertZoneCount(envelope, 4);
     }
 
     @Test
     public void countZonesCloseToDateline() {
-        ReferencedEnvelope envelope =
-                new ReferencedEnvelope(175, 176, 81.4, 81.7, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope envelope = new ReferencedEnvelope(175, 176, 81.4, 81.7, DefaultGeographicCRS.WGS84);
         assertZoneCount(envelope, 1);
     }
 
@@ -169,8 +159,7 @@ public class RHealPixInstanceTest {
             double lon2 = lon1 + (random.nextDouble() * (180 - lon1));
             double lat1 = random.nextDouble() * 180 - 90;
             double lat2 = lat1 + (random.nextDouble() * (90 - lat1));
-            ReferencedEnvelope envelope =
-                    new ReferencedEnvelope(lon1, lon2, lat1, lat2, DefaultGeographicCRS.WGS84);
+            ReferencedEnvelope envelope = new ReferencedEnvelope(lon1, lon2, lat1, lat2, DefaultGeographicCRS.WGS84);
             int resolution = (int) (random.nextDouble() * MAX_RESOLUTION);
             try {
                 assertZoneCount(envelope, resolution);
@@ -184,12 +173,8 @@ public class RHealPixInstanceTest {
         long count = rpix.countZonesFromEnvelope(envelope, resolution);
         int expected = Iterators.size(rpix.zonesFromEnvelope(envelope, resolution, false));
         List<String> expectedZones = new ArrayList<>();
-        rpix.zonesFromEnvelope(envelope, resolution, false)
-                .forEachRemaining(z -> expectedZones.add(z.getId()));
-        assertEquals(
-                "Expected " + expected + " " + expectedZones + " but got " + count,
-                expected,
-                count);
+        rpix.zonesFromEnvelope(envelope, resolution, false).forEachRemaining(z -> expectedZones.add(z.getId()));
+        assertEquals("Expected " + expected + " " + expectedZones + " but got " + count, expected, count);
     }
 
     @Test
@@ -220,9 +205,7 @@ public class RHealPixInstanceTest {
         List<String> neighbors = new ArrayList<>();
         iterator.forEachRemaining(z -> neighbors.add(z.getId()));
         // dateline check, remember full side connectivity
-        assertThat(
-                neighbors,
-                hasItems("P0", "O2", "O5", "O8", "P6", "P1", "P4", "P7", "O4", "N8", "P5", "S2"));
+        assertThat(neighbors, hasItems("P0", "O2", "O5", "O8", "P6", "P1", "P4", "P7", "O4", "N8", "P5", "S2"));
         assertThat(neighbors, CoreMatchers.not(hasItems("P3")));
         assertEquals(12, neighbors.size());
     }
@@ -257,11 +240,9 @@ public class RHealPixInstanceTest {
             interpreter.set("resolution", Integer.valueOf(r));
             @SuppressWarnings("unchecked")
             Set<String> expected =
-                    (Set<String>)
-                            interpreter.getValue("list(c.subcells(resolution))", List.class)
-                                    .stream()
-                                    .map(Object::toString)
-                                    .collect(Collectors.toSet());
+                    (Set<String>) interpreter.getValue("list(c.subcells(resolution))", List.class).stream()
+                            .map(Object::toString)
+                            .collect(Collectors.toSet());
             assertEquals(expected, actual);
         }
     }
@@ -279,34 +260,27 @@ public class RHealPixInstanceTest {
 
     @Test
     public void testMapPolygon() throws Exception {
-        Polygon polygon =
-                (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
+        Polygon polygon = (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
 
         Set<String> actual = new HashSet<>();
         rpix.polygon(polygon, 4, false).forEachRemaining(z -> actual.add(z.getId()));
         // visually verified
-        Set<String> expected =
-                new HashSet<>(Arrays.asList("R4430", "R4434", "R4433", "R4431", "R4437", "R4436"));
+        Set<String> expected = new HashSet<>(Arrays.asList("R4430", "R4434", "R4433", "R4431", "R4437", "R4436"));
         assertEquals(expected, actual);
     }
 
     @Test
     public void zonesFromEnvelopeCompact() throws IOException {
         Iterator<Zone> zonesIterator =
-                rpix.zonesFromEnvelope(
-                        new ReferencedEnvelope(-20, 21, -13.2, 21, DefaultGeographicCRS.WGS84),
-                        2,
-                        true);
+                rpix.zonesFromEnvelope(new ReferencedEnvelope(-20, 21, -13.2, 21, DefaultGeographicCRS.WGS84), 2, true);
         Set<String> actual = new TreeSet<>();
         zonesIterator.forEachRemaining(z -> actual.add(z.getId()));
         // returns the R4 zone, plus a ring of zones at resolution 2 around it,
         // 3*4 + 4 corners, totally 17
         assertEquals(17, actual.size());
-        Set<String> expected =
-                new HashSet<>(
-                        Arrays.asList(
-                                "R4", "R08", "R16", "R17", "R18", "R26", "R32", "R35", "R38", "R50",
-                                "R53", "R56", "R62", "R70", "R71", "R72", "R80"));
+        Set<String> expected = new HashSet<>(Arrays.asList(
+                "R4", "R08", "R16", "R17", "R18", "R26", "R32", "R35", "R38", "R50", "R53", "R56", "R62", "R70", "R71",
+                "R72", "R80"));
         assertEquals(expected, actual);
     }
 }

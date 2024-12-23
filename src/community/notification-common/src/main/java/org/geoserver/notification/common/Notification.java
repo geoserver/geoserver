@@ -29,8 +29,8 @@ public interface Notification {
     };
 
     /**
-     * An event handle, identifying the event (can be coming from an external system to avoid
-     * re-processing notifications for action the external system has undertaken)
+     * An event handle, identifying the event (can be coming from an external system to avoid re-processing
+     * notifications for action the external system has undertaken)
      */
     public String getHandle();
 
@@ -41,14 +41,14 @@ public interface Notification {
     public Action getAction();
 
     /**
-     * The "object" of the event, could be what has been created/inserted/modified, the container of
-     * it, the request, and so on. Typically a catalog object, a service object, or a Request
+     * The "object" of the event, could be what has been created/inserted/modified, the container of it, the request,
+     * and so on. Typically a catalog object, a service object, or a Request
      */
     public Object getObject();
 
     /**
-     * A set of "properties" attached to the event, could be properties being changed, the bounds
-     * being affected, and so on
+     * A set of "properties" attached to the event, could be properties being changed, the bounds being affected, and so
+     * on
      */
     public Map<String, Object> getProperties();
 

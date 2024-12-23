@@ -34,27 +34,19 @@ class HistogramTransformer extends TransformerBase {
         @Override
         public void encode(Object object) throws IllegalArgumentException {
             if (!(object instanceof Domains)) {
-                throw new IllegalArgumentException(
-                        "Expected domains info but instead got: "
-                                + object.getClass().getCanonicalName());
+                throw new IllegalArgumentException("Expected domains info but instead got: "
+                        + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
             Tuple<String, List<Integer>> histogram = domains.getHistogramValues();
-            Attributes nameSpaces =
-                    createAttributes(
-                            new String[] {
-                                "xmlns",
-                                        "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
-                                "xmlns:ows", "http://www.opengis.net/ows/1.1"
-                            });
+            Attributes nameSpaces = createAttributes(new String[] {
+                "xmlns", "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
+                "xmlns:ows", "http://www.opengis.net/ows/1.1"
+            });
             start("Histogram", nameSpaces);
             element("ows:Identifier", domains.getHistogramName());
             element("Domain", histogram.first);
-            element(
-                    "Values",
-                    histogram.second.stream()
-                            .map(Object::toString)
-                            .collect(Collectors.joining(",")));
+            element("Values", histogram.second.stream().map(Object::toString).collect(Collectors.joining(",")));
             end("Histogram");
         }
     }

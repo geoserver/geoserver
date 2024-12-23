@@ -73,8 +73,7 @@ public class TypeOfFunction extends FunctionExpressionImpl {
             info = (CatalogInfo) getExpression(0).evaluate(object);
         } catch (Exception e) {
             throw new IllegalArgumentException(
-                    "Filter Function problem for function typeOf argument #0 - expected type CatalogInfo",
-                    e);
+                    "Filter Function problem for function typeOf argument #0 - expected type CatalogInfo", e);
         }
 
         return typeClass(info.getClass()).getSimpleName();

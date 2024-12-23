@@ -107,8 +107,7 @@ public class JaxbAdminRule extends AbstractPayload {
         rule.setAccess(AdminGrantType.valueOf(getAccess()));
         rule.setUsername(getUserName());
         rule.setRolename(getRoleName());
-        rule.setAddressRange(
-                getAddressRange() == null ? null : new IPAddressRange(getAddressRange()));
+        rule.setAddressRange(getAddressRange() == null ? null : new IPAddressRange(getAddressRange()));
         rule.setWorkspace(getWorkspace());
         rule.setId(id);
         return rule;

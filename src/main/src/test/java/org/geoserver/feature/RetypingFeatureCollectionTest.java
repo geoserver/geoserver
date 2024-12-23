@@ -31,21 +31,18 @@ public class RetypingFeatureCollectionTest {
     @Before
     public void setup() throws SchemaException {
         SimpleFeatureType originalSchema =
-                DataUtilities.createType(
-                        "BasicPolygons", "the_geom:MultiPolygon:srid=4326,ID:String,value:int");
+                DataUtilities.createType("BasicPolygons", "the_geom:MultiPolygon:srid=4326,ID:String,value:int");
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.init(originalSchema);
         tb.setName("BasicPolygons2");
         renamedSchema = tb.buildFeatureType();
 
-        collection =
-                new ListFeatureCollection(originalSchema) {
-                    @Override
-                    public void accepts(FeatureVisitor visitor, ProgressListener progress)
-                            throws java.io.IOException {
-                        lastVisitor = visitor;
-                    }
-                };
+        collection = new ListFeatureCollection(originalSchema) {
+            @Override
+            public void accepts(FeatureVisitor visitor, ProgressListener progress) throws java.io.IOException {
+                lastVisitor = visitor;
+            }
+        };
     }
 
     @Test
@@ -62,8 +59,7 @@ public class RetypingFeatureCollectionTest {
     }
 
     private void assertOptimalVisit(FeatureVisitor visitor) throws IOException {
-        RetypingFeatureCollection retypedCollection =
-                new RetypingFeatureCollection(collection, renamedSchema);
+        RetypingFeatureCollection retypedCollection = new RetypingFeatureCollection(collection, renamedSchema);
         retypedCollection.accepts(visitor, null);
         assertSame(lastVisitor, visitor);
     }
@@ -77,8 +73,7 @@ public class RetypingFeatureCollectionTest {
      */
     @Test
     public void testSubCollectionRetyping() {
-        RetypingFeatureCollection retypedCollection =
-                new RetypingFeatureCollection(collection, renamedSchema);
+        RetypingFeatureCollection retypedCollection = new RetypingFeatureCollection(collection, renamedSchema);
         SimpleFeatureCollection subCollection = retypedCollection.subCollection(Filter.INCLUDE);
         assertSame(renamedSchema, subCollection.getSchema());
     }

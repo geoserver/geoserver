@@ -18,8 +18,7 @@ import org.geoserver.web.ComponentInfo;
 public class ResourceConfigurationPanelInfo extends ComponentInfo<ResourceConfigurationPanel> {
     public static final long serialVersionUID = -1l;
 
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.config");
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.config");
 
     private List<String> myHandleableClasses;
 
@@ -40,10 +39,7 @@ public class ResourceConfigurationPanelInfo extends ComponentInfo<ResourceConfig
                     return true;
                 }
             } catch (ClassNotFoundException cnfe) {
-                LOGGER.severe(
-                        "Couldn't find class "
-                                + className
-                                + "; please check your applicationContext.xml.");
+                LOGGER.severe("Couldn't find class " + className + "; please check your applicationContext.xml.");
             }
         }
         return false;

@@ -34,7 +34,8 @@ public class CacheController extends AbstractCatalogController {
 
     static final Logger LOGGER = Logging.getLogger(CacheController.class);
 
-    @Autowired private CacheManager cacheManager;
+    @Autowired
+    private CacheManager cacheManager;
 
     public CacheController(Catalog catalog) {
         super(catalog);

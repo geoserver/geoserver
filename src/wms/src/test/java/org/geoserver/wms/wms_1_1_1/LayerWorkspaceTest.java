@@ -57,8 +57,7 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     /** Test layer names order from GetCapabilities on workspace */
     @Test
     public void testWorkspaceLayerOrderGetCapabilities() throws Exception {
-        Document doc =
-                getAsDOM("/cite/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
+        Document doc = getAsDOM("/cite/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         List<String> originalList = layerNameList(doc);
         assertFalse(originalList.isEmpty());
         assertTrue(originalList.stream().noneMatch(x -> x.indexOf(":") > -1));
@@ -78,10 +77,9 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     private List<String> layerNameList(Document doc) throws Exception {
         List<Node> nlist = xpathList("//WMT_MS_Capabilities/Capability/Layer/Layer/Name", doc);
         List<String> result = new ArrayList<>();
-        nlist.forEach(
-                x -> {
-                    result.add(x.getTextContent().trim());
-                });
+        nlist.forEach(x -> {
+            result.add(x.getTextContent().trim());
+        });
         return result;
     }
 
@@ -107,30 +105,22 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     @Test
     public void testGlobalDescribeLayer() throws Exception {
         LayerInfo layer = layer(catalog, MockData.PRIMITIVEGEOFEATURE);
-        Document doc =
-                getAsDOM(
-                        "/wms?service=WMS&request=describeLayer&version=1.1.1&LAYERS="
-                                + layer.getName(),
-                        true);
+        Document doc = getAsDOM("/wms?service=WMS&request=describeLayer&version=1.1.1&LAYERS=" + layer.getName(), true);
         assertXpathExists("//LayerDescription[@name='" + layer.prefixedName() + "']", doc);
     }
 
     @Test
     public void testWorkspaceCapabilities() throws Exception {
         Document doc = getAsDOM("/sf/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
-        assertXpathExists(
-                "//Layer[Name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']", doc);
+        assertXpathExists("//Layer[Name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']", doc);
     }
 
     @Test
     public void testWorkspaceDescribeLayer() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "/sf/wms?service=WMS&request=describeLayer&version=1.1.1&LAYERS="
-                                + MockData.PRIMITIVEGEOFEATURE.getLocalPart(),
-                        true);
-        assertXpathExists(
-                "//LayerDescription[@name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']",
-                doc);
+        Document doc = getAsDOM(
+                "/sf/wms?service=WMS&request=describeLayer&version=1.1.1&LAYERS="
+                        + MockData.PRIMITIVEGEOFEATURE.getLocalPart(),
+                true);
+        assertXpathExists("//LayerDescription[@name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']", doc);
     }
 }

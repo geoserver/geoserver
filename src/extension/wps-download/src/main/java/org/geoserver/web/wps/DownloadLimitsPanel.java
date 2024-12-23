@@ -30,8 +30,7 @@ public class DownloadLimitsPanel extends AdminPagePanel {
         ConfigurationModel cm = new ConfigurationModel();
         setDefaultModel(cm);
 
-        TextField<Long> maxFeatures =
-                new TextField<>("maxFeatures", new PropertyModel<>(cm, "maxFeatures"));
+        TextField<Long> maxFeatures = new TextField<>("maxFeatures", new PropertyModel<>(cm, "maxFeatures"));
         maxFeatures.add(RangeValidator.minimum(0l));
         add(maxFeatures);
 
@@ -40,8 +39,7 @@ public class DownloadLimitsPanel extends AdminPagePanel {
         rasterSizeLimit.add(RangeValidator.minimum(0l));
         add(rasterSizeLimit);
 
-        TextField<Long> writeLimits =
-                new TextField<>("writeLimits", new PropertyModel<>(cm, "writeLimits"));
+        TextField<Long> writeLimits = new TextField<>("writeLimits", new PropertyModel<>(cm, "writeLimits"));
         writeLimits.add(RangeValidator.minimum(0l));
         add(writeLimits);
 
@@ -51,8 +49,7 @@ public class DownloadLimitsPanel extends AdminPagePanel {
         add(hardOutputLimit);
 
         TextField<Long> maxAnimationFrames =
-                new TextField<>(
-                        "maxAnimationFrames", new PropertyModel<>(cm, "maxAnimationFrames"));
+                new TextField<>("maxAnimationFrames", new PropertyModel<>(cm, "maxAnimationFrames"));
         maxAnimationFrames.add(RangeValidator.minimum(0));
         add(maxAnimationFrames);
 
@@ -68,8 +65,7 @@ public class DownloadLimitsPanel extends AdminPagePanel {
 
     @Override
     public void onMainFormSubmit() {
-        DownloadServiceConfiguration config =
-                (DownloadServiceConfiguration) getDefaultModelObject();
+        DownloadServiceConfiguration config = (DownloadServiceConfiguration) getDefaultModelObject();
         try {
             getConfigurationPersister().setConfiguration(config);
         } catch (IOException e) {

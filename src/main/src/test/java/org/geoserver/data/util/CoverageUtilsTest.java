@@ -53,12 +53,11 @@ public class CoverageUtilsTest {
         GeneralParameterValue[] oldParams = new GeneralParameterValue[1];
         oldParams[0] = ImageMosaicFormat.FILTER.createValue();
         Filter filter = CQL.toFilter("a = 6");
-        GeneralParameterValue[] newParams =
-                CoverageUtils.mergeParameter(
-                        descriptors,
-                        oldParams,
-                        filter,
-                        ImageMosaicFormat.FILTER.getName().getCode());
+        GeneralParameterValue[] newParams = CoverageUtils.mergeParameter(
+                descriptors,
+                oldParams,
+                filter,
+                ImageMosaicFormat.FILTER.getName().getCode());
         assertEquals(1, newParams.length);
         assertEquals(filter, ((ParameterValue) newParams[0]).getValue());
     }

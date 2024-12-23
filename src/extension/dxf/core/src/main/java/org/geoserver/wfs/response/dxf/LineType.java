@@ -67,12 +67,11 @@ public class LineType {
     }
 
     /**
-     * Parse a line type descriptor and returns a fully configured LineType object. A descriptor has
-     * the following format: <name>!<repeatable pattern>[!<base length>], where <name> is the name
-     * assigned to the line type, <base length> (optional) is a real number that tells how long is
-     * each part of the line pattern (defaults to 0.125), and <repeatable pattern> is a visual
-     * description of the repeatable part of the line pattern, as a sequence of - (solid line), *
-     * (dot) and _ (empty space).
+     * Parse a line type descriptor and returns a fully configured LineType object. A descriptor has the following
+     * format: <name>!<repeatable pattern>[!<base length>], where <name> is the name assigned to the line type, <base
+     * length> (optional) is a real number that tells how long is each part of the line pattern (defaults to 0.125), and
+     * <repeatable pattern> is a visual description of the repeatable part of the line pattern, as a sequence of -
+     * (solid line), * (dot) and _ (empty space).
      */
     public static LineType parse(String ltype) {
         // split the descriptor in 2/3 parts
@@ -95,10 +94,9 @@ public class LineType {
             // analyze each part and build a LineTypeItem
             while (m.find()) {
                 String piece = m.group(0);
-                int type =
-                        piece.startsWith("-")
-                                ? LineTypeItem.DASH
-                                : (piece.startsWith("*") ? LineTypeItem.DOT : LineTypeItem.EMPTY);
+                int type = piece.startsWith("-")
+                        ? LineTypeItem.DASH
+                        : (piece.startsWith("*") ? LineTypeItem.DOT : LineTypeItem.EMPTY);
                 LineTypeItem item = new LineTypeItem(type, piece.length() * baseLen);
                 items.add(item);
             }

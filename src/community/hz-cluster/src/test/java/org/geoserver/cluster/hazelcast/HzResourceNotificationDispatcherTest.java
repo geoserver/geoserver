@@ -24,13 +24,11 @@ import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotificationDispatcher;
 
 /** @author Niels Charlier */
-public class HzResourceNotificationDispatcherTest
-        extends AbstractResourceNotificationDispatcherTest {
+public class HzResourceNotificationDispatcherTest extends AbstractResourceNotificationDispatcherTest {
 
     @Override
     protected ResourceNotificationDispatcher initWatcher() throws Exception {
-        final Capture<MessageListener<ResourceNotification>> captureTopicListener =
-                Capture.newInstance();
+        final Capture<MessageListener<ResourceNotification>> captureTopicListener = Capture.newInstance();
         final Capture<ResourceNotification> captureTopicPublish = Capture.newInstance();
 
         final Cluster cluster = createMock(Cluster.class);
@@ -41,25 +39,20 @@ public class HzResourceNotificationDispatcherTest
         expect(hz.getCluster()).andStubReturn(cluster);
         expect(hz.<ResourceNotification>getTopic(HzResourceNotificationDispatcher.TOPIC_NAME))
                 .andStubReturn(topic);
-        expect(topic.addMessageListener(capture(captureTopicListener)))
-                .andReturn(UUID.randomUUID());
+        expect(topic.addMessageListener(capture(captureTopicListener))).andReturn(UUID.randomUUID());
         topic.publish(EasyMock.capture(captureTopicPublish));
-        expectLastCall()
-                .andStubAnswer(
-                        new IAnswer<Object>() {
-                            @Override
-                            public Object answer() throws Throwable {
-                                Message<ResourceNotification> message = createMock(Message.class);
-                                expect(message.getMessageObject())
-                                        .andStubReturn(captureTopicPublish.getValue());
-                                EasyMock.replay(message);
-                                for (MessageListener<ResourceNotification> listener :
-                                        captureTopicListener.getValues()) {
-                                    listener.onMessage(message);
-                                }
-                                return null;
-                            }
-                        });
+        expectLastCall().andStubAnswer(new IAnswer<Object>() {
+            @Override
+            public Object answer() throws Throwable {
+                Message<ResourceNotification> message = createMock(Message.class);
+                expect(message.getMessageObject()).andStubReturn(captureTopicPublish.getValue());
+                EasyMock.replay(message);
+                for (MessageListener<ResourceNotification> listener : captureTopicListener.getValues()) {
+                    listener.onMessage(message);
+                }
+                return null;
+            }
+        });
 
         expect(hzCluster.isEnabled()).andStubReturn(true);
         expect(hzCluster.isRunning()).andStubReturn(true);

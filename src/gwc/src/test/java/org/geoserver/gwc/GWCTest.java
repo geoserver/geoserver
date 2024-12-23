@@ -252,17 +252,13 @@ public class GWCTest {
         blobStoreAggregator = mock(BlobStoreAggregator.class);
         synchEnv = mock(GWCSynchEnv.class);
 
-        gridSetBroker =
-                new GridSetBroker(Arrays.asList(new DefaultGridsets(true, true), xmlConfig));
+        gridSetBroker = new GridSetBroker(Arrays.asList(new DefaultGridsets(true, true), xmlConfig));
         tileLayer = new GeoServerTileLayer(layer, gridSetBroker, tileLayerInfo);
-        GridSet testGridSet = namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
+        GridSet testGridSet =
+                namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
 
-        GridSubset testGridSubset =
-                GridSubsetFactory.createGridSubSet(
-                        testGridSet,
-                        new BoundingBox(-180, 0, 0, 90),
-                        0,
-                        testGridSet.getNumLevels() - 1);
+        GridSubset testGridSubset = GridSubsetFactory.createGridSubSet(
+                testGridSet, new BoundingBox(-180, 0, 0, 90), 0, testGridSet.getNumLevels() - 1);
         when(xmlConfig.getGridSet(eq("TEST"))).thenReturn(Optional.of(testGridSet));
         tileLayer.addGridSubset(testGridSubset);
         tileLayerGroup = new GeoServerTileLayer(layerGroup, gridSetBroker, tileLayerGroupInfo);
@@ -271,8 +267,9 @@ public class GWCTest {
         mockTileLayerDispatcher();
 
         ApplicationContext appContext = createMock(ApplicationContext.class);
-        GeoWebCacheEnvironment genv =
-                createMockBuilder(GeoWebCacheEnvironment.class).withConstructor().createMock();
+        GeoWebCacheEnvironment genv = createMockBuilder(GeoWebCacheEnvironment.class)
+                .withConstructor()
+                .createMock();
         expect(appContext.getBeanNamesForType(GeoWebCacheEnvironment.class))
                 .andReturn(new String[] {"geoWebCacheEnvironment"})
                 .anyTimes();
@@ -289,14 +286,17 @@ public class GWCTest {
                 .anyTimes();
         Map<String, XMLConfiguration> xmlConfMap = new HashMap<>();
         xmlConfMap.put("geoWebCacheXMLConfiguration", xmlConfig);
-        expect(appContext.getBeansOfType(XMLConfiguration.class)).andReturn(xmlConfMap).anyTimes();
-        expect(appContext.getBean("geoWebCacheXMLConfiguration")).andReturn(xmlConfig).anyTimes();
+        expect(appContext.getBeansOfType(XMLConfiguration.class))
+                .andReturn(xmlConfMap)
+                .anyTimes();
+        expect(appContext.getBean("geoWebCacheXMLConfiguration"))
+                .andReturn(xmlConfig)
+                .anyTimes();
 
-        GeoServerEnvironment gsenv =
-                createMockBuilder(GeoServerEnvironment.class)
-                        .withConstructor()
-                        .addMockedMethods("getProps")
-                        .createMock();
+        GeoServerEnvironment gsenv = createMockBuilder(GeoServerEnvironment.class)
+                .withConstructor()
+                .addMockedMethods("getProps")
+                .createMock();
         expect(appContext.getBeanNamesForType(GeoServerEnvironment.class))
                 .andReturn(new String[] {"environments"})
                 .anyTimes();
@@ -313,23 +313,22 @@ public class GWCTest {
         expect(gsenv.getProps()).andReturn(properties).anyTimes();
         replay(gsenv);
 
-        GWC gwcenv =
-                createMockBuilder(GWC.class)
-                        .withConstructor(
-                                gwcConfigPersister,
-                                storageBroker,
-                                tld,
-                                gridSetBroker,
-                                tileBreeder,
-                                diskQuotaMonitor,
-                                owsDispatcher,
-                                catalog,
-                                catalog,
-                                storageFinder,
-                                jdbcStorage,
-                                blobStoreAggregator,
-                                synchEnv)
-                        .createMock();
+        GWC gwcenv = createMockBuilder(GWC.class)
+                .withConstructor(
+                        gwcConfigPersister,
+                        storageBroker,
+                        tld,
+                        gridSetBroker,
+                        tileBreeder,
+                        diskQuotaMonitor,
+                        owsDispatcher,
+                        catalog,
+                        catalog,
+                        storageFinder,
+                        jdbcStorage,
+                        blobStoreAggregator,
+                        synchEnv)
+                .createMock();
 
         expect(appContext.getBeanNamesForType(GWC.class))
                 .andReturn(new String[] {"gwc"})
@@ -340,8 +339,9 @@ public class GWCTest {
         expect(appContext.getBean("gwc")).andReturn(gwcenv).anyTimes();
         expect(appContext.isSingleton("gwc")).andReturn(true).anyTimes();
 
-        GeoServerResourceLoader loader =
-                createMockBuilder(GeoServerResourceLoader.class).withConstructor().createMock();
+        GeoServerResourceLoader loader = createMockBuilder(GeoServerResourceLoader.class)
+                .withConstructor()
+                .createMock();
         expect(appContext.getBeanNamesForType(ExtensionFilter.class))
                 .andReturn(new String[] {})
                 .anyTimes();
@@ -361,7 +361,8 @@ public class GWCTest {
 
         replay(appContext);
 
-        GeoWebCacheExtensions gse = createMockBuilder(GeoWebCacheExtensions.class).createMock();
+        GeoWebCacheExtensions gse =
+                createMockBuilder(GeoWebCacheExtensions.class).createMock();
         gse.setApplicationContext(appContext);
 
         replay(gse);
@@ -369,8 +370,7 @@ public class GWCTest {
         GeoServerExtensions gsext = new GeoServerExtensions();
         gsext.setApplicationContext(appContext);
 
-        List<GeoWebCacheEnvironment> extensions =
-                GeoWebCacheExtensions.extensions(GeoWebCacheEnvironment.class);
+        List<GeoWebCacheEnvironment> extensions = GeoWebCacheExtensions.extensions(GeoWebCacheEnvironment.class);
         assertNotNull(extensions);
         assertEquals(1, extensions.size());
         assertTrue(extensions.contains(genv));
@@ -381,8 +381,7 @@ public class GWCTest {
         } else {
             jdbcConfiguration.setDialect("HSQL");
         }
-        File jdbcConfigurationFile =
-                File.createTempFile("jdbcConfigurationFile", ".tmp", tmpDir().dir());
+        File jdbcConfigurationFile = File.createTempFile("jdbcConfigurationFile", ".tmp", tmpDir().dir());
         jdbcConfiguration.store(jdbcConfiguration, jdbcConfigurationFile);
 
         JDBCConfiguration loadedConf = jdbcConfiguration.load(jdbcConfigurationFile);
@@ -392,21 +391,20 @@ public class GWCTest {
 
         replay(jdbcStorage);
 
-        mediator =
-                new GWC(
-                        gwcConfigPersister,
-                        storageBroker,
-                        tld,
-                        gridSetBroker,
-                        tileBreeder,
-                        diskQuotaMonitor,
-                        owsDispatcher,
-                        catalog,
-                        catalog,
-                        storageFinder,
-                        jdbcStorage,
-                        blobStoreAggregator,
-                        synchEnv);
+        mediator = new GWC(
+                gwcConfigPersister,
+                storageBroker,
+                tld,
+                gridSetBroker,
+                tileBreeder,
+                diskQuotaMonitor,
+                owsDispatcher,
+                catalog,
+                catalog,
+                storageFinder,
+                jdbcStorage,
+                blobStoreAggregator,
+                synchEnv);
         mediator.setApplicationContext(appContext);
 
         mediator = spy(mediator);
@@ -438,8 +436,7 @@ public class GWCTest {
         when(tld.getTileLayer(eq(tileLayer.getName()))).thenReturn(tileLayer);
         when(tld.getTileLayer(eq(tileLayerGroup.getName()))).thenReturn(tileLayerGroup);
 
-        when(tld.getLayerNames())
-                .thenReturn(ImmutableSet.of(tileLayer.getName(), tileLayerGroup.getName()));
+        when(tld.getLayerNames()).thenReturn(ImmutableSet.of(tileLayer.getName(), tileLayerGroup.getName()));
         Iterable<TileLayer> tileLayers = ImmutableList.of(tileLayer, tileLayerGroup);
         when(tld.getLayerList()).thenReturn(tileLayers);
 
@@ -627,8 +624,7 @@ public class GWCTest {
         when(xmlConfig.getGridSet(eq(newName))).thenReturn(Optional.of(newGridset));
 
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq(oldName));
-        verify(storageBroker, times(1))
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq(oldName));
+        verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()), eq(oldName));
     }
 
     @Test
@@ -659,16 +655,12 @@ public class GWCTest {
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayer.getName()), eq("TEST"));
         verify(storageBroker, times(1)).deleteByGridSetId(eq(tileLayerGroup.getName()), eq("TEST"));
 
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:900913"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:900913"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()), eq("EPSG:4326"));
         verify(storageBroker, never()).deleteByGridSetId(eq(tileLayer.getName()), eq("My4326"));
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq("EPSG:900913"));
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq("EPSG:4326"));
-        verify(storageBroker, never())
-                .deleteByGridSetId(eq(tileLayerGroup.getName()), eq("My4326"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()), eq("EPSG:900913"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()), eq("EPSG:4326"));
+        verify(storageBroker, never()).deleteByGridSetId(eq(tileLayerGroup.getName()), eq("My4326"));
 
         verify(tld, times(1)).modify(same(tileLayer));
         verify(tld, times(1)).modify(same(tileLayerGroup));
@@ -739,13 +731,10 @@ public class GWCTest {
         doNothing().when(tld).addLayer(any(GeoServerTileLayer.class));
         mediator.autoConfigureLayers(layerNames, defaults);
 
-        GeoServerTileLayerInfo expected1 =
-                new GeoServerTileLayer(layer2, defaults, gridSetBroker).getInfo();
-        GeoServerTileLayerInfo expected2 =
-                new GeoServerTileLayer(group2, defaults, gridSetBroker).getInfo();
+        GeoServerTileLayerInfo expected1 = new GeoServerTileLayer(layer2, defaults, gridSetBroker).getInfo();
+        GeoServerTileLayerInfo expected2 = new GeoServerTileLayer(group2, defaults, gridSetBroker).getInfo();
 
-        ArgumentCaptor<GeoServerTileLayer> addCaptor =
-                ArgumentCaptor.forClass(GeoServerTileLayer.class);
+        ArgumentCaptor<GeoServerTileLayer> addCaptor = ArgumentCaptor.forClass(GeoServerTileLayer.class);
 
         verify(tld, times(2)).addLayer(addCaptor.capture());
 
@@ -770,8 +759,7 @@ public class GWCTest {
     @Test
     public void testDeleteCacheByGridSetId() throws Exception {
 
-        when(storageBroker.deleteByGridSetId(eq("layer"), eq("gset1")))
-                .thenThrow(new StorageException("fake"));
+        when(storageBroker.deleteByGridSetId(eq("layer"), eq("gset1"))).thenThrow(new StorageException("fake"));
 
         try {
             mediator.deleteCacheByGridSetId("layer", "gset1");
@@ -791,24 +779,20 @@ public class GWCTest {
         ArgumentCaptor<CatalogListener> captor = ArgumentCaptor.forClass(CatalogListener.class);
         verify(catalog, times(2)).removeListener(captor.capture());
         for (CatalogListener captured : captor.getAllValues()) {
-            assertTrue(
-                    captured instanceof CatalogLayerEventListener
-                            || captured instanceof CatalogStyleChangeListener);
+            assertTrue(captured instanceof CatalogLayerEventListener || captured instanceof CatalogStyleChangeListener);
         }
     }
 
     @Test
     public void testTruncateLayerFully() throws Exception {
 
-        when(tld.getTileLayer(eq(tileLayerGroup.getName())))
-                .thenThrow(new GeoWebCacheException("fake"));
+        when(tld.getTileLayer(eq(tileLayerGroup.getName()))).thenThrow(new GeoWebCacheException("fake"));
 
         mediator.truncate(tileLayerGroup.getName());
         verify(storageBroker, never()).deleteByGridSetId(anyString(), anyString());
 
         mediator.truncate(tileLayer.getName());
-        verify(storageBroker, times(tileLayer.getGridSubsets().size()))
-                .deleteByGridSetId(anyString(), anyString());
+        verify(storageBroker, times(tileLayer.getGridSubsets().size())).deleteByGridSetId(anyString(), anyString());
     }
 
     @Test
@@ -823,7 +807,8 @@ public class GWCTest {
         styleName = layer.getDefaultStyle().prefixedName();
         mediator.truncateByLayerAndStyle(layerName, styleName);
 
-        int expected = tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
+        int expected =
+                tileLayer.getGridSubsets().size() * tileLayer.getMimeTypes().size();
         verify(tileBreeder, times(expected)).dispatchTasks(any());
     }
 
@@ -832,16 +817,14 @@ public class GWCTest {
         String layerName = tileLayer.getName();
 
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
-        final Set<Map<String, String>> cachedParameters =
-                tileLayer.getInfo().cachedStyles().stream()
-                        .map(style -> Collections.singletonMap("STYLES", style))
-                        .collect(Collectors.toSet());
+        final Set<Map<String, String>> cachedParameters = tileLayer.getInfo().cachedStyles().stream()
+                .map(style -> Collections.singletonMap("STYLES", style))
+                .collect(Collectors.toSet());
 
         when(storageBroker.getCachedParameters(layerName)).thenReturn(cachedParameters);
 
         // bounds outside layer bounds (which are -180,0,0,90)
-        ReferencedEnvelope bounds =
-                new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope bounds = new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
         BoundingBox layerBounds = tileLayer.getGridSubset("EPSG:4326").getOriginalExtent();
 
         assertFalse(bounds.intersects(layerBounds.getMinX(), layerBounds.getMinY()));
@@ -870,9 +853,7 @@ public class GWCTest {
 
         reset(tileBreeder);
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
-        bounds =
-                mediator.getAreaOfValidity(
-                        CRS.decode("EPSG:2083")); // Terra del Fuego Does not intersect subset
+        bounds = mediator.getAreaOfValidity(CRS.decode("EPSG:2083")); // Terra del Fuego Does not intersect subset
         mediator.truncate(layerName, bounds);
         verify(tileBreeder, times(0)).seed(eq(layerName), any(SeedRequest.class));
 
@@ -890,26 +871,19 @@ public class GWCTest {
         String layerName = tileLayer.getName();
 
         when(tileBreeder.findTileLayer(layerName)).thenReturn(tileLayer);
-        final Set<Map<String, String>> cachedParameters =
-                tileLayer.getInfo().cachedStyles().stream()
-                        .flatMap(
-                                style ->
-                                        cachedTimes.stream()
-                                                .map(
-                                                        time -> {
-                                                            Map<String, String> map =
-                                                                    new HashMap<>();
-                                                            map.put("STYLE", style);
-                                                            map.put("TIME", time);
-                                                            return map;
-                                                        }))
-                        .collect(Collectors.toSet());
+        final Set<Map<String, String>> cachedParameters = tileLayer.getInfo().cachedStyles().stream()
+                .flatMap(style -> cachedTimes.stream().map(time -> {
+                    Map<String, String> map = new HashMap<>();
+                    map.put("STYLE", style);
+                    map.put("TIME", time);
+                    return map;
+                }))
+                .collect(Collectors.toSet());
 
         when(storageBroker.getCachedParameters(layerName)).thenReturn(cachedParameters);
 
         // bounds outside layer bounds (which are -180,0,0,90)
-        ReferencedEnvelope bounds =
-                new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
+        ReferencedEnvelope bounds = new ReferencedEnvelope(10, 20, 10, 20, DefaultGeographicCRS.WGS84);
         BoundingBox layerBounds =
                 tileLayer.getGridSubset("EPSG:4326").getGridSet().getOriginalExtent();
 
@@ -1029,12 +1003,10 @@ public class GWCTest {
         final Set<String> layerNames = Sets.newHashSet(removedLayer, remainingLayer);
 
         when(tld.getLayerNames()).thenReturn(layerNames);
-        doAnswer(
-                        (Answer<Void>)
-                                invocation -> {
-                                    layerNames.remove(removedLayer);
-                                    return null;
-                                })
+        doAnswer((Answer<Void>) invocation -> {
+                    layerNames.remove(removedLayer);
+                    return null;
+                })
                 .when(tld)
                 .reInit();
 
@@ -1080,8 +1052,7 @@ public class GWCTest {
         assertDispatchMismatch(request, "more than one layer requested");
 
         rawKvp.put("layers", "SomeNonCachedLayer");
-        when(tld.getTileLayer(eq("SomeNonCachedLayer")))
-                .thenThrow(new GeoWebCacheException("layer not found"));
+        when(tld.getTileLayer(eq("SomeNonCachedLayer"))).thenThrow(new GeoWebCacheException("layer not found"));
         assertDispatchMismatch(request, "not a tile layer");
 
         rawKvp.put("layers", tileLayer.getName());
@@ -1192,8 +1163,7 @@ public class GWCTest {
         assertDispatchMismatch(request, "no parameter filter exists for TIME");
         request.setTime(Collections.emptyList());
 
-        List<Map<String, String>> viewParams =
-                ImmutableList.of(ImmutableMap.of("paramKey", "paramVal"));
+        List<Map<String, String>> viewParams = ImmutableList.of(ImmutableMap.of("paramKey", "paramVal"));
         request.setViewParams(viewParams);
         assertDispatchMismatch(request, "no parameter filter exists for VIEWPARAMS");
         request.setViewParams(null);
@@ -1229,9 +1199,9 @@ public class GWCTest {
     }
 
     /**
-     * Since GeoServer sets a new FILTER parameter equal to an input CQL_FILTER parameter (if
-     * present) for each WMS requests (using direct WMS integration), this may result in a caching
-     * error. This test ensures that no error is thrown and caching is allowed.
+     * Since GeoServer sets a new FILTER parameter equal to an input CQL_FILTER parameter (if present) for each WMS
+     * requests (using direct WMS integration), this may result in a caching error. This test ensures that no error is
+     * thrown and caching is allowed.
      */
     @Test
     public void testCQLFILTERParameters() throws Exception {
@@ -1280,10 +1250,7 @@ public class GWCTest {
                 target.toString().contains(expectedReason));
     }
 
-    /**
-     * Confirms that GWC handling of WMS requests does not enter recursion when encountering a seed
-     * request
-     */
+    /** Confirms that GWC handling of WMS requests does not enter recursion when encountering a seed request */
     @Test
     public void testGetMapRequest() throws Throwable {
         GetMapRequest request = new GetMapRequest();
@@ -1296,8 +1263,7 @@ public class GWCTest {
         WebMapService mapService = mock(DefaultWebMapService.class);
         when(mapService.getMap(request)).thenReturn(rawMap);
         Method getMapMethod = WebMapService.class.getMethod("getMap", GetMapRequest.class);
-        MethodInvocation invocation =
-                new PassThroughMethodInvocation(mapService, getMapMethod, request);
+        MethodInvocation invocation = new PassThroughMethodInvocation(mapService, getMapMethod, request);
         mediator.getConfig().setDirectWMSIntegrationEnabled(true);
         mediator.getConfig().setRequireTiledParameter(false);
         CachingWebMapService cwms = new CachingWebMapService(mediator);
@@ -1306,11 +1272,9 @@ public class GWCTest {
         GetMapRequest requestWithoutSeedKey = new GetMapRequest();
         rawKvp.remove(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
         requestWithoutSeedKey.setRawKvp(rawKvp);
-        RawMap rawMap2 =
-                new RawMap(new WMSMapContent(requestWithoutSeedKey), new byte[] {}, "image/png");
+        RawMap rawMap2 = new RawMap(new WMSMapContent(requestWithoutSeedKey), new byte[] {}, "image/png");
         when(mapService.getMap(requestWithoutSeedKey)).thenReturn(rawMap2);
-        MethodInvocation invocation2 =
-                new PassThroughMethodInvocation(mapService, getMapMethod, requestWithoutSeedKey);
+        MethodInvocation invocation2 = new PassThroughMethodInvocation(mapService, getMapMethod, requestWithoutSeedKey);
         WebMap webMapWithoutSeed = cwms.invoke(invocation2);
         assertEquals("geowebcache-cache-result", webMapWithoutSeed.getResponseHeaders()[0][0]);
     }
@@ -1322,16 +1286,14 @@ public class GWCTest {
         testMultipleCrsMatchingGridSubsets("EPSG:4326", "EPSG:4326", new long[] {10, 10, 10});
 
         testMultipleCrsMatchingGridSubsets("EPSG:4326", "GlobalCRS84Scale", new long[] {1, 1, 1});
-        testMultipleCrsMatchingGridSubsets(
-                "EPSG:4326", "GlobalCRS84Scale", new long[] {10, 10, 10});
+        testMultipleCrsMatchingGridSubsets("EPSG:4326", "GlobalCRS84Scale", new long[] {10, 10, 10});
 
         testMultipleCrsMatchingGridSubsets("EPSG:4326", "GlobalCRS84Scale", new long[] {1, 1, 1});
-        testMultipleCrsMatchingGridSubsets(
-                "EPSG:4326", "GlobalCRS84Scale", new long[] {10, 10, 10});
+        testMultipleCrsMatchingGridSubsets("EPSG:4326", "GlobalCRS84Scale", new long[] {10, 10, 10});
     }
 
-    private void testMultipleCrsMatchingGridSubsets(
-            final String srs, final String expectedGridset, long[] tileIndex) throws Exception {
+    private void testMultipleCrsMatchingGridSubsets(final String srs, final String expectedGridset, long[] tileIndex)
+            throws Exception {
         GetMapRequest request = new GetMapRequest();
 
         Map<String, String> rawKvp = new CaseInsensitiveMap<>(new HashMap<>());
@@ -1343,16 +1305,13 @@ public class GWCTest {
         request.setWidth(256);
         request.setHeight(256);
         rawKvp.put("layers", "mockLayer");
-        List<String> gridSetNames =
-                Arrays.asList("GlobalCRS84Pixel", "GlobalCRS84Scale", "EPSG:4326");
+        List<String> gridSetNames = Arrays.asList("GlobalCRS84Pixel", "GlobalCRS84Scale", "EPSG:4326");
         tileLayer = mockTileLayer("mockLayer", gridSetNames);
 
         // make the request match a tile in the expected gridset
         BoundingBox bounds = tileLayer.getGridSubset(expectedGridset).boundsFromIndex(tileIndex);
 
-        Envelope reqBbox =
-                new Envelope(
-                        bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
+        Envelope reqBbox = new Envelope(bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
         request.setBbox(reqBbox);
 
         ArgumentCaptor<ConveyorTile> captor = ArgumentCaptor.forClass(ConveyorTile.class);
@@ -1369,16 +1328,12 @@ public class GWCTest {
         assertEquals(expectedGridset, tileRequest.getGridSetId());
         assertEquals("image/png", tileRequest.getMimeType().getMimeType());
         assertArrayEquals(
-                "Expected "
-                        + Arrays.toString(tileIndex)
-                        + " got "
-                        + Arrays.toString(tileRequest.getTileIndex()),
+                "Expected " + Arrays.toString(tileIndex) + " got " + Arrays.toString(tileRequest.getTileIndex()),
                 tileIndex,
                 tileRequest.getTileIndex());
     }
 
-    private GeoServerTileLayer mockTileLayer(String layerName, List<String> gridSetNames)
-            throws Exception {
+    private GeoServerTileLayer mockTileLayer(String layerName, List<String> gridSetNames) throws Exception {
 
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tld.layerExists(eq(layerName))).thenReturn(true);
@@ -1436,12 +1391,9 @@ public class GWCTest {
         // tileLayer = mockTileLayer("mockLayer", ImmutableList.of("EPSG:900913", "EPSG:4326"));
 
         // make the request match a tile in the expected gridset
-        BoundingBox bounds =
-                tileLayer.getGridSubset("EPSG:900913").boundsFromIndex(new long[] {0, 0, 1});
+        BoundingBox bounds = tileLayer.getGridSubset("EPSG:900913").boundsFromIndex(new long[] {0, 0, 1});
 
-        Envelope reqBbox =
-                new Envelope(
-                        bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
+        Envelope reqBbox = new Envelope(bounds.getMinX(), bounds.getMaxX(), bounds.getMinY(), bounds.getMaxY());
         request.setBbox(reqBbox);
 
         assertFalse(tileLayer.getInfo().cachedStyles().isEmpty());
@@ -1460,8 +1412,7 @@ public class GWCTest {
         }
 
         request.setEnv(ImmutableMap.of("envKey", "envValue"));
-        updateStringParameterFilter(
-                tileLayerInfo, "ENV", true, "def:devVal", "envKey:envValue", "envKey2:envValue2");
+        updateStringParameterFilter(tileLayerInfo, "ENV", true, "def:devVal", "envKey:envValue", "envKey2:envValue2");
         testParameterFilter(request, rawKvp, "env", "envKey:envValue");
 
         updateAcceptAllFloatParameterFilter(tileLayerInfo, "ANGLE", true);
@@ -1473,10 +1424,7 @@ public class GWCTest {
     }
 
     private void testParameterFilter(
-            GetMapRequest request,
-            Map<String, String> rawKvp,
-            String rawKvpParamName,
-            String rawKvpParamValue) {
+            GetMapRequest request, Map<String, String> rawKvp, String rawKvpParamName, String rawKvpParamValue) {
 
         // set up raw kvp
         rawKvp.put(rawKvpParamName, rawKvpParamValue);
@@ -1486,23 +1434,14 @@ public class GWCTest {
         assertEquals(errors.toString(), 0, errors.length());
 
         Map<String, String> fullParameters = tileRequest.getFilteringParameters();
-        assertEquals(
-                fullParameters.toString(),
-                rawKvpParamValue,
-                fullParameters.get(rawKvpParamName.toUpperCase()));
+        assertEquals(fullParameters.toString(), rawKvpParamValue, fullParameters.get(rawKvpParamName.toUpperCase()));
     }
 
     @Test
     public void testGetDefaultAdvertisedCachedFormats() {
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
-        Set<String> defaultFormats =
-                ImmutableSet.of(
-                        "image/png",
-                        "image/png8",
-                        "image/jpeg",
-                        "image/gif",
-                        "image/vnd.jpeg-png",
-                        "image/vnd.jpeg-png8");
+        Set<String> defaultFormats = ImmutableSet.of(
+                "image/png", "image/png8", "image/jpeg", "image/gif", "image/vnd.jpeg-png", "image/vnd.jpeg-png8");
 
         SetView<String> formatsWithUtfGrid =
                 union(defaultFormats, Collections.singleton("application/json;type=utfgrid"));
@@ -1531,28 +1470,15 @@ public class GWCTest {
         }
 
         // from src/main/resources/org/geoserver/gwc/advertised_formats.properties
-        Set<String> defaultFormats =
-                ImmutableSet.of(
-                        "image/png",
-                        "image/png8",
-                        "image/jpeg",
-                        "image/gif",
-                        "image/vnd.jpeg-png",
-                        "image/vnd.jpeg-png8");
+        Set<String> defaultFormats = ImmutableSet.of(
+                "image/png", "image/png8", "image/jpeg", "image/gif", "image/vnd.jpeg-png", "image/vnd.jpeg-png8");
 
         // see src/test/resources/org/geoserver/gwc/advertised_formats.properties
         Set<String> expectedVector =
-                union(
-                        defaultFormats,
-                        ImmutableSet.of(
-                                "test/vector1", "test/vector2", "application/json;type=utfgrid"));
-        Set<String> expectedRaster =
-                union(defaultFormats, ImmutableSet.of("test/raster1", "test/raster2;type=test"));
+                union(defaultFormats, ImmutableSet.of("test/vector1", "test/vector2", "application/json;type=utfgrid"));
+        Set<String> expectedRaster = union(defaultFormats, ImmutableSet.of("test/raster1", "test/raster2;type=test"));
         Set<String> expectedGroup =
-                union(
-                        defaultFormats,
-                        ImmutableSet.of(
-                                "test/group1", "test/group2", "application/json;type=utfgrid"));
+                union(defaultFormats, ImmutableSet.of("test/group1", "test/group2", "application/json;type=utfgrid"));
 
         assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.VECTOR, urls));
         assertEquals(expectedVector, GWC.getAdvertisedCachedFormats(PublishedType.REMOTE, urls));
@@ -1566,8 +1492,7 @@ public class GWCTest {
     @Test
     public void testSetBlobStoresNull() throws ConfigurationException {
 
-        NullPointerException e =
-                assertThrows(NullPointerException.class, () -> mediator.setBlobStores(null));
+        NullPointerException e = assertThrows(NullPointerException.class, () -> mediator.setBlobStores(null));
         assertTrue(e.getMessage().contains("stores is null"));
     }
 
@@ -1577,8 +1502,7 @@ public class GWCTest {
         CompositeBlobStore composite = mock(CompositeBlobStore.class);
         doReturn(composite).when(mediator).getCompositeBlobStore();
 
-        List<BlobStoreInfo> configList =
-                Lists.newArrayList(mock(BlobStoreInfo.class), mock(BlobStoreInfo.class));
+        List<BlobStoreInfo> configList = Lists.newArrayList(mock(BlobStoreInfo.class), mock(BlobStoreInfo.class));
         when(configList.get(0).getName()).thenReturn("store0");
         when(configList.get(1).getName()).thenReturn("store1");
         when(blobStoreAggregator.getBlobStores()).thenReturn(configList);
@@ -1588,8 +1512,10 @@ public class GWCTest {
         List<BlobStoreInfo> newStores = ImmutableList.of(config);
         mediator.setBlobStores(newStores);
 
-        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(0).getName()));
-        verify(blobStoreAggregator, times(1)).removeBlobStore(eq(configList.get(1).getName()));
+        verify(blobStoreAggregator, times(1))
+                .removeBlobStore(eq(configList.get(0).getName()));
+        verify(blobStoreAggregator, times(1))
+                .removeBlobStore(eq(configList.get(1).getName()));
         verify(blobStoreAggregator, times(1)).addBlobStore(eq(config));
     }
 
@@ -1605,8 +1531,7 @@ public class GWCTest {
                 .when(blobStoreAggregator)
                 .addBlobStore(config);
 
-        List<BlobStoreInfo> oldStores =
-                Lists.newArrayList(mock(BlobStoreInfo.class), mock(BlobStoreInfo.class));
+        List<BlobStoreInfo> oldStores = Lists.newArrayList(mock(BlobStoreInfo.class), mock(BlobStoreInfo.class));
 
         when(blobStoreAggregator.getBlobStores()).thenReturn(oldStores);
 
@@ -1622,15 +1547,15 @@ public class GWCTest {
     @Test
     public void testGeoServerEnvParametrization() throws Exception {
         if (GeoServerEnvironment.allowEnvParametrization()) {
-            assertEquals("HSQL", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
+            assertEquals(
+                    "HSQL", jdbcStorage.getJDBCDiskQuotaConfig().clone(true).getDialect());
         }
     }
 
     @Test
     public void testGWCEnvParametrization() {
         if (GeoServerEnvironment.allowEnvParametrization()) {
-            GeoWebCacheEnvironment gwcEnvironment =
-                    GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
+            GeoWebCacheEnvironment gwcEnvironment = GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class);
             assertEquals("TEST VALUE", gwcEnvironment.resolveValue("${TEST}"));
         }
     }

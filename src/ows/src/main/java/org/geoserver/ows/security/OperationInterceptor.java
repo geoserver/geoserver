@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 import org.geoserver.platform.Operation;
 
 public interface OperationInterceptor {
-    public Object invoke(
-            Operation opDescriptor, Method operation, Object serviceBean, Object[] parameters)
+    public Object invoke(Operation opDescriptor, Method operation, Object serviceBean, Object[] parameters)
             throws InvocationTargetException, IllegalArgumentException, IllegalAccessException;
 }

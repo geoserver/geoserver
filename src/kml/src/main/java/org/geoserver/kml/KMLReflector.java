@@ -73,8 +73,8 @@ public class KMLReflector {
     // doWms(request, response, wms, wmsConfiguration);
     // }
 
-    public static org.geoserver.wms.WebMap doWms(
-            GetMapRequest request, WebMapService wms, WMS wmsConfiguration) throws Exception {
+    public static org.geoserver.wms.WebMap doWms(GetMapRequest request, WebMapService wms, WMS wmsConfiguration)
+            throws Exception {
         // set the content disposition
         StringBuffer filename = new StringBuffer();
         boolean containsRasterData = false;
@@ -83,22 +83,17 @@ public class KMLReflector {
             MapLayerInfo layer = request.getLayers().get(i);
             String name = layer.getName();
 
-            containsRasterData =
-                    containsRasterData || (layer.getType() == MapLayerInfo.TYPE_RASTER);
+            containsRasterData = containsRasterData || (layer.getType() == MapLayerInfo.TYPE_RASTER);
 
             if (layer.getType() == MapLayerInfo.TYPE_VECTOR) {
-                isRegionatingFriendly =
-                        isRegionatingFriendly
-                                && layer.getFeature()
-                                        .getFeatureSource(null, null)
-                                        .getQueryCapabilities()
-                                        .isReliableFIDSupported();
+                isRegionatingFriendly = isRegionatingFriendly
+                        && layer.getFeature()
+                                .getFeatureSource(null, null)
+                                .getQueryCapabilities()
+                                .isReliableFIDSupported();
             } else if (layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR) {
-                isRegionatingFriendly =
-                        isRegionatingFriendly
-                                && layer.getRemoteFeatureSource()
-                                        .getQueryCapabilities()
-                                        .isReliableFIDSupported();
+                isRegionatingFriendly = isRegionatingFriendly
+                        && layer.getRemoteFeatureSource().getQueryCapabilities().isReliableFIDSupported();
             }
 
             // strip off prefix
@@ -112,9 +107,7 @@ public class KMLReflector {
 
         // setup the default mode
         Map<String, String> rawKvp = request.getRawKvp();
-        String mode =
-                KvpUtils.caseInsensitiveParam(
-                        rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
+        String mode = KvpUtils.caseInsensitiveParam(rawKvp, "mode", wmsConfiguration.getKmlReflectorMode());
 
         if (!MODES.containsKey(mode)) {
             throw new ServiceException("Unknown KML mode: " + mode);
@@ -123,11 +116,8 @@ public class KMLReflector {
         Map<String, Object> modeOptions = new HashMap<>(MODES.get(mode));
 
         if ("superoverlay".equals(mode)) {
-            String submode =
-                    KvpUtils.caseInsensitiveParam(
-                            request.getRawKvp(),
-                            "superoverlay_mode",
-                            wmsConfiguration.getKmlSuperoverlayMode());
+            String submode = KvpUtils.caseInsensitiveParam(
+                    request.getRawKvp(), "superoverlay_mode", wmsConfiguration.getKmlSuperoverlayMode());
 
             if ("raster".equalsIgnoreCase(submode)) {
                 modeOptions.put("overlaymode", "raster");
@@ -188,8 +178,7 @@ public class KMLReflector {
         }
         if (superoverlay || refreshMode || containsRasterData) {
             request.setFormat(NetworkLinkMapOutputFormat.KML_MIME_TYPE);
-        } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS)
-                .contains(request.getFormat())) {
+        } else if (!Arrays.asList(KMZMapOutputFormat.OUTPUT_FORMATS).contains(request.getFormat())) {
             request.setFormat(KMLMapOutputFormat.MIME_TYPE);
         }
 
@@ -207,11 +196,11 @@ public class KMLReflector {
     }
 
     /**
-     * Copy all the format_options parameters from the kvp map and put them into the formatOptions
-     * map. If a parameter is already present in formatOption map it will be preserved.
+     * Copy all the format_options parameters from the kvp map and put them into the formatOptions map. If a parameter
+     * is already present in formatOption map it will be preserved.
      */
-    public static void organizeFormatOptionsParams(
-            Map<String, String> kvp, Map<String, Object> formatOptions) throws Exception {
+    public static void organizeFormatOptionsParams(Map<String, String> kvp, Map<String, Object> formatOptions)
+            throws Exception {
         WMSRequests.mergeEntry(kvp, formatOptions, "legend");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmscore");
         WMSRequests.mergeEntry(kvp, formatOptions, "kmattr");

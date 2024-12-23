@@ -44,8 +44,8 @@ public class GWCIconFactory implements Serializable {
             new PackageResourceReference(GWCSettingsPage.class, "geowebcache-16.png");
 
     /**
-     * Enum of tile layer type to aid in presenting a type column in the UI without incurring in
-     * heavy resource lookups such as loading feature types from the geoserver catalog.
+     * Enum of tile layer type to aid in presenting a type column in the UI without incurring in heavy resource lookups
+     * such as loading feature types from the geoserver catalog.
      */
     public static enum CachedLayerType {
         VECTOR(PublishedType.VECTOR.getCode()),
@@ -129,18 +129,12 @@ public class GWCIconFactory implements Serializable {
         return UNKNOWN_ICON;
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate an enabled/properly configured
-     * resource
-     */
+    /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
     public static PackageResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate a
-     * disabled/misconfigured/unreachable resource
-     */
+    /** Returns a reference to a general purpose icon to indicate a disabled/misconfigured/unreachable resource */
     public static PackageResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }

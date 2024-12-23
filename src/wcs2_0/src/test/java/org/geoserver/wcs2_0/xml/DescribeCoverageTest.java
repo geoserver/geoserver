@@ -29,16 +29,13 @@ public class DescribeCoverageTest extends WCSTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
         Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
-        props.put(
-                SystemTestData.LayerProperty.ENVELOPE,
-                new ReferencedEnvelope(180, -180, 90, -90, null));
+        props.put(SystemTestData.LayerProperty.ENVELOPE, new ReferencedEnvelope(180, -180, 90, -90, null));
         testData.setUpRasterLayer(WORLD, "/world.tiff", null, null, WCSTestSupport.class);
     }
 
     @Test
     public void testNativeBoundsMissingSRS() throws Exception {
-        final File xml =
-                new File("./src/test/resources/testDescribeCoverageNativeBoundsMissingSRS.xml");
+        final File xml = new File("./src/test/resources/testDescribeCoverageNativeBoundsMissingSRS.xml");
         final String request = FileUtils.readFileToString(xml, "UTF-8");
 
         Document dom = postAsDOM("wcs", request);
@@ -50,8 +47,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
         // check it is good
         assertXpathEvaluatesTo("cite__world", "//wcs:CoverageDescription//wcs:CoverageId", dom);
-        assertXpathEvaluatesTo(
-                "2", "//wcs:CoverageDescription//gml:boundedBy//gml:Envelope/@srsDimension", dom);
+        assertXpathEvaluatesTo("2", "//wcs:CoverageDescription//gml:boundedBy//gml:Envelope/@srsDimension", dom);
     }
 
     @Test
@@ -83,9 +79,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         // check it is good
         assertXpathEvaluatesTo("wcs__BlueMarble", "//wcs:CoverageDescription//wcs:CoverageId", dom);
         assertXpathEvaluatesTo(
-                "3",
-                "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
-                dom);
+                "3", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
         assertXpathEvaluatesTo(
                 "image/tiff",
                 "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat",
@@ -111,9 +105,7 @@ public class DescribeCoverageTest extends WCSTestSupport {
         // check it is good
         assertXpathEvaluatesTo("wcs__multiband", "//wcs:CoverageDescription//wcs:CoverageId", dom);
         assertXpathEvaluatesTo(
-                "9",
-                "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)",
-                dom);
+                "9", "count(//wcs:CoverageDescription//gmlcov:rangeType//swe:DataRecord//swe:field)", dom);
         assertXpathEvaluatesTo(
                 "image/tiff",
                 "//wcs:CoverageDescriptions//wcs:CoverageDescription[1]//wcs:ServiceParameters//wcs:nativeFormat",

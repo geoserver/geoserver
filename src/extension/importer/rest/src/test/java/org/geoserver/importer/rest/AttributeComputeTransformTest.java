@@ -22,8 +22,7 @@ public class AttributeComputeTransformTest extends TransformTestSupport {
 
     @Test
     public void testTransformLiteral() throws Exception {
-        AttributeComputeTransform tx =
-                new AttributeComputeTransform("theDate", Date.class, "2012-05-03T12:00:00Z");
+        AttributeComputeTransform tx = new AttributeComputeTransform("theDate", Date.class, "2012-05-03T12:00:00Z");
 
         // reference
         // riverType = DataUtilities.createType(namespace+".river",
@@ -40,15 +39,12 @@ public class AttributeComputeTransformTest extends TransformTestSupport {
         SimpleFeature targetFeature =
                 SimpleFeatureBuilder.build(transformedType, riverFeature.getAttributes(), "theId");
         SimpleFeature transformed = tx.apply(null, null, riverFeature, targetFeature);
-        assertEquals(
-                Converters.convert("2012-05-03T12:00:00Z", Date.class),
-                transformed.getAttribute("theDate"));
+        assertEquals(Converters.convert("2012-05-03T12:00:00Z", Date.class), transformed.getAttribute("theDate"));
     }
 
     @Test
     public void testTransformExpression() throws Exception {
-        AttributeComputeTransform tx =
-                new AttributeComputeTransform("flowSquared", Double.class, "flow * flow");
+        AttributeComputeTransform tx = new AttributeComputeTransform("flowSquared", Double.class, "flow * flow");
 
         // reference
         // riverType = DataUtilities.createType(namespace+".river",

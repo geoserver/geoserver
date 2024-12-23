@@ -57,8 +57,7 @@ public class PostGISPanel extends AbstractDbPanel {
     @Override
     protected DataStoreFactorySpi fillStoreParams(Map<String, Serializable> params) {
         DataStoreFactorySpi factory;
-        params.put(
-                JDBCDataStoreFactory.DBTYPE.key, (String) PostgisNGDataStoreFactory.DBTYPE.sample);
+        params.put(JDBCDataStoreFactory.DBTYPE.key, (String) PostgisNGDataStoreFactory.DBTYPE.sample);
         if (CONNECTION_JNDI.equals(connectionType)) {
             factory = new PostgisNGJNDIDataStoreFactory();
             fillInJndiParams(params, jndiParamPanel);

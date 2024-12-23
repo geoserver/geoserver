@@ -50,14 +50,11 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
     private static final String BASE_URL = "http://localhost/geoserver";
 
     /** Test layers */
-    public static final QName REGIONATED =
-            new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
+    public static final QName REGIONATED = new QName(MockData.SF_URI, "Regionated", MockData.SF_PREFIX);
 
     public static final QName ACCIDENT = new QName(MockData.SF_URI, "Accident", MockData.SF_PREFIX);
-    public static final QName ACCIDENT2 =
-            new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
-    public static final QName ACCIDENT3 =
-            new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
+    public static final QName ACCIDENT2 = new QName(MockData.SF_URI, "Accident2", MockData.SF_PREFIX);
+    public static final QName ACCIDENT3 = new QName(MockData.SF_URI, "Accident3", MockData.SF_PREFIX);
 
     private Catalog catalog;
 
@@ -76,10 +73,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
         testData.setUpSecurity();
     }
 
-    /**
-     * Adds required styles to test the selection of maximum and minimum denominator from style's
-     * rules.
-     */
+    /** Adds required styles to test the selection of maximum and minimum denominator from style's rules. */
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
 
@@ -93,8 +87,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
     }
 
     void addLayerAndStyle(SystemTestData testData, QName name) throws IOException {
-        testData.addVectorLayer(
-                name, null, name.getLocalPart() + ".properties", getClass(), this.catalog);
+        testData.addVectorLayer(name, null, name.getLocalPart() + ".properties", getClass(), this.catalog);
 
         final String styleName = name.getLocalPart();
         testData.addStyle(styleName, getClass(), this.catalog);
@@ -184,8 +177,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
     /**
      * Retrieves the WMS's capabilities document.
      *
-     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a
-     *     pixel
+     * @param scaleHintUnitsPerDiaPixel true if the scalehint must be in units per diagonal of a pixel
      * @return Capabilities as {@link Document}
      */
     private Document findCapabilities(Boolean scaleHintUnitsPerDiaPixel) throws Exception {
@@ -197,8 +189,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
         info.getGeoServer().save(info);
 
         Capabilities_1_3_0_Transformer tr =
-                new Capabilities_1_3_0_Transformer(
-                        wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
+                new Capabilities_1_3_0_Transformer(wms, BASE_URL, wms.getAllowedMapFormats(), new HashSet<>());
         GetCapabilitiesRequest req = new GetCapabilitiesRequest();
         req.setBaseUrl(BASE_URL);
         req.setVersion(WMS.VERSION_1_3_0.toString());
@@ -216,8 +207,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
      *
      * @return The layer element or null it the required layer isn't found
      */
-    private Element searchLayerElement(final String layerRequired, Document capabilities)
-            throws XpathException {
+    private Element searchLayerElement(final String layerRequired, Document capabilities) throws XpathException {
 
         NodeList layersNodes = xpath.getMatchingNodes("//wms:Layer/wms:Name", capabilities);
         for (int i = 0; i < layersNodes.getLength(); i++) {
@@ -231,8 +221,7 @@ public class GetCapabilitiesScaleDenominatorTest extends WMSTestSupport {
 
                 if (layerRequired.equalsIgnoreCase(nodeValue)) {
 
-                    return (Element)
-                            e.getParentNode(); // returns the layer element associated to the
+                    return (Element) e.getParentNode(); // returns the layer element associated to the
                     // required layer name.
                 }
             }

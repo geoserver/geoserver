@@ -13,21 +13,19 @@ import org.geoserver.featurestemplating.builders.visitors.PropertySelectionHandl
 public class IteratingPropertySelection extends PropertySelectionWrapper {
 
     public IteratingPropertySelection(
-            AbstractTemplateBuilder templateBuilder,
-            PropertySelectionHandler propertySelectionHandler) {
+            AbstractTemplateBuilder templateBuilder, PropertySelectionHandler propertySelectionHandler) {
         super(templateBuilder, propertySelectionHandler);
     }
 
     @Override
     protected AbstractTemplateBuilder retypeBuilder(AbstractTemplateBuilder templateBuilder) {
 
-        AbstractTemplateBuilder result =
-                new IteratingBuilder((IteratingBuilder) templateBuilder, true) {
-                    @Override
-                    public boolean canWrite(TemplateBuilderContext context) {
-                        return IteratingPropertySelection.this.canWrite(context);
-                    }
-                };
+        AbstractTemplateBuilder result = new IteratingBuilder((IteratingBuilder) templateBuilder, true) {
+            @Override
+            public boolean canWrite(TemplateBuilderContext context) {
+                return IteratingPropertySelection.this.canWrite(context);
+            }
+        };
         return result;
     }
 }

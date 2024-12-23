@@ -13,8 +13,6 @@ package org.geoserver.wms;
 public enum ScaleComputationMethod {
     /** The OGC mandated way, for interoperability */
     OGC,
-    /**
-     * Accurate, but not interoperable, not working against ill setup requests, but ideal for prints
-     */
+    /** Accurate, but not interoperable, not working against ill setup requests, but ideal for prints */
     Accurate
 }

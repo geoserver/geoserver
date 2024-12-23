@@ -49,9 +49,7 @@ public class NewServiceAccessRulePage extends AbstractServiceAccessRulePage {
             updateModels();
             ServiceAccessRule rule = (ServiceAccessRule) form.getModelObject();
             if (ServiceAccessRuleDAO.get().getRules().contains(rule)) {
-                form.error(
-                        new ParamResourceModel("duplicateRule", getPage(), rule.getKey())
-                                .getString());
+                form.error(new ParamResourceModel("duplicateRule", getPage(), rule.getKey()).getString());
             }
         }
 

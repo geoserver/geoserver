@@ -57,12 +57,8 @@ public class DynamicMergeBuilderTest extends DataTestCase {
         tb.add("arrayMetadata", String.class);
         tb.setName("jsonFieldSimpleType");
         SimpleFeatureType schema = tb.buildFeatureType();
-        schema.getDescriptor("dynamicMetadata")
-                .getUserData()
-                .put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
-        schema.getDescriptor("staticMetadata")
-                .getUserData()
-                .put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
+        schema.getDescriptor("dynamicMetadata").getUserData().put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
+        schema.getDescriptor("staticMetadata").getUserData().put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
 
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         fb.add(DYNAMIC_METADATA);
@@ -86,10 +82,9 @@ public class DynamicMergeBuilderTest extends DataTestCase {
     @Test
     public void testMergeStaticResultOverlayExpression() throws Exception {
         JSONObject json = encodeDynamicMerge("${staticMetadata}", jsonFieldSimpleFeature, true);
-        JSONObject metadata19139 =
-                json.getJSONObject("dynamicMergeBuilder")
-                        .getJSONObject("metadata")
-                        .getJSONObject("metadata_iso_19139");
+        JSONObject metadata19139 = json.getJSONObject("dynamicMergeBuilder")
+                .getJSONObject("metadata")
+                .getJSONObject("metadata_iso_19139");
         assertEquals("metadata_iso_19139", metadata19139.getString("title"));
         assertEquals("http://metadata_iso_19139.org", metadata19139.getString("href"));
         assertEquals("metadata", metadata19139.getString("type"));
@@ -98,10 +93,9 @@ public class DynamicMergeBuilderTest extends DataTestCase {
     @Test
     public void testMergeStaticResultBaseExpression() throws Exception {
         JSONObject json = encodeDynamicMerge("${staticMetadata}", jsonFieldSimpleFeature, false);
-        JSONObject metadata19139 =
-                json.getJSONObject("dynamicMergeBuilder")
-                        .getJSONObject("metadata")
-                        .getJSONObject("metadata_iso_19139");
+        JSONObject metadata19139 = json.getJSONObject("dynamicMergeBuilder")
+                .getJSONObject("metadata")
+                .getJSONObject("metadata_iso_19139");
         assertEquals("basetext", metadata19139.getString("title"));
         assertEquals("basehref", metadata19139.getString("href"));
         assertEquals("basetype", metadata19139.getString("type"));
@@ -115,26 +109,17 @@ public class DynamicMergeBuilderTest extends DataTestCase {
         } catch (UnsupportedOperationException e) {
             message = e.getMessage();
         }
-        assertEquals(
-                message,
-                "A json attribute value cannot have a template directive among its fields.");
+        assertEquals(message, "A json attribute value cannot have a template directive among its fields.");
     }
 
-    private JSONObject encodeDynamicMerge(
-            String expression, Feature feature, boolean overlayExpression) throws IOException {
+    private JSONObject encodeDynamicMerge(String expression, Feature feature, boolean overlayExpression)
+            throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
 
-        DynamicMergeBuilder builder =
-                new DynamicMergeBuilder(
-                        "dynamicMergeBuilder",
-                        expression,
-                        new NamespaceSupport(),
-                        node,
-                        overlayExpression);
+        DynamicMergeBuilder builder = new DynamicMergeBuilder(
+                "dynamicMergeBuilder", expression, new NamespaceSupport(), node, overlayExpression);
         writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
         writer.writeEndObject();

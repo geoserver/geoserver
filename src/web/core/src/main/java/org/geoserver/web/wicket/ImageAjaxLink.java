@@ -32,21 +32,18 @@ public abstract class ImageAjaxLink<T> extends Panel {
     /** Constructs the panel with a link containing an image and a label. */
     public ImageAjaxLink(String id, PackageResourceReference imageRef, String label) {
         super(id);
-        link =
-                new AjaxLink<>("link") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        ImageAjaxLink.this.onClick(target);
-                    }
+        link = new AjaxLink<>("link") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                ImageAjaxLink.this.onClick(target);
+            }
 
-                    @Override
-                    protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
-                        super.updateAjaxAttributes(attributes);
-                        attributes
-                                .getAjaxCallListeners()
-                                .add(ImageAjaxLink.this.getAjaxCallListener());
-                    }
-                };
+            @Override
+            protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                super.updateAjaxAttributes(attributes);
+                attributes.getAjaxCallListeners().add(ImageAjaxLink.this.getAjaxCallListener());
+            }
+        };
         add(link);
         link.add(image = new Image("image", imageRef));
         link.add(new Label("label", label));
@@ -62,8 +59,8 @@ public abstract class ImageAjaxLink<T> extends Panel {
     }
 
     /**
-     * Returns the link wrapped by the {@link ImageAjaxLink} panel (allows playing with its
-     * attributes and enable/disable the link)
+     * Returns the link wrapped by the {@link ImageAjaxLink} panel (allows playing with its attributes and
+     * enable/disable the link)
      */
     public AjaxLink<T> getLink() {
         return link;

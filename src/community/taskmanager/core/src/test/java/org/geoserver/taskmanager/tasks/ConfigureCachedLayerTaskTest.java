@@ -50,19 +50,26 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_EXT_GS = "geoserver";
     private static final String ATT_FILE = "file";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private Configuration config;
 
@@ -92,21 +99,16 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
         dataUtil.addTaskToConfiguration(config, task1);
 
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(ConfigureCachedLayerTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, ConfigureCachedLayerTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task2, ConfigureCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task2, ConfigureCachedLayerTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task2, ConfigureCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task2);
 
         config = dao.save(config);
@@ -147,13 +149,11 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void testConfigureAndDelete()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testConfigureAndDelete() throws SchedulerException, SQLException, MalformedURLException {
         // configure caching
         GWC gwc = GWC.get();
         final GeoServerTileLayer tileLayer =
-                new GeoServerTileLayer(
-                        gwc.getLayerInfoByName("DEM"), gwc.getConfig(), gwc.getGridSetBroker());
+                new GeoServerTileLayer(gwc.getLayerInfoByName("DEM"), gwc.getConfig(), gwc.getGridSetBroker());
         tileLayer.getInfo().setEnabled(true);
         tileLayer.getInfo().setExpireCache(20);
         tileLayer.getInfo().setExpireClients(30);
@@ -186,8 +186,10 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -231,38 +233,34 @@ public class ConfigureCachedLayerTaskTest extends AbstractTaskManagerTest {
                         .getDefaultValue(),
                 enc.getParameterFilterDefaultValue(2));
         assertEquals(
-                Introspector.decapitalize(
-                        tileLayer
-                                .getInfo()
-                                .getParameterFilter(enc.getParameterFilterKey(0))
-                                .getClass()
-                                .getSimpleName()),
+                Introspector.decapitalize(tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(0))
+                        .getClass()
+                        .getSimpleName()),
                 enc.getParameterFilterType(0));
         assertEquals(
-                Introspector.decapitalize(
-                        tileLayer
-                                .getInfo()
-                                .getParameterFilter(enc.getParameterFilterKey(1))
-                                .getClass()
-                                .getSimpleName()),
+                Introspector.decapitalize(tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(1))
+                        .getClass()
+                        .getSimpleName()),
                 enc.getParameterFilterType(1));
         assertEquals(
-                Introspector.decapitalize(
-                        tileLayer
-                                .getInfo()
-                                .getParameterFilter(enc.getParameterFilterKey(2))
-                                .getClass()
-                                .getSimpleName()),
+                Introspector.decapitalize(tileLayer
+                        .getInfo()
+                        .getParameterFilter(enc.getParameterFilterKey(2))
+                        .getClass()
+                        .getSimpleName()),
                 enc.getParameterFilterType(2));
 
         // delete caching configuration
         gwc.removeTileLayers(Collections.singletonList("wcs:DEM"));
 
-        trigger =
-                TriggerBuilder.newTrigger()
-                        .forJob(batchUpdate.getId().toString())
-                        .startNow()
-                        .build();
+        trigger = TriggerBuilder.newTrigger()
+                .forJob(batchUpdate.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

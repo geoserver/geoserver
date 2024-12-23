@@ -28,10 +28,6 @@ public class BBoxMockData extends AbstractAppSchemaMockData {
     public void addContent() {
         putNamespace(EX_PREFIX, EX_URI);
         addFeatureType(
-                EX_PREFIX,
-                "geomContainer",
-                "BBoxTest.xml",
-                "BBoxTestPropertyfile.properties",
-                "NestedGeometry.xsd");
+                EX_PREFIX, "geomContainer", "BBoxTest.xml", "BBoxTestPropertyfile.properties", "NestedGeometry.xsd");
     }
 }

@@ -21,8 +21,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
         SingleIpFlowController controller = new SingleIpFlowController(1, "127.0.0.1");
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildIpRequest(ipAddress, "");
-        FlowControllerTestingThread tSample =
-                new FlowControllerTestingThread(firstRequest, 0, 0, controller);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -34,11 +33,9 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
         // themselves
         // as the same client, until we interrupt them
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before
@@ -72,8 +69,7 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
         SingleIpFlowController controller = new SingleIpFlowController(1, "192.168.1.8");
         String ipAddress = "127.0.0.1";
         Request firstRequest = buildIpRequest(ipAddress, "");
-        FlowControllerTestingThread tSample =
-                new FlowControllerTestingThread(firstRequest, 0, 0, controller);
+        FlowControllerTestingThread tSample = new FlowControllerTestingThread(firstRequest, 0, 0, controller);
         tSample.start();
         waitTerminated(tSample, MAX_WAIT);
 
@@ -82,11 +78,9 @@ public class SingleIpFlowControllerTest extends IpFlowControllerTest {
         String ip = firstRequest.getHttpRequest().getRemoteAddr();
 
         FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
         FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(
-                        buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
+                new FlowControllerTestingThread(buildIpRequest(ip, ""), 0, Long.MAX_VALUE, controller);
 
         try {
             // start threads making sure every one of them managed to block somewhere before

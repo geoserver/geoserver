@@ -33,10 +33,7 @@ public class KeywordsEditorTest {
         keywords.add(new Keyword("one"));
         keywords.add(new Keyword("two"));
         keywords.add(new Keyword("three"));
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> new KeywordsEditor(id, new ListModel<>(keywords))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new KeywordsEditor(id, new ListModel<>(keywords))));
     }
 
     @Test

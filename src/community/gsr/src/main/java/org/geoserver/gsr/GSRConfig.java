@@ -17,8 +17,8 @@ import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 
 /**
- * Static configuration values used in the api output. Values are read from the properties file
- * "config.properties" in this package.
+ * Static configuration values used in the api output. Values are read from the properties file "config.properties" in
+ * this package.
  */
 public class GSRConfig {
 
@@ -45,8 +45,7 @@ public class GSRConfig {
         } catch (NumberFormatException e) {
             LOGGER.log(
                     Level.FINEST,
-                    "CURRENT_VERSION could not be parsed to double: "
-                            + properties.getProperty("CURRENT_VERSION"),
+                    "CURRENT_VERSION could not be parsed to double: " + properties.getProperty("CURRENT_VERSION"),
                     e);
         }
         CURRENT_VERSION = currentVersion == null ? 10.51 : currentVersion;
@@ -57,8 +56,7 @@ public class GSRConfig {
         } catch (NumberFormatException e) {
             LOGGER.log(
                     Level.FINEST,
-                    "SPEC_VERSION could not be parsed to double: "
-                            + properties.getProperty("SPEC_VERSION"),
+                    "SPEC_VERSION could not be parsed to double: " + properties.getProperty("SPEC_VERSION"),
                     e);
         }
         SPEC_VERSION = specVersion == null ? 1.0 : specVersion;

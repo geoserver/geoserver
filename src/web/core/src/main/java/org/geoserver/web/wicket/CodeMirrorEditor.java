@@ -52,10 +52,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public static final PackageResourceReference[] CSS_REFERENCE = {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirror.css"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/show-hint.css"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.css"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.css")
     };
 
     public static final PackageResourceReference[] MODES = {
@@ -69,16 +67,11 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/show-hint.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/geocss-hint.js"),
         new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/js/xml-hint.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
-        new PackageResourceReference(
-                CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/dialog/dialog.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/searchcursor.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/search.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/search/matchesonscrollbar.js"),
+        new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/addon/scroll/annotatescrollbar.js")
     };
 
     private TextArea<String> editor;
@@ -129,8 +122,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
                                 "var result = {'cmSelection': getSelection()};" + "return result;";
                         attributes.getDynamicExtraParameters().add(dynamicExtraParameters);
                     }
-                }.add(new AttributeAppender("class", cssClass, " "))
-                        .add(new AttributeAppender("title", title, " ")));
+                }.add(new AttributeAppender("class", cssClass, " ")).add(new AttributeAppender("title", title, " ")));
     }
 
     public CodeMirrorEditor(String id, IModel<String> model) {
@@ -152,11 +144,8 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // Make the line numbers look good
-        response.render(
-                CssHeaderItem.forReference(
-                        new PackageResourceReference(
-                                CodeMirrorEditor.class,
-                                "js/codemirror/css/codemirrorlinenos.css")));
+        response.render(CssHeaderItem.forReference(
+                new PackageResourceReference(CodeMirrorEditor.class, "js/codemirror/css/codemirrorlinenos.css")));
     }
 
     public void setTextAreaMarkupId(String id) {
@@ -169,23 +158,16 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
 
     public void setMode(String mode) {
         this.mode = mode;
-        Optional<AjaxRequestTarget> requestTarget =
-                RequestCycle.get().find(AjaxRequestTarget.class);
+        Optional<AjaxRequestTarget> requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
         if (requestTarget.isPresent()) {
-            String javascript =
-                    "document.gsEditors."
-                            + editor.getMarkupId()
-                            + ".setOption('mode', '"
-                            + mode
-                            + "');";
+            String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode', '" + mode + "');";
             requestTarget.get().appendJavaScript(javascript);
         }
     }
 
     public void setModeAndSubMode(String mode, String subMode) {
         this.mode = mode;
-        Optional<AjaxRequestTarget> requestTarget =
-                RequestCycle.get().find(AjaxRequestTarget.class);
+        Optional<AjaxRequestTarget> requestTarget = RequestCycle.get().find(AjaxRequestTarget.class);
         if (requestTarget.isPresent()) {
             String javascript = "document.gsEditors." + editor.getMarkupId() + ".setOption('mode',";
             String modeObj = "{name: \"" + mode + "\", " + subMode + ": true}";
@@ -239,8 +221,7 @@ public class CodeMirrorEditor extends FormComponentPanel<String> {
         }
 
         private String getInitJavascript() {
-            try (InputStream is =
-                    CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
+            try (InputStream is = CodeMirrorEditor.class.getResourceAsStream("CodeMirrorEditor.js")) {
                 String js = convertStreamToString(is);
                 js = js.replaceAll("\\$componentId", editor.getMarkupId());
                 js = js.replaceAll("\\$codeMirrorEditorId", getMarkupId());

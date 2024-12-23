@@ -36,8 +36,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
     private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(new HashSet<>(List.of(MapMLConstants.MAPML_MIME_TYPE)));
-    static final MapProducerCapabilities MAPML_CAPABILITIES =
-            new MapProducerCapabilities(false, true, true);
+    static final MapProducerCapabilities MAPML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
 
     /**
      * Constructor
@@ -70,8 +69,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
             if (!mapContent.getRequest().getLayers().isEmpty()
                     && MapLayerInfo.TYPE_VECTOR
                             != mapContent.getRequest().getLayers().get(0).getType()) {
-                throw new ServiceException(
-                        "MapML WMS Feature format does not currently support non-vector layers.");
+                throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
             }
             List<Query> queries = StyleQueryUtil.getStyleQuery(mapContent.layers(), mapContent);
             Query query = null;

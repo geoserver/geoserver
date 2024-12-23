@@ -13,16 +13,13 @@ import org.geoserver.wms.map.AbstractMapResponse;
 
 /** A Response containing a MapML HTML document */
 public class MapMLHTMLResponse extends AbstractMapResponse {
-    /**
-     * Registers with the parent class the type of object that will be written to the output stream
-     */
+    /** Registers with the parent class the type of object that will be written to the output stream */
     public MapMLHTMLResponse() {
         super(MapMLHTMLMap.class, (Set<String>) null);
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         MapMLHTMLMap mapmlHTMLMap = (MapMLHTMLMap) value;
         try {
             String mapmlHTML = mapmlHTMLMap.getMapmlHTML();

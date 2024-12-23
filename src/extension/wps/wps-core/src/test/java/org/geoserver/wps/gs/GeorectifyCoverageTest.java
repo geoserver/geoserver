@@ -41,8 +41,7 @@ public class GeorectifyCoverageTest extends WPSTestSupport {
 
     @Test
     public void testGeorectify()
-            throws IOException, MismatchedDimensionException, NoSuchAuthorityCodeException,
-                    FactoryException {
+            throws IOException, MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException {
         GeorectifyCoverage process = applicationContext.getBean(GeorectifyCoverage.class);
         if (!process.isAvailable()) {
             LOGGER.warning("GDAL utilities are not in the path, skipping the test");
@@ -50,41 +49,24 @@ public class GeorectifyCoverageTest extends WPSTestSupport {
         }
 
         BufferedImage image = ImageIO.read(new File("./src/test/resources/rotated-image.png"));
-        GridCoverage2D coverage =
-                new GridCoverageFactory()
-                        .create(
-                                "test",
-                                image,
-                                new ReferencedEnvelope(
-                                        0,
-                                        image.getWidth(),
-                                        0,
-                                        image.getHeight(),
-                                        CRS.decode("EPSG:404000")));
-        String gcps =
-                "["
-                        + //
-                        "[[183, 33], [-74.01183158, 40.70852996]],"
-                        + //
-                        "[[103, 114], [-74.01083751, 40.70754684]],"
-                        + //
-                        "[[459, 298], [-74.00857344, 40.71194565]],"
-                        + //
-                        "[[252, 139], [-74.01053024, 40.70938712]]"
-                        + //
-                        "]";
+        GridCoverage2D coverage = new GridCoverageFactory()
+                .create(
+                        "test",
+                        image,
+                        new ReferencedEnvelope(0, image.getWidth(), 0, image.getHeight(), CRS.decode("EPSG:404000")));
+        String gcps = "["
+                + //
+                "[[183, 33], [-74.01183158, 40.70852996]],"
+                + //
+                "[[103, 114], [-74.01083751, 40.70754684]],"
+                + //
+                "[[459, 298], [-74.00857344, 40.71194565]],"
+                + //
+                "[[252, 139], [-74.01053024, 40.70938712]]"
+                + //
+                "]";
         Map<String, Object> map =
-                process.execute(
-                        coverage,
-                        gcps,
-                        null,
-                        DefaultGeographicCRS.WGS84,
-                        null,
-                        null,
-                        null,
-                        false,
-                        null,
-                        null);
+                process.execute(coverage, gcps, null, DefaultGeographicCRS.WGS84, null, null, null, false, null, null);
         GridCoverage2D warped = (GridCoverage2D) map.get("result");
         assertEquals(CRS.decode("EPSG:4326", true), warped.getCoordinateReferenceSystem());
         // check the expected location, the output file also got verified visually

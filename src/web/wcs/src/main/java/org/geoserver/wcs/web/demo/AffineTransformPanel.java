@@ -85,22 +85,18 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
     }
 
     public AffineTransformPanel setReadOnly(final boolean readOnly) {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    component.setEnabled(!readOnly);
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            component.setEnabled(!readOnly);
+        });
 
         return this;
     }
 
     @Override
     public void convertInput() {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).processInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).processInput();
+        });
 
         // update the grid envelope
         if (isResolutionModeEnabled() && scaleX != null && scaleY != null) {
@@ -111,8 +107,7 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
                 && scaleY != null
                 && shearY != null
                 && originY != null) {
-            setConvertedInput(
-                    new AffineTransform(scaleX, shearX, shearY, scaleY, originX, originY));
+            setConvertedInput(new AffineTransform(scaleX, shearX, shearY, scaleY, originX, originY));
         } else {
             setConvertedInput(null);
         }
@@ -123,11 +118,9 @@ public class AffineTransformPanel extends FormComponentPanel<AffineTransform> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).clearInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).clearInput();
+        });
     }
 
     /** Turns the editor in a pure resolution editor */

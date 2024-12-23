@@ -23,8 +23,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer {
 
     /**
-     * Key to cache the result of {@link #isWorkspaceAdmin(Authentication)} on the request's {@link
-     * RequestAttributes} in {@link RequestAttributes#SCOPE_REQUEST request scope}
+     * Key to cache the result of {@link #isWorkspaceAdmin(Authentication)} on the request's {@link RequestAttributes}
+     * in {@link RequestAttributes#SCOPE_REQUEST request scope}
      */
     static final String REQUEST_CONTEXT_CACHE_KEY = "WORKSPACEADMIN_COMPONENT_AUTHORIZER_VALUE";
 
@@ -62,8 +62,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
 
     ResourceAccessManager getAccessManager() {
         // the secure catalog builds and owns the ResourceAccessManager
-        SecureCatalogImpl secureCatalog =
-                GeoServerApplication.get().getBeanOfType(SecureCatalogImpl.class);
+        SecureCatalogImpl secureCatalog = GeoServerApplication.get().getBeanOfType(SecureCatalogImpl.class);
         if (null == secureCatalog) return null;
         return secureCatalog.getResourceAccessManager();
     }
@@ -71,8 +70,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
     void setCachedValue(boolean workspaceAdmin) {
         RequestAttributes atts = RequestContextHolder.getRequestAttributes();
         if (null != atts) {
-            atts.setAttribute(
-                    REQUEST_CONTEXT_CACHE_KEY, workspaceAdmin, RequestAttributes.SCOPE_REQUEST);
+            atts.setAttribute(REQUEST_CONTEXT_CACHE_KEY, workspaceAdmin, RequestAttributes.SCOPE_REQUEST);
         }
     }
 
@@ -80,8 +78,7 @@ public class WorkspaceAdminComponentAuthorizer extends AdminComponentAuthorizer 
     Boolean getCachedValue() {
         RequestAttributes atts = RequestContextHolder.getRequestAttributes();
         if (null != atts) {
-            return (Boolean)
-                    atts.getAttribute(REQUEST_CONTEXT_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
+            return (Boolean) atts.getAttribute(REQUEST_CONTEXT_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
         }
         return null;
     }

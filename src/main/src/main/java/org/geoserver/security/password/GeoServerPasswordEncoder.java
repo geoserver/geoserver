@@ -37,8 +37,7 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder, BeanNameAware
 
     /**
      * Decodes an encoded password. Only supported for {@link PasswordEncodingType#ENCRYPT} and
-     * {@link PasswordEncodingType#PLAIN} encoders, ie those that return <code>true</code> from
-     * {@link #isReversible()}.
+     * {@link PasswordEncodingType#PLAIN} encoders, ie those that return <code>true</code> from {@link #isReversible()}.
      *
      * @param encPass The encoded password.
      */
@@ -90,14 +89,10 @@ public interface GeoServerPasswordEncoder extends PasswordEncoder, BeanNameAware
     String getPrefix();
 
     /**
-     * Is this encoder available without installing the unrestricted policy files of the java
-     * cryptographic extension
+     * Is this encoder available without installing the unrestricted policy files of the java cryptographic extension
      */
     boolean isAvailableWithoutStrongCryptogaphy();
 
-    /**
-     * Flag indicating if the encoder can decode an encrypted password back into its original plain
-     * text form.
-     */
+    /** Flag indicating if the encoder can decode an encrypted password back into its original plain text form. */
     boolean isReversible();
 }

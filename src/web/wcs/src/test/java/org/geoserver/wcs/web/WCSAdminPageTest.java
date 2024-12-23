@@ -42,39 +42,28 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
         FormTester form = tester.newFormTester("form");
 
         // enable i18n for title and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         // enable i18n for abstract and add two entries
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
 
         // figure out the locales used in the test (might not be stable across JVMs)
         @SuppressWarnings("unchecked")
-        DropDownChoice<Locale> select =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
+        DropDownChoice<Locale> select = (DropDownChoice)
+                tester.getComponentFromLastRenderedPage(
+                        "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select");
         Locale l10 = select.getChoices().get(10);
         Locale l20 = select.getChoices().get(20);
 
@@ -153,7 +142,6 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
         ft.setValue("defaultDeflateCompressionLevel", "20");
         ft.submit();
         // there should be an error
-        tester.assertErrorMessages(
-                "The value of 'Default Deflate Compression Level' must be between 1 and 9.");
+        tester.assertErrorMessages("The value of 'Default Deflate Compression Level' must be between 1 and 9.");
     }
 }

@@ -10,6 +10,5 @@ import org.geoserver.metadata.data.model.ComplexMetadataMap;
 
 public interface GeonetworkImportService {
 
-    void importLayer(ResourceInfo resource, ComplexMetadataMap map, String geonetwork, String uuid)
-            throws IOException;
+    void importLayer(ResourceInfo resource, ComplexMetadataMap map, String geonetwork, String uuid) throws IOException;
 }

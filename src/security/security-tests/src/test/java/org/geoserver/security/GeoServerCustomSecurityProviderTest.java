@@ -19,8 +19,9 @@ public class GeoServerCustomSecurityProviderTest extends GeoServerSystemTestSupp
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+        springContextLocations.add(getClass()
+                .getResource(getClass().getSimpleName() + "-context.xml")
+                .toString());
     }
 
     public static class SecurityProvider extends GeoServerSecurityProvider {
@@ -40,16 +41,12 @@ public class GeoServerCustomSecurityProviderTest extends GeoServerSystemTestSupp
 
     @Test
     public void testThatInitIsCalled() {
-        assertTrue(
-                "The Security provider's init method should be called",
-                SecurityProvider.initCalled);
+        assertTrue("The Security provider's init method should be called", SecurityProvider.initCalled);
     }
 
     @Test
     public void testThatDestroyIsCalled() throws Exception {
         destroyGeoServer();
-        assertTrue(
-                "The Security provider's destroy method should be called",
-                SecurityProvider.destroyCalled);
+        assertTrue("The Security provider's destroy method should be called", SecurityProvider.destroyCalled);
     }
 }

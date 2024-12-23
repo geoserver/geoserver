@@ -18,8 +18,8 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * Factory for {@link XStreamPersister} instances.
  *
- * <p>This class is a singleton registered in a spring context. Any code that needs to create an
- * XStreamPersister instance should do one of the following:
+ * <p>This class is a singleton registered in a spring context. Any code that needs to create an XStreamPersister
+ * instance should do one of the following:
  *
  * <ol>
  *   <li>Use dependency injection via spring. Example:
@@ -44,8 +44,8 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     /**
      * Application context provided during initialization.
      *
-     * <p>This may be null during initial startup, or during tests, when {@link
-     * #setApplicationContext(ApplicationContext)} has not been called.
+     * <p>This may be null during initial startup, or during tests, when
+     * {@link #setApplicationContext(ApplicationContext)} has not been called.
      */
     private ApplicationContext applicationContext;
 
@@ -57,11 +57,11 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     /**
      * Creates an instance configured to persist JSON.
      *
-     * <p>Preserves legacy Jettison 1.0.1 behavior when encoding single-element collections as a
-     * JSON object instead of a single-element JSON array.
+     * <p>Preserves legacy Jettison 1.0.1 behavior when encoding single-element collections as a JSON object instead of
+     * a single-element JSON array.
      *
-     * <p>Use {@link #createJSONPersister(true)} to force JSON encoding to always use JSON arrays
-     * regardless of collection size.
+     * <p>Use {@link #createJSONPersister(true)} to force JSON encoding to always use JSON arrays regardless of
+     * collection size.
      */
     public XStreamPersister createJSONPersister() {
         // preserve legacy single-element-array-as-object serialization
@@ -70,16 +70,15 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     }
 
     /**
-     * @param alwaysSerializeCollectionsAsArray whether to encode single element collections as JSON
-     *     arrays ({@code true}), which is the default value in Jettison 1.4+, or preserve legacy
-     *     (as of Jettison 1.0.1) single-element-array-as-object serialization ({@code false}).
+     * @param alwaysSerializeCollectionsAsArray whether to encode single element collections as JSON arrays
+     *     ({@code true}), which is the default value in Jettison 1.4+, or preserve legacy (as of Jettison 1.0.1)
+     *     single-element-array-as-object serialization ({@code false}).
      */
     public XStreamPersister createJSONPersister(boolean alwaysSerializeCollectionsAsArray) {
         // needed for Jettison 1.4.1
         Configuration configuration = new Configuration();
         configuration.setRootElementArrayWrapper(false);
-        JettisonMappedXmlDriver driver =
-                new JettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray);
+        JettisonMappedXmlDriver driver = new JettisonMappedXmlDriver(configuration, alwaysSerializeCollectionsAsArray);
         return buildPersister(driver);
     }
 
@@ -97,14 +96,10 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
         if (initializers == null || initializers.isEmpty()) {
             // the factory is created also programmatically, and without
             if (applicationContext == null) {
-                initializers =
-                        new ArrayList<>(
-                                GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
+                initializers = new ArrayList<>(GeoServerExtensions.extensions(XStreamPersisterInitializer.class));
             } else {
-                initializers =
-                        new ArrayList<>(
-                                GeoServerExtensions.extensions(
-                                        XStreamPersisterInitializer.class, applicationContext));
+                initializers = new ArrayList<>(
+                        GeoServerExtensions.extensions(XStreamPersisterInitializer.class, applicationContext));
             }
         }
         return initializers;
@@ -114,15 +109,12 @@ public class XStreamPersisterFactory implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
         initializers =
-                new ArrayList<>(
-                        GeoServerExtensions.extensions(
-                                XStreamPersisterInitializer.class, applicationContext));
+                new ArrayList<>(GeoServerExtensions.extensions(XStreamPersisterInitializer.class, applicationContext));
     }
 
     /**
-     * Programmatically adds a {@link XStreamPersisterInitializer} to the factory (initializers are
-     * also automatically looked up from the Spring context, use this method only if you cannot
-     * Declare your initializer as a spring bean)
+     * Programmatically adds a {@link XStreamPersisterInitializer} to the factory (initializers are also automatically
+     * looked up from the Spring context, use this method only if you cannot Declare your initializer as a spring bean)
      */
     public void addInitializer(XStreamPersisterInitializer initializer) {
         getInitializers().add(initializer);

@@ -16,9 +16,7 @@ public class JdbcUrlSplitter {
         int pos, pos1, pos2;
         String connUri;
 
-        if (jdbcUrl == null
-                || !jdbcUrl.startsWith("jdbc:")
-                || (pos1 = jdbcUrl.indexOf(':', 5)) == -1)
+        if (jdbcUrl == null || !jdbcUrl.startsWith("jdbc:") || (pos1 = jdbcUrl.indexOf(':', 5)) == -1)
             throw new IllegalArgumentException("Invalid JDBC url.");
 
         driverName = jdbcUrl.substring(5, pos1);

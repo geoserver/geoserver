@@ -27,8 +27,7 @@ public class GetRepositoryItemKvpRequestReader extends KvpRequestReader {
     }
 
     @Override
-    public Object read(Object req, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object req, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
 
         GetRepositoryItemType request = (GetRepositoryItemType) super.read(req, kvp, rawKvp);
 

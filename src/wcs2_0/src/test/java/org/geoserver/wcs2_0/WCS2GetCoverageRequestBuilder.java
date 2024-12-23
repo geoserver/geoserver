@@ -76,8 +76,7 @@ public class WCS2GetCoverageRequestBuilder {
     }
 
     /** Sets a lat/lon bounding box. */
-    public WCS2GetCoverageRequestBuilder bbox(
-            double minLon, double maxLon, double minLat, double maxLat) {
+    public WCS2GetCoverageRequestBuilder bbox(double minLon, double maxLon, double minLat, double maxLat) {
         DimensionTrimType latTrim = Wcs20Factory.eINSTANCE.createDimensionTrimType();
         latTrim.setCRS("http://www.opengis.net/def/crs/EPSG/0/4326");
         latTrim.setTrimLow(minLat + "");

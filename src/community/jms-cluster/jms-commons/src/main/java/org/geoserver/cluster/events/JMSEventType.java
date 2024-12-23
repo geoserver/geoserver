@@ -9,8 +9,7 @@ import java.io.Serializable;
 import java.util.EventObject;
 
 /**
- * Defining Event type example, each event points (source) to an object which represents the
- * incoming event.
+ * Defining Event type example, each event points (source) to an object which represents the incoming event.
  *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */

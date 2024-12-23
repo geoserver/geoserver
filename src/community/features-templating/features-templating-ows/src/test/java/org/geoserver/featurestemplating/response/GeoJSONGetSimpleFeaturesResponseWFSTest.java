@@ -39,11 +39,10 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     @Test
     public void testGeoJSONQueryPointingToExpr() throws Exception {
         setUpSimple("NamedPlacesGeoJSON.json");
-        StringBuilder sb =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
-                        .append("application/json")
-                        .append("&cql_filter= features.name = 'Name: Goose Island' ");
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                .append("application/json")
+                .append("&cql_filter= features.name = 'Name: Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(1, features.size());
@@ -54,11 +53,10 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     @Test
     public void testGeoJSONQueryPointingToSimpleAttribute() throws Exception {
         setUpSimple("NamedPlacesDifferentAttributesGeoJSON.json");
-        StringBuilder sb =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
-                        .append("application/json")
-                        .append("&cql_filter= NAME = 'Goose Island' ");
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                .append("application/json")
+                .append("&cql_filter= NAME = 'Goose Island' ");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(1, features.size());
@@ -69,11 +67,10 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     @Test
     public void testGeoJSONResponseWithFilter() throws Exception {
         setUpSimple("NamedPlacesGeoJSON.json");
-        StringBuilder path =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces")
-                        .append("&outputFormat=application/json")
-                        .append("&cql_filter= features.id = '118'");
+        StringBuilder path = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces")
+                .append("&outputFormat=application/json")
+                .append("&cql_filter= features.id = '118'");
         JSONObject result = (JSONObject) getJson(path.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 1);
@@ -88,10 +85,9 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     @Test
     public void testGeoJSONResponseDynamicKey() throws Exception {
         setUpSimple("NamedPlacesDynKeyGeoJSON.json");
-        String url =
-                "wfs?request=GetFeature&version=2.0"
-                        + "&TYPENAME=cite:NamedPlaces&outputFormat=application/json"
-                        + "&featureId=NamedPlaces.1107531895891";
+        String url = "wfs?request=GetFeature&version=2.0"
+                + "&TYPENAME=cite:NamedPlaces&outputFormat=application/json"
+                + "&featureId=NamedPlaces.1107531895891";
         JSONObject result = (JSONObject) getJson(url);
         print(result);
         JSONArray features = (JSONArray) result.get("features");
@@ -105,10 +101,9 @@ public class GeoJSONGetSimpleFeaturesResponseWFSTest extends GeoJSONGetSimpleFea
     public void testGeoJSONResponseFilteredDynamicKey() throws Exception {
         // cannot filter on a dynamic key, but at least check the mapping won't fail
         setUpSimple("NamedPlacesDynKeyGeoJSON.json");
-        String url =
-                "wfs?request=GetFeature&version=2.0"
-                        + "&TYPENAME=cite:NamedPlaces&outputFormat=application/json"
-                        + "&CQL_FILTER=id=118";
+        String url = "wfs?request=GetFeature&version=2.0"
+                + "&TYPENAME=cite:NamedPlaces&outputFormat=application/json"
+                + "&CQL_FILTER=id=118";
         JSONObject result = (JSONObject) getJson(url);
         print(result);
         JSONArray features = (JSONArray) result.get("features");

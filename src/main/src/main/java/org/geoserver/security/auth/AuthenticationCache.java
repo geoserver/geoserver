@@ -12,8 +12,8 @@ import org.springframework.security.core.Authentication;
 /**
  * Interface to cache {@link Authentication} objects.
  *
- * <p>The key is created from the name of the filter and the result of {@link
- * AuthenticationCachingFilter#getCacheKey(javax.servlet.http.HttpServletRequest)}
+ * <p>The key is created from the name of the filter and the result of
+ * {@link AuthenticationCachingFilter#getCacheKey(javax.servlet.http.HttpServletRequest)}
  *
  * @author mcr
  */

@@ -12,8 +12,7 @@ import java.util.Map;
 import org.geoserver.metadata.data.model.ComplexMetadataAttribute;
 import org.geotools.util.Converters;
 
-public class ComplexMetadataAttributeImpl<T extends Serializable>
-        implements ComplexMetadataAttribute<T> {
+public class ComplexMetadataAttributeImpl<T extends Serializable> implements ComplexMetadataAttribute<T> {
 
     private static final long serialVersionUID = 7309095204153589550L;
 
@@ -26,10 +25,7 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
     private Class<T> clazz;
 
     public ComplexMetadataAttributeImpl(
-            Map<String, Serializable> map,
-            String strPath,
-            ComplexMetadataIndexReference indexRef,
-            Class<T> clazz) {
+            Map<String, Serializable> map, String strPath, ComplexMetadataIndexReference indexRef, Class<T> clazz) {
         this.map = map;
         this.strPath = strPath;
         this.indexRef = indexRef;
@@ -65,8 +61,7 @@ public class ComplexMetadataAttributeImpl<T extends Serializable>
         map.put(strPath, setValueInternal(map.get(strPath), indexRef.getIndex(), value));
     }
 
-    protected Serializable setValueInternal(
-            Serializable originalValue, int[] index, Serializable newValue) {
+    protected Serializable setValueInternal(Serializable originalValue, int[] index, Serializable newValue) {
         if (index.length == 0) {
             return newValue;
         } else if (originalValue instanceof List<?>) {

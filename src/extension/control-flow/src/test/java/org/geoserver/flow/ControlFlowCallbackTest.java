@@ -40,19 +40,16 @@ public class ControlFlowCallbackTest {
         final CountingController controller = new CountingController(1, 0);
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
-        callback.doFilter(
-                null,
-                null,
-                new FilterChain() {
+        callback.doFilter(null, null, new FilterChain() {
 
-                    @Override
-                    public void doFilter(ServletRequest request, ServletResponse response)
-                            throws IOException, ServletException {
-                        callback.operationDispatched(null, null);
-                        assertEquals(1, controller.requestIncomingCalls);
-                        assertEquals(0, controller.requestCompleteCalls);
-                    }
-                });
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                callback.operationDispatched(null, null);
+                assertEquals(1, controller.requestIncomingCalls);
+                assertEquals(0, controller.requestCompleteCalls);
+            }
+        });
 
         assertEquals(1, controller.requestIncomingCalls);
         assertEquals(1, controller.requestCompleteCalls);
@@ -118,8 +115,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        BasicOWSController controller =
-                new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
+        BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
 
@@ -156,8 +152,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         final ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        final BasicOWSController controller =
-                new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
+        final BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
 
@@ -170,24 +165,23 @@ public class ControlFlowCallbackTest {
         r1.setHttpRequest(httpRequest);
         r1.setHttpResponse(httpResponse);
         final AtomicBoolean servletCalled = new AtomicBoolean(false);
-        MockFilterChain filterChain =
-                new MockFilterChain(
-                        new HttpServletBean() {
-                            @Override
-                            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-                                    throws ServletException, IOException {
-                                servletCalled.set(true);
+        MockFilterChain filterChain = new MockFilterChain(
+                new HttpServletBean() {
+                    @Override
+                    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                            throws ServletException, IOException {
+                        servletCalled.set(true);
 
-                                // setup external request
-                                callback.operationDispatched(r1, null);
-                                assertEquals(1, callback.getRunningRequests());
-                                assertEquals(0, callback.getBlockedRequests());
-                                assertEquals(1, controller.getRequestsInQueue());
+                        // setup external request
+                        callback.operationDispatched(r1, null);
+                        assertEquals(1, callback.getRunningRequests());
+                        assertEquals(0, callback.getBlockedRequests());
+                        assertEquals(1, controller.getRequestsInQueue());
 
-                                // fail to call finished
-                            }
-                        },
-                        callback);
+                        // fail to call finished
+                    }
+                },
+                callback);
         filterChain.doFilter(httpRequest, httpResponse);
         // check the servlet doing the test has been called
         assertTrue(servletCalled.get());
@@ -202,8 +196,7 @@ public class ControlFlowCallbackTest {
         // setup a controller hitting on GWC
         final ControlFlowCallback callback = new ControlFlowCallback();
         TestingConfigurator tc = new TestingConfigurator();
-        final BasicOWSController controller =
-                new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
+        final BasicOWSController controller = new BasicOWSController("GWC", 1, new SimpleThreadBlocker(1));
         tc.controllers.add(controller);
         callback.provider = new DefaultFlowControllerProvider(tc);
 
@@ -217,30 +210,29 @@ public class ControlFlowCallbackTest {
         r1.setHttpResponse(httpResponse);
 
         final AtomicBoolean servletCalled = new AtomicBoolean(false);
-        MockFilterChain filterChain =
-                new MockFilterChain(
-                        new HttpServletBean() {
-                            @Override
-                            protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-                                    throws ServletException, IOException {
-                                servletCalled.set(true);
+        MockFilterChain filterChain = new MockFilterChain(
+                new HttpServletBean() {
+                    @Override
+                    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+                            throws ServletException, IOException {
+                        servletCalled.set(true);
 
-                                // setup external request
-                                callback.operationDispatched(r1, null);
-                                assertEquals(1, callback.getRunningRequests());
-                                assertEquals(0, callback.getBlockedRequests());
+                        // setup external request
+                        callback.operationDispatched(r1, null);
+                        assertEquals(1, callback.getRunningRequests());
+                        assertEquals(0, callback.getBlockedRequests());
 
-                                // call the nested one
-                                Request r2 = new Request(r1);
-                                callback.operationDispatched(r2, null);
-                                assertEquals(1, callback.getRunningRequests());
-                                assertEquals(0, callback.getBlockedRequests());
-                                assertEquals(1, controller.getRequestsInQueue());
+                        // call the nested one
+                        Request r2 = new Request(r1);
+                        callback.operationDispatched(r2, null);
+                        assertEquals(1, callback.getRunningRequests());
+                        assertEquals(0, callback.getBlockedRequests());
+                        assertEquals(1, controller.getRequestsInQueue());
 
-                                // fail to call finished on either
-                            }
-                        },
-                        callback);
+                        // fail to call finished on either
+                    }
+                },
+                callback);
         filterChain.doFilter(httpRequest, httpResponse);
         // check the servlet doing the test has been called
         assertTrue(servletCalled.get());

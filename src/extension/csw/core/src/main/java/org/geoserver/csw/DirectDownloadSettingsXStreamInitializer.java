@@ -12,8 +12,7 @@ public class DirectDownloadSettingsXStreamInitializer implements XStreamPersiste
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType(
-                "directDownloadSettings", DirectDownloadSettings.class);
+        persister.registerBreifMapComplexType("directDownloadSettings", DirectDownloadSettings.class);
         XStream xs = persister.getXStream();
         xs.alias("directDownloadSettings", DirectDownloadSettings.class);
     }

@@ -23,8 +23,7 @@ import org.geotools.ows.wms.Layer;
 import org.geotools.ows.wms.WebMapServer;
 
 /**
- * Utility class used to check wheter REMOTE_OWS_XXX related tests can be run against the demo
- * server or not or not.
+ * Utility class used to check wheter REMOTE_OWS_XXX related tests can be run against the demo server or not or not.
  *
  * @author Andrea Aime - TOPP
  * @author Ben Caradoc-Davies, CSIRO Exploration and Mining
@@ -56,12 +55,8 @@ public class RemoteOWSTestSupport {
                 try {
                     WFSDataStoreFactory factory = new WFSDataStoreFactory();
                     @SuppressWarnings("unchecked") // incompatible generics here
-                    Map<String, Serializable> params =
-                            new HashMap(factory.getImplementationHints());
-                    URL url =
-                            new URL(
-                                    WFS_SERVER_URL
-                                            + "service=WFS&request=GetCapabilities&version=1.1.0");
+                    Map<String, Serializable> params = new HashMap(factory.getImplementationHints());
+                    URL url = new URL(WFS_SERVER_URL + "service=WFS&request=GetCapabilities&version=1.1.0");
                     params.put(WFSDataStoreFactory.URL.key, url);
                     params.put(WFSDataStoreFactory.TRY_GZIP.key, Boolean.TRUE);
                     // give it five seconds to respond...
@@ -82,14 +77,11 @@ public class RemoteOWSTestSupport {
                         remoteWFSStatesAvailable = Boolean.FALSE;
                     }
 
-                    logger.log(
-                            Level.WARNING,
-                            "Remote WFS tests are enabled, remote server appears to be up");
+                    logger.log(Level.WARNING, "Remote WFS tests are enabled, remote server appears to be up");
                 } catch (IOException e) {
                     logger.log(
                             Level.WARNING,
-                            "Skipping remote wms test, either demo  "
-                                    + "is down or the topp:states layer is not there",
+                            "Skipping remote wms test, either demo  " + "is down or the topp:states layer is not there",
                             e);
                     remoteWFSStatesAvailable = Boolean.FALSE;
                 }
@@ -112,9 +104,7 @@ public class RemoteOWSTestSupport {
                 try {
                     remoteWMSStatesAvailable = Boolean.FALSE;
                     WebMapServer server =
-                            new WebMapServer(
-                                    new URL(WMS_SERVER_URL + "service=WMS&request=GetCapabilities"),
-                                    5000);
+                            new WebMapServer(new URL(WMS_SERVER_URL + "service=WMS&request=GetCapabilities"), 5000);
                     for (Layer l : server.getCapabilities().getLayerList()) {
                         if ("topp:states".equals(l.getName())) {
                             remoteWMSStatesAvailable = Boolean.TRUE;
@@ -124,8 +114,7 @@ public class RemoteOWSTestSupport {
                 } catch (Exception e) {
                     logger.log(
                             Level.WARNING,
-                            "Skipping remote WMS test, either demo  "
-                                    + "is down or the topp:states layer is not there",
+                            "Skipping remote WMS test, either demo  " + "is down or the topp:states layer is not there",
                             e);
                     remoteWMSStatesAvailable = Boolean.FALSE;
                 }

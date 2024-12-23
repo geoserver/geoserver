@@ -49,9 +49,8 @@ public class Execute {
         }
 
         if (responseDocument != null && rawDataOutput != null) {
-            throw new WPSException(
-                    "Invalid request, only one of the raw data output or the "
-                            + "response document should be specified in the request");
+            throw new WPSException("Invalid request, only one of the raw data output or the "
+                    + "response document should be specified in the request");
         }
 
         ExecuteRequest request = new ExecuteRequest(execute);

@@ -7,9 +7,7 @@ package org.geoserver.featurestemplating.readers;
 import java.io.IOException;
 import org.geoserver.platform.resource.Resource;
 
-/**
- * This class provides the necessary logic to retrieve a reader based on the extension value passed.
- */
+/** This class provides the necessary logic to retrieve a reader based on the extension value passed. */
 public class TemplateReaderProvider {
     enum SupportedExtension {
         JSON,
@@ -27,20 +25,17 @@ public class TemplateReaderProvider {
      * @throws IOException
      */
     public static TemplateReader findReader(
-            String resourceExtension, Resource resource, TemplateReaderConfiguration configuration)
-            throws IOException {
+            String resourceExtension, Resource resource, TemplateReaderConfiguration configuration) throws IOException {
         TemplateReader reader;
         if (resourceExtension.equalsIgnoreCase(SupportedExtension.JSON.name())) {
-            RecursiveJSONParser parser =
-                    new RecursiveJSONParser(resource, configuration.getRootCollectionName());
+            RecursiveJSONParser parser = new RecursiveJSONParser(resource, configuration.getRootCollectionName());
             reader = new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
         } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XML.name())) {
             reader = new GMLTemplateReader(resource, configuration.getNamespaces());
         } else if (resourceExtension.equalsIgnoreCase(SupportedExtension.XHTML.name())) {
             reader = new XHTMLTemplateReader(resource, configuration.getNamespaces());
         } else {
-            throw new UnsupportedOperationException(
-                    "Not a supported extension " + resourceExtension);
+            throw new UnsupportedOperationException("Not a supported extension " + resourceExtension);
         }
         return reader;
     }

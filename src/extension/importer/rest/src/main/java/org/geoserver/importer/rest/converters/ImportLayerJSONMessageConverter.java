@@ -51,8 +51,7 @@ public class ImportLayerJSONMessageConverter extends BaseMessageConverter<Import
     // Reading
     //
     @Override
-    protected ImportLayer readInternal(
-            Class<? extends ImportLayer> clazz, HttpInputMessage inputMessage)
+    protected ImportLayer readInternal(Class<? extends ImportLayer> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);

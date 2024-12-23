@@ -17,8 +17,7 @@ import org.geoserver.data.test.TestData;
 public interface NamespaceTestData extends TestData {
 
     /**
-     * Return a map of namespace prefix to namespace URI; the map may be immutable so do not attempt
-     * to modify it.
+     * Return a map of namespace prefix to namespace URI; the map may be immutable so do not attempt to modify it.
      *
      * @return map of namespace prefix to namespace URI.
      */

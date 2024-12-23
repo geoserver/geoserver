@@ -17,10 +17,10 @@ import org.geoserver.platform.resource.Resource;
 /**
  * Runs a post-script with the provided options.
  *
- * <p>Eventually it would be useful to pass some information about the data just imported, but will
- * require more configuration (like, for direct imports it may be the data location, for indirect
- * ones the layer just created, along with some configuration about if and how to pass said into the
- * script). If you're reading this and are interested, hop on gs-devel and discuss
+ * <p>Eventually it would be useful to pass some information about the data just imported, but will require more
+ * configuration (like, for direct imports it may be the data location, for indirect ones the layer just created, along
+ * with some configuration about if and how to pass said into the script). If you're reading this and are interested,
+ * hop on gs-devel and discuss
  */
 public class PostScriptTransform extends AbstractCommandLineTransform implements PostTransform {
 
@@ -57,18 +57,14 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
         Resource resource = scripts.get(name);
         if (resource.getType() != Resource.Type.RESOURCE) {
             throw new ValidationException(
-                    "Script named '"
-                            + name
-                            + "' was not found in "
-                            + "$GEOSERVER_DATA_DIR/importer/scripts");
+                    "Script named '" + name + "' was not found in " + "$GEOSERVER_DATA_DIR/importer/scripts");
         }
         File executable = resource.file();
         if (!executable.canExecute()) {
-            throw new ValidationException(
-                    "Found file named '"
-                            + name
-                            + "' in "
-                            + "$GEOSERVER_DATA_DIR/importer/scripts, but it's not executable");
+            throw new ValidationException("Found file named '"
+                    + name
+                    + "' in "
+                    + "$GEOSERVER_DATA_DIR/importer/scripts, but it's not executable");
         }
         return executable;
     }
@@ -80,8 +76,7 @@ public class PostScriptTransform extends AbstractCommandLineTransform implements
             throw new ValidationException("Could not find importer/scripts in data directory");
         } else if (scripts.getType() == Resource.Type.RESOURCE) {
             throw new ValidationException(
-                    "Found importer/scripts in data directory, but it's a"
-                            + " file and was expecting a directory");
+                    "Found importer/scripts in data directory, but it's a" + " file and was expecting a directory");
         } else {
             return scripts;
         }

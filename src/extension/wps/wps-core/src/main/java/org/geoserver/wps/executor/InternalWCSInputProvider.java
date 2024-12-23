@@ -26,8 +26,7 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
 
     private ApplicationContext context;
 
-    public InternalWCSInputProvider(
-            InputType input, ProcessParameterIO ppio, ApplicationContext context) {
+    public InternalWCSInputProvider(InputType input, ProcessParameterIO ppio, ApplicationContext context) {
         super(input, ppio);
         this.context = context;
     }
@@ -56,12 +55,10 @@ public class InternalWCSInputProvider extends AbstractInputProvider {
 
         // perform GetCoverage
         if (getCoverage instanceof GetCoverageType) {
-            WebCoverageService111 wcs =
-                    (WebCoverageService111) context.getBean("wcs111ServiceTarget");
+            WebCoverageService111 wcs = (WebCoverageService111) context.getBean("wcs111ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs11.GetCoverageType) getCoverage)[0];
         } else if (getCoverage instanceof net.opengis.wcs10.GetCoverageType) {
-            WebCoverageService100 wcs =
-                    (WebCoverageService100) context.getBean("wcs100ServiceTarget");
+            WebCoverageService100 wcs = (WebCoverageService100) context.getBean("wcs100ServiceTarget");
             return wcs.getCoverage((net.opengis.wcs10.GetCoverageType) getCoverage)[0];
         } else if (getCoverage instanceof net.opengis.wcs20.GetCoverageType) {
             WebCoverageService20 wcs = (WebCoverageService20) context.getBean("wcs20ServiceTarget");

@@ -22,8 +22,7 @@ public class TemplateModelsValidator {
         }
     }
 
-    public void validate(TemplatePreviewPanel.PreviewInfoModel info)
-            throws TemplateConfigurationException {
+    public void validate(TemplatePreviewPanel.PreviewInfoModel info) throws TemplateConfigurationException {
         SupportedFormat outputFormat = info.getOutputFormat();
         TemplateConfigurationException e = null;
         if (outputFormat == null) {

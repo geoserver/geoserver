@@ -43,25 +43,23 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         Resource tmpDir = BackupUtils.tmpDir();
         String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
 
-        String json =
-                "{\"backup\": {"
-                        + "   \"archiveFile\": \""
-                        + archiveFilePath
-                        + "\", "
-                        + "   \"overwrite\": true,"
-                        + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
-                        + "  }"
-                        + "}";
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
+                + "  }"
+                + "}";
 
         JSONObject backup = postNewBackup(json);
 
         assertNotNull(backup);
 
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+        JSONObject execution =
+                readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
+        assertTrue("STARTED".equals(execution.getString("status")) || "STARTING".equals(execution.getString("status")));
 
         int cnt = 0;
         while (cnt < 100
@@ -81,47 +79,40 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         // setup security, AggregateGeoFeature allowed to everybody, PrimitiveGeoFeature to military
         // only
         Properties props = new Properties();
-        props.load(
-                new StringReader(
-                        Stream.of("PrimitiveGeoFeature.r=MILITARY", "AggregateGeoFeature.r=*")
-                                .collect(Collectors.joining("\n"))));
-        DefaultResourceAccessManager manager =
-                new DefaultResourceAccessManager(
-                        new MemoryDataAccessRuleDAO(createDataDirectoryMock(), catalog, props),
-                        catalog);
+        props.load(new StringReader(Stream.of("PrimitiveGeoFeature.r=MILITARY", "AggregateGeoFeature.r=*")
+                .collect(Collectors.joining("\n"))));
+        DefaultResourceAccessManager manager = new DefaultResourceAccessManager(
+                new MemoryDataAccessRuleDAO(createDataDirectoryMock(), catalog, props), catalog);
 
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(catalog, manager) {
+        SecureCatalogImpl sc = new SecureCatalogImpl(catalog, manager) {
 
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
 
         Resource tmpDir = BackupUtils.tmpDir();
         String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
 
-        String json =
-                "{\"backup\": {"
-                        + "   \"archiveFile\": \""
-                        + archiveFilePath
-                        + "\", "
-                        + "   \"overwrite\": true,"
-                        + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
-                        + "  }"
-                        + "}";
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] }"
+                + "  }"
+                + "}";
 
         JSONObject backup = postNewBackup(json);
 
         assertNotNull(backup);
 
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+        JSONObject execution =
+                readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
+        assertTrue("STARTED".equals(execution.getString("status")) || "STARTING".equals(execution.getString("status")));
 
         int cnt = 0;
         while (cnt < 100
@@ -141,25 +132,23 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         Resource tmpDir = BackupUtils.tmpDir();
         String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
 
-        String json =
-                "{\"backup\": {"
-                        + "   \"archiveFile\": \""
-                        + archiveFilePath
-                        + "\", "
-                        + "   \"overwrite\": true,"
-                        + "   \"options\": { \"option\": [\"BK_PARAM_PASSWORDS=true\"] }"
-                        + "  }"
-                        + "}";
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_PARAM_PASSWORDS=true\"] }"
+                + "  }"
+                + "}";
 
         JSONObject backup = postNewBackup(json);
 
         assertNotNull(backup);
 
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+        JSONObject execution =
+                readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
+        assertTrue("STARTED".equals(execution.getString("status")) || "STARTING".equals(execution.getString("status")));
 
         int cnt = 0;
         while (cnt < 100
@@ -190,22 +179,22 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
         Resource tmpDir = BackupUtils.tmpDir();
         String archiveFilePath = Paths.path(tmpDir.path(), "geoserver-backup.zip");
 
-        String json =
-                "{\"backup\": {"
-                        + "   \"archiveFile\": \""
-                        + archiveFilePath
-                        + "\", "
-                        + "   \"overwrite\": true,"
-                        + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] },"
-                        + "   \"wsFilter\": \"name IN ('topp','geosolutions-it')\""
-                        + "  }"
-                        + "}";
+        String json = "{\"backup\": {"
+                + "   \"archiveFile\": \""
+                + archiveFilePath
+                + "\", "
+                + "   \"overwrite\": true,"
+                + "   \"options\": { \"option\": [\"BK_BEST_EFFORT=false\"] },"
+                + "   \"wsFilter\": \"name IN ('topp','geosolutions-it')\""
+                + "  }"
+                + "}";
 
         JSONObject backup = postNewBackup(json);
 
         assertNotNull(backup);
 
-        JSONObject execution = readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
+        JSONObject execution =
+                readExecutionStatus(backup.getJSONObject("execution").getLong("id"));
 
         assertEquals(
                 "name IN ('topp','geosolutions-it')",
@@ -216,9 +205,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
                         .getJSONObject("parameters")
                         .get("wsFilter"));
 
-        assertTrue(
-                "STARTED".equals(execution.getString("status"))
-                        || "STARTING".equals(execution.getString("status")));
+        assertTrue("STARTED".equals(execution.getString("status")) || "STARTING".equals(execution.getString("status")));
 
         int cnt = 0;
         while (cnt < 100
@@ -234,11 +221,8 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
     }
 
     JSONObject postNewBackup(String body) throws Exception {
-        MockHttpServletResponse resp =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/br/backup",
-                        body,
-                        MediaType.APPLICATION_JSON_VALUE);
+        MockHttpServletResponse resp = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/br/backup", body, MediaType.APPLICATION_JSON_VALUE);
 
         assertEquals(201, resp.getStatus());
         assertEquals("application/json", resp.getContentType());
@@ -253,13 +237,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
     }
 
     JSONObject readExecutionStatus(long executionId) throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/br/backup/"
-                                        + executionId
-                                        + ".json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/br/backup/" + executionId + ".json");
 
         JSONObject backup = json.getJSONObject("backup");
 
@@ -274,8 +252,7 @@ public class RESTBackupTest extends BackupRestoreTestSupport {
 
     class MemoryDataAccessRuleDAO extends DataAccessRuleDAO {
 
-        public MemoryDataAccessRuleDAO(
-                GeoServerDataDirectory dd, Catalog rawCatalog, Properties props)
+        public MemoryDataAccessRuleDAO(GeoServerDataDirectory dd, Catalog rawCatalog, Properties props)
                 throws ConfigurationException, IOException {
             super(dd, rawCatalog);
             loadRules(props);

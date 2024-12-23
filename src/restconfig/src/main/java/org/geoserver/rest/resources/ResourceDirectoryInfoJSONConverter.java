@@ -27,24 +27,23 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 /**
- * Message converter to maintain backwards compatibility on JSON encoding of {@link
- * ResourceDirectoryInfo} for single-element {@link ResourceDirectoryInfo#getChildren() children}.
+ * Message converter to maintain backwards compatibility on JSON encoding of {@link ResourceDirectoryInfo} for
+ * single-element {@link ResourceDirectoryInfo#getChildren() children}.
  *
- * <p>The upgrade to XStream 1.4.19/Jettison 1.4.1 changes the deafult Jettison 1.0.1 behavior when
- * encoding single-element collections as JSON. While it used to encode such collections as a JSON
- * object, it now (correctly) encodes them as single-element JSON arrays.
+ * <p>The upgrade to XStream 1.4.19/Jettison 1.4.1 changes the deafult Jettison 1.0.1 behavior when encoding
+ * single-element collections as JSON. While it used to encode such collections as a JSON object, it now (correctly)
+ * encodes them as single-element JSON arrays.
  *
- * <p>This converter preserves the legacy behavior for {@link ResourceController}'s {@link
- * ResourceDirectoryInfo#getChildren()} to avoid any possible breakage in GeoServer REST clients
- * that depend on the legacy behavior.
+ * <p>This converter preserves the legacy behavior for {@link ResourceController}'s
+ * {@link ResourceDirectoryInfo#getChildren()} to avoid any possible breakage in GeoServer REST clients that depend on
+ * the legacy behavior.
  */
 @Component
 public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConverter {
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return RestWrapper.class.isAssignableFrom(clazz)
-                && !RestListWrapper.class.isAssignableFrom(clazz);
+        return RestWrapper.class.isAssignableFrom(clazz) && !RestListWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override
@@ -62,8 +61,7 @@ public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConver
             ResourceDirectoryInfo dirInfo = (ResourceDirectoryInfo) object;
             if (1 == dirInfo.getChildren().size()) {
                 boolean alwaysSerializeCollectionsAsArrays = true;
-                XStreamPersister xmlPersister =
-                        xpf.createJSONPersister(alwaysSerializeCollectionsAsArrays);
+                XStreamPersister xmlPersister = xpf.createJSONPersister(alwaysSerializeCollectionsAsArrays);
                 restWrapper.configurePersister(xmlPersister, this);
                 writeSingleChildrenDirectoryInfo(dirInfo, xmlPersister, outputMessage.getBody());
                 return;
@@ -73,29 +71,24 @@ public class ResourceDirectoryInfoJSONConverter extends XStreamJSONMessageConver
     }
 
     private void writeSingleChildrenDirectoryInfo(
-            ResourceDirectoryInfo dirInfo, XStreamPersister xmlPersister, OutputStream out)
-            throws IOException {
+            ResourceDirectoryInfo dirInfo, XStreamPersister xmlPersister, OutputStream out) throws IOException {
 
         SingleChildDirInfo info = new SingleChildDirInfo(dirInfo);
         XStream xstream = xmlPersister.getXStream();
         xstream.alias("ResourceDirectory", SingleChildDirInfo.class);
 
-        Converter conv =
-                new CollectionConverter(xstream.getMapper()) {
-                    @Override
-                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return Collection.class.isAssignableFrom(type);
-                    }
+        Converter conv = new CollectionConverter(xstream.getMapper()) {
+            @Override
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                return Collection.class.isAssignableFrom(type);
+            }
 
-                    @Override
-                    protected void writeCompleteItem(
-                            Object item,
-                            MarshallingContext context,
-                            HierarchicalStreamWriter writer) {
+            @Override
+            protected void writeCompleteItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
 
-                        super.writeBareItem(item, context, writer);
-                    }
-                };
+                super.writeBareItem(item, context, writer);
+            }
+        };
 
         xstream.registerLocalConverter(Children.class, "child", conv);
         xmlPersister.save(info, out);

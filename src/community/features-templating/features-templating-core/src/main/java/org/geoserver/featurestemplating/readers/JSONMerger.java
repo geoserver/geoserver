@@ -11,9 +11,9 @@ import java.util.function.Predicate;
 import org.apache.commons.collections4.IteratorUtils;
 
 /**
- * This class is responsible for merging 2 JsonNodes, base and overlay. JsonNode overlay contains
- * keyword $merge. If overlay attributes exists on base node, base node's same attributes will be
- * replaced with overlay's and others remain.
+ * This class is responsible for merging 2 JsonNodes, base and overlay. JsonNode overlay contains keyword $merge. If
+ * overlay attributes exists on base node, base node's same attributes will be replaced with overlay's and others
+ * remain.
  */
 public class JSONMerger {
 
@@ -30,21 +30,18 @@ public class JSONMerger {
 
     public ObjectNode mergeTrees(JsonNode base, JsonNode overlay) {
         // first validate they are both objects
-        if (base.getNodeType() != JsonNodeType.OBJECT
-                || overlay.getNodeType() != JsonNodeType.OBJECT)
-            throw new IllegalArgumentException(
-                    "Trying to merge but either source or target are not objects:\n"
-                            + base.toPrettyString()
-                            + "\n"
-                            + overlay.toPrettyString());
+        if (base.getNodeType() != JsonNodeType.OBJECT || overlay.getNodeType() != JsonNodeType.OBJECT)
+            throw new IllegalArgumentException("Trying to merge but either source or target are not objects:\n"
+                    + base.toPrettyString()
+                    + "\n"
+                    + overlay.toPrettyString());
 
         return mergeTrees((ObjectNode) base, (ObjectNode) overlay);
     }
 
     /**
-     * When the overlay as a property interpolation directive or expression (${} or $${}), it puts
-     * "$dynamicMerge" to the root of the merge result. Then assign "node1" to the overlay and
-     * "node2" to the base.
+     * When the overlay as a property interpolation directive or expression (${} or $${}), it puts "$dynamicMerge" to
+     * the root of the merge result. Then assign "node1" to the overlay and "node2" to the base.
      *
      * @param base
      * @param overlay
@@ -88,14 +85,10 @@ public class JSONMerger {
     }
 
     private boolean isDynamicMerge(JsonNode ov, JsonNode bv) {
-        Predicate<JsonNode> isDynamic =
-                node ->
-                        node.isTextual()
-                                && (node.asText().startsWith("${")
-                                        || node.asText().startsWith("$${"));
+        Predicate<JsonNode> isDynamic = node -> node.isTextual()
+                && (node.asText().startsWith("${") || node.asText().startsWith("$${"));
         Predicate<JsonNode> isObject = node -> node.getNodeType() == JsonNodeType.OBJECT;
-        return (isDynamic.test(ov) && isObject.test(bv))
-                || (isDynamic.test(bv) && isObject.test(ov));
+        return (isDynamic.test(ov) && isObject.test(bv)) || (isDynamic.test(bv) && isObject.test(ov));
     }
 
     private void dynamicMergeDirective(ObjectNode merged, String name, JsonNode bv, JsonNode ov) {

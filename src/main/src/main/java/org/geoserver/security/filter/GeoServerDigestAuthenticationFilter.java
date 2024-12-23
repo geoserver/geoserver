@@ -44,9 +44,7 @@ public class GeoServerDigestAuthenticationFilter extends GeoServerCompositeFilte
         aep = new DigestAuthenticationEntryPoint();
         aep.setKey(config.getName());
         aep.setNonceValiditySeconds(
-                authConfig.getNonceValiditySeconds() <= 0
-                        ? 300
-                        : authConfig.getNonceValiditySeconds());
+                authConfig.getNonceValiditySeconds() <= 0 ? 300 : authConfig.getNonceValiditySeconds());
         aep.setRealmName(GeoServerSecurityManager.REALM);
         try {
             aep.afterPropertiesSet();
@@ -61,11 +59,9 @@ public class GeoServerDigestAuthenticationFilter extends GeoServerCompositeFilte
 
         filter.setAuthenticationEntryPoint(aep);
 
-        HttpDigestUserDetailsServiceWrapper wrapper =
-                new HttpDigestUserDetailsServiceWrapper(
-                        getSecurityManager()
-                                .loadUserGroupService(authConfig.getUserGroupServiceName()),
-                        Charset.defaultCharset());
+        HttpDigestUserDetailsServiceWrapper wrapper = new HttpDigestUserDetailsServiceWrapper(
+                getSecurityManager().loadUserGroupService(authConfig.getUserGroupServiceName()),
+                Charset.defaultCharset());
         filter.setUserDetailsService(wrapper);
 
         filter.afterPropertiesSet();
@@ -101,8 +97,7 @@ public class GeoServerDigestAuthenticationFilter extends GeoServerCompositeFilte
             String section212response = header.substring(7);
 
             String[] headerEntries = DigestAuthUtils.splitIgnoringQuotes(section212response, ',');
-            Map<String, String> headerMap =
-                    DigestAuthUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
+            Map<String, String> headerMap = DigestAuthUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
 
             String username = headerMap.get("username");
             String realm = headerMap.get("realm");

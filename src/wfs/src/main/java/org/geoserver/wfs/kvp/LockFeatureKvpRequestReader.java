@@ -29,8 +29,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
     }
 
     @Override
-    protected <T> void querySet(EObject request, String property, List<T> values)
-            throws WFSException {
+    protected <T> void querySet(EObject request, String property, List<T> values) throws WFSException {
         // no values specified, do nothing
         if (values == null) {
             return;
@@ -98,8 +97,7 @@ public class LockFeatureKvpRequestReader extends BaseFeatureKvpRequestReader {
     }
 
     @Override
-    protected void buildStoredQueries(
-            EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
+    protected void buildStoredQueries(EObject request, List<URI> storedQueryIds, Map<String, Object> kvp) {
         throw new UnsupportedOperationException("No stored queries in WFS 1.0 or 1.1");
     }
 

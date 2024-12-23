@@ -13,8 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 /**
- * Converts a string formatted according to the OGC APIs "datetime" parameter into a list of
- * objects, which can be either a DateRange or a Date.
+ * Converts a string formatted according to the OGC APIs "datetime" parameter into a list of objects, which can be
+ * either a DateRange or a Date.
  *
  * <p>The OGC specification has the following ABNF: <br>
  * <br>

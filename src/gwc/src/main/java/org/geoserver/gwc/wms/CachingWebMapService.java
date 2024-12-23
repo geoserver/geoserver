@@ -35,8 +35,8 @@ import org.geowebcache.io.Resource;
 import org.geowebcache.layer.TileLayer;
 
 /**
- * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to serve cached tiles
- * whenever the request matches a GeoWebCache tile.
+ * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to serve cached tiles whenever the
+ * request matches a GeoWebCache tile.
  *
  * @author Gabriel Roldan
  */
@@ -54,8 +54,7 @@ public class CachingWebMapService implements MethodInterceptor {
      * Wraps {@link WebMapService#getMap(GetMapRequest)}, called by the {@link Dispatcher}
      *
      * @see WebMapService#getMap(GetMapRequest)
-     * @see
-     *     org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
     @Override
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
@@ -68,8 +67,7 @@ public class CachingWebMapService implements MethodInterceptor {
         boolean tiled = request.isTiled() || !config.isRequireTiledParameter();
         final Map<String, String> rawKvp = request.getRawKvp();
         // skipping seeding requests to avoid meta tile recursion
-        boolean isSeedingRequest =
-                rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        boolean isSeedingRequest = rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
         if (!tiled || isSeedingRequest) {
             return (WebMap) invocation.proceed();
         }
@@ -80,8 +78,7 @@ public class CachingWebMapService implements MethodInterceptor {
         if (cachedTile == null) {
             WebMap dynamicResult = (WebMap) invocation.proceed();
             dynamicResult.setResponseHeader("geowebcache-cache-result", MISS.toString());
-            dynamicResult.setResponseHeader(
-                    "geowebcache-miss-reason", requestMistmatchTarget.toString());
+            dynamicResult.setResponseHeader("geowebcache-miss-reason", requestMistmatchTarget.toString());
             return dynamicResult;
         }
         checkState(cachedTile.getTileLayer() != null);
@@ -117,13 +114,11 @@ public class CachingWebMapService implements MethodInterceptor {
 
         RawMap map = new RawMap(null, tileBytes, mimeType);
 
-        map.setContentDispositionHeader(
-                null, "." + cachedTile.getMimeType().getFileExtension(), false);
+        map.setContentDispositionHeader(null, "." + cachedTile.getMimeType().getFileExtension(), false);
 
         LinkedHashMap<String, String> headers = new LinkedHashMap<>();
         GWC.setCacheControlHeaders(headers, layer, (int) cachedTile.getTileIndex()[2]);
-        GWC.setConditionalGetHeaders(
-                headers, cachedTile, etag, request.getHttpRequestHeader("If-Modified-Since"));
+        GWC.setConditionalGetHeaders(headers, cachedTile, etag, request.getHttpRequestHeader("If-Modified-Since"));
         GWC.setCacheMetadataHeaders(headers, cachedTile, layer);
         headers.forEach((k, v) -> map.setResponseHeader(k, v));
 

@@ -38,120 +38,106 @@ public class ProcessFactoryInfoProvider extends GeoServerDataProvider<ProcessGro
     protected List<Property<ProcessGroupInfo>> getProperties() {
         List<Property<ProcessGroupInfo>> props = new ArrayList<>();
         props.add(new BeanProperty<>("enabled", "enabled"));
-        props.add(
-                new AbstractProperty<>("prefix") {
+        props.add(new AbstractProperty<>("prefix") {
+
+            @Override
+            public Object getPropertyValue(ProcessGroupInfo item) {
+                Class<?> factoryClass = item.getFactoryClass();
+                Set<String> prefixes = new HashSet<>();
+                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
+                if (pf != null) {
+                    Set<Name> names = pf.getNames();
+                    for (Name name : names) {
+                        prefixes.add(name.getNamespaceURI());
+                    }
+                }
+
+                // if we cannot find a title use the class name
+                if (prefixes.isEmpty()) {
+                    return "";
+                } else {
+                    // build a comma separated list with the prefixes
+                    List<String> pl = new ArrayList<>(prefixes);
+                    Collections.sort(pl);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < pl.size(); i++) {
+                        sb.append(pl.get(i));
+                        if (i < pl.size() - 1) {
+                            sb.append(", ");
+                        }
+                    }
+
+                    return sb.toString();
+                }
+            }
+        });
+        props.add(new AbstractProperty<>("title") {
+
+            @Override
+            public Object getPropertyValue(ProcessGroupInfo item) {
+                Class<?> factoryClass = item.getFactoryClass();
+                String title = null;
+                ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
+                if (pf != null) {
+                    title = pf.getTitle().toString(locale);
+                }
+
+                // if we cannot find a title use the class name
+                if (title == null) {
+                    title = factoryClass.getName();
+                }
+
+                return title;
+            }
+        });
+        props.add(new AbstractProperty<>("summary") {
+
+            @Override
+            public Object getPropertyValue(final ProcessGroupInfo item) {
+                return new LoadableDetachableModel<String>() {
 
                     @Override
-                    public Object getPropertyValue(ProcessGroupInfo item) {
+                    protected String load() {
+                        if (item.getFilteredProcesses().isEmpty()) {
+                            // all processes are enabled
+                            return new ParamResourceModel("WPSAdminPage.filter.all", null).getString();
+                        }
+
                         Class<?> factoryClass = item.getFactoryClass();
-                        Set<String> prefixes = new HashSet<>();
-                        ProcessFactory pf =
-                                GeoServerProcessors.getProcessFactory(factoryClass, false);
+                        ProcessFactory pf = GeoServerProcessors.getProcessFactory(factoryClass, false);
                         if (pf != null) {
-                            Set<Name> names = pf.getNames();
-                            for (Name name : names) {
-                                prefixes.add(name.getNamespaceURI());
+                            Set<Name> names = new HashSet<>(pf.getNames());
+                            int total = names.size();
+                            for (ProcessInfo toRemove : item.getFilteredProcesses()) {
+                                if (!toRemove.isEnabled()) {
+                                    names.remove(toRemove.getName());
+                                }
+                            }
+                            int active = names.size();
+                            if (active != total) {
+                                return new ParamResourceModel("WPSAdminPage.filter.active", null, active, total)
+                                        .getString();
+                            } else {
+                                return new ParamResourceModel("WPSAdminPage.filter.all", null).getString();
                             }
                         }
 
-                        // if we cannot find a title use the class name
-                        if (prefixes.isEmpty()) {
-                            return "";
-                        } else {
-                            // build a comma separated list with the prefixes
-                            List<String> pl = new ArrayList<>(prefixes);
-                            Collections.sort(pl);
-                            StringBuilder sb = new StringBuilder();
-                            for (int i = 0; i < pl.size(); i++) {
-                                sb.append(pl.get(i));
-                                if (i < pl.size() - 1) {
-                                    sb.append(", ");
-                                }
-                            }
-
-                            return sb.toString();
-                        }
+                        return "?";
                     }
-                });
-        props.add(
-                new AbstractProperty<>("title") {
+                };
+            }
+        });
+        props.add(new AbstractProperty<>("roles") {
+            @Override
+            public Object getPropertyValue(ProcessGroupInfo item) {
+                return item.getRoles();
+            }
 
-                    @Override
-                    public Object getPropertyValue(ProcessGroupInfo item) {
-                        Class<?> factoryClass = item.getFactoryClass();
-                        String title = null;
-                        ProcessFactory pf =
-                                GeoServerProcessors.getProcessFactory(factoryClass, false);
-                        if (pf != null) {
-                            title = pf.getTitle().toString(locale);
-                        }
-
-                        // if we cannot find a title use the class name
-                        if (title == null) {
-                            title = factoryClass.getName();
-                        }
-
-                        return title;
-                    }
-                });
-        props.add(
-                new AbstractProperty<>("summary") {
-
-                    @Override
-                    public Object getPropertyValue(final ProcessGroupInfo item) {
-                        return new LoadableDetachableModel<String>() {
-
-                            @Override
-                            protected String load() {
-                                if (item.getFilteredProcesses().isEmpty()) {
-                                    // all processes are enabled
-                                    return new ParamResourceModel("WPSAdminPage.filter.all", null)
-                                            .getString();
-                                }
-
-                                Class<?> factoryClass = item.getFactoryClass();
-                                ProcessFactory pf =
-                                        GeoServerProcessors.getProcessFactory(factoryClass, false);
-                                if (pf != null) {
-                                    Set<Name> names = new HashSet<>(pf.getNames());
-                                    int total = names.size();
-                                    for (ProcessInfo toRemove : item.getFilteredProcesses()) {
-                                        if (!toRemove.isEnabled()) {
-                                            names.remove(toRemove.getName());
-                                        }
-                                    }
-                                    int active = names.size();
-                                    if (active != total) {
-                                        return new ParamResourceModel(
-                                                        "WPSAdminPage.filter.active",
-                                                        null,
-                                                        active,
-                                                        total)
-                                                .getString();
-                                    } else {
-                                        return new ParamResourceModel(
-                                                        "WPSAdminPage.filter.all", null)
-                                                .getString();
-                                    }
-                                }
-
-                                return "?";
-                            }
-                        };
-                    }
-                });
-        props.add(
-                new AbstractProperty<>("roles") {
-                    @Override
-                    public Object getPropertyValue(ProcessGroupInfo item) {
-                        return item.getRoles();
-                    }
-
-                    @Override
-                    public IModel getModel(IModel itemModel) {
-                        return new PropertyModel<>(itemModel, "roles");
-                    }
-                });
+            @Override
+            public IModel getModel(IModel itemModel) {
+                return new PropertyModel<>(itemModel, "roles");
+            }
+        });
         props.add(new PropertyPlaceholder<>("edit"));
 
         return props;

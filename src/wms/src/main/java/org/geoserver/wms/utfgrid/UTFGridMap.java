@@ -113,11 +113,10 @@ public class UTFGridMap extends RawMap {
     }
 
     /**
-     * Writes the grid, and maps the original values into a compact sequence of keys (the original
-     * values might be sparse due to features being fully overwritten by other features)
+     * Writes the grid, and maps the original values into a compact sequence of keys (the original values might be
+     * sparse due to features being fully overwritten by other features)
      */
-    private List<UTFGridEntry> writeGrid(
-            PrintWriter pw, RenderedImage image, UTFGridEntries entries) {
+    private List<UTFGridEntry> writeGrid(PrintWriter pw, RenderedImage image, UTFGridEntries entries) {
         Map<Integer, UTFGridEntry> keyToFeature = entries.getEntryMap();
         List<UTFGridEntry> result = new ArrayList<>();
 
@@ -136,13 +135,12 @@ public class UTFGridMap extends RawMap {
                 } else {
                     UTFGridEntry entry = keyToFeature.get(pixel);
                     if (entry == null) {
-                        throw new RuntimeException(
-                                "Could not find entry for pixel value "
-                                        + pixel
-                                        + ". This normally means there is some color altering "
-                                        + "option at work "
-                                        + "that the UTFGrid code failed to remove, like opacity, "
-                                        + "blending and the like");
+                        throw new RuntimeException("Could not find entry for pixel value "
+                                + pixel
+                                + ". This normally means there is some color altering "
+                                + "option at work "
+                                + "that the UTFGrid code failed to remove, like opacity, "
+                                + "blending and the like");
                     }
                     int entryKey = entry.getKey();
                     if (entryKey == -1) {

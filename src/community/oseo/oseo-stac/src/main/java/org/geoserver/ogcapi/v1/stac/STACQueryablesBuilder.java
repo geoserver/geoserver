@@ -104,27 +104,22 @@ public class STACQueryablesBuilder {
         Map<String, Schema> properties = this.queryables.getProperties();
         if (features != null) {
             Set<String> preconfiguredQueryables = getPreconfiguredQueryables();
-            BiConsumer<String, DynamicValueBuilder> collector =
-                    (path, vb) -> {
-                        if (SKIP_PROPERTIES.contains(path)) return;
-                        // skip property if not among the preconfigured ones
-                        if (preconfiguredQueryables != null
-                                && !preconfiguredQueryables.contains(path)) return;
-                        properties.put(path, getSchema(vb));
-                    };
+            BiConsumer<String, DynamicValueBuilder> collector = (path, vb) -> {
+                if (SKIP_PROPERTIES.contains(path)) return;
+                // skip property if not among the preconfigured ones
+                if (preconfiguredQueryables != null && !preconfiguredQueryables.contains(path)) return;
+                properties.put(path, getSchema(vb));
+            };
 
             // lookup the queryables among the properties
             AbstractTemplateBuilder builder = lookupBuilder(features, "properties");
             if (builder != null) {
-                TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(builder, sampleFeature, collector);
+                TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(builder, sampleFeature, collector);
                 visitor.visit();
             }
             // if any pre-configured queryable was missed, look at the top level propeties too
-            if (preconfiguredQueryables != null
-                    && properties.size() < preconfiguredQueryables.size()) {
-                TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(features, sampleFeature, collector);
+            if (preconfiguredQueryables != null && properties.size() < preconfiguredQueryables.size()) {
+                TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(features, sampleFeature, collector);
                 visitor.visit();
             }
         }
@@ -148,9 +143,9 @@ public class STACQueryablesBuilder {
         // if there is a collection, then we use the pre-configured ones only if
         // there is a setting for them, otherwise return all of them, skipping the global ones too
         if (collection != null) {
-            Optional<String[]> collectionQueryables =
-                    Optional.ofNullable(collection.getProperty(DEFINED_QUERYABLES_PROPERTY))
-                            .map(p -> (String[]) p.getValue());
+            Optional<String[]> collectionQueryables = Optional.ofNullable(
+                            collection.getProperty(DEFINED_QUERYABLES_PROPERTY))
+                    .map(p -> (String[]) p.getValue());
             if (collectionQueryables.isPresent()) {
                 if (result == null) result = new LinkedHashSet<>();
                 result.addAll(Arrays.asList(collectionQueryables.get()));
@@ -163,8 +158,7 @@ public class STACQueryablesBuilder {
     }
 
     /**
-     * Returns a map between the path names used for queryables, and the expression backing them in
-     * the database
+     * Returns a map between the path names used for queryables, and the expression backing them in the database
      *
      * @return
      * @throws IOException
@@ -174,23 +168,20 @@ public class STACQueryablesBuilder {
         Map<String, Expression> expressions = new HashMap<>();
         if (features != null) {
             Set<String> preconfigured = getPreconfiguredQueryables();
-            BiConsumer<String, DynamicValueBuilder> collector =
-                    (path, vb) -> {
-                        if (SKIP_PROPERTIES.contains(path)) return;
-                        if (preconfigured != null && !preconfigured.contains(path)) return;
-                        expressions.put(path, vb.getXpath() == null ? vb.getCql() : vb.getXpath());
-                    };
+            BiConsumer<String, DynamicValueBuilder> collector = (path, vb) -> {
+                if (SKIP_PROPERTIES.contains(path)) return;
+                if (preconfigured != null && !preconfigured.contains(path)) return;
+                expressions.put(path, vb.getXpath() == null ? vb.getCql() : vb.getXpath());
+            };
 
             AbstractTemplateBuilder properties = lookupBuilder(features, "properties");
             if (properties != null) {
-                TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(properties, sampleFeature, collector);
+                TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(properties, sampleFeature, collector);
                 visitor.visit();
             }
             // if missing queryables, look up the top level as well
             if (preconfigured != null && preconfigured.size() > expressions.size()) {
-                TemplatePropertyVisitor visitor =
-                        new TemplatePropertyVisitor(features, sampleFeature, collector);
+                TemplatePropertyVisitor visitor = new TemplatePropertyVisitor(features, sampleFeature, collector);
                 visitor.visit();
             }
         }

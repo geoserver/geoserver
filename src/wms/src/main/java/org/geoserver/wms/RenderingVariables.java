@@ -20,10 +20,7 @@ public class RenderingVariables {
     static final Logger LOGGER = Logging.getLogger(RenderingVariables.class);
     /** The WMS GetMap BBOX, as a {@link org.geotools.geometry.jts.ReferencedEnvelope} */
     public static final String WMS_BBOX = "wms_bbox";
-    /**
-     * The GetMap SRS, as a {@link org.geotools.api.referencing.crs.CoordinateReferenceSystem}
-     * object
-     */
+    /** The GetMap SRS, as a {@link org.geotools.api.referencing.crs.CoordinateReferenceSystem} object */
     private static final String WMS_SRS = "wms_srs";
     /** The GetMap width, as an {@link Integer} */
     private static final String WMS_WIDTH = "wms_width";
@@ -35,8 +32,7 @@ public class RenderingVariables {
     public static void setupEnvironmentVariables(WMSMapContent mapContent) {
         // setup some SLD variable substitution environment used by rendering transformations
         EnvFunction.setLocalValue(WMS_BBOX, mapContent.getRenderingArea());
-        EnvFunction.setLocalValue(
-                "wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
+        EnvFunction.setLocalValue("wms_crs", mapContent.getRenderingArea().getCoordinateReferenceSystem());
         EnvFunction.setLocalValue(WMS_SRS, mapContent.getRequest().getSRS());
         EnvFunction.setLocalValue(WMS_WIDTH, mapContent.getMapWidth());
         EnvFunction.setLocalValue(WMS_HEIGHT, mapContent.getMapHeight());

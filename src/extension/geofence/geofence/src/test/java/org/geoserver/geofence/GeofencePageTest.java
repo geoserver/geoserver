@@ -33,11 +33,8 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
 
         // get the beans we use for testing
-        configurer =
-                (GeoFencePropertyPlaceholderConfigurer)
-                        applicationContext.getBean("geofence-configurer");
-        configurer.setLocation(
-                new UrlResource(this.getClass().getResource("/test-config.properties")));
+        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 
     @Before
@@ -95,8 +92,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testErrorWrongURL() {
         @SuppressWarnings("unchecked")
-        TextField<String> servicesUrl =
-                (TextField<String>) tester.getComponentFromLastRenderedPage("form:servicesUrl");
+        TextField<String> servicesUrl = (TextField<String>) tester.getComponentFromLastRenderedPage("form:servicesUrl");
         servicesUrl.setDefaultModel(new Model<>("fakeurl"));
 
         tester.clickLink("form:test", true);
@@ -127,9 +123,7 @@ public class GeofencePageTest extends GeoServerWicketTestSupport {
     @Test
     public void testInvalidateCache() {
         tester.clickLink("form:invalidate", true);
-        String success =
-                new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated")
-                        .getObject();
+        String success = new StringResourceModel(GeofencePage.class.getSimpleName() + ".cacheInvalidated").getObject();
         tester.assertInfoMessages(new String[] {success});
     }
 }

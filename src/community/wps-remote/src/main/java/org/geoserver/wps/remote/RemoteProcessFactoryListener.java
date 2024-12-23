@@ -7,22 +7,21 @@ package org.geoserver.wps.remote;
 import org.geotools.api.feature.type.Name;
 
 /**
- * Interface allowing a {@link RemoteProcessFactory} instance to listen to the {@link
- * RemoteProcessClient} messages.
+ * Interface allowing a {@link RemoteProcessFactory} instance to listen to the {@link RemoteProcessClient} messages.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
 public interface RemoteProcessFactoryListener {
 
     /**
-     * Registers a new {@link RemoteProcess} upon a new remote service presentation; from now on a
-     * new WPS Process will be available
+     * Registers a new {@link RemoteProcess} upon a new remote service presentation; from now on a new WPS Process will
+     * be available
      */
     public void registerProcess(RemoteServiceDescriptor serviceDescriptor);
 
     /**
-     * De-registers a {@link RemoteProcess} upon a {@link RemoteProcessClient} request; the WPS
-     * Process won't be available anymore
+     * De-registers a {@link RemoteProcess} upon a {@link RemoteProcessClient} request; the WPS Process won't be
+     * available anymore
      */
     public void deregisterProcess(Name name);
 }

@@ -50,19 +50,14 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         if (debugMode) config.notifier(new ConsoleNotifier(debugMode));
         wmsService = new WireMockServer(config);
         wmsService.start();
-        capabilities =
-                "http://localhost:"
-                        + wmsService.port()
-                        + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
-        wmsService.stubFor(
-                WireMock.get(
-                                urlEqualTo(
-                                        "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBodyFile("caps130.xml")));
+        capabilities = "http://localhost:"
+                + wmsService.port()
+                + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
+        wmsService.stubFor(WireMock.get(urlEqualTo("/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBodyFile("caps130.xml")));
     }
 
     @AfterClass
@@ -126,8 +121,7 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "foo");
         form.setValue("capabilitiesURL:border:border_body:paramValue", "http://foo");
@@ -168,8 +162,7 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "bar");
         form.setValue("capabilitiesURL:border:border_body:paramValue", url.toExternalForm());
@@ -202,22 +195,17 @@ public class WMSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "fooAutoDisable");
         form.setValue("capabilitiesURL:border:border_body:paramValue", capabilities);
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "form:disableOnConnFailurePanel:paramValue");
+        Component component = tester.getComponentFromLastRenderedPage("form:disableOnConnFailurePanel:paramValue");
         CheckBox checkBox = (CheckBox) component;
         assertFalse(Boolean.valueOf(checkBox.getInput()).booleanValue());
         form.setValue("disableOnConnFailurePanel:paramValue", true);
         form.submit("save");
         tester.assertNoErrorMessage();
         final Catalog catalog = getCatalog();
-        assertTrue(
-                catalog.getStoreByName("fooAutoDisable", WMSStoreInfo.class)
-                        .isDisableOnConnFailure());
+        assertTrue(catalog.getStoreByName("fooAutoDisable", WMSStoreInfo.class).isDisableOnConnFailure());
     }
 }

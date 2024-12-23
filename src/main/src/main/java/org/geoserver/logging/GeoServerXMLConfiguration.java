@@ -18,8 +18,8 @@ import org.geoserver.platform.resource.Paths;
 import org.geotools.util.logging.Log4J2Logger;
 
 /**
- * GeoServerXMLConfiguration builds on Log4J XmlConfiguration, adding post-processing to adjust
- * configuration (if needed) prior to use.
+ * GeoServerXMLConfiguration builds on Log4J XmlConfiguration, adding post-processing to adjust configuration (if
+ * needed) prior to use.
  */
 public class GeoServerXMLConfiguration extends XmlConfiguration {
 
@@ -51,21 +51,13 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     protected static final String LOGGER_NODE = "Logger";
 
     public static final String ROOT_NODE = "Root";
-    /**
-     * Logfile location, updated by {@link LoggingInitializer} in response to configuration changes.
-     */
+    /** Logfile location, updated by {@link LoggingInitializer} in response to configuration changes. */
     String loggingLocation = null;
 
-    /**
-     * Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration
-     * changes.
-     */
+    /** Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration changes. */
     boolean suppressFileLogging = false;
 
-    /**
-     * Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration
-     * changes.
-     */
+    /** Logfile processing hint, updated by {@link LoggingInitializer} in response to configuration changes. */
     boolean suppressStdOutLogging = false;
 
     public GeoServerXMLConfiguration(LoggerContext loggerContext, ConfigurationSource source) {
@@ -92,10 +84,8 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     protected void stripGeoServerLogFile(Node node) {
         if (isType(node, APPENDERS_NODE)) {
             node.getChildren()
-                    .removeIf(
-                            appender ->
-                                    isGeoServerLogFile(appender, ROLLING_FILE_NODE)
-                                            || isGeoServerLogFile(appender, FILE_APPENDER_NODE));
+                    .removeIf(appender -> isGeoServerLogFile(appender, ROLLING_FILE_NODE)
+                            || isGeoServerLogFile(appender, FILE_APPENDER_NODE));
         }
         if (isType(node, LOGGERS_NODE)) {
             for (final Node logger : node.getChildren()) {
@@ -122,8 +112,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     }
 
     /**
-     * Check node name (xml element and attribute names are not case sensitive, and have not been
-     * corrected yet).
+     * Check node name (xml element and attribute names are not case sensitive, and have not been corrected yet).
      *
      * @param node config node
      * @param type node type
@@ -134,8 +123,8 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     }
 
     /**
-     * Get value for named attribute (xml element and attribute names are not case sensitive, and
-     * have not been corrected yet).
+     * Get value for named attribute (xml element and attribute names are not case sensitive, and have not been
+     * corrected yet).
      *
      * @param node Config node
      * @param name Attribute name
@@ -153,8 +142,8 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
     }
 
     /**
-     * Put value for named attribute (xml element and attribute names are not case sensitive, and
-     * have not been corrected yet).
+     * Put value for named attribute (xml element and attribute names are not case sensitive, and have not been
+     * corrected yet).
      *
      * @param node Config node
      * @param name Attribute name
@@ -211,8 +200,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         String fileName = fileName();
         String fileNameTemplate = attributeGet(node, "fileName");
         if (fileNameTemplate != null) {
-            LOGGER.debug(
-                    "Preconfiguration geoserverlogfile.RollingFile.filename=", fileNameTemplate);
+            LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filename=", fileNameTemplate);
 
             String path = applyPathTemplate(fileName, fileNameTemplate);
             attributePut(node, "fileName", path);
@@ -220,9 +208,7 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
         }
         String filePatternTemplate = attributeGet(node, "filePattern");
         if (filePatternTemplate != null) {
-            LOGGER.debug(
-                    "Preconfiguration geoserverlogfile.RollingFile.filePattern=",
-                    filePatternTemplate);
+            LOGGER.debug("Preconfiguration geoserverlogfile.RollingFile.filePattern=", filePatternTemplate);
 
             String pattern = applyPathTemplate(fileName, filePatternTemplate);
             attributePut(node, "filePattern", pattern);
@@ -333,11 +319,10 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             }
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("geoserverlogfile")) {
-                    LOGGER.warn(
-                            "Logger '"
-                                    + loggerConfig.getName()
-                                    + "' includes suppressed 'geoserverlogfile':"
-                                    + loggerConfig.getAppenders().get("geoserverlogfile"));
+                    LOGGER.warn("Logger '"
+                            + loggerConfig.getName()
+                            + "' includes suppressed 'geoserverlogfile':"
+                            + loggerConfig.getAppenders().get("geoserverlogfile"));
                 }
             }
         }
@@ -348,11 +333,10 @@ public class GeoServerXMLConfiguration extends XmlConfiguration {
             }
             for (LoggerConfig loggerConfig : getLoggers().values()) {
                 if (loggerConfig.getAppenders().containsKey("stdout")) {
-                    LOGGER.warn(
-                            "Logger '"
-                                    + loggerConfig.getName()
-                                    + "' includes suppressed 'stdout':"
-                                    + loggerConfig.getAppenders().get("stdout"));
+                    LOGGER.warn("Logger '"
+                            + loggerConfig.getName()
+                            + "' includes suppressed 'stdout':"
+                            + loggerConfig.getAppenders().get("stdout"));
                 }
             }
         }

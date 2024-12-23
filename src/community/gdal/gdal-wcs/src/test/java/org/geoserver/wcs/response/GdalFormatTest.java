@@ -35,8 +35,7 @@ public class GdalFormatTest {
         Assume.assumeTrue(GdalTestUtil.isGdalAvailable());
 
         // the coverage response delegate
-        gdalCovRespDelegate =
-                new GdalCoverageResponseDelegate(new GeoServerImpl(), new GdalWrapperFactory());
+        gdalCovRespDelegate = new GdalCoverageResponseDelegate(new GeoServerImpl(), new GdalWrapperFactory());
         // add default formats
         for (Format format : GdalConfigurator.DEFAULT.getFormats()) {
             gdalCovRespDelegate.addFormat(format);

@@ -39,7 +39,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     private static final Logger LOGGER = Logging.getLogger(MapMLGetFeatureOutputFormat.class);
 
-    @Autowired private Jaxb2Marshaller mapmlMarshaller;
+    @Autowired
+    private Jaxb2Marshaller mapmlMarshaller;
 
     private String base;
     private String path;
@@ -56,16 +57,12 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollectionResponse,
-            OutputStream out,
-            Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollectionResponse, OutputStream out, Operation getFeature)
             throws IOException, ServiceException {
 
         List<FeatureCollection> featureCollections = featureCollectionResponse.getFeatures();
         if (featureCollections.size() != 1) {
-            throw new ServiceException(
-                    "MapML OutputFormat does not support Multiple Feature Type output.");
+            throw new ServiceException("MapML OutputFormat does not support Multiple Feature Type output.");
         }
         FeatureCollection featureCollection = featureCollections.get(0);
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
@@ -83,20 +80,19 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         int numDecimals = this.getNumDecimals(featureCollections, gs, gs.getCatalog());
         boolean forcedDecimal = this.getForcedDecimal(featureCollections, gs, gs.getCatalog());
         boolean padWithZeros = this.getPadWithZeros(featureCollections, gs, gs.getCatalog());
-        Mapml mapml =
-                MapMLFeatureUtil.featureCollectionToMapML(
-                        featureCollection,
-                        layerInfo,
-                        null,
-                        requestCRS,
-                        MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
-                        numDecimals,
-                        forcedDecimal,
-                        padWithZeros,
-                        null,
-                        false,
-                        false,
-                        null);
+        Mapml mapml = MapMLFeatureUtil.featureCollectionToMapML(
+                featureCollection,
+                layerInfo,
+                null,
+                requestCRS,
+                MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
+                numDecimals,
+                forcedDecimal,
+                padWithZeros,
+                null,
+                false,
+                false,
+                null);
 
         // write to output
         OutputStreamWriter osw = new OutputStreamWriter(out, gs.getSettings().getCharset());
@@ -113,20 +109,17 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         URI srsName = null;
         try {
             boolean wfs1 = getFeature.getService().getVersion().toString().startsWith("1");
-            srsName =
-                    wfs1
-                            ? ((QueryTypeImpl)
-                                            ((GetFeatureTypeImpl) getFeature.getParameters()[0])
-                                                    .getQuery()
-                                                    .get(0))
-                                    .getSrsName()
-                            : ((net.opengis.wfs20.impl.QueryTypeImpl)
-                                            ((net.opengis.wfs20.impl.GetFeatureTypeImpl)
-                                                            getFeature.getParameters()[0])
-                                                    .getAbstractQueryExpressionGroup()
-                                                    .get(0)
-                                                    .getValue())
-                                    .getSrsName();
+            srsName = wfs1
+                    ? ((QueryTypeImpl) ((GetFeatureTypeImpl) getFeature.getParameters()[0])
+                                    .getQuery()
+                                    .get(0))
+                            .getSrsName()
+                    : ((net.opengis.wfs20.impl.QueryTypeImpl) ((net.opengis.wfs20.impl.GetFeatureTypeImpl)
+                                            getFeature.getParameters()[0])
+                                    .getAbstractQueryExpressionGroup()
+                                    .get(0)
+                                    .getValue())
+                            .getSrsName();
         } catch (Exception e) {
             LOGGER.warning("Could not get SRS name from Operation: " + e.getMessage());
         }

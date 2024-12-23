@@ -22,10 +22,8 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 @SuppressWarnings("serial")
 public class GroupListProvider extends GeoServerDataProvider<GeoServerUserGroup> {
 
-    public static final Property<GeoServerUserGroup> GROUPNAME =
-            new BeanProperty<>("groupname", "groupname");
-    public static final Property<GeoServerUserGroup> ENABLED =
-            new BeanProperty<>("enabled", "enabled");
+    public static final Property<GeoServerUserGroup> GROUPNAME = new BeanProperty<>("groupname", "groupname");
+    public static final Property<GeoServerUserGroup> ENABLED = new BeanProperty<>("enabled", "enabled");
     protected String userGroupServiceName;
 
     public GroupListProvider(String userGroupServiceName) {
@@ -38,10 +36,7 @@ public class GroupListProvider extends GeoServerDataProvider<GeoServerUserGroup>
         try {
             GeoServerUserGroupService service = null;
             if (userGroupServiceName != null)
-                service =
-                        getApplication()
-                                .getSecurityManager()
-                                .loadUserGroupService(userGroupServiceName);
+                service = getApplication().getSecurityManager().loadUserGroupService(userGroupServiceName);
 
             if (service == null) groups = new TreeSet<>();
             else groups = service.getUserGroups();

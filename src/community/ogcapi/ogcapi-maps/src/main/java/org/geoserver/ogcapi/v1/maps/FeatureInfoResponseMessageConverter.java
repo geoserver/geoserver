@@ -25,8 +25,8 @@ import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
 /**
- * Adapts all output formats able to encode GetFeatureInfo response . Allows to reuse all existing
- * WMS output formats in the OGC Maps API implementation.
+ * Adapts all output formats able to encode GetFeatureInfo response . Allows to reuse all existing WMS output formats in
+ * the OGC Maps API implementation.
  */
 @Component
 public class FeatureInfoResponseMessageConverter
@@ -50,35 +50,31 @@ public class FeatureInfoResponseMessageConverter
     public boolean canWrite(Class<?> aClass, MediaType mediaType) {
         return FeatureInfoResponse.class.isAssignableFrom(aClass)
                 && (mediaType == null
-                        || getSupportedMediaTypes().stream()
-                                .anyMatch(mt -> mt.isCompatibleWith(mediaType)));
+                        || getSupportedMediaTypes().stream().anyMatch(mt -> mt.isCompatibleWith(mediaType)));
     }
 
     @Override
     public List<MediaType> getSupportedMediaTypes() {
         return outputFormats.stream()
-                .map(
-                        of -> {
-                            try {
-                                return MediaType.parseMediaType(of.getContentType());
-                            } catch (InvalidMediaTypeException e) {
-                                return null;
-                            }
-                        })
+                .map(of -> {
+                    try {
+                        return MediaType.parseMediaType(of.getContentType());
+                    } catch (InvalidMediaTypeException e) {
+                        return null;
+                    }
+                })
                 .filter(mt -> mt != null)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public FeatureInfoResponse read(
-            Class<? extends FeatureInfoResponse> aClass, HttpInputMessage httpInputMessage)
+    public FeatureInfoResponse read(Class<? extends FeatureInfoResponse> aClass, HttpInputMessage httpInputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void write(
-            FeatureInfoResponse response, MediaType mediaType, HttpOutputMessage httpOutputMessage)
+    public void write(FeatureInfoResponse response, MediaType mediaType, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
         GetFeatureInfoOutputFormat of =
                 wms.getFeatureInfoOutputFormat(response.getRequest().getInfoFormat());

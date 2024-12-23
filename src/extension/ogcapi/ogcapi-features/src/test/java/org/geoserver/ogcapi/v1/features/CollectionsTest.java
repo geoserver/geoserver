@@ -57,8 +57,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         super.onSetUp(testData);
 
         // customize metadata and set custom CRS too
-        FeatureTypeInfo basicPolygons =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo basicPolygons = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         basicPolygons.setTitle(BASIC_POLYGONS_TITLE);
         basicPolygons.setAbstract(BASIC_POLYGONS_DESCRIPTION);
         basicPolygons.setOverridingServiceSRS(true);
@@ -84,8 +83,7 @@ public class CollectionsTest extends FeaturesTestSupport {
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);
         // not misconfigured yet
-        FeatureTypeInfo misconfigured =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
+        FeatureTypeInfo misconfigured = getCatalog().getFeatureTypeByName(getLayerId(MockData.BUILDINGS));
 
         DocumentContext json = getAsJSONPath("ogc/features/v1/collections", 200);
         int expected = getCatalog().getFeatureTypes().size();
@@ -105,12 +103,9 @@ public class CollectionsTest extends FeaturesTestSupport {
 
         // check we have the expected number of links and they all use the right "rel"
         // relation
-        Collection<MediaType> formats =
-                GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
-                        .getProducibleMediaTypes(FeaturesResponse.class, true);
-        assertThat(
-                formats.size(),
-                lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
+        Collection<MediaType> formats = GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
+                .getProducibleMediaTypes(FeaturesResponse.class, true);
+        assertThat(formats.size(), lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
         for (MediaType format : formats) {
             // check title and rel.
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
@@ -120,10 +115,7 @@ public class CollectionsTest extends FeaturesTestSupport {
 
         // check the global crs list
         List<String> crs = json.read("crs");
-        assertThat(
-                crs.size(),
-                Matchers.greaterThan(
-                        5000)); // lots... the list is growing, hopefully will stay above 5k
+        assertThat(crs.size(), Matchers.greaterThan(5000)); // lots... the list is growing, hopefully will stay above 5k
         assertThat(
                 crs,
                 hasItems(
@@ -144,20 +136,18 @@ public class CollectionsTest extends FeaturesTestSupport {
         // check one that is specific instead
         assertThat(
                 json.read("collections[?(@.id=='cite:BasicPolygons')].crs"),
-                contains(
-                        Arrays.asList(
-                                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                                "http://www.opengis.net/def/crs/EPSG/0/3857",
-                                "http://www.opengis.net/def/crs/EPSG/0/32632")));
+                contains(Arrays.asList(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/EPSG/0/32632")));
     }
 
     @Test
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/ogc/features/v1/collections", 200);
-        long expected =
-                getCatalog().getFeatureTypes().stream()
-                        .filter(ft -> "cdf".equals(ft.getStore().getWorkspace().getName()))
-                        .count();
+        long expected = getCatalog().getFeatureTypes().stream()
+                .filter(ft -> "cdf".equals(ft.getStore().getWorkspace().getName()))
+                .count();
         // check the filtering
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
@@ -195,12 +185,12 @@ public class CollectionsTest extends FeaturesTestSupport {
         }
 
         // go and check a specific collection title and description
-        FeatureTypeInfo basicPolygons =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo basicPolygons = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         String basicPolygonsName = basicPolygons.prefixedName();
         String basicPolygonsHtmlId = basicPolygonsName.replace(":", "__");
         assertEquals(
-                BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsHtmlId + "_title").text());
+                BASIC_POLYGONS_TITLE,
+                document.select("#" + basicPolygonsHtmlId + "_title").text());
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsHtmlId + "_description").text());
@@ -309,14 +299,10 @@ public class CollectionsTest extends FeaturesTestSupport {
     public void testCustomLinks() throws Exception {
         GeoServerInfo gsi = getGeoServer().getGlobal();
         LinkInfoImpl link1 =
-                new LinkInfoImpl(
-                        "enclosure",
-                        "application/geopackage+sqlite3",
-                        "http://example.com/fullDataset.gpkg");
+                new LinkInfoImpl("enclosure", "application/geopackage+sqlite3", "http://example.com/fullDataset.gpkg");
         LinkInfoImpl link2 = new LinkInfoImpl("license", "text/html", "http://example.com/license");
         link2.setService("Coverages");
-        ArrayList<LinkInfo> links =
-                Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
+        ArrayList<LinkInfo> links = Stream.of(link1, link2).collect(Collectors.toCollection(ArrayList::new));
         gsi.getSettings().getMetadata().put(LinkInfo.LINKS_METADATA_KEY, links);
         getGeoServer().save(gsi);
 

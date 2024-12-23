@@ -14,8 +14,7 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class PasswordPolicyPanelInfo
-        extends SecurityNamedServicePanelInfo<PasswordPolicyConfig, PasswordPolicyPanel> {
+public class PasswordPolicyPanelInfo extends SecurityNamedServicePanelInfo<PasswordPolicyConfig, PasswordPolicyPanel> {
 
     public PasswordPolicyPanelInfo() {
         setComponentClass(PasswordPolicyPanel.class);

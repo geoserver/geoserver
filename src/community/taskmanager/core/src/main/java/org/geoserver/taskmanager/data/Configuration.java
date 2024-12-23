@@ -8,8 +8,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 /**
- * A configuration exists of tasks which are somehow related to each other and share attributes
- * which are used as task parameters.
+ * A configuration exists of tasks which are somehow related to each other and share attributes which are used as task
+ * parameters.
  *
  * @author Niels Charlier
  */

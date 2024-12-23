@@ -9,8 +9,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * Tests whether the use of special characters in a mapping name can be used for feature chaining
- * (using quotes in LinkElement).
+ * Tests whether the use of special characters in a mapping name can be used for feature chaining (using quotes in
+ * LinkElement).
  *
  * @author Niels Charlier, Curtin University of Technology
  */
@@ -21,10 +21,7 @@ public class MappingNameTest extends AbstractAppSchemaTestSupport {
         return new MappingNameMockData();
     }
 
-    /**
-     * Test whether GetFeature returns a FeatureCollection with the right content based on the
-     * feature chaining.
-     */
+    /** Test whether GetFeature returns a FeatureCollection with the right content based on the feature chaining. */
     @Test
     public void testGetFeature() {
         Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typeName=gsml:MappedFeature");

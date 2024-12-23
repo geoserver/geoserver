@@ -123,14 +123,12 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public <T extends StoreInfo> T getStoreByName(
-            String workspaceName, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(String workspaceName, String name, Class<T> clazz) {
         return delegate.getStoreByName(workspaceName, name, clazz);
     }
 
     @Override
-    public <T extends StoreInfo> T getStoreByName(
-            WorkspaceInfo workspace, String name, Class<T> clazz) {
+    public <T extends StoreInfo> T getStoreByName(WorkspaceInfo workspace, String name, Class<T> clazz) {
         return delegate.getStoreByName(workspace, name, clazz);
     }
 
@@ -140,14 +138,12 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(
-            WorkspaceInfo workspace, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(WorkspaceInfo workspace, Class<T> clazz) {
         return delegate.getStoresByWorkspace(workspace, clazz);
     }
 
     @Override
-    public <T extends StoreInfo> List<T> getStoresByWorkspace(
-            String workspaceName, Class<T> clazz) {
+    public <T extends StoreInfo> List<T> getStoresByWorkspace(String workspaceName, Class<T> clazz) {
         return delegate.getStoresByWorkspace(workspaceName, clazz);
     }
 
@@ -290,8 +286,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public <T extends ResourceInfo> T getResourceByName(
-            NamespaceInfo ns, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByName(NamespaceInfo ns, String name, Class<T> clazz) {
         return delegate.getResourceByName(ns, name, clazz);
     }
 
@@ -311,20 +306,17 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            NamespaceInfo namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace, Class<T> clazz) {
         return delegate.getResourcesByNamespace(namespace, clazz);
     }
 
     @Override
-    public <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            String namespace, Class<T> clazz) {
+    public <T extends ResourceInfo> List<T> getResourcesByNamespace(String namespace, Class<T> clazz) {
         return delegate.getResourcesByNamespace(namespace, clazz);
     }
 
     @Override
-    public <T extends ResourceInfo> T getResourceByStore(
-            StoreInfo store, String name, Class<T> clazz) {
+    public <T extends ResourceInfo> T getResourceByStore(StoreInfo store, String name, Class<T> clazz) {
         return delegate.getResourceByStore(store, name, clazz);
     }
 
@@ -787,19 +779,13 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
 
     @Override
     public void fireModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         delegate.fireModified(object, propertyNames, oldValues, newValues);
     }
 
     @Override
     public void firePostModified(
-            CatalogInfo object,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            CatalogInfo object, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         delegate.firePostModified(object, propertyNames, oldValues, newValues);
     }
 
@@ -827,8 +813,7 @@ public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> impleme
     }
 
     @Override
-    public <T extends CatalogInfo> T get(Class<T> type, Filter filter)
-            throws IllegalArgumentException {
+    public <T extends CatalogInfo> T get(Class<T> type, Filter filter) throws IllegalArgumentException {
         return delegate.get(type, filter);
     }
 

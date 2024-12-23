@@ -21,8 +21,7 @@ public class DropStoredQueryKvpRequestReader extends WFSKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         EObject obj = (EObject) super.read(request, kvp, rawKvp);
 
         // handle storedQuery_id parameter

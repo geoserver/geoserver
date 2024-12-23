@@ -8,8 +8,7 @@ package org.geoserver.security.xml;
 
 import org.geoserver.security.config.SecurityUserGroupServiceConfig;
 
-public class XMLUserGroupServiceConfig extends XMLSecurityServiceConfig
-        implements SecurityUserGroupServiceConfig {
+public class XMLUserGroupServiceConfig extends XMLSecurityServiceConfig implements SecurityUserGroupServiceConfig {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

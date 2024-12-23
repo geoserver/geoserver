@@ -55,11 +55,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
             return new String[0];
         }
         String schemaLocation =
-                buildURL(
-                        schemaBaseURL,
-                        "schemas/wcseo/1.0/wcsEOGetCapabilites.xsd",
-                        null,
-                        URLType.RESOURCE);
+                buildURL(schemaBaseURL, "schemas/wcseo/1.0/wcsEOGetCapabilites.xsd", null, URLType.RESOURCE);
         return new String[] {WCSEOMetadata.NAMESPACE, schemaLocation};
     }
 
@@ -72,9 +68,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
 
     @Override
     public void encodeExtendedOperations(
-            org.geoserver.ExtendedCapabilitiesProvider.Translator tx,
-            WCSInfo wcs,
-            GetCapabilitiesType request)
+            org.geoserver.ExtendedCapabilitiesProvider.Translator tx, WCSInfo wcs, GetCapabilitiesType request)
             throws IOException {
         if (!isEarthObservationEnabled()) {
             return;
@@ -85,9 +79,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
         tx.start("ows:Operation", attributes);
 
         final String url =
-                appendQueryString(
-                        buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE),
-                        "");
+                appendQueryString(buildURL(request.getBaseUrl(), "wcs", null, URLMangler.URLType.SERVICE), "");
 
         tx.start("ows:DCP");
         tx.start("ows:HTTP");
@@ -107,8 +99,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
 
         tx.end("ows:Operation");
 
-        Integer defaultCount =
-                wcs.getMetadata().get(WCSEOMetadata.COUNT_DEFAULT.key, Integer.class);
+        Integer defaultCount = wcs.getMetadata().get(WCSEOMetadata.COUNT_DEFAULT.key, Integer.class);
         if (defaultCount != null) {
             tx.start("ows:Constraint", atts("name", "CountDefault"));
             element(tx, "ows:NoValues", null, null);
@@ -142,8 +133,7 @@ public class WCSEOExtendedCapabilitiesProvider extends WCSExtendedCapabilitiesPr
                 String datasetId = codec.getDatasetName(ci);
                 element(tx, "wcseo:DatasetSeriesId", datasetId, null);
 
-                GridCoverage2DReader reader =
-                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
+                GridCoverage2DReader reader = (GridCoverage2DReader) ci.getGridCoverageReader(null, null);
 
                 WCSDimensionsHelper dimensionsHelper = new WCSDimensionsHelper(time, reader, null);
                 tx.start("gml:TimePeriod", atts("gml:id", datasetId + "__timeperiod"));

@@ -20,8 +20,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
-        extends AbstractSecurityPage {
+public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig> extends AbstractSecurityPage {
 
     /** logger */
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.web.security");
@@ -51,12 +50,10 @@ public class SecurityNamedServicePage<T extends SecurityNamedServiceConfig>
             String id, SecurityNamedServicePanelInfo panelInfo, IModel<T> config) {
         try {
             @SuppressWarnings("unchecked")
-            SecurityNamedServicePanel<T> panel =
-                    (SecurityNamedServicePanel)
-                            panelInfo
-                                    .getComponentClass()
-                                    .getConstructor(String.class, IModel.class)
-                                    .newInstance(id, config);
+            SecurityNamedServicePanel<T> panel = (SecurityNamedServicePanel) panelInfo
+                    .getComponentClass()
+                    .getConstructor(String.class, IModel.class)
+                    .newInstance(id, config);
             return panel;
         } catch (Exception e) {
             throw new WicketRuntimeException(e);

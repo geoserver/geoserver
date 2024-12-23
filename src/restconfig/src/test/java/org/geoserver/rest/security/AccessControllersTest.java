@@ -28,8 +28,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 /**
- * Test for {@link DataAccessController},{@link ServiceAccessController} and {@link
- * RestAccessController}
+ * Test for {@link DataAccessController},{@link ServiceAccessController} and {@link RestAccessController}
  *
  * @author christian
  */
@@ -97,14 +96,13 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
                 dom.getDocumentElement()
                         .getElementsByTagName(RuleMapXMLConverter.RULEELEMENT)
                         .getLength());
-        String pattern =
-                "/"
-                        + RuleMapXMLConverter.ROOTELEMENT
-                        + "/"
-                        + RuleMapXMLConverter.RULEELEMENT
-                        + "[@"
-                        + RuleMapXMLConverter.RESOURCEATTR
-                        + "='XXX']";
+        String pattern = "/"
+                + RuleMapXMLConverter.ROOTELEMENT
+                + "/"
+                + RuleMapXMLConverter.RULEELEMENT
+                + "[@"
+                + RuleMapXMLConverter.RESOURCEATTR
+                + "='XXX']";
         for (String[] rule : rules) {
             String exp = pattern.replace("XXX", rule[0]);
             String roles = xp.evaluate(exp, dom);
@@ -189,15 +187,20 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
 
         String[][] layerRules = getDefaultLayerRules();
 
-        assertEquals(200, deleteAsServletResponse(DATA_URI + "/" + layerRules[0][0]).getStatus());
-        assertEquals(404, deleteAsServletResponse(DATA_URI + "/" + layerRules[0][0]).getStatus());
+        assertEquals(
+                200, deleteAsServletResponse(DATA_URI + "/" + layerRules[0][0]).getStatus());
+        assertEquals(
+                404, deleteAsServletResponse(DATA_URI + "/" + layerRules[0][0]).getStatus());
 
-        assertEquals(404, deleteAsServletResponse(SERVICE_URI + "/wfs.getFeature").getStatus());
+        assertEquals(
+                404, deleteAsServletResponse(SERVICE_URI + "/wfs.getFeature").getStatus());
 
         String[][] restRules = getDefaultRestRulesForDelete();
 
-        assertEquals(200, deleteAsServletResponse(REST_URI + "/" + restRules[0][0]).getStatus());
-        assertEquals(404, deleteAsServletResponse(REST_URI + "/" + restRules[0][0]).getStatus());
+        assertEquals(
+                200, deleteAsServletResponse(REST_URI + "/" + restRules[0][0]).getStatus());
+        assertEquals(
+                404, deleteAsServletResponse(REST_URI + "/" + restRules[0][0]).getStatus());
     }
 
     @Test
@@ -259,10 +262,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         checkXMLResponse(dom, rules);
 
         // add
-        toBeAdded2 =
-                new String[][] {
-                    {"/myworkspace/**:PUT,POST", TEST_ROLE1}, {"/myworkspace/**:GET", TEST_ROLELIST}
-                };
+        toBeAdded2 = new String[][] {{"/myworkspace/**:PUT,POST", TEST_ROLE1}, {"/myworkspace/**:GET", TEST_ROLELIST}};
         expected = new String[][] {rules[0], rules[1], toBeAdded2[0], toBeAdded2[1]};
         assertEquals(
                 200,
@@ -332,10 +332,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         checkJSONResponse(json, rules);
 
         // add
-        toBeAdded2 =
-                new String[][] {
-                    {"/myworkspace/**:PUT,POST", TEST_ROLE1}, {"/myworkspace/**:GET", TEST_ROLELIST}
-                };
+        toBeAdded2 = new String[][] {{"/myworkspace/**:PUT,POST", TEST_ROLE1}, {"/myworkspace/**:GET", TEST_ROLELIST}};
         expected = new String[][] {rules[0], rules[1], toBeAdded2[0], toBeAdded2[1]};
         assertEquals(
                 200,
@@ -374,10 +371,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         // service rules
 
         rules = getDefaultServiceRules();
-        toBeModified2 =
-                new String[][] {
-                    {"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}
-                }; // conflict
+        toBeModified2 = new String[][] {{"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}}; // conflict
         assertEquals(
                 409,
                 putAsServletResponse(SERVICE_URI_JSON, createJSONBody(toBeModified2), "text/json")
@@ -388,15 +382,13 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
 
         assertEquals(
                 200,
-                putAsServletResponse(
-                                SERVICE_URI_JSON, createJSONBody(new String[][] {}), "text/json")
+                putAsServletResponse(SERVICE_URI_JSON, createJSONBody(new String[][] {}), "text/json")
                         .getStatus());
 
         // REST rules
 
         rules = getDefaultRestRules();
-        toBeModified =
-                new String[][] {rules[0], {"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
+        toBeModified = new String[][] {rules[0], {"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
         assertEquals(
                 409,
                 putAsServletResponse(REST_URI_JSON, createJSONBody(toBeModified), "text/json")
@@ -445,10 +437,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         // service rules
 
         rules = getDefaultServiceRules();
-        toBeModified2 =
-                new String[][] {
-                    {"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}
-                }; // conflict
+        toBeModified2 = new String[][] {{"ws.*", TEST_ROLE1}, {"ws2.GetFeature", TEST_ROLELIST}}; // conflict
         assertEquals(
                 409,
                 putAsServletResponse(SERVICE_URI_XML, createXMLBody(toBeModified2), "text/xml")
@@ -465,8 +454,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         // REST rules
 
         rules = getDefaultRestRules();
-        toBeModified =
-                new String[][] {rules[0], {"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
+        toBeModified = new String[][] {rules[0], {"/myworkspace/**:GET", TEST_ROLELIST}}; // conflict
         assertEquals(
                 409,
                 putAsServletResponse(REST_URI_XML, createXMLBody(toBeModified), "text/xml")
@@ -495,7 +483,8 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
 
         Document dom = getAsDOM(CATALOG_URI_XML);
         print(dom);
-        assertEquals(CatalogModeController.XML_ROOT_ELEM, dom.getDocumentElement().getNodeName());
+        assertEquals(
+                CatalogModeController.XML_ROOT_ELEM, dom.getDocumentElement().getNodeName());
         NodeList nl = dom.getElementsByTagName(CatalogModeController.MODE_ELEMENT);
         assertEquals(1, nl.getLength());
         mode = nl.item(0).getTextContent();
@@ -513,17 +502,11 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
                         .getStatus());
         assertEquals(
                 422,
-                putAsServletResponse(
-                                CATALOG_URI_JSON,
-                                MessageFormat.format(jsonTemplate, "ABC"),
-                                "text/json")
+                putAsServletResponse(CATALOG_URI_JSON, MessageFormat.format(jsonTemplate, "ABC"), "text/json")
                         .getStatus());
         assertEquals(
                 422,
-                putAsServletResponse(
-                                CATALOG_URI_XML,
-                                MessageFormat.format(xmlTemplate, "ABC"),
-                                "text/xml")
+                putAsServletResponse(CATALOG_URI_XML, MessageFormat.format(xmlTemplate, "ABC"), "text/xml")
                         .getStatus());
 
         assertEquals(
@@ -718,9 +701,12 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         assertEquals(403, getAsServletResponse(CATALOG_URI_XML).getStatus());
         assertEquals(403, getAsServletResponse(CATALOG_URI_JSON).getStatus());
         assertEquals(
-                403, putAsServletResponse(CATALOG_URI_XML, xmlTemplate, "text/xml").getStatus());
+                403,
+                putAsServletResponse(CATALOG_URI_XML, xmlTemplate, "text/xml").getStatus());
         assertEquals(
-                403, putAsServletResponse(CATALOG_URI_JSON, jsonTemplate, "text/json").getStatus());
+                403,
+                putAsServletResponse(CATALOG_URI_JSON, jsonTemplate, "text/json")
+                        .getStatus());
     }
 
     @Test
@@ -737,8 +723,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
         login();
 
         // 1) Test PUT request
-        MockHttpServletResponse response =
-                putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+        MockHttpServletResponse response = putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
         // Expecting 200 OK if reload is successful
         assertEquals(200, response.getStatus());
 
@@ -790,10 +775,9 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
             // We'll do a simple string replacement to remove all <filter>anonymous</filter>.
             // For a more robust approach, parse XML. But here, string replacement is quick.
 
-            String modifiedConfig =
-                    originalConfig.replaceAll(
-                            "<filter>anonymous</filter>", "" // remove the entire line
-                            );
+            String modifiedConfig = originalConfig.replaceAll(
+                    "<filter>anonymous</filter>", "" // remove the entire line
+                    );
 
             // Write the modified XML back to config.xml
             FileUtils.writeStringToFile(configFile, modifiedConfig, "UTF-8");
@@ -801,8 +785,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
             // -----------------------------------------------------------------
             // B) Reload the Security subsystem via /catalog/reload
             // -----------------------------------------------------------------
-            MockHttpServletResponse response =
-                    putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
+            MockHttpServletResponse response = putAsServletResponse(CATALOG_RELOAD_URI, "", "text/plain");
             assertEquals(200, response.getStatus());
 
             // We’ve now removed anonymous filters from config.xml and reloaded security.
@@ -820,9 +803,7 @@ public class AccessControllersTest extends SecurityRESTTestSupport {
             // Expect a 401 (Unauthorized) or 403 (Forbidden), depending on GeoServer config.
             // Adjust the assertion if your environment returns a specific code.
             int status = wmsResponse.getStatus();
-            assertTrue(
-                    "Expected 401 or 403, but got " + status,
-                    status == 401 || status == 403 || status == 404);
+            assertTrue("Expected 401 or 403, but got " + status, status == 401 || status == 403 || status == 404);
 
         } finally {
             // -----------------------------------------------------------------

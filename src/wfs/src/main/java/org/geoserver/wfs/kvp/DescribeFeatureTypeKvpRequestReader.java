@@ -27,8 +27,7 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
         this.catalog = catalog;
     }
 
-    public DescribeFeatureTypeKvpRequestReader(
-            final Catalog catalog, Class<?> requestBean, EFactory factory) {
+    public DescribeFeatureTypeKvpRequestReader(final Catalog catalog, Class<?> requestBean, EFactory factory) {
         super(requestBean, factory);
         this.catalog = catalog;
     }
@@ -76,11 +75,10 @@ public class DescribeFeatureTypeKvpRequestReader extends WFSKvpRequestReader {
             } else if (kvp.get("NAMESPACES") instanceof NamespaceSupport) {
                 namespaces = (NamespaceSupport) kvp.get("namespaces");
             } else {
-                LOGGER.warning(
-                        "There's a namespace parameter but it seems it wasn't parsed to a "
-                                + NamespaceSupport.class.getName()
-                                + ": "
-                                + kvp.get("namespace"));
+                LOGGER.warning("There's a namespace parameter but it seems it wasn't parsed to a "
+                        + NamespaceSupport.class.getName()
+                        + ": "
+                        + kvp.get("namespace"));
             }
         }
         if (namespaces != null) {

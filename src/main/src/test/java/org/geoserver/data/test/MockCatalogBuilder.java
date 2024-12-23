@@ -145,24 +145,22 @@ public class MockCatalogBuilder {
 
         ws.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(ws);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(ws);
+                    }
+                })
                 .anyTimes();
 
         ns.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(ns);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(ns);
+                    }
+                })
                 .anyTimes();
 
         callback.onWorkspace(name, ws, this);
@@ -206,13 +204,12 @@ public class MockCatalogBuilder {
 
         ds.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(ds);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(ds);
+                    }
+                })
                 .anyTimes();
 
         callback.onStore(name, ds, ws, this);
@@ -232,7 +229,9 @@ public class MockCatalogBuilder {
         File covDir = new File(dataDirRoot, name);
         final File covFile = new File(covDir, filename);
         expect(cs.getURL()).andReturn(URLs.fileToUrl(covFile).toString()).anyTimes();
-        expect(cs.getType()).andAnswer(() -> lookupGridFormat(covFile).getName()).anyTimes();
+        expect(cs.getType())
+                .andAnswer(() -> lookupGridFormat(covFile).getName())
+                .anyTimes();
         expect(cs.getFormat()).andAnswer(() -> lookupGridFormat(covFile)).anyTimes();
         expect(cs.getConnectionParameters()).andReturn(new HashMap<>()).anyTimes();
 
@@ -243,13 +242,12 @@ public class MockCatalogBuilder {
 
         cs.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(cs);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(cs);
+                    }
+                })
                 .anyTimes();
 
         callback.onStore(name, cs, ws, this);
@@ -265,8 +263,7 @@ public class MockCatalogBuilder {
         return format;
     }
 
-    <T extends StoreInfo> void initStore(
-            T s, Class<T> clazz, String sId, String name, WorkspaceInfo ws) {
+    <T extends StoreInfo> void initStore(T s, Class<T> clazz, String sId, String name, WorkspaceInfo ws) {
         expect(s.getId()).andReturn(sId).anyTimes();
         expect(s.getName()).andReturn(name).anyTimes();
         expect(s.getWorkspace()).andReturn(ws).anyTimes();
@@ -280,7 +277,9 @@ public class MockCatalogBuilder {
         expect(catalog.getStoreByName(name, StoreInfo.class)).andReturn(s).anyTimes();
 
         expect(catalog.getStoreByName(ws.getName(), name, clazz)).andReturn(s).anyTimes();
-        expect(catalog.getStoreByName(ws.getName(), name, StoreInfo.class)).andReturn(s).anyTimes();
+        expect(catalog.getStoreByName(ws.getName(), name, StoreInfo.class))
+                .andReturn(s)
+                .anyTimes();
 
         expect(catalog.getStoreByName(ws, name, clazz)).andReturn(s).anyTimes();
         expect(catalog.getStoreByName(ws, name, StoreInfo.class)).andReturn(s).anyTimes();
@@ -305,17 +304,7 @@ public class MockCatalogBuilder {
         final FeatureTypeInfo ft = createNiceMock(FeatureTypeInfo.class);
         featureTypes.add(ft);
 
-        initResource(
-                ft,
-                FeatureTypeInfo.class,
-                ftId,
-                name,
-                ds,
-                ns,
-                srs,
-                projPolicy,
-                envelope,
-                latLonEnvelope);
+        initResource(ft, FeatureTypeInfo.class, ftId, name, ds, ns, srs, projPolicy, envelope, latLonEnvelope);
 
         expect(ft.getNumDecimals()).andReturn(8);
 
@@ -335,11 +324,7 @@ public class MockCatalogBuilder {
                     .andAnswer(() -> ((DataStore) ds.getDataStore(null)).getSchema(name))
                     .anyTimes();
             expect(ft.getFeatureSource(null, null))
-                    .andAnswer(
-                            (IAnswer)
-                                    () ->
-                                            ((DataStore) ds.getDataStore(null))
-                                                    .getFeatureSource(name))
+                    .andAnswer((IAnswer) () -> ((DataStore) ds.getDataStore(null)).getFeatureSource(name))
                     .anyTimes();
         } catch (IOException e) {
         }
@@ -348,11 +333,8 @@ public class MockCatalogBuilder {
                 .andReturn(ft)
                 .anyTimes();
 
-        expect(
-                        catalog.getFeatureTypeByName(
-                                or(
-                                        eq(new NameImpl(ns.getPrefix(), name)),
-                                        eq(new NameImpl(ns.getURI(), name)))))
+        expect(catalog.getFeatureTypeByName(
+                        or(eq(new NameImpl(ns.getPrefix(), name)), eq(new NameImpl(ns.getURI(), name)))))
                 .andReturn(ft)
                 .anyTimes();
         expect(catalog.getFeatureTypeByName(ns, name)).andReturn(ft).anyTimes();
@@ -365,13 +347,12 @@ public class MockCatalogBuilder {
 
         ft.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(ft);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(ft);
+                    }
+                })
                 .anyTimes();
 
         callback.onResource(name, ft, ds, this);
@@ -437,7 +418,9 @@ public class MockCatalogBuilder {
         expect(c.getDimensions()).andReturn(real.getDimensions()).anyTimes();
         expect(c.getGrid()).andReturn(real.getGrid()).anyTimes();
 
-        expect(c.getInterpolationMethods()).andReturn(real.getInterpolationMethods()).anyTimes();
+        expect(c.getInterpolationMethods())
+                .andReturn(real.getInterpolationMethods())
+                .anyTimes();
         expect(c.getRequestSRS()).andReturn(real.getRequestSRS()).anyTimes();
         expect(c.getResponseSRS()).andReturn(real.getResponseSRS()).anyTimes();
 
@@ -449,11 +432,8 @@ public class MockCatalogBuilder {
         expect(catalog.getCoverageByName(or(eq(name), eq(ns.getPrefix() + ":" + name))))
                 .andReturn(c)
                 .anyTimes();
-        expect(
-                        catalog.getCoverageByName(
-                                or(
-                                        eq(new NameImpl(ns.getPrefix(), name)),
-                                        eq(new NameImpl(ns.getURI(), name)))))
+        expect(catalog.getCoverageByName(
+                        or(eq(new NameImpl(ns.getPrefix(), name)), eq(new NameImpl(ns.getURI(), name)))))
                 .andReturn(c)
                 .anyTimes();
         expect(catalog.getCoverageByName(ns, name)).andReturn(c).anyTimes();
@@ -468,13 +448,12 @@ public class MockCatalogBuilder {
 
         c.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(c);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(c);
+                    }
+                })
                 .anyTimes();
 
         callback.onResource(name, c, cs, this);
@@ -498,7 +477,9 @@ public class MockCatalogBuilder {
         expect(r.getName()).andReturn(name).anyTimes();
         expect(r.getQualifiedName()).andReturn(new NameImpl(ns.getURI(), name)).anyTimes();
         expect(r.getNativeName()).andReturn(name).anyTimes();
-        expect(r.getQualifiedNativeName()).andReturn(new NameImpl(ns.getURI(), name)).anyTimes();
+        expect(r.getQualifiedNativeName())
+                .andReturn(new NameImpl(ns.getURI(), name))
+                .anyTimes();
         expect(r.getTitle()).andReturn(name).anyTimes();
         expect(r.getAbstract()).andReturn("abstract about " + name).anyTimes();
         expect(r.getStore()).andReturn(s).anyTimes();
@@ -545,20 +526,27 @@ public class MockCatalogBuilder {
                 .andReturn(r)
                 .anyTimes();
 
-        expect(catalog.getResourceByName(ns, name, clazz)).andReturn(r).andReturn(r).anyTimes();
+        expect(catalog.getResourceByName(ns, name, clazz))
+                .andReturn(r)
+                .andReturn(r)
+                .anyTimes();
         expect(catalog.getResourceByName(ns, name, ResourceInfo.class))
                 .andReturn(r)
                 .andReturn(r)
                 .anyTimes();
 
-        expect(catalog.getResourceByName(ns.getPrefix(), name, clazz)).andReturn(r).anyTimes();
+        expect(catalog.getResourceByName(ns.getPrefix(), name, clazz))
+                .andReturn(r)
+                .anyTimes();
         expect(catalog.getResourceByName(ns.getPrefix(), name, ResourceInfo.class))
                 .andReturn(r)
                 .anyTimes();
         // expect(catalog.getResourceByName(or(eq(ns.getPrefix()), eq(ns.getURI())), name,
         //    clazz)).andReturn(r).anyTimes();
         expect(catalog.getResourceByStore(s, name, clazz)).andReturn(r).anyTimes();
-        expect(catalog.getResourceByStore(s, name, ResourceInfo.class)).andReturn(r).anyTimes();
+        expect(catalog.getResourceByStore(s, name, ResourceInfo.class))
+                .andReturn(r)
+                .anyTimes();
     }
 
     LayerInfo createLayer(ResourceInfo r, String name, NamespaceInfo ns) {
@@ -580,18 +568,21 @@ public class MockCatalogBuilder {
         expect(catalog.getLayer(lId)).andReturn(l).anyTimes();
         expect(catalog.getLayerByName(name)).andReturn(l).anyTimes();
         expect(catalog.getLayerByName(ns.getPrefix() + ":" + name)).andReturn(l).anyTimes();
-        expect(catalog.getLayerByName(new NameImpl(ns.getPrefix(), name))).andReturn(l).anyTimes();
-        expect(catalog.getLayerByName(new NameImpl(ns.getURI(), name))).andReturn(l).anyTimes();
+        expect(catalog.getLayerByName(new NameImpl(ns.getPrefix(), name)))
+                .andReturn(l)
+                .anyTimes();
+        expect(catalog.getLayerByName(new NameImpl(ns.getURI(), name)))
+                .andReturn(l)
+                .anyTimes();
         expect(catalog.getLayers(r)).andReturn(Arrays.asList(l)).anyTimes();
         l.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(l);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(l);
+                    }
+                })
                 .anyTimes();
 
         callback.onLayer(name, l, this);
@@ -616,14 +607,8 @@ public class MockCatalogBuilder {
         expect(s.getFormatVersion()).andReturn(version).anyTimes();
         try {
             expect(s.getStyle())
-                    .andReturn(
-                            Styles.style(
-                                    new SLDHandler()
-                                            .parse(
-                                                    getClass().getResourceAsStream(filename),
-                                                    version,
-                                                    null,
-                                                    null)))
+                    .andReturn(Styles.style(
+                            new SLDHandler().parse(getClass().getResourceAsStream(filename), version, null, null)))
                     .anyTimes();
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -634,13 +619,12 @@ public class MockCatalogBuilder {
 
         s.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(s);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(s);
+                    }
+                })
                 .anyTimes();
 
         callback.onStyle(name, s, this);
@@ -648,8 +632,7 @@ public class MockCatalogBuilder {
         return this;
     }
 
-    public MockCatalogBuilder layerGroup(
-            String name, List<String> layerNames, List<String> styleNames) {
+    public MockCatalogBuilder layerGroup(String name, List<String> layerNames, List<String> styleNames) {
 
         final LayerGroupInfo lg = createMock(LayerGroupInfo.class);
         layerGroups.add(lg);
@@ -696,13 +679,12 @@ public class MockCatalogBuilder {
 
         lg.accept(anyObject());
         expectLastCall()
-                .andAnswer(
-                        new VisitAnswer() {
-                            @Override
-                            protected void doVisit(CatalogVisitor visitor) {
-                                visitor.visit(lg);
-                            }
-                        })
+                .andAnswer(new VisitAnswer() {
+                    @Override
+                    protected void doVisit(CatalogVisitor visitor) {
+                        visitor.visit(lg);
+                    }
+                })
                 .anyTimes();
 
         expect(catalog.getLayerGroupByName(name)).andReturn(lg).anyTimes();
@@ -723,7 +705,9 @@ public class MockCatalogBuilder {
                 expect(catalog.getResourcesByStore(ds, ResourceInfo.class))
                         .andReturn(new ArrayList<>(featureTypes))
                         .anyTimes();
-                expect(catalog.getFeatureTypesByDataStore(ds)).andReturn(featureTypes).anyTimes();
+                expect(catalog.getFeatureTypesByDataStore(ds))
+                        .andReturn(featureTypes)
+                        .anyTimes();
             }
 
             if (!coverages.isEmpty()) {
@@ -735,7 +719,9 @@ public class MockCatalogBuilder {
                 expect(catalog.getResourcesByStore(cs, ResourceInfo.class))
                         .andReturn(new ArrayList<>(coverages))
                         .anyTimes();
-                expect(catalog.getCoveragesByCoverageStore(cs)).andReturn(coverages).anyTimes();
+                expect(catalog.getCoveragesByCoverageStore(cs))
+                        .andReturn(coverages)
+                        .anyTimes();
             }
 
             // clear out local lists but push up to be included when this workspace is complete
@@ -755,7 +741,9 @@ public class MockCatalogBuilder {
             expect(catalog.getStoresByWorkspace(ws, DataStoreInfo.class))
                     .andReturn(dataStores)
                     .anyTimes();
-            expect(catalog.getDataStoresByWorkspace(ws.getName())).andReturn(dataStores).anyTimes();
+            expect(catalog.getDataStoresByWorkspace(ws.getName()))
+                    .andReturn(dataStores)
+                    .anyTimes();
             expect(catalog.getDataStoresByWorkspace(ws)).andReturn(dataStores).anyTimes();
 
             expect(catalog.getStoresByWorkspace(ws.getName(), CoverageStoreInfo.class))
@@ -767,7 +755,9 @@ public class MockCatalogBuilder {
             expect(catalog.getCoverageStoresByWorkspace(ws.getName()))
                     .andReturn(coverageStores)
                     .anyTimes();
-            expect(catalog.getCoverageStoresByWorkspace(ws)).andReturn(coverageStores).anyTimes();
+            expect(catalog.getCoverageStoresByWorkspace(ws))
+                    .andReturn(coverageStores)
+                    .anyTimes();
 
             List<StoreInfo> l = new LinkedList<>(dataStores);
             l.addAll(coverageStores);
@@ -775,7 +765,9 @@ public class MockCatalogBuilder {
             expect(catalog.getStoresByWorkspace(ws.getName(), StoreInfo.class))
                     .andReturn(l)
                     .anyTimes();
-            expect(catalog.getStoresByWorkspace(ws, StoreInfo.class)).andReturn(l).anyTimes();
+            expect(catalog.getStoresByWorkspace(ws, StoreInfo.class))
+                    .andReturn(l)
+                    .anyTimes();
 
             expect(catalog.getStylesByWorkspace(ws.getName())).andReturn(styles).anyTimes();
             expect(catalog.getStylesByWorkspace(ws)).andReturn(styles).anyTimes();
@@ -788,7 +780,9 @@ public class MockCatalogBuilder {
             // add all the resources for this workspace
             List<ResourceInfo> m = new LinkedList<>(featureTypesByNamespace);
             m.addAll(coveragesByNamespace);
-            expect(catalog.getResourcesByNamespace(ns, ResourceInfo.class)).andReturn(m).anyTimes();
+            expect(catalog.getResourcesByNamespace(ns, ResourceInfo.class))
+                    .andReturn(m)
+                    .anyTimes();
             // expect(catalog.getResourcesByNamespace(ns.getPrefix(),
             // ResourceInfo.class)).andReturn(m).anyTimes();
             expect(catalog.getResourcesByNamespace(ns, FeatureTypeInfo.class))
@@ -822,7 +816,9 @@ public class MockCatalogBuilder {
             expect(catalog.getResources(FeatureTypeInfo.class))
                     .andReturn(featureTypesAll)
                     .anyTimes();
-            expect(catalog.getResources(CoverageInfo.class)).andReturn(coverages).anyTimes();
+            expect(catalog.getResources(CoverageInfo.class))
+                    .andReturn(coverages)
+                    .anyTimes();
             expect(catalog.getFeatureTypes()).andReturn(featureTypesAll).anyTimes();
             expect(catalog.getCoverages()).andReturn(coveragesAll).anyTimes();
 
@@ -830,7 +826,9 @@ public class MockCatalogBuilder {
             List<StoreInfo> m = new LinkedList<>(dataStoresAll);
             m.addAll(coverageStoresAll);
             expect(catalog.getStores(StoreInfo.class)).andReturn(m).anyTimes();
-            expect(catalog.getStores(DataStoreInfo.class)).andReturn(dataStoresAll).anyTimes();
+            expect(catalog.getStores(DataStoreInfo.class))
+                    .andReturn(dataStoresAll)
+                    .anyTimes();
             expect(catalog.getStores(CoverageStoreInfo.class))
                     .andReturn(coverageStoresAll)
                     .anyTimes();
@@ -849,8 +847,12 @@ public class MockCatalogBuilder {
             expect(catalog.getNamespaces()).andReturn(namespaces).anyTimes();
 
             // default workspace/namespace
-            expect(catalog.getDefaultWorkspace()).andReturn(workspaces.peekFirst()).anyTimes();
-            expect(catalog.getDefaultNamespace()).andReturn(namespaces.peekFirst()).anyTimes();
+            expect(catalog.getDefaultWorkspace())
+                    .andReturn(workspaces.peekFirst())
+                    .anyTimes();
+            expect(catalog.getDefaultNamespace())
+                    .andReturn(namespaces.peekFirst())
+                    .anyTimes();
 
             replay(catalog);
 

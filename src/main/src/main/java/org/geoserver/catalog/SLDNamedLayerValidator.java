@@ -41,10 +41,7 @@ public class SLDNamedLayerValidator extends GeoServerSLDVisitorAdapter {
         }
         if (p == null) {
             validationErrors.add(
-                    new Exception(
-                            "No layer or layer group named '"
-                                    + namedLayer.getName()
-                                    + "' found in the catalog"));
+                    new Exception("No layer or layer group named '" + namedLayer.getName() + "' found in the catalog"));
         }
         return p;
     }
@@ -53,9 +50,7 @@ public class SLDNamedLayerValidator extends GeoServerSLDVisitorAdapter {
     public StyleInfo visitNamedStyleInternal(NamedStyle namedStyle) {
         StyleInfo s = catalog.getStyleByName(namedStyle.getName());
         if (s == null) {
-            validationErrors.add(
-                    new Exception(
-                            "No style named '" + namedStyle.getName() + "' found in the catalog"));
+            validationErrors.add(new Exception("No style named '" + namedStyle.getName() + "' found in the catalog"));
         }
         return s;
     }

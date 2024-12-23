@@ -44,16 +44,14 @@ public class RasterAttributeTableVisitorTest {
 
     @Test
     public void testBelowMinScale() throws Exception {
-        RasterAttributeTableVisitor visitor =
-                new RasterAttributeTableVisitor(0.1, NATIVE_NAME, READER);
+        RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(0.1, NATIVE_NAME, READER);
         getRatStyle().accept(visitor);
         assertNull(visitor.getAttributeTableEnricher());
     }
 
     @Test
     public void testAboveMaxScale() throws Exception {
-        RasterAttributeTableVisitor visitor =
-                new RasterAttributeTableVisitor(2e6, NATIVE_NAME, READER);
+        RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(2e6, NATIVE_NAME, READER);
         getRatStyle().accept(visitor);
         assertNull(visitor.getAttributeTableEnricher());
     }
@@ -66,16 +64,14 @@ public class RasterAttributeTableVisitorTest {
         symbolizer.getOptions().clear();
 
         // scale in range, but vendor option got removed
-        RasterAttributeTableVisitor visitor =
-                new RasterAttributeTableVisitor(1000, NATIVE_NAME, READER);
+        RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(1000, NATIVE_NAME, READER);
         style.accept(visitor);
         assertNull(visitor.getAttributeTableEnricher());
     }
 
     @Test
     public void testGetEnricher() throws Exception {
-        RasterAttributeTableVisitor visitor =
-                new RasterAttributeTableVisitor(1000, NATIVE_NAME, READER);
+        RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(1000, NATIVE_NAME, READER);
         getRatStyle().accept(visitor);
         AttributeTableEnricher enricher = visitor.getAttributeTableEnricher();
         assertNotNull(enricher);
@@ -87,11 +83,9 @@ public class RasterAttributeTableVisitorTest {
     @Test
     public void testNoPAMDataset() throws Exception {
         GeoTiffReader reader =
-                new GeoTiffReader(
-                        new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/tazbm.tiff"));
+                new GeoTiffReader(new File("./src/test/resources/org/geoserver/wms/wms_1_1_1/tazbm.tiff"));
         try {
-            RasterAttributeTableVisitor visitor =
-                    new RasterAttributeTableVisitor(1000, "tazbm", reader);
+            RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(1000, "tazbm", reader);
             getRatStyle().accept(visitor);
             assertNull(visitor.getAttributeTableEnricher());
         } finally {
@@ -107,8 +101,7 @@ public class RasterAttributeTableVisitorTest {
         FileUtils.copyFile(source, target);
         GeoTiffReader reader = new GeoTiffReader(target);
         try {
-            RasterAttributeTableVisitor visitor =
-                    new RasterAttributeTableVisitor(1000, "tazbm", reader);
+            RasterAttributeTableVisitor visitor = new RasterAttributeTableVisitor(1000, "tazbm", reader);
             getRatStyle().accept(visitor);
             assertNull(visitor.getAttributeTableEnricher());
         } finally {

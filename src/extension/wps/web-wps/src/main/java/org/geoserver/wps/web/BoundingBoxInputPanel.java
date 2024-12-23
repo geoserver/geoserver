@@ -44,24 +44,20 @@ public class BoundingBoxInputPanel extends Panel {
         valueModel = new PropertyModel<>(getDefaultModel(), "value");
         mimeTypes = pv.getSupportedMime();
 
-        typeChoice =
-                new DropDownChoice<>(
-                        "type",
-                        new PropertyModel<>(getDefaultModelObject(), "type"),
-                        Arrays.asList(ParameterType.values()));
+        typeChoice = new DropDownChoice<>(
+                "type", new PropertyModel<>(getDefaultModelObject(), "type"), Arrays.asList(ParameterType.values()));
         add(typeChoice);
 
         updateEditor();
 
-        typeChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        typeChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateEditor();
-                        target.add(BoundingBoxInputPanel.this);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateEditor();
+                target.add(BoundingBoxInputPanel.this);
+            }
+        });
     }
 
     void updateEditor() {
@@ -78,8 +74,7 @@ public class BoundingBoxInputPanel extends Panel {
             // data as plain text
             Fragment f = new Fragment("editor", "text", this);
             DropDownChoice mimeChoice =
-                    new DropDownChoice<>(
-                            "mime", new PropertyModel<>(getDefaultModel(), "mime"), mimeTypes);
+                    new DropDownChoice<>("mime", new PropertyModel<>(getDefaultModel(), "mime"), mimeTypes);
             f.add(mimeChoice);
 
             f.add(new TextArea<>("textarea", valueModel));
@@ -89,10 +84,7 @@ public class BoundingBoxInputPanel extends Panel {
             valueModel.setObject(new VectorLayerConfiguration());
             Fragment f = new Fragment("editor", "vectorLayer", this);
             DropDownChoice layer =
-                    new DropDownChoice<>(
-                            "layer",
-                            new PropertyModel<>(valueModel, "layerName"),
-                            getVectorLayerNames());
+                    new DropDownChoice<>("layer", new PropertyModel<>(valueModel, "layerName"), getVectorLayerNames());
             f.add(layer);
             add(f);
         } else if (pt == ParameterType.RASTER_LAYER) {
@@ -101,29 +93,22 @@ public class BoundingBoxInputPanel extends Panel {
 
             Fragment f = new Fragment("editor", "rasterLayer", this);
             final DropDownChoice layer =
-                    new DropDownChoice<>(
-                            "layer",
-                            new PropertyModel<>(valueModel, "layerName"),
-                            getRasterLayerNames());
+                    new DropDownChoice<>("layer", new PropertyModel<>(valueModel, "layerName"), getRasterLayerNames());
             f.add(layer);
             add(f);
 
             // we need to update the raster own bounding box as wcs requests
             // mandate a spatial extent (why oh why???)
-            layer.add(
-                    new AjaxFormComponentUpdatingBehavior("change") {
+            layer.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                        @Override
-                        protected void onUpdate(AjaxRequestTarget target) {
-                            String name = layer.getDefaultModelObjectAsString();
-                            LayerInfo li =
-                                    GeoServerApplication.get().getCatalog().getLayerByName(name);
-                            ReferencedEnvelope spatialDomain =
-                                    li.getResource().getNativeBoundingBox();
-                            ((RasterLayerConfiguration) valueModel.getObject())
-                                    .setSpatialDomain(spatialDomain);
-                        }
-                    });
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    String name = layer.getDefaultModelObjectAsString();
+                    LayerInfo li = GeoServerApplication.get().getCatalog().getLayerByName(name);
+                    ReferencedEnvelope spatialDomain = li.getResource().getNativeBoundingBox();
+                    ((RasterLayerConfiguration) valueModel.getObject()).setSpatialDomain(spatialDomain);
+                }
+            });
         } else {
             error("Unsupported parameter type");
         }

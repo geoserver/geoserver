@@ -49,8 +49,8 @@ public class GWCSynchEnv implements ApplicationContextAware {
     }
 
     /**
-     * Only for unit tests, this forces the synchronization of the GeoServer and GeoWebCache while
-     * avoiding setting system properties.
+     * Only for unit tests, this forces the synchronization of the GeoServer and GeoWebCache while avoiding setting
+     * system properties.
      *
      * @param forceSync
      */
@@ -64,8 +64,8 @@ public class GWCSynchEnv implements ApplicationContextAware {
         syncEnv();
     }
     /**
-     * Synchronizes environment properties between the {@link GeoServerEnvironment} and the {@link
-     * GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
+     * Synchronizes environment properties between the {@link GeoServerEnvironment} and the
+     * {@link GeoWebCacheEnvironment}. (GeoServer properties will override GeoWebCache properties)
      */
     public void syncEnv() throws IllegalArgumentException {
         if (needsSynchronization()) {

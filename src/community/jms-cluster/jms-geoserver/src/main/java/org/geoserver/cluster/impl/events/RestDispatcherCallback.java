@@ -26,35 +26,26 @@ public class RestDispatcherCallback implements DispatcherCallback {
     @Override
     public void init(HttpServletRequest request, HttpServletResponse response) {
         // get request parameters
-        Map<String, String> parameters =
-                request.getParameterMap().entrySet().stream()
-                        .map(
-                                entry -> {
-                                    String[] values = entry.getValue();
-                                    String value =
-                                            values == null || values.length == 0 ? null : values[0];
-                                    return new SimpleEntry<>(entry.getKey(), value);
-                                })
-                        .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
+        Map<String, String> parameters = request.getParameterMap().entrySet().stream()
+                .map(entry -> {
+                    String[] values = entry.getValue();
+                    String value = values == null || values.length == 0 ? null : values[0];
+                    return new SimpleEntry<>(entry.getKey(), value);
+                })
+                .collect(Collectors.toMap(SimpleEntry::getKey, SimpleEntry::getValue));
         // log request parameters
         if (LOGGER.isLoggable(Level.FINE)) {
-            parameters
-                    .keySet()
-                    .forEach(
-                            parameter ->
-                                    LOGGER.info("Registering incoming parameter: " + parameter));
+            parameters.keySet().forEach(parameter -> LOGGER.info("Registering incoming parameter: " + parameter));
         }
         // set local parameters
         this.parameters.set(parameters);
     }
 
     @Override
-    public void dispatched(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {}
+    public void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler) {}
 
     @Override
-    public void exception(
-            HttpServletRequest request, HttpServletResponse response, Exception error) {}
+    public void exception(HttpServletRequest request, HttpServletResponse response, Exception error) {}
 
     @Override
     public void finished(HttpServletRequest request, HttpServletResponse response) {}

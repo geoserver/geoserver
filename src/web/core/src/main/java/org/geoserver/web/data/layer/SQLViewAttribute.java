@@ -88,14 +88,6 @@ class SQLViewAttribute implements Serializable {
 
     @Override
     public String toString() {
-        return "SQLViewAttribute [name="
-                + name
-                + ", pk="
-                + pk
-                + ", srid="
-                + srid
-                + ", type="
-                + type
-                + "]";
+        return "SQLViewAttribute [name=" + name + ", pk=" + pk + ", srid=" + srid + ", type=" + type + "]";
     }
 }

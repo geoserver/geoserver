@@ -26,8 +26,7 @@ public class DiskQuotaWarningPanel extends Panel {
         Exception exception = getException();
         Label label = new Label("diskQuotaError", new Model<>());
         if (exception != null) {
-            ParamResourceModel rm =
-                    new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
+            ParamResourceModel rm = new ParamResourceModel("GWC.diskQuotaLoadFailed", null, exception.getMessage());
             label.setDefaultModelObject(rm.getString());
         } else {
             label.setVisible(false);

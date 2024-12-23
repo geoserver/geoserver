@@ -36,8 +36,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Extends the {@link FeatureService} with native tiling abilities, as provided by the {@link
- * org.geotools.tile.TileService}
+ * Extends the {@link FeatureService} with native tiling abilities, as provided by the
+ * {@link org.geotools.tile.TileService}
  */
 @APIService(
         service = "Features",
@@ -74,8 +74,7 @@ public class TiledFeatureService {
             baseClass = TilesService.class)
     @ResponseBody
     @GetMapping(path = "tileMatrixSets/{tileMatrixSetId}", name = "getTileMatrixSet")
-    public TileMatrixSetDocument getTileMatrixSet(
-            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId) {
+    public TileMatrixSetDocument getTileMatrixSet(@PathVariable(name = "tileMatrixSetId") String tileMatrixSetId) {
         TileMatrixSetDocument response = delegate.getTileMatrixSet(tileMatrixSetId);
         rebaseLinks(response);
         return response;
@@ -83,25 +82,19 @@ public class TiledFeatureService {
 
     @GetMapping(path = "collections/{collectionId}/tiles", name = "describeTilesets")
     @ResponseBody
-    @HTMLResponseBody(
-            templateName = "tiles.ftl",
-            fileName = "tiles.html",
-            baseClass = TilesService.class)
+    @HTMLResponseBody(templateName = "tiles.ftl", fileName = "tiles.html", baseClass = TilesService.class)
     public TilesDocument describeTiles(@PathVariable(name = "collectionId") String collectionId)
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    collectionId + " is not a tiled layer",
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
         }
         TilesDocument response = delegate.describeTilesets(collectionId);
         rebaseLinks(response);
         for (Tileset tileset : response.getTilesets()) {
             String uri = tileset.getTileMatrixSetURI();
             if (uri.contains("tiles/v1/tileMatrixSets")) {
-                String rebasedURI =
-                        uri.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
+                String rebasedURI = uri.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
                 tileset.setTileMatrixSetURI(rebasedURI);
                 tileset.setTileMatrixSetDefinition(rebasedURI);
             }
@@ -120,16 +113,13 @@ public class TiledFeatureService {
             throws FactoryException, TransformException, IOException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    collectionId + " is not a tiled layer",
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
         }
         Tileset tileset = delegate.describeTileset(collectionId, tileMatrixId);
         rebaseLinks(tileset);
         String uri = tileset.getTileMatrixSetURI();
         if (uri.contains("tiles/v1/tileMatrixSets")) {
-            String rebasedURI =
-                    uri.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
+            String rebasedURI = uri.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
             tileset.setTileMatrixSetURI(rebasedURI);
             tileset.setTileMatrixSetDefinition(rebasedURI);
         }
@@ -138,29 +128,23 @@ public class TiledFeatureService {
         return tileset;
     }
 
-    @GetMapping(
-            path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata",
-            name = "getTilesMetadata")
+    @GetMapping(path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/metadata", name = "getTilesMetadata")
     @ResponseBody
     public TileJSON getTileJSON(
             @PathVariable(name = "collectionId") String collectionId,
             @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId)
-            throws FactoryException, TransformException, NoSuchAlgorithmException,
-                    GeoWebCacheException, IOException {
+            throws FactoryException, TransformException, NoSuchAlgorithmException, GeoWebCacheException, IOException {
         TileJSON response = delegate.getTileJSON(collectionId, tileMatrixSetId);
-        String[] uris =
-                Arrays.stream(response.getTiles())
-                        .map(uri -> uri.replace("/ogc/tiles/v1", "/ogc/features/v1"))
-                        .toArray(s -> new String[s]);
+        String[] uris = Arrays.stream(response.getTiles())
+                .map(uri -> uri.replace("/ogc/tiles/v1", "/ogc/features/v1"))
+                .toArray(s -> new String[s]);
         response.setTiles(uris);
         return response;
     }
 
     @ResponseBody
     @GetMapping(
-            path =
-                    "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow"
-                            + "}/{tileCol}",
+            path = "/collections/{collectionId}/tiles/{tileMatrixSetId}/{tileMatrix}/{tileRow" + "}/{tileCol}",
             name = "getTile")
     public ResponseEntity<byte[]> getRawTile(
             @PathVariable(name = "collectionId") String collectionId,
@@ -173,30 +157,19 @@ public class TiledFeatureService {
             throws GeoWebCacheException, IOException, NoSuchAlgorithmException {
         if (!isTiledVectorLayer(collectionId)) {
             throw new APIException(
-                    APIException.NOT_FOUND,
-                    collectionId + " is not a tiled layer",
-                    HttpStatus.NOT_FOUND);
+                    APIException.NOT_FOUND, collectionId + " is not a tiled layer", HttpStatus.NOT_FOUND);
         }
-        return delegate.getRawTile(
-                collectionId,
-                tileMatrixSetId,
-                tileMatrix,
-                tileRow,
-                tileCol,
-                filter,
-                filterLanguage);
+        return delegate.getRawTile(collectionId, tileMatrixSetId, tileMatrix, tileRow, tileCol, filter, filterLanguage);
     }
 
     private void rebaseLinks(AbstractDocument document) {
         for (Link link : document.getLinks()) {
             String href = link.getHref();
             if (href.contains("/tiles/v1/tileMatrixSets")) {
-                String rebasedHref =
-                        href.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
+                String rebasedHref = href.replace("/tiles/v1/tileMatrixSets", "/features/v1/tileMatrixSets");
                 link.setHref(rebasedHref);
             } else if (href.contains("/tiles/v1/collections")) {
-                String rebasedHref =
-                        href.replace("/tiles/v1/collections", "/features/v1/collections");
+                String rebasedHref = href.replace("/tiles/v1/collections", "/features/v1/collections");
                 link.setHref(rebasedHref);
             }
         }
@@ -207,10 +180,7 @@ public class TiledFeatureService {
         return delegate.api();
     }
 
-    /**
-     * Checks if the layer in question has a tile configuration, and exposes vector based tile
-     * formats.
-     */
+    /** Checks if the layer in question has a tile configuration, and exposes vector based tile formats. */
     public boolean isTiledVectorLayer(String collectionId) {
         try {
             TileLayer layer = gwc.getTileLayerByName(collectionId);

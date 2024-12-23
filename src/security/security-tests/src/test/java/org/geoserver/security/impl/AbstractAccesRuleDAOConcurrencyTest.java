@@ -45,10 +45,9 @@ public abstract class AbstractAccesRuleDAOConcurrencyTest<D extends AbstractAcce
     @Test
     public void testConcurrentModifications() throws Exception {
         // REST operations change the contents of the DAO by using
-        List<Callable<Void>> manipulators =
-                IntStream.range(1, getLoops())
-                        .mapToObj(c -> (Callable<Void>) () -> manipulate(c))
-                        .collect(Collectors.toList());
+        List<Callable<Void>> manipulators = IntStream.range(1, getLoops())
+                .mapToObj(c -> (Callable<Void>) () -> manipulate(c))
+                .collect(Collectors.toList());
 
         // run, just check there were no exceptions and no assertion failures
         List<Future<Void>> futures = executors.invokeAll(manipulators);

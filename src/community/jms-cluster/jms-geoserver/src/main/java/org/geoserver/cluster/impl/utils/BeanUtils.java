@@ -15,24 +15,23 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.geoserver.cluster.impl.handlers.catalog.CatalogUtils;
 
 /**
- * This class implements a set of function inspired by the Apache BeanUtils defining wrappers which
- * are designed to work with the GeoServer catalog and configuration
+ * This class implements a set of function inspired by the Apache BeanUtils defining wrappers which are designed to work
+ * with the GeoServer catalog and configuration
  *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class BeanUtils {
 
     /**
-     * This is a 'smart' (perform checks for some special cases) update function which should be
-     * used to copy of the properties for objects of the catalog and configuration.
+     * This is a 'smart' (perform checks for some special cases) update function which should be used to copy of the
+     * properties for objects of the catalog and configuration.
      *
      * @param <T> the type of the bean to update
      * @param info the bean instance to update
      * @param properties the list of string of properties to update
      * @param values the list of new values to update
      */
-    public static <T> void smartUpdate(
-            final T info, final List<String> properties, final List<Object> values)
+    public static <T> void smartUpdate(final T info, final List<String> properties, final List<Object> values)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         final Iterator<String> itPropertyName = properties.iterator();
         final Iterator<Object> itValue = values.iterator();
@@ -70,11 +69,10 @@ public abstract class BeanUtils {
                     liveMap.putAll((Map) value);
                 } else {
                     if (CatalogUtils.LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                        CatalogUtils.LOGGER.severe(
-                                "Skipping unwritable property "
-                                        + propertyName
-                                        + " with property type "
-                                        + pd.getPropertyType());
+                        CatalogUtils.LOGGER.severe("Skipping unwritable property "
+                                + propertyName
+                                + " with property type "
+                                + pd.getPropertyType());
                 }
             }
         }

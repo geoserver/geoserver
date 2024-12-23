@@ -28,10 +28,8 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         }
 
         // get the store
-        InternalCatalogStore store =
-                applicationContext.getBean(
-                        InternalCatalogStore
-                                .class); // new InternalCatalogStore(this.getGeoServer());
+        InternalCatalogStore store = applicationContext.getBean(
+                InternalCatalogStore.class); // new InternalCatalogStore(this.getGeoServer());
         assertNotNull(store);
 
         // test if we have default mapping
@@ -42,10 +40,9 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
 
         assertEquals(1, store.getMappings("Record").size());
         assertEquals(1, store.getMappings("MD_Metadata").size());
-        assertFalse(
-                store.getMappings("MD_Metadata")
-                        .get(0)
-                        .elements(PropertyPath.fromDotPath("fileIdentifier.CharacterString"))
-                        .isEmpty());
+        assertFalse(store.getMappings("MD_Metadata")
+                .get(0)
+                .elements(PropertyPath.fromDotPath("fileIdentifier.CharacterString"))
+                .isEmpty());
     }
 }

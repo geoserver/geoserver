@@ -40,18 +40,11 @@ public class OwsRequestResource extends MonitorRequestController {
             @RequestParam(name = "live", required = false) Boolean live,
             @RequestParam(name = "fields", required = false) String fieldsSpec)
             throws Exception {
-        return super.handleObjectGetRestWrapper(
-                req, from, to, filter, order, offset, count, live, fieldsSpec);
+        return super.handleObjectGetRestWrapper(req, from, to, filter, order, offset, count, live, fieldsSpec);
     }
 
     @Override
-    @GetMapping(
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                CSV_MEDIATYPE_VALUE,
-                EXCEL_MEDIATYPE_VALUE,
-                ZIP_MEDIATYPE_VALUE
-            })
+    @GetMapping(produces = {MediaType.TEXT_HTML_VALUE, CSV_MEDIATYPE_VALUE, EXCEL_MEDIATYPE_VALUE, ZIP_MEDIATYPE_VALUE})
     @ResponseBody
     protected MonitorQueryResults handleObjectGet(
             @PathVariable(name = "request", required = false) String req,

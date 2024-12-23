@@ -25,8 +25,7 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
 
     private ApplicationContext context;
 
-    public InternalWFSInputProvider(
-            InputType input, ProcessParameterIO ppio, ApplicationContext context) {
+    public InternalWFSInputProvider(InputType input, ProcessParameterIO ppio, ApplicationContext context) {
         super(input, ppio);
         this.context = context;
     }
@@ -52,15 +51,13 @@ public class InternalWFSInputProvider extends AbstractInputProvider {
         if (gft instanceof net.opengis.wfs.GetFeatureType) {
             WebFeatureService wfs = (WebFeatureService) context.getBean("wfsServiceTarget");
 
-            FeatureCollectionResponse featureCollectionType =
-                    wfs.getFeature((net.opengis.wfs.GetFeatureType) gft);
+            FeatureCollectionResponse featureCollectionType = wfs.getFeature((net.opengis.wfs.GetFeatureType) gft);
             // this will also deal with axis order issues
             return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
         } else if (gft instanceof net.opengis.wfs20.GetFeatureType) {
             WebFeatureService20 wfs = (WebFeatureService20) context.getBean("wfsService20Target");
 
-            FeatureCollectionResponse featureCollectionType =
-                    wfs.getFeature((net.opengis.wfs20.GetFeatureType) gft);
+            FeatureCollectionResponse featureCollectionType = wfs.getFeature((net.opengis.wfs20.GetFeatureType) gft);
             // this will also deal with axis order issues
             return ((ComplexPPIO) ppio).decode(featureCollectionType.getAdaptee());
         } else {

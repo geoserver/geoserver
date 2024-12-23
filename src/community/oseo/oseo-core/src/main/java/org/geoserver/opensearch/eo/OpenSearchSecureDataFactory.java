@@ -29,8 +29,7 @@ public class OpenSearchSecureDataFactory implements SecuredObjectFactory {
         // wrapping check
         Class<?> clazz = object.getClass();
         if (!canSecure(clazz))
-            throw new IllegalArgumentException(
-                    "Don't know how to wrap objects of class " + object.getClass());
+            throw new IllegalArgumentException("Don't know how to wrap objects of class " + object.getClass());
 
         // return as is, implementations of OpenSearchAccess are read only
         return object;

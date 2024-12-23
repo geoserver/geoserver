@@ -40,41 +40,32 @@ class DescribeDomainsTransformer extends TransformerBase {
         @Override
         public void encode(Object object) throws IllegalArgumentException {
             if (!(object instanceof Domains)) {
-                throw new IllegalArgumentException(
-                        "Expected domains info but instead got: "
-                                + object.getClass().getCanonicalName());
+                throw new IllegalArgumentException("Expected domains info but instead got: "
+                        + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Attributes attributes =
-                    createAttributes(
-                            new String[] {
-                                "xmlns",
-                                "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
-                                "xmlns:ows",
-                                "http://www.opengis.net/ows/1.1",
-                                "version",
-                                "1.2"
-                            });
+            Attributes attributes = createAttributes(new String[] {
+                "xmlns",
+                "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
+                "xmlns:ows",
+                "http://www.opengis.net/ows/1.1",
+                "version",
+                "1.2"
+            });
             start("Domains", attributes);
             Map<String, Tuple<Integer, List<String>>> domainsValues = new HashMap<>();
-            domains.getDimensions()
-                    .forEach(
-                            dimension -> {
-                                Tuple<Integer, List<String>> dimensionValues =
-                                        dimension.getDomainValuesAsStrings(
-                                                new Query(null, domains.getFilter()),
-                                                domains.getExpandLimit());
-                                domainsValues.put(dimension.getDimensionName(), dimensionValues);
-                            });
-            if (domains.getSpatialDomain() != null && !domains.getSpatialDomain().isEmpty()) {
+            domains.getDimensions().forEach(dimension -> {
+                Tuple<Integer, List<String>> dimensionValues = dimension.getDomainValuesAsStrings(
+                        new Query(null, domains.getFilter()), domains.getExpandLimit());
+                domainsValues.put(dimension.getDimensionName(), dimensionValues);
+            });
+            if (domains.getSpatialDomain() != null
+                    && !domains.getSpatialDomain().isEmpty()) {
                 handleBoundingBox(domains.getSpatialDomain());
             }
             domainsValues
                     .entrySet()
-                    .forEach(
-                            dimensionValues ->
-                                    handleDimension(
-                                            dimensionValues.getKey(), dimensionValues.getValue()));
+                    .forEach(dimensionValues -> handleDimension(dimensionValues.getKey(), dimensionValues.getValue()));
             end("Domains");
         }
 
@@ -84,26 +75,21 @@ class DescribeDomainsTransformer extends TransformerBase {
             }
             start("SpaceDomain");
             CoordinateReferenceSystem crs = boundingBox.getCoordinateReferenceSystem();
-            Attributes attributes =
-                    createAttributes(
-                            new String[] {
-                                "CRS", crs == null ? "EPSG:4326" : CRS.toSRS(crs),
-                                "minx", String.valueOf(boundingBox.getMinX()),
-                                "miny", String.valueOf(boundingBox.getMinY()),
-                                "maxx", String.valueOf(boundingBox.getMaxX()),
-                                "maxy", String.valueOf(boundingBox.getMaxY()),
-                            });
+            Attributes attributes = createAttributes(new String[] {
+                "CRS", crs == null ? "EPSG:4326" : CRS.toSRS(crs),
+                "minx", String.valueOf(boundingBox.getMinX()),
+                "miny", String.valueOf(boundingBox.getMinY()),
+                "maxx", String.valueOf(boundingBox.getMaxX()),
+                "maxy", String.valueOf(boundingBox.getMaxY()),
+            });
             element("BoundingBox", "", attributes);
             end("SpaceDomain");
         }
 
-        private void handleDimension(
-                String dimensionName, Tuple<Integer, List<String>> domainsValuesAsStrings) {
+        private void handleDimension(String dimensionName, Tuple<Integer, List<String>> domainsValuesAsStrings) {
             start("DimensionDomain");
             element("ows:Identifier", dimensionName);
-            element(
-                    "Domain",
-                    domainsValuesAsStrings.second.stream().collect(Collectors.joining(",")));
+            element("Domain", domainsValuesAsStrings.second.stream().collect(Collectors.joining(",")));
             element("Size", String.valueOf(domainsValuesAsStrings.first));
             end("DimensionDomain");
         }

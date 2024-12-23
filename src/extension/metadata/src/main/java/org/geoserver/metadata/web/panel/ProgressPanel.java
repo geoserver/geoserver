@@ -51,17 +51,14 @@ public class ProgressPanel extends Panel {
 
     public void start(AjaxRequestTarget target, IModel<Float> model, EventHandler handler) {
         ProgressBar progressBar =
-                new ProgressBar(
-                        "content",
-                        new ProgressionModel() {
-                            private static final long serialVersionUID = 5716227987463146386L;
+                new ProgressBar("content", new ProgressionModel() {
+                    private static final long serialVersionUID = 5716227987463146386L;
 
-                            @Override
-                            protected Progression getProgression() {
-                                return new Progression(
-                                        cancelMe ? 100 : Math.round(100 * model.getObject()));
-                            }
-                        }) {
+                    @Override
+                    protected Progression getProgression() {
+                        return new Progression(cancelMe ? 100 : Math.round(100 * model.getObject()));
+                    }
+                }) {
                     private static final long serialVersionUID = 6384204231727968702L;
 
                     @Override
@@ -76,16 +73,15 @@ public class ProgressPanel extends Panel {
                 };
 
         window.setContent(progressBar);
-        window.setCloseButtonCallback(
-                new GSModalWindow.CloseButtonCallback() {
-                    private static final long serialVersionUID = 5570427983448661370L;
+        window.setCloseButtonCallback(new GSModalWindow.CloseButtonCallback() {
+            private static final long serialVersionUID = 5570427983448661370L;
 
-                    @Override
-                    public boolean onCloseButtonClicked(AjaxRequestTarget target) {
-                        cancelMe = true;
-                        return false;
-                    }
-                });
+            @Override
+            public boolean onCloseButtonClicked(AjaxRequestTarget target) {
+                cancelMe = true;
+                return false;
+            }
+        });
         window.show(target);
         progressBar.start(target);
     }

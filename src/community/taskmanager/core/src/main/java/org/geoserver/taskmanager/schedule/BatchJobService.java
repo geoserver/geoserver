@@ -18,14 +18,12 @@ import org.geoserver.taskmanager.data.Configuration;
 public interface BatchJobService {
 
     /**
-     * Saves this batch and update the schedule according to its new settings. This may also mean
-     * that the batch is actually unscheduled, or that it scheduling is changed, if it was
-     * previously scheduled.
+     * Saves this batch and update the schedule according to its new settings. This may also mean that the batch is
+     * actually unscheduled, or that it scheduling is changed, if it was previously scheduled.
      *
-     * <p>Batches are scheduled if they are ACTIVE, ENABLED and have a FREQUENCY set. Batches which
-     * are ACTIVE, but not ENABLED _or_ have FREQUENCY set to NULL, are known by the quartz
-     * scheduler but are never triggered unless explicitly done. Batches which are NOT ACTIVE, are
-     * entirely removed from the quartz scheduler.
+     * <p>Batches are scheduled if they are ACTIVE, ENABLED and have a FREQUENCY set. Batches which are ACTIVE, but not
+     * ENABLED _or_ have FREQUENCY set to NULL, are known by the quartz scheduler but are never triggered unless
+     * explicitly done. Batches which are NOT ACTIVE, are entirely removed from the quartz scheduler.
      *
      * @param batch the batch.
      * @return the saved batch.
@@ -44,9 +42,8 @@ public interface BatchJobService {
     Configuration saveAndSchedule(Configuration config);
 
     /**
-     * Interrupt a batch run. This method will also check if it can verify the batch run has
-     * actually already ended (for example when the server was restarted), and if that is the case
-     * update its status.
+     * Interrupt a batch run. This method will also check if it can verify the batch run has actually already ended (for
+     * example when the server was restarted), and if that is the case update its status.
      *
      * @param batchRun the batch run to interrupt
      */
@@ -70,8 +67,7 @@ public interface BatchJobService {
      *
      * @param batches the batches to be run
      * @param waitInSeconds number of seconds to wait before the first batch
-     * @param intervalInSeconds number of seconds to wait between batches, may be be zero to
-     *     schedule all at once.
+     * @param intervalInSeconds number of seconds to wait between batches, may be be zero to schedule all at once.
      */
     void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds);
 
@@ -80,15 +76,10 @@ public interface BatchJobService {
      *
      * @param batches the batches to be run
      * @param waitInSeconds number of seconds to wait before the first batch
-     * @param intervalInSeconds number of seconds to wait between batches, may be be zero to
-     *     schedule all at once.
+     * @param intervalInSeconds number of seconds to wait between batches, may be be zero to schedule all at once.
      * @param callback run afterwards
      */
-    void scheduleNow(
-            Collection<Batch> batches,
-            int waitInSeconds,
-            int intervalInSeconds,
-            Consumer<Batch> callback);
+    void scheduleNow(Collection<Batch> batches, int waitInSeconds, int intervalInSeconds, Consumer<Batch> callback);
 
     void closeInactiveBatchruns();
 

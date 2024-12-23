@@ -23,8 +23,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testEditPlain() throws Exception {
-        final ReferencedEnvelope e =
-                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+        final ReferencedEnvelope e = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
         tester.startPage(new FormTestPage((ComponentBuilder) id -> new EnvelopePanel(id, e)));
 
         tester.assertComponent("form", Form.class);
@@ -46,8 +45,7 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         ft.submit();
 
         assertEquals(new Envelope(-2, 2, -2, 2), ep.getModelObject());
-        assertEquals(
-                DefaultGeographicCRS.WGS84, ep.getModelObject().getCoordinateReferenceSystem());
+        assertEquals(DefaultGeographicCRS.WGS84, ep.getModelObject().getCoordinateReferenceSystem());
     }
 
     @Test
@@ -55,14 +53,11 @@ public class EnvelopePanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem epsg4326 = CRS.decode("EPSG:4326", true);
         CoordinateReferenceSystem epsg4140 = CRS.decode("EPSG:4140", true);
         final ReferencedEnvelope e = new ReferencedEnvelope(-180, 180, -90, 90, epsg4326);
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> {
-                                    EnvelopePanel panel = new EnvelopePanel(id, e);
-                                    panel.setCRSFieldVisible(true);
-                                    return panel;
-                                }));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> {
+            EnvelopePanel panel = new EnvelopePanel(id, e);
+            panel.setCRSFieldVisible(true);
+            return panel;
+        }));
 
         tester.assertComponent("form", Form.class);
 

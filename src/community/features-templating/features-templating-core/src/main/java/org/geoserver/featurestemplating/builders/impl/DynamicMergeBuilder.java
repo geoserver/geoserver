@@ -23,11 +23,7 @@ public class DynamicMergeBuilder extends DynamicJsonBuilder {
     private boolean overlayExpression;
 
     public DynamicMergeBuilder(
-            String key,
-            String expression,
-            NamespaceSupport namespaces,
-            JsonNode node,
-            boolean overlayExpression) {
+            String key, String expression, NamespaceSupport namespaces, JsonNode node, boolean overlayExpression) {
         super(key, expression, namespaces, node);
         this.overlayExpression = overlayExpression;
     }
@@ -50,8 +46,7 @@ public class DynamicMergeBuilder extends DynamicJsonBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         Object evaluate = evaluateDirective(context);
 
         if (!(evaluate instanceof JsonNode)) {
@@ -75,8 +70,7 @@ public class DynamicMergeBuilder extends DynamicJsonBuilder {
         }
     }
 
-    protected void writeFromNestedTree(
-            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
+    protected void writeFromNestedTree(TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
             throws IOException {
         writer.startObject(getKey(context), getEncodingHints());
         super.iterateAndEvaluateNestedTree(context, writer, node);

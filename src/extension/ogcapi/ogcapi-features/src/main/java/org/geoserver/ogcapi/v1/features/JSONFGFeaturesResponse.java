@@ -57,8 +57,7 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
     }
 
     @Override
-    protected void writeExtraFeatureProperties(
-            Feature feature, Operation operation, GeoJSONBuilder jw) {
+    protected void writeExtraFeatureProperties(Feature feature, Operation operation, GeoJSONBuilder jw) {
         String featureId = getItemId();
         if (featureId != null) {
             // needed on the single feature when there is no collection wrapper
@@ -68,8 +67,7 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
     }
 
     @Override
-    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
-            throws IOException {
+    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws IOException {
         writeCoordRefSys(jsonWriter, crs);
     }
 
@@ -100,14 +98,10 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
     }
 
     @Override
-    protected void writeGeometry(
-            GeoJSONBuilder jsonWriter, GeometryDescriptor descriptor, Geometry aGeom) {
-        boolean otherCRS =
-                descriptor != null
-                        && descriptor.getCoordinateReferenceSystem() != null
-                        && !CRS.equalsIgnoreMetadata(
-                                DefaultGeographicCRS.WGS84,
-                                descriptor.getCoordinateReferenceSystem());
+    protected void writeGeometry(GeoJSONBuilder jsonWriter, GeometryDescriptor descriptor, Geometry aGeom) {
+        boolean otherCRS = descriptor != null
+                && descriptor.getCoordinateReferenceSystem() != null
+                && !CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, descriptor.getCoordinateReferenceSystem());
         String key = "geometry";
         if (otherCRS) {
             // make sure the JSON writer does not try to un-flip the coordinates
@@ -160,11 +154,9 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
     private Integer getGeometryDimension(Class<?> binding) {
         if (Point.class.isAssignableFrom(binding) || MultiPoint.class.isAssignableFrom(binding)) {
             return 0;
-        } else if (LineString.class.isAssignableFrom(binding)
-                || MultiLineString.class.isAssignableFrom(binding)) {
+        } else if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
             return 1;
-        } else if (Polygon.class.isAssignableFrom(binding)
-                || MultiPolygon.class.isAssignableFrom(binding)) {
+        } else if (Polygon.class.isAssignableFrom(binding) || MultiPolygon.class.isAssignableFrom(binding)) {
             return 2;
         } else {
             LOGGER.log(Level.WARNING, "Could not compute geometry dimension for " + binding);
@@ -184,9 +176,7 @@ public class JSONFGFeaturesResponse extends RFCGeoJSONFeaturesResponse {
 
         // add a link to the schema
         String path =
-                "ogc/features/v1/collections/"
-                        + ResponseUtils.urlEncode(featureType.prefixedName())
-                        + "/schemas/fg/";
+                "ogc/features/v1/collections/" + ResponseUtils.urlEncode(featureType.prefixedName()) + "/schemas/fg/";
         if (featureId != null) {
             path += "feature.json";
         } else {

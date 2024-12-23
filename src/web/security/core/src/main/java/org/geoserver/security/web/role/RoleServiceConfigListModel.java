@@ -18,8 +18,7 @@ import org.geoserver.web.GeoServerApplication;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class RoleServiceConfigListModel
-        extends LoadableDetachableModel<List<SecurityRoleServiceConfig>> {
+public class RoleServiceConfigListModel extends LoadableDetachableModel<List<SecurityRoleServiceConfig>> {
 
     @Override
     protected List<SecurityRoleServiceConfig> load() {

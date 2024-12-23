@@ -18,9 +18,7 @@ public class DGGSInfoImpl extends ServiceInfoImpl implements DGGSInfo {
 
     @Override
     public int getMaxNumberOfZonesForPreview() {
-        return maxNumberOfZonesForPreview == null
-                ? DEFAULT_MAX_ZONES_PREVIEW
-                : maxNumberOfZonesForPreview;
+        return maxNumberOfZonesForPreview == null ? DEFAULT_MAX_ZONES_PREVIEW : maxNumberOfZonesForPreview;
     }
 
     @Override

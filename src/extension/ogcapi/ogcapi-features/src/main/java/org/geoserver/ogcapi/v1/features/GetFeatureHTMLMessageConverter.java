@@ -31,12 +31,10 @@ import org.springframework.stereotype.Component;
 
 /** Produces a Feature response in HTML. */
 @Component
-public class GetFeatureHTMLMessageConverter
-        extends AbstractServiceHTMLMessageConverter<FeaturesResponse> {
+public class GetFeatureHTMLMessageConverter extends AbstractServiceHTMLMessageConverter<FeaturesResponse> {
     static final Logger LOGGER = Logging.getLogger(GetFeatureHTMLMessageConverter.class);
 
-    public GetFeatureHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public GetFeatureHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(FeaturesResponse.class, WFSInfo.class, templateSupport, geoServer);
     }
 
@@ -46,7 +44,9 @@ public class GetFeatureHTMLMessageConverter
             info = ((TypeInfoCollectionWrapper) collection).getFeatureTypeInfo();
         }
         if (info == null && collection.getSchema() != null) {
-            info = geoServer.getCatalog().getFeatureTypeByName(collection.getSchema().getName());
+            info = geoServer
+                    .getCatalog()
+                    .getFeatureTypeByName(collection.getSchema().getName());
         }
         return info;
     }
@@ -76,8 +76,7 @@ public class GetFeatureHTMLMessageConverter
 
         Charset charset = getDefaultCharset();
         if (charset != null && outputMessage != null && outputMessage.getBody() != null) {
-            try (OutputStreamWriter osw =
-                    new OutputStreamWriter(outputMessage.getBody(), charset)) {
+            try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), charset)) {
                 templateSupport.processTemplate(header, model, osw, charset);
 
                 // process content template for all feature collections found
@@ -96,25 +95,21 @@ public class GetFeatureHTMLMessageConverter
                             model.put("featureInfo", typeInfo);
                             model.put("data", fc);
                             // allow building a collection backlink
-                            if (fc instanceof TypeInfoCollectionWrapper
-                                    && includeCollectionLink()) {
-                                FeatureTypeInfo info =
-                                        ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
+                            if (fc instanceof TypeInfoCollectionWrapper && includeCollectionLink()) {
+                                FeatureTypeInfo info = ((TypeInfoCollectionWrapper) fc).getFeatureTypeInfo();
                                 if (info != null) {
                                     model.put("collection", info.prefixedName());
                                 }
                             }
                             try {
-                                templateSupport.processTemplate(
-                                        content, model, osw, getDefaultCharset());
+                                templateSupport.processTemplate(content, model, osw, getDefaultCharset());
                             } finally {
                                 model.remove("data");
                             }
                         } else {
                             Template template = getEmptyTemplate(typeInfo);
                             model.put("collection", typeInfo.prefixedName());
-                            templateSupport.processTemplate(
-                                    template, model, osw, getDefaultCharset());
+                            templateSupport.processTemplate(template, model, osw, getDefaultCharset());
                         }
                     }
                 }
@@ -129,9 +124,8 @@ public class GetFeatureHTMLMessageConverter
                 purgeIterators();
             }
         } else {
-            LOGGER.warning(
-                    "Either the default character set, output message or body was null, so the "
-                            + "template could not be processed.");
+            LOGGER.warning("Either the default character set, output message or body was null, so the "
+                    + "template could not be processed.");
         }
     }
 
@@ -149,17 +143,14 @@ public class GetFeatureHTMLMessageConverter
     }
 
     protected Template getComplexContentTemplate(FeatureTypeInfo typeInfo) throws IOException {
-        return templateSupport.getTemplate(
-                typeInfo, "getfeature-complex-content.ftl", this.getClass());
+        return templateSupport.getTemplate(typeInfo, "getfeature-complex-content.ftl", this.getClass());
     }
 
     protected Template getFooterTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
-        return templateSupport.getTemplate(
-                referenceFeatureType, "getfeature-footer.ftl", this.getClass());
+        return templateSupport.getTemplate(referenceFeatureType, "getfeature-footer.ftl", this.getClass());
     }
 
     protected Template getHeaderTemplate(FeatureTypeInfo referenceFeatureType) throws IOException {
-        return templateSupport.getTemplate(
-                referenceFeatureType, "getfeature-header.ftl", this.getClass());
+        return templateSupport.getTemplate(referenceFeatureType, "getfeature-header.ftl", this.getClass());
     }
 }

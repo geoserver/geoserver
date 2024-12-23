@@ -25,8 +25,7 @@ import org.xml.sax.Attributes;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.helpers.NamespaceSupport;
 
-public class WFSExtendedCapabilitiesProvider
-        implements org.geoserver.wfs.WFSExtendedCapabilitiesProvider {
+public class WFSExtendedCapabilitiesProvider implements org.geoserver.wfs.WFSExtendedCapabilitiesProvider {
 
     @Override
     public String[] getSchemaLocations(String schemaBaseURL) {
@@ -42,21 +41,18 @@ public class WFSExtendedCapabilitiesProvider
     }
 
     @Override
-    public void encode(Translator tx, WFSInfo wfs, GetCapabilitiesRequest request)
-            throws IOException {
+    public void encode(Translator tx, WFSInfo wfs, GetCapabilitiesRequest request) throws IOException {
         String version = GetCapabilities.version(request);
         // can't add to a pre 1.1.0 version
         if ("1.0.0".equals(version)) {
             return;
         }
         MetadataMap serviceMetadata = wfs.getMetadata();
-        Boolean createExtendedCapabilities =
-                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
         UniqueResourceIdentifiers ids =
-                serviceMetadata.get(
-                        SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
+                serviceMetadata.get(SPATIAL_DATASET_IDENTIFIER_TYPE.key, UniqueResourceIdentifiers.class);
         // Don't create extended capabilities element if mandatory content not present
         // or turned off
         if (metadataURL == null
@@ -82,9 +78,7 @@ public class WFSExtendedCapabilitiesProvider
         ServicesUtils.encodeSupportedLanguages(serviceMetadata, tx);
         for (UniqueResourceIdentifier id : ids) {
             if (id.getMetadataURL() != null) {
-                tx.start(
-                        "inspire_dls:SpatialDataSetIdentifier",
-                        atts("metadataURL", id.getMetadataURL()));
+                tx.start("inspire_dls:SpatialDataSetIdentifier", atts("metadataURL", id.getMetadataURL()));
             } else {
                 tx.start("inspire_dls:SpatialDataSetIdentifier");
             }

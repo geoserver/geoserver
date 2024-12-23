@@ -31,8 +31,7 @@ import org.junit.experimental.categories.Category;
 @Category(SystemTest.class)
 public class XMLRoleServiceTest extends AbstractRoleServiceTest {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
 
     @Override
     public GeoServerRoleService createRoleService(String serviceName) throws Exception {
@@ -45,8 +44,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         store.store();
     }
 
-    protected GeoServerRoleService createRoleService(String serviceName, String xmlFileName)
-            throws Exception {
+    protected GeoServerRoleService createRoleService(String serviceName, String xmlFileName) throws Exception {
 
         XMLRoleServiceConfig gaConfig =
                 (XMLRoleServiceConfig) getSecurityManager().loadRoleServiceConfig(serviceName);
@@ -80,13 +78,11 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
 
     @Test
     public void testDefault() throws Exception {
-        GeoServerRoleService service =
-                getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
+        GeoServerRoleService service = getSecurityManager().loadRoleService(XMLRoleService.DEFAULT_NAME);
 
         assertEquals(2, service.getRoles().size());
         GeoServerRole adminRole = service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE);
-        GeoServerRole groupAdminRole =
-                service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
+        GeoServerRole groupAdminRole = service.getRoleByName(XMLRoleService.DEFAULT_LOCAL_GROUP_ADMIN_ROLE);
 
         assertEquals(0, service.getGroupNamesForRole(adminRole).size());
         assertEquals(0, service.getGroupNamesForRole(groupAdminRole).size());
@@ -101,10 +97,8 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         File xmlFile = File.createTempFile("roles", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
-            GeoServerRoleService service1 =
-                    createRoleService("locking1", xmlFile.getCanonicalPath());
-            GeoServerRoleService service2 =
-                    createRoleService("locking2", xmlFile.getCanonicalPath());
+            GeoServerRoleService service1 = createRoleService("locking1", xmlFile.getCanonicalPath());
+            GeoServerRoleService service2 = createRoleService("locking2", xmlFile.getCanonicalPath());
             GeoServerRoleStore store1 = createStore(service1);
             GeoServerRoleStore store2 = createStore(service2);
 
@@ -215,10 +209,8 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         File xmlFile = File.createTempFile("roles", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
-            GeoServerRoleService service1 =
-                    createRoleService("reload1", xmlFile.getCanonicalPath());
-            GeoServerRoleService service2 =
-                    createRoleService("reload2", xmlFile.getCanonicalPath());
+            GeoServerRoleService service1 = createRoleService("reload1", xmlFile.getCanonicalPath());
+            GeoServerRoleService service2 = createRoleService("reload2", xmlFile.getCanonicalPath());
 
             GeoServerRoleStore store1 = createStore(service1);
 
@@ -273,8 +265,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         File xmlFile = File.createTempFile("roles", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
-            GeoServerRoleService service1 =
-                    createRoleService("disassociateRole", xmlFile.getCanonicalPath());
+            GeoServerRoleService service1 = createRoleService("disassociateRole", xmlFile.getCanonicalPath());
 
             GeoServerRoleStore store1 = createStore(service1);
 
@@ -312,8 +303,7 @@ public class XMLRoleServiceTest extends AbstractRoleServiceTest {
         File xmlFile = File.createTempFile("roles2", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("rolesTemplate.xml"), xmlFile);
-            GeoServerRoleService service1 =
-                    createRoleService("disassociateRoleFromGroup", xmlFile.getCanonicalPath());
+            GeoServerRoleService service1 = createRoleService("disassociateRoleFromGroup", xmlFile.getCanonicalPath());
 
             GeoServerRoleStore store1 = createStore(service1);
 

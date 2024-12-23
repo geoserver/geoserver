@@ -20,8 +20,8 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
 /**
  * Controller which publishes files through a web interface.
  *
- * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
- * spring dispatcher servlet. Example:
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the spring dispatcher
+ * servlet. Example:
  *
  * <pre>
  * <code>
@@ -43,9 +43,9 @@ import org.springframework.web.context.support.ServletContextResourceLoader;
 public class FilePublisher extends AbstractURLPublisher {
 
     /**
-     * System property to control whether or not to disable server static files with the text/html
-     * or application/javascript mime types. When set to true, these mime types will be converted to
-     * text/plain. Default is false.
+     * System property to control whether or not to disable server static files with the text/html or
+     * application/javascript mime types. When set to true, these mime types will be converted to text/plain. Default is
+     * false.
      */
     public static final String DISABLE_STATIC_WEB_FILES = "GEOSERVER_DISABLE_STATIC_WEB_FILES";
 
@@ -105,8 +105,7 @@ public class FilePublisher extends AbstractURLPublisher {
 
         if (file == null && scloader != null) {
             // try loading as a servlet resource
-            ServletContextResource resource =
-                    (ServletContextResource) scloader.getResource(reqPath);
+            ServletContextResource resource = (ServletContextResource) scloader.getResource(reqPath);
             if (resource != null && resource.exists()) {
                 file = resource.getFile();
             }

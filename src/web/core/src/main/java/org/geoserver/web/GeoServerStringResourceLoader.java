@@ -22,8 +22,8 @@ import org.apache.wicket.resource.loader.ComponentStringResourceLoader;
 import org.apache.wicket.resource.loader.IStringResourceLoader;
 
 /**
- * A custom localizer, heavily inspired by {@link ComponentStringResourceLoader}, which considers
- * two peculiarities of the GeoServer i18n subsystem:
+ * A custom localizer, heavily inspired by {@link ComponentStringResourceLoader}, which considers two peculiarities of
+ * the GeoServer i18n subsystem:
  *
  * <ul>
  *   <li>All resources are loaded in GeoServer*.properties files located in the root of each jar
@@ -38,25 +38,19 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
     public GeoServerStringResourceLoader() {}
 
     /**
-     * Get the string resource for the given combination of class, key, locale and style. The
-     * information is obtained from a resource bundle associated with the provided Class (or one of
-     * its super classes).
+     * Get the string resource for the given combination of class, key, locale and style. The information is obtained
+     * from a resource bundle associated with the provided Class (or one of its super classes).
      *
-     * @param clazz The Class to find resources to be loaded (might be null if we want a
-     *     context-less search)
+     * @param clazz The Class to find resources to be loaded (might be null if we want a context-less search)
      * @param key The key to obtain the string for
      * @param locale The locale identifying the resource set to select the strings from
-     * @param style The (optional) style identifying the resource set to select the strings from
-     *     (see {@link org.apache.wicket.Session})
+     * @param style The (optional) style identifying the resource set to select the strings from (see
+     *     {@link org.apache.wicket.Session})
      * @return The string resource value or null if resource not found
      */
     @Override
     public String loadStringResource(
-            Class<?> clazz,
-            final String key,
-            final Locale locale,
-            final String style,
-            String variation) {
+            Class<?> clazz, final String key, final Locale locale, final String style, String variation) {
         // Load the properties associated with the path
         IPropertiesFactory propertiesFactory =
                 Application.get().getResourceSettings().getPropertiesFactory();
@@ -65,8 +59,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
         String path = "/GeoServerApplication";
         while (true) {
             // Iterator over all the combinations
-            ResourceNameIterator iter =
-                    new ResourceNameIterator(path, style, variation, locale, null, false);
+            ResourceNameIterator iter = new ResourceNameIterator(path, style, variation, locale, null, false);
             while (iter.hasNext()) {
                 String newPath = iter.next();
 
@@ -98,17 +91,12 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
     }
 
     /**
-     * @see
-     *     org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
+     * @see org.apache.wicket.resource.loader.IStringResourceLoader#loadStringResource(org.apache.wicket.Component,
      *     java.lang.String)
      */
     @Override
     public String loadStringResource(
-            final Component component,
-            final String key,
-            Locale locale,
-            String style,
-            String variation) {
+            final Component component, final String key, Locale locale, String style, String variation) {
         if (component == null) {
             return null;
         }
@@ -139,8 +127,7 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
     }
 
     /**
-     * Traverse the component hierarchy up to the Page and add each component class to the list
-     * (stack) returned
+     * Traverse the component hierarchy up to the Page and add each component class to the list (stack) returned
      *
      * @param component The component to evaluate
      * @return The stack of classes
@@ -166,8 +153,8 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
     }
 
     /**
-     * Check the supplied class to see if it is one that we shouldn't bother further searches up the
-     * class hierarchy for properties.
+     * Check the supplied class to see if it is one that we shouldn't bother further searches up the class hierarchy for
+     * properties.
      *
      * @param clazz The class to check
      * @return Whether to stop the search
@@ -178,15 +165,11 @@ public class GeoServerStringResourceLoader implements IStringResourceLoader {
         }
 
         // Stop at all html markup base classes
-        if (clazz.equals(WebPage.class)
-                || clazz.equals(WebMarkupContainer.class)
-                || clazz.equals(WebComponent.class)) {
+        if (clazz.equals(WebPage.class) || clazz.equals(WebMarkupContainer.class) || clazz.equals(WebComponent.class)) {
             return true;
         }
 
         // Stop at all wicket base classes
-        return clazz.equals(Page.class)
-                || clazz.equals(MarkupContainer.class)
-                || clazz.equals(Component.class);
+        return clazz.equals(Page.class) || clazz.equals(MarkupContainer.class) || clazz.equals(Component.class);
     }
 }

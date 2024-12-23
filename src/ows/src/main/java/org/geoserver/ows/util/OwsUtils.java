@@ -26,12 +26,11 @@ public class OwsUtils {
     /**
      * Reflectively sets a property on an object.
      *
-     * <p>This method uses {@link #setter(Class, String, Class)} to locate teh setter method for the
-     * property and then invokes it with teh specified <tt>value</tt>.
+     * <p>This method uses {@link #setter(Class, String, Class)} to locate teh setter method for the property and then
+     * invokes it with teh specified <tt>value</tt>.
      *
-     * <p>The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2". If
-     * any of the resulting properties along the path result in null this method will throw {@link
-     * NullPointerException}
+     * <p>The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2". If any of the
+     * resulting properties along the path result in null this method will throw {@link NullPointerException}
      *
      * @param object The target object.
      * @param property The property to set.
@@ -40,8 +39,7 @@ public class OwsUtils {
      * @throws RuntimeException If an error occurs setting the property
      * @throws NullPointerException If the property specifies a property that results in null.
      */
-    public static void set(Object object, String property, Object value)
-            throws IllegalArgumentException {
+    public static void set(Object object, String property, Object value) throws IllegalArgumentException {
         String[] props = property.split("\\.");
         Method s = null;
         if (props.length > 1) {
@@ -49,21 +47,15 @@ public class OwsUtils {
                 object = get(object, props[i]);
             }
             if (object == null) {
-                throw new NullPointerException(
-                        "Property '" + property + "' is null for object " + object);
+                throw new NullPointerException("Property '" + property + "' is null for object " + object);
             }
-            s =
-                    setter(
-                            object.getClass(),
-                            props[props.length - 1],
-                            value != null ? value.getClass() : null);
+            s = setter(object.getClass(), props[props.length - 1], value != null ? value.getClass() : null);
         } else {
             s = setter(object.getClass(), property, value != null ? value.getClass() : null);
         }
 
         if (s == null) {
-            throw new IllegalArgumentException(
-                    "No such property '" + property + "' for object " + object);
+            throw new IllegalArgumentException("No such property '" + property + "' for object " + object);
         }
 
         try {
@@ -95,9 +87,8 @@ public class OwsUtils {
     /**
      * Returns a setter method for a property of java bean.
      *
-     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the setter for the
-     * property should be returned regardless of the type. If not null it will be used to filter the
-     * returned method.
+     * <p>The <tt>type</tt> parameter may be <code>null</code> to indicate the setter for the property should be
+     * returned regardless of the type. If not null it will be used to filter the returned method.
      *
      * @param clazz The type of the bean.
      * @param property The property name.
@@ -122,11 +113,11 @@ public class OwsUtils {
     /**
      * Reflectively gets a property from an object.
      *
-     * <p>This method uses {@link #getter(Class, String, Class)} to locate the getter method for the
-     * property and then invokes it.
+     * <p>This method uses {@link #getter(Class, String, Class)} to locate the getter method for the property and then
+     * invokes it.
      *
-     * <p>The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2". If
-     * any of the resulting properties along the path result in null this method will return null.
+     * <p>The <tt>property</tt> parameter may be specified as a "path" of the form "prop1.prop2". If any of the
+     * resulting properties along the path result in null this method will return null.
      *
      * @param object The target object.
      * @param property The property to set.
@@ -140,8 +131,7 @@ public class OwsUtils {
             String prop = props[i];
             Method g = getter(result.getClass(), props[i], null);
             if (g == null) {
-                throw new IllegalArgumentException(
-                        "No such property '" + prop + "' for object " + result);
+                throw new IllegalArgumentException("No such property '" + prop + "' for object " + result);
             }
             try {
                 result = g.invoke(result, null);
@@ -263,8 +253,7 @@ public class OwsUtils {
                         }
                     }
                 }
-                if (cause != null && cause.getMessage() != null && !"".equals(cause.getMessage()))
-                    s.append("\n");
+                if (cause != null && cause.getMessage() != null && !"".equals(cause.getMessage())) s.append("\n");
             }
 
             // avoid infinite loop if someone did the very stupid thing of setting
@@ -298,9 +287,7 @@ public class OwsUtils {
             Method setter = properties.setter(p, type);
 
             // do a check for read only before calling the getter to avoid an unnecessary call
-            if (setter == null
-                    && !(Collection.class.isAssignableFrom(type)
-                            || Map.class.isAssignableFrom(type))) {
+            if (setter == null && !(Collection.class.isAssignableFrom(type) || Map.class.isAssignableFrom(type))) {
                 // read only
                 continue;
             }
@@ -384,8 +371,7 @@ public class OwsUtils {
 
     /** Helper method for updating a collection based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
-    static void updateCollectionProperty(Object object, Collection newValue, Method getter)
-            throws Exception {
+    static void updateCollectionProperty(Object object, Collection newValue, Method getter) throws Exception {
         Collection<Object> oldValue = (Collection) getter.invoke(object, null);
         if (oldValue != null) {
             oldValue.clear();

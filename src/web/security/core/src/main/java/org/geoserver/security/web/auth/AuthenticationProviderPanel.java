@@ -14,8 +14,7 @@ import org.geoserver.security.web.SecurityNamedServicePanel;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class AuthenticationProviderPanel<T extends SecurityAuthProviderConfig>
-        extends SecurityNamedServicePanel<T> {
+public class AuthenticationProviderPanel<T extends SecurityAuthProviderConfig> extends SecurityNamedServicePanel<T> {
 
     public AuthenticationProviderPanel(String id, IModel<T> model) {
         super(id, model);

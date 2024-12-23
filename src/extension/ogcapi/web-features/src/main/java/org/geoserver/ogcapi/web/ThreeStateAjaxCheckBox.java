@@ -32,7 +32,8 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
         FALSE(false),
         UNDEFINED(null);
 
-        @Nullable private Boolean value;
+        @Nullable
+        private Boolean value;
 
         private State(Boolean nullableState) {
             this.value = nullableState;
@@ -60,8 +61,8 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
     }
 
     /**
-     * @return {@code null} when the initial state is {@code null} and the final state is
-     *     "unchecked", {@code true} or {@code false} otherwise according to the model value.
+     * @return {@code null} when the initial state is {@code null} and the final state is "unchecked", {@code true} or
+     *     {@code false} otherwise according to the model value.
      */
     @Override
     @Nullable
@@ -70,8 +71,8 @@ abstract class ThreeStateAjaxCheckBox extends AjaxCheckBox {
     }
 
     /**
-     * Prevents the null (undefined) state from being replaced by false during form submission by
-     * directly handling the model’s value
+     * Prevents the null (undefined) state from being replaced by false during form submission by directly handling the
+     * model’s value
      */
     @Override
     public void updateModel() {

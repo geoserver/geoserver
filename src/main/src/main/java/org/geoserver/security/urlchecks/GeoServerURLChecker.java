@@ -15,8 +15,8 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
 /**
- * GeoServer implementation of the {@link URLChecker} interface, based on a list of {@link
- * RegexURLCheck} provided by the {@link URLCheckDAO}
+ * GeoServer implementation of the {@link URLChecker} interface, based on a list of {@link RegexURLCheck} provided by
+ * the {@link URLCheckDAO}
  */
 public class GeoServerURLChecker implements URLChecker, DisposableBean {
 
@@ -71,10 +71,9 @@ public class GeoServerURLChecker implements URLChecker, DisposableBean {
     }
 
     public AbstractURLCheck get(final String name) throws Exception {
-        Optional<AbstractURLCheck> entry =
-                dao.getChecks().stream()
-                        .filter(urlEntry -> urlEntry.getName().equalsIgnoreCase(name))
-                        .findFirst();
+        Optional<AbstractURLCheck> entry = dao.getChecks().stream()
+                .filter(urlEntry -> urlEntry.getName().equalsIgnoreCase(name))
+                .findFirst();
         if (entry.isPresent()) {
             return entry.get();
         } else {

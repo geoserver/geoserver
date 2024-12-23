@@ -21,13 +21,12 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 public class PreviewFontProvider extends GeoServerDataProvider<PreviewFont> {
     public static final Property<PreviewFont> NAME = new BeanProperty<>("name", "fontName");
 
-    public static final Property<PreviewFont> PREVIEW_IMAGE =
-            new BeanProperty<>("previewImage", "previewImage") {
-                @Override
-                public boolean isSearchable() {
-                    return false;
-                }
-            };
+    public static final Property<PreviewFont> PREVIEW_IMAGE = new BeanProperty<>("previewImage", "previewImage") {
+        @Override
+        public boolean isSearchable() {
+            return false;
+        }
+    };
 
     public static final List<Property<PreviewFont>> PROPERTIES = Arrays.asList(NAME, PREVIEW_IMAGE);
 

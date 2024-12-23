@@ -45,30 +45,15 @@ import javax.xml.bind.annotation.XmlType;
 public class GeometryCollection {
 
     @XmlElements({
-        @XmlElement(
-                name = "map-point",
-                type = Point.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-linestring",
-                type = LineString.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-polygon",
-                type = Polygon.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-multipoint",
-                type = MultiPoint.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-point", type = Point.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-linestring", type = LineString.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-polygon", type = Polygon.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-multipoint", type = MultiPoint.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(
                 name = "map-multilinestring",
                 type = MultiLineString.class,
                 namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-multipolygon",
-                type = MultiPolygon.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-multipolygon", type = MultiPolygon.class, namespace = "http://www.w3.org/1999/xhtml"),
         @XmlElement(name = "map-a", type = A.class, namespace = "http://www.w3.org/1999/xhtml")
     })
     protected List<Object> pointOrLineStringOrPolygon;
@@ -76,9 +61,9 @@ public class GeometryCollection {
     /**
      * Gets the value of the pointOrLineStringOrPolygon property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the pointOrLineStringOrPolygon property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the pointOrLineStringOrPolygon property.
      *
      * <p>For example, to add a new item, do as follows:
      *
@@ -86,8 +71,8 @@ public class GeometryCollection {
      *    getPointOrLineStringOrPolygon().add(newItem);
      * </pre>
      *
-     * <p>Objects of the following type(s) are allowed in the list {@link Point } {@link LineString
-     * } {@link Polygon } {@link MultiPoint } {@link MultiLineString } {@link MultiPolygon }
+     * <p>Objects of the following type(s) are allowed in the list {@link Point } {@link LineString } {@link Polygon }
+     * {@link MultiPoint } {@link MultiLineString } {@link MultiPolygon }
      */
     public List<Object> getPointOrLineStringOrPolygon() {
         if (pointOrLineStringOrPolygon == null) {

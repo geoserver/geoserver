@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 /** Tests that metadata module doesn't fail on faulty configuration file. */
 public class FaultyConfigurationTest extends AbstractWicketMetadataTest {
 
-    @Autowired protected ConfigurationServiceImpl configService;
+    @Autowired
+    protected ConfigurationServiceImpl configService;
 
-    private File faultyConfigIgnored =
-            new File(DATA_DIRECTORY.getDataDirectoryRoot(), "fouteinhoud.yaml.ignore");
+    private File faultyConfigIgnored = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "fouteinhoud.yaml.ignore");
 
     private File faultyConfig = new File(DATA_DIRECTORY.getDataDirectoryRoot(), "fouteinhoud.yaml");
 

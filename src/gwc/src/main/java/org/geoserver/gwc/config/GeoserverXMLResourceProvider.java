@@ -30,8 +30,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
 
     private static final Logger LOGGER = Logging.getLogger(GeoserverXMLResourceProvider.class);
 
-    static final String GEOWEBCACHE_CONFIG_DIR_PROPERTY =
-            XMLFileResourceProvider.GWC_CONFIG_DIR_VAR;
+    static final String GEOWEBCACHE_CONFIG_DIR_PROPERTY = XMLFileResourceProvider.GWC_CONFIG_DIR_VAR;
 
     static final String GEOWEBCACHE_CACHE_DIR_PROPERTY = DefaultStorageFinder.GWC_CACHE_DIR;
 
@@ -50,31 +49,26 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             throws ConfigurationException {
         this.configFileName = configFileName;
         this.configDirectory = inferConfigDirectory(resourceStore, providedConfigDirectory);
-        LOGGER.config(
-                String.format(
-                        "Will look for '%s' in directory '%s'.",
-                        configFileName, configDirectory.dir().getAbsolutePath()));
+        LOGGER.config(String.format(
+                "Will look for '%s' in directory '%s'.",
+                configFileName, configDirectory.dir().getAbsolutePath()));
     }
 
-    public GeoserverXMLResourceProvider(
-            final String configFileName, final ResourceStore resourceStore)
+    public GeoserverXMLResourceProvider(final String configFileName, final ResourceStore resourceStore)
             throws ConfigurationException {
         this(null, configFileName, resourceStore);
     }
 
     /**
-     * Helper method that infers the directory that contains or will contain GWC configuration.
-     * First we will check if a specific location was set using properties GEOWEBCACHE_CONFIG_DIR
-     * and GEOWEBCACHE_CACHE_DIR, then we will check if a location was provided and then fallback on
-     * the default location.
+     * Helper method that infers the directory that contains or will contain GWC configuration. First we will check if a
+     * specific location was set using properties GEOWEBCACHE_CONFIG_DIR and GEOWEBCACHE_CACHE_DIR, then we will check
+     * if a location was provided and then fallback on the default location.
      */
-    private static Resource inferConfigDirectory(
-            ResourceStore resourceStore, String providedConfigDirectory) {
+    private static Resource inferConfigDirectory(ResourceStore resourceStore, String providedConfigDirectory) {
         // check if a specific location was provided using a context property otherwise use the
         // provided directory
-        String configDirectoryPath =
-                findFirstDefined(GEOWEBCACHE_CONFIG_DIR_PROPERTY, GEOWEBCACHE_CACHE_DIR_PROPERTY)
-                        .orElse(providedConfigDirectory);
+        String configDirectoryPath = findFirstDefined(GEOWEBCACHE_CONFIG_DIR_PROPERTY, GEOWEBCACHE_CACHE_DIR_PROPERTY)
+                .orElse(providedConfigDirectory);
         // if the configuration directory stills not defined we use the default location
         if (configDirectoryPath == null) {
             configDirectoryPath = DEFAULT_CONFIGURATION_DIR_NAME;
@@ -89,8 +83,8 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
     }
 
     /**
-     * Returns an {@link Optional} containing the value of the first defined property, or an empty
-     * {@code Optional} if no property is defined in the current context.
+     * Returns an {@link Optional} containing the value of the first defined property, or an empty {@code Optional} if
+     * no property is defined in the current context.
      */
     private static Optional<String> findFirstDefined(String... propertiesNames) {
         for (String propertyName : propertiesNames) {
@@ -98,10 +92,7 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
             String propertyValue = GeoServerExtensions.getProperty(propertyName);
             if (propertyValue != null) {
                 // this property is defined so let's use is value
-                LOGGER.fine(
-                        String.format(
-                                "Property '%s' is set with value '%s'.",
-                                propertyName, propertyValue));
+                LOGGER.fine(String.format("Property '%s' is set with value '%s'.", propertyName, propertyValue));
                 return Optional.of(propertyValue);
             }
         }
@@ -157,11 +148,10 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
         if (Resources.exists(xmlFile)) {
             LOGGER.fine("Found configuration file '" + xmlFile.path() + "'");
         } else if (templateLocation != null) {
-            LOGGER.config(
-                    "Create configuration file '"
-                            + xmlFile.path()
-                            + "' from template "
-                            + getClass().getResource(templateLocation).toExternalForm());
+            LOGGER.config("Create configuration file '"
+                    + xmlFile.path()
+                    + "' from template "
+                    + getClass().getResource(templateLocation).toExternalForm());
             // grab template from classpath
             try {
                 IOUtils.copy(getClass().getResourceAsStream(templateLocation), xmlFile.out());
@@ -180,31 +170,22 @@ public class GeoserverXMLResourceProvider implements ConfigurationResourceProvid
 
         LOGGER.fine("Backing up config file " + xmlFile.name() + " to " + backUpFileName);
 
-        List<Resource> previousBackUps =
-                Resources.list(
-                        parentFile,
-                        res -> {
-                            if (configFileName.equals(res.name())) {
-                                return false;
-                            }
-                            if (res.name().startsWith(configFileName)
-                                    && res.name().endsWith(".bak")) {
-                                return true;
-                            }
-                            return false;
-                        });
+        List<Resource> previousBackUps = Resources.list(parentFile, res -> {
+            if (configFileName.equals(res.name())) {
+                return false;
+            }
+            if (res.name().startsWith(configFileName) && res.name().endsWith(".bak")) {
+                return true;
+            }
+            return false;
+        });
 
         final int maxBackups = 10;
         if (previousBackUps.size() > maxBackups) {
-            Collections.sort(
-                    previousBackUps, (o1, o2) -> (int) (o1.lastmodified() - o2.lastmodified()));
+            Collections.sort(previousBackUps, (o1, o2) -> (int) (o1.lastmodified() - o2.lastmodified()));
             Resource oldest = previousBackUps.get(0);
             LOGGER.fine(
-                    "Deleting oldest config backup "
-                            + oldest
-                            + " to keep a maximum of "
-                            + maxBackups
-                            + " backups.");
+                    "Deleting oldest config backup " + oldest + " to keep a maximum of " + maxBackups + " backups.");
             oldest.delete();
         }
 

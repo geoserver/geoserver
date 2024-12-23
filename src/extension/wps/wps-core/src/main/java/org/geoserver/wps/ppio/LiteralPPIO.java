@@ -10,8 +10,8 @@ import org.geotools.util.Converters;
 /**
  * Process parameter input / output for literals in string form.
  *
- * <p>This class can handle arbitary literal data and does so by delegating to the geotools
- * converter api, {@link Converters}. However this class may be subclassed as needed.
+ * <p>This class can handle arbitary literal data and does so by delegating to the geotools converter api,
+ * {@link Converters}. However this class may be subclassed as needed.
  *
  * @author Lucas Reed, Refractions Research Inc
  * @author Justin Deoliveira, OpenGEO

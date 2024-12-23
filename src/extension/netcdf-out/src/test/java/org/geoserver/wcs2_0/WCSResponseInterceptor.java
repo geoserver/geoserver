@@ -24,19 +24,12 @@ public final class WCSResponseInterceptor extends BaseCoverageResponseDelegate
     private GridCoverage2D result;
 
     public WCSResponseInterceptor(GeoServer geoserver) {
-        super(
-                geoserver,
-                Arrays.asList("MyOutput"),
-                Map.of(MIME_TYPE, "zip"),
-                Map.of("MyOutput", MIME_TYPE));
+        super(geoserver, Arrays.asList("MyOutput"), Map.of(MIME_TYPE, "zip"), Map.of("MyOutput", MIME_TYPE));
     }
 
     @Override
     public void encode(
-            GridCoverage2D coverage,
-            String outputFormat,
-            Map<String, String> econdingParameters,
-            OutputStream output)
+            GridCoverage2D coverage, String outputFormat, Map<String, String> econdingParameters, OutputStream output)
             throws ServiceException, IOException {
         this.result = coverage;
     }

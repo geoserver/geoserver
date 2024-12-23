@@ -25,9 +25,7 @@ public class SystemTest extends GeoServerSystemTestSupport {
         super.setUpTestData(testData);
         new File(testData.getDataDirectoryRoot(), "notifier").mkdir();
         testData.copyTo(
-                getClass()
-                        .getClassLoader()
-                        .getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
+                getClass().getClassLoader().getResourceAsStream(NotifierInitializer.PROPERTYFILENAME),
                 "notifier/" + NotifierInitializer.PROPERTYFILENAME);
     }
 
@@ -47,8 +45,7 @@ public class SystemTest extends GeoServerSystemTestSupport {
     public void testTransactionNotifierIntialization() throws IOException {
         NotificationConfiguration cfg = null;
         int counter = 0;
-        for (TransactionCallback listener :
-                GeoServerExtensions.extensions(TransactionCallback.class)) {
+        for (TransactionCallback listener : GeoServerExtensions.extensions(TransactionCallback.class)) {
             if (listener instanceof INotificationTransactionListener) {
                 counter++;
             }

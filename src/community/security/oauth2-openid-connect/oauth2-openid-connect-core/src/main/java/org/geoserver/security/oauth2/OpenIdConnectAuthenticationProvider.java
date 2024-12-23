@@ -30,11 +30,7 @@ public class OpenIdConnectAuthenticationProvider extends GeoServerOAuthAuthentic
             String oauth2SecurityConfiguration,
             String geoServerOauth2RestTemplate,
             String bearTokenValidatorBeanName) {
-        super(
-                securityManager,
-                tokenServices,
-                oauth2SecurityConfiguration,
-                geoServerOauth2RestTemplate);
+        super(securityManager, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
         if ((bearTokenValidatorBeanName != null) && (!bearTokenValidatorBeanName.isEmpty())) {
             bearerTokenValidator = (TokenValidator) context.getBean(bearTokenValidatorBeanName);
         }
@@ -53,16 +49,11 @@ public class OpenIdConnectAuthenticationProvider extends GeoServerOAuthAuthentic
     @Override
     public GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config) {
         return new OpenIdConnectAuthenticationFilter(
-                config,
-                tokenServices,
-                oauth2SecurityConfiguration,
-                geoServerOauth2RestTemplate,
-                bearerTokenValidator);
+                config, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate, bearerTokenValidator);
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new OpenIdConnectFilterConfigValidator(securityManager);
     }
 

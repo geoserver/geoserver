@@ -53,50 +53,27 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         Catalog cat = getCatalog();
 
         global =
-                createLayerGroup(
-                        cat,
-                        "base",
-                        "base default",
-                        layer(cat, MockData.LAKES),
-                        layer(cat, MockData.FORESTS));
+                createLayerGroup(cat, "base", "base default", layer(cat, MockData.LAKES), layer(cat, MockData.FORESTS));
         cat.add(global);
 
-        global2 =
-                createLayerGroup(
-                        cat,
-                        "base2",
-                        "base default",
-                        layer(cat, MockData.LAKES),
-                        layer(cat, MockData.FORESTS));
+        global2 = createLayerGroup(
+                cat, "base2", "base default", layer(cat, MockData.LAKES), layer(cat, MockData.FORESTS));
         cat.add(global2);
 
-        sf =
-                createLayerGroup(
-                        cat,
-                        "base",
-                        "sf base",
-                        layer(cat, MockData.PRIMITIVEGEOFEATURE),
-                        layer(cat, MockData.AGGREGATEGEOFEATURE));
+        sf = createLayerGroup(
+                cat,
+                "base",
+                "sf base",
+                layer(cat, MockData.PRIMITIVEGEOFEATURE),
+                layer(cat, MockData.AGGREGATEGEOFEATURE));
         sf.setWorkspace(cat.getWorkspaceByName("sf"));
         cat.add(sf);
 
-        cite =
-                createLayerGroup(
-                        cat,
-                        "base",
-                        "cite base",
-                        layer(cat, MockData.BRIDGES),
-                        layer(cat, MockData.BUILDINGS));
+        cite = createLayerGroup(cat, "base", "cite base", layer(cat, MockData.BRIDGES), layer(cat, MockData.BUILDINGS));
         cite.setWorkspace(cat.getWorkspaceByName("cite"));
         cat.add(cite);
 
-        world =
-                createLayerGroup(
-                        cat,
-                        "world",
-                        "world base",
-                        layer(cat, MockData.WORLD),
-                        layer(cat, MockData.WORLD));
+        world = createLayerGroup(cat, "world", "world base", layer(cat, MockData.WORLD), layer(cat, MockData.WORLD));
         cat.add(world);
     }
 
@@ -117,8 +94,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         return cat.getLayerByName(getLayerId(name));
     }
 
-    LayerGroupInfo createLayerGroup(Catalog cat, String name, String title, PublishedInfo... layers)
-            throws Exception {
+    LayerGroupInfo createLayerGroup(Catalog cat, String name, String title, PublishedInfo... layers) throws Exception {
         LayerGroupInfo group = cat.getFactory().createLayerGroup();
         group.setName(name);
         group.setTitle("title for layer group " + title);
@@ -179,8 +155,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
     @Test
     public void testLayerGroupAbstractInCapabilities() throws Exception {
         Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
-        assertXpathExists(
-                "//Layer/Abstract[text() = 'abstract for layer group base default']", dom);
+        assertXpathExists("//Layer/Abstract[text() = 'abstract for layer group base default']", dom);
         assertXpathExists("//Layer/Abstract[text() = 'abstract for layer group sf base']", dom);
         assertXpathExists("//Layer/Abstract[text() = 'abstract for layer group cite base']", dom);
     }
@@ -193,14 +168,11 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check it doesn't have children Layers
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer", dom);
 
         // check its layers are present at the same level
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
     }
 
     @Test
@@ -215,10 +187,8 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check its layers are no more present at the same level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
 
         // check its layers are present as its children
         assertXpathExists(
@@ -238,17 +208,14 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?request=getcapabilities&version=1.1.1");
 
         // check layer group doesn't have a name but eventually a title
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
         assertXpathExists(
                 "/WMT_MS_Capabilities/Capability/Layer/Layer/Title[text() = 'title for layer group base default']",
                 dom);
 
         // check its layers are no more present at the same level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
 
         // check its layers are present as its children
         assertXpathExists(
@@ -273,10 +240,8 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check its layers are no more present at the same level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
 
         // check its layers are present as its children
         assertXpathExists(
@@ -315,8 +280,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests']", dom);
 
         dom = getAsDOM("wms/reflect?layers=sf:base&format=rss");
-        assertXpathExists(
-                "rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
+        assertXpathExists("rss/channel/title[text() = 'sf:PrimitiveGeoFeature,sf:AggregateGeoFeature']", dom);
 
         dom = getAsDOM("wms/reflect?layers=cite:base&format=rss");
         assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Buildings']", dom);
@@ -325,15 +289,13 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
     @Test
     public void testWorkspaceGetMap() throws Exception {
         Document dom = getAsDOM("sf/wms?request=reflect&layers=base&format=rss");
-        assertXpathExists(
-                "rss/channel/title[text() = 'PrimitiveGeoFeature,AggregateGeoFeature']", dom);
+        assertXpathExists("rss/channel/title[text() = 'PrimitiveGeoFeature,AggregateGeoFeature']", dom);
 
         dom = getAsDOM("cite/wms?request=reflect&layers=base&format=rss");
         assertXpathExists("rss/channel/title[text() = 'Bridges,Buildings']", dom);
 
         dom = getAsDOM("sf/wms?request=reflect&layers=cite:base&format=rss");
-        assertXpathExists(
-                "rss/channel/title[text() = 'PrimitiveGeoFeature,AggregateGeoFeature']", dom);
+        assertXpathExists("rss/channel/title[text() = 'PrimitiveGeoFeature,AggregateGeoFeature']", dom);
     }
 
     @Test
@@ -351,28 +313,20 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
         // check top level layer group exists
         assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base2']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base2']", dom);
 
         // check their layers are no more present at the same level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
 
         // check its layers are present as their children (in both groups)
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer[Name = 'cite:Lakes']", dom);
         assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer[Name = 'cite:Lakes']",
-                dom);
+                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer[Name = 'cite:Forests']", dom);
         assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base']/Layer[Name = 'cite:Forests']",
-                dom);
+                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base2']/Layer[Name = 'cite:Lakes']", dom);
         assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base2']/Layer[Name = 'cite:Lakes']",
-                dom);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base2']/Layer[Name = 'cite:Forests']",
-                dom);
+                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'base2']/Layer[Name = 'cite:Forests']", dom);
     }
 
     @Test
@@ -386,23 +340,17 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         // print(dom);
 
         // check top level layer group exists
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'nested']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'nested']", dom);
 
         // check its layers, and nested layers, and nested groups, are no more present at the same
         // level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Bridges']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Bridges']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check its layers are present as its children, as well as the nested group
         assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'cite:Bridges']",
-                dom);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']",
-                dom);
+                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'cite:Bridges']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']", dom);
         assertXpathNotExists(
                 "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']/Layer[Name = 'cite:Lakes']",
                 dom);
@@ -425,27 +373,19 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         // print(dom);
 
         // check top level layer group exists
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'nested']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'nested']", dom);
 
         // check its layers, and nested layers, and nested groups, are no more present at the same
         // level
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Bridges']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
-        assertXpathNotExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Bridges']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Lakes']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'cite:Forests']", dom);
+        assertXpathNotExists("/WMT_MS_Capabilities/Capability/Layer/Layer/Name[text() = 'base']", dom);
 
         // check its layers are present as its children, as well as the nested group
         assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'cite:Bridges']",
-                dom);
-        assertXpathExists(
-                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']",
-                dom);
+                "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'cite:Bridges']", dom);
+        assertXpathExists("/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']", dom);
         assertXpathExists(
                 "/WMT_MS_Capabilities/Capability/Layer/Layer[Name = 'nested']/Layer[Name = 'base']/Layer[Name = 'cite:Lakes']",
                 dom);
@@ -467,8 +407,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
         // print(dom);
 
-        assertXpathExists(
-                "rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
     }
 
     @Test
@@ -479,9 +418,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         cat.add(nested);
 
         Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
-        assertXpathExists(
-                "rss/channel/title[text() = 'cite:Lakes,cite:Forests,cite:Lakes,cite:Forests']",
-                dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Lakes,cite:Forests,cite:Lakes,cite:Forests']", dom);
     }
 
     @Test
@@ -494,8 +431,7 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
         Document dom = getAsDOM("wms?request=reflect&layers=nested&format=rss");
         // print(dom);
 
-        assertXpathExists(
-                "rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
+        assertXpathExists("rss/channel/title[text() = 'cite:Bridges,cite:Lakes,cite:Forests']", dom);
     }
 
     void assertBounds(LayerGroupInfo lg, String name, Document dom) throws Exception {
@@ -575,13 +511,11 @@ public class LayerGroupWorkspaceTest extends WMSTestSupport {
 
     /** returns list of prefixed layer groups names from document */
     private List<String> layerGroupNameList(Document doc) throws Exception {
-        List<Node> nlist =
-                xpathList("//WMT_MS_Capabilities/Capability/Layer/Layer[not(@opaque)]/Name", doc);
+        List<Node> nlist = xpathList("//WMT_MS_Capabilities/Capability/Layer/Layer[not(@opaque)]/Name", doc);
         List<String> result = new ArrayList<>();
-        nlist.forEach(
-                x -> {
-                    result.add(x.getTextContent().trim());
-                });
+        nlist.forEach(x -> {
+            result.add(x.getTextContent().trim());
+        });
         return result;
     }
 

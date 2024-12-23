@@ -16,8 +16,8 @@ import org.geoserver.test.AbstractAppSchemaTestSupport;
 import org.junit.Assume;
 
 /**
- * Base class that provides the Wfs test support framework and perform checks on the fixture and the
- * availabilities of the fixture required
+ * Base class that provides the Wfs test support framework and perform checks on the fixture and the availabilities of
+ * the fixture required
  *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  */
@@ -36,8 +36,8 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
     }
 
     /**
-     * The key in the test fixture property file used to set the behaviour of the online test if
-     * {@link #connect()} fails.
+     * The key in the test fixture property file used to set the behaviour of the online test if {@link #connect()}
+     * fails.
      */
     public static final String SKIP_ON_FAILURE_KEY = "skip.on.failure";
 
@@ -47,8 +47,8 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
     protected boolean skipOnFailure = true;
 
     /**
-     * A static map which tracks which fixture files can not be found. This prevents continually
-     * looking up the file and reporting it not found to the user.
+     * A static map which tracks which fixture files can not be found. This prevents continually looking up the file and
+     * reporting it not found to the user.
      */
     protected static Map<String, Boolean> found = new HashMap<>();
 
@@ -72,9 +72,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
      * <p>The fixture id is obtained via {@link #getFixtureId()}.
      */
     protected final void initialiseTest() throws Exception {
-        skipOnFailure =
-                Boolean.parseBoolean(
-                        fixture.getProperty(SKIP_ON_FAILURE_KEY, SKIP_ON_FAILURE_DEFAULT));
+        skipOnFailure = Boolean.parseBoolean(fixture.getProperty(SKIP_ON_FAILURE_KEY, SKIP_ON_FAILURE_DEFAULT));
         // call the setUp template method
         try {
             connect();
@@ -91,8 +89,8 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
     }
 
     /**
-     * Check whether the fixture is available. This method also loads the configuration if present,
-     * and tests the connection using {@link #isOnline()}.
+     * Check whether the fixture is available. This method also loads the configuration if present, and tests the
+     * connection using {@link #isOnline()}.
      *
      * @return true if fixture is available for use
      */
@@ -113,10 +111,7 @@ public abstract class AbstractDataReferenceWfsTest extends AbstractAppSchemaTest
                 try {
                     available = isOnline();
                 } catch (Throwable t) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Skipping " + fixtureId + " tests, resources not available.",
-                            t);
+                    LOGGER.log(Level.WARNING, "Skipping " + fixtureId + " tests, resources not available.", t);
 
                     available = Boolean.FALSE;
                 }

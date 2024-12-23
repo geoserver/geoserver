@@ -11,10 +11,10 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.feature.type.Name;
 
 /**
- * Extension point to initialize/cleanup the underlying resource of a feature type with custom
- * informations taken from its metadata <br>
- * This may be useful when the resource configuration is dynamic and based on informations provided
- * by user as in case of {@link org.geotools.jdbc.VirtualTable}
+ * Extension point to initialize/cleanup the underlying resource of a feature type with custom informations taken from
+ * its metadata <br>
+ * This may be useful when the resource configuration is dynamic and based on informations provided by user as in case
+ * of {@link org.geotools.jdbc.VirtualTable}
  *
  * <p>The extension point is used as follows:
  *
@@ -34,35 +34,28 @@ import org.geotools.api.feature.type.Name;
 public interface FeatureTypeCallback {
 
     /** Checks if this initializer can handle the specified resource handle */
-    boolean canHandle(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess);
+    boolean canHandle(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess);
 
     /**
-     * Initializes the specified feature type in the specified data access. If temporaryName is
-     * provided, it means the initializer should try to initializer the feature type with the given
-     * temporary name, unless the feature type already exists.
+     * Initializes the specified feature type in the specified data access. If temporaryName is provided, it means the
+     * initializer should try to initializer the feature type with the given temporary name, unless the feature type
+     * already exists.
      *
      * @return true if the initialization used the temporary name, false otherwise
      */
     boolean initialize(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException;
 
     /** Prepares for the feature type to be flushed */
-    void flush(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
+    void flush(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess)
             throws IOException;
 
     /**
-     * Performs any cleanup necessary to clean up the layer from the specified store. In case a
-     * previous initialization used a temporary name, it will be passed down and the initiliazer
-     * should use it for cleanup purposes
+     * Performs any cleanup necessary to clean up the layer from the specified store. In case a previous initialization
+     * used a temporary name, it will be passed down and the initiliazer should use it for cleanup purposes
      */
     void dispose(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName)
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName)
             throws IOException;
 }

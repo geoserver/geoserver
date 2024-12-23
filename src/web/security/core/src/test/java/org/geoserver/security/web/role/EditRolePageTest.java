@@ -51,12 +51,8 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
 
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRoleServiceName());
         tester.startPage(
-                page =
-                        (EditRolePage)
-                                new EditRolePage(
-                                                getRoleServiceName(),
-                                                gaService.getRoleByName("ROLE_WFS"))
-                                        .setReturnPage(returnPage));
+                page = (EditRolePage) new EditRolePage(getRoleServiceName(), gaService.getRoleByName("ROLE_WFS"))
+                        .setReturnPage(returnPage));
         tester.assertRenderedPage(EditRolePage.class);
 
         assertFalse(tester.getComponentFromLastRenderedPage("form:name").isEnabled());
@@ -94,12 +90,9 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
 
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRoleServiceName());
         tester.startPage(
-                page =
-                        (EditRolePage)
-                                new EditRolePage(
-                                                getRoleServiceName(),
-                                                gaService.getRoleByName("ROLE_AUTHENTICATED"))
-                                        .setReturnPage(returnPage));
+                page = (EditRolePage)
+                        new EditRolePage(getRoleServiceName(), gaService.getRoleByName("ROLE_AUTHENTICATED"))
+                                .setReturnPage(returnPage));
         tester.assertRenderedPage(EditRolePage.class);
 
         tester.assertModelValue("form:name", "ROLE_AUTHENTICATED");
@@ -129,10 +122,8 @@ public class EditRolePageTest extends AbstractSecurityWicketTestSupport {
 
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRORoleServiceName());
         tester.startPage(
-                page =
-                        (EditRolePage)
-                                new EditRolePage(getRORoleServiceName(), GeoServerRole.ADMIN_ROLE)
-                                        .setReturnPage(returnPage));
+                page = (EditRolePage)
+                        new EditRolePage(getRORoleServiceName(), GeoServerRole.ADMIN_ROLE).setReturnPage(returnPage));
         tester.assertRenderedPage(EditRolePage.class);
         assertFalse(tester.getComponentFromLastRenderedPage("form:name").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:properties").isEnabled());

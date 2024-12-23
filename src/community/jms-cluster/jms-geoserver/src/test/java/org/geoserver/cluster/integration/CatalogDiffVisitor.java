@@ -36,8 +36,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.util.IOUtils;
 
 /**
- * Utility visitor that will extract the differences between catalog objects. This visitor can be
- * used to fully compare two catalogs.
+ * Utility visitor that will extract the differences between catalog objects. This visitor can be used to fully compare
+ * two catalogs.
  */
 public final class CatalogDiffVisitor implements CatalogVisitor {
 
@@ -48,9 +48,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
     private final List<InfoDiff> differences = new ArrayList<>();
 
     public CatalogDiffVisitor(
-            Catalog otherCatalog,
-            GeoServerDataDirectory dataDir,
-            GeoServerDataDirectory otherDataDir) {
+            Catalog otherCatalog, GeoServerDataDirectory dataDir, GeoServerDataDirectory otherDataDir) {
         this.otherCatalog = otherCatalog;
         this.dataDir = dataDir;
         this.otherDataDir = otherDataDir;
@@ -62,14 +60,11 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         listDiffOther(catalog.getNamespaces(), otherCatalog.getNamespaces());
         listDiffOther(catalog.getDataStores(), otherCatalog.getDataStores());
         listDiffOther(catalog.getCoverageStores(), otherCatalog.getCoverageStores());
-        listDiffOther(
-                catalog.getStores(WMSStoreInfo.class), otherCatalog.getStores(WMSStoreInfo.class));
+        listDiffOther(catalog.getStores(WMSStoreInfo.class), otherCatalog.getStores(WMSStoreInfo.class));
         listDiffOther(catalog.getFeatureTypes(), otherCatalog.getFeatureTypes());
         listDiffOther(catalog.getCoverages(), otherCatalog.getCoverages());
         listDiffOther(catalog.getLayers(), otherCatalog.getLayers());
-        listDiffOther(
-                catalog.getResources(WMSLayerInfo.class),
-                otherCatalog.getResources(WMSLayerInfo.class));
+        listDiffOther(catalog.getResources(WMSLayerInfo.class), otherCatalog.getResources(WMSLayerInfo.class));
         listDiffOther(catalog.getStyles(), otherCatalog.getStyles());
         listDiffOther(catalog.getLayerGroups(), otherCatalog.getLayerGroups());
         catalog.getWorkspaces().forEach(info -> info.accept(this));
@@ -111,9 +106,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         if (!(Objects.equals(dataStore, otherDataStore)
                 && Objects.equals(dataStore.getType(), otherDataStore.getType())
                 && checkEquals(dataStore.getMetadata(), otherDataStore.getMetadata())
-                && checkEquals(
-                        dataStore.getConnectionParameters(),
-                        otherDataStore.getConnectionParameters()))) {
+                && checkEquals(dataStore.getConnectionParameters(), otherDataStore.getConnectionParameters()))) {
             differences.add(new InfoDiff(dataStore, otherDataStore));
         }
     }
@@ -127,8 +120,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
                 && Objects.equals(coverageStore.getURL(), otherCoverageStore.getURL())
                 && checkEquals(coverageStore.getMetadata(), otherCoverageStore.getMetadata())
                 && checkEquals(
-                        coverageStore.getConnectionParameters(),
-                        otherCoverageStore.getConnectionParameters()))) {
+                        coverageStore.getConnectionParameters(), otherCoverageStore.getConnectionParameters()))) {
             differences.add(new InfoDiff(coverageStore, otherCoverageStore));
         }
     }
@@ -145,9 +137,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
                 && Objects.equals(wmsStore.getReadTimeout(), otherWmsStore.getReadTimeout())
                 && Objects.equals(wmsStore.getConnectTimeout(), otherWmsStore.getConnectTimeout())
                 && checkEquals(wmsStore.getMetadata(), otherWmsStore.getMetadata())
-                && checkEquals(
-                        wmsStore.getConnectionParameters(),
-                        otherWmsStore.getConnectionParameters()))) {
+                && checkEquals(wmsStore.getConnectionParameters(), otherWmsStore.getConnectionParameters()))) {
             differences.add(new InfoDiff(wmsStore, otherWmsStore));
         }
     }
@@ -175,8 +165,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         CoverageInfo otherCoverage = otherCatalog.getCoverage(coverage.getId());
         if (!(Objects.equals(coverage, otherCoverage)
                 && checkEquals(coverage.getDimensions(), otherCoverage.getDimensions())
-                && checkEquals(
-                        coverage.getInterpolationMethods(), otherCoverage.getInterpolationMethods())
+                && checkEquals(coverage.getInterpolationMethods(), otherCoverage.getInterpolationMethods())
                 && checkEquals(coverage.getParameters(), otherCoverage.getParameters())
                 && checkEquals(coverage.getResponseSRS(), otherCoverage.getResponseSRS())
                 && checkEquals(coverage.getAlias(), otherCoverage.getAlias())
@@ -246,22 +235,16 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
         return differences;
     }
 
-    /**
-     * Register has differences the elements from the other collection that are not present in
-     * collection.
-     */
-    private <T extends CatalogInfo> void listDiffOther(
-            Collection<T> collection, Collection<T> otherCollection) {
-        differences.addAll(
-                otherCollection.stream()
-                        .filter(info -> !containsElementWithId(info.getId(), collection))
-                        .map(info -> new InfoDiff(null, info))
-                        .collect(Collectors.toList()));
+    /** Register has differences the elements from the other collection that are not present in collection. */
+    private <T extends CatalogInfo> void listDiffOther(Collection<T> collection, Collection<T> otherCollection) {
+        differences.addAll(otherCollection.stream()
+                .filter(info -> !containsElementWithId(info.getId(), collection))
+                .map(info -> new InfoDiff(null, info))
+                .collect(Collectors.toList()));
     }
 
     /** Searches a catalog info based in is ID in a provided collection- */
-    private <T extends CatalogInfo> boolean containsElementWithId(
-            String id, Collection<T> collection) {
+    private <T extends CatalogInfo> boolean containsElementWithId(String id, Collection<T> collection) {
         for (T element : collection) {
             if (element.getId().equals(id)) {
                 // catalog info element found
@@ -281,8 +264,7 @@ public final class CatalogDiffVisitor implements CatalogVisitor {
             IOUtils.copy(input, output);
             return new String(output.toByteArray());
         } catch (IOException exception) {
-            throw new RuntimeException(
-                    String.format("Error reading style '%s'.", styleInfo.getName()));
+            throw new RuntimeException(String.format("Error reading style '%s'.", styleInfo.getName()));
         }
     }
 

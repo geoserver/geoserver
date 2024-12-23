@@ -17,8 +17,7 @@ public class NumberFormatTransform extends AttributeRemapTransform {
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         Object val = oldFeature.getAttribute(field);
         if (val != null) {

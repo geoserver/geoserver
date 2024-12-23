@@ -52,17 +52,16 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
 
     protected void setupPanel(JDBCSecurityServiceConfig theConfig) {
         this.config = theConfig;
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(
+                new ComponentBuilder() {
+                    private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return current = new JDBCConnectionPanel<>(id, new Model<>(config));
-                            }
-                        },
-                        new CompoundPropertyModel<>(config)));
+                    @Override
+                    public Component buildComponent(String id) {
+                        return current = new JDBCConnectionPanel<>(id, new Model<>(config));
+                    }
+                },
+                new CompoundPropertyModel<>(config)));
     }
 
     @Test
@@ -149,11 +148,7 @@ public class JDBCConnectionPanelTest extends AbstractSecurityWicketTestSupport {
             tester.assertComponent(base + "jndiName", TextField.class);
             tester.assertVisible(base + "jndiName");
         } else {
-            for (String c :
-                    Arrays.asList(
-                            new String[] {
-                                "driverClassName", "connectURL", "userName", "password"
-                            })) {
+            for (String c : Arrays.asList(new String[] {"driverClassName", "connectURL", "userName", "password"})) {
                 tester.assertComponent(base + c, FormComponent.class);
                 tester.assertVisible(base + c);
             }

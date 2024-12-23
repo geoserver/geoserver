@@ -12,14 +12,13 @@ package org.geoserver.platform.resource;
  *
  * <ul>
  *   <li>Direct manipulation using {@link Resource#out()}
- *   <li>Indirect editing detected through synchronization (with the local file system or geoserver
- *       cluster)
+ *   <li>Indirect editing detected through synchronization (with the local file system or geoserver cluster)
  * </ul>
  *
- * Listeners are used to register interest in a change to a individual resource or a directory of
- * resources. Receiving a notification indicates that a change has taken place, and is available
- * using {@link Resource#in()}. If you require local file access please use {@link Resource#file()}
- * (or {@link Resource#dir()}) in response to this notification to unpack the change locally.
+ * Listeners are used to register interest in a change to a individual resource or a directory of resources. Receiving a
+ * notification indicates that a change has taken place, and is available using {@link Resource#in()}. If you require
+ * local file access please use {@link Resource#file()} (or {@link Resource#dir()}) in response to this notification to
+ * unpack the change locally.
  *
  * <p>Watch directory contents:
  *
@@ -43,8 +42,8 @@ package org.geoserver.platform.resource;
  * </code>
  * </pre>
  *
- * <p>As shown above, simply watching a directory for changes does not automatically retrieve the
- * changed file. In this case the FontCache needs any TTF fonts unpacked locally before being reset.
+ * <p>As shown above, simply watching a directory for changes does not automatically retrieve the changed file. In this
+ * case the FontCache needs any TTF fonts unpacked locally before being reset.
  *
  * <p>Example reload on resource change:
  *

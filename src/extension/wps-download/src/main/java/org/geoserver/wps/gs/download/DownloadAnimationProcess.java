@@ -54,10 +54,9 @@ import org.jcodec.common.model.Rational;
 
 @DescribeProcess(
         title = "Animation Download Process",
-        description =
-                "Builds an animation given a set of layer "
-                        + "definitions, "
-                        + "area of interest, size and a series of times for animation frames.")
+        description = "Builds an animation given a set of layer "
+                + "definitions, "
+                + "area of interest, size and a series of times for animation frames.")
 public class DownloadAnimationProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(DownloadAnimationProcess.class);
@@ -89,10 +88,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
         this.confiGenerator = downloadServiceConfigurationGenerator;
         this.warningAppender = warningAppender;
         // java 8 formatters are thread safe
-        this.formatter =
-                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
-                        .withLocale(Locale.ENGLISH)
-                        .withZone(ZoneId.of("GMT"));
+        this.formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+                .withLocale(Locale.ENGLISH)
+                .withZone(ZoneId.of("GMT"));
         this.rasterCleaner = rasterCleaner;
     }
 
@@ -108,39 +106,27 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                 description = "Animation metadata, including dimension match warnings")
     })
     public Map<String, Object> execute(
-            @DescribeParameter(
-                            name = "bbox",
-                            min = 1,
-                            description = "The map area and output projection")
+            @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection")
                     ReferencedEnvelope bbox,
             @DescribeParameter(
                             name = "decoration",
                             min = 0,
-                            description =
-                                    "A WMS decoration layout name to watermark" + " the output")
+                            description = "A WMS decoration layout name to watermark" + " the output")
                     String decorationName,
             @DescribeParameter(
                             name = "decorationEnvironment",
                             min = 0,
                             description = "Env parameters used to apply the watermark decoration")
                     String decorationEnvironment,
-            @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
-                    Integer headerHeight,
+            @DescribeParameter(name = "headerheight", min = 0, description = "Header height") Integer headerHeight,
             @DescribeParameter(
                             name = "time",
                             min = 1,
                             description =
-                                    "Map time specification (a range with "
-                                            + "periodicity or a list of time values)")
+                                    "Map time specification (a range with " + "periodicity or a list of time values)")
                     String time,
-            @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
-                    int width,
-            @DescribeParameter(
-                            name = "height",
-                            min = 1,
-                            description = "Output height",
-                            minValue = 1)
-                    int height,
+            @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1) int width,
+            @DescribeParameter(name = "height", min = 1, description = "Output height", minValue = 1) int height,
             @DescribeParameter(
                             name = "fps",
                             min = 1,
@@ -148,18 +134,13 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                             minValue = 0,
                             defaultValue = "1")
                     double fps,
-            @DescribeParameter(
-                            name = "layer",
-                            min = 1,
-                            description = "The list of layers",
-                            minValue = 1)
+            @DescribeParameter(name = "layer", min = 1, description = "The list of layers", minValue = 1)
                     Layer[] layers,
             ProgressListener progressListener)
             throws Exception {
 
         // avoid NPE on progress listener, make it effectively final for lambda to use below
-        ProgressListener listener =
-                Optional.ofNullable(progressListener).orElse(new DefaultProgressListener());
+        ProgressListener listener = Optional.ofNullable(progressListener).orElse(new DefaultProgressListener());
 
         // if height and width are an odd number fix them, cannot encode videos otherwise
         if (width % 2 != 0) {
@@ -184,31 +165,29 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             // Have two threads work on encoding. The current thread builds the frames, and submits
             // them into a small queue that the encoder thread picks from
             BlockingQueue<BufferedImage> renderingQueue = new LinkedBlockingDeque<>(1);
-            BasicThreadFactory threadFactory =
-                    new BasicThreadFactory.Builder().namingPattern("animation-encoder-%d").build();
+            BasicThreadFactory threadFactory = new BasicThreadFactory.Builder()
+                    .namingPattern("animation-encoder-%d")
+                    .build();
             ExecutorService executor = Executors.newSingleThreadExecutor(threadFactory);
             // a way to get out of the encoding loop in case an exception happens during frame
             // rendering
             AtomicBoolean abortEncoding = new AtomicBoolean(false);
-            Future<Void> future =
-                    executor.submit(
-                            () -> {
-                                int totalTimes = parsedTimes.size();
-                                int count = 1;
-                                BufferedImage frame;
-                                while ((frame = renderingQueue.take()) != STOP) {
-                                    enc.encodeImage(frame);
-                                    RasterCleaner.disposeImage(frame);
-                                    listener.progress(90 * (((float) count) / totalTimes));
-                                    String message =
-                                            "Generated frames " + count + " out of " + totalTimes;
-                                    listener.setTask(new SimpleInternationalString(message));
-                                    count++;
-                                    // handling exit due to WPS cancellation, or to exceptions
-                                    if (listener.isCanceled() || abortEncoding.get()) return null;
-                                }
-                                return null;
-                            });
+            Future<Void> future = executor.submit(() -> {
+                int totalTimes = parsedTimes.size();
+                int count = 1;
+                BufferedImage frame;
+                while ((frame = renderingQueue.take()) != STOP) {
+                    enc.encodeImage(frame);
+                    RasterCleaner.disposeImage(frame);
+                    listener.progress(90 * (((float) count) / totalTimes));
+                    String message = "Generated frames " + count + " out of " + totalTimes;
+                    listener.setTask(new SimpleInternationalString(message));
+                    count++;
+                    // handling exit due to WPS cancellation, or to exceptions
+                    if (listener.isCanceled() || abortEncoding.get()) return null;
+                }
+                return null;
+            });
             Request request = Dispatcher.REQUEST.get();
             AnimationMetadata metadata = new AnimationMetadata();
             try {
@@ -221,20 +200,19 @@ public class DownloadAnimationProcess implements GeoServerProcess {
                     // clean up eventual previous warnings
                     warningAppender.init(request);
 
-                    RenderedImage image =
-                            mapper.buildImage(
-                                    bbox,
-                                    decorationName,
-                                    decorationEnvironment,
-                                    mapTime,
-                                    width,
-                                    height,
-                                    headerHeight,
-                                    layers,
-                                    false,
-                                    "image/png",
-                                    new DefaultProgressListener(),
-                                    serverCache);
+                    RenderedImage image = mapper.buildImage(
+                            bbox,
+                            decorationName,
+                            decorationEnvironment,
+                            mapTime,
+                            width,
+                            height,
+                            headerHeight,
+                            layers,
+                            false,
+                            "image/png",
+                            new DefaultProgressListener(),
+                            serverCache);
                     BufferedImage frame = toBufferedImage(image);
                     LOGGER.log(Level.FINE, "Got frame %s", frame);
                     renderingQueue.put(frame);
@@ -285,10 +263,9 @@ public class DownloadAnimationProcess implements GeoServerProcess {
             mapTime = formatter.format(((Date) parsedTime).toInstant());
         } else if (parsedTime instanceof DateRange) {
             DateRange range = (DateRange) parsedTime;
-            mapTime =
-                    formatter.format(range.getMinValue().toInstant())
-                            + "/"
-                            + formatter.format(range.getMinValue().toInstant());
+            mapTime = formatter.format(range.getMinValue().toInstant())
+                    + "/"
+                    + formatter.format(range.getMinValue().toInstant());
         } else {
             throw new WPSException("Unexpected parsed date type: " + parsedTime);
         }

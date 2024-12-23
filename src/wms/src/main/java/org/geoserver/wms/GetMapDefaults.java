@@ -60,23 +60,20 @@ public class GetMapDefaults {
     }
 
     /**
-     * This method tries to automatically determine SRS, bounding box and output size based on the
-     * layers provided by the user and any other parameters.
+     * This method tries to automatically determine SRS, bounding box and output size based on the layers provided by
+     * the user and any other parameters.
      *
-     * <p>If bounds are not specified by the user, they are automatically se to the union of the
-     * bounds of all layers.
+     * <p>If bounds are not specified by the user, they are automatically se to the union of the bounds of all layers.
      *
-     * <p>The size of the output image defaults to 512 pixels, the height is automatically
-     * determined based on the width to height ratio of the requested layers. This is also true if
-     * either height or width are specified by the user. If both height and width are specified by
-     * the user, the automatically determined bounding box will be adjusted to fit inside these
-     * bounds.
+     * <p>The size of the output image defaults to 512 pixels, the height is automatically determined based on the width
+     * to height ratio of the requested layers. This is also true if either height or width are specified by the user.
+     * If both height and width are specified by the user, the automatically determined bounding box will be adjusted to
+     * fit inside these bounds.
      *
-     * <p>General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2)
-     * Determine whether all requested layers use the same SRS, - if so, try to do bounding box
-     * calculations in native coordinates 3) Aggregate the bounding boxes (in EPSG:4326 or native)
-     * 4a) If bounding box has been specified, adjust height of image to match 4b) If bounding box
-     * has not been specified, but height has, adjust bounding box
+     * <p>General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2) Determine whether all
+     * requested layers use the same SRS, - if so, try to do bounding box calculations in native coordinates 3)
+     * Aggregate the bounding boxes (in EPSG:4326 or native) 4a) If bounding box has been specified, adjust height of
+     * image to match 4b) If bounding box has not been specified, but height has, adjust bounding box
      */
     public void autoSetBoundsAndSize(GetMapRequest getMap) {
         // Get the layers
@@ -97,9 +94,8 @@ public class GetMapDefaults {
         for (int i = 0; useNativeBounds && i < layers.size(); i++) {
             if (layers.get(i) != null) {
                 String layerSRS = layers.get(i).getSRS();
-                useNativeBounds =
-                        reqSRS.equalsIgnoreCase(layerSRS)
-                                && layers.get(i).getResource().getNativeBoundingBox() != null;
+                useNativeBounds = reqSRS.equalsIgnoreCase(layerSRS)
+                        && layers.get(i).getResource().getNativeBoundingBox() != null;
             } else {
                 useNativeBounds = false;
             }
@@ -129,12 +125,10 @@ public class GetMapDefaults {
                         ReferencedEnvelope nativeBbox = layerInfo.getBoundingBox();
                         if (nativeBbox == null) {
                             try {
-                                CoordinateReferenceSystem nativeCrs =
-                                        layerInfo.getCoordinateReferenceSystem();
+                                CoordinateReferenceSystem nativeCrs = layerInfo.getCoordinateReferenceSystem();
                                 nativeBbox = curbbox.transform(nativeCrs, true);
                             } catch (Exception e) {
-                                throw new ServiceException(
-                                        "Best effort native bbox computation failed", e);
+                                throw new ServiceException("Best effort native bbox computation failed", e);
                             }
                         }
                         curbbox = nativeBbox;
@@ -269,8 +263,8 @@ public class GetMapDefaults {
     }
 
     /**
-     * This adjusts the bounds by zooming out 2%, but also ensuring that the maximum bounds do not
-     * exceed the world bounding box
+     * This adjusts the bounds by zooming out 2%, but also ensuring that the maximum bounds do not exceed the world
+     * bounding box
      *
      * <p>This only applies if the SRS is EPSG:4326 or EPSG:900913
      *

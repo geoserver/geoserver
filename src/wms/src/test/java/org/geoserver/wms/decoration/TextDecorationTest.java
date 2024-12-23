@@ -38,13 +38,12 @@ public class TextDecorationTest {
         Map<String, Expression> options = new HashMap<>();
         options.put(
                 "message",
-                FF.literal(
-                        "<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n"
-                                + "<#setting locale=\"en_US\">\n"
-                                + "<#setting time_zone=\"GMT\">"
-                                + "<#if time??>\n"
-                                + "${time?datetime?string[\"dd.MM.yyyy\"]}"
-                                + "</#if>"));
+                FF.literal("<#setting datetime_format=\"yyyy-MM-dd'T'HH:mm:ss.SSSX\">\n"
+                        + "<#setting locale=\"en_US\">\n"
+                        + "<#setting time_zone=\"GMT\">"
+                        + "<#if time??>\n"
+                        + "${time?datetime?string[\"dd.MM.yyyy\"]}"
+                        + "</#if>"));
         decoration.loadOptions(options);
 
         GetMapRequest getMap = new GetMapRequest();

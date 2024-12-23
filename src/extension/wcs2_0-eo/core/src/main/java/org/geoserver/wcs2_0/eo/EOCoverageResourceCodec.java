@@ -53,8 +53,8 @@ public class EOCoverageResourceCodec {
     }
 
     /**
-     * Checks if the specified coverage is a valid dataset, e.g., it has the dataset flag enabled
-     * and time dimension, and has a structured grid coverage reader backing it
+     * Checks if the specified coverage is a valid dataset, e.g., it has the dataset flag enabled and time dimension,
+     * and has a structured grid coverage reader backing it
      */
     public boolean isValidDataset(CoverageInfo ci) {
         Boolean dataset = ci.getMetadata().get(WCSEOMetadata.DATASET.key, Boolean.class);
@@ -64,8 +64,7 @@ public class EOCoverageResourceCodec {
             boolean structured = reader instanceof StructuredGridCoverage2DReader;
             return dataset != null && dataset && time != null && time.isEnabled() && structured;
         } catch (IOException e) {
-            throw new ServiceException(
-                    "Failed to locate the grid coverage reader for coverage " + ci.prefixedName());
+            throw new ServiceException("Failed to locate the grid coverage reader for coverage " + ci.prefixedName());
         }
     }
 
@@ -76,22 +75,19 @@ public class EOCoverageResourceCodec {
      */
     public CoverageInfo getDatasetCoverage(String datasetId) {
         if (!datasetId.endsWith(DATASET_SUFFIX)) {
-            LOGGER.fine(
-                    "Invalid dataset id " + datasetId + " it does not end with " + DATASET_SUFFIX);
+            LOGGER.fine("Invalid dataset id " + datasetId + " it does not end with " + DATASET_SUFFIX);
             return null;
         }
 
         String coverageName = datasetId.substring(0, datasetId.length() - DATASET_SUFFIX.length());
         LayerInfo layer = NCNameResourceCodec.getCoverage(catalog, coverageName);
         if (layer == null) {
-            LOGGER.fine(
-                    "Invalid dataset id " + datasetId + " does not match any published dataset");
+            LOGGER.fine("Invalid dataset id " + datasetId + " does not match any published dataset");
             return null;
         }
         CoverageInfo ci = (CoverageInfo) layer.getResource();
         if (!isValidDataset(ci)) {
-            LOGGER.fine(
-                    "Invalid dataset id " + datasetId + " does not match any published dataset");
+            LOGGER.fine("Invalid dataset id " + datasetId + " does not match any published dataset");
             return null;
         }
 
@@ -104,8 +100,8 @@ public class EOCoverageResourceCodec {
     }
 
     /**
-     * Returns the coverage containing the specified coverage, or null if the syntax is incorrect,
-     * the coverage does not exist, or it's not a dataset
+     * Returns the coverage containing the specified coverage, or null if the syntax is incorrect, the coverage does not
+     * exist, or it's not a dataset
      */
     public CoverageInfo getGranuleCoverage(String granuleId) {
         // does it have the expected lexical structure?
@@ -132,10 +128,7 @@ public class EOCoverageResourceCodec {
         }
     }
 
-    /**
-     * Given a valid granule id returns a Filter to extract it from the structured grid coverage
-     * reader
-     */
+    /** Given a valid granule id returns a Filter to extract it from the structured grid coverage reader */
     public Filter getGranuleFilter(String granuleId) {
         // does it have the expected lexical structure?
         if (!granuleId.contains(GRANULE_SEPARATOR)) {

@@ -12,8 +12,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /** Configuration panel extension for {@link GeoServerRequestHeaderAuthenticationFilter}. */
 public class JwtHeadersAuthFilterPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                GeoServerJwtHeadersFilterConfig, JwtHeadersAuthFilterPanel> {
+        extends AuthenticationFilterPanelInfo<GeoServerJwtHeadersFilterConfig, JwtHeadersAuthFilterPanel> {
 
     public JwtHeadersAuthFilterPanelInfo() {
         setComponentClass(JwtHeadersAuthFilterPanel.class);

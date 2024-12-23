@@ -14,8 +14,7 @@ import org.geoserver.metadata.data.service.ComplexMetadataService;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
-public class RepeatableComplexAttributeDataProvider
-        extends GeoServerDataProvider<ComplexMetadataMap> {
+public class RepeatableComplexAttributeDataProvider extends GeoServerDataProvider<ComplexMetadataMap> {
 
     private static final long serialVersionUID = -255037580716257623L;
 
@@ -39,8 +38,7 @@ public class RepeatableComplexAttributeDataProvider
     private List<ComplexMetadataMap> items = new ArrayList<>();
 
     public RepeatableComplexAttributeDataProvider(
-            AttributeConfiguration attributeConfiguration,
-            IModel<ComplexMetadataMap> metadataModel) {
+            AttributeConfiguration attributeConfiguration, IModel<ComplexMetadataMap> metadataModel) {
         this.metadataModel = metadataModel;
         this.attributeConfiguration = attributeConfiguration;
 
@@ -65,12 +63,9 @@ public class RepeatableComplexAttributeDataProvider
     }
 
     public void addField() {
-        ComplexMetadataMap item =
-                metadataModel.getObject().subMap(attributeConfiguration.getKey(), items.size());
+        ComplexMetadataMap item = metadataModel.getObject().subMap(attributeConfiguration.getKey(), items.size());
         ComplexMetadataService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(ComplexMetadataService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
         service.init(item, attributeConfiguration.getTypename());
         items.add(item);
     }

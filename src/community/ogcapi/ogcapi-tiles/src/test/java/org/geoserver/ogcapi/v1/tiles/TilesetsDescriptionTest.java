@@ -33,19 +33,15 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
                 hasItems("application/x-yaml"));
 
         // check some of the basic tile matrix sets are there
-        assertThat(
-                json.read("tileMatrixSets[*].id"),
-                hasItems("GlobalCRS84Pixel", "EPSG:4326", "EPSG:900913"));
+        assertThat(json.read("tileMatrixSets[*].id"), hasItems("GlobalCRS84Pixel", "EPSG:4326", "EPSG:900913"));
 
         // verify a specific one
         assertThat(
-                json.read(
-                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
+                json.read("tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
                 contains(
                         "http://localhost:8080/geoserver/ogc/tiles/v1/tileMatrixSets/EPSG%3A4326?f=application%2Fjson"));
         assertThat(
-                json.read(
-                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
+                json.read("tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
                 contains("tileMatrixSet"));
     }
 
@@ -72,29 +68,23 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
 
         // check basic properties
         assertThat(json.read("id"), equalTo("EPSG:4326"));
-        assertThat(
-                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions
         assertThat(json.read("tileMatrices[0].id"), equalTo("EPSG:4326:0"));
-        assertThat(
-                json.read("tileMatrices[0].scaleDenominator", Double.class),
-                closeTo(2.7954112E8, 1e3));
+        assertThat(json.read("tileMatrices[0].scaleDenominator", Double.class), closeTo(2.7954112E8, 1e3));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].matrixWidth"), equalTo(2));
         assertThat(json.read("tileMatrices[0].matrixHeight"), equalTo(1));
-        assertThat(
-                json.read("tileMatrices[0].pointOfOrigin"),
-                contains(closeTo(90, 0), closeTo(-180, 0)));
+        assertThat(json.read("tileMatrices[0].pointOfOrigin"), contains(closeTo(90, 0), closeTo(-180, 0)));
     }
 
     @Test
     public void getDataTilesMetadata() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        DocumentContext json =
-                getAsJSONPath("ogc/tiles/v1/collections/" + roadSegments + "/tiles", 200);
+        DocumentContext json = getAsJSONPath("ogc/tiles/v1/collections/" + roadSegments + "/tiles", 200);
 
         //        // check the raw tiles links
         //        assertEquals(
@@ -135,10 +125,8 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
 
     @Test
     public void testTileJSONSingleLayer() throws Exception {
-        DocumentContext doc =
-                getAsJSONPath(
-                        "/ogc/tiles/v1/collections/cite:RoadSegments/tiles/EPSG:4326/metadata?f=application%2Fjson",
-                        200);
+        DocumentContext doc = getAsJSONPath(
+                "/ogc/tiles/v1/collections/cite:RoadSegments/tiles/EPSG:4326/metadata?f=application%2Fjson", 200);
         assertThat(doc.read("name"), equalTo("cite:RoadSegments"));
         assertThat(doc.read("scheme"), equalTo("xyz"));
         assertThat(
@@ -152,54 +140,40 @@ public class TilesetsDescriptionTest extends TilesTestSupport {
         assertThat(
                 readSingle(doc, "vector_layers[?(@.id == 'RoadSegments')].fields"),
                 allOf(hasEntry("FID", "string"), hasEntry("NAME", "string")));
-        assertThat(
-                readSingle(doc, "vector_layers[?(@.id == 'RoadSegments')].geometry_type"),
-                equalTo("line"));
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'RoadSegments')].geometry_type"), equalTo("line"));
     }
 
     @Test
     @SuppressWarnings("unchecked") // matcher varargs
     public void testTileJSONLayerGroup() throws Exception {
-        DocumentContext doc =
-                getAsJSONPath(
-                        "/ogc/tiles/v1/collections/"
-                                + NATURE_GROUP
-                                + "/tiles/EPSG:900913/metadata?f=application%2Fjson",
-                        200);
+        DocumentContext doc = getAsJSONPath(
+                "/ogc/tiles/v1/collections/" + NATURE_GROUP + "/tiles/EPSG:900913/metadata?f=application%2Fjson", 200);
         assertThat(doc.read("name"), equalTo("nature"));
         assertThat(doc.read("scheme"), equalTo("xyz"));
         assertThat(
                 readSingle(doc, "tiles"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/tiles/v1/collections/nature/tiles/EPSG:900913/{z}/{y}/{x}?f=application%2Fvnd.mapbox-vector-tile"));
-        assertThat(
-                doc.read("center"),
-                hasItems(closeTo(0d, 1e-6), closeTo(0d, 1e-6), closeTo(0d, 1e-6)));
+        assertThat(doc.read("center"), hasItems(closeTo(0d, 1e-6), closeTo(0d, 1e-6), closeTo(0d, 1e-6)));
         assertThat(doc.read("bounds"), equalTo(Arrays.asList(-180.0, -90.0, 180.0, 90.0)));
         assertThat(
                 readSingle(doc, "vector_layers[?(@.id == 'Lakes')].fields"),
                 allOf(hasEntry("FID", "string"), hasEntry("NAME", "string")));
-        assertThat(
-                readSingle(doc, "vector_layers[?(@.id == 'Lakes')].geometry_type"),
-                equalTo("polygon"));
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'Lakes')].geometry_type"), equalTo("polygon"));
         assertThat(
                 readSingle(doc, "vector_layers[?(@.id == 'Forests')].fields"),
                 allOf(hasEntry("FID", "string"), hasEntry("NAME", "string")));
-        assertThat(
-                readSingle(doc, "vector_layers[?(@.id == 'Forests')].geometry_type"),
-                equalTo("polygon"));
+        assertThat(readSingle(doc, "vector_layers[?(@.id == 'Forests')].geometry_type"), equalTo("polygon"));
     }
 
     public void checkRoadSegmentsTileMatrix(DocumentContext json, Tileset.DataType dataType) {
         // check the tile matrices
         assertEquals(Integer.valueOf(2), json.read("$.tilesets.size()"));
-        String matrixDefinition =
-                "http://localhost:8080/geoserver/ogc/tiles/v1/tileMatrixSets/EPSG%3A4326";
+        String matrixDefinition = "http://localhost:8080/geoserver/ogc/tiles/v1/tileMatrixSets/EPSG%3A4326";
         assertEquals(matrixDefinition, json.read("$.tilesets[0].tileMatrixSetURI"));
         assertEquals(matrixDefinition, json.read("$.tilesets[0].tileMatrixSetDefinition"));
         assertEquals(dataType.toString(), json.read("$.tilesets[0].dataType"));
-        String tilesetLink =
-                readSingle(json, "$.tilesets[0].links[?(@.type == 'application/json')].href");
+        String tilesetLink = readSingle(json, "$.tilesets[0].links[?(@.type == 'application/json')].href");
         if (dataType == Tileset.DataType.map) {
             assertEquals(
                     "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/map/tiles/EPSG:4326?f=application%2Fjson",

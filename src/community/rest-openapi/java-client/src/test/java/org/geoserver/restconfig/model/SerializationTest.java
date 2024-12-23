@@ -48,19 +48,18 @@ public abstract class SerializationTest {
         String raw;
         try (InputStream in = baseClass.getResourceAsStream(resource)) {
             assertNotNull("resource not found: " + resource, in);
-            raw =
-                    new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
-                            .lines()
-                            .collect(Collectors.joining(System.lineSeparator()));
+            raw = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))
+                    .lines()
+                    .collect(Collectors.joining(System.lineSeparator()));
         }
         return decode(raw, type);
     }
 
     protected <T> T decode(String raw, Type type) throws IOException {
         @SuppressWarnings("deprecation")
-        Request request =
-                Request.create("GET", "http://doesntmatter", Collections.emptyMap(), null, null);
-        Response response = Response.builder().request(request).body(raw, Charsets.UTF_8).build();
+        Request request = Request.create("GET", "http://doesntmatter", Collections.emptyMap(), null, null);
+        Response response =
+                Response.builder().request(request).body(raw, Charsets.UTF_8).build();
         assertNotNull(response);
         @SuppressWarnings("unchecked")
         T decoded = (T) decoder.decode(response, type);
@@ -74,8 +73,7 @@ public abstract class SerializationTest {
         assertThat((String) ((Map) responseCRS).get("$"), StringStartsWith.startsWith(srs));
     }
 
-    protected void assertResponseBounds(
-            EnvelopeResponse env, double minx, double maxx, double miny, double maxy) {
+    protected void assertResponseBounds(EnvelopeResponse env, double minx, double maxx, double miny, double maxy) {
         assertEquals(Double.valueOf(minx), env.getMinx());
         assertEquals(Double.valueOf(maxx), env.getMaxx());
         assertEquals(Double.valueOf(miny), env.getMiny());

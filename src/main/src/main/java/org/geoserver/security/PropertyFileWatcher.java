@@ -18,8 +18,8 @@ import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
 /**
- * A simple class to support reloadable property files. Watches last modified date on the specified
- * file, and allows to read a Properties out of it.
+ * A simple class to support reloadable property files. Watches last modified date on the specified file, and allows to
+ * read a Properties out of it.
  *
  * @author Andrea Aime
  */
@@ -48,10 +48,7 @@ public class PropertyFileWatcher extends FileWatcher<Properties> {
         return isModified();
     }
 
-    /**
-     * Subclass of Properties that maintains order by actually storing keys in an underlying
-     * LinkedHashMap.
-     */
+    /** Subclass of Properties that maintains order by actually storing keys in an underlying LinkedHashMap. */
     public static class LinkedProperties extends Properties {
 
         private static final long serialVersionUID = 1L;

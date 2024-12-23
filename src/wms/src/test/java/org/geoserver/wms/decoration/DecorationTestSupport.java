@@ -38,10 +38,7 @@ public class DecorationTestSupport {
         WMSMapContent map = new WMSMapContent(request);
         map.setMapWidth(request.getWidth());
         map.setMapHeight(request.getHeight());
-        map.getViewport()
-                .setBounds(
-                        new ReferencedEnvelope(
-                                new Envelope(0, 0.01, 0, 0.01), DefaultGeographicCRS.WGS84));
+        map.getViewport().setBounds(new ReferencedEnvelope(new Envelope(0, 0.01, 0, 0.01), DefaultGeographicCRS.WGS84));
         return map;
     }
 
@@ -60,12 +57,7 @@ public class DecorationTestSupport {
 
         Color actual;
         if (cm.hasAlpha()) {
-            actual =
-                    new Color(
-                            cm.getRed(pixel),
-                            cm.getGreen(pixel),
-                            cm.getBlue(pixel),
-                            cm.getAlpha(pixel));
+            actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), cm.getAlpha(pixel));
         } else {
             actual = new Color(cm.getRed(pixel), cm.getGreen(pixel), cm.getBlue(pixel), 255);
         }

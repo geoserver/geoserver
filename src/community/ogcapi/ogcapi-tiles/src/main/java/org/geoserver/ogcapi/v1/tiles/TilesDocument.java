@@ -23,17 +23,12 @@ public class TilesDocument extends AbstractDocument {
     }
 
     public TilesDocument(WMS wms, TileLayer tileLayer, Tileset.DataType dataType, String styleId) {
-        this.tilesets =
-                tileLayer.getGridSubsets().stream()
-                        .map(
-                                subsetId ->
-                                        new Tileset(
-                                                wms, tileLayer, dataType, subsetId, styleId, false))
-                        .collect(Collectors.toList());
-        this.id =
-                tileLayer instanceof GeoServerTileLayer
-                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                        : tileLayer.getName();
+        this.tilesets = tileLayer.getGridSubsets().stream()
+                .map(subsetId -> new Tileset(wms, tileLayer, dataType, subsetId, styleId, false))
+                .collect(Collectors.toList());
+        this.id = tileLayer instanceof GeoServerTileLayer
+                ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                : tileLayer.getName();
         this.styleId = styleId;
         this.dataType = dataType;
 
@@ -42,15 +37,13 @@ public class TilesDocument extends AbstractDocument {
             addSelfLinks("ogc/tiles/v1/collections/" + id + "/tiles");
         } else if (dataType == Tileset.DataType.map) {
             if (styleId != null) {
-                addSelfLinks(
-                        "ogc/tiles/v1/collections/" + id + "/styles/" + styleId + "/map/tiles");
+                addSelfLinks("ogc/tiles/v1/collections/" + id + "/styles/" + styleId + "/map/tiles");
             } else {
                 addSelfLinks("ogc/tiles/v1/collections/" + id + "/map/tiles");
             }
 
         } else {
-            throw new IllegalArgumentException(
-                    "Tiles of this type are not yet supported: " + dataType);
+            throw new IllegalArgumentException("Tiles of this type are not yet supported: " + dataType);
         }
     }
 

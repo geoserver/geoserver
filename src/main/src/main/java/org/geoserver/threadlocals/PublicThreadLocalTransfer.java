@@ -25,15 +25,13 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
             throws SecurityException, NoSuchFieldException {
         this.field = theClass.getDeclaredField(threadLocalField);
         if (field == null) {
-            throw new IllegalArgumentException(
-                    "Failed to locate field " + field + " in class " + theClass.getName());
+            throw new IllegalArgumentException("Failed to locate field " + field + " in class " + theClass.getName());
         } else if (!Modifier.isStatic(field.getModifiers())) {
-            throw new IllegalArgumentException(
-                    "Field "
-                            + field
-                            + " in class "
-                            + theClass.getName()
-                            + " was found, but it's not a static variable");
+            throw new IllegalArgumentException("Field "
+                    + field
+                    + " in class "
+                    + theClass.getName()
+                    + " was found, but it's not a static variable");
         }
         this.key = theClass.getName() + "#" + field;
     }
@@ -60,8 +58,7 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
         try {
             return (ThreadLocal) field.get(null);
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Failed to grab thread local " + key + " for transfer into other threads", e);
+            throw new RuntimeException("Failed to grab thread local " + key + " for transfer into other threads", e);
         }
     }
 

@@ -40,29 +40,25 @@ public class BoundingBox3DTest extends WFS20TestSupport {
 
     @Test
     public void testBBox1() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,0,200,200,50");
+        Document doc = getAsDOM(
+                "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,0,200,200,50");
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("sf:With3D");
         assertEquals(1, features.getLength());
 
-        assertEquals(
-                features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid1");
+        assertEquals(features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid1");
     }
 
     @Test
     public void testBBox2() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,50,200,200,100");
+        Document doc = getAsDOM(
+                "wfs?request=getfeature&service=wfs&version=2.0.0&typename=sf:With3D&bbox=-200,-200,50,200,200,100");
         assertGML32(doc);
 
         NodeList features = doc.getElementsByTagName("sf:With3D");
         assertEquals(1, features.getLength());
 
-        assertEquals(
-                features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid2");
+        assertEquals(features.item(0).getAttributes().getNamedItem("gml:id").getNodeValue(), "fid2");
     }
 }

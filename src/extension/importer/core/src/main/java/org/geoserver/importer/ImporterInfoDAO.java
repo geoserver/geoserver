@@ -17,8 +17,7 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
 /**
- * Saves/retrieves the importer configuration from System, Environment, Servlet context variables,
- * or a property file
+ * Saves/retrieves the importer configuration from System, Environment, Servlet context variables, or a property file
  */
 public class ImporterInfoDAO {
 
@@ -54,16 +53,12 @@ public class ImporterInfoDAO {
         // configure based on available CPUs
         int processors = Runtime.getRuntime().availableProcessors();
         info.setUploadRoot(getConfig(props, UPLOAD_ROOT_KEY, String.class, () -> null));
-        info.setMaxAsynchronousImports(
-                getConfig(props, MAX_ASYNCH_KEY, Integer.class, () -> processors));
-        info.setMaxSynchronousImports(
-                getConfig(props, MAX_SYNCH_KEY, Integer.class, () -> processors));
-        info.setContextExpiration(
-                getConfig(props, CONTEXT_EXPIRATION_KEY, Double.class, () -> 1440d));
+        info.setMaxAsynchronousImports(getConfig(props, MAX_ASYNCH_KEY, Integer.class, () -> processors));
+        info.setMaxSynchronousImports(getConfig(props, MAX_SYNCH_KEY, Integer.class, () -> processors));
+        info.setContextExpiration(getConfig(props, CONTEXT_EXPIRATION_KEY, Double.class, () -> 1440d));
     }
 
-    private <T> T getConfig(
-            Properties props, String name, Class<T> clazz, Supplier<T> defaultValueSupplier) {
+    private <T> T getConfig(Properties props, String name, Class<T> clazz, Supplier<T> defaultValueSupplier) {
         String value = null;
         // check env/sys var overrides first
         try {
@@ -100,10 +95,8 @@ public class ImporterInfoDAO {
             props.setProperty(UPLOAD_ROOT_KEY, configuration.getUploadRoot());
         }
         props.setProperty(MAX_SYNCH_KEY, String.valueOf(configuration.getMaxSynchronousImports()));
-        props.setProperty(
-                MAX_ASYNCH_KEY, String.valueOf(configuration.getMaxAsynchronousImports()));
-        props.setProperty(
-                CONTEXT_EXPIRATION_KEY, String.valueOf(configuration.getContextExpiration()));
+        props.setProperty(MAX_ASYNCH_KEY, String.valueOf(configuration.getMaxAsynchronousImports()));
+        props.setProperty(CONTEXT_EXPIRATION_KEY, String.valueOf(configuration.getContextExpiration()));
         try (OutputStream os = resource.out()) {
             props.store(os, null);
         }

@@ -113,13 +113,12 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
             // the gridset bounds (otherwise the layer bounds will be used as the gridset ones)
             BoundingBox subsetBounds = gridSubset.getGridSetBounds();
             if (subsetBounds != null) {
-                ReferencedEnvelope re =
-                        new ReferencedEnvelope(
-                                subsetBounds.getMinX(),
-                                subsetBounds.getMaxX(),
-                                subsetBounds.getMinY(),
-                                subsetBounds.getMaxY(),
-                                box.getCoordinateReferenceSystem());
+                ReferencedEnvelope re = new ReferencedEnvelope(
+                        subsetBounds.getMinX(),
+                        subsetBounds.getMaxX(),
+                        subsetBounds.getMinY(),
+                        subsetBounds.getMaxY(),
+                        box.getCoordinateReferenceSystem());
                 e.setTileMatrixSetBounds(re);
             }
 
@@ -174,14 +173,12 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     }
 
     /**
-     * re-formats the original request to one that's inline with the GeoPKG specification. If the
-     * CRS is XY (EAST_NORTH), the we do nothing. If the CRS is YX (NORTH_EAST), we attempt to
-     * re-write the request in XY format. i.e. change the request CRS to the equivalent EAST_NORTH
-     * CRS and flip the request's ordinates around in the request NOTE: geopkg requires XY
-     * coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is XY). For a WMS 1.3
-     * EPSG:4326 request, this will flip. For a WMS 1.1 EPSG:4326 request, this will NOT flip. NOTE:
-     * typically, a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates flipped.
-     * NOTE: updates request in-situ
+     * re-formats the original request to one that's inline with the GeoPKG specification. If the CRS is XY
+     * (EAST_NORTH), the we do nothing. If the CRS is YX (NORTH_EAST), we attempt to re-write the request in XY format.
+     * i.e. change the request CRS to the equivalent EAST_NORTH CRS and flip the request's ordinates around in the
+     * request NOTE: geopkg requires XY coordinate systems and WMS 1.3 assumes 4326 is YX (WMS 1.1's 4326 is XY). For a
+     * WMS 1.3 EPSG:4326 request, this will flip. For a WMS 1.1 EPSG:4326 request, this will NOT flip. NOTE: typically,
+     * a WMS 1.1 and WMS 1.3 EPSG:4326 request will have the bbox ordinates flipped. NOTE: updates request in-situ
      */
     private GetMapRequest rewriteRequest(GetMapRequest req) {
         CoordinateReferenceSystem sourceCRS = req.getCrs();
@@ -197,8 +194,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
                 CoordinateReferenceSystem flippedCRS = CRS.decode(_identifier, true);
                 if (CRS.getAxisOrder(flippedCRS) == CRS.AxisOrder.EAST_NORTH) {
                     Envelope reqJTSEnvelope = req.getBbox();
-                    ReferencedEnvelope reqEnvelope =
-                            ReferencedEnvelope.envelope(reqJTSEnvelope, req.getCrs());
+                    ReferencedEnvelope reqEnvelope = ReferencedEnvelope.envelope(reqJTSEnvelope, req.getCrs());
                     ReferencedEnvelope flippedEnvelope = reqEnvelope.transform(flippedCRS, false);
 
                     req.setBbox(flippedEnvelope);
@@ -212,12 +208,7 @@ public class GeoPackageGetMapOutputFormat extends AbstractTilesGetMapOutputForma
     }
 
     /** Add tiles to an existing GeoPackage */
-    public void addTiles(
-            GeoPackage geopkg,
-            TileEntry e,
-            GetMapRequest req,
-            String name,
-            ProgressListener listener)
+    public void addTiles(GeoPackage geopkg, TileEntry e, GetMapRequest req, String name, ProgressListener listener)
             throws IOException {
         addTiles(new GeopackageWrapper(geopkg, e), req, name, listener);
     }

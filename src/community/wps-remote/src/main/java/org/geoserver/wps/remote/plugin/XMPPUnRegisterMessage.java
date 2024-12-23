@@ -21,7 +21,8 @@ import org.jivesoftware.smack.packet.Packet;
 public class XMPPUnRegisterMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     @Override
     public boolean canHandle(Map<String, String> signalArgs) {
@@ -31,15 +32,13 @@ public class XMPPUnRegisterMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         try {
             xmppClient.handleMemberLeave(packet);
         } catch (Exception e) {
             // NOTIFY LISTENERS
-            final Set<RemoteProcessClientListener> remoteClientListeners =
-                    xmppClient.getRemoteClientListeners();
+            final Set<RemoteProcessClientListener> remoteClientListeners = xmppClient.getRemoteClientListeners();
             synchronized (remoteClientListeners) {
                 for (RemoteProcessClientListener listener : remoteClientListeners) {
 

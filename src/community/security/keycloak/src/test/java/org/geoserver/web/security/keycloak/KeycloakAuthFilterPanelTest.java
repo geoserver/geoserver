@@ -36,8 +36,7 @@ public class KeycloakAuthFilterPanelTest extends AbstractSecurityNamedServicePan
         tester.debugComponentTrees();
         tester.assertModelValue(
                 "panel:panel:form:panel:roleSource",
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                        .UserGroupService);
+                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.UserGroupService);
     }
 
     @Override

@@ -10,8 +10,8 @@ import org.geotools.renderer.GTRenderer;
 import org.geotools.renderer.RenderListener;
 
 /**
- * Attaches itself to the renderer and ensures no more than a certain amount of errors occur, if
- * they do, the rendering process is stopped
+ * Attaches itself to the renderer and ensures no more than a certain amount of errors occur, if they do, the rendering
+ * process is stopped
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -25,30 +25,27 @@ public class MaxErrorEnforcer {
 
     Exception lastException;
 
-    /**
-     * Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing
-     */
+    /** Builds a new max errors enforcer. If maxErrors is not positive the enforcer will do nothing */
     public MaxErrorEnforcer(GTRenderer renderer, int maxErrors) {
         this.renderer = renderer;
         this.maxErrors = maxErrors;
         this.errors = 0;
 
         if (maxErrors > 0) {
-            renderer.addRenderListener(
-                    new RenderListener() {
+            renderer.addRenderListener(new RenderListener() {
 
-                        @Override
-                        public void featureRenderer(SimpleFeature feature) {}
+                @Override
+                public void featureRenderer(SimpleFeature feature) {}
 
-                        @Override
-                        public void errorOccurred(Exception e) {
-                            errors++;
-                            lastException = e;
-                            if (errors > MaxErrorEnforcer.this.maxErrors) {
-                                MaxErrorEnforcer.this.renderer.stopRendering();
-                            }
-                        }
-                    });
+                @Override
+                public void errorOccurred(Exception e) {
+                    errors++;
+                    lastException = e;
+                    if (errors > MaxErrorEnforcer.this.maxErrors) {
+                        MaxErrorEnforcer.this.renderer.stopRendering();
+                    }
+                }
+            });
         }
     }
 

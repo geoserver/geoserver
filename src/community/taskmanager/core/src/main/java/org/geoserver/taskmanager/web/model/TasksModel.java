@@ -18,8 +18,7 @@ public class TasksModel extends GeoServerDataProvider<Task> {
 
     public static final Property<Task> NAME = new BeanProperty<Task>("name", "name");
     public static final Property<Task> TYPE = new BeanProperty<Task>("type", "type");
-    public static final Property<Task> PARAMETERS =
-            new BeanProperty<Task>("parameters", "parameters");
+    public static final Property<Task> PARAMETERS = new BeanProperty<Task>("parameters", "parameters");
 
     private IModel<Configuration> configurationModel;
 

@@ -53,17 +53,14 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     private static final Name STATION_FEATURE_NAME =
             new NameImpl(MockData.STATIONS_URI_GML32, "StationWithMeasurements_gml32");
 
-    private static final String STATION_NESTED_GEOM =
-            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:geometry";
+    private static final String STATION_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:geometry";
 
-    private static final String STATION_NONEXISTENT_NESTED_GEOM =
-            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:not_there_geometry";
+    private static final String STATION_NONEXISTENT_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:not_there_geometry";
 
-    private static final String STATION_WRONG_NESTED_GEOM =
-            "st_gml32:measurements/ms_gml32:Measurement_gml32/"
-                    + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:code";
+    private static final String STATION_WRONG_NESTED_GEOM = "st_gml32:measurements/ms_gml32:Measurement_gml32/"
+            + "ms_gml32:sampledArea/ms_gml32:SampledArea/ms_gml32:code";
 
     AppSchemaDataAccess dataAccess;
 
@@ -108,10 +105,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
                     gml32Parameters);
         }
 
-        /**
-         * Helper method that will add the station feature type customizing it for the desired GML
-         * version.
-         */
+        /** Helper method that will add the station feature type customizing it for the desired GML version. */
         protected void addStationFeatureType(
                 String namespacePrefix,
                 String gmlPrefix,
@@ -125,29 +119,17 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File stationsMappings =
-                    new File(
-                            gmlDirectory,
-                            String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
-            File stationsProperties =
-                    new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
-            File stationsSchema =
-                    new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
-            File measurementsSchema =
-                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File stationsMappings = new File(gmlDirectory, String.format("%s_%s.xml", stationsMappingsName, gmlPrefix));
+            File stationsProperties = new File(gmlDirectory, String.format("stations_%s.properties", gmlPrefix));
+            File stationsSchema = new File(gmlDirectory, String.format("stations_%s.xsd", gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
+            substituteParameters("/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
             substituteParameters(
-                    "/test-data/stations/" + stationsMappingsPath, parameters, stationsMappings);
+                    "/test-data/stations/defaultGeometry/stations.properties", parameters, stationsProperties);
+            substituteParameters("/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
             substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.properties",
-                    parameters,
-                    stationsProperties);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/stations.xsd", parameters, stationsSchema);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.xsd",
-                    parameters,
-                    measurementsSchema);
+                    "/test-data/stations/defaultGeometry/measurements.xsd", parameters, measurementsSchema);
             // create station feature type
             addFeatureType(
                     namespacePrefix,
@@ -169,23 +151,16 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             File gmlDirectory = getDirectoryForGmlPrefix(gmlPrefix);
             gmlDirectory.mkdirs();
             // add the necessary files
-            File measurementsMappings =
-                    new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
+            File measurementsMappings = new File(gmlDirectory, String.format("%s_%s.xml", mappingsName, gmlPrefix));
             File measurementsProperties =
                     new File(gmlDirectory, String.format("measurements_%s.properties", gmlPrefix));
-            File measurementsSchema =
-                    new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
+            File measurementsSchema = new File(gmlDirectory, String.format("measurements_%s.xsd", gmlPrefix));
             // perform the parameterization
+            substituteParameters("/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
             substituteParameters(
-                    "/test-data/stations/" + mappingsPath, parameters, measurementsMappings);
+                    "/test-data/stations/defaultGeometry/measurements.properties", parameters, measurementsProperties);
             substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.properties",
-                    parameters,
-                    measurementsProperties);
-            substituteParameters(
-                    "/test-data/stations/defaultGeometry/measurements.xsd",
-                    parameters,
-                    measurementsSchema);
+                    "/test-data/stations/defaultGeometry/measurements.xsd", parameters, measurementsSchema);
             // create measurements feature type
             addFeatureType(
                     namespacePrefix,
@@ -224,15 +199,12 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     }
 
     @Test
-    public void testNestedContainsFilterEncoding()
-            throws FilterToSQLException, IOException, ParseException {
+    public void testNestedContainsFilterEncoding() throws FilterToSQLException, IOException, ParseException {
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon contained =
-                (Polygon)
-                        wktReader.read("POLYGON((-1.5 -1.5, -1.5 1.5, 0 1.5, 0 -1.5, -1.5 -1.5))");
+        Polygon contained = (Polygon) wktReader.read("POLYGON((-1.5 -1.5, -1.5 1.5, 0 1.5, 0 -1.5, -1.5 -1.5))");
         Contains contains = ff.contains(nestedGeom, ff.literal(contained));
 
         checkPostPreFilterSplitting(contains);
@@ -243,8 +215,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     }
 
     @Test
-    public void testNestedTouchesFilterEncoding()
-            throws FilterToSQLException, IOException, ParseException {
+    public void testNestedTouchesFilterEncoding() throws FilterToSQLException, IOException, ParseException {
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -260,8 +231,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     }
 
     @Test
-    public void testNestedIntersectsFilterEncoding()
-            throws FilterToSQLException, IOException, ParseException {
+    public void testNestedIntersectsFilterEncoding() throws FilterToSQLException, IOException, ParseException {
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
@@ -277,14 +247,12 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
     }
 
     @Test
-    public void testNestedOverlapsFilterEncoding()
-            throws FilterToSQLException, IOException, ParseException {
+    public void testNestedOverlapsFilterEncoding() throws FilterToSQLException, IOException, ParseException {
         // make sure nested filters encoding is enabled, otherwise skip test
         assumeTrue(shouldTestNestedFiltersEncoding(rootMapping));
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon intersecting =
-                (Polygon) wktReader.read("POLYGON((-4 3, -2 4.5, -2.5 2, -3.5 2, -4 3))");
+        Polygon intersecting = (Polygon) wktReader.read("POLYGON((-4 3, -2 4.5, -2.5 2, -3.5 2, -4 3))");
         Overlaps overlaps = ff.overlaps(nestedGeom, ff.literal(intersecting));
 
         checkPostPreFilterSplitting(overlaps);
@@ -367,8 +335,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         String units = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon beyondSt2 =
-                (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
+        Polygon beyondSt2 = (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
         Beyond beyond = ff.beyond(nestedGeom, ff.literal(beyondSt2), 1.0, units);
 
         checkPostPreFilterSplitting(beyond);
@@ -385,8 +352,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
         String units = crs.getCoordinateSystem().getAxis(0).getUnit().toString();
 
         PropertyName nestedGeom = ff.property(STATION_NESTED_GEOM);
-        Polygon dwithinSt2 =
-                (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
+        Polygon dwithinSt2 = (Polygon) wktReader.read("POLYGON((-5 -4, -5 -2.5, -2 -2.5, -2 -4, -5 -4))");
         DWithin dwithin = ff.dwithin(nestedGeom, ff.literal(dwithinSt2), 1.0, units);
 
         checkPostPreFilterSplitting(dwithin);
@@ -413,10 +379,9 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             assertTrue(errorMessage.contains("not_there_geometry"));
             assertTrue(errorMessage.contains("not found in type"));
         } catch (Exception other) {
-            fail(
-                    "Expected IllegalArgumentException to be thrown, but "
-                            + other.getClass().getName()
-                            + " was thrown instead");
+            fail("Expected IllegalArgumentException to be thrown, but "
+                    + other.getClass().getName()
+                    + " was thrown instead");
         }
     }
 
@@ -438,10 +403,9 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
             assertTrue(errorMessage.contains("should be of type"));
             assertTrue(errorMessage.contains("GeometryDescriptor"));
         } catch (Exception other) {
-            fail(
-                    "Expected IllegalArgumentException to be thrown, but "
-                            + other.getClass().getName()
-                            + " was thrown instead");
+            fail("Expected IllegalArgumentException to be thrown, but "
+                    + other.getClass().getName()
+                    + " was thrown instead");
         }
     }
 
@@ -454,8 +418,7 @@ public class NestedGeometryFilterEncodingTest extends AbstractAppSchemaTestSuppo
 
     private void checkPostPreFilterSplitting(Filter filter) {
         JDBCDataStore store = (JDBCDataStore) rootMapping.getSource().getDataStore();
-        ComplexFilterSplitter splitter =
-                new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
+        ComplexFilterSplitter splitter = new ComplexFilterSplitter(store.getFilterCapabilities(), rootMapping);
         filter.accept(splitter, null);
         Filter preFilter = splitter.getFilterPre();
         Filter postFilter = splitter.getFilterPost();

@@ -38,11 +38,9 @@ public class ApiTest extends CoveragesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/coverages/v1/openapi", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/coverages/v1/openapi", 200);
         assertThat(
-                response.getContentType(),
-                CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
+                response.getContentType(), CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -53,8 +51,7 @@ public class ApiTest extends CoveragesTestSupport {
 
     @Test
     public void testApiHTML() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/coverages/v1/openapi?f=text/html", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/coverages/v1/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -70,8 +67,7 @@ public class ApiTest extends CoveragesTestSupport {
                         "<link rel=\"icon\" type=\"image/png\" href=\"http://localhost:8080/geoserver/swagger-ui/favicon-16x16.png\" sizes=\"16x16\" />"));
         assertThat(
                 html,
-                containsString(
-                        "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
+                containsString("<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
         assertThat(
                 html,
                 containsString(
@@ -101,7 +97,8 @@ public class ApiTest extends CoveragesTestSupport {
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
         assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        String yaml =
+                string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
@@ -113,9 +110,7 @@ public class ApiTest extends CoveragesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(
-                servers.get(0).getUrl(),
-                equalTo("http://localhost:8080/geoserver/ogc/coverages/v1"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/coverages/v1"));
 
         // info version is spec version
         assertEquals("1.0.0", api.getInfo().getVersion());
@@ -150,10 +145,7 @@ public class ApiTest extends CoveragesTestSupport {
         assertThat(coverageGet.getOperationId(), equalTo("getCoverage"));
         List<Parameter> parameters = coverageGet.getParameters();
         List<String> coverageGetParamNames =
-                parameters.stream()
-                        .map(p -> p.get$ref())
-                        .filter(n -> n != null)
-                        .collect(Collectors.toList());
+                parameters.stream().map(p -> p.get$ref()).filter(n -> n != null).collect(Collectors.toList());
         assertThat(
                 coverageGetParamNames,
                 containsInAnyOrder(
@@ -166,10 +158,9 @@ public class ApiTest extends CoveragesTestSupport {
         Map<String, Parameter> params = api.getComponents().getParameters();
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
-        List<String> expectedCollectionIds =
-                getCatalog().getCoverages().stream()
-                        .map(ft -> ft.prefixedName())
-                        .collect(Collectors.toList());
+        List<String> expectedCollectionIds = getCatalog().getCoverages().stream()
+                .map(ft -> ft.prefixedName())
+                .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));
     }
 
@@ -183,7 +174,8 @@ public class ApiTest extends CoveragesTestSupport {
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        String yaml =
+                string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         // System.out.println(yaml);
 
@@ -193,8 +185,7 @@ public class ApiTest extends CoveragesTestSupport {
         Parameter collectionId = params.get("collectionId");
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         List<String> expectedCollectionIds =
-                getCatalog().getCoveragesByNamespace(getCatalog().getNamespaceByPrefix("wcs"))
-                        .stream()
+                getCatalog().getCoveragesByNamespace(getCatalog().getNamespaceByPrefix("wcs")).stream()
                         .map(ci -> ci.getName())
                         .collect(Collectors.toList());
         assertThat(collectionIdValues, equalTo(expectedCollectionIds));

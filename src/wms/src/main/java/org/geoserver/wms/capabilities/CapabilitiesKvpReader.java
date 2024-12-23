@@ -14,8 +14,8 @@ import org.geoserver.wms.WMS;
 import org.geotools.util.Version;
 
 /**
- * This utility reads in a GetCapabilities KVP request and turns it into an appropriate internal
- * CapabilitiesRequest object, upon request.
+ * This utility reads in a GetCapabilities KVP request and turns it into an appropriate internal CapabilitiesRequest
+ * object, upon request.
  *
  * @author Rob Hranac, TOPP
  * @author Gabriel Roldan
@@ -65,8 +65,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
             request.setRootLayerEnabled(Boolean.valueOf((String) rawKvp.get("ROOTLAYER")));
         }
         String[] acceptLanguages =
-                RequestUtils.getLanguageValue(
-                        rawKvp, InternationalContentHelper.ACCEPTLANGUAGES_PARAM);
+                RequestUtils.getLanguageValue(rawKvp, InternationalContentHelper.ACCEPTLANGUAGES_PARAM);
         if (acceptLanguages != null) request.setAcceptLanguages(acceptLanguages);
         return request;
     }

@@ -12,8 +12,7 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.platform.ServiceException;
 
 public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategyFactory {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.geosearch");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.geosearch");
 
     String myName;
     String myClassName;
@@ -63,10 +62,7 @@ public class ReflectiveRegionatingStrategyFactory implements RegionatingStrategy
         try {
             myStrategyClass = Class.forName(myClassName);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Failed to find class " + myClassName + " for ReflectiveRegionatingStrategy.",
-                    e);
+            LOGGER.log(Level.SEVERE, "Failed to find class " + myClassName + " for ReflectiveRegionatingStrategy.", e);
         }
 
         return myStrategyClass;

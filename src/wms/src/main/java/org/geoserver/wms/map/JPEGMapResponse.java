@@ -26,8 +26,7 @@ import org.geotools.image.ImageWorker;
 public final class JPEGMapResponse extends RenderedImageMapResponse {
 
     /** Logger. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(JPEGMapResponse.class.toString());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JPEGMapResponse.class.toString());
 
     private static final boolean CODEC_LIB_AVAILABLE = PackageUtil.isCodecLibAvailable();
 
@@ -45,8 +44,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
      *
      * <p>We should soon support multipage tiff.
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, false);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false, false);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/jpeg";
@@ -56,8 +54,7 @@ public final class JPEGMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("About to write a JPEG image.");

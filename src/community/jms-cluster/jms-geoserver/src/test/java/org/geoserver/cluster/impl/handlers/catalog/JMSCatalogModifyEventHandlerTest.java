@@ -26,19 +26,15 @@ public final class JMSCatalogModifyEventHandlerTest {
     public void testCatalogModifyEventHandling() throws Exception {
         // create a catalog modify event that include properties of type catalog
         CatalogModifyEventImpl catalogModifyEvent = new CatalogModifyEventImpl();
-        catalogModifyEvent.setPropertyNames(
-                Arrays.asList("propertyA", "propertyB", "propertyC", "propertyD"));
+        catalogModifyEvent.setPropertyNames(Arrays.asList("propertyA", "propertyB", "propertyC", "propertyD"));
         catalogModifyEvent.setOldValues(Arrays.asList("value", new CatalogImpl(), 50, null));
-        catalogModifyEvent.setNewValues(
-                Arrays.asList("new_value", new CatalogImpl(), null, new CatalogImpl()));
+        catalogModifyEvent.setNewValues(Arrays.asList("new_value", new CatalogImpl(), null, new CatalogImpl()));
         // serialise the event and deserialize it
-        JMSCatalogModifyEventHandlerSPI handler =
-                new JMSCatalogModifyEventHandlerSPI(
-                        0,
-                        null,
-                        new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl())
-                                .createXStream(),
-                        null);
+        JMSCatalogModifyEventHandlerSPI handler = new JMSCatalogModifyEventHandlerSPI(
+                0,
+                null,
+                new JMSXStreamFactory(new XStreamPersisterFactory(), new GeoServerImpl()).createXStream(),
+                null);
         String serializedEvent = handler.createHandler().serialize(catalogModifyEvent);
         CatalogEvent newEvent = handler.createHandler().deserialize(serializedEvent);
         // check the deserialized event
@@ -47,8 +43,7 @@ public final class JMSCatalogModifyEventHandlerTest {
         CatalogModifyEvent newModifyEvent = (CatalogModifyEvent) newEvent;
         // check properties names
         assertThat(newModifyEvent.getPropertyNames().size(), is(2));
-        assertThat(
-                newModifyEvent.getPropertyNames(), CoreMatchers.hasItems("propertyA", "propertyC"));
+        assertThat(newModifyEvent.getPropertyNames(), CoreMatchers.hasItems("propertyA", "propertyC"));
         // check old values
         assertThat(newModifyEvent.getOldValues().size(), is(2));
         assertThat(newModifyEvent.getOldValues(), CoreMatchers.hasItems("value", 50));

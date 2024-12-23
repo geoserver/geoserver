@@ -37,9 +37,7 @@ public class CollectionTest extends ImagesTestSupport {
         assertEquals(40.56208, json.read("$.extent.spatial.bbox[0][1]", Double.class), 1e-6d);
         assertEquals(14.592757, json.read("$.extent.spatial.bbox[0][2]", Double.class), 1e-6d);
         assertEquals(44.558083, json.read("$.extent.spatial.bbox[0][3]", Double.class), 1e-6d);
-        assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                json.read("$.extent.spatial.crs", String.class));
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.extent.spatial.crs", String.class));
 
         // check the images link
         List<String> items = json.read("$.links[?(@.rel=='images')].href");
@@ -54,17 +52,14 @@ public class CollectionTest extends ImagesTestSupport {
     @Test
     public void testImagesCollectionYaml() throws Exception {
         String waterTemp = getLayerId(WATER_TEMP);
-        String yaml =
-                getAsString("ogc/images/v1/collections/" + waterTemp + "?f=application/x-yaml");
+        String yaml = getAsString("ogc/images/v1/collections/" + waterTemp + "?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testWaterTempCollectionJson(json);
     }
 
     @Test
     public void testWorkspacedWaterTempCollectionJson() throws Exception {
-        DocumentContext json =
-                getAsJSONPath(
-                        "gs/ogc/images/v1/collections/" + WATER_TEMP_DEFAULT.getLocalPart(), 200);
+        DocumentContext json = getAsJSONPath("gs/ogc/images/v1/collections/" + WATER_TEMP_DEFAULT.getLocalPart(), 200);
 
         // check the images link
         List<String> items = json.read("$.links[?(@.rel=='images')].href");

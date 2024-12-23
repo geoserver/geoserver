@@ -92,10 +92,9 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
                 return fc.getSchema();
             }
         } else {
-            throw new IllegalArgumentException(
-                    "SecureFeatureSources has been fed "
-                            + "with unexpected AccessLimits class "
-                            + policy.getLimits().getClass());
+            throw new IllegalArgumentException("SecureFeatureSources has been fed "
+                    + "with unexpected AccessLimits class "
+                    + policy.getLimits().getClass());
         }
     }
 
@@ -106,8 +105,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     @Override
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource(
             ProgressListener listener, Hints hints) throws IOException {
-        final FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                delegate.getFeatureSource(listener, hints);
+        final FeatureSource<? extends FeatureType, ? extends Feature> fs = delegate.getFeatureSource(listener, hints);
         Request request = Dispatcher.REQUEST.get();
         if (policy.level == AccessLevel.METADATA && !isGetCapabilities(request)) {
             throw SecureCatalogImpl.unauthorizedAccess(this.getName());
@@ -117,9 +115,9 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
     }
 
     /**
-     * Checks if current request is GetCapabilities and returns a new WrapperPolicy with attributes
-     * read allowed to compute the dimensions values. If current request is not a GetCapabilities
-     * one, returns the same policy without changes.
+     * Checks if current request is GetCapabilities and returns a new WrapperPolicy with attributes read allowed to
+     * compute the dimensions values. If current request is not a GetCapabilities one, returns the same policy without
+     * changes.
      */
     private WrapperPolicy computeWrapperPolicy(Request request) {
         if (isGetCapabilities(request) && policy.getLimits() instanceof VectorAccessLimits) {

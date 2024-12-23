@@ -28,10 +28,8 @@ public class RoleServicesPanel extends SecurityNamedServicesPanel<SecurityRoleSe
     }
 
     @Override
-    protected void validateRemoveConfig(SecurityRoleServiceConfig config)
-            throws SecurityConfigException {
-        SecurityConfigValidator.getConfigurationValiator(
-                        GeoServerRoleService.class, config.getClassName())
+    protected void validateRemoveConfig(SecurityRoleServiceConfig config) throws SecurityConfigException {
+        SecurityConfigValidator.getConfigurationValiator(GeoServerRoleService.class, config.getClassName())
                 .validateRemoveRoleService(config);
     }
 

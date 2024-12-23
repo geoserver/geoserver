@@ -22,9 +22,8 @@ import jep.SharedInterpreter;
 import org.geotools.util.logging.Logging;
 
 /**
- * {@link JEPRuntime} handling shared interpreters as thread locals. Some per request mechanisms
- * should be used to clean up the interpreters at the end of the request, calling {@link
- * #closeThreadIntepreter()}
+ * {@link JEPRuntime} handling shared interpreters as thread locals. Some per request mechanisms should be used to clean
+ * up the interpreters at the end of the request, calling {@link #closeThreadIntepreter()}
  */
 public class JEPWebRuntime implements JEPRuntime {
 

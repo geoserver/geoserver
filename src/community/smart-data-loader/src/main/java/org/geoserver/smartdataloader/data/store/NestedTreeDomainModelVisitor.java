@@ -13,10 +13,7 @@ import org.geoserver.smartdataloader.domain.entities.DomainEntity;
 import org.geoserver.smartdataloader.domain.entities.DomainEntitySimpleAttribute;
 import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 
-/**
- * DomainModelVisitor that translates DomainModel representation into the required structure for
- * NestedTree.
- */
+/** DomainModelVisitor that translates DomainModel representation into the required structure for NestedTree. */
 public class NestedTreeDomainModelVisitor extends DomainModelVisitorImpl {
 
     private DefaultTreeModel treeModel;

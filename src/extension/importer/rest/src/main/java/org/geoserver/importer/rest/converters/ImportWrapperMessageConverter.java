@@ -20,8 +20,7 @@ import org.springframework.stereotype.Component;
 /**
  * {@link BaseMessageConverter} implementation for writing {@link ImportWrapper} objects.
  *
- * <p>This converter is willing to write JSON directly, or output JSON as HTML for visual
- * inspection.
+ * <p>This converter is willing to write JSON directly, or output JSON as HTML for visual inspection.
  */
 @Component
 public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWrapper> {
@@ -69,15 +68,13 @@ public class ImportWrapperMessageConverter extends BaseMessageConverter<ImportWr
         outputWriter.flush();
     }
 
-    private void writeHTML(ImportWrapper wrapper, OutputStreamWriter outputWriter)
-            throws IOException {
+    private void writeHTML(ImportWrapper wrapper, OutputStreamWriter outputWriter) throws IOException {
         outputWriter.write("<html><body><pre>");
         writeJSON(wrapper, outputWriter);
         outputWriter.write("</pre></body></html>");
     }
 
-    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter)
-            throws IOException {
+    private void writeJSON(ImportWrapper wrapper, OutputStreamWriter outputWriter) throws IOException {
         FlushableJSONBuilder json = new FlushableJSONBuilder(outputWriter);
         ImportJSONWriter writer = new ImportJSONWriter(importer);
 

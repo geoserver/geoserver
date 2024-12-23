@@ -17,16 +17,14 @@ import org.geoserver.cluster.JMSEventHandlerSPI;
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class JMSConfigurationHandler<TYPE> extends JMSEventHandler<String, TYPE> {
-    public JMSConfigurationHandler(
-            final XStream xstream, Class<JMSEventHandlerSPI<String, TYPE>> clazz) {
+    public JMSConfigurationHandler(final XStream xstream, Class<JMSEventHandlerSPI<String, TYPE>> clazz) {
         super(xstream, clazz);
         // omit not serializable fields
         omitFields(xstream);
     }
 
     /**
-     * here you may modify XStream [de]serialization adding omitFields and all other changes
-     * supported by XStream
+     * here you may modify XStream [de]serialization adding omitFields and all other changes supported by XStream
      *
      * @param xstream a not null and initted XStream to use
      */
@@ -44,9 +42,7 @@ public abstract class JMSConfigurationHandler<TYPE> extends JMSEventHandler<Stri
             return (TYPE) source;
         } else {
             throw new IllegalArgumentException(
-                    this.getClass().getCanonicalName()
-                            + " is unable to deserialize the object:"
-                            + s);
+                    this.getClass().getCanonicalName() + " is unable to deserialize the object:" + s);
         }
     }
 }

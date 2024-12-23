@@ -19,8 +19,7 @@ import org.xml.sax.ContentHandler;
 import org.xml.sax.helpers.AttributesImpl;
 
 /**
- * Encodes a CloseableIterator<String> containing domain values into the specified XML Domain
- * Response
+ * Encodes a CloseableIterator<String> containing domain values into the specified XML Domain Response
  *
  * @author Alessio Fabiani - GeoSolutions
  */
@@ -103,11 +102,7 @@ public class CSWDomainValuesTransformer extends AbstractRecordTransformer {
     public void addAttribute(AttributesImpl attributes, String name, Object value) {
         if (value != null) {
             attributes.addAttribute(
-                    "",
-                    name,
-                    name,
-                    "",
-                    value instanceof String ? (String) value : String.valueOf(value));
+                    "", name, name, "", value instanceof String ? (String) value : String.valueOf(value));
         }
     }
 

@@ -27,8 +27,7 @@ public class MapMLMapResponse extends AbstractMapResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         MapMLMap mapmlMap = (MapMLMap) value;
         try {
             Mapml mapml = mapmlMap.getMapml();

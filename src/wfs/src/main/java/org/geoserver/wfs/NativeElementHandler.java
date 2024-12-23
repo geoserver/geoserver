@@ -14,8 +14,7 @@ import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 
 /**
- * Processes native elements as unrecognized ones, and checks wheter they can be safely ignored on
- * not.
+ * Processes native elements as unrecognized ones, and checks wheter they can be safely ignored on not.
  *
  * @author Andrea Aime - TOPP
  */
@@ -29,16 +28,12 @@ public class NativeElementHandler implements TransactionElementHandler {
     public NativeElementHandler() {}
 
     @Override
-    public void checkValidity(TransactionElement element, Map featureTypeInfos)
-            throws WFSTransactionException {
+    public void checkValidity(TransactionElement element, Map featureTypeInfos) throws WFSTransactionException {
 
         Native nativ = (Native) element;
         if (!nativ.isSafeToIgnore()) {
             throw new WFSTransactionException(
-                    "Native element:"
-                            + nativ.getVendorId()
-                            + " unsupported but marked as"
-                            + " unsafe to ignore",
+                    "Native element:" + nativ.getVendorId() + " unsupported but marked as" + " unsafe to ignore",
                     "InvalidParameterValue");
         }
     }
@@ -64,8 +59,7 @@ public class NativeElementHandler implements TransactionElementHandler {
      * @see TransactionElementHandler#getTypeNames(TransactionRequest, TransactionElement)
      */
     @Override
-    public QName[] getTypeNames(TransactionRequest request, TransactionElement element)
-            throws WFSTransactionException {
+    public QName[] getTypeNames(TransactionRequest request, TransactionElement element) throws WFSTransactionException {
         // we don't handle this
         return EMPTY_QNAMES;
     }

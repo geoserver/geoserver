@@ -19,6 +19,5 @@ public interface CatalogAdditionalResourcesWriter<T> {
 
     public boolean canHandle(Object item);
 
-    public void writeAdditionalResources(Backup backupFacade, Resource base, T item)
-            throws IOException;
+    public void writeAdditionalResources(Backup backupFacade, Resource base, T item) throws IOException;
 }

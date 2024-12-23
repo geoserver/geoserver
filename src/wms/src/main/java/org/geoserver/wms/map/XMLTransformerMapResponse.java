@@ -35,8 +35,7 @@ public class XMLTransformerMapResponse extends AbstractMapResponse {
      * @param operation operation descriptor for which the map was produced; not used at all.
      */
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         write(value, output);
     }
 

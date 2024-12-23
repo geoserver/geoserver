@@ -24,13 +24,9 @@ class ImageListenerSupport {
         this.imageListeners = imageListeners;
     }
 
-    void imageAdded(CoverageInfo coverageInfo, GranuleSource granules, String featureId)
-            throws IOException {
+    void imageAdded(CoverageInfo coverageInfo, GranuleSource granules, String featureId) throws IOException {
         SimpleFeatureCollection fc =
-                granules.getGranules(
-                        new Query(
-                                coverageInfo.getNativeCoverageName(),
-                                FF.id(FF.featureId(featureId))));
+                granules.getGranules(new Query(coverageInfo.getNativeCoverageName(), FF.id(FF.featureId(featureId))));
         SimpleFeature feature = DataUtilities.first(fc);
 
         if (feature != null && imageListeners != null) {

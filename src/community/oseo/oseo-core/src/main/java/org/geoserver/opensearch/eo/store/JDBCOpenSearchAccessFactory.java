@@ -26,31 +26,22 @@ import org.geotools.util.KVP;
  */
 public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
 
-    public static final Param REPOSITORY_PARAM =
-            new Param(
-                    "repository",
-                    Repository.class,
-                    "The repository that will provide the store instances",
-                    false,
-                    null,
-                    new KVP(Param.LEVEL, "advanced"));
+    public static final Param REPOSITORY_PARAM = new Param(
+            "repository",
+            Repository.class,
+            "The repository that will provide the store instances",
+            false,
+            null,
+            new KVP(Param.LEVEL, "advanced"));
 
     public static final Param STORE_PARAM =
-            new Param(
-                    "store",
-                    String.class,
-                    "Delegate data store",
-                    false,
-                    null,
-                    new KVP(Param.ELEMENT, String.class));
+            new Param("store", String.class, "Delegate data store", false, null, new KVP(Param.ELEMENT, String.class));
 
     /** parameter for database type */
-    public static final Param DBTYPE =
-            new Param("dbtype", String.class, "Type", true, "opensearch-eo-jdbc");
+    public static final Param DBTYPE = new Param("dbtype", String.class, "Type", true, "opensearch-eo-jdbc");
 
     /** parameter for namespace of the datastore */
-    public static final Param NAMESPACE =
-            new Param("namespace", String.class, "Namespace prefix", false);
+    public static final Param NAMESPACE = new Param("namespace", String.class, "Namespace prefix", false);
 
     private static GeoServer geoServer;
 
@@ -61,14 +52,13 @@ public class JDBCOpenSearchAccessFactory implements DataAccessFactory {
     }
 
     @Override
-    public DataAccess<? extends FeatureType, ? extends Feature> createDataStore(
-            Map<String, ?> params) throws IOException {
+    public DataAccess<? extends FeatureType, ? extends Feature> createDataStore(Map<String, ?> params)
+            throws IOException {
         Repository repository = (Repository) REPOSITORY_PARAM.lookUp(params);
         String flatStoreName = (String) STORE_PARAM.lookUp(params);
         String ns = (String) NAMESPACE.lookUp(params);
         Name name = Converters.convert(flatStoreName, Name.class);
-        return new JDBCOpenSearchAccess(
-                repository, name, ns, GeoServerExtensions.bean(GeoServer.class));
+        return new JDBCOpenSearchAccess(repository, name, ns, GeoServerExtensions.bean(GeoServer.class));
     }
 
     @Override

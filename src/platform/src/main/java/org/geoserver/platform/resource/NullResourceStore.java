@@ -12,10 +12,10 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Empty ResourceStore implementation (any attempt to access content will result in
- * IllegalStateException). This implementation prevents client code from requiring null checks on
- * {@link ResourceStore#get(String)}. IllegalStateException are thrown by in(), out() and file()
- * which are the usual methods clients require error handling.
+ * Empty ResourceStore implementation (any attempt to access content will result in IllegalStateException). This
+ * implementation prevents client code from requiring null checks on {@link ResourceStore#get(String)}.
+ * IllegalStateException are thrown by in(), out() and file() which are the usual methods clients require error
+ * handling.
  */
 final class NullResourceStore implements ResourceStore {
     final long MODIFIED = System.currentTimeMillis();

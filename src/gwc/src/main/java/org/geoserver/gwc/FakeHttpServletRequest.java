@@ -48,22 +48,15 @@ class FakeHttpServletRequest implements HttpServletRequest {
         this(parameterMap, cookies, null);
     }
 
-    public FakeHttpServletRequest(
-            Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
-        this.parameterMap =
-                parameterMap.entrySet().stream()
-                        .collect(
-                                Collectors.toMap(
-                                        e -> e.getKey(), e -> new String[] {e.getValue()}));
+    public FakeHttpServletRequest(Map<String, String> parameterMap, Cookie[] cookies, String workspace) {
+        this.parameterMap = parameterMap.entrySet().stream()
+                .collect(Collectors.toMap(e -> e.getKey(), e -> new String[] {e.getValue()}));
         this.cookies = cookies;
         this.workspace = workspace;
         // grab the original request from Spring to forward security related attributes
         // such as requests host, ports and headers
-        this.original =
-                Optional.ofNullable(
-                                (ServletRequestAttributes)
-                                        RequestContextHolder.getRequestAttributes())
-                        .map(ServletRequestAttributes::getRequest);
+        this.original = Optional.ofNullable((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .map(ServletRequestAttributes::getRequest);
     }
 
     /** Standard interface */
@@ -84,8 +77,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public long getDateHeader(String name) {
-        return original.map(r -> r.getDateHeader(name))
-                .orElseThrow(() -> new ServletDebugException());
+        return original.map(r -> r.getDateHeader(name)).orElseThrow(() -> new ServletDebugException());
     }
 
     @Override
@@ -105,8 +97,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public int getIntHeader(String name) {
-        return original.map(r -> r.getIntHeader(name))
-                .orElseThrow(() -> new ServletDebugException());
+        return original.map(r -> r.getIntHeader(name)).orElseThrow(() -> new ServletDebugException());
     }
 
     @Override
@@ -215,8 +206,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
     }
 
     @Override
-    public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass)
-            throws IOException, ServletException {
+    public <T extends HttpUpgradeHandler> T upgrade(Class<T> aClass) throws IOException, ServletException {
         return null;
     }
 

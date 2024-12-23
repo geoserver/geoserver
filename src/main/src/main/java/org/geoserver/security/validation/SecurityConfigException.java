@@ -23,12 +23,10 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String AUTH_PROVIDER_NOT_FOUND_$1 = "AUTH_PROVIDER_NOT_FOUND";
     // return MessageFormat.format("No authentication provider named {0} ",args);
 
-    public static final String INVALID_CONFIG_PASSWORD_ENCODER_$1 =
-            "INVALID_CONFIG_PASSWORD_ENCODER";
+    public static final String INVALID_CONFIG_PASSWORD_ENCODER_$1 = "INVALID_CONFIG_PASSWORD_ENCODER";
     // return MessageFormat.format("Bean {0} is not a valid password password encoder",args);
 
-    public static final String INVALID_STRONG_CONFIG_PASSWORD_ENCODER =
-            "INVALID_STRONG_CONFIG_PASSWORD_ENCODER";
+    public static final String INVALID_STRONG_CONFIG_PASSWORD_ENCODER = "INVALID_STRONG_CONFIG_PASSWORD_ENCODER";
     // return MessageFormat.format("Install unrestricted security policy files before using a strong
     // configuration password encoder",args);
 
@@ -57,8 +55,7 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String ROLE_SERVICE_ALREADY_EXISTS_$1 = "ROLE_SERVICE_ALREADY_EXISTS";
     // return MessageFormat.format("Role service {0} alreday exists",args);
 
-    public static final String USERGROUP_SERVICE_ALREADY_EXISTS_$1 =
-            "USERGROUP_SERVICE_ALREADY_EXISTS";
+    public static final String USERGROUP_SERVICE_ALREADY_EXISTS_$1 = "USERGROUP_SERVICE_ALREADY_EXISTS";
     // return MessageFormat.format("User/group service {0} alreday exists",args);
 
     public static final String AUTH_FILTER_ALREADY_EXISTS_$1 = "AUTH_FILTER_ALREADY_EXISTS";
@@ -124,10 +121,8 @@ public class SecurityConfigException extends AbstractSecurityException {
     public static final String UNKNOWN_ROLE_FILTER_$2 = "UNKNOWN_ROLE_FILTER";
     public static final String UNKNOWN_FILTER_$2 = "UNKNOWN_FILTER";
     public static final String NOT_AN_AUTHENTICATION_FILTER_$2 = "NOT_AN_AUTHENTICATION_FILTER";
-    public static final String NOT_A_HTML_AUTHENTICATION_FILTER_$2 =
-            "NOT_A_HTML_AUTHENTICATION_FILTER";
-    public static final String NOT_A_SERVICE_AUTHENTICATION_FILTER_$2 =
-            "NOT_A_SERVICE_AUTHENTICATION_FILTER";
+    public static final String NOT_A_HTML_AUTHENTICATION_FILTER_$2 = "NOT_A_HTML_AUTHENTICATION_FILTER";
+    public static final String NOT_A_SERVICE_AUTHENTICATION_FILTER_$2 = "NOT_A_SERVICE_AUTHENTICATION_FILTER";
     public static final String FILTER_STILL_USED = "FILTER_STILL_USED";
     public static final String RESERVED_ROLE_NAME = "RESERVED_ROLE_NAME";
 

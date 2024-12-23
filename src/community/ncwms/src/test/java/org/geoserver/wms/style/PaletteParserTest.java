@@ -27,7 +27,8 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class PaletteParserTest {
-    @Rule public ExpectedException exception = ExpectedException.none();
+    @Rule
+    public ExpectedException exception = ExpectedException.none();
 
     PaletteParser parser = new PaletteParser();
 
@@ -97,8 +98,7 @@ public class PaletteParserTest {
                 cm.getParameters().get(0).evaluate(null));
     }
 
-    static Function assertDynamicColorColormap(StyledLayerDescriptor sld)
-            throws TransformerException {
+    static Function assertDynamicColorColormap(StyledLayerDescriptor sld) throws TransformerException {
         // logStyle(sld);
         NamedLayer layer = (NamedLayer) sld.getStyledLayers()[0];
         Style style = layer.getStyles()[0];

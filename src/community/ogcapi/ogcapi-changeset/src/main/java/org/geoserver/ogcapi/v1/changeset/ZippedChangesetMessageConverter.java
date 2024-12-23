@@ -36,8 +36,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ZippedChangesetMessageConverter implements HttpMessageConverter<ChangeSet> {
 
-    private static final MediaType ZIP_MEDIA_TYPE =
-            MediaType.parseMediaType(ChangesetTilesService.ZIP_MIME);
+    private static final MediaType ZIP_MEDIA_TYPE = MediaType.parseMediaType(ChangesetTilesService.ZIP_MIME);
 
     private final ObjectMapper mapper;
     private final StorageBroker storageBroker;
@@ -88,17 +87,16 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
             while (tiles.hasNext()) {
                 // compute the tile
                 long[] tileIndex = tiles.next();
-                ConveyorTile tile =
-                        new ConveyorTile(
-                                storageBroker,
-                                tileLayer.getName(), // using the tile id won't work with storage
-                                // broker
-                                gridSet.getName(),
-                                tileIndex,
-                                tilesMime,
-                                changeSet.getFilterParameters(),
-                                null,
-                                null);
+                ConveyorTile tile = new ConveyorTile(
+                        storageBroker,
+                        tileLayer.getName(), // using the tile id won't work with storage
+                        // broker
+                        gridSet.getName(),
+                        tileIndex,
+                        tilesMime,
+                        changeSet.getFilterParameters(),
+                        null,
+                        null);
                 tile = tileLayer.getTile(tile);
                 if (tile != null) {
                     // add the tile if missing
@@ -112,10 +110,7 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
             zos.flush();
         } catch (Exception e) {
             throw new APIException(
-                    "InternalError",
-                    "Failed during changeset encoding",
-                    HttpStatus.INTERNAL_SERVER_ERROR,
-                    e);
+                    "InternalError", "Failed during changeset encoding", HttpStatus.INTERNAL_SERVER_ERROR, e);
         }
     }
 
@@ -126,14 +121,6 @@ public class ZippedChangesetMessageConverter implements HttpMessageConverter<Cha
         long tilesHigh = grid.getNumTilesHigh();
         long y = tilesHigh - tileIndex[1] - 1;
 
-        return gridSet.getName()
-                + "/"
-                + grid.getName()
-                + "/"
-                + y
-                + "/"
-                + x
-                + "."
-                + mime.getFileExtension();
+        return gridSet.getName() + "/" + grid.getName() + "/" + y + "/" + x + "." + mime.getFileExtension();
     }
 }

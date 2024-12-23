@@ -19,8 +19,8 @@ public interface RawData {
     public String getMimeType();
 
     /**
-     * Gives access to the raw data contents. TODO: decide if this one may be called only once, or
-     * if the code should make it possible to extract the stream multiple times
+     * Gives access to the raw data contents. TODO: decide if this one may be called only once, or if the code should
+     * make it possible to extract the stream multiple times
      */
     public InputStream getInputStream() throws IOException;
 

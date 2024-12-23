@@ -11,8 +11,8 @@ import java.util.Iterator;
 public interface CloseableIterator<T> extends Iterator<T>, Closeable {
 
     /**
-     * Closes this stream and releases any system resources associated with it. This method is
-     * idempotent, if the stream is already closed then invoking this method has no effect.
+     * Closes this stream and releases any system resources associated with it. This method is idempotent, if the stream
+     * is already closed then invoking this method has no effect.
      *
      * @throws RuntimeException if an I/O error occurs
      */

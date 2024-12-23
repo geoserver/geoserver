@@ -44,8 +44,7 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     /**
      * Decodes the parameter from an extenral source that has been pre-parsed.
      *
-     * <p>This method should transform the object from the external representation to the internal
-     * representation.
+     * <p>This method should transform the object from the external representation to the internal representation.
      *
      * @param input An object of type {@link #getExternalType()}
      * @return An object of type {@link #getType()}.
@@ -58,25 +57,25 @@ public abstract class ComplexPPIO extends ProcessParameterIO {
     public abstract void encode(Object value, OutputStream os) throws Exception;
 
     /**
-     * Encodes the internal object representation of a parameter into an output stream using
-     * specific encoding parameters
+     * Encodes the internal object representation of a parameter into an output stream using specific encoding
+     * parameters
      */
-    public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os)
-            throws Exception {
+    public void encode(Object value, Map<String, Object> encodingParameters, OutputStream os) throws Exception {
         encode(value, os);
-    };
+    }
+    ;
 
     /**
-     * Provides a suitable extension for the output file. Implement this if the file extension is
-     * not depend on the object being encoded
+     * Provides a suitable extension for the output file. Implement this if the file extension is not depend on the
+     * object being encoded
      */
     public String getFileExtension() {
         return ".bin";
     }
 
     /**
-     * Provides a suitable extension for the output file given the object being encoded. The default
-     * implementation simply calls {@link #getFileExtension()}
+     * Provides a suitable extension for the output file given the object being encoded. The default implementation
+     * simply calls {@link #getFileExtension()}
      */
     public String getFileExtension(Object object) {
         return getFileExtension();

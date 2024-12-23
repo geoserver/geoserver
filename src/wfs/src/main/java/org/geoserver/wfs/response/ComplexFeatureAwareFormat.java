@@ -14,8 +14,8 @@ import org.geoserver.platform.Operation;
 public interface ComplexFeatureAwareFormat {
 
     /**
-     * Returns true if the response supports complex features, or an attempt to cast down to simple
-     * features should be made.
+     * Returns true if the response supports complex features, or an attempt to cast down to simple features should be
+     * made.
      */
     default boolean supportsComplexFeatures(Object value, Operation operation) {
         return true;

@@ -76,14 +76,11 @@ public class GeoIPPostProcessor implements RequestPostProcessor {
             if (!warned.get()) {
                 warned.set(true);
 
-                String path =
-                        new File(loader.getBaseDirectory(), "monitoring/GeoLiteCity.dat")
-                                .getAbsolutePath();
-                LOGGER.warning(
-                        "GeoIP database "
-                                + path
-                                + " is not available. "
-                                + "Please install the file to enable GeoIP lookups.");
+                String path = new File(loader.getBaseDirectory(), "monitoring/GeoLiteCity.dat").getAbsolutePath();
+                LOGGER.warning("GeoIP database "
+                        + path
+                        + " is not available. "
+                        + "Please install the file to enable GeoIP lookups.");
             }
             return null;
 

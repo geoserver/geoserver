@@ -8,8 +8,8 @@ package org.geoserver.wps.executor;
 import org.geotools.api.util.ProgressListener;
 
 /**
- * A provider that can parse an input in a lazy way, to allow the input parsing time (sometimes
- * significant) to be included as part of the overall execution time (and associated progress)
+ * A provider that can parse an input in a lazy way, to allow the input parsing time (sometimes significant) to be
+ * included as part of the overall execution time (and associated progress)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -25,8 +25,8 @@ interface InputProvider {
     public boolean resolved();
 
     /**
-     * Returns the number of "long" steps to be carried out in order to get this input. A long step
-     * is either executing a sub-process, or having to fetch a remote data set
+     * Returns the number of "long" steps to be carried out in order to get this input. A long step is either executing
+     * a sub-process, or having to fetch a remote data set
      */
     int longStepCount();
 }

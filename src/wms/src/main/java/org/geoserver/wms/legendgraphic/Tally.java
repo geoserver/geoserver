@@ -37,8 +37,7 @@ class Tally {
             if (usedMemory + imageSize > maxMemory) {
                 // we don't report the max value as this could be a sub-list
                 throw new ServiceException(
-                        LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED,
-                        ServiceException.MAX_MEMORY_EXCEEDED);
+                        LegendGraphicBuilder.MEMORY_USAGE_EXCEEDED, ServiceException.MAX_MEMORY_EXCEEDED);
             }
             usedMemory += imageSize;
         }

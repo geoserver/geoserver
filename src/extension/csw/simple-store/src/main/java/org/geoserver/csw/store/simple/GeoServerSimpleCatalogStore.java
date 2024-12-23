@@ -9,8 +9,8 @@ import java.io.IOException;
 import org.geoserver.config.GeoServerDataDirectory;
 
 /**
- * An implementation of {@link SimpleCatalogStore} that is going to find the records in the
- * "catalog" subdirectory of the GeoServer data directory
+ * An implementation of {@link SimpleCatalogStore} that is going to find the records in the "catalog" subdirectory of
+ * the GeoServer data directory
  */
 public class GeoServerSimpleCatalogStore extends SimpleCatalogStore {
 

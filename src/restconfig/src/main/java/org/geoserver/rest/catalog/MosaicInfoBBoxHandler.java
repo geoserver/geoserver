@@ -18,8 +18,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * This class provides methods to update a mosaic native bounding box at the coverage info level
- * according to the bounds present in the index
+ * This class provides methods to update a mosaic native bounding box at the coverage info level according to the bounds
+ * present in the index
  */
 class MosaicInfoBBoxHandler {
 
@@ -31,43 +31,34 @@ class MosaicInfoBBoxHandler {
         this.catalog = catalog;
     }
 
-    void updateNativeBBox(
-            String workspaceName, String storeName, StructuredGridCoverage2DReader reader)
+    void updateNativeBBox(String workspaceName, String storeName, StructuredGridCoverage2DReader reader)
             throws IOException {
         CoverageStoreInfo store = this.catalog.getCoverageStoreByName(workspaceName, storeName);
         updateNativeBBox(store, reader);
     }
 
-    void updateNativeBBox(CoverageStoreInfo storeInfo, StructuredGridCoverage2DReader reader)
-            throws IOException {
+    void updateNativeBBox(CoverageStoreInfo storeInfo, StructuredGridCoverage2DReader reader) throws IOException {
         List<CoverageInfo> coverages = this.catalog.getCoveragesByStore(storeInfo);
         try {
             if (reader == null) {
-                reader =
-                        (StructuredGridCoverage2DReader)
-                                storeInfo.getGridCoverageReader(null, null);
+                reader = (StructuredGridCoverage2DReader) storeInfo.getGridCoverageReader(null, null);
             }
             StructuredGridCoverage2DReader defaultReader = reader;
             for (CoverageInfo ci : coverages) {
                 MetadataMap metadata = ci.getMetadata();
                 if (metadata != null && metadata.containsKey(CoverageView.COVERAGE_VIEW)) {
                     // I need to get the actual coverageView reader
-                    reader =
-                            (StructuredGridCoverage2DReader)
-                                    this.catalog.getResourcePool().getGridCoverageReader(ci, null);
+                    reader = (StructuredGridCoverage2DReader)
+                            this.catalog.getResourcePool().getGridCoverageReader(ci, null);
                 } else {
                     reader = defaultReader;
                 }
-                ReferencedEnvelope newBbox =
-                        new ReferencedEnvelope(reader.getOriginalEnvelope(ci.getName()));
+                ReferencedEnvelope newBbox = new ReferencedEnvelope(reader.getOriginalEnvelope(ci.getName()));
                 ci.setNativeBoundingBox(newBbox);
                 this.catalog.save(ci);
             }
         } catch (ClassCastException ex) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Store doesn't support harvesting."
-                            + " Cannot update layer's native bounding box");
+            LOGGER.log(Level.FINE, "Store doesn't support harvesting." + " Cannot update layer's native bounding box");
         }
     }
 }

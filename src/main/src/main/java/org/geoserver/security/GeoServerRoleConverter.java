@@ -16,10 +16,7 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public interface GeoServerRoleConverter {
 
-    /**
-     * Converts a {@link GeoServerRole} to a string The {@link GeoServerRole#getUserName()} is not
-     * included
-     */
+    /** Converts a {@link GeoServerRole} to a string The {@link GeoServerRole#getUserName()} is not included */
     public abstract String convertRoleToString(GeoServerRole role);
 
     /** converts a collection of roles to a string */
@@ -30,15 +27,12 @@ public interface GeoServerRoleConverter {
      *
      * <p>The userName may be null
      */
-    public abstract Collection<GeoServerRole> convertRolesFromString(
-            String rolesString, String userName);
+    public abstract Collection<GeoServerRole> convertRolesFromString(String rolesString, String userName);
 
     /**
-     * Creates a {@link GeoServerRole} from a string May return <code>null</code> if rolesString is
-     * null or empty
+     * Creates a {@link GeoServerRole} from a string May return <code>null</code> if rolesString is null or empty
      *
-     * <p>The userName may be null and should only be passed if the role has personalized role
-     * parameters
+     * <p>The userName may be null and should only be passed if the role has personalized role parameters
      */
     public abstract GeoServerRole convertRoleFromString(String roleString, String userName);
 }

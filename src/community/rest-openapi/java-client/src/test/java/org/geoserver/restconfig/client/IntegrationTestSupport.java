@@ -21,8 +21,8 @@ import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 
 /**
- * Junit {@link Rule} used to provide a pre-configured {@link GeoServerClient} and to enable
- * integration tests only if the geoserver instance is {@link #isAlive() accessible}
+ * Junit {@link Rule} used to provide a pre-configured {@link GeoServerClient} and to enable integration tests only if
+ * the geoserver instance is {@link #isAlive() accessible}
  *
  * <p>The {@code geoserver_port} environment variable needs to be provided
  */
@@ -42,8 +42,7 @@ public class IntegrationTestSupport extends ExternalResource {
         final String apiUrl = resolve("geoserver_api_url", "http://localhost:18080/geoserver/rest");
 
         if (isEmpty(apiUrl)) {
-            log.warn(
-                    "No geoserver_api_url System property provided, can't run geoserver integration tests.");
+            log.warn("No geoserver_api_url System property provided, can't run geoserver integration tests.");
             return;
         }
         this.geoserverApiURL = new URL(apiUrl);
@@ -127,13 +126,9 @@ public class IntegrationTestSupport extends ExternalResource {
         WorkspaceInfo requestBody = new WorkspaceInfo().name(name).isolated(isolated);
         WorkspacesClient workspaces = client().workspaces();
         workspaces.create(requestBody);
-        WorkspaceInfo ws =
-                workspaces
-                        .getAsInfo(name)
-                        .orElseThrow(
-                                () ->
-                                        new NoSuchElementException(
-                                                "workspace " + name + " not created"));
+        WorkspaceInfo ws = workspaces
+                .getAsInfo(name)
+                .orElseThrow(() -> new NoSuchElementException("workspace " + name + " not created"));
         assertEquals(name, ws.getName());
         this.workspacesToCleanup.add(name);
         return ws;
@@ -145,14 +140,10 @@ public class IntegrationTestSupport extends ExternalResource {
 
     public MetadataLinkInfo newMetadataLink(int sampleIndex) {
         return newMetadataLink(
-                "Test link #" + sampleIndex,
-                "http://test.com/mdlink#" + sampleIndex,
-                "ISO19115:2003",
-                "text/plain");
+                "Test link #" + sampleIndex, "http://test.com/mdlink#" + sampleIndex, "ISO19115:2003", "text/plain");
     }
 
-    public MetadataLinkInfo newMetadataLink(
-            String about, String contentURL, String metadataType, String contentType) {
+    public MetadataLinkInfo newMetadataLink(String about, String contentURL, String metadataType, String contentType) {
         MetadataLinkInfo mdl = new MetadataLinkInfo();
         mdl.setAbout(about);
         mdl.setContent(contentURL);

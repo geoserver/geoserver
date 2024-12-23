@@ -14,9 +14,8 @@ import org.springframework.core.convert.converter.Converter;
 import org.springframework.stereotype.Component;
 
 /**
- * Manages OGC API sort parameter. Current definition is a comma separate list, with + or - in front
- * of the attribute name to specify the direction. In case of no direction specifier, + is the
- * default.
+ * Manages OGC API sort parameter. Current definition is a comma separate list, with + or - in front of the attribute
+ * name to specify the direction. In case of no direction specifier, + is the default.
  */
 @Component
 public class SortByConverter implements Converter<String, SortBy[]> {
@@ -28,9 +27,7 @@ public class SortByConverter implements Converter<String, SortBy[]> {
     }
 
     public static final SortBy[] convertString(String spec) {
-        return Arrays.stream(spec.split("\\s*,\\s*"))
-                .map(s -> sortBy(s))
-                .toArray(n -> new SortBy[n]);
+        return Arrays.stream(spec.split("\\s*,\\s*")).map(s -> sortBy(s)).toArray(n -> new SortBy[n]);
     }
 
     private static SortBy sortBy(String spec) {

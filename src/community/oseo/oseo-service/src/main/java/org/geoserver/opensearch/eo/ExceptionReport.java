@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Support class for encoding JSON exceptions according to
- * https://docs.opengeospatial.org/is/17-047r1/17-047r1.html#39
+ * Support class for encoding JSON exceptions according to https://docs.opengeospatial.org/is/17-047r1/17-047r1.html#39
  */
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class ExceptionReport {

@@ -31,8 +31,7 @@ public class StylesDocument extends AbstractDocument {
         this.tileLayer = tileLayer;
         this.tileLayerId = TilesService.getTileLayerId(tileLayer);
 
-        addSelfLinks(
-                "ogc/tiles/v1/collections/" + ResponseUtils.urlEncode(tileLayerId) + "/styles");
+        addSelfLinks("ogc/tiles/v1/collections/" + ResponseUtils.urlEncode(tileLayerId) + "/styles");
     }
 
     public List<StyleDocument> getStyles() {
@@ -46,9 +45,7 @@ public class StylesDocument extends AbstractDocument {
             result = new StyleDocument(s);
         } else {
             // layer group and GWC native layer case
-            result =
-                    new StyleDocument(
-                            StyleDocument.DEFAULT_STYLE_NAME, "Default style for " + tileLayerId);
+            result = new StyleDocument(StyleDocument.DEFAULT_STYLE_NAME, "Default style for " + tileLayerId);
         }
 
         // are the map tiles at all?
@@ -56,12 +53,7 @@ public class StylesDocument extends AbstractDocument {
             new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections")
                     .segment(tileLayerId, true)
                     .segment("styles/map/tiles")
-                    .title(
-                            "Tilesets list for "
-                                    + tileLayerId
-                                    + " with style "
-                                    + s.getName()
-                                    + ", represented as ")
+                    .title("Tilesets list for " + tileLayerId + " with style " + s.getName() + ", represented as ")
                     .rel(TiledCollectionDocument.REL_TILESETS_MAP)
                     .add(result);
         }

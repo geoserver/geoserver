@@ -9,8 +9,8 @@ import java.io.Serializable;
 import org.geoserver.catalog.impl.AuthorityURL;
 
 /**
- * Support interface for publication of AuthorityURL elements in WMS capabilities, assigned to
- * either the root WMS layer or any individual layer, including layer gorups.
+ * Support interface for publication of AuthorityURL elements in WMS capabilities, assigned to either the root WMS layer
+ * or any individual layer, including layer gorups.
  *
  * @author groldan
  * @see AuthorityURL

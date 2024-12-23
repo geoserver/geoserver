@@ -39,14 +39,13 @@ public class IconService extends AbstractController {
     }
 
     @Override
-    public ModelAndView handleRequestInternal(
-            HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
 
         String path = request.getPathInfo();
         Matcher m = URI.matcher(path);
         if (!m.matches()) {
-            response.sendError(
-                    400, "Bad request, path must be of form: /icons/[<workspace>/]<style>");
+            response.sendError(400, "Bad request, path must be of form: /icons/[<workspace>/]<style>");
             return null;
         }
         // this is wrong - matches 2 even when no workspace in url!
@@ -59,9 +58,7 @@ public class IconService extends AbstractController {
         }
 
         StyleInfo styleInfo =
-                workspace != null
-                        ? catalog.getStyleByName(workspace, styleName)
-                        : catalog.getStyleByName(styleName);
+                workspace != null ? catalog.getStyleByName(workspace, styleName) : catalog.getStyleByName(styleName);
         if (styleInfo == null) {
             String msg = "No such style " + styleName;
             if (workspace != null) {
@@ -74,8 +71,7 @@ public class IconService extends AbstractController {
         String q = request.getQueryString();
         try {
             Style style = styleInfo.getStyle();
-            Map<String, Object> properties =
-                    q != null ? KvpUtils.parseQueryString("?" + q) : Collections.emptyMap();
+            Map<String, Object> properties = q != null ? KvpUtils.parseQueryString("?" + q) : Collections.emptyMap();
             Map<String, String> kvp = new HashMap<>();
             for (String key : properties.keySet()) {
                 Object value = properties.get(key);

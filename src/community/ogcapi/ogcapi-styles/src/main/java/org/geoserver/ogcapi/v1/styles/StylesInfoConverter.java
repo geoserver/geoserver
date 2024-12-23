@@ -40,8 +40,7 @@ public class StylesInfoConverter implements HttpMessageConverter<StyleInfo> {
     Map<MediaType, StyleWriterConverter> writers = new HashMap<>();
     List<MediaType> mediaTypes = new ArrayList<>();
 
-    public StylesInfoConverter(
-            GeoServerExtensions extensions, GeoServerDataDirectory dataDirectory) {
+    public StylesInfoConverter(GeoServerExtensions extensions, GeoServerDataDirectory dataDirectory) {
         this.dataDirectory = dataDirectory;
         handlers = extensions.extensions(StyleHandler.class);
         for (StyleHandler sh : handlers) {
@@ -89,13 +88,9 @@ public class StylesInfoConverter implements HttpMessageConverter<StyleInfo> {
         if (contentType == null || contentType.isCompatibleWith(getNativeMediaType(styleInfo))) {
             copyDefinition(styleInfo, outputMessage.getBody());
         } else {
-            StyleWriterConverter writer =
-                    getWriter(contentType)
-                            .orElseThrow(
-                                    () ->
-                                            new RestException(
-                                                    "Cannot write style as " + mediaTypes,
-                                                    HttpStatus.UNSUPPORTED_MEDIA_TYPE));
+            StyleWriterConverter writer = getWriter(contentType)
+                    .orElseThrow(() -> new RestException(
+                            "Cannot write style as " + mediaTypes, HttpStatus.UNSUPPORTED_MEDIA_TYPE));
             writer.write(styleInfo, contentType, outputMessage);
         }
     }
@@ -105,16 +100,12 @@ public class StylesInfoConverter implements HttpMessageConverter<StyleInfo> {
         if (format == null) {
             return MediaType.valueOf(SLDHandler.MIMETYPE_10);
         }
-        StyleHandler handler =
-                handlers.stream()
-                        .filter(sh -> styleInfo.getFormat().equals(sh.getFormat()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new RestException(
-                                                "Could not find style handler for style "
-                                                        + styleInfo.prefixedName(),
-                                                HttpStatus.INTERNAL_SERVER_ERROR));
+        StyleHandler handler = handlers.stream()
+                .filter(sh -> styleInfo.getFormat().equals(sh.getFormat()))
+                .findFirst()
+                .orElseThrow(() -> new RestException(
+                        "Could not find style handler for style " + styleInfo.prefixedName(),
+                        HttpStatus.INTERNAL_SERVER_ERROR));
         Version version = styleInfo.getFormatVersion();
         if (version == null) version = handler.getVersions().get(0);
         return MediaType.valueOf(handler.mimeType(version));

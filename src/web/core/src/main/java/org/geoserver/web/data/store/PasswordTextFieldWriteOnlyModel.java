@@ -9,13 +9,13 @@ import org.apache.wicket.markup.html.form.PasswordTextField;
 import org.apache.wicket.model.IModel;
 
 /**
- * A password text field that obfuscates the password in the HTML source and does not reset the
- * value when the form is edited.
+ * A password text field that obfuscates the password in the HTML source and does not reset the value when the form is
+ * edited.
  */
 public class PasswordTextFieldWriteOnlyModel extends PasswordTextField {
     /**
-     * Used so that someone with access to the browser cannot read the HTML source of the page and
-     * get the password. It replaces it with random text but updates the original value on write.
+     * Used so that someone with access to the browser cannot read the HTML source of the page and get the password. It
+     * replaces it with random text but updates the original value on write.
      *
      * @param id the component id
      * @param model the model
@@ -26,8 +26,8 @@ public class PasswordTextFieldWriteOnlyModel extends PasswordTextField {
     }
 
     /**
-     * Model wraps component model so that someone with access to the browser cannot read the HTML
-     * source of the page and get the password.
+     * Model wraps component model so that someone with access to the browser cannot read the HTML source of the page
+     * and get the password.
      */
     static class WriteOnlyModel implements IModel<String> {
         String fakePass = "_gs_pwd_" + UUID.randomUUID();

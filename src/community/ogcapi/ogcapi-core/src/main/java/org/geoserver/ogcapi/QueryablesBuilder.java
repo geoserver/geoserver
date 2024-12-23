@@ -28,11 +28,9 @@ public class QueryablesBuilder {
     public static final String POINT_SCHEMA_REF = "https://geojson.org/schema/Point.json";
     public static final String MULTIPOINT_SCHEMA_REF = "https://geojson.org/schema/MultiPoint.json";
     public static final String LINESTRING_SCHEMA_REF = "https://geojson.org/schema/LineString.json";
-    public static final String MULTILINESTRING_SCHEMA_REF =
-            "https://geojson.org/schema/MultiLineString.json";
+    public static final String MULTILINESTRING_SCHEMA_REF = "https://geojson.org/schema/MultiLineString.json";
     public static final String POLYGON_SCHEMA_REF = "https://geojson.org/schema/Polygon.json";
-    public static final String MULTIPOLYGON_SCHEMA_REF =
-            "https://geojson.org/schema/MultiPolygon.json";
+    public static final String MULTIPOLYGON_SCHEMA_REF = "https://geojson.org/schema/MultiPolygon.json";
     public static final String GEOMETRY_SCHEMA_REF = "https://geojson.org/schema/Geometry.json";
 
     public static final String POINT = "Point";
@@ -61,19 +59,16 @@ public class QueryablesBuilder {
     }
 
     public QueryablesBuilder forType(FeatureType ft) {
-        Map<String, Schema> properties =
-                ft.getDescriptors().stream()
-                        .filter( // ignore feature chaining links, they might be duplicated
-                                ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
-                        .collect(
-                                Collectors.toMap(
-                                        ad -> ad.getName().getLocalPart(),
-                                        ad -> getSchema(ad.getType()),
-                                        (u, v) -> {
-                                            throw new IllegalStateException(
-                                                    String.format("Duplicate key %s", u));
-                                        },
-                                        () -> new LinkedHashMap<>()));
+        Map<String, Schema> properties = ft.getDescriptors().stream()
+                .filter( // ignore feature chaining links, they might be duplicated
+                        ad -> !ad.getName().equals(FEATURE_CHAINING_LINK_NAME))
+                .collect(Collectors.toMap(
+                        ad -> ad.getName().getLocalPart(),
+                        ad -> getSchema(ad.getType()),
+                        (u, v) -> {
+                            throw new IllegalStateException(String.format("Duplicate key %s", u));
+                        },
+                        () -> new LinkedHashMap<>()));
         this.queryables.setProperties(properties);
         return this;
     }

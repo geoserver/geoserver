@@ -11,10 +11,7 @@ import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.repeat.RepeatStatus;
 
-/**
- * Spring batch tasklet responsible for performing final restore steps. In particular, reloaded the
- * catalog
- */
+/** Spring batch tasklet responsible for performing final restore steps. In particular, reloaded the catalog */
 public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet {
 
     private boolean dryRun;
@@ -24,8 +21,7 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
     }
 
     @Override
-    RepeatStatus doExecute(
-            StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
+    RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception {
         // Reload GeoServer Catalog
         if (jobExecution.getStatus() != BatchStatus.STOPPED) {
@@ -42,10 +38,7 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
                     geoserver.dispose();
                     geoserver.reload(getCatalog());
                 } catch (Exception e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error occurred while trying to Reload the GeoServer Catalog: ",
-                            e);
+                    LOGGER.log(Level.WARNING, "Error occurred while trying to Reload the GeoServer Catalog: ", e);
                 }
             }
 
@@ -57,10 +50,6 @@ public class FinalizeRestoreTasklet extends AbstractCatalogBackupRestoreTasklet 
 
     @Override
     protected void initialize(StepExecution stepExecution) {
-        dryRun =
-                Boolean.parseBoolean(
-                        stepExecution
-                                .getJobParameters()
-                                .getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+        dryRun = Boolean.parseBoolean(stepExecution.getJobParameters().getString(Backup.PARAM_DRY_RUN_MODE, "false"));
     }
 }

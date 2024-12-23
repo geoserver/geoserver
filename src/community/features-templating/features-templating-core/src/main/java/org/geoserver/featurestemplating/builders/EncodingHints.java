@@ -12,9 +12,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * This class represent a Map of encoding hints. An encoding hint is a value giving additional
- * instructions to the writing process of a template output. The class also defines the constants
- * for the currently available EncodingHints.
+ * This class represent a Map of encoding hints. An encoding hint is a value giving additional instructions to the
+ * writing process of a template output. The class also defines the constants for the currently available EncodingHints.
  */
 public class EncodingHints extends HashMap<String, Object> {
 
@@ -95,12 +94,7 @@ public class EncodingHints extends HashMap<String, Object> {
      */
     public static boolean isSingleFeatureRequest() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .map(
-                        att ->
-                                (String)
-                                        att.getAttribute(
-                                                "OGCFeatures:ItemId",
-                                                RequestAttributes.SCOPE_REQUEST))
+                .map(att -> (String) att.getAttribute("OGCFeatures:ItemId", RequestAttributes.SCOPE_REQUEST))
                 .isPresent();
     }
 }

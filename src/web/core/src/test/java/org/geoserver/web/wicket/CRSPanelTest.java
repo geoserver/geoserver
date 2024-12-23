@@ -60,8 +60,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = DefaultGeographicCRS.WGS84;
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        ModalWindow window = (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
@@ -75,12 +74,10 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         // see GEOS-3207
         tester.startPage(new CRSPanelTestPage());
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        ModalWindow window = (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
-        GeoServerAjaxFormLink link =
-                (GeoServerAjaxFormLink) tester.getComponentFromLastRenderedPage("form:crs:wkt");
+        GeoServerAjaxFormLink link = (GeoServerAjaxFormLink) tester.getComponentFromLastRenderedPage("form:crs:wkt");
         assertFalse(link.isEnabled());
     }
 
@@ -218,8 +215,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        ModalWindow window = (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         tester.clickLink("form:crs:wkt", true);
@@ -233,8 +229,7 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         CoordinateReferenceSystem crs = CRS.decode("IAU:30100");
         tester.startPage(new CRSPanelTestPage(crs));
 
-        ModalWindow window =
-                (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
+        ModalWindow window = (ModalWindow) tester.getComponentFromLastRenderedPage("form:crs:popup");
         assertFalse(window.isShown());
 
         // open the CRS list panel
@@ -247,15 +242,12 @@ public class CRSPanelTest extends GeoServerWicketTestSupport {
         ft.submit("crs:popup:content:table:filterForm:submit");
 
         // find and click the link with the 30115 code
-        tester.getLastRenderedPage()
-                .visitChildren(
-                        AjaxLink.class,
-                        (link, visit) -> {
-                            if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
-                                visit.stop();
-                                tester.executeAjaxEvent(link, "onclick");
-                            }
-                        });
+        tester.getLastRenderedPage().visitChildren(AjaxLink.class, (link, visit) -> {
+            if ("IAU:30115".equals(link.getDefaultModelObjectAsString())) {
+                visit.stop();
+                tester.executeAjaxEvent(link, "onclick");
+            }
+        });
 
         // window closed
         assertFalse(window.isShown());

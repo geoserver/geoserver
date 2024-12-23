@@ -89,12 +89,10 @@ public class TransformRestTest extends XSLTTestSupport {
 
     @Test
     public void testGetTransformHTML() throws Exception {
-        Document d =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/transforms/general.html");
+        Document d = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/transforms/general.html");
         // print(d);
 
-        assertEquals(
-                "Source format: \"text/xml; subtype=gml/2.1.2\"", xpath.evaluate("//h:li[1]", d));
+        assertEquals("Source format: \"text/xml; subtype=gml/2.1.2\"", xpath.evaluate("//h:li[1]", d));
         assertEquals("Output format: \"text/html; subtype=xslt\"", xpath.evaluate("//h:li[2]", d));
         assertEquals("File extension: \"html\"", xpath.evaluate("//h:li[3]", d));
         assertEquals("XSLT transform: \"general.xslt\"", xpath.evaluate("//h:li[4]", d));
@@ -102,8 +100,7 @@ public class TransformRestTest extends XSLTTestSupport {
 
     @Test
     public void testGetTransformXML() throws Exception {
-        Document d =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/transforms/general.xml");
+        Document d = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/transforms/general.xml");
         // print(d);
 
         assertEquals("text/xml; subtype=gml/2.1.2", xpath.evaluate("//sourceFormat", d));
@@ -114,36 +111,30 @@ public class TransformRestTest extends XSLTTestSupport {
 
     @Test
     public void testPostXML() throws Exception {
-        String xml =
-                "<transform>\n"
-                        + "  <name>buildings</name>\n"
-                        + //
-                        "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n"
-                        + //
-                        "  <outputFormat>text/html</outputFormat>\n"
-                        + //
-                        "  <fileExtension>html</fileExtension>\n"
-                        + //
-                        "  <xslt>buildings.xslt</xslt>\n"
-                        + //
-                        "  <featureType>\n"
-                        + //
-                        "    <name>cite:Buildings</name>\n"
-                        + //
-                        "  </featureType>\n"
-                        + "</transform>\n";
+        String xml = "<transform>\n"
+                + "  <name>buildings</name>\n"
+                + //
+                "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n"
+                + //
+                "  <outputFormat>text/html</outputFormat>\n"
+                + //
+                "  <fileExtension>html</fileExtension>\n"
+                + //
+                "  <xslt>buildings.xslt</xslt>\n"
+                + //
+                "  <featureType>\n"
+                + //
+                "    <name>cite:Buildings</name>\n"
+                + //
+                "  </featureType>\n"
+                + "</transform>\n";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/transforms", xml);
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/transforms", xml);
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                ""
-                                        + RestBaseController.ROOT_PATH
-                                        + "/services/wfs/transforms/buildings"));
+        assertTrue(response.getHeader("Location")
+                .endsWith("" + RestBaseController.ROOT_PATH + "/services/wfs/transforms/buildings"));
 
         TransformInfo info = repository.getTransformInfo("buildings");
         assertNotNull(info);
@@ -151,34 +142,24 @@ public class TransformRestTest extends XSLTTestSupport {
 
     @Test
     public void testPostXSLT() throws Exception {
-        String xslt =
-                FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
-                        "UTF-8");
+        String xslt = FileUtils.readFileToString(
+                new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"), "UTF-8");
 
         // test for missing params
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/transforms?name=general2",
-                        xslt,
-                        "application/xslt+xml");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/transforms?name=general2", xslt, "application/xslt+xml");
         assertEquals(400, response.getStatus());
 
         // now pass all
-        response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/services/wfs/transforms?name=general2&sourceFormat=gml&outputFormat=HTML&outputMimeType=text/html",
-                        xslt,
-                        "application/xslt+xml");
+        response = postAsServletResponse(
+                RestBaseController.ROOT_PATH
+                        + "/services/wfs/transforms?name=general2&sourceFormat=gml&outputFormat=HTML&outputMimeType=text/html",
+                xslt,
+                "application/xslt+xml");
         assertEquals(201, response.getStatus());
         assertNotNull(response.getHeader("Location"));
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                ""
-                                        + RestBaseController.ROOT_PATH
-                                        + "/services/wfs/transforms/general2"));
+        assertTrue(response.getHeader("Location")
+                .endsWith("" + RestBaseController.ROOT_PATH + "/services/wfs/transforms/general2"));
 
         TransformInfo info = repository.getTransformInfo("general2");
         assertNotNull(info);
@@ -190,19 +171,15 @@ public class TransformRestTest extends XSLTTestSupport {
     @Test
     public void testPutXML() throws Exception {
         // let's change the output format
-        String xml =
-                "<transform>\n"
-                        + "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n"
-                        + "  <outputFormat>text/html</outputFormat>\n"
-                        + "  <fileExtension>html</fileExtension>\n"
-                        + "  <xslt>general.xslt</xslt>\n"
-                        + "</transform>";
+        String xml = "<transform>\n"
+                + "  <sourceFormat>text/xml; subtype=gml/2.1.2</sourceFormat>\n"
+                + "  <outputFormat>text/html</outputFormat>\n"
+                + "  <fileExtension>html</fileExtension>\n"
+                + "  <xslt>general.xslt</xslt>\n"
+                + "</transform>";
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/transforms/general",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/transforms/general", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         TransformInfo info = repository.getTransformInfo("general");
@@ -211,15 +188,10 @@ public class TransformRestTest extends XSLTTestSupport {
 
     @Test
     public void testPutXSLT() throws Exception {
-        String xslt =
-                FileUtils.readFileToString(
-                        new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"),
-                        "UTF-8");
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/transforms/general",
-                        xslt,
-                        "application/xslt+xml");
+        String xslt = FileUtils.readFileToString(
+                new File("src/test/resources/org/geoserver/wfs/xslt/general2.xslt"), "UTF-8");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/transforms/general", xslt, "application/xslt+xml");
         assertEquals(200, response.getStatus());
 
         TransformInfo info = repository.getTransformInfo("general");
@@ -234,8 +206,7 @@ public class TransformRestTest extends XSLTTestSupport {
     @Test
     public void testDelete() throws Exception {
         MockHttpServletResponse response =
-                deleteAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/transforms/general");
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/transforms/general");
         assertEquals(200, response.getStatus());
 
         TransformInfo info = repository.getTransformInfo("general");

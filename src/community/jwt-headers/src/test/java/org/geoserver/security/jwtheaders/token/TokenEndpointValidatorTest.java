@@ -16,8 +16,7 @@ import org.mockito.ArgumentMatchers;
 public class TokenEndpointValidatorTest {
 
     /**
-     * tests a good endpoint - we use a mock to return this json; {
-     * "sub":"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d" }
+     * tests a good endpoint - we use a mock to return this json; { "sub":"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d" }
      *
      * @throws Exception
      */
@@ -58,18 +57,15 @@ public class TokenEndpointValidatorTest {
 
         validator.tokenEndpointValidator = spy(validator.tokenEndpointValidator);
 
-        doReturn(null)
-                .when(validator.tokenEndpointValidator)
-                .download(ArgumentMatchers.any(), ArgumentMatchers.any());
+        doReturn(null).when(validator.tokenEndpointValidator).download(ArgumentMatchers.any(), ArgumentMatchers.any());
 
         String token = JwtHeaderUserNameExtractorTest.accessToken;
         validator.validate(token);
     }
 
     /**
-     * tests a good endpoint - we use a mock to return this json; {
-     * "sub":"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d" } The access token also has this as the subject
-     * (sub), so its good!
+     * tests a good endpoint - we use a mock to return this json; { "sub":"ea33e3cc-f0e1-4218-89cb-8d48c27eee3d" } The
+     * access token also has this as the subject (sub), so its good!
      *
      * @throws Exception
      */
@@ -95,8 +91,8 @@ public class TokenEndpointValidatorTest {
     }
 
     /**
-     * tests a good endpoint - we use a mock to return this json; { "sub":"BAD-SUBJECT" } The access
-     * token has a different subject, so this should throw
+     * tests a good endpoint - we use a mock to return this json; { "sub":"BAD-SUBJECT" } The access token has a
+     * different subject, so this should throw
      *
      * @throws Exception
      */

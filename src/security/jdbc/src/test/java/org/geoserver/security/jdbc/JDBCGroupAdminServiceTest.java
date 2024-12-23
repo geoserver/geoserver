@@ -52,8 +52,7 @@ public class JDBCGroupAdminServiceTest extends GroupAdminServiceTest {
     @Override
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
         JDBCUserGroupService service =
-                (JDBCUserGroupService)
-                        JDBCTestSupport.createH2UserGroupService(name, getSecurityManager());
+                (JDBCUserGroupService) JDBCTestSupport.createH2UserGroupService(name, getSecurityManager());
         if (!service.tablesAlreadyCreated()) {
             service.createTables();
         }
@@ -63,8 +62,7 @@ public class JDBCGroupAdminServiceTest extends GroupAdminServiceTest {
 
     @Override
     public GeoServerRoleService createRoleService(String name) throws Exception {
-        JDBCRoleService service =
-                (JDBCRoleService) JDBCTestSupport.createH2RoleService(name, getSecurityManager());
+        JDBCRoleService service = (JDBCRoleService) JDBCTestSupport.createH2RoleService(name, getSecurityManager());
         if (!service.tablesAlreadyCreated()) {
             service.createTables();
         }
@@ -91,8 +89,7 @@ public class JDBCGroupAdminServiceTest extends GroupAdminServiceTest {
     }
 
     @Override
-    public GeoServerUserGroupStore createStore(GeoServerUserGroupService service)
-            throws IOException {
+    public GeoServerUserGroupStore createStore(GeoServerUserGroupService service) throws IOException {
         JDBCUserGroupStore store = (JDBCUserGroupStore) super.createStore(service);
         try {
             JDBCTestSupport.dropExistingTables(store, store.getConnection());

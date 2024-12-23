@@ -38,8 +38,7 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
 
         File backupFile = File.createTempFile("testRunSpringBatchBackupJob", ".zip");
         BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(
-                        Files.asResource(backupFile), true, null, null, null, params);
+                backupFacade.runBackupAsync(Files.asResource(backupFile), true, null, null, null, params);
 
         // Wait a bit
         Thread.sleep(100);
@@ -49,9 +48,7 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || !backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || !backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -60,8 +57,7 @@ public class BackupWithoutSettingsTest extends BackupRestoreTestSupport {
                     || backupExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
-                    LOGGER.log(
-                            Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
+                    LOGGER.log(Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
                 }
                 break;
             }

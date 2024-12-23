@@ -8,13 +8,12 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.config.util.XStreamPersister;
 
 /**
- * Testing utility listener to check the roles involved on catalog and geoserver startup loading
- * process. Defined in testing applicationContext.xml file as id="rootStartupListener".
+ * Testing utility listener to check the roles involved on catalog and geoserver startup loading process. Defined in
+ * testing applicationContext.xml file as id="rootStartupListener".
  */
 public class RootStartupListener implements GeoServerLoaderListener {
 
-    private static volatile GeoServerLoaderListener delegate =
-            GeoServerLoaderListener.EMPTY_LISTENER;
+    private static volatile GeoServerLoaderListener delegate = GeoServerLoaderListener.EMPTY_LISTENER;
 
     @Override
     public void loadCatalog(Catalog catalog, XStreamPersister xp) {

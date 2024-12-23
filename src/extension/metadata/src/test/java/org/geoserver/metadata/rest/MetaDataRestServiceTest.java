@@ -31,7 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class MetaDataRestServiceTest extends AbstractMetadataTest {
 
-    @Autowired private MetaDataRestService restService;
+    @Autowired
+    private MetaDataRestService restService;
 
     @Before
     public void before() throws Exception {
@@ -47,43 +48,36 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
     @Test
     public void testImportGeonetwork() throws IOException {
 
-        ResourceInfo rInfo =
-                geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
+        ResourceInfo rInfo = geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
 
         MetadataTemplate template = templateService.findByName("simple fields");
         template.getLinkedLayers().add(rInfo.getId());
         templateService.save(template);
 
         restService.importAndLink(
-                "geonetwork url",
-                "doesn'texist;boo;\ntopp:mylayer; 1a2c6739-3c62-432b-b2a0-aaa589a9e3a1; ");
+                "geonetwork url", "doesn'texist;boo;\ntopp:mylayer; 1a2c6739-3c62-432b-b2a0-aaa589a9e3a1; ");
 
         rInfo = geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
 
         @SuppressWarnings("unchecked")
         Map<String, Serializable> metadataMap =
-                (Map<String, Serializable>)
-                        rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                (Map<String, Serializable>) rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         // simple single
-        Assert.assertEquals(
-                "1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("identifier-single"));
+        Assert.assertEquals("1a2c6739-3c62-432b-b2a0-aaa589a9e3a1", metadataMap.get("identifier-single"));
         // simple list
         Serializable actualList = metadataMap.get("refsystem-as-list");
         Assert.assertTrue(actualList instanceof List);
         Assert.assertEquals(4, ((List<?>) actualList).size());
         Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualList).get(0));
         Assert.assertEquals("TAW", ((List<?>) actualList).get(1));
-        Assert.assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
+        Assert.assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualList).get(2));
 
         // complex single
         Assert.assertEquals("EPSG", metadataMap.get("referencesystem-object/code-space"));
-        Assert.assertEquals(
-                "Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
+        Assert.assertEquals("Belge_Lambert_1972 (31370)", metadataMap.get("referencesystem-object/code"));
 
         // complex list
-        Serializable actualObjectCodeSpaceList =
-                metadataMap.get("referencesystem-object-list/code-space");
+        Serializable actualObjectCodeSpaceList = metadataMap.get("referencesystem-object-list/code-space");
         Assert.assertTrue(actualObjectCodeSpaceList instanceof List);
         Assert.assertEquals(6, ((List<?>) actualObjectCodeSpaceList).size());
         Assert.assertEquals("EPSG", ((List<?>) actualObjectCodeSpaceList).get(0));
@@ -95,9 +89,7 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         Assert.assertEquals(6, ((List<?>) actualObjectCodeList).size());
         Assert.assertEquals("Belge_Lambert_1972 (31370)", ((List<?>) actualObjectCodeList).get(0));
         Assert.assertEquals("TAW", ((List<?>) actualObjectCodeList).get(1));
-        Assert.assertEquals(
-                "http://www.opengis.net/def/crs/EPSG/0/3043",
-                ((List<?>) actualObjectCodeList).get(2));
+        Assert.assertEquals("http://www.opengis.net/def/crs/EPSG/0/3043", ((List<?>) actualObjectCodeList).get(2));
 
         // check equal sizes for complex repeatables
         List<?> names = (List<?>) metadataMap.get("contact/name");
@@ -125,26 +117,26 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
 
     @Test
     public void testLinkTemplates() {
-        restService.importAndLink(
-                null, "emptyline\ntopp:mylayer; ; allData; template-nested-object");
+        restService.importAndLink(null, "emptyline\ntopp:mylayer; ; allData; template-nested-object");
 
-        ResourceInfo rInfo =
-                geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
+        ResourceInfo rInfo = geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
         @SuppressWarnings("unchecked")
-        ComplexMetadataMap map =
-                new ComplexMetadataMapImpl(
-                        (Map<String, Serializable>)
-                                rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
+        ComplexMetadataMap map = new ComplexMetadataMapImpl(
+                (Map<String, Serializable>) rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
 
         Assert.assertEquals(3, map.size("referencesystem-object-list"));
         ComplexMetadataMap submap01 = map.subMap("referencesystem-object-list", 0);
         ComplexMetadataMap submap02 = map.subMap("referencesystem-object-list", 1);
-        Assert.assertEquals("list-objectcode01", submap01.get(String.class, "code").getValue());
         Assert.assertEquals(
-                "list-objectcodeSpace01", submap01.get(String.class, "code-space").getValue());
-        Assert.assertEquals("list-objectcode02", submap02.get(String.class, "code").getValue());
+                "list-objectcode01", submap01.get(String.class, "code").getValue());
         Assert.assertEquals(
-                "list-objectcodeSpace02", submap02.get(String.class, "code-space").getValue());
+                "list-objectcodeSpace01",
+                submap01.get(String.class, "code-space").getValue());
+        Assert.assertEquals(
+                "list-objectcode02", submap02.get(String.class, "code").getValue());
+        Assert.assertEquals(
+                "list-objectcodeSpace02",
+                submap02.get(String.class, "code-space").getValue());
         // Should be updated list of nested objects
         Assert.assertEquals(1, map.size("feature-catalog/feature-attribute"));
         ComplexMetadataMap submapTemplate = map.subMap("feature-catalog/feature-attribute", 0);
@@ -155,13 +147,17 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         ComplexMetadataMap submapdomain01 = submapTemplate.subMap("domain", 0);
         ComplexMetadataMap submapdomain02 = submapTemplate.subMap("domain", 1);
         Assert.assertEquals(
-                "template-domain-code01", submapdomain01.get(String.class, "code").getValue());
+                "template-domain-code01",
+                submapdomain01.get(String.class, "code").getValue());
         Assert.assertEquals(
-                "template-domain-code01", submapdomain01.get(String.class, "value").getValue());
+                "template-domain-code01",
+                submapdomain01.get(String.class, "value").getValue());
         Assert.assertEquals(
-                "template-domain-code02", submapdomain02.get(String.class, "code").getValue());
+                "template-domain-code02",
+                submapdomain02.get(String.class, "code").getValue());
         Assert.assertEquals(
-                "template-domain-code02", submapdomain02.get(String.class, "value").getValue());
+                "template-domain-code02",
+                submapdomain02.get(String.class, "value").getValue());
 
         // verify linked
         MetadataTemplate template = templateService.findByName("allData");
@@ -183,10 +179,7 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         layer.getResource().getKeywords().add(new Keyword("KEY_Vlaanderen"));
         layer.getResource().getKeywords().get(3).setVocabulary("VOCABULARY_B");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());
-        layer.getResource()
-                .getMetadataLinks()
-                .get(0)
-                .setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
+        layer.getResource().getMetadataLinks().get(0).setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
         layer.getResource().getMetadataLinks().get(0).setType("text/html");
         layer.getResource().getMetadataLinks().get(0).setMetadataType("ISO191156:2003");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());
@@ -211,13 +204,10 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         restService.nativeToCustom("0,2");
 
         layer = geoServer.getCatalog().getLayerByName("topp:mylayer");
-        ResourceInfo rInfo =
-                geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
+        ResourceInfo rInfo = geoServer.getCatalog().getResourceByName("topp:mylayer", ResourceInfo.class);
         @SuppressWarnings("unchecked")
-        ComplexMetadataMap map =
-                new ComplexMetadataMapImpl(
-                        (Map<String, Serializable>)
-                                rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
+        ComplexMetadataMap map = new ComplexMetadataMapImpl(
+                (Map<String, Serializable>) rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY));
 
         assertEquals(2, map.size("refsystem-as-list"));
         assertEquals("foo", map.get(String.class, "refsystem-as-list", 0).getValue());
@@ -232,11 +222,8 @@ public class MetaDataRestServiceTest extends AbstractMetadataTest {
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Serializable> underlying =
-                (HashMap<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        HashMap<String, Serializable> underlying = (HashMap<String, Serializable>)
+                layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
         map.get(String.class, "refsystem-as-list", 0).setValue("foo");

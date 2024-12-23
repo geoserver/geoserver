@@ -17,8 +17,7 @@ import org.geoserver.smartdataloader.metadata.jdbc.JdbcTableMetadata;
 public class JdbcForeignKeyConstraintMetadata extends JdbcTableConstraintMetadata {
     private final JdbcTableMetadata relatedTable;
 
-    public JdbcForeignKeyConstraintMetadata(
-            JdbcTableMetadata table, String name, JdbcTableMetadata relatedTable) {
+    public JdbcForeignKeyConstraintMetadata(JdbcTableMetadata table, String name, JdbcTableMetadata relatedTable) {
         super(table, name);
         this.relatedTable = relatedTable;
     }
@@ -37,16 +36,14 @@ public class JdbcForeignKeyConstraintMetadata extends JdbcTableConstraintMetadat
             return false;
         }
         if (!super.equals(object)) return false;
-        JdbcForeignKeyConstraintMetadata foreignKeyConstraint =
-                (JdbcForeignKeyConstraintMetadata) object;
+        JdbcForeignKeyConstraintMetadata foreignKeyConstraint = (JdbcForeignKeyConstraintMetadata) object;
         return this.compareTo(foreignKeyConstraint) == 0;
     }
 
     @Override
     public int compareTo(ConstraintMetadata tableConstraint) {
         if (tableConstraint != null) {
-            JdbcForeignKeyConstraintMetadata tc =
-                    (JdbcForeignKeyConstraintMetadata) tableConstraint;
+            JdbcForeignKeyConstraintMetadata tc = (JdbcForeignKeyConstraintMetadata) tableConstraint;
             return ComparisonChain.start()
                     .compare(this.getTable(), tc.getTable())
                     .compare(this.getName(), tc.getName())
@@ -66,8 +63,7 @@ public class JdbcForeignKeyConstraintMetadata extends JdbcTableConstraintMetadat
     }
 
     public boolean referencesTo(JdbcTableMetadata table) {
-        if (table != null && (table.equals(relatedTable) || table.equals(this.getTable())))
-            return true;
+        if (table != null && (table.equals(relatedTable) || table.equals(this.getTable()))) return true;
         return false;
     }
 }

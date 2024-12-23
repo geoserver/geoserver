@@ -48,19 +48,26 @@ public class WorkspaceSecuritySyncTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_WORKSPACE = "workspace";
     private static final String ATT_EXT_GS = "geoserver";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired protected DataAccessRuleDAO dataAccessDao;
+    @Autowired
+    protected DataAccessRuleDAO dataAccessDao;
 
     private Configuration config;
 
@@ -83,10 +90,8 @@ public class WorkspaceSecuritySyncTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(WorkspaceSecuritySyncTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, ConfigureCachedLayerTaskTypeImpl.PARAM_WORKSPACE, ATT_WORKSPACE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, ConfigureCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, ConfigureCachedLayerTaskTypeImpl.PARAM_WORKSPACE, ATT_WORKSPACE);
+        dataUtil.setTaskParameterToAttribute(task1, ConfigureCachedLayerTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -114,33 +119,24 @@ public class WorkspaceSecuritySyncTaskTest extends AbstractTaskManagerTest {
     public void testSyncAndCleanup() throws SchedulerException, SQLException, IOException {
         // run with admin rights
         SecurityContextHolder.getContext()
-                .setAuthentication(
-                        new UsernamePasswordAuthenticationToken(
-                                "admin",
-                                null,
-                                Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
+                .setAuthentication(new UsernamePasswordAuthenticationToken(
+                        "admin", null, Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
 
         // configure security
+        dataAccessDao.addRule(new DataAccessRule(WS, DataAccessRule.ANY, AccessMode.READ, Collections.emptySet()));
         dataAccessDao.addRule(
-                new DataAccessRule(
-                        WS, DataAccessRule.ANY, AccessMode.READ, Collections.emptySet()));
-        dataAccessDao.addRule(
-                new DataAccessRule(
-                        WS,
-                        DataAccessRule.ANY,
-                        AccessMode.WRITE,
-                        Sets.newHashSet("ROLE_1", "ROLE_2")));
-        dataAccessDao.addRule(
-                new DataAccessRule(
-                        WS, DataAccessRule.ANY, AccessMode.ADMIN, Sets.newHashSet("ROLE_1")));
+                new DataAccessRule(WS, DataAccessRule.ANY, AccessMode.WRITE, Sets.newHashSet("ROLE_1", "ROLE_2")));
+        dataAccessDao.addRule(new DataAccessRule(WS, DataAccessRule.ANY, AccessMode.ADMIN, Sets.newHashSet("ROLE_1")));
         dataAccessDao.storeRules();
 
         dataUtil.setConfigurationAttribute(config, ATT_WORKSPACE, WS);
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -152,19 +148,11 @@ public class WorkspaceSecuritySyncTaskTest extends AbstractTaskManagerTest {
         assertEquals(
                 Sets.newHashSet("ROLE_1", "ROLE_2"),
                 dataRules.getRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.W));
-        assertEquals(
-                Sets.newHashSet("ROLE_1"),
-                dataRules.getRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.A));
+        assertEquals(Sets.newHashSet("ROLE_1"), dataRules.getRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.A));
 
         // clean-up side effects
-        restManager
-                .getSecurityManager()
-                .deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.R);
-        restManager
-                .getSecurityManager()
-                .deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.W);
-        restManager
-                .getSecurityManager()
-                .deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.A);
+        restManager.getSecurityManager().deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.R);
+        restManager.getSecurityManager().deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.W);
+        restManager.getSecurityManager().deleteDataRule(WS, GeoServerRESTSecurityManager.ANY, RuleType.A);
     }
 }

@@ -24,14 +24,12 @@ public class StoreListModel extends LoadableDetachableModel<List<StoreInfo>> {
     protected List<StoreInfo> load() {
         List<StoreInfo> stores = GeoServerApplication.get().getCatalog().getStores(StoreInfo.class);
         stores = new ArrayList<>(stores);
-        Collections.sort(
-                stores,
-                (o1, o2) -> {
-                    if (o1.getWorkspace().equals(o2.getWorkspace())) {
-                        return o1.getName().compareTo(o2.getName());
-                    }
-                    return o1.getWorkspace().getName().compareTo(o2.getWorkspace().getName());
-                });
+        Collections.sort(stores, (o1, o2) -> {
+            if (o1.getWorkspace().equals(o2.getWorkspace())) {
+                return o1.getName().compareTo(o2.getName());
+            }
+            return o1.getWorkspace().getName().compareTo(o2.getWorkspace().getName());
+        });
         return stores;
     }
 }

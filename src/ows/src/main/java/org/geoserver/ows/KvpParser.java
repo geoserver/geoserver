@@ -11,8 +11,8 @@ import org.geotools.util.Version;
 /**
  * Parses a key-value pair into a key-object pair.
  *
- * <p>This class is intended to be subclassed. Subclasses need declare the key in which they parse,
- * and the type of object they parse into.
+ * <p>This class is intended to be subclassed. Subclasses need declare the key in which they parse, and the type of
+ * object they parse into.
  *
  * <p>Instances need to be declared in a spring context like the following:
  *
@@ -41,9 +41,9 @@ import org.geotools.util.Version;
  *
  * <p><b>Operation Binding</b>
  *
- * <p>In the normal case, a kvp parser is engaged when a request specifies a name which matches the
- * name declared by the kvp parser. It is also possible to attach a kvp parser so that it only
- * engages on a particular operation. This is done by declaring the one or more of the following:
+ * <p>In the normal case, a kvp parser is engaged when a request specifies a name which matches the name declared by the
+ * kvp parser. It is also possible to attach a kvp parser so that it only engages on a particular operation. This is
+ * done by declaring the one or more of the following:
  *
  * <ul>
  *   <li>service
@@ -51,11 +51,11 @@ import org.geotools.util.Version;
  *   <li>request
  * </ul>
  *
- * <p>When a kvp parser declares one or more of these properties, it will only be engaged if an
- * incoming request specicfies matching values of the properties.
+ * <p>When a kvp parser declares one or more of these properties, it will only be engaged if an incoming request
+ * specicfies matching values of the properties.
  *
- * <p>The following bean declaration would create the above kvp parser so that it only engages when
- * the service is "MyService", and the request is "MyRequest".
+ * <p>The following bean declaration would create the above kvp parser so that it only engages when the service is
+ * "MyService", and the request is "MyRequest".
  *
  * <pre>
  *         <code>
@@ -70,8 +70,7 @@ import org.geotools.util.Version;
  */
 public abstract class KvpParser {
     /** logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.ows");
 
     /** The key. */
     String key;

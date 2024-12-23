@@ -59,21 +59,18 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
     }
 
     @Override
-    public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request)
-            throws IOException {
+    public void encode(Translator tx, WMSInfo wms, GetCapabilitiesRequest request) throws IOException {
         Version requestVersion = WMS.version(request.getVersion());
         // if this is not a wms 1.3.0 request
         if (!WMS.VERSION_1_3_0.equals(requestVersion)) {
             return;
         }
         MetadataMap serviceMetadata = wms.getMetadata();
-        Boolean createExtendedCapabilities =
-                serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
+        Boolean createExtendedCapabilities = serviceMetadata.get(CREATE_EXTENDED_CAPABILITIES.key, Boolean.class);
         String metadataURL = (String) serviceMetadata.get(SERVICE_METADATA_URL.key);
         // Don't create extended capabilities element if mandatory content not present
         // or turned off
-        if (metadataURL == null
-                || createExtendedCapabilities != null && !createExtendedCapabilities) {
+        if (metadataURL == null || createExtendedCapabilities != null && !createExtendedCapabilities) {
             return;
         }
         String mediaType = (String) serviceMetadata.get(SERVICE_METADATA_TYPE.key);
@@ -96,8 +93,7 @@ public class WMSExtendedCapabilitiesProvider implements ExtendedCapabilitiesProv
     }
 
     @Override
-    public NumberRange<Double> overrideScaleDenominators(
-            PublishedInfo layer, NumberRange<Double> scaleDenominators) {
+    public NumberRange<Double> overrideScaleDenominators(PublishedInfo layer, NumberRange<Double> scaleDenominators) {
         return scaleDenominators;
     }
 }

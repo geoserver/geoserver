@@ -31,9 +31,8 @@ import org.geotools.util.Utilities;
 import org.geotools.util.logging.Logging;
 
 /**
- * Base class for transformations between 2 different height's related verticalCRS. The
- * transformation goes through a Vertical offset file containing the offset to be applied for each
- * specific x,y pair.
+ * Base class for transformations between 2 different height's related verticalCRS. The transformation goes through a
+ * Vertical offset file containing the offset to be applied for each specific x,y pair.
  */
 public class VerticalGridTransform extends AbstractMathTransform {
 
@@ -43,8 +42,8 @@ public class VerticalGridTransform extends AbstractMathTransform {
     /**
      * Constructs a {@code VerticalGridTransform} from the specified grid shift file.
      *
-     * <p>This constructor checks for grid shift file availability, but doesn't actually load the
-     * full grid into memory to preserve resources.
+     * <p>This constructor checks for grid shift file availability, but doesn't actually load the full grid into memory
+     * to preserve resources.
      *
      * @param file Vertical grid file name
      * @throws NoSuchIdentifierException if the grid is not available.
@@ -58,8 +57,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
 
         gridLocation = locateGrid(grid.toString());
         if (gridLocation == null) {
-            throw new NoSuchIdentifierException(
-                    "Could not locate Vertical Grid File " + file, null);
+            throw new NoSuchIdentifierException("Could not locate Vertical Grid File " + file, null);
         }
 
         verticalGridShift = FACTORY.createVerticalGrid(gridLocation, interpolationCRSCode);
@@ -101,8 +99,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
     private static VerticalGridShiftFactory FACTORY = new VerticalGridShiftFactory();
 
     /**
-     * Transform the input height value from the source data using the underlying Vertical Grid
-     * Shift.
+     * Transform the input height value from the source data using the underlying Vertical Grid Shift.
      *
      * @param x The first coordinate of the grid
      * @param y The second coordinate of the grid
@@ -110,25 +107,17 @@ public class VerticalGridTransform extends AbstractMathTransform {
      * @return true if the height has been successfully transformed.
      * @throws TransformException if the offset can't be computed for the specified coordinates.
      */
-    protected boolean transformHeight(double x, double y, double[] height)
-            throws TransformException {
+    protected boolean transformHeight(double x, double y, double[] height) throws TransformException {
         if (!verticalGridShift.isInValidArea(x, y)) {
             throw new TransformException(
-                    "Point ("
-                            + x
-                            + " "
-                            + y
-                            + ") is outside of (("
-                            + verticalGridShift.getValidArea()
-                            + "))");
+                    "Point (" + x + " " + y + ") is outside of ((" + verticalGridShift.getValidArea() + "))");
         }
         return verticalGridShift.shift(x, y, height);
     }
 
     /** Transforms a list of coordinate point ordinal values. */
     @Override
-    public void transform(
-            final double[] srcPts, int srcOff, final double[] dstPts, int dstOff, int numPts)
+    public void transform(final double[] srcPts, int srcOff, final double[] dstPts, int dstOff, int numPts)
             throws TransformException {
         bidirectionalTransform(srcPts, srcOff, dstPts, dstOff, numPts, true);
     }
@@ -138,10 +127,9 @@ public class VerticalGridTransform extends AbstractMathTransform {
      *
      * @param srcPts the array containing the source point coordinates.
      * @param srcOff the offset to the first point to be transformed in the source array.
-     * @param dstPts the array into which the transformed point coordinates are returned. May be the
-     *     same than {@code srcPts}.
-     * @param dstOff the offset to the location of the first transformed point that is stored in the
-     *     destination array.
+     * @param dstPts the array into which the transformed point coordinates are returned. May be the same than
+     *     {@code srcPts}.
+     * @param dstOff the offset to the location of the first transformed point that is stored in the destination array.
      * @param numPts the number of point objects to be transformed.
      * @param forward {@code true} for direct transform, {@code false} for inverse transform.
      * @throws TransformException if an IO error occurs reading the grid file.
@@ -186,37 +174,32 @@ public class VerticalGridTransform extends AbstractMathTransform {
 
         public static final String VERTICAL_OFFSET_FILE_KEY = "Vertical offset file";
 
-        public static final String VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY =
-                "Vertical Offset by Grid Interpolation";
+        public static final String VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY = "Vertical Offset by Grid Interpolation";
 
         private static final long serialVersionUID = 7111781812366039408L;
 
         /**
-         * The operation parameter descriptor for the "Vertical offset file" parameter value. The
-         * default value is "".
+         * The operation parameter descriptor for the "Vertical offset file" parameter value. The default value is "".
          */
-        public static final DefaultParameterDescriptor<URI> FILE =
-                new DefaultParameterDescriptor<>(
-                        toMap(
-                                new NamedIdentifier[] {
-                                    new NamedIdentifier(Citations.EPSG, VERTICAL_OFFSET_FILE_KEY),
-                                    new NamedIdentifier(Citations.EPSG, "8732")
-                                }),
-                        URI.class,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        true);
+        public static final DefaultParameterDescriptor<URI> FILE = new DefaultParameterDescriptor<>(
+                toMap(new NamedIdentifier[] {
+                    new NamedIdentifier(Citations.EPSG, VERTICAL_OFFSET_FILE_KEY),
+                    new NamedIdentifier(Citations.EPSG, "8732")
+                }),
+                URI.class,
+                null,
+                null,
+                null,
+                null,
+                null,
+                true);
 
         public static final DefaultParameterDescriptor<Integer> INTERPOLATION_CRS_CODE =
                 new DefaultParameterDescriptor<>(
-                        toMap(
-                                new NamedIdentifier[] {
-                                    new NamedIdentifier(Citations.EPSG, INTERPOLATION_CRS_CODE_KEY),
-                                    new NamedIdentifier(Citations.EPSG, "1048")
-                                }),
+                        toMap(new NamedIdentifier[] {
+                            new NamedIdentifier(Citations.EPSG, INTERPOLATION_CRS_CODE_KEY),
+                            new NamedIdentifier(Citations.EPSG, "1048")
+                        }),
                         Integer.class,
                         null,
                         null,
@@ -226,14 +209,12 @@ public class VerticalGridTransform extends AbstractMathTransform {
                         false);
 
         /** The parameters group. */
-        static final ParameterDescriptorGroup PARAMETERS =
-                createDescriptorGroup(
-                        new NamedIdentifier[] {
-                            new NamedIdentifier(
-                                    Citations.EPSG, VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY),
-                            new NamedIdentifier(Citations.EPSG, "1081")
-                        },
-                        new ParameterDescriptor[] {FILE, INTERPOLATION_CRS_CODE});
+        static final ParameterDescriptorGroup PARAMETERS = createDescriptorGroup(
+                new NamedIdentifier[] {
+                    new NamedIdentifier(Citations.EPSG, VERTICAL_OFFSET_BY_GRID_INTERPOLATION_KEY),
+                    new NamedIdentifier(Citations.EPSG, "1081")
+                },
+                new ParameterDescriptor[] {FILE, INTERPOLATION_CRS_CODE});
 
         /** Constructs a provider. */
         public Provider() {
@@ -257,8 +238,7 @@ public class VerticalGridTransform extends AbstractMathTransform {
         @Override
         protected MathTransform createMathTransform(final ParameterValueGroup values)
                 throws ParameterNotFoundException, FactoryException {
-            return new VerticalGridTransform(
-                    value(FILE, values), value(INTERPOLATION_CRS_CODE, values));
+            return new VerticalGridTransform(value(FILE, values), value(INTERPOLATION_CRS_CODE, values));
         }
     }
 
@@ -272,12 +252,10 @@ public class VerticalGridTransform extends AbstractMathTransform {
         final ParameterValue<URI> file = new Parameter<>(Provider.FILE);
         file.setValue(grid);
 
-        final ParameterValue<Integer> interpolationCRSCode =
-                new Parameter<>(Provider.INTERPOLATION_CRS_CODE);
+        final ParameterValue<Integer> interpolationCRSCode = new Parameter<>(Provider.INTERPOLATION_CRS_CODE);
         interpolationCRSCode.setValue(verticalGridShift.getCRSCode());
 
-        return new ParameterGroup(
-                Provider.PARAMETERS, new ParameterValue[] {file, interpolationCRSCode});
+        return new ParameterGroup(Provider.PARAMETERS, new ParameterValue[] {file, interpolationCRSCode});
     }
 
     public VerticalGridShift getVerticalGridShift() {

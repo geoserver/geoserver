@@ -139,8 +139,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testX509FilterConfigValidation() throws Exception {
-        X509CertificateAuthenticationFilterConfig config =
-                new X509CertificateAuthenticationFilterConfig();
+        X509CertificateAuthenticationFilterConfig config = new X509CertificateAuthenticationFilterConfig();
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName("testX509");
 
@@ -149,8 +148,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testUsernamePasswordFilterConfigValidation() throws Exception {
-        UsernamePasswordAuthenticationFilterConfig config =
-                new UsernamePasswordAuthenticationFilterConfig();
+        UsernamePasswordAuthenticationFilterConfig config = new UsernamePasswordAuthenticationFilterConfig();
         config.setClassName(GeoServerUserNamePasswordAuthenticationFilter.class.getName());
         config.setName("testUsernamePassword");
 
@@ -203,8 +201,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
             assertEquals("unknown", ex.getArgs()[0]);
         }
 
-        config.setAuthenticationFilterName(
-                GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
+        config.setAuthenticationFilterName(GeoServerSecurityFilterChain.FILTER_SECURITY_INTERCEPTOR);
 
         try {
             validator.validateFilterConfig(config);
@@ -230,9 +227,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
             assertEquals(0, ex.getArgs().length);
         }
 
-        config.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                        .UserGroupService);
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.UserGroupService);
         try {
             validator.validateFilterConfig(config);
             fail("no user group service should fail");
@@ -253,9 +248,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
         config.setUserGroupServiceName(XMLUserGroupService.DEFAULT_NAME);
 
-        config.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                        .RoleService);
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.RoleService);
         config.setRoleServiceName("blabla");
         try {
             validator.validateFilterConfig(config);
@@ -267,8 +260,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
         }
 
         config.setRoleServiceName(XMLRoleService.DEFAULT_NAME);
-        config.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        config.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
 
         try {
             validator.validateFilterConfig(config);
@@ -314,8 +306,7 @@ public class FilterConfigValidatorTest extends GeoServerMockTestSupport {
 
     @Test
     public void testRequestHeaderFilterConfigValidation() throws Exception {
-        RequestHeaderAuthenticationFilterConfig config =
-                new RequestHeaderAuthenticationFilterConfig();
+        RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
         config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
         config.setName("testRequestHeader");
 

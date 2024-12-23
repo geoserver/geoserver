@@ -49,21 +49,17 @@ public class ParamInfo implements Serializable {
         this.deprecated = param.isDeprecated();
         // the "short" Param constructor sets the title equal to the key, that's not
         // very useful, use the description in that case instead
-        this.title =
-                param.title != null && !param.title.toString().equals(param.key)
-                        ? param.title.toString()
-                        : param.getDescription().toString();
+        this.title = param.title != null && !param.title.toString().equals(param.key)
+                ? param.title.toString()
+                : param.getDescription().toString();
         this.password = param.isPassword();
         this.level = param.getLevel();
-        this.largeText =
-                param.metadata != null
-                        && Boolean.TRUE.equals(param.metadata.get(Param.IS_LARGE_TEXT));
+        this.largeText = param.metadata != null && Boolean.TRUE.equals(param.metadata.get(Param.IS_LARGE_TEXT));
         Object defaultValue = this.deprecated ? null : param.sample;
         if (Serializable.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
             this.value = (Serializable) defaultValue;
-        } else if (Repository.class.equals(param.type)
-                || EntityResolver.class.isAssignableFrom(param.type)) {
+        } else if (Repository.class.equals(param.type) || EntityResolver.class.isAssignableFrom(param.type)) {
             this.binding = param.type;
             this.value = null;
         } else {

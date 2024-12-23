@@ -117,17 +117,13 @@ public class DGGSGeometryStoreTest {
         Query q = new Query();
 
         // explicitly ask for resolution 13
-        q.getHints()
-                .put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION, 13));
+        q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION, 13));
         SimpleFeature f13 = DataUtilities.first(fs.getFeatures(q));
         assertEquals(13, f13.getAttribute(RESOLUTION));
 
         // invalid, negative
         try {
-            q.getHints()
-                    .put(
-                            Hints.VIRTUAL_TABLE_PARAMETERS,
-                            Collections.singletonMap(VP_RESOLUTION, -1));
+            q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION, -1));
             DataUtilities.first(fs.getFeatures(q));
         } catch (IllegalArgumentException e) {
             assertThat(e.getMessage(), containsString("-1"));
@@ -135,10 +131,7 @@ public class DGGSGeometryStoreTest {
 
         // invalid, too large
         try {
-            q.getHints()
-                    .put(
-                            Hints.VIRTUAL_TABLE_PARAMETERS,
-                            Collections.singletonMap(VP_RESOLUTION, 50));
+            q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION, 50));
             DataUtilities.first(fs.getFeatures(q));
         } catch (IllegalArgumentException e) {
             assertThat(e.getMessage(), containsString("50"));
@@ -157,33 +150,21 @@ public class DGGSGeometryStoreTest {
         assertEquals(10, f13.getAttribute(RESOLUTION));
 
         // now add a negative offset
-        q.getHints()
-                .put(
-                        Hints.VIRTUAL_TABLE_PARAMETERS,
-                        Collections.singletonMap(VP_RESOLUTION_DELTA, -3));
+        q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION_DELTA, -3));
         SimpleFeature f13m3 = DataUtilities.first(fs.getFeatures(q));
         assertEquals(7, f13m3.getAttribute(RESOLUTION));
 
         // now add a positive offset
-        q.getHints()
-                .put(
-                        Hints.VIRTUAL_TABLE_PARAMETERS,
-                        Collections.singletonMap(VP_RESOLUTION_DELTA, 3));
+        q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION_DELTA, 3));
         SimpleFeature f13p3 = DataUtilities.first(fs.getFeatures(q));
         assertEquals(13, f13p3.getAttribute(RESOLUTION));
 
         // below lower bound
-        q.getHints()
-                .put(
-                        Hints.VIRTUAL_TABLE_PARAMETERS,
-                        Collections.singletonMap(VP_RESOLUTION_DELTA, -100));
+        q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION_DELTA, -100));
         assertEquals(0, DataUtilities.count(fs.getFeatures(q)));
 
         // above higher bound
-        q.getHints()
-                .put(
-                        Hints.VIRTUAL_TABLE_PARAMETERS,
-                        Collections.singletonMap(VP_RESOLUTION_DELTA, 100));
+        q.getHints().put(Hints.VIRTUAL_TABLE_PARAMETERS, Collections.singletonMap(VP_RESOLUTION_DELTA, 100));
         assertEquals(0, DataUtilities.count(fs.getFeatures(q)));
     }
 
@@ -199,16 +180,13 @@ public class DGGSGeometryStoreTest {
         assertEquals(5, features.size());
         Set<String> identifiers = new HashSet<>();
         features.accepts(
-                feature -> identifiers.add((String) feature.getProperty("zoneId").getValue()),
+                feature ->
+                        identifiers.add((String) feature.getProperty("zoneId").getValue()),
                 null);
         assertThat(
                 identifiers,
                 CoreMatchers.hasItems(
-                        "805bfffffffffff",
-                        "8077fffffffffff",
-                        "809bfffffffffff",
-                        "8071fffffffffff",
-                        "809ffffffffffff"));
+                        "805bfffffffffff", "8077fffffffffff", "809bfffffffffff", "8071fffffffffff", "809ffffffffffff"));
     }
 
     @Test
@@ -217,10 +195,7 @@ public class DGGSGeometryStoreTest {
         // filter uses the geometry
         q.setFilter(FF.bbox("", -20, -20, 20, 20, "EPSG:4326"));
         // sorting uses the shape type (pentagons first) and by zoneId after
-        q.setSortBy(
-                new SortBy[] {
-                    FF.sort("shape", SortOrder.DESCENDING), FF.sort("zoneId", SortOrder.ASCENDING)
-                });
+        q.setSortBy(new SortBy[] {FF.sort("shape", SortOrder.DESCENDING), FF.sort("zoneId", SortOrder.ASCENDING)});
         // only output is the zoneId
         q.setPropertyNames(new String[] {"zoneId"});
 
@@ -229,22 +204,22 @@ public class DGGSGeometryStoreTest {
         assertEquals(1, features.getSchema().getAttributeCount());
         List<String> identifiers = new ArrayList<>();
         features.accepts(
-                feature -> identifiers.add((String) feature.getProperty("zoneId").getValue()),
+                feature ->
+                        identifiers.add((String) feature.getProperty("zoneId").getValue()),
                 null);
         // hand verified list, with a map and checking sorting, 8075fffffffffff is the pentagon
-        List<String> expected =
-                Arrays.asList(
-                        "8075fffffffffff",
-                        "803ffffffffffff",
-                        "8055fffffffffff",
-                        "8059fffffffffff",
-                        "806bfffffffffff",
-                        "807dfffffffffff",
-                        "8083fffffffffff",
-                        "8097fffffffffff",
-                        "8099fffffffffff",
-                        "80a5fffffffffff",
-                        "80adfffffffffff");
+        List<String> expected = Arrays.asList(
+                "8075fffffffffff",
+                "803ffffffffffff",
+                "8055fffffffffff",
+                "8059fffffffffff",
+                "806bfffffffffff",
+                "807dfffffffffff",
+                "8083fffffffffff",
+                "8097fffffffffff",
+                "8099fffffffffff",
+                "80a5fffffffffff",
+                "80adfffffffffff");
         assertEquals(expected, identifiers);
     }
 }

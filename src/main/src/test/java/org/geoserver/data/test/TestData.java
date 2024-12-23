@@ -12,10 +12,7 @@ import java.io.File;
  *
  * @author Andrea Aime - TOPP
  */
-@SuppressWarnings({
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
+@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public interface TestData {
     /** Creates the temporary GeoServer data directory */
     public void setUp() throws Exception;

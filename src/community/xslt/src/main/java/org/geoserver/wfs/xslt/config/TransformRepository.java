@@ -49,86 +49,73 @@ public class TransformRepository {
 
     GeoServerDataDirectory dataDir;
 
-    /**
-     * Caches the {@link TransformInfo} objects so that we don't have to load them from disk all the
-     * time
-     */
-    FileItemCache<TransformInfo> infoCache =
-            new FileItemCache<TransformInfo>(100) {
+    /** Caches the {@link TransformInfo} objects so that we don't have to load them from disk all the time */
+    FileItemCache<TransformInfo> infoCache = new FileItemCache<TransformInfo>(100) {
 
-                @Override
-                protected TransformInfo loadItem(Resource file) throws IOException {
-                    if (!Resources.exists(file)) {
-                        return null;
-                    }
+        @Override
+        protected TransformInfo loadItem(Resource file) throws IOException {
+            if (!Resources.exists(file)) {
+                return null;
+            }
 
-                    try (InputStream fis = file.in()) {
-                        TransformInfo info = (TransformInfo) xs.fromXML(fis);
-                        info.setName(getTransformName(file));
+            try (InputStream fis = file.in()) {
+                TransformInfo info = (TransformInfo) xs.fromXML(fis);
+                info.setName(getTransformName(file));
 
-                        return info;
-                    }
-                }
-            };
+                return info;
+            }
+        }
+    };
 
     /**
-     * Caches the XSLT Templates to avoid parsing the XSLT over and over (Templates is thread safe,
-     * {@link Transformer} is not.
+     * Caches the XSLT Templates to avoid parsing the XSLT over and over (Templates is thread safe, {@link Transformer}
+     * is not.
      */
-    FileItemCache<Templates> transformCache =
-            new FileItemCache<Templates>(100) {
+    FileItemCache<Templates> transformCache = new FileItemCache<Templates>(100) {
 
-                @Override
-                protected Templates loadItem(Resource file) throws IOException {
-                    // do not trust StreamSource to do the file closing, reports on the net
-                    // suggest it might not
-                    try (InputStream fis = file.in()) {
-                        Source xslSource = new StreamSource(fis);
+        @Override
+        protected Templates loadItem(Resource file) throws IOException {
+            // do not trust StreamSource to do the file closing, reports on the net
+            // suggest it might not
+            try (InputStream fis = file.in()) {
+                Source xslSource = new StreamSource(fis);
 
-                        TransformerFactory tf = TransformerFactory.newInstance();
-                        final List<TransformerException> errors = new ArrayList<>();
-                        tf.setErrorListener(
-                                new ErrorListener() {
+                TransformerFactory tf = TransformerFactory.newInstance();
+                final List<TransformerException> errors = new ArrayList<>();
+                tf.setErrorListener(new ErrorListener() {
 
-                                    @Override
-                                    public void warning(TransformerException e)
-                                            throws TransformerException {
-                                        LOGGER.log(
-                                                Level.WARNING,
-                                                "Found warning while loading XSLT template",
-                                                e);
-                                    }
-
-                                    @Override
-                                    public void fatalError(TransformerException e)
-                                            throws TransformerException {
-                                        errors.add(e);
-                                    }
-
-                                    @Override
-                                    public void error(TransformerException e)
-                                            throws TransformerException {
-                                        errors.add(e);
-                                    }
-                                });
-                        Templates template = tf.newTemplates(xslSource);
-
-                        if (!errors.isEmpty()) {
-                            StringBuilder sb = new StringBuilder("Errors found in the template");
-                            for (TransformerException e : errors) {
-                                sb.append("\n").append(e.getMessageAndLocation());
-                            }
-
-                            throw new IOException(sb.toString());
-                        }
-
-                        return template;
-                    } catch (TransformerException e) {
-                        throw new IOException(
-                                "Error found in the template: " + e.getMessageAndLocation());
+                    @Override
+                    public void warning(TransformerException e) throws TransformerException {
+                        LOGGER.log(Level.WARNING, "Found warning while loading XSLT template", e);
                     }
+
+                    @Override
+                    public void fatalError(TransformerException e) throws TransformerException {
+                        errors.add(e);
+                    }
+
+                    @Override
+                    public void error(TransformerException e) throws TransformerException {
+                        errors.add(e);
+                    }
+                });
+                Templates template = tf.newTemplates(xslSource);
+
+                if (!errors.isEmpty()) {
+                    StringBuilder sb = new StringBuilder("Errors found in the template");
+                    for (TransformerException e : errors) {
+                        sb.append("\n").append(e.getMessageAndLocation());
+                    }
+
+                    throw new IOException(sb.toString());
                 }
-            };
+
+                return template;
+            } catch (TransformerException e) {
+                throw new IOException("Error found in the template: " + e.getMessageAndLocation());
+            }
+        }
+    };
 
     public TransformRepository(GeoServerDataDirectory dataDir, Catalog catalog) {
         this.dataDir = dataDir;
@@ -142,9 +129,7 @@ public class TransformRepository {
         xs.omitField(TransformInfo.class, "name");
         xs.alias("transform", TransformInfo.class);
         xs.registerLocalConverter(
-                TransformInfo.class,
-                "featureType",
-                new ReferenceConverter(FeatureTypeInfo.class, catalog));
+                TransformInfo.class, "featureType", new ReferenceConverter(FeatureTypeInfo.class, catalog));
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class);
     }
 
@@ -193,8 +178,7 @@ public class TransformRepository {
         List<TransformInfo> allTransformations = getAllTransforms();
         List<TransformInfo> result = new ArrayList<>();
         for (TransformInfo ti : allTransformations) {
-            if (ti.getFeatureType() != null
-                    && ti.getFeatureType().getId().equals(featureType.getId())) {
+            if (ti.getFeatureType() != null && ti.getFeatureType().getId().equals(featureType.getId())) {
                 result.add(ti);
             }
         }
@@ -209,8 +193,8 @@ public class TransformRepository {
     }
 
     /**
-     * Deletes a transformation definition and its associated XSLT file (assuming the latter is not
-     * shared with other transformations)
+     * Deletes a transformation definition and its associated XSLT file (assuming the latter is not shared with other
+     * transformations)
      */
     public boolean removeTransformInfo(TransformInfo info) throws IOException {
         Resource infoFile = getTransformInfoFile(info.getName());
@@ -254,8 +238,8 @@ public class TransformRepository {
     }
 
     /**
-     * Returns the stylesheet of a transformation. It is the duty of the caller to close the input
-     * stream after reading it.
+     * Returns the stylesheet of a transformation. It is the duty of the caller to close the input stream after reading
+     * it.
      */
     public InputStream getTransformSheet(TransformInfo info) throws IOException {
         Resource txFile = getTransformFile(info);
@@ -263,9 +247,7 @@ public class TransformRepository {
         return txFile.in();
     }
 
-    /**
-     * Writes the stylesheet of a transformation. This method will close the provided input stream.
-     */
+    /** Writes the stylesheet of a transformation. This method will close the provided input stream. */
     @SuppressWarnings("PMD.UseTryWithResources")
     public void putTransformSheet(TransformInfo info, InputStream sheet) throws IOException {
         Resource txFile = getTransformFile(info);

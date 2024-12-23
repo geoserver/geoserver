@@ -42,12 +42,9 @@ public class GeoServerCompositeFilter extends GeoServerSecurityFilter {
                 throws IOException, ServletException {
 
             // try cache
-            if (GeoServerCompositeFilter.this instanceof AuthenticationCachingFilter
-                    && currentPosition == 0) {
-                String cacheKey =
-                        authenticateFromCache(
-                                (AuthenticationCachingFilter) GeoServerCompositeFilter.this,
-                                (HttpServletRequest) request);
+            if (GeoServerCompositeFilter.this instanceof AuthenticationCachingFilter && currentPosition == 0) {
+                String cacheKey = authenticateFromCache(
+                        (AuthenticationCachingFilter) GeoServerCompositeFilter.this, (HttpServletRequest) request);
                 if (cacheKey != null) request.setAttribute(CACHE_KEY_ATTRIBUTE, cacheKey);
             }
 

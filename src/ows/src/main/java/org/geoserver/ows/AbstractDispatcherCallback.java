@@ -10,8 +10,8 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * An empty callback implementation, can be used as a convenient base class when there is a need to
- * implement only a few callback methods
+ * An empty callback implementation, can be used as a convenient base class when there is a need to implement only a few
+ * callback methods
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -38,8 +38,7 @@ public class AbstractDispatcherCallback implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         return response;
     }
 

@@ -10,8 +10,8 @@ import org.geoserver.security.config.SecurityAuthProviderConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
- * Extension of {@link SecurityNamedServiceConfig} for authentication providers checking
- * username/password with a JDBC connect.
+ * Extension of {@link SecurityNamedServiceConfig} for authentication providers checking username/password with a JDBC
+ * connect.
  *
  * @author christian
  */

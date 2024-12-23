@@ -9,9 +9,9 @@ import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.locks.LockProvider;
 
 /**
- * A lock provider that delegates the work to another {@link LockProvider} instance, which needs to
- * be configured by calling {@link #setDelegate(LockProvider)}. A un-configured instance will throw
- * {@link NullPointerException} when {@link #getLock(String)} is called.
+ * A lock provider that delegates the work to another {@link LockProvider} instance, which needs to be configured by
+ * calling {@link #setDelegate(LockProvider)}. A un-configured instance will throw {@link NullPointerException} when
+ * {@link #getLock(String)} is called.
  *
  * @author Andrea Aime - GeoSolutions
  */

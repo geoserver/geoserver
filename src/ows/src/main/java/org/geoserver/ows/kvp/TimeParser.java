@@ -10,8 +10,8 @@ import org.geoserver.platform.ServiceException;
 import org.geotools.util.DateTimeParser;
 
 /**
- * Parses the {@code time} parameter of the request. The date, time and period are expected to be
- * formatted according ISO-8601 standard.
+ * Parses the {@code time} parameter of the request. The date, time and period are expected to be formatted according
+ * ISO-8601 standard.
  *
  * @author Cedric Briancon
  * @author Martin Desruisseaux
@@ -23,8 +23,7 @@ public class TimeParser extends DateTimeParser {
 
     private static final int DEFAULT_MAX_ELEMENTS_TIMES_KVP = 100;
 
-    private static final int DEFAULT_FLAGS =
-            FLAG_GET_TIME_ON_PRESENT | FLAG_SINGLE_DATE_AS_DATERANGE;
+    private static final int DEFAULT_FLAGS = FLAG_GET_TIME_ON_PRESENT | FLAG_SINGLE_DATE_AS_DATERANGE;
 
     /** Builds a default TimeParser with no provided maximum number of times */
     public TimeParser() {

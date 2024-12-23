@@ -38,10 +38,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * @author Niels Charlier
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({
-    "classpath*:/applicationContext.xml",
-    "classpath*:/applicationSecurityContext.xml"
-})
+@ContextConfiguration({"classpath*:/applicationContext.xml", "classpath*:/applicationSecurityContext.xml"})
 @WebAppConfiguration // we need web app context to have data directory set.
 public abstract class AbstractMetadataTest {
 
@@ -51,11 +48,14 @@ public abstract class AbstractMetadataTest {
 
     private static File metadataTemplates;
 
-    @Autowired protected GeoServer geoServer;
+    @Autowired
+    protected GeoServer geoServer;
 
-    @Autowired protected MetadataTemplateServiceImpl templateService;
+    @Autowired
+    protected MetadataTemplateServiceImpl templateService;
 
-    @Autowired private ConfigurationServiceImpl configService;
+    @Autowired
+    private ConfigurationServiceImpl configService;
 
     @BeforeClass
     public static void init() throws Exception {
@@ -67,10 +67,7 @@ public abstract class AbstractMetadataTest {
 
             // copy test files to data directory
             metadata = new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.DIRECTORY);
-            metadataTemplates =
-                    new File(
-                            DATA_DIRECTORY.getDataDirectoryRoot(),
-                            MetadataConstants.TEMPLATES_DIRECTORY);
+            metadataTemplates = new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.TEMPLATES_DIRECTORY);
             metadata.mkdirs();
             metadataTemplates.mkdirs();
             IOUtils.copy(
@@ -103,9 +100,7 @@ public abstract class AbstractMetadataTest {
                     new File(metadata, "geonetwork-1a2c6739-3c62-432b-b2a0-aaa589a9e3a1.xml"));
             unzip(
                     AbstractMetadataTest.class.getResourceAsStream("templates.zip"),
-                    new File(
-                            DATA_DIRECTORY.getDataDirectoryRoot(),
-                            MetadataConstants.TEMPLATES_DIRECTORY));
+                    new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.TEMPLATES_DIRECTORY));
 
             // All files for the layer
             unzip(
@@ -135,8 +130,7 @@ public abstract class AbstractMetadataTest {
     /**
      * Sets up the authentication context for the test.
      *
-     * <p>This context lasts only for a single test case, it is cleared after every test has
-     * completed.
+     * <p>This context lasts only for a single test case, it is cleared after every test has completed.
      *
      * @param username The username.
      * @param password The password.
@@ -187,9 +181,7 @@ public abstract class AbstractMetadataTest {
     protected void restoreTemplates() throws IOException {
         unzip(
                 AbstractMetadataTest.class.getResourceAsStream("templates.zip"),
-                new File(
-                        DATA_DIRECTORY.getDataDirectoryRoot(),
-                        MetadataConstants.TEMPLATES_DIRECTORY));
+                new File(DATA_DIRECTORY.getDataDirectoryRoot(), MetadataConstants.TEMPLATES_DIRECTORY));
         templateService.reload();
     }
 
@@ -201,9 +193,7 @@ public abstract class AbstractMetadataTest {
                 new File(DATA_DIRECTORY.getDataDirectoryRoot()));
         IOUtils.copy(
                 AbstractMetadataTest.class.getResourceAsStream("myLayer-featuretype.xml"),
-                new File(
-                        DATA_DIRECTORY.getDataDirectoryRoot(),
-                        "workspaces/topp/datastore/mylayer/featuretype.xml"));
+                new File(DATA_DIRECTORY.getDataDirectoryRoot(), "workspaces/topp/datastore/mylayer/featuretype.xml"));
         geoServer.reload();
     }
 }

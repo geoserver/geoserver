@@ -113,8 +113,8 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Derived property indicating whether both this LayerInfo and its ResourceInfo are enabled.
      *
-     * <p>Note this is a derived property and hence not part of the model. Consider it equal to
-     * {@code getResource() != null && getResouce.enabled() && this.isEnabled()}
+     * <p>Note this is a derived property and hence not part of the model. Consider it equal to {@code getResource() !=
+     * null && getResouce.enabled() && this.isEnabled()}
      *
      * @return the chained enabled status considering this object and it's associated ResourceInfo
      * @see #getResource()
@@ -125,8 +125,8 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Sets the queryable status
      *
-     * @param queryable {@code true} to set this Layer as queryable and subject of GetFeatureInfo
-     *     requests, {@code false} to make the layer not queryable.
+     * @param queryable {@code true} to set this Layer as queryable and subject of GetFeatureInfo requests,
+     *     {@code false} to make the layer not queryable.
      */
     void setQueryable(boolean queryable);
 
@@ -140,8 +140,7 @@ public interface LayerInfo extends PublishedInfo {
     /**
      * Sets the opaque status
      *
-     * @param opaque {@code true} to set this Layer as opaque, {@code false} to make the layer
-     *     transparent.
+     * @param opaque {@code true} to set this Layer as opaque, {@code false} to make the layer transparent.
      */
     void setOpaque(boolean opaque);
 

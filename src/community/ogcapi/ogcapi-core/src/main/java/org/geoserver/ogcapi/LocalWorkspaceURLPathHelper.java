@@ -34,8 +34,7 @@ public class LocalWorkspaceURLPathHelper extends UrlPathHelper {
         } else if (published == null) {
             localRequestPrefix = request.getContextPath() + "/" + ws.getName();
         } else {
-            localRequestPrefix =
-                    request.getContextPath() + "/" + ws.getName() + "/" + published.getName();
+            localRequestPrefix = request.getContextPath() + "/" + ws.getName() + "/" + published.getName();
         }
         if (uri.startsWith(localRequestPrefix)) {
             uri = request.getContextPath() + uri.substring(localRequestPrefix.length());

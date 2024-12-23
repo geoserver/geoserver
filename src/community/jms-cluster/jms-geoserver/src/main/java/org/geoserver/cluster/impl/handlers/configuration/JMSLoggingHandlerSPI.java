@@ -21,10 +21,7 @@ public class JMSLoggingHandlerSPI extends JMSEventHandlerSPI<String, LoggingInfo
     final ToggleSwitch producer;
 
     public JMSLoggingHandlerSPI(
-            final int priority,
-            final GeoServer geo,
-            final XStream xstream,
-            final ToggleSwitch producer) {
+            final int priority, final GeoServer geo, final XStream xstream, final ToggleSwitch producer) {
         super(priority);
         this.geoserver = geo;
         this.xstream = xstream;

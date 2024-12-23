@@ -54,8 +54,8 @@ class ClassificationFunctionsVisitor extends StyleAttributeExtractor {
     }
 
     /**
-     * Returns the set of property names used in the classification functions as first argument Will
-     * throw exceptions if the first parameter is not a PropertyName
+     * Returns the set of property names used in the classification functions as first argument Will throw exceptions if
+     * the first parameter is not a PropertyName
      *
      * @return
      */
@@ -71,8 +71,8 @@ class ClassificationFunctionsVisitor extends StyleAttributeExtractor {
     }
 
     /**
-     * Extracts all recode keys. If there are no recode functions, or the keys are not literals,
-     * exceptions will be thrown
+     * Extracts all recode keys. If there are no recode functions, or the keys are not literals, exceptions will be
+     * thrown
      *
      * @return
      */
@@ -92,8 +92,8 @@ class ClassificationFunctionsVisitor extends StyleAttributeExtractor {
     }
 
     /**
-     * Extracts all categorize keys. If there are no categorize functions, or the keys are not
-     * literals, exceptions will be thrown
+     * Extracts all categorize keys. If there are no categorize functions, or the keys are not literals, exceptions will
+     * be thrown
      *
      * @return
      */

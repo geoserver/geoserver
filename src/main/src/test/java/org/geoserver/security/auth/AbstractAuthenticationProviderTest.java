@@ -104,33 +104,25 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
         ugstore.store();
 
-        GeoServerAuthenticationProvider prov =
-                createAuthProvider(testProviderName, ugservice.getName());
+        GeoServerAuthenticationProvider prov = createAuthProvider(testProviderName, ugservice.getName());
         prepareAuthProviders(prov.getName());
     }
 
     protected void insertAnonymousFilter() throws Exception {
         SecurityManagerConfig mconfig = getSecurityManager().loadSecurityConfig();
-        mconfig.getFilterChain()
-                .find(pattern)
-                .getFilterNames()
-                .add(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+        mconfig.getFilterChain().find(pattern).getFilterNames().add(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
         getSecurityManager().saveSecurityConfig(mconfig);
     }
 
     protected void removeAnonymousFilter() throws Exception {
         SecurityManagerConfig mconfig = getSecurityManager().loadSecurityConfig();
-        mconfig.getFilterChain()
-                .find(pattern)
-                .getFilterNames()
-                .remove(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
+        mconfig.getFilterChain().find(pattern).getFilterNames().remove(GeoServerSecurityFilterChain.ANONYMOUS_FILTER);
         getSecurityManager().saveSecurityConfig(mconfig);
     }
 
-    public GeoServerAuthenticationProvider createAuthProvider(
-            String name, String userGroupServiceName) throws Exception {
-        UsernamePasswordAuthenticationProviderConfig config =
-                new UsernamePasswordAuthenticationProviderConfig();
+    public GeoServerAuthenticationProvider createAuthProvider(String name, String userGroupServiceName)
+            throws Exception {
+        UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();
         config.setClassName(UsernamePasswordAuthenticationProvider.class.getName());
         config.setUserGroupServiceName(userGroupServiceName);
         config.setName(name);
@@ -158,15 +150,13 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         return createUserGroupService(name, getPBEPasswordEncoder().getName());
     }
 
-    public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName)
-            throws Exception {
+    public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName) throws Exception {
         SecurityUserGroupServiceConfig config = getUserGroupConfg(name, passwordEncoderName);
         getSecurityManager().saveUserGroupService(config /*,isNewUGService(name)*/);
         return getSecurityManager().loadUserGroupService(name);
     }
 
-    public MemoryUserGroupServiceConfigImpl getUserGroupConfg(
-            String name, String passwordEncoderName) {
+    public MemoryUserGroupServiceConfigImpl getUserGroupConfg(String name, String passwordEncoderName) {
         MemoryUserGroupServiceConfigImpl config = new MemoryUserGroupServiceConfigImpl();
         config.setName(name);
         config.setClassName(MemoryUserGroupService.class.getName());
@@ -187,8 +177,8 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         getSecurityManager().saveSecurityConfig(config);
     }
 
-    protected void prepareFilterChain(
-            Class<?> filterChainClass, String pattern, String... filterNames) throws Exception {
+    protected void prepareFilterChain(Class<?> filterChainClass, String pattern, String... filterNames)
+            throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         GeoServerSecurityFilterChain filterChain = config.getFilterChain();
 
@@ -196,8 +186,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
 
         Constructor<?> cons = filterChainClass.getConstructor(new Class[] {String[].class});
         String[] args = {pattern};
-        RequestFilterChain requestChain =
-                (RequestFilterChain) cons.newInstance(new Object[] {args});
+        RequestFilterChain requestChain = (RequestFilterChain) cons.newInstance(new Object[] {args});
         requestChain = new HtmlLoginFilterChain(pattern);
         requestChain.setName("testChain");
         requestChain.setFilterNames(filterNames);
@@ -208,8 +197,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         getSecurityManager().saveSecurityConfig(config);
     }
 
-    protected void modifyChain(
-            String pattern, boolean disabled, boolean allowSessionCreation, String roleFilterName)
+    protected void modifyChain(String pattern, boolean disabled, boolean allowSessionCreation, String roleFilterName)
             throws Exception {
         SecurityManagerConfig config = getSecurityManager().getSecurityConfig();
         RequestFilterChain chain = config.getFilterChain().find(pattern);
@@ -237,12 +225,10 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         return GeoServerExtensions.bean(GeoServerSecurityFilterChainProxy.class);
     }
 
-    protected String clientDigestString(
-            String serverDigestString, String username, String password, String method) {
+    protected String clientDigestString(String serverDigestString, String username, String password, String method) {
         String section212response = serverDigestString.substring(7);
         String[] headerEntries = DigestAuthUtils.splitIgnoringQuotes(section212response, ',');
-        Map<String, String> headerMap =
-                DigestAuthUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
+        Map<String, String> headerMap = DigestAuthUtils.splitEachArrayElementAndCreateMap(headerEntries, "=", "\"");
 
         String realm = headerMap.get("realm");
         String qop = headerMap.get("qop");
@@ -254,8 +240,7 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         String opaque = "5ccc069c403ebaf9f0171e9517f40e41";
 
         String responseString =
-                DigestAuthUtils.generateDigest(
-                        false, username, realm, password, method, uri, qop, nonce, nc, cnonce);
+                DigestAuthUtils.generateDigest(false, username, realm, password, method, uri, qop, nonce, nc, cnonce);
 
         String template = "Digest username=\"{0}\",realm=\"{1}\"";
         template += ",nonce=\"{2}\",uri=\"{3}\"";
@@ -263,144 +248,138 @@ public abstract class AbstractAuthenticationProviderTest extends AbstractSecurit
         template += ",cnonce=\"{6}\",response=\"{7}\"";
         template += ",opaque=\"{8}\"";
 
-        return MessageFormat.format(
-                template, username, realm, nonce, uri, qop, nc, cnonce, responseString, opaque);
+        return MessageFormat.format(template, username, realm, nonce, uri, qop, nc, cnonce, responseString, opaque);
     }
 
     protected void setCertifacteForUser(final String userName, MockHttpServletRequest request) {
-        X509Certificate x509 =
-                new X509Certificate() {
+        X509Certificate x509 = new X509Certificate() {
 
-                    @Override
-                    public Set<String> getCriticalExtensionOIDs() {
-                        return null;
-                    }
+            @Override
+            public Set<String> getCriticalExtensionOIDs() {
+                return null;
+            }
 
-                    @Override
-                    public byte[] getExtensionValue(String arg0) {
-                        return null;
-                    }
+            @Override
+            public byte[] getExtensionValue(String arg0) {
+                return null;
+            }
 
-                    @Override
-                    public Set<String> getNonCriticalExtensionOIDs() {
-                        return null;
-                    }
+            @Override
+            public Set<String> getNonCriticalExtensionOIDs() {
+                return null;
+            }
 
-                    @Override
-                    public boolean hasUnsupportedCriticalExtension() {
-                        return false;
-                    }
+            @Override
+            public boolean hasUnsupportedCriticalExtension() {
+                return false;
+            }
 
-                    @Override
-                    public void checkValidity()
-                            throws CertificateExpiredException, CertificateNotYetValidException {}
+            @Override
+            public void checkValidity() throws CertificateExpiredException, CertificateNotYetValidException {}
 
-                    @Override
-                    public void checkValidity(Date arg0)
-                            throws CertificateExpiredException, CertificateNotYetValidException {}
+            @Override
+            public void checkValidity(Date arg0) throws CertificateExpiredException, CertificateNotYetValidException {}
 
-                    @Override
-                    public int getBasicConstraints() {
-                        return 0;
-                    }
+            @Override
+            public int getBasicConstraints() {
+                return 0;
+            }
 
-                    @Override
-                    public Principal getIssuerDN() {
-                        return null;
-                    }
+            @Override
+            public Principal getIssuerDN() {
+                return null;
+            }
 
-                    @Override
-                    public boolean[] getIssuerUniqueID() {
-                        return null;
-                    }
+            @Override
+            public boolean[] getIssuerUniqueID() {
+                return null;
+            }
 
-                    @Override
-                    public boolean[] getKeyUsage() {
-                        return null;
-                    }
+            @Override
+            public boolean[] getKeyUsage() {
+                return null;
+            }
 
-                    @Override
-                    public Date getNotAfter() {
-                        return null;
-                    }
+            @Override
+            public Date getNotAfter() {
+                return null;
+            }
 
-                    @Override
-                    public Date getNotBefore() {
-                        return null;
-                    }
+            @Override
+            public Date getNotBefore() {
+                return null;
+            }
 
-                    @Override
-                    public BigInteger getSerialNumber() {
-                        return null;
-                    }
+            @Override
+            public BigInteger getSerialNumber() {
+                return null;
+            }
 
-                    @Override
-                    public String getSigAlgName() {
-                        return null;
-                    }
+            @Override
+            public String getSigAlgName() {
+                return null;
+            }
 
-                    @Override
-                    public String getSigAlgOID() {
-                        return null;
-                    }
+            @Override
+            public String getSigAlgOID() {
+                return null;
+            }
 
-                    @Override
-                    public byte[] getSigAlgParams() {
-                        return null;
-                    }
+            @Override
+            public byte[] getSigAlgParams() {
+                return null;
+            }
 
-                    @Override
-                    public byte[] getSignature() {
-                        return null;
-                    }
+            @Override
+            public byte[] getSignature() {
+                return null;
+            }
 
-                    @Override
-                    public Principal getSubjectDN() {
-                        return () -> "cn=" + userName + ",ou=ou1";
-                    }
+            @Override
+            public Principal getSubjectDN() {
+                return () -> "cn=" + userName + ",ou=ou1";
+            }
 
-                    @Override
-                    public boolean[] getSubjectUniqueID() {
-                        return null;
-                    }
+            @Override
+            public boolean[] getSubjectUniqueID() {
+                return null;
+            }
 
-                    @Override
-                    public byte[] getTBSCertificate() throws CertificateEncodingException {
-                        return null;
-                    }
+            @Override
+            public byte[] getTBSCertificate() throws CertificateEncodingException {
+                return null;
+            }
 
-                    @Override
-                    public int getVersion() {
-                        return 0;
-                    }
+            @Override
+            public int getVersion() {
+                return 0;
+            }
 
-                    @Override
-                    public byte[] getEncoded() throws CertificateEncodingException {
-                        return null;
-                    }
+            @Override
+            public byte[] getEncoded() throws CertificateEncodingException {
+                return null;
+            }
 
-                    @Override
-                    public PublicKey getPublicKey() {
-                        return null;
-                    }
+            @Override
+            public PublicKey getPublicKey() {
+                return null;
+            }
 
-                    @Override
-                    public String toString() {
-                        return null;
-                    }
+            @Override
+            public String toString() {
+                return null;
+            }
 
-                    @Override
-                    public void verify(PublicKey arg0)
-                            throws CertificateException, NoSuchAlgorithmException,
-                                    InvalidKeyException, NoSuchProviderException,
-                                    SignatureException {}
+            @Override
+            public void verify(PublicKey arg0)
+                    throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
+                            SignatureException {}
 
-                    @Override
-                    public void verify(PublicKey arg0, String arg1)
-                            throws CertificateException, NoSuchAlgorithmException,
-                                    InvalidKeyException, NoSuchProviderException,
-                                    SignatureException {}
-                };
+            @Override
+            public void verify(PublicKey arg0, String arg1)
+                    throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, NoSuchProviderException,
+                            SignatureException {}
+        };
         request.setAttribute("javax.servlet.request.X509Certificate", new X509Certificate[] {x509});
     }
 

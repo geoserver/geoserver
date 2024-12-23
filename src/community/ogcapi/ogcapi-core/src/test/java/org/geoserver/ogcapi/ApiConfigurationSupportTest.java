@@ -31,11 +31,8 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
 
     @Test
     public void testUrlHelperType() {
-        RequestMappingHandlerMapping mappingHandler =
-                applicationContext.getBean(RequestMappingHandlerMapping.class);
-        assertEquals(
-                mappingHandler.getUrlPathHelper().getClass().getSimpleName(),
-                "GeoServerUrlPathHelper");
+        RequestMappingHandlerMapping mappingHandler = applicationContext.getBean(RequestMappingHandlerMapping.class);
+        assertEquals(mappingHandler.getUrlPathHelper().getClass().getSimpleName(), "GeoServerUrlPathHelper");
     }
 
     @Test
@@ -92,33 +89,23 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
     public void testReadWithControllerContext() {
         // give more context and ensure there is no overlap reading objects that would be posted
         // to the REST API (those do not extend from RestWrapper)
-        List<Class<?>> workspaceConverters =
-                getFilteredConverters(
-                        c -> {
-                            // mimic Spring lookup
-                            if (c instanceof GenericHttpMessageConverter)
-                                return ((GenericHttpMessageConverter<?>) c)
-                                        .canRead(
-                                                WorkspaceInfo.class,
-                                                WorkspaceController.class,
-                                                MediaType.APPLICATION_JSON);
-                            else return c.canRead(WorkspaceInfo.class, MediaType.APPLICATION_JSON);
-                        });
+        List<Class<?>> workspaceConverters = getFilteredConverters(c -> {
+            // mimic Spring lookup
+            if (c instanceof GenericHttpMessageConverter)
+                return ((GenericHttpMessageConverter<?>) c)
+                        .canRead(WorkspaceInfo.class, WorkspaceController.class, MediaType.APPLICATION_JSON);
+            else return c.canRead(WorkspaceInfo.class, MediaType.APPLICATION_JSON);
+        });
         assertEquals(asList(XStreamJSONMessageConverter.class), workspaceConverters);
 
         // now try an API controller instead
-        List<Class<?>> messageConverters =
-                getFilteredConverters(
-                        c -> {
-                            // mimic Spring lookup
-                            if (c instanceof GenericHttpMessageConverter)
-                                return ((GenericHttpMessageConverter<?>) c)
-                                        .canRead(
-                                                Message.class,
-                                                HelloController.class,
-                                                MediaType.APPLICATION_JSON);
-                            else return c.canRead(Message.class, MediaType.APPLICATION_JSON);
-                        });
+        List<Class<?>> messageConverters = getFilteredConverters(c -> {
+            // mimic Spring lookup
+            if (c instanceof GenericHttpMessageConverter)
+                return ((GenericHttpMessageConverter<?>) c)
+                        .canRead(Message.class, HelloController.class, MediaType.APPLICATION_JSON);
+            else return c.canRead(Message.class, MediaType.APPLICATION_JSON);
+        });
         assertEquals(asList(MappingJackson2HttpMessageConverter.class), messageConverters);
     }
 
@@ -127,17 +114,13 @@ public class ApiConfigurationSupportTest extends OGCApiTestSupport {
         // XStreamJSONMessageConverter that is only used if the wrapper actually contains
         // a ResourceDirectoryInfo, otherwise delegates to its parent class
         return getFilteredConverters(
-                c ->
-                        c.canRead(target, mediaType)
-                                && !(c instanceof ResourceDirectoryInfoJSONConverter));
+                c -> c.canRead(target, mediaType) && !(c instanceof ResourceDirectoryInfoJSONConverter));
     }
 
     private List<Class<?>> getWritingConverters(Class<?> target, MediaType mediaType) {
         // see above for the ResourceDirectoryInfoJSONConverter weirdness
         return getFilteredConverters(
-                c ->
-                        c.canWrite(target, mediaType)
-                                && !(c instanceof ResourceDirectoryInfoJSONConverter));
+                c -> c.canWrite(target, mediaType) && !(c instanceof ResourceDirectoryInfoJSONConverter));
     }
 
     private static List<Class<?>> getFilteredConverters(Predicate<HttpMessageConverter<?>> filter) {

@@ -63,13 +63,9 @@ public class TemplatePathVisitorTest {
 
     private RootBuilder getBuilderTree(String resourceName) throws IOException {
         InputStream is = getClass().getResource(resourceName).openStream();
-        ObjectMapper mapper =
-                new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
-        JSONTemplateReader templateReader =
-                new JSONTemplateReader(
-                        mapper.readTree(is),
-                        new TemplateReaderConfiguration(new NamespaceSupport()),
-                        Collections.emptyList());
+        ObjectMapper mapper = new ObjectMapper(new JsonFactory().enable(JsonParser.Feature.ALLOW_COMMENTS));
+        JSONTemplateReader templateReader = new JSONTemplateReader(
+                mapper.readTree(is), new TemplateReaderConfiguration(new NamespaceSupport()), Collections.emptyList());
         return templateReader.getRootBuilder();
     }
 }

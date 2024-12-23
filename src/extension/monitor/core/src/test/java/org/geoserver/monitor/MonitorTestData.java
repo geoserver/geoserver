@@ -55,109 +55,43 @@ public class MonitorTestData {
         data.add(data(10, "/ten", "2010-07-23T16:56:44", "2010-07-23T16:56:47", "RUNNING"));
 
         if (extended) {
-            data.add(
-                    data(
-                            11,
-                            "/foo",
-                            "2010-08-23T15:26:44",
-                            "2010-08-23T15:26:59",
-                            "RUNNING",
-                            "foo",
-                            "x",
-                            "widgets"));
-            data.add(
-                    data(
-                            12,
-                            "/bar",
-                            "2010-08-23T15:36:44",
-                            "2010-08-23T15:36:47",
-                            "WAITING",
-                            "bar",
-                            "y",
-                            "things"));
-            data.add(
-                    data(
-                            13,
-                            "/baz",
-                            "2010-08-23T15:46:44",
-                            "2010-08-23T15:46:52",
-                            "FINISHED",
-                            "baz",
-                            "x",
-                            "stuff"));
-            data.add(
-                    data(
-                            14,
-                            "/bam",
-                            "2010-08-23T15:56:44",
-                            "2010-08-23T15:56:48",
-                            "FAILED",
-                            "bam",
-                            "x",
-                            "widgets",
-                            "things"));
-            data.add(
-                    data(
-                            15,
-                            "/foo",
-                            "2010-08-23T16:06:44",
-                            "2010-08-23T16:06:45",
-                            "RUNNING",
-                            "foo",
-                            "x",
-                            "things",
-                            "stuff"));
-            data.add(
-                    data(
-                            16,
-                            "/foo",
-                            "2010-08-23T16:16:44",
-                            "2010-08-23T16:16:53",
-                            "WAITING",
-                            "foo",
-                            "x",
-                            "stuff"));
-            data.add(
-                    data(
-                            17,
-                            "/bar",
-                            "2010-08-23T16:26:44",
-                            "2010-08-23T16:26:47",
-                            "FINISHED",
-                            "bar",
-                            "z",
-                            "things",
-                            "stuff"));
-            data.add(
-                    data(
-                            18,
-                            "/bam",
-                            "2010-08-23T16:36:44",
-                            "2010-08-23T16:36:46",
-                            "FAILED",
-                            "bam",
-                            "y",
-                            "widgets"));
-            data.add(
-                    data(
-                            19,
-                            "/bam",
-                            "2010-08-23T16:46:44",
-                            "2010-08-23T16:46:53",
-                            "CANCELLING",
-                            "bam",
-                            "y",
-                            "stuff"));
-            data.add(
-                    data(
-                            20,
-                            "/foo",
-                            "2010-08-23T16:56:44",
-                            "2010-08-23T16:56:47",
-                            "RUNNING",
-                            "foo",
-                            "x",
-                            "things"));
+            data.add(data(11, "/foo", "2010-08-23T15:26:44", "2010-08-23T15:26:59", "RUNNING", "foo", "x", "widgets"));
+            data.add(data(12, "/bar", "2010-08-23T15:36:44", "2010-08-23T15:36:47", "WAITING", "bar", "y", "things"));
+            data.add(data(13, "/baz", "2010-08-23T15:46:44", "2010-08-23T15:46:52", "FINISHED", "baz", "x", "stuff"));
+            data.add(data(
+                    14,
+                    "/bam",
+                    "2010-08-23T15:56:44",
+                    "2010-08-23T15:56:48",
+                    "FAILED",
+                    "bam",
+                    "x",
+                    "widgets",
+                    "things"));
+            data.add(data(
+                    15,
+                    "/foo",
+                    "2010-08-23T16:06:44",
+                    "2010-08-23T16:06:45",
+                    "RUNNING",
+                    "foo",
+                    "x",
+                    "things",
+                    "stuff"));
+            data.add(data(16, "/foo", "2010-08-23T16:16:44", "2010-08-23T16:16:53", "WAITING", "foo", "x", "stuff"));
+            data.add(data(
+                    17,
+                    "/bar",
+                    "2010-08-23T16:26:44",
+                    "2010-08-23T16:26:47",
+                    "FINISHED",
+                    "bar",
+                    "z",
+                    "things",
+                    "stuff"));
+            data.add(data(18, "/bam", "2010-08-23T16:36:44", "2010-08-23T16:36:46", "FAILED", "bam", "y", "widgets"));
+            data.add(data(19, "/bam", "2010-08-23T16:46:44", "2010-08-23T16:46:53", "CANCELLING", "bam", "y", "stuff"));
+            data.add(data(20, "/foo", "2010-08-23T16:56:44", "2010-08-23T16:56:47", "RUNNING", "foo", "x", "things"));
         }
 
         // subclass hook
@@ -168,8 +102,7 @@ public class MonitorTestData {
         }
     }
 
-    protected RequestData data(long id, String path, String start, String end, String status)
-            throws ParseException {
+    protected RequestData data(long id, String path, String start, String end, String status) throws ParseException {
         RequestData data = new RequestData();
         data.setPath(path);
         data.setStartTime(toDate(start));

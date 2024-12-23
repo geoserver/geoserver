@@ -33,11 +33,7 @@ public class RasterLegendBuilderTest {
     public void testRuleTextRampOneElements() {
         StyleBuilder sb = new StyleBuilder();
         ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null},
-                        new double[] {10},
-                        new Color[] {Color.RED},
-                        ColorMap.TYPE_RAMP);
+                sb.createColorMap(new String[] {null}, new double[] {10}, new Color[] {Color.RED}, ColorMap.TYPE_RAMP);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -51,12 +47,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testRuleTextRampTwoElements() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null},
-                        new double[] {10, 100},
-                        new Color[] {Color.RED, Color.BLUE},
-                        ColorMap.TYPE_RAMP);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null},
+                new double[] {10, 100},
+                new Color[] {Color.RED, Color.BLUE},
+                ColorMap.TYPE_RAMP);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -72,12 +67,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testRuleTextRampThreeElements() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null, null},
-                        new double[] {10, 50, 100},
-                        new Color[] {Color.RED, Color.WHITE, Color.BLUE},
-                        ColorMap.TYPE_RAMP);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null, null},
+                new double[] {10, 50, 100},
+                new Color[] {Color.RED, Color.WHITE, Color.BLUE},
+                ColorMap.TYPE_RAMP);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -95,12 +89,8 @@ public class RasterLegendBuilderTest {
     @Test
     public void testRuleTextIntervalOneElements() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null},
-                        new double[] {10},
-                        new Color[] {Color.RED},
-                        ColorMap.TYPE_INTERVALS);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null}, new double[] {10}, new Color[] {Color.RED}, ColorMap.TYPE_INTERVALS);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -114,12 +104,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testRuleTextIntervalsTwoElements() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null},
-                        new double[] {10, 100},
-                        new Color[] {Color.RED, Color.BLUE},
-                        ColorMap.TYPE_INTERVALS);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null},
+                new double[] {10, 100},
+                new Color[] {Color.RED, Color.BLUE},
+                ColorMap.TYPE_INTERVALS);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -135,12 +124,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testRuleTextIntervalsThreeElements() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null, null},
-                        new double[] {10, 50, 100},
-                        new Color[] {Color.RED, Color.WHITE, Color.BLUE},
-                        ColorMap.TYPE_INTERVALS);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null, null},
+                new double[] {10, 50, 100},
+                new Color[] {Color.RED, Color.WHITE, Color.BLUE},
+                ColorMap.TYPE_INTERVALS);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -158,12 +146,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testInfiniteOnIntervals() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null, null},
-                        new double[] {Double.NEGATIVE_INFINITY, 50, Double.POSITIVE_INFINITY},
-                        new Color[] {Color.RED, Color.WHITE, Color.BLUE},
-                        ColorMap.TYPE_INTERVALS);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null, null},
+                new double[] {Double.NEGATIVE_INFINITY, 50, Double.POSITIVE_INFINITY},
+                new Color[] {Color.RED, Color.WHITE, Color.BLUE},
+                ColorMap.TYPE_INTERVALS);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         RasterLayerLegendHelper helper = new RasterLayerLegendHelper(request, style, null);
@@ -179,12 +166,11 @@ public class RasterLegendBuilderTest {
     @Test
     public void testLegendBorderColour() {
         StyleBuilder sb = new StyleBuilder();
-        ColorMap cmap =
-                sb.createColorMap(
-                        new String[] {null, null, null},
-                        new double[] {Double.NEGATIVE_INFINITY, 50, Double.POSITIVE_INFINITY},
-                        new Color[] {Color.RED, Color.WHITE, Color.BLUE},
-                        ColorMap.TYPE_INTERVALS);
+        ColorMap cmap = sb.createColorMap(
+                new String[] {null, null, null},
+                new double[] {Double.NEGATIVE_INFINITY, 50, Double.POSITIVE_INFINITY},
+                new Color[] {Color.RED, Color.WHITE, Color.BLUE},
+                ColorMap.TYPE_INTERVALS);
         Style style = sb.createStyle(sb.createRasterSymbolizer(cmap, 1));
 
         // Check default border colour

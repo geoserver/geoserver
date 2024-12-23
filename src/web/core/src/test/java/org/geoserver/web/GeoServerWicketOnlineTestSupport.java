@@ -49,12 +49,7 @@ public class GeoServerWicketOnlineTestSupport {
 
         // Log in via /j_spring_security_check
         String body = "username=" + username + "&password=" + password;
-        huc =
-                preparePost(
-                        "j_spring_security_check",
-                        body.length(),
-                        "application/x-www-form-urlencoded",
-                        jsessionid);
+        huc = preparePost("j_spring_security_check", body.length(), "application/x-www-form-urlencoded", jsessionid);
 
         // Follow redirects to get the new JSESSIONID for the authenticated session
         huc.setInstanceFollowRedirects(false);
@@ -105,8 +100,8 @@ public class GeoServerWicketOnlineTestSupport {
      * Performs an HTTP GET against the provided url
      *
      * @param url The URL to GET
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the GET is performed without authentication
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the GET is performed without authentication
      * @return The open HttpUrlConnection resulting from the GET. Callers must read the response and
      *     {@link HttpURLConnection#disconnect()} from the connection.
      */
@@ -118,14 +113,13 @@ public class GeoServerWicketOnlineTestSupport {
      * Performs an HTTP GET against the provided url
      *
      * @param url The URL to GET
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the GET is performed without authentication
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the GET is performed without authentication
      * @param accept the content type(s) to accept. The accept header is ommited if this is null
      * @return The open HttpUrlConnection resulting from the GET. Callers must read the response and
      *     {@link HttpURLConnection#disconnect()} from the connection.
      */
-    protected HttpURLConnection get(String url, String jsessionid, String accept)
-            throws IOException {
+    protected HttpURLConnection get(String url, String jsessionid, String accept) throws IOException {
         return doGet(prepareGet(url, jsessionid, accept));
     }
 
@@ -133,14 +127,13 @@ public class GeoServerWicketOnlineTestSupport {
      * Prepares an HTTP GET request against the provided url
      *
      * @param @param url The URL to GET
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the GET is performed without authentication
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the GET is performed without authentication
      * @param accept the content type(s) to accept. The accept header is ommited if this is null
-     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before
-     *     calling {@link HttpURLConnection#connect()} and reading the response.
+     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before calling
+     *     {@link HttpURLConnection#connect()} and reading the response.
      */
-    protected HttpURLConnection prepareGet(String url, String jsessionid, String accept)
-            throws IOException {
+    protected HttpURLConnection prepareGet(String url, String jsessionid, String accept) throws IOException {
         URL u = new URL(GEOSERVER_BASE_URL + "/" + url);
         HttpURLConnection huc = (HttpURLConnection) u.openConnection();
         if (accept != null) {
@@ -172,10 +165,10 @@ public class GeoServerWicketOnlineTestSupport {
      * @param url The URL to POST
      * @param body The content to post
      * @param contentType The Content-Type of the content
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the POST is performed without authentication
-     * @return The open HttpUrlConnection resulting from the POST. Callers must read the response
-     *     and {@link HttpURLConnection#disconnect()} from the connection.
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the POST is performed without authentication
+     * @return The open HttpUrlConnection resulting from the POST. Callers must read the response and
+     *     {@link HttpURLConnection#disconnect()} from the connection.
      */
     protected HttpURLConnection post(String url, String body, String contentType, String jsessionid)
             throws IOException {
@@ -188,13 +181,12 @@ public class GeoServerWicketOnlineTestSupport {
      * @param url The URL to POST
      * @param contentLength The length of the content that will be sent
      * @param contentType The Content-Type of the content
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the POST is performed without authentication
-     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before
-     *     calling {@link HttpURLConnection#connect()}, sending the body, and reading the response.
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the POST is performed without authentication
+     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before calling
+     *     {@link HttpURLConnection#connect()}, sending the body, and reading the response.
      */
-    protected HttpURLConnection preparePost(
-            String url, int contentLength, String contentType, String jsessionid)
+    protected HttpURLConnection preparePost(String url, int contentLength, String contentType, String jsessionid)
             throws IOException {
         URL u = new URL(GEOSERVER_BASE_URL + "/" + url);
         HttpURLConnection huc = (HttpURLConnection) u.openConnection();
@@ -214,8 +206,8 @@ public class GeoServerWicketOnlineTestSupport {
     }
 
     /**
-     * Calls {@link HttpURLConnection#connect()} on the provided connection, writes the provided
-     * content and returns the connection.
+     * Calls {@link HttpURLConnection#connect()} on the provided connection, writes the provided content and returns the
+     * connection.
      *
      * @param huc An {@link HttpURLConnection} prepared for a post request
      * @param body The body to write to the connection
@@ -235,10 +227,10 @@ public class GeoServerWicketOnlineTestSupport {
      * Performs an HTTP DELETE against the provided url
      *
      * @param url The URL to DELETE
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the DELETE is performed without authentication
-     * @return The open HttpUrlConnection resulting from the DELETE. Callers must read the response
-     *     and {@link HttpURLConnection#disconnect()} from the connection.
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the DELETE is performed without authentication
+     * @return The open HttpUrlConnection resulting from the DELETE. Callers must read the response and
+     *     {@link HttpURLConnection#disconnect()} from the connection.
      */
     protected HttpURLConnection delete(String url, String jsessionid) throws IOException {
         // Can just use doGet here, as it merely opens the connection
@@ -249,10 +241,10 @@ public class GeoServerWicketOnlineTestSupport {
      * Prepares an HTTP DELETE request against the provided url
      *
      * @param @param url The URL to DELETE
-     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be
-     *     null, in which case the DELETE is performed without authentication
-     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before
-     *     calling {@link HttpURLConnection#connect()} and reading the response.
+     * @param jsessionid The jsessionid cookie of the session, in the form "JSESSIONID=foo". May be null, in which case
+     *     the DELETE is performed without authentication
+     * @return The prepared HttpUrlConnection. Callers may add headers or other properties before calling
+     *     {@link HttpURLConnection#connect()} and reading the response.
      */
     protected HttpURLConnection prepareDelete(String url, String jsessionid) throws IOException {
         URL u = new URL(GEOSERVER_BASE_URL + "/" + url);

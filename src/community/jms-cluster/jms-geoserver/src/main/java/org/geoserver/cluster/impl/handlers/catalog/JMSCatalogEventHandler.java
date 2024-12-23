@@ -21,14 +21,13 @@ import org.geoserver.cluster.JMSEventHandlerSPI;
 import org.geoserver.ows.util.OwsUtils;
 
 /**
- * Abstract class which use Xstream as message serializer/de-serializer. We extend this class to
- * implementing synchronize method.
+ * Abstract class which use Xstream as message serializer/de-serializer. We extend this class to implementing
+ * synchronize method.
  *
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class JMSCatalogEventHandler extends JMSEventHandler<String, CatalogEvent> {
-    public JMSCatalogEventHandler(
-            final XStream xstream, Class<JMSEventHandlerSPI<String, CatalogEvent>> clazz) {
+    public JMSCatalogEventHandler(final XStream xstream, Class<JMSEventHandlerSPI<String, CatalogEvent>> clazz) {
         super(xstream, clazz);
         // omit not serializable fields
         omitFields();

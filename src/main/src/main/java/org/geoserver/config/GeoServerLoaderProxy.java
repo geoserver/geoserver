@@ -15,11 +15,10 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextClosedEvent;
 
 /**
- * A proxy for {@link GeoServerLoader} that loads the actual loader instance based on the spring
- * context.
+ * A proxy for {@link GeoServerLoader} that loads the actual loader instance based on the spring context.
  *
- * <p>This method will first attempt to lookup an instance of {@link GeoServerLoader} in the spring
- * context and if none found will fall back on {@link DefaultGeoServerLoader}.
+ * <p>This method will first attempt to lookup an instance of {@link GeoServerLoader} in the spring context and if none
+ * found will fall back on {@link DefaultGeoServerLoader}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -46,8 +45,7 @@ public class GeoServerLoaderProxy
     }
 
     @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName)
-            throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (loader != null) {
             return loader.postProcessAfterInitialization(bean, beanName);
         }
@@ -55,8 +53,7 @@ public class GeoServerLoaderProxy
     }
 
     @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName)
-            throws BeansException {
+    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         if (loader != null) {
             return loader.postProcessBeforeInitialization(bean, beanName);
         }

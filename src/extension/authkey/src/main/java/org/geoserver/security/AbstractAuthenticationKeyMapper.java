@@ -27,8 +27,7 @@ import org.springframework.util.StringUtils;
  */
 public abstract class AbstractAuthenticationKeyMapper implements AuthenticationKeyMapper {
 
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
     private String beanName;
     private String userGroupServiceName;
@@ -44,8 +43,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     private long cacheTtlSeconds = 300; // Default: 5 minutes
 
     // Executor for cleaning up expired cache entries
-    private final ScheduledExecutorService cacheCleanupExecutor =
-            Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService cacheCleanupExecutor = Executors.newSingleThreadScheduledExecutor();
 
     public AbstractAuthenticationKeyMapper() {
         super();
@@ -84,8 +82,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     }
 
     protected GeoServerUserGroupService getUserGroupService() throws IOException {
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(getUserGroupServiceName());
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(getUserGroupServiceName());
         if (service == null) {
             throw new IOException("Unknown user/group service: " + getUserGroupServiceName());
         }
@@ -143,10 +140,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         }
     }
 
-    /**
-     * Gets the default value for the given parameter. The Default implementation always returns an
-     * empty string.
-     */
+    /** Gets the default value for the given parameter. The Default implementation always returns an empty string. */
     protected String getDefaultParamValue(String paramName) {
         return "";
     }
@@ -161,8 +155,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
     public void validateParameter(String paramName, String value) throws FilterConfigException {}
 
     /** Creates a validation exception (used by inheriting mappers). */
-    protected AuthenticationKeyFilterConfigException createFilterException(
-            String errorid, Object... args) {
+    protected AuthenticationKeyFilterConfigException createFilterException(String errorid, Object... args) {
         return new AuthenticationKeyFilterConfigException(errorid, args);
     }
 
@@ -191,8 +184,7 @@ public abstract class AbstractAuthenticationKeyMapper implements AuthenticationK
         GeoServerUser user = this.getUserInternal(key);
         if (key != null && user != null) {
             // Cache the user for future requests
-            userCache.put(
-                    key, new CacheEntry(user, System.currentTimeMillis() + cacheTtlSeconds * 1000));
+            userCache.put(key, new CacheEntry(user, System.currentTimeMillis() + cacheTtlSeconds * 1000));
         }
         return user;
     }

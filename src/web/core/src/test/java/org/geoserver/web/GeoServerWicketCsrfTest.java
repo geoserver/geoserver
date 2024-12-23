@@ -30,8 +30,7 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(
-                new Object[][] {{"true", "foo.com"}, {"false", "geoserver.org"}, {"false", ""}});
+        return Arrays.asList(new Object[][] {{"true", "foo.com"}, {"false", "geoserver.org"}, {"false", ""}});
     }
 
     @Parameter(0)
@@ -47,8 +46,7 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         // Update the Csrf properties and re-init the test app
         System.setProperty(GEOSERVER_CSRF_WHITELIST, csrfWhitelist);
         System.setProperty(GEOSERVER_CSRF_DISABLED, csrfDisabled);
-        GeoServerApplication app =
-                (GeoServerApplication) applicationContext.getBean("webApplication");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
         tester = new WicketTester(app, false);
         app.init();
 
@@ -76,12 +74,11 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         // Set up HTTP requst with necessary headers
         MockHttpServletRequest request = tester.getRequest();
 
-        String relativePath =
-                form.getForm()
-                        .getRootForm()
-                        .urlFor(IFormSubmitListener.INTERFACE, new PageParameters())
-                        .toString()
-                        .substring(1);
+        String relativePath = form.getForm()
+                .getRootForm()
+                .urlFor(IFormSubmitListener.INTERFACE, new PageParameters())
+                .toString()
+                .substring(1);
 
         request.setServerName("geoserver.org");
         request.setHeader("Origin", "http://www.geoserver.org");
@@ -110,12 +107,11 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         // Set up HTTP requst with necessary headers
         MockHttpServletRequest request = tester.getRequest();
 
-        String relativePath =
-                form.getForm()
-                        .getRootForm()
-                        .urlFor(IFormSubmitListener.INTERFACE, new PageParameters())
-                        .toString()
-                        .substring(1);
+        String relativePath = form.getForm()
+                .getRootForm()
+                .urlFor(IFormSubmitListener.INTERFACE, new PageParameters())
+                .toString()
+                .substring(1);
 
         request.setServerName("geoserver.org");
         request.setHeader("Origin", "http://www.remote.com");

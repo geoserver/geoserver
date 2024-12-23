@@ -62,12 +62,8 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
 
         @Override
         protected void transformResponse(
-                OutputStream output,
-                CSWRecordsResult result,
-                RequestBaseType request,
-                CSWInfo csw) {
-            CSWRecordTransformer transformer =
-                    new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
+                OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
+            CSWRecordTransformer transformer = new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
             transformer.setIndentation(2);
             try {
                 transformer.transform(result, output);
@@ -78,8 +74,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
     }
 
     SimpleCatalogStore store =
-            new SimpleCatalogStore(
-                    Files.asResource(new File("./src/test/resources/org/geoserver/csw/records")));
+            new SimpleCatalogStore(Files.asResource(new File("./src/test/resources/org/geoserver/csw/records")));
 
     @Before
     public void setUp() throws Exception {
@@ -126,8 +121,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("100", "//csw:SearchResults/@numberOfRecordsMatched", dom);
         assertXpathEvaluatesTo("12", "//csw:SearchResults/@numberOfRecordsReturned", dom);
         assertXpathEvaluatesTo("13", "//csw:SearchResults/@nextRecord", dom);
-        assertXpathEvaluatesTo(
-                "http://www.opengis.net/cat/csw/2.0.2", "//csw:SearchResults/@recordSchema", dom);
+        assertXpathEvaluatesTo("http://www.opengis.net/cat/csw/2.0.2", "//csw:SearchResults/@recordSchema", dom);
         assertXpathEvaluatesTo("brief", "//csw:SearchResults/@elementSet", dom);
         assertXpathEvaluatesTo("12", "count(//csw:BriefRecord)", dom);
 
@@ -248,8 +242,7 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
         assertXpathEvaluatesTo("12", "count(//csw:Record)", dom);
 
         // check one full record
-        String xpathBase =
-                "//csw:Record[dc:identifier = 'urn:uuid:784e2afd-a9fd-44a6-9a92-a3848371c8ec']/";
+        String xpathBase = "//csw:Record[dc:identifier = 'urn:uuid:784e2afd-a9fd-44a6-9a92-a3848371c8ec']/";
         assertXpathEvaluatesTo("7", "count(" + xpathBase + "*)", dom);
         assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Text", xpathBase + "dc:type", dom);
         assertXpathEvaluatesTo("Aliquam fermentum purus quis arcu", xpathBase + "dc:title", dom);
@@ -299,15 +292,8 @@ public class CSWRecordResponseTest extends CSWSimpleTestSupport {
         cal.set(Calendar.DAY_OF_MONTH, 10);
         cal.set(Calendar.HOUR_OF_DAY, 15);
         FeatureCollection fc = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
-        CSWRecordsResult response =
-                new CSWRecordsResult(
-                        ElementSetType.BRIEF,
-                        "http://www.opengis.net/cat/csw/2.0.2",
-                        100,
-                        12,
-                        13,
-                        cal.getTime(),
-                        fc);
+        CSWRecordsResult response = new CSWRecordsResult(
+                ElementSetType.BRIEF, "http://www.opengis.net/cat/csw/2.0.2", 100, 12, 13, cal.getTime(), fc);
         return response;
     }
 }

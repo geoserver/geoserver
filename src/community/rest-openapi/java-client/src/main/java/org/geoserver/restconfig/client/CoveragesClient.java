@@ -42,8 +42,7 @@ public class CoveragesClient {
      * @param store The name of the coverage data store (required)
      * @param info The body of the coverage to POST (required)
      */
-    public CoverageInfo create(
-            @NonNull String workspace, @NonNull String store, @NonNull CoverageInfo info) {
+    public CoverageInfo create(@NonNull String workspace, @NonNull String store, @NonNull CoverageInfo info) {
         Objects.requireNonNull(info.getNativeCoverageName(), "nativeCoverageName is null");
         if (info.getStore() != null && !store.equals(info.getStore().getName())) {
             log.info(
@@ -65,12 +64,8 @@ public class CoveragesClient {
         final String name = info.getName();
         api().createCoverageAtStore(workspace, store, new CoverageInfoWrapper().coverage(info));
         return findByStore(workspace, store, name)
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        String.format(
-                                                "Coverage '%s.%s.%s' not found right after creation",
-                                                workspace, store, name)));
+                .orElseThrow(() -> new IllegalStateException(
+                        String.format("Coverage '%s.%s.%s' not found right after creation", workspace, store, name)));
     }
 
     /**
@@ -83,11 +78,9 @@ public class CoveragesClient {
      * @return
      */
     public CoverageInfo create(@NonNull String workspace, @NonNull CoverageInfo info) {
-        Objects.requireNonNull(
-                info.getNativeCoverageName(), "precondition violation: nativeCoverageName is null");
+        Objects.requireNonNull(info.getNativeCoverageName(), "precondition violation: nativeCoverageName is null");
         Objects.requireNonNull(info.getStore(), "precondition violation: store is null");
-        Objects.requireNonNull(
-                info.getStore().getName(), "precondition violation: store name is null");
+        Objects.requireNonNull(info.getStore().getName(), "precondition violation: store name is null");
         // geoserver fails to discriminate the provided store and workspace in case
         // there's another store with the same name (probably in the default workspace).
         // Setting the store to null forces it to lookup the parametrized workspace and
@@ -102,60 +95,46 @@ public class CoveragesClient {
         info.setNativeName(info.getNativeCoverageName());
 
         final String name = info.getName();
-        api().createCoverageAtStore(
-                        workspace, store.getName(), new CoverageInfoWrapper().coverage(info));
+        api().createCoverageAtStore(workspace, store.getName(), new CoverageInfoWrapper().coverage(info));
         return findByStore(workspace, store.getName(), name)
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        String.format(
-                                                "Coverage '%s.%s.%s' not found right after creation",
-                                                workspace, store.getName(), name)));
+                .orElseThrow(() -> new IllegalStateException(String.format(
+                        "Coverage '%s.%s.%s' not found right after creation", workspace, store.getName(), name)));
     }
 
     /**
      * Delete a coverage (optionally recursively deleting layers).
      *
-     * <p>{@code DELETE
-     * /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}?recurse={recurse}}
+     * <p>{@code DELETE /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}?recurse={recurse}}
      *
      * @param workspace The name of the workspace (required)
      * @param store The name of the coverage datastore (required)
      * @param coverage The name of the coverage (required)
-     * @param recurse The recurse controls recursive deletion. When set to true all stores
-     *     containing the resource are also removed. (optional, default to false)
+     * @param recurse The recurse controls recursive deletion. When set to true all stores containing the resource are
+     *     also removed. (optional, default to false)
      */
-    public void delete(
-            @NonNull String workspace,
-            @NonNull String store,
-            @NonNull String coverage,
-            Boolean recurse) {
+    public void delete(@NonNull String workspace, @NonNull String store, @NonNull String coverage, Boolean recurse) {
         api().deleteCoverage(workspace, store, coverage, recurse);
     }
 
-    public void deleteRecursively(
-            @NonNull String workspace, @NonNull String store, @NonNull String coverage) {
+    public void deleteRecursively(@NonNull String workspace, @NonNull String store, @NonNull String coverage) {
         delete(workspace, store, coverage, Boolean.TRUE);
     }
 
     /**
      * Get an individual coverage.
      *
-     * <p>{@code GET
-     * /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}?quietOnNotFound=true}
+     * <p>{@code GET /workspaces/{workspace}/coveragestores/{store}/coverages/{coverage}?quietOnNotFound=true}
      *
      * @param workspace The name of the workspace (required)
      * @param store The name of the coverage datastore (required)
      * @param coverage The name of the coverage (required)
-     * @param quietOnNotFound The quietOnNotFound parameter avoids to log an Exception when the
-     *     coverage is not present. Note that 404 status code will be returned anyway. (optional,
-     *     default to false)
+     * @param quietOnNotFound The quietOnNotFound parameter avoids to log an Exception when the coverage is not present.
+     *     Note that 404 status code will be returned anyway. (optional, default to false)
      */
     public Optional<CoverageInfo> findByStore(
             @NonNull String workspace, @NonNull String store, @NonNull String coverage) {
         try {
-            CoverageResponseWrapper wrapper =
-                    api().findCoverageByStore(workspace, store, coverage, Boolean.TRUE);
+            CoverageResponseWrapper wrapper = api().findCoverageByStore(workspace, store, coverage, Boolean.TRUE);
             CoverageResponse coverageResponse = wrapper.getCoverage();
             return Optional.of(mapper.map(coverageResponse));
         } catch (ServerException.NotFound nf) {
@@ -166,13 +145,12 @@ public class CoveragesClient {
     /**
      * Get the coverages available for the provided workspace and data store.
      *
-     * <p>{@code GET /workspaces/{workspace}/coveragestores/{store}/coverages?[includeUnpublished?
-     * "list=all" : ""]}}
+     * <p>{@code GET /workspaces/{workspace}/coveragestores/{store}/coverages?[includeUnpublished? "list=all" : ""]}}
      *
      * @param workspace The name of the workspace (required)
      * @param store The name of the coverage data store (required)
-     * @param includeUnpublished If {@code true}, all the coverages available in the data source
-     *     (even the non published ones) will be returned.
+     * @param includeUnpublished If {@code true}, all the coverages available in the data source (even the non published
+     *     ones) will be returned.
      */
     public List<NamedLink> findAllByStore(
             @NonNull String workspace, @NonNull String store, boolean includeUnpublished) {
@@ -200,11 +178,10 @@ public class CoveragesClient {
      * <p>{@code GET /workspaces/{workspace}/coverages?list={list}}
      *
      * @param workspace The name of the workspace (required)
-     * @param includeUnpublished If {@code true}, all the coverages available in the worskspace
-     *     (even the non published ones) will be returned.
+     * @param includeUnpublished If {@code true}, all the coverages available in the worskspace (even the non published
+     *     ones) will be returned.
      */
-    public List<NamedLink> findAllByWorkspace(
-            @NonNull String workspace, boolean includeUnpublished) {
+    public List<NamedLink> findAllByWorkspace(@NonNull String workspace, boolean includeUnpublished) {
         String list = includeUnpublished ? "all" : null;
         CoveragesResponse response = api().findCoveragesByWorkspace(workspace, list);
         CoverageListWrapper listWrapper = response.getCoverageStores();
@@ -268,18 +245,10 @@ public class CoveragesClient {
             if (calculateLatLonBbox) calculate.add("latlonbbox");
             if (calculateNativeBbox) calculate.add("nativebbox");
         }
-        api().updateCoverage(
-                        workspace,
-                        store,
-                        coverage,
-                        new CoverageInfoWrapper().coverage(info),
-                        calculate);
+        api().updateCoverage(workspace, store, coverage, new CoverageInfoWrapper().coverage(info), calculate);
         final String newName = info.getName();
         return findByStore(workspace, store, newName)
                 .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        String.format(
-                                                "Coverage %s not found after update", newName)));
+                        () -> new IllegalStateException(String.format("Coverage %s not found after update", newName)));
     }
 }

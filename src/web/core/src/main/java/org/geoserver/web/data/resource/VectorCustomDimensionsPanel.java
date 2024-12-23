@@ -63,8 +63,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         mainDiv.add(addForm);
 
         // the sub container for adding new dimension input and button
-        final WebMarkupContainer addDimContainer =
-                new WebMarkupContainer("addVectorCustomDimensionPanel");
+        final WebMarkupContainer addDimContainer = new WebMarkupContainer("addVectorCustomDimensionPanel");
         addDimContainer.setOutputMarkupId(true);
         addForm.add(addDimContainer);
 
@@ -74,19 +73,18 @@ public class VectorCustomDimensionsPanel extends Panel {
         final TextField<String> nameInput = new TextField<>("nameInput", new Model<>(""));
         addDimContainer.add(nameInput);
         // add the ajax button
-        final AjaxButton addButton =
-                new AjaxButton("addButton", addForm) {
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        nameInput.processInput();
-                        final String newName = nameInput.getModelObject();
-                        nameInput.getModel().setObject("");
-                        // add new item with the provided name.
-                        addNewDimension(newName);
-                        // update the entire panel
-                        target.add(mainDiv);
-                    }
-                };
+        final AjaxButton addButton = new AjaxButton("addButton", addForm) {
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                nameInput.processInput();
+                final String newName = nameInput.getModelObject();
+                nameInput.getModel().setObject("");
+                // add new item with the provided name.
+                addNewDimension(newName);
+                // update the entire panel
+                target.add(mainDiv);
+            }
+        };
         addButton.setDefaultFormProcessing(false);
         addDimContainer.add(addButton);
 
@@ -139,8 +137,7 @@ public class VectorCustomDimensionsPanel extends Panel {
     /** Builds the List needed for the refreshing view. */
     private List<IModel<VectorCustomDimensionEntry>> getCustomDimensionMetadataList(
             final IModel<FeatureTypeInfo> typeInfoModel) {
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<>(getTypeInfoModel(), "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(getTypeInfoModel(), "metadata");
         final List<IModel<VectorCustomDimensionEntry>> models = new ArrayList<>();
         final FeatureTypeInfo typeInfo = typeInfoModel.getObject();
         final FeatureTypeDimensionsAccessor accessor = new FeatureTypeDimensionsAccessor(typeInfo);
@@ -165,17 +162,12 @@ public class VectorCustomDimensionsPanel extends Panel {
                     @Override
                     protected void populateItem(Item<VectorCustomDimensionEntry> item) {
                         final VectorCustomDimensionEntry entry = item.getModel().getObject();
-                        final WebMarkupContainer div =
-                                new WebMarkupContainer("vectorCustomDimension");
+                        final WebMarkupContainer div = new WebMarkupContainer("vectorCustomDimension");
                         div.setOutputMarkupId(true);
                         item.add(div);
                         div.add(new Label("dimensionName", entry.getKeyNoPrefixed()));
-                        final VectorCustomDimensionEditor editor =
-                                new VectorCustomDimensionEditor(
-                                        "customVectorEditor",
-                                        item.getModel(),
-                                        typeInfoModel.getObject(),
-                                        Serializable.class);
+                        final VectorCustomDimensionEditor editor = new VectorCustomDimensionEditor(
+                                "customVectorEditor", item.getModel(), typeInfoModel.getObject(), Serializable.class);
                         editor.disablePresentationMode(DimensionPresentation.CONTINUOUS_INTERVAL);
                         div.add(editor);
                     }
@@ -217,9 +209,7 @@ public class VectorCustomDimensionsPanel extends Panel {
         @Override
         public VectorCustomDimensionEntry getObject() {
             final DimensionInfo dim =
-                    (DimensionInfo)
-                            model.getObject()
-                                    .get(VECTOR_CUSTOM_DIMENSION_PREFIX + expression, target);
+                    (DimensionInfo) model.getObject().get(VECTOR_CUSTOM_DIMENSION_PREFIX + expression, target);
             if (entry == null) {
                 final Pair<String, DimensionInfo> pair = Pair.of(key, dim);
                 entry = new VectorCustomDimensionEntry(pair);

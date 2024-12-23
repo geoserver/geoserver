@@ -37,8 +37,7 @@ public class OverrideCRSTest extends GeoServerSystemTestSupport {
     @Test
     public void testOverride() throws Exception {
         CoordinateReferenceSystem epsg3003 = CRS.decode("EPSG:3003");
-        DefaultGeodeticDatum datum3003 =
-                (DefaultGeodeticDatum) (((ProjectedCRS) epsg3003).getDatum());
+        DefaultGeodeticDatum datum3003 = (DefaultGeodeticDatum) (((ProjectedCRS) epsg3003).getDatum());
         BursaWolfParameters[] bwParamArray3003 = datum3003.getBursaWolfParameters();
         assertEquals(1, bwParamArray3003.length);
         BursaWolfParameters bw3003 = bwParamArray3003[0];
@@ -53,8 +52,7 @@ public class OverrideCRSTest extends GeoServerSystemTestSupport {
 
         // without an override they should be the same as 3002
         CoordinateReferenceSystem epsg3002 = CRS.decode("EPSG:3002");
-        DefaultGeodeticDatum datum3002 =
-                (DefaultGeodeticDatum) (((ProjectedCRS) epsg3002).getDatum());
+        DefaultGeodeticDatum datum3002 = (DefaultGeodeticDatum) (((ProjectedCRS) epsg3002).getDatum());
         BursaWolfParameters[] bwParamArray3002 = datum3002.getBursaWolfParameters();
         assertEquals(1, bwParamArray3002.length);
         BursaWolfParameters bw3002 = bwParamArray3002[0];

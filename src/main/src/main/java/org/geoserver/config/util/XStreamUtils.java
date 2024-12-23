@@ -20,9 +20,8 @@ import org.geoserver.util.IOUtils;
  */
 public final class XStreamUtils {
     /**
-     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp file
-     * is used for the serialization so that the true destination file is not partially written in
-     * the case of an error.
+     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp file is used for the
+     * serialization so that the true destination file is not partially written in the case of an error.
      *
      * @param f The file to write to, only modified if the temp file serialization was error free.
      * @param obj The object to serialize.
@@ -48,17 +47,14 @@ public final class XStreamUtils {
     }
 
     /**
-     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp file
-     * is used for the serialization so that the true destination file is not partially written in
-     * the case of an error.
+     * Performs serialization with an {@link XStreamPersister} in a safe manner in which a temp file is used for the
+     * serialization so that the true destination file is not partially written in the case of an error.
      *
-     * @param r The resource to write to, only modified if the temp file serialization was error
-     *     free.
+     * @param r The resource to write to, only modified if the temp file serialization was error free.
      * @param obj The object to serialize.
      * @param xp The persister.
      */
-    public static void xStreamPersist(Resource r, Object obj, XStreamPersister xp)
-            throws IOException {
+    public static void xStreamPersist(Resource r, Object obj, XStreamPersister xp) throws IOException {
 
         try (OutputStream out = r.out()) {
             xp.save(obj, out);

@@ -60,8 +60,7 @@ import org.springframework.web.client.ResourceAccessException;
  *
  * @author Alessio Fabiani, GeoSolutions
  */
-public abstract class GeoServerOAuthAuthenticationFilter
-        extends GeoServerPreAuthenticatedUserNameFilter
+public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements GeoServerAuthenticationFilter, LogoutHandler {
 
     public static final String SESSION_COOKIE_NAME = "sessionid";
@@ -78,8 +77,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
     OAuth2RestOperations restTemplate;
 
-    OAuth2ClientAuthenticationProcessingFilter filter =
-            new OAuth2ClientAuthenticationProcessingFilter("/");
+    OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter("/");
 
     ResourceServerTokenServices tokenServices;
 
@@ -115,9 +113,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         // Search for an access_token on the request (simulating SSO)
         String accessToken = getAccessTokenFromRequest(request);
-        if (authentication == null
-                || authentication instanceof AnonymousAuthenticationToken
-                || accessToken != null) {
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken || accessToken != null) {
 
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
@@ -136,8 +132,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
 
             if (accessToken == null
                     && customSessionCookie == null
-                    && (authentication == null
-                            || authentication instanceof AnonymousAuthenticationToken)) {
+                    && (authentication == null || authentication instanceof AnonymousAuthenticationToken)) {
                 final AccessTokenRequest accessTokenRequest =
                         restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
                 if (accessTokenRequest != null) {
@@ -158,10 +153,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
                         getSecurityManager()
                                 .getAuthenticationCache()
-                                .put(
-                                        getName(),
-                                        getCacheKey((HttpServletRequest) request),
-                                        postAuthentication);
+                                .put(getName(), getCacheKey((HttpServletRequest) request), postAuthentication);
                     }
                 }
             }
@@ -177,23 +169,18 @@ public abstract class GeoServerOAuthAuthenticationFilter
      * @param httpRequest
      * @param accessTokenRequest Access token request, non {@code null}
      */
-    protected void enhanceAccessTokenRequest(
-            HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
+    protected void enhanceAccessTokenRequest(HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
         var session = httpRequest.getSession();
         var validator = (String) session.getAttribute("OIDC_CODE_VERIFIER");
         accessTokenRequest.put("code_verifier", Collections.singletonList(validator));
 
         if (accessTokenRequest.getStateKey() != null)
-            restTemplate
-                    .getOAuth2ClientContext()
-                    .removePreservedState(accessTokenRequest.getStateKey());
+            restTemplate.getOAuth2ClientContext().removePreservedState(accessTokenRequest.getStateKey());
 
-        if (accessTokenRequest.containsKey("access_token"))
-            clearAccessTokenRequest(httpRequest, accessTokenRequest);
+        if (accessTokenRequest.containsKey("access_token")) clearAccessTokenRequest(httpRequest, accessTokenRequest);
     }
 
-    private void clearAccessTokenRequest(
-            HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
+    private void clearAccessTokenRequest(HttpServletRequest httpRequest, AccessTokenRequest accessTokenRequest) {
         try {
             accessTokenRequest.remove("access_token");
         } finally {
@@ -221,8 +208,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     }
 
     protected String getParameterValue(String paramName, ServletRequest request) {
-        for (Enumeration<String> iterator = request.getParameterNames();
-                iterator.hasMoreElements(); ) {
+        for (Enumeration<String> iterator = request.getParameterNames(); iterator.hasMoreElements(); ) {
             final String param = iterator.nextElement();
             if (paramName.equalsIgnoreCase(param)) {
                 return request.getParameter(param);
@@ -266,10 +252,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
     }
 
     @Override
-    public void logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 
         OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
         if ((token != null && token.getTokenType().equalsIgnoreCase(OAuth2AccessToken.BEARER_TYPE))
@@ -279,9 +262,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     restTemplate.getOAuth2ClientContext().getAccessTokenRequest();
             try {
                 if (accessTokenRequest != null && accessTokenRequest.getStateKey() != null) {
-                    restTemplate
-                            .getOAuth2ClientContext()
-                            .removePreservedState(accessTokenRequest.getStateKey());
+                    restTemplate.getOAuth2ClientContext().removePreservedState(accessTokenRequest.getStateKey());
                     accessTokenRequest.remove("access_token");
                 }
             } finally {
@@ -309,8 +290,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 }
             }
 
-            request.setAttribute(
-                    GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, filterConfig.getLogoutUri());
+            request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, filterConfig.getLogoutUri());
         }
     }
 
@@ -326,20 +306,17 @@ public abstract class GeoServerOAuthAuthenticationFilter
             principal = null;
         }
 
-        LOGGER.log(
-                Level.FINE,
-                "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
+        LOGGER.log(Level.FINE, "preAuthenticatedPrincipal = " + principal + ", trying to authenticate");
 
         if (principal != null && principal.trim().length() > 0) {
             if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
-                result =
-                        new PreAuthenticatedAuthenticationToken(
-                                principal,
-                                null,
-                                Arrays.asList(
-                                        GeoServerRole.ADMIN_ROLE,
-                                        GeoServerRole.GROUP_ADMIN_ROLE,
-                                        GeoServerRole.AUTHENTICATED_ROLE));
+                result = new PreAuthenticatedAuthenticationToken(
+                        principal,
+                        null,
+                        Arrays.asList(
+                                GeoServerRole.ADMIN_ROLE,
+                                GeoServerRole.GROUP_ADMIN_ROLE,
+                                GeoServerRole.AUTHENTICATED_ROLE));
             } else {
                 Collection<GeoServerRole> roles = null;
                 try {
@@ -350,8 +327,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                 if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
                     roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 
-                RoleCalculator calc =
-                        new RoleCalculator(getSecurityManager().getActiveRoleService());
+                RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
                 if (calc != null) {
                     try {
                         roles.addAll(calc.calculateRoles(principal));
@@ -399,9 +375,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
         }
 
         if (accessToken != null) {
-            restTemplate
-                    .getOAuth2ClientContext()
-                    .setAccessToken(new DefaultOAuth2AccessToken(accessToken));
+            restTemplate.getOAuth2ClientContext().setAccessToken(new DefaultOAuth2AccessToken(accessToken));
         }
 
         // Setting up OAuth2 Filter services and resource template
@@ -424,19 +398,13 @@ public abstract class GeoServerOAuthAuthenticationFilter
             if (authentication instanceof OAuth2Authentication) {
                 OAuth2Authentication oAuth2Authentication = (OAuth2Authentication) authentication;
                 Object map =
-                        oAuth2Authentication
-                                .getOAuth2Request()
-                                .getExtensions()
-                                .get(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
+                        oAuth2Authentication.getOAuth2Request().getExtensions().get(OAUTH2_ACCESS_TOKEN_CHECK_KEY);
                 if (map instanceof Map) {
                     req.setAttribute(OAUTH2_ACCESS_TOKEN_CHECK_KEY, map);
                 }
             }
 
-            LOGGER.log(
-                    Level.FINE,
-                    "Authenticated OAuth request for principal {0}",
-                    authentication.getPrincipal());
+            LOGGER.log(Level.FINE, "Authenticated OAuth request for principal {0}", authentication.getPrincipal());
         } catch (HttpClientErrorException.Unauthorized unauthorized) {
             // this exception typically happens when the token has expired (also, if it was
             // invalid/modified)
@@ -445,8 +413,7 @@ public abstract class GeoServerOAuthAuthenticationFilter
                     "Oauth2 OIDC - an error occurred during token validation.  Most likely the token has expired or is invalid/modified.  "
                             + unauthorized.getMessage());
         } catch (Exception e) {
-            if (e instanceof UserRedirectRequiredException
-                    || e instanceof InsufficientAuthenticationException) {
+            if (e instanceof UserRedirectRequiredException || e instanceof InsufficientAuthenticationException) {
                 if (filterConfig.getEnableRedirectAuthenticationEntryPoint()
                         || req.getRequestURI().endsWith(filterConfig.getLoginEndpoint())) {
                     // Intercepting a "UserRedirectRequiredException" and redirect to the OAuth2
@@ -475,18 +442,14 @@ public abstract class GeoServerOAuthAuthenticationFilter
                         }
                     }
                 }
-            } else if (e instanceof BadCredentialsException
-                    || e instanceof ResourceAccessException) {
+            } else if (e instanceof BadCredentialsException || e instanceof ResourceAccessException) {
                 if (e.getCause() instanceof OAuth2AccessDeniedException) {
                     LOGGER.log(
                             Level.WARNING,
                             "Error while trying to authenticate to OAuth2 Provider with the following Exception cause:",
                             e.getCause());
                 } else if (e instanceof ResourceAccessException) {
-                    LOGGER.log(
-                            Level.SEVERE,
-                            "Could not Authorize OAuth2 Resource due to the following exception:",
-                            e);
+                    LOGGER.log(Level.SEVERE, "Could not Authorize OAuth2 Resource due to the following exception:", e);
                 } else if (e instanceof ResourceAccessException
                         || e.getCause() instanceof OAuth2AccessDeniedException) {
                     LOGGER.log(
@@ -503,15 +466,10 @@ public abstract class GeoServerOAuthAuthenticationFilter
             }
         }
 
-        String username =
-                (authentication != null
-                        ? SecurityUtils.getUsername(authentication.getPrincipal())
-                        : null);
+        String username = (authentication != null ? SecurityUtils.getUsername(authentication.getPrincipal()) : null);
         if (username != null && username.trim().length() == 0) username = null;
         try {
-            if (username != null
-                    && PreAuthenticatedUserNameRoleSource.UserGroupService.equals(
-                            getRoleSource())) {
+            if (username != null && PreAuthenticatedUserNameRoleSource.UserGroupService.equals(getRoleSource())) {
                 GeoServerUserGroupService service =
                         getSecurityManager().loadUserGroupService(getUserGroupServiceName());
                 GeoServerUser u = service.getUserByUsername(username);
@@ -537,15 +495,12 @@ public abstract class GeoServerOAuthAuthenticationFilter
     }
 
     protected void configureRestTemplate() {
-        AuthorizationCodeResourceDetails details =
-                (AuthorizationCodeResourceDetails) restTemplate.getResource();
+        AuthorizationCodeResourceDetails details = (AuthorizationCodeResourceDetails) restTemplate.getResource();
 
         details.setClientId(filterConfig.getCliendId());
         details.setClientSecret(filterConfig.getClientSecret());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
-                .setClientId(filterConfig.getCliendId());
-        ((GeoServerOAuthRemoteTokenServices) this.tokenServices)
-                .setClientSecret(filterConfig.getClientSecret());
+        ((GeoServerOAuthRemoteTokenServices) this.tokenServices).setClientId(filterConfig.getCliendId());
+        ((GeoServerOAuthRemoteTokenServices) this.tokenServices).setClientSecret(filterConfig.getClientSecret());
 
         details.setAccessTokenUri(filterConfig.getAccessTokenUri());
         details.setUserAuthorizationUri(filterConfig.getUserAuthorizationUri());

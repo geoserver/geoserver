@@ -28,8 +28,7 @@ public class CSWRecordsResponse extends AbstractRecordsResponse {
     @Override
     protected void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
-        CSWRecordTransformer transformer =
-                new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
+        CSWRecordTransformer transformer = new CSWRecordTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {
             transformer.transform(result, output);

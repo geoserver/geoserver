@@ -57,10 +57,8 @@ public class MemoryUserGroupService extends AbstractUserGroupService {
         try {
             helper.userMap = (TreeMap<String, GeoServerUser>) oin.readObject();
             helper.groupMap = (TreeMap<String, GeoServerUserGroup>) oin.readObject();
-            helper.user_groupMap =
-                    (TreeMap<GeoServerUser, SortedSet<GeoServerUserGroup>>) oin.readObject();
-            helper.group_userMap =
-                    (TreeMap<GeoServerUserGroup, SortedSet<GeoServerUser>>) oin.readObject();
+            helper.user_groupMap = (TreeMap<GeoServerUser, SortedSet<GeoServerUserGroup>>) oin.readObject();
+            helper.group_userMap = (TreeMap<GeoServerUserGroup, SortedSet<GeoServerUser>>) oin.readObject();
             helper.propertyMap = (TreeMap<String, SortedSet<GeoServerUser>>) oin.readObject();
         } catch (ClassNotFoundException e) {
             throw new IOException(e);
@@ -68,8 +66,7 @@ public class MemoryUserGroupService extends AbstractUserGroupService {
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         GeoServerUser user = new MemoryGeoserverUser(username, this);
         user.setEnabled(isEnabled);
         user.setPassword(password);
@@ -77,8 +74,7 @@ public class MemoryUserGroupService extends AbstractUserGroupService {
     }
 
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         GeoServerUserGroup group = new MemoryGeoserverUserGroup(groupname);
         group.setEnabled(isEnabled);
         return group;
@@ -89,18 +85,14 @@ public class MemoryUserGroupService extends AbstractUserGroupService {
         this.name = config.getName();
         SecurityUserGroupServiceConfig ugConfig = (SecurityUserGroupServiceConfig) config;
         passwordEncoderName = ugConfig.getPasswordEncoderName();
-        GeoServerPasswordEncoder enc =
-                getSecurityManager().loadPasswordEncoder(passwordEncoderName);
+        GeoServerPasswordEncoder enc = getSecurityManager().loadPasswordEncoder(passwordEncoderName);
 
         if (enc.getEncodingType() == PasswordEncodingType.ENCRYPT) {
             KeyStoreProvider prov = getSecurityManager().getKeyStoreProvider();
             String alias = prov.aliasForGroupService(name);
             if (prov.containsAlias(alias) == false) {
                 prov.setUserGroupKey(
-                        name,
-                        getSecurityManager()
-                                .getRandomPassworddProvider()
-                                .getRandomPasswordWithDefaultLength());
+                        name, getSecurityManager().getRandomPassworddProvider().getRandomPasswordWithDefaultLength());
                 prov.storeKeyStore();
             }
         }

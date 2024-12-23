@@ -56,8 +56,7 @@ import org.locationtech.jts.geom.GeometryFactory;
  */
 public class MultiDimDataStore extends ContentDataStore {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.wcs2_0");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.wcs2_0");
 
     private static final CoordinateReferenceSystem EPSG_4326;
 
@@ -72,8 +71,7 @@ public class MultiDimDataStore extends ContentDataStore {
     }
 
     private static final List<String> BAND_LIST =
-            Arrays.asList(
-                    "NDVI", "BLUE/TOC", "SWIR/VAA", "NIR/TOC", "RED/TOC", "SWIR/TOC", "VNIR/VAA");
+            Arrays.asList("NDVI", "BLUE/TOC", "SWIR/VAA", "NIR/TOC", "RED/TOC", "SWIR/TOC", "VNIR/VAA");
 
     /** The 'dim_' prefix is mandatory as per the WMS spec, and also required by geoserver */
     private static final String BAND_DIMENSION = "BANDS";
@@ -85,8 +83,7 @@ public class MultiDimDataStore extends ContentDataStore {
     }
 
     private static final Date THE_DATE = new Date();
-    private static final ReferencedEnvelope TOTAL_BOUNDS =
-            new ReferencedEnvelope(10.000, 55, 40, 70, EPSG_4326);
+    private static final ReferencedEnvelope TOTAL_BOUNDS = new ReferencedEnvelope(10.000, 55, 40, 70, EPSG_4326);
     private static final String FILE_LOCATION_ATTRIBUTE = "fileLocation";
     private static final String LABEL_ATTRIBUTE = "label";
     private static final String GEOMETRY_ATTRIBUTE = "geometry";
@@ -155,24 +152,23 @@ public class MultiDimDataStore extends ContentDataStore {
         return new ContentFeatureSource(entry, Query.ALL) {
 
             {
-                queryCapabilities =
-                        new QueryCapabilities() {
-                            @Override
-                            public boolean supportsSorting(SortBy[] sortAttributes) {
-                                if (sortAttributes != null && sortAttributes.length == 1) {
-                                    if (sortAttributes[0]
-                                            .getPropertyName()
-                                            .getPropertyName()
-                                            .equals("timestamp")) {
-                                        // sort by timestamp happens to be what we do by
-                                        // default
-                                        // TODO does the PDF support a sort order?
-                                        return true;
-                                    }
-                                }
-                                return super.supportsSorting(sortAttributes);
+                queryCapabilities = new QueryCapabilities() {
+                    @Override
+                    public boolean supportsSorting(SortBy[] sortAttributes) {
+                        if (sortAttributes != null && sortAttributes.length == 1) {
+                            if (sortAttributes[0]
+                                    .getPropertyName()
+                                    .getPropertyName()
+                                    .equals("timestamp")) {
+                                // sort by timestamp happens to be what we do by
+                                // default
+                                // TODO does the PDF support a sort order?
+                                return true;
                             }
-                        };
+                        }
+                        return super.supportsSorting(sortAttributes);
+                    }
+                };
             }
 
             // the image mosaic reader does not want this bounds to be null
@@ -185,8 +181,7 @@ public class MultiDimDataStore extends ContentDataStore {
             protected int getCountInternal(Query query) throws IOException {
                 if (query.getFilter() == Filter.INCLUDE) { // filtering not implemented
                     int count = 0;
-                    try (FeatureReader<SimpleFeatureType, SimpleFeature> featureReader =
-                            getReaderInternal(query)) {
+                    try (FeatureReader<SimpleFeatureType, SimpleFeature> featureReader = getReaderInternal(query)) {
                         while (featureReader.hasNext()) {
                             featureReader.next();
                             count++;
@@ -209,8 +204,7 @@ public class MultiDimDataStore extends ContentDataStore {
 
                         int idCounter = 0;
                         for (Date date : availableTimes) {
-                            SimpleFeatureBuilder featureBuilder =
-                                    new SimpleFeatureBuilder(FEATURE_TYPE);
+                            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(FEATURE_TYPE);
                             featureBuilder.set(TIME_ATTRIBUTE, date);
                             features.add(featureBuilder.buildFeature("dummyID" + idCounter++));
                         }
@@ -221,8 +215,7 @@ public class MultiDimDataStore extends ContentDataStore {
 
                         int idCounter = 0;
                         for (String band : BAND_LIST) {
-                            SimpleFeatureBuilder featureBuilder =
-                                    new SimpleFeatureBuilder(FEATURE_TYPE);
+                            SimpleFeatureBuilder featureBuilder = new SimpleFeatureBuilder(FEATURE_TYPE);
                             featureBuilder.set(BAND_DIMENSION, band);
                             features.add(featureBuilder.buildFeature("dummyID" + idCounter++));
                         }
@@ -239,141 +232,116 @@ public class MultiDimDataStore extends ContentDataStore {
                     endDate.setTime(0);
                     final List<String> band = new ArrayList<>();
 
-                    DefaultFilterVisitor filterVisitor =
-                            new DefaultFilterVisitor() {
+                    DefaultFilterVisitor filterVisitor = new DefaultFilterVisitor() {
 
-                                @Override
-                                public Object visit(BBOX filter, Object data) {
-                                    ReferencedEnvelope envelope = (ReferencedEnvelope) data;
-                                    filter.getBounds();
-                                    envelope.setBounds(filter.getBounds());
-                                    return super.visit(filter, data);
+                        @Override
+                        public Object visit(BBOX filter, Object data) {
+                            ReferencedEnvelope envelope = (ReferencedEnvelope) data;
+                            filter.getBounds();
+                            envelope.setBounds(filter.getBounds());
+                            return super.visit(filter, data);
+                        }
+
+                        @Override
+                        public Object visit(Intersects filter, Object data) {
+                            ReferencedEnvelope envelope = (ReferencedEnvelope) data;
+
+                            Geometry polygon = ((Geometry) ((Literal) filter.getExpression2()).getValue());
+
+                            ReferencedEnvelope bounds = JTS.bounds(polygon, envelope.getCoordinateReferenceSystem());
+                            envelope.setBounds(bounds);
+                            return super.visit(filter, data);
+                        }
+
+                        /** Used by WCS 2.0 to select a time range */
+                        @Override
+                        public Object visit(PropertyIsGreaterThanOrEqualTo filter, Object data) {
+                            PropertyName prop;
+                            Literal lit;
+                            if (filter.getExpression1() instanceof PropertyName
+                                    && filter.getExpression2() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else if (filter.getExpression2() instanceof PropertyName
+                                    && filter.getExpression1() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else {
+                                return super.visit(filter, data);
+                            }
+                            if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
+                                if (lit.getValue() != null) {
+                                    beginDate.setTime(((Date) lit.getValue()).getTime());
                                 }
+                            }
+                            return super.visit(filter, data);
+                        }
 
-                                @Override
-                                public Object visit(Intersects filter, Object data) {
-                                    ReferencedEnvelope envelope = (ReferencedEnvelope) data;
-
-                                    Geometry polygon =
-                                            ((Geometry)
-                                                    ((Literal) filter.getExpression2()).getValue());
-
-                                    ReferencedEnvelope bounds =
-                                            JTS.bounds(
-                                                    polygon,
-                                                    envelope.getCoordinateReferenceSystem());
-                                    envelope.setBounds(bounds);
-                                    return super.visit(filter, data);
+                        /** Used by WCS 2.0 to select a time range */
+                        @Override
+                        public Object visit(PropertyIsLessThanOrEqualTo filter, Object data) {
+                            PropertyName prop;
+                            Literal lit;
+                            if (filter.getExpression1() instanceof PropertyName
+                                    && filter.getExpression2() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else if (filter.getExpression2() instanceof PropertyName
+                                    && filter.getExpression1() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else {
+                                return super.visit(filter, data);
+                            }
+                            if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
+                                if (lit.getValue() != null) {
+                                    endDate.setTime(((Date) lit.getValue()).getTime());
                                 }
+                            }
+                            return super.visit(filter, data);
+                        }
 
-                                /** Used by WCS 2.0 to select a time range */
-                                @Override
-                                public Object visit(
-                                        PropertyIsGreaterThanOrEqualTo filter, Object data) {
-                                    PropertyName prop;
-                                    Literal lit;
-                                    if (filter.getExpression1() instanceof PropertyName
-                                            && filter.getExpression2() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else if (filter.getExpression2() instanceof PropertyName
-                                            && filter.getExpression1() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else {
-                                        return super.visit(filter, data);
-                                    }
-                                    if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
-                                        if (lit.getValue() != null) {
-                                            beginDate.setTime(((Date) lit.getValue()).getTime());
-                                        }
-                                    }
-                                    return super.visit(filter, data);
-                                }
+                        @Override
+                        public Object visit(PropertyIsEqualTo filter, Object data) {
+                            PropertyName prop;
+                            Literal lit;
+                            if (filter.getExpression1() instanceof PropertyName
+                                    && filter.getExpression2() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else if (filter.getExpression2() instanceof PropertyName
+                                    && filter.getExpression1() instanceof Literal) {
+                                prop = (PropertyName) filter.getExpression1();
+                                lit = (Literal) filter.getExpression2();
+                            } else {
+                                return super.visit(filter, data);
+                            }
+                            if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
+                                date.setTime(((Date) lit.getValue()).getTime());
+                            }
+                            if (prop.getPropertyName().equals(BAND_DIMENSION)) {
+                                band.add((String) lit.getValue());
+                            }
+                            return super.visit(filter, data);
+                        }
 
-                                /** Used by WCS 2.0 to select a time range */
-                                @Override
-                                public Object visit(
-                                        PropertyIsLessThanOrEqualTo filter, Object data) {
-                                    PropertyName prop;
-                                    Literal lit;
-                                    if (filter.getExpression1() instanceof PropertyName
-                                            && filter.getExpression2() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else if (filter.getExpression2() instanceof PropertyName
-                                            && filter.getExpression1() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else {
-                                        return super.visit(filter, data);
-                                    }
-                                    if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
-                                        if (lit.getValue() != null) {
-                                            endDate.setTime(((Date) lit.getValue()).getTime());
-                                        }
-                                    }
-                                    return super.visit(filter, data);
-                                }
+                        @Override
+                        public Object visit(PropertyIsBetween filter, Object data) {
+                            PropertyName prop = (PropertyName) filter.getExpression();
 
-                                @Override
-                                public Object visit(PropertyIsEqualTo filter, Object data) {
-                                    PropertyName prop;
-                                    Literal lit;
-                                    if (filter.getExpression1() instanceof PropertyName
-                                            && filter.getExpression2() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else if (filter.getExpression2() instanceof PropertyName
-                                            && filter.getExpression1() instanceof Literal) {
-                                        prop = (PropertyName) filter.getExpression1();
-                                        lit = (Literal) filter.getExpression2();
-                                    } else {
-                                        return super.visit(filter, data);
-                                    }
-                                    if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
-                                        date.setTime(((Date) lit.getValue()).getTime());
-                                    }
-                                    if (prop.getPropertyName().equals(BAND_DIMENSION)) {
-                                        band.add((String) lit.getValue());
-                                    }
-                                    return super.visit(filter, data);
-                                }
-
-                                @Override
-                                public Object visit(PropertyIsBetween filter, Object data) {
-                                    PropertyName prop = (PropertyName) filter.getExpression();
-
-                                    if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
-                                        beginDate.setTime(
-                                                ((Date)
-                                                                ((Literal)
-                                                                                filter
-                                                                                        .getLowerBoundary())
-                                                                        .getValue())
-                                                        .getTime());
-                                        endDate.setTime(
-                                                ((Date)
-                                                                ((Literal)
-                                                                                filter
-                                                                                        .getUpperBoundary())
-                                                                        .getValue())
-                                                        .getTime());
-                                    }
-                                    if (prop.getPropertyName().equals(BAND_DIMENSION)) {
-                                        String bands =
-                                                (String)
-                                                        ((Literal) filter.getLowerBoundary())
-                                                                .getValue();
-                                        String[] singleBands = bands.split(",");
-                                        band.addAll(Arrays.asList(singleBands));
-                                    }
-                                    return super.visit(filter, data);
-                                }
-                            };
-                    ReferencedEnvelope bbox =
-                            ReferencedEnvelope.rect(
-                                    -180, -90, 360, 180, DefaultGeographicCRS.WGS84);
+                            if (prop.getPropertyName().equals(TIME_ATTRIBUTE)) {
+                                beginDate.setTime(((Date) ((Literal) filter.getLowerBoundary()).getValue()).getTime());
+                                endDate.setTime(((Date) ((Literal) filter.getUpperBoundary()).getValue()).getTime());
+                            }
+                            if (prop.getPropertyName().equals(BAND_DIMENSION)) {
+                                String bands = (String) ((Literal) filter.getLowerBoundary()).getValue();
+                                String[] singleBands = bands.split(",");
+                                band.addAll(Arrays.asList(singleBands));
+                            }
+                            return super.visit(filter, data);
+                        }
+                    };
+                    ReferencedEnvelope bbox = ReferencedEnvelope.rect(-180, -90, 360, 180, DefaultGeographicCRS.WGS84);
 
                     query.getFilter().accept(filterVisitor, bbox);
                     LOGGER.fine("Mosaic query on bbox: " + bbox);
@@ -408,8 +376,7 @@ public class MultiDimDataStore extends ContentDataStore {
         };
     }
 
-    private FeatureReader<SimpleFeatureType, SimpleFeature> wrapAndCache(
-            List<SimpleFeature> features) {
+    private FeatureReader<SimpleFeatureType, SimpleFeature> wrapAndCache(List<SimpleFeature> features) {
 
         return new CollectionFeatureReader(features, FEATURE_TYPE);
     }

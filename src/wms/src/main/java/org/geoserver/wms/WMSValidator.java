@@ -30,8 +30,7 @@ public class WMSValidator extends AbstractCatalogValidator {
         }
 
         if (lyr.getResource() == null
-                || ((lyr.getResource().getSRS() == null
-                                || lyr.getResource().getLatLonBoundingBox() == null)
+                || ((lyr.getResource().getSRS() == null || lyr.getResource().getLatLonBoundingBox() == null)
                         && WMS.isWmsExposable(lyr))) {
             throw new RuntimeException("Layer's resource is not fully configured");
         }
@@ -39,28 +38,22 @@ public class WMSValidator extends AbstractCatalogValidator {
         // Resource-dependent checks
         if (lyr.getType() == PublishedType.RASTER) {
             if (!(lyr.getResource() instanceof CoverageInfo))
-                throw new RuntimeException(
-                        "Layer with type RASTER doesn't have a coverage associated");
+                throw new RuntimeException("Layer with type RASTER doesn't have a coverage associated");
             CoverageInfo cvinfo = (CoverageInfo) lyr.getResource();
             try {
-                cvinfo.getCatalog()
-                        .getResourcePool()
-                        .getGridCoverageReader(cvinfo, GeoTools.getDefaultHints());
+                cvinfo.getCatalog().getResourcePool().getGridCoverageReader(cvinfo, GeoTools.getDefaultHints());
             } catch (Throwable t) {
                 throw new RuntimeException("Couldn't connect to raster layer's resource");
             }
         } else if (lyr.getType() == PublishedType.VECTOR) {
             if (!(lyr.getResource() instanceof FeatureTypeInfo))
-                throw new RuntimeException(
-                        "Layer with type VECTOR doesn't have a featuretype associated");
-        } else if (lyr.getType()
-                == PublishedType.WMTS) { // this is mostly to avoid throwing a not RASTER nor VECTOR
+                throw new RuntimeException("Layer with type VECTOR doesn't have a featuretype associated");
+        } else if (lyr.getType() == PublishedType.WMTS) { // this is mostly to avoid throwing a not RASTER nor VECTOR
             // exception
             if (!(lyr.getResource() instanceof WMTSLayerInfo)) {
                 throw new RuntimeException("WMTS Layer doesn't have the correct resource");
             }
-        } else if (lyr.getType()
-                == PublishedType.WMS) { // this is mostly to avoid throwing a not RASTER nor VECTOR
+        } else if (lyr.getType() == PublishedType.WMS) { // this is mostly to avoid throwing a not RASTER nor VECTOR
             // exception
             if (!(lyr.getResource() instanceof WMSLayerInfo)) {
                 throw new RuntimeException("WMS Layer doesn't have the correct resource");
@@ -68,8 +61,7 @@ public class WMSValidator extends AbstractCatalogValidator {
         } else throw new RuntimeException("Layer is neither RASTER nor VECTOR type");
 
         // Style-dependent checks
-        if ((lyr.getDefaultStyle() == null || lyr.getStyles().contains(null))
-                && WMS.isWmsExposable(lyr)) {
+        if ((lyr.getDefaultStyle() == null || lyr.getStyles().contains(null)) && WMS.isWmsExposable(lyr)) {
             throw new RuntimeException("Layer has null styles!");
         }
     }

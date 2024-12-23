@@ -32,10 +32,7 @@ import org.geotools.coverage.grid.io.GridCoverage2DReader;
 import org.geotools.coverage.grid.io.PAMResourceInfo;
 import org.geotools.util.logging.Logging;
 
-/**
- * Provides access to the PAMDataset for a coverage and support to extract {@link
- * RasterAttributeTable} from it.
- */
+/** Provides access to the PAMDataset for a coverage and support to extract {@link RasterAttributeTable} from it. */
 public class CoverageRATs {
 
     static final Logger LOGGER = Logging.getLogger(CoverageRATs.class);
@@ -82,10 +79,7 @@ public class CoverageRATs {
 
             return ((PAMResourceInfo) info).getPAMDataset();
         } catch (IOException e) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Read failed while attempting to check if reader has a PAMDataset",
-                    e);
+            LOGGER.log(Level.INFO, "Read failed while attempting to check if reader has a PAMDataset", e);
         }
         return null;
     }
@@ -106,8 +100,7 @@ public class CoverageRATs {
     }
 
     /**
-     * Returns the {@link RasterAttributeTable} for the given band, or {@code null} if no RAT is
-     * available for the band.
+     * Returns the {@link RasterAttributeTable} for the given band, or {@code null} if no RAT is available for the band.
      *
      * @param bandIdx
      * @return
@@ -134,9 +127,7 @@ public class CoverageRATs {
                 fields.stream().map(f -> f.getUsage()).collect(Collectors.toSet());
 
         if (!fieldUsages.contains(Name) && !fieldUsages.contains(Generic)) {
-            LOGGER.fine(
-                    "No classification names and no generic fields found in RAT for band "
-                            + bandIdx);
+            LOGGER.fine("No classification names and no generic fields found in RAT for band " + bandIdx);
             return null;
         }
 
@@ -165,9 +156,7 @@ public class CoverageRATs {
         return catalog.getStyleByName(workspace, name);
     }
 
-    /**
-     * Adds a style with the given name into the catalog, or updates a same named style otherwise
-     */
+    /** Adds a style with the given name into the catalog, or updates a same named style otherwise */
     public StyleInfo saveStyle(Style style, String name) throws IOException {
         StyleInfo si = getCoverageStyle(name);
         if (si == null) {

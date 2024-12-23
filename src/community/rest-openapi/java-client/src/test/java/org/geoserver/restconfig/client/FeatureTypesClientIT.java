@@ -55,10 +55,8 @@ public class FeatureTypesClientIT {
         this.dataStores = support.client().dataStores();
         this.featureTypes = support.client().featureTypes();
 
-        String wsname1 =
-                String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
-        String wsname2 =
-                String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname1 = String.format("%s-ws1-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
+        String wsname2 = String.format("%s-ws2-%d", testName.getMethodName(), rnd.nextInt((int) 1e6));
 
         this.workspaces.create(wsname1);
         this.workspaces.create(wsname2);
@@ -91,9 +89,7 @@ public class FeatureTypesClientIT {
     // nativeName
     public @Test void createRequiresName() {
         FeatureTypeInfo roads =
-                new FeatureTypeInfo()
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("roadsStoreWs1"));
+                new FeatureTypeInfo().nativeName("roads").store(new DataStoreInfo().name("roadsStoreWs1"));
         roads.setName(null);
         this.ex.expect(ServerException.BadRequest.class);
         this.featureTypes.create(ws1.getName(), roads);
@@ -110,9 +106,7 @@ public class FeatureTypesClientIT {
 
     public @Test void createBadStoreName() {
         FeatureTypeInfo roads =
-                new FeatureTypeInfo()
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("bad-store-name"));
+                new FeatureTypeInfo().nativeName("roads").store(new DataStoreInfo().name("bad-store-name"));
         this.ex.expect(ServerException.NotFound.class);
         // server is not sending this message, but it logs it
         // ex.expectMessage("No such data store");
@@ -120,22 +114,17 @@ public class FeatureTypesClientIT {
     }
 
     /**
-     * It should be possible to create two feature types with the same store and FT name on
-     * different workspaces. Fails with geoserver < 2.15.4, bug report:
-     * https://osgeo-org.atlassian.net/browse/GEOS-9190
+     * It should be possible to create two feature types with the same store and FT name on different workspaces. Fails
+     * with geoserver < 2.15.4, bug report: https://osgeo-org.atlassian.net/browse/GEOS-9190
      */
     public @Test void createSameStoreNameDifferentWorkspace() {
         final String storeName = "streams"; // created above in before()
         final String nativeFeatureTypeName = "streams";
 
         FeatureTypeInfo streamsWorkspace1 =
-                new FeatureTypeInfo()
-                        .nativeName(nativeFeatureTypeName)
-                        .store(new DataStoreInfo().name(storeName));
+                new FeatureTypeInfo().nativeName(nativeFeatureTypeName).store(new DataStoreInfo().name(storeName));
         FeatureTypeInfo streamsWorkspace2 =
-                new FeatureTypeInfo()
-                        .nativeName(nativeFeatureTypeName)
-                        .store(new DataStoreInfo().name(storeName));
+                new FeatureTypeInfo().nativeName(nativeFeatureTypeName).store(new DataStoreInfo().name(storeName));
         {
             FeatureTypeInfo ft1ws1 = this.featureTypes.create(ws1.getName(), streamsWorkspace1);
             assertEquals(nativeFeatureTypeName, ft1ws1.getName());
@@ -151,16 +140,14 @@ public class FeatureTypesClientIT {
             assertEquals(ws2.getName(), ft1ws2.getNamespace().getPrefix());
         }
         {
-            FeatureTypeInfo ft2ws1 =
-                    this.featureTypes.create(ws1.getName(), streamsWorkspace1.name("name2"));
+            FeatureTypeInfo ft2ws1 = this.featureTypes.create(ws1.getName(), streamsWorkspace1.name("name2"));
             assertEquals("name2", ft2ws1.getName());
             assertEquals(storeName, ft2ws1.getStore().getName());
             assertEquals(ws1.getName(), ft2ws1.getStore().getWorkspace().getName());
             assertEquals(ws1.getName(), ft2ws1.getNamespace().getPrefix());
         }
         {
-            FeatureTypeInfo ft2ws2 =
-                    this.featureTypes.create(ws2.getName(), streamsWorkspace2.name("name2"));
+            FeatureTypeInfo ft2ws2 = this.featureTypes.create(ws2.getName(), streamsWorkspace2.name("name2"));
             assertEquals("name2", ft2ws2.getName());
             assertEquals(storeName, ft2ws2.getStore().getName());
             assertEquals(ws2.getName(), ft2ws2.getStore().getWorkspace().getName());
@@ -169,32 +156,28 @@ public class FeatureTypesClientIT {
     }
 
     public @Test void createMinimalInformation() {
-        FeatureTypeInfo roadsws1 =
-                new FeatureTypeInfo()
-                        .name("roads")
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("roadsStoreWs1"));
-        FeatureTypeInfo roadsws2 =
-                new FeatureTypeInfo()
-                        .name("roads")
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("roadsStoreWs2"));
+        FeatureTypeInfo roadsws1 = new FeatureTypeInfo()
+                .name("roads")
+                .nativeName("roads")
+                .store(new DataStoreInfo().name("roadsStoreWs1"));
+        FeatureTypeInfo roadsws2 = new FeatureTypeInfo()
+                .name("roads")
+                .nativeName("roads")
+                .store(new DataStoreInfo().name("roadsStoreWs2"));
 
         this.featureTypes.create(ws1.getName(), roadsws1);
         this.featureTypes.create(ws2.getName(), roadsws2);
     }
 
     public @Test void createMinimalInformationNativeAndPublishedName() {
-        FeatureTypeInfo roadsws1 =
-                new FeatureTypeInfo()
-                        .nativeName("roads")
-                        .name("roads-123")
-                        .store(new DataStoreInfo().name("roadsStoreWs1"));
-        FeatureTypeInfo roadsws2 =
-                new FeatureTypeInfo()
-                        .nativeName("roads")
-                        .name("roads-345")
-                        .store(new DataStoreInfo().name("roadsStoreWs2"));
+        FeatureTypeInfo roadsws1 = new FeatureTypeInfo()
+                .nativeName("roads")
+                .name("roads-123")
+                .store(new DataStoreInfo().name("roadsStoreWs1"));
+        FeatureTypeInfo roadsws2 = new FeatureTypeInfo()
+                .nativeName("roads")
+                .name("roads-345")
+                .store(new DataStoreInfo().name("roadsStoreWs2"));
 
         this.featureTypes.create(ws1.getName(), roadsws1);
         this.featureTypes.create(ws2.getName(), roadsws2);
@@ -232,16 +215,14 @@ public class FeatureTypesClientIT {
     }
 
     public @Test void update() {
-        FeatureTypeInfo roadsws1 =
-                new FeatureTypeInfo()
-                        .name("roads")
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("roadsStoreWs1"));
-        FeatureTypeInfo roadsws2 =
-                new FeatureTypeInfo()
-                        .name("roads")
-                        .nativeName("roads")
-                        .store(new DataStoreInfo().name("roadsStoreWs2"));
+        FeatureTypeInfo roadsws1 = new FeatureTypeInfo()
+                .name("roads")
+                .nativeName("roads")
+                .store(new DataStoreInfo().name("roadsStoreWs1"));
+        FeatureTypeInfo roadsws2 = new FeatureTypeInfo()
+                .name("roads")
+                .nativeName("roads")
+                .store(new DataStoreInfo().name("roadsStoreWs2"));
 
         this.featureTypes.create(ws1.getName(), roadsws1);
         this.featureTypes.create(ws2.getName(), roadsws2);

@@ -78,14 +78,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
 
         // format only editable for new styles
         DropDownChoice format =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
         assertTrue(format.isEnabled());
         // workspace only editable upon creation or if admin
         DropDownChoice workspace =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertTrue(workspace.isEnabled());
         assertFalse(workspace.isNullValid());
         assertNotNull(workspace.getModelObject());
@@ -97,12 +94,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
         tester.startPage(StyleNewPage.class);
 
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "cite_style");
         form.setValue(
@@ -127,12 +123,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
 
         // Setting a workspace we don't have permissions for should fail
         FormTester form = tester.newFormTester("styleForm");
-        File styleFile =
-                new File(new java.io.File(getClass().getResource("default_point.sld").toURI()));
-        String sld =
-                IOUtils.toString(new FileReader(styleFile))
-                        .replaceAll("\r\n", "\n")
-                        .replaceAll("\r", "\n");
+        File styleFile = new File(
+                new java.io.File(getClass().getResource("default_point.sld").toURI()));
+        String sld = IOUtils.toString(new FileReader(styleFile))
+                .replaceAll("\r\n", "\n")
+                .replaceAll("\r", "\n");
         form.setValue("styleEditor:editorContainer:editorParent:editor", sld);
         form.setValue("context:panel:name", "sf_style");
         form.setValue(
@@ -163,14 +158,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
 
         // format only editable for new styles
         DropDownChoice format =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
         assertTrue(format.isEnabled());
         // workspace only editable upon creation or if admin
         DropDownChoice workspace =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertTrue(workspace.isEnabled());
         assertTrue(workspace.isNullValid());
         assertNull(workspace.getModelObject());
@@ -198,14 +190,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
 
         // format only editable for new styles
         DropDownChoice format =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
         assertFalse(format.isEnabled());
         // workspace only editable upon creation or if admin
         DropDownChoice workspace =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertFalse(workspace.isEnabled());
         assertFalse(workspace.isNullValid());
         assertNotNull(workspace.getModelObject());
@@ -226,14 +215,11 @@ public class StylePageSecurityTest extends GeoServerWicketTestSupport {
 
         // format only editable for new styles
         DropDownChoice format =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:format");
         assertFalse(format.isEnabled());
         // workspace only editable upon creation or if admin
         DropDownChoice workspace =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage(
-                                "styleForm:context:panel:workspace");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("styleForm:context:panel:workspace");
         assertTrue(workspace.isEnabled());
         assertTrue(workspace.isNullValid());
         assertNotNull(workspace.getModelObject());

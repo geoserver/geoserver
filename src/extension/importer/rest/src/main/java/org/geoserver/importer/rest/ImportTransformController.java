@@ -63,13 +63,12 @@ public class ImportTransformController extends ImportBaseController {
         importer.changed(task);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(
-                builder.path("/imports/{importId}/tasks/{taskId}/transforms/{transformId}")
-                        .buildAndExpand(
-                                importId.toString(),
-                                taskId.toString(),
-                                transforms.getTransforms().size() - 1)
-                        .toUri());
+        headers.setLocation(builder.path("/imports/{importId}/tasks/{taskId}/transforms/{transformId}")
+                .buildAndExpand(
+                        importId.toString(),
+                        taskId.toString(),
+                        transforms.getTransforms().size() - 1)
+                .toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
         return new ResponseEntity<>("", headers, HttpStatus.CREATED);
     }
@@ -84,8 +83,7 @@ public class ImportTransformController extends ImportBaseController {
         return (writer, builder, converter) -> {
             ImportTransform tx = transform(importId, taskId, transformId, true);
             if (tx == null) {
-                converter.transformChain(
-                        builder, task(importId, taskId), true, converter.expand(expand, 1));
+                converter.transformChain(builder, task(importId, taskId), true, converter.expand(expand, 1));
             } else {
                 ImportTask task = task(importId, taskId);
                 int index = task.getTransform().getTransforms().indexOf(tx);
@@ -122,9 +120,7 @@ public class ImportTransformController extends ImportBaseController {
 
     @DeleteMapping(path = {"/tasks/{taskId}/transforms/{transformId}"})
     public ResponseEntity deleteTransform(
-            @PathVariable Long importId,
-            @PathVariable Integer taskId,
-            @PathVariable Integer transformId)
+            @PathVariable Long importId, @PathVariable Integer taskId, @PathVariable Integer transformId)
             throws IOException {
 
         ImportTask task = task(importId, taskId);
@@ -143,27 +139,22 @@ public class ImportTransformController extends ImportBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ImportTransform.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     protected String getTemplateName(Object object) {
-        throw new NotImplementedException(
-                "ImportTransformController::getTemplateName() is not implemented");
+        throw new NotImplementedException("ImportTransformController::getTemplateName() is not implemented");
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        throw new NotImplementedException(
-                "ImportTransformController::createObjectWrapper() is not implemented");
+        throw new NotImplementedException("ImportTransformController::createObjectWrapper() is not implemented");
     }
 
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-        throw new NotImplementedException(
-                "ImportTransformController::configueFreemarker() is not implemented");
+        throw new NotImplementedException("ImportTransformController::configueFreemarker() is not implemented");
     }
 }

@@ -19,9 +19,8 @@ public interface BackupRestoreJobExecutionListener {
     void beforeJob(JobType type, JobExecution jobExecution);
 
     /**
-     * Callback after completion of a job. Called after both both successful and failed executions.
-     * To perform logic on a particular status, use "if (jobExecution.getStatus() ==
-     * BatchStatus.X)".
+     * Callback after completion of a job. Called after both both successful and failed executions. To perform logic on
+     * a particular status, use "if (jobExecution.getStatus() == BatchStatus.X)".
      */
     void afterJob(JobType type, JobExecution jobExecution);
 }

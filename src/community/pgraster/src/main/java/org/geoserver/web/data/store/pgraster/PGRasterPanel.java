@@ -26,23 +26,22 @@ import org.geotools.gce.imagemosaic.ImageMosaicReader;
 import org.geotools.referencing.CRS;
 
 /**
- * a Panel with PGRaster automatic configuration options TODO: 1) Add numeric validator for PORT 2)
- * change text description on the GUI (right now there is the name of the params)
+ * a Panel with PGRaster automatic configuration options TODO: 1) Add numeric validator for PORT 2) change text
+ * description on the GUI (right now there is the name of the params)
  */
 public class PGRasterPanel extends Panel {
 
     private static final long serialVersionUID = -8845475833628642890L;
 
     /**
-     * temporary parameter name used to hold the raster table selected by the drop down into the
-     * store's connectionParameters
+     * temporary parameter name used to hold the raster table selected by the drop down into the store's
+     * connectionParameters
      */
     public static final String TABLE_NAME = "tableName";
 
     private static final String RESOURCE_KEY_PREFIX = PGRasterPanel.class.getSimpleName();
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(ImageMosaicReader.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(ImageMosaicReader.class);
 
     FormComponent server;
 
@@ -94,8 +93,7 @@ public class PGRasterPanel extends Panel {
         schema = addTextPanel(paramsModel, "schema", true);
         schema.setModelValue(new String[] {"public"});
         fileext = addTextPanel(paramsModel, "fileext", "tiles file extension filter", false);
-        importopt =
-                addTextPanel(paramsModel, "importopt", "raster2pgsql script import options", false);
+        importopt = addTextPanel(paramsModel, "importopt", "raster2pgsql script import options", false);
 
         server.setOutputMarkupId(true);
         port.setOutputMarkupId(true);
@@ -113,12 +111,8 @@ public class PGRasterPanel extends Panel {
 
         final String resourceKey = RESOURCE_KEY_PREFIX + "." + paramName;
 
-        final PasswordParamPanel pwdPanel =
-                new PasswordParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramName),
-                        new ResourceModel(resourceKey, paramName),
-                        true);
+        final PasswordParamPanel pwdPanel = new PasswordParamPanel(
+                paramName, new MapModel(paramsModel, paramName), new ResourceModel(resourceKey, paramName), true);
         add(pwdPanel);
 
         String defaultTitle = paramName;
@@ -131,24 +125,16 @@ public class PGRasterPanel extends Panel {
         return pwdPanel.getFormComponent();
     }
 
-    private FormComponent addTextPanel(
-            final IModel paramsModel, final String paramName, final boolean required) {
+    private FormComponent addTextPanel(final IModel paramsModel, final String paramName, final boolean required) {
         return addTextPanel(paramsModel, paramName, paramName, required);
     }
 
     private FormComponent addTextPanel(
-            final IModel paramsModel,
-            final String paramName,
-            final String paramTitle,
-            final boolean required) {
+            final IModel paramsModel, final String paramName, final String paramTitle, final boolean required) {
         final String resourceKey = getClass().getSimpleName() + "." + paramName;
 
-        final TextParamPanel textParamPanel =
-                new TextParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramTitle),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
+        final TextParamPanel textParamPanel = new TextParamPanel(
+                paramName, new MapModel(paramsModel, paramTitle), new ResourceModel(resourceKey, paramName), required);
         textParamPanel.getFormComponent().setType(String.class /*param.type*/);
 
         String defaultTitle = paramTitle;
@@ -163,9 +149,7 @@ public class PGRasterPanel extends Panel {
     }
 
     public FormComponent[] getDependentFormComponents() {
-        return new FormComponent[] {
-            server, port, user, password, database, schema, table, fileext, importopt
-        };
+        return new FormComponent[] {server, port, user, password, database, schema, table, fileext, importopt};
     }
 
     /** Setup a URL String composing all the required configuration options */

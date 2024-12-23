@@ -17,8 +17,7 @@ import org.geoserver.ows.util.OwsUtils;
 
 public class RuleConverter implements Converter {
     @Override
-    public void marshal(
-            Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         Rule rule = (Rule) source;
         String[] properties = {
             "id",
@@ -45,9 +44,8 @@ public class RuleConverter implements Converter {
     @Override
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         RuleBuilder builder = new RuleBuilder();
-        builder.withId(
-                Optional.ofNullable(reader.getAttribute("id"))
-                        .orElse(UUID.randomUUID().toString()));
+        builder.withId(Optional.ofNullable(reader.getAttribute("id"))
+                .orElse(UUID.randomUUID().toString()));
         addParameter(reader, "activated", builder::withActivated, Boolean::valueOf);
         addParameter(reader, "position", builder::withPosition, Integer::valueOf);
         addParameter(reader, "match", builder::withMatch);
@@ -60,8 +58,7 @@ public class RuleConverter implements Converter {
         return builder.build();
     }
 
-    private <T> void addParameter(
-            HierarchicalStreamReader reader, String attributeName, Consumer<T> consumer) {
+    private <T> void addParameter(HierarchicalStreamReader reader, String attributeName, Consumer<T> consumer) {
         addParameter(reader, attributeName, consumer, null);
     }
 

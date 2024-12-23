@@ -27,10 +27,7 @@ public class WcsXmlReader extends XmlRequestReader {
     private EntityResolverProvider resolverProvider;
 
     public WcsXmlReader(
-            String element,
-            String version,
-            WCSConfiguration configuration,
-            EntityResolverProvider resolverProvider) {
+            String element, String version, WCSConfiguration configuration, EntityResolverProvider resolverProvider) {
         super(new QName(WCS.NAMESPACE, element), new Version(version), "wcs");
         this.configuration = configuration;
         this.resolverProvider = resolverProvider;

@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.keycloak.representations.adapters.config.AdapterConfig;
 
 /**
- * Tests for {@link GeoServerKeycloakFilterConfigValidator}. Shows an invalid set of config failing
- * with the correct error type, and valid config passing (not throwing an exception).
+ * Tests for {@link GeoServerKeycloakFilterConfigValidator}. Shows an invalid set of config failing with the correct
+ * error type, and valid config passing (not throwing an exception).
  */
 public class GeoServerKeycloakFilterConfigValidatorTest {
 
@@ -30,8 +30,7 @@ public class GeoServerKeycloakFilterConfigValidatorTest {
         kcConfig.writeAdapterConfig(new AdapterConfig());
         SecurityNamedServiceConfig config = kcConfig;
         // attempt to validate the config
-        GeoServerKeycloakFilterConfigValidator validator =
-                new GeoServerKeycloakFilterConfigValidator(null);
+        GeoServerKeycloakFilterConfigValidator validator = new GeoServerKeycloakFilterConfigValidator(null);
         validator.validateFilterConfig(config);
         // exception on previous line
     }
@@ -47,8 +46,7 @@ public class GeoServerKeycloakFilterConfigValidatorTest {
         kcConfig.writeAdapterConfig(aConfig);
         SecurityNamedServiceConfig config = kcConfig;
         // attempt to validate the config
-        GeoServerKeycloakFilterConfigValidator validator =
-                new GeoServerKeycloakFilterConfigValidator(null);
+        GeoServerKeycloakFilterConfigValidator validator = new GeoServerKeycloakFilterConfigValidator(null);
         validator.validateFilterConfig(config);
     }
 }

@@ -53,10 +53,7 @@ public class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServi
     }
 
     protected String getUGServiceName() {
-        return formTester
-                .getForm()
-                .get("details:config.userGroupServiceName")
-                .getDefaultModelObjectAsString();
+        return formTester.getForm().get("details:config.userGroupServiceName").getDefaultModelObjectAsString();
     }
 
     @Before
@@ -107,22 +104,18 @@ public class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServi
         assertNotNull(getSecurityNamedServiceConfig("default"));
 
         UsernamePasswordAuthenticationProviderConfig authConfig =
-                (UsernamePasswordAuthenticationProviderConfig)
-                        getSecurityNamedServiceConfig("default2");
+                (UsernamePasswordAuthenticationProviderConfig) getSecurityNamedServiceConfig("default2");
         assertNotNull(authConfig);
         assertEquals("default2", authConfig.getName());
-        assertEquals(
-                UsernamePasswordAuthenticationProvider.class.getName(), authConfig.getClassName());
+        assertEquals(UsernamePasswordAuthenticationProvider.class.getName(), authConfig.getClassName());
         assertEquals("default", authConfig.getUserGroupServiceName());
 
         // reload from manager
-        authConfig =
-                (UsernamePasswordAuthenticationProviderConfig)
-                        getSecurityManager().loadAuthenticationProviderConfig("default2");
+        authConfig = (UsernamePasswordAuthenticationProviderConfig)
+                getSecurityManager().loadAuthenticationProviderConfig("default2");
         assertNotNull(authConfig);
         assertEquals("default2", authConfig.getName());
-        assertEquals(
-                UsernamePasswordAuthenticationProvider.class.getName(), authConfig.getClassName());
+        assertEquals(UsernamePasswordAuthenticationProvider.class.getName(), authConfig.getClassName());
         assertEquals("default", authConfig.getUserGroupServiceName());
 
         // test add with name clash
@@ -149,9 +142,7 @@ public class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServi
         clickCancel();
         tester.assertRenderedPage(basePage.getClass());
 
-        authConfig =
-                (UsernamePasswordAuthenticationProviderConfig)
-                        getSecurityNamedServiceConfig("default");
+        authConfig = (UsernamePasswordAuthenticationProviderConfig) getSecurityNamedServiceConfig("default");
         assertEquals("default", authConfig.getUserGroupServiceName());
 
         clickNamedServiceConfig("default2");
@@ -160,15 +151,12 @@ public class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServi
         clickSave();
         tester.assertRenderedPage(basePage.getClass());
 
-        authConfig =
-                (UsernamePasswordAuthenticationProviderConfig)
-                        getSecurityNamedServiceConfig("default2");
+        authConfig = (UsernamePasswordAuthenticationProviderConfig) getSecurityNamedServiceConfig("default2");
         assertEquals("test", authConfig.getUserGroupServiceName());
 
         // reload from manager
-        authConfig =
-                (UsernamePasswordAuthenticationProviderConfig)
-                        getSecurityManager().loadAuthenticationProviderConfig("default2");
+        authConfig = (UsernamePasswordAuthenticationProviderConfig)
+                getSecurityManager().loadAuthenticationProviderConfig("default2");
         assertEquals("test", authConfig.getUserGroupServiceName());
     }
 
@@ -251,8 +239,7 @@ public class UsernamePasswordDetailsPanelTest extends AbstractSecurityNamedServi
     @Test
     public void testRemove() throws Exception {
         initializeForXML();
-        UsernamePasswordAuthenticationProviderConfig config =
-                new UsernamePasswordAuthenticationProviderConfig();
+        UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();
         config.setName("default2");
         config.setClassName(UsernamePasswordAuthenticationProvider.class.getCanonicalName());
         config.setUserGroupServiceName("default");

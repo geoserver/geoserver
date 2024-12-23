@@ -82,8 +82,7 @@ public class SecuredLayerGroupTest extends GeoServerSystemTestSupport {
 
         // tests
         final ArrayList<PublishedInfo> securedLayers = new ArrayList<>();
-        final SecuredLayerGroupInfo securedLg =
-                new SecuredLayerGroupInfo(lg, null, securedLayers, new ArrayList<>());
+        final SecuredLayerGroupInfo securedLg = new SecuredLayerGroupInfo(lg, null, securedLayers, new ArrayList<>());
 
         securedLg.getLayers().add(new SecuredLayerInfo(layer1, null));
         securedLg.getLayers().add(new SecuredLayerInfo(layer2, null));

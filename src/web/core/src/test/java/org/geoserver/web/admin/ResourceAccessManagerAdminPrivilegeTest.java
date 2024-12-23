@@ -16,8 +16,7 @@ public class ResourceAccessManagerAdminPrivilegeTest extends AbstractAdminPrivil
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                "classpath:/org/geoserver/web/admin/ResourceAccessManagerContext.xml");
+        springContextLocations.add("classpath:/org/geoserver/web/admin/ResourceAccessManagerContext.xml");
     }
 
     @Override
@@ -26,10 +25,8 @@ public class ResourceAccessManagerAdminPrivilegeTest extends AbstractAdminPrivil
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
 
-        WorkspaceAccessLimits wsAdminLimits =
-                new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
-        WorkspaceAccessLimits wsUserLimits =
-                new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, false);
+        WorkspaceAccessLimits wsAdminLimits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
+        WorkspaceAccessLimits wsUserLimits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, false);
 
         WorkspaceInfo citeWs = catalog.getWorkspaceByName("cite");
         tam.putLimits("cite", citeWs, wsAdminLimits);

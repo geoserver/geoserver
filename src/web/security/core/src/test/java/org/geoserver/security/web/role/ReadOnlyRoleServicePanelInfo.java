@@ -11,8 +11,7 @@ import org.geoserver.security.impl.ReadOnlyRoleService;
 /**
  * Configuration panel info for {@link ReadOnlyRoleService}.
  *
- * <p>This service is only used for testing, it is only available when running from the development
- * environment.
+ * <p>This service is only used for testing, it is only available when running from the development environment.
  *
  * @author Justin Deoliveira, OpenGeo
  */

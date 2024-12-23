@@ -13,9 +13,9 @@ import org.xml.sax.helpers.XMLFilterImpl;
 /**
  * Uses SAX to extact a GetFeature query from and incoming GetFeature request XML stream.
  *
- * <p>Note that this Handler extension ignores Filters completely and must be chained as a parent to
- * the PredicateFilter method in order to recognize them. If it is not chained, it will still
- * generate valid queries, but with no filtering whatsoever.
+ * <p>Note that this Handler extension ignores Filters completely and must be chained as a parent to the PredicateFilter
+ * method in order to recognize them. If it is not chained, it will still generate valid queries, but with no filtering
+ * whatsoever.
  *
  * @author Chris Holmes, TOPP
  * @version $Id$

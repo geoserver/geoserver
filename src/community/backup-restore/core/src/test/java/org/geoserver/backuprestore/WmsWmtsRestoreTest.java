@@ -30,28 +30,21 @@ public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
         cleanCatalogInternal();
 
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         // When
         RestoreExecutionAdapter restoreExecution =
-                backupFacade.runRestoreAsync(
-                        file("testWmsWmtsLayers.zip"), null, null, null, hints);
+                backupFacade.runRestoreAsync(file("testWmsWmtsLayers.zip"), null, null, null, hints);
         waitForExecution(restoreExecution);
 
         // Then
         final Catalog restoreCatalog = restoreExecution.getRestoreCatalog();
 
-        WMSStoreInfo wmsStoreInfo =
-                restoreCatalog.getStoreByName("gs", "some-wms-store", WMSStoreInfo.class);
+        WMSStoreInfo wmsStoreInfo = restoreCatalog.getStoreByName("gs", "some-wms-store", WMSStoreInfo.class);
         assertNotNull(wmsStoreInfo);
-        WMTSStoreInfo wmtsStoreInfo =
-                restoreCatalog.getStoreByName("gs", "some-wmts-store", WMTSStoreInfo.class);
+        WMTSStoreInfo wmtsStoreInfo = restoreCatalog.getStoreByName("gs", "some-wmts-store", WMTSStoreInfo.class);
         assertNotNull(wmtsStoreInfo);
-        WMSLayerInfo wmsLayerInfo =
-                restoreCatalog.getResourceByStore(wmsStoreInfo, "wmsLayer", WMSLayerInfo.class);
+        WMSLayerInfo wmsLayerInfo = restoreCatalog.getResourceByStore(wmsStoreInfo, "wmsLayer", WMSLayerInfo.class);
         assertNotNull(wmsLayerInfo);
         WMTSLayerInfo wmtsLayerInfo =
                 restoreCatalog.getResourceByStore(wmtsStoreInfo, "wmtsLayer", WMTSLayerInfo.class);
@@ -66,8 +59,7 @@ public class WmsWmtsRestoreTest extends BackupRestoreTestSupport {
         catalog.getWorkspaces().forEach(ws -> removeWorkspace(ws.getName()));
     }
 
-    private void waitForExecution(RestoreExecutionAdapter restoreExecutionAdapter)
-            throws InterruptedException {
+    private void waitForExecution(RestoreExecutionAdapter restoreExecutionAdapter) throws InterruptedException {
         Thread.sleep(100);
         int cnt = 0;
         while (cnt < 100

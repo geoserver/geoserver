@@ -19,18 +19,16 @@ public class BatchRunsModel extends GeoServerDataProvider<BatchRun> {
     public static final Property<BatchRun> START = new BeanProperty<BatchRun>("start", "start");
     public static final Property<BatchRun> END = new BeanProperty<BatchRun>("end", "end");
     public static final Property<BatchRun> STATUS = new BeanProperty<BatchRun>("status", "status");
-    public static final Property<BatchRun> MESSAGE =
-            new BeanProperty<BatchRun>("message", "message");
-    public static final Property<BatchRun> STOP =
-            new AbstractProperty<BatchRun>("stop") {
+    public static final Property<BatchRun> MESSAGE = new BeanProperty<BatchRun>("message", "message");
+    public static final Property<BatchRun> STOP = new AbstractProperty<BatchRun>("stop") {
 
-                private static final long serialVersionUID = -978472501994535469L;
+        private static final long serialVersionUID = -978472501994535469L;
 
-                @Override
-                public Object getPropertyValue(BatchRun item) {
-                    return null;
-                }
-            };
+        @Override
+        public Object getPropertyValue(BatchRun item) {
+            return null;
+        }
+    };
 
     private IModel<Batch> batchModel;
 
@@ -39,8 +37,7 @@ public class BatchRunsModel extends GeoServerDataProvider<BatchRun> {
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BatchRun>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BatchRun>> getProperties() {
         return Arrays.asList(START, END, STATUS, STOP, MESSAGE);
     }
 

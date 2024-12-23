@@ -26,8 +26,7 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 
 /** @author ImranR */
-public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
-        extends DecoratingFeatureSource<T, F> {
+public class ClippedFeatureSource<T extends FeatureType, F extends Feature> extends DecoratingFeatureSource<T, F> {
     static final Logger LOGGER = Logging.getLogger(ClippedFeatureSource.class);
 
     Geometry clip;
@@ -54,8 +53,7 @@ public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
         return clipGeom;
     }
 
-    private static CoordinateReferenceSystem getGeometryCRS(Geometry clipGeom)
-            throws FactoryException {
+    private static CoordinateReferenceSystem getGeometryCRS(Geometry clipGeom) throws FactoryException {
         if (clipGeom.getUserData() instanceof CoordinateReferenceSystem) {
             return (CoordinateReferenceSystem) clipGeom.getUserData();
         } else {
@@ -95,11 +93,9 @@ public class ClippedFeatureSource<T extends FeatureType, F extends Feature>
     }
 
     @SuppressWarnings("unchecked")
-    private FeatureCollection<T, F> getClippedCollection(
-            FeatureCollection<T, F> fc, Geometry clipGeom) {
+    private FeatureCollection<T, F> getClippedCollection(FeatureCollection<T, F> fc, Geometry clipGeom) {
         if (fc instanceof SimpleFeatureCollection) {
-            return (FeatureCollection<T, F>)
-                    new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false);
+            return (FeatureCollection<T, F>) new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false);
         }
         return fc;
     }

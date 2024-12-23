@@ -102,8 +102,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
             // check derived collections are still read only and share the same
             // challenge policy
-            SecuredFeatureCollection sorted =
-                    (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
+            SecuredFeatureCollection sorted = (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
             assertEquals(ro.policy, sorted.policy);
             rofc.subCollection(Filter.INCLUDE);
             assertEquals(ro.policy, sorted.policy);
@@ -159,8 +158,7 @@ public class SecuredFeatureCollectionTest extends SecureObjectsTest {
 
             // check derived collections are still read only and share the same
             // challenge policy
-            SecuredFeatureCollection sorted =
-                    (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
+            SecuredFeatureCollection sorted = (SecuredFeatureCollection) rofc.sort(SortBy.NATURAL_ORDER);
             assertEquals(ro.policy, sorted.policy);
             rofc.subCollection(Filter.INCLUDE);
             assertEquals(ro.policy, sorted.policy);

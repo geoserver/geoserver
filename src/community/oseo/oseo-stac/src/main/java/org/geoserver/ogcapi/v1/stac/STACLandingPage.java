@@ -40,13 +40,10 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
     private final String type = STACService.TYPE_CATALOG;
     private final String id = LANDING_PAGE_ID;
 
-    public STACLandingPage(
-            OSEOInfo service, String basePath, List<String> conformsTo, Set<String> collectionIds) {
+    public STACLandingPage(OSEOInfo service, String basePath, List<String> conformsTo, Set<String> collectionIds) {
         super(
                 (service.getTitle() == null) ? "STAC server" : service.getTitle(),
-                (service.getAbstract() == null)
-                        ? "STAC server implementation"
-                        : service.getAbstract(),
+                (service.getAbstract() == null) ? "STAC server implementation" : service.getAbstract(),
                 basePath);
         this.conformsTo = conformsTo;
 
@@ -66,31 +63,28 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
 
         // link to each collection as a child
         for (String collectionId : collectionIds) {
-            String href =
-                    ResponseUtils.buildURL(
-                            APIRequestInfo.get().getBaseURL(),
-                            basePath + "/collections/" + ResponseUtils.urlEncode(collectionId),
-                            null,
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    APIRequestInfo.get().getBaseURL(),
+                    basePath + "/collections/" + ResponseUtils.urlEncode(collectionId),
+                    null,
+                    URLMangler.URLType.SERVICE);
             Link link = new Link(href, "child", "application/json", null);
             getLinks().add(link);
         }
 
         // get JSON link first, for compatibility with pySTAC
-        Function<List<MediaType>, List<MediaType>> jsonFirstUpdater =
-                mtypes -> {
-                    mtypes.remove(OGCAPIMediaTypes.GEOJSON);
-                    mtypes.add(0, OGCAPIMediaTypes.GEOJSON);
-                    return mtypes;
-                };
+        Function<List<MediaType>, List<MediaType>> jsonFirstUpdater = mtypes -> {
+            mtypes.remove(OGCAPIMediaTypes.GEOJSON);
+            mtypes.add(0, OGCAPIMediaTypes.GEOJSON);
+            return mtypes;
+        };
 
         // only allow JSON, for compatibility with pySTAC
-        Function<List<MediaType>, List<MediaType>> jsonOnlyUpdater =
-                mtypes -> {
-                    mtypes.clear();
-                    mtypes.add(OGCAPIMediaTypes.JSON);
-                    return mtypes;
-                };
+        Function<List<MediaType>, List<MediaType>> jsonOnlyUpdater = mtypes -> {
+            mtypes.clear();
+            mtypes.add(OGCAPIMediaTypes.JSON);
+            return mtypes;
+        };
 
         // search, GET
         new LinksBuilder(SearchResponse.class, basePath)
@@ -120,40 +114,32 @@ public class STACLandingPage extends AbstractLandingPageDocumentNoConformance {
                 .add(this);
 
         // queryables
-        links.addAll(
-                APIRequestInfo.get()
-                        .getLinksFor(
-                                basePath + "/queryables",
-                                Queryables.class,
-                                "Queryables as ",
-                                Queryables.REL,
-                                true,
-                                "queryables",
-                                null)
-                        .stream()
-                        .filter(
-                                l ->
-                                        "text/html".equals(l.getType())
-                                                || SCHEMA_TYPE_VALUE.equals(l.getType()))
-                        .collect(Collectors.toList()));
+        links.addAll(APIRequestInfo.get()
+                .getLinksFor(
+                        basePath + "/queryables",
+                        Queryables.class,
+                        "Queryables as ",
+                        Queryables.REL,
+                        true,
+                        "queryables",
+                        null)
+                .stream()
+                .filter(l -> "text/html".equals(l.getType()) || SCHEMA_TYPE_VALUE.equals(l.getType()))
+                .collect(Collectors.toList()));
 
         // sortables
-        links.addAll(
-                APIRequestInfo.get()
-                        .getLinksFor(
-                                basePath + "/sortables",
-                                Sortables.class,
-                                "Sortables as ",
-                                Sortables.REL,
-                                true,
-                                "sortables",
-                                null)
-                        .stream()
-                        .filter(
-                                l ->
-                                        "text/html".equals(l.getType())
-                                                || SCHEMA_TYPE_VALUE.equals(l.getType()))
-                        .collect(Collectors.toList()));
+        links.addAll(APIRequestInfo.get()
+                .getLinksFor(
+                        basePath + "/sortables",
+                        Sortables.class,
+                        "Sortables as ",
+                        Sortables.REL,
+                        true,
+                        "sortables",
+                        null)
+                .stream()
+                .filter(l -> "text/html".equals(l.getType()) || SCHEMA_TYPE_VALUE.equals(l.getType()))
+                .collect(Collectors.toList()));
     }
 
     @JsonProperty("stac_version")

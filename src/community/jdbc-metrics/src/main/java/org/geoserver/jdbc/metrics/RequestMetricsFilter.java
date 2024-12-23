@@ -22,9 +22,8 @@ import org.geoserver.ows.util.ResponseUtils;
 /**
  * Servlet filter that adds headers providing access to jdbc request metrics.
  *
- * <p>Since headers need to be written before the start of the response body we need to store the
- * metric values into a cache to be later retrieved. See {@link RequestMetricsController} for
- * details.
+ * <p>Since headers need to be written before the start of the response body we need to store the metric values into a
+ * cache to be later retrieved. See {@link RequestMetricsController} for details.
  */
 public class RequestMetricsFilter implements GeoServerFilter {
 
@@ -44,21 +43,17 @@ public class RequestMetricsFilter implements GeoServerFilter {
         // set a header that represents the request id
         String reqId = String.valueOf(requestId.getAndIncrement());
         httpRsp.setHeader("x-geoserver-request", reqId);
-        httpRsp.setHeader(
-                "x-geoserver-jdbc-metrics",
-                ResponseUtils.baseURL(httpReq) + "jdbc-metrics/" + reqId);
+        httpRsp.setHeader("x-geoserver-jdbc-metrics", ResponseUtils.baseURL(httpReq) + "jdbc-metrics/" + reqId);
         httpRsp.setHeader("x-geoserver-node-info", nodeData.getId());
 
         // do the request
         filterChain.doFilter(req, rsp);
 
         // write the metrics out to the cache
-        Optional.ofNullable(RequestMetricsCallback.metrics.get())
-                .ifPresent(
-                        map -> {
-                            RequestMetricsController.METRICS.put(reqId, map);
-                            RequestMetricsCallback.metrics.remove();
-                        });
+        Optional.ofNullable(RequestMetricsCallback.metrics.get()).ifPresent(map -> {
+            RequestMetricsController.METRICS.put(reqId, map);
+            RequestMetricsCallback.metrics.remove();
+        });
     }
 
     @Override

@@ -25,32 +25,27 @@ public class XFrameOptionsFilterTest {
 
     @Test
     public void testFilterWithNoSetPolicy() throws IOException, ServletException {
-        String currentShouldSetProperty =
-                System.getProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY);
+        String currentShouldSetProperty = System.getProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY);
         System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY, "false");
         String header = getHeader("X-Frame-Options");
 
         assertNull("Expect default XFrameOption to be null", header);
 
         if (currentShouldSetProperty != null) {
-            System.setProperty(
-                    XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY,
-                    currentShouldSetProperty);
+            System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY, currentShouldSetProperty);
         }
     }
 
     @Test
     public void testFilterWithSameOrigin() throws IOException, ServletException {
-        String currentShouldSetProperty =
-                System.getProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY);
+        String currentShouldSetProperty = System.getProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY);
         System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY, "DENY");
         String header = getHeader("X-Frame-Options");
 
         assertEquals("Expect default XFrameOption to be DENY", "DENY", header);
 
         if (currentShouldSetProperty != null) {
-            System.setProperty(
-                    XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY, currentShouldSetProperty);
+            System.setProperty(XFrameOptionsFilter.GEOSERVER_XFRAME_POLICY, currentShouldSetProperty);
         }
     }
 
@@ -64,9 +59,7 @@ public class XFrameOptionsFilterTest {
         assertNull("Expect X-Content-Type-Options to be null", header);
 
         if (currentShouldSetProperty != null) {
-            System.setProperty(
-                    XFrameOptionsFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY,
-                    currentShouldSetProperty);
+            System.setProperty(XFrameOptionsFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY, currentShouldSetProperty);
         }
     }
 
@@ -80,15 +73,12 @@ public class XFrameOptionsFilterTest {
         assertEquals("Expect X-Content-Type-Options to be nosniff", "nosniff", header);
 
         if (currentShouldSetProperty != null) {
-            System.setProperty(
-                    XFrameOptionsFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY,
-                    currentShouldSetProperty);
+            System.setProperty(XFrameOptionsFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY, currentShouldSetProperty);
         }
     }
 
     private String getHeader(String name) throws IOException, ServletException {
-        MockHttpServletRequest request =
-                new MockHttpServletRequest("GET", "http://www.geoserver.org");
+        MockHttpServletRequest request = new MockHttpServletRequest("GET", "http://www.geoserver.org");
         MockHttpServletResponse response = new MockHttpServletResponse();
         XFrameOptionsFilter filter = new XFrameOptionsFilter();
         MockFilterChain mockChain = new MockFilterChain();

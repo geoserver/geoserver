@@ -35,8 +35,7 @@ import org.geotools.xml.XmlConverterFactory;
 public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
 
         if (!context.isExtendedDataEnabled()) {
             return null;
@@ -119,10 +118,7 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
             ExtendedData exd = pm.createAndSetExtendedData();
             SchemaData schemaData = exd.createAndAddSchemaData();
             schemaData.setSchemaUrl(
-                    "#"
-                            + context.getCurrentFeatureType().getTypeName()
-                            + "_"
-                            + context.getCurrentLayerIndex());
+                    "#" + context.getCurrentFeatureType().getTypeName() + "_" + context.getCurrentLayerIndex());
             for (AttributeDescriptor ad : sf.getFeatureType().getAttributeDescriptors()) {
                 // skip geometry attributes
                 if (ad instanceof GeometryDescriptor) {
@@ -141,9 +137,7 @@ public class ExtendedDataDecoratorFactory implements KmlDecoratorFactory {
                         kmlValue = DATE_CONVERTER.convert(value, String.class);
                     } catch (Exception e) {
                         throw new ServiceException(
-                                "Failed to convert date into string while "
-                                        + "generating extended data section",
-                                e);
+                                "Failed to convert date into string while " + "generating extended data section", e);
                     }
                 } else {
                     kmlValue = Converters.convert(value, String.class);

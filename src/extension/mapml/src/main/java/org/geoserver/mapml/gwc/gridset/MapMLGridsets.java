@@ -30,23 +30,24 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
     private final GridSet OSMTILE;
     private final GridSet CBMTILE;
     private final GridSet APSTILE;
-    @Autowired private GWC gwc = GWC.get();
+
+    @Autowired
+    private GWC gwc = GWC.get();
 
     /** */
     public MapMLGridsets() {
         log.fine("Adding MapML WGS84 gridset");
-        WGS84 =
-                GridSetFactory.createGridSet(
-                        "WGS84",
-                        SRS.getEPSG4326(),
-                        BoundingBox.WORLD4326,
-                        true,
-                        GridSetFactory.DEFAULT_LEVELS,
-                        null,
-                        GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
-                        256,
-                        256,
-                        false);
+        WGS84 = GridSetFactory.createGridSet(
+                "WGS84",
+                SRS.getEPSG4326(),
+                BoundingBox.WORLD4326,
+                true,
+                GridSetFactory.DEFAULT_LEVELS,
+                null,
+                GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                256,
+                256,
+                false);
         WGS84.setDescription("World Geodetic System 1984");
         for (int i = 0; i < GridSetFactory.DEFAULT_LEVELS; i++) {
             WGS84.getGrid(i).setName(Integer.toString(i));
@@ -54,100 +55,87 @@ public class MapMLGridsets extends SimpleGridSetConfiguration {
         addInternal(WGS84);
 
         log.fine("Adding MapML OSMTILE gridset");
-        OSMTILE =
-                GridSetFactory.createGridSet(
-                        "OSMTILE",
-                        SRS.getEPSG3857(),
-                        BoundingBox.WORLD3857,
-                        true,
-                        OSMTILEResolutions(),
-                        null,
-                        1.0D,
-                        GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
-                        integerLevelNames(OSMTILEResolutions().length),
-                        256,
-                        256,
-                        false);
-        OSMTILE.setDescription(
-                "Web Mercator-based tiled coordinate reference system. "
-                        + "Applied by many global map applications, "
-                        + "for areas excluding polar latitudes.");
+        OSMTILE = GridSetFactory.createGridSet(
+                "OSMTILE",
+                SRS.getEPSG3857(),
+                BoundingBox.WORLD3857,
+                true,
+                OSMTILEResolutions(),
+                null,
+                1.0D,
+                GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                integerLevelNames(OSMTILEResolutions().length),
+                256,
+                256,
+                false);
+        OSMTILE.setDescription("Web Mercator-based tiled coordinate reference system. "
+                + "Applied by many global map applications, "
+                + "for areas excluding polar latitudes.");
         addInternal(OSMTILE);
 
         log.fine("Adding MapML CBMTILE gridset");
         Bounds cb = TiledCRSConstants.tiledCRSDefinitions.get("CBMTILE").getBounds();
-        BoundingBox cb_bbox =
-                new BoundingBox(
-                        cb.getMin().getX(),
-                        cb.getMin().getY(),
-                        cb.getMax().getX(),
-                        cb.getMax().getY());
+        BoundingBox cb_bbox = new BoundingBox(
+                cb.getMin().getX(),
+                cb.getMin().getY(),
+                cb.getMax().getX(),
+                cb.getMax().getY());
 
-        CBMTILE =
-                GridSetFactory.createGridSet(
-                        "CBMTILE",
-                        SRS.getSRS(3978),
-                        cb_bbox,
-                        true,
-                        CBMTILEResolutions(),
-                        null,
-                        1.0D,
-                        GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
-                        integerLevelNames(CBMTILEResolutions().length),
-                        256,
-                        256,
-                        false);
-        CBMTILE.setDescription(
-                "Lambert Conformal Conic-based tiled " + "coordinate reference system for Canada.");
+        CBMTILE = GridSetFactory.createGridSet(
+                "CBMTILE",
+                SRS.getSRS(3978),
+                cb_bbox,
+                true,
+                CBMTILEResolutions(),
+                null,
+                1.0D,
+                GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                integerLevelNames(CBMTILEResolutions().length),
+                256,
+                256,
+                false);
+        CBMTILE.setDescription("Lambert Conformal Conic-based tiled " + "coordinate reference system for Canada.");
         addInternal(CBMTILE);
 
         log.fine("Adding MapML APSTILE gridset");
         Bounds at_b = TiledCRSConstants.tiledCRSDefinitions.get("APSTILE").getBounds();
-        BoundingBox at_bbox =
-                new BoundingBox(
-                        at_b.getMin().getX(),
-                        at_b.getMin().getY(),
-                        at_b.getMax().getX(),
-                        at_b.getMax().getY());
+        BoundingBox at_bbox = new BoundingBox(
+                at_b.getMin().getX(),
+                at_b.getMin().getY(),
+                at_b.getMax().getX(),
+                at_b.getMax().getY());
 
-        APSTILE =
-                GridSetFactory.createGridSet(
-                        "APSTILE",
-                        SRS.getSRS(5936),
-                        at_bbox,
-                        true,
-                        APSTILEResolutions(),
-                        null,
-                        1.0D,
-                        GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
-                        integerLevelNames(APSTILEResolutions().length),
-                        256,
-                        256,
-                        false);
+        APSTILE = GridSetFactory.createGridSet(
+                "APSTILE",
+                SRS.getSRS(5936),
+                at_bbox,
+                true,
+                APSTILEResolutions(),
+                null,
+                1.0D,
+                GridSetFactory.DEFAULT_PIXEL_SIZE_METER,
+                integerLevelNames(APSTILEResolutions().length),
+                256,
+                256,
+                false);
 
         APSTILE.setDescription(
-                "Alaska Polar Stereographic-based tiled "
-                        + "coordinate reference system for the Arctic region.");
+                "Alaska Polar Stereographic-based tiled " + "coordinate reference system for the Arctic region.");
         addInternal(APSTILE);
-        getGridSets().stream()
-                .forEach(
-                        g -> {
-                            if (!gwc.getGridSetBroker().getGridSetNames().contains(g.getName())) {
-                                try {
-                                    gwc.getGridSetBroker().addGridSet(g);
-                                } catch (UnsupportedOperationException ioe) {
-                                    log.log(
-                                            Level.SEVERE,
-                                            "Error occurred adding gridset: '" + g.getName() + "'",
-                                            ioe);
-                                }
-                            }
-                            // embedded gridsets aren't editable by the user,
-                            // which is what we want, so push this onto that list
-                            // needs to be added to list first time and every time
-                            // we start up, because it's not a "default" gridset.
-                            gwc.addEmbeddedGridSet(g.getName());
-                        });
+        getGridSets().stream().forEach(g -> {
+            if (!gwc.getGridSetBroker().getGridSetNames().contains(g.getName())) {
+                try {
+                    gwc.getGridSetBroker().addGridSet(g);
+                } catch (UnsupportedOperationException ioe) {
+                    log.log(Level.SEVERE, "Error occurred adding gridset: '" + g.getName() + "'", ioe);
+                }
+            }
+            // embedded gridsets aren't editable by the user,
+            // which is what we want, so push this onto that list
+            // needs to be added to list first time and every time
+            // we start up, because it's not a "default" gridset.
+            gwc.addEmbeddedGridSet(g.getName());
+        });
         gwc.getConfig()
                 .setDefaultCachingGridSetIds(
                         getGridSets().stream().map(g -> g.getName()).collect(toSet()));

@@ -45,11 +45,14 @@ public class TaskManagerTaskUtil {
 
     private static final Logger LOGGER = Logging.getLogger(TaskManagerTaskUtil.class);
 
-    @Autowired private LookupService<TaskType> taskTypes;
+    @Autowired
+    private LookupService<TaskType> taskTypes;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
     @Lookup
     public TaskContext createContext(Task task) {
@@ -69,7 +72,8 @@ public class TaskManagerTaskUtil {
     private String getRawParameterValue(Parameter parameter) {
         String attName = dataUtil.getAssociatedAttributeName(parameter);
         if (attName != null) {
-            Attribute att = parameter.getTask().getConfiguration().getAttributes().get(attName);
+            Attribute att =
+                    parameter.getTask().getConfiguration().getAttributes().get(attName);
             if (att != null) {
                 return att.getValue();
             } else {
@@ -104,19 +108,12 @@ public class TaskManagerTaskUtil {
      * @param rawParameters raw parameters
      */
     private void validateRequired(
-            TaskType taskType,
-            Map<String, String> rawParameters,
-            List<ValidationError> validationErrors) {
+            TaskType taskType, Map<String, String> rawParameters, List<ValidationError> validationErrors) {
         for (ParameterInfo info : taskType.getParameterInfo().values()) {
             if (info.isRequired()) {
-                if (!rawParameters.containsKey(info.getName())
-                        || "".equals(rawParameters.get(info.getName()))) {
+                if (!rawParameters.containsKey(info.getName()) || "".equals(rawParameters.get(info.getName()))) {
                     validationErrors.add(
-                            new ValidationError(
-                                    ValidationErrorType.MISSING,
-                                    info.getName(),
-                                    null,
-                                    taskType.getName()));
+                            new ValidationError(ValidationErrorType.MISSING, info.getName(), null, taskType.getName()));
                 }
             }
         }
@@ -131,8 +128,8 @@ public class TaskManagerTaskUtil {
      * @return the parsed parameters
      * @throws TaskException if any of the parameters are invalid or missing.
      */
-    private Map<String, Object> parseParameters(
-            TaskType taskType, Map<String, String> rawParameters) throws TaskException {
+    private Map<String, Object> parseParameters(TaskType taskType, Map<String, String> rawParameters)
+            throws TaskException {
         List<ValidationError> validationErrors = new ArrayList<ValidationError>();
 
         // first check all required
@@ -143,12 +140,8 @@ public class TaskManagerTaskUtil {
         for (Entry<String, String> parameter : rawParameters.entrySet()) {
             ParameterInfo info = taskType.getParameterInfo().get(parameter.getKey());
             if (info == null) {
-                validationErrors.add(
-                        new ValidationError(
-                                ValidationErrorType.INVALID_PARAM,
-                                parameter.getKey(),
-                                null,
-                                taskType.getName()));
+                validationErrors.add(new ValidationError(
+                        ValidationErrorType.INVALID_PARAM, parameter.getKey(), null, taskType.getName()));
                 break;
             }
             ParameterType pt = info.getType();
@@ -158,12 +151,11 @@ public class TaskManagerTaskUtil {
             }
             Object value = pt.parse(parameter.getValue(), dependsOnValues);
             if (value == null) {
-                validationErrors.add(
-                        new ValidationError(
-                                ValidationErrorType.INVALID_VALUE,
-                                parameter.getKey(),
-                                parameter.getValue(),
-                                taskType.getName()));
+                validationErrors.add(new ValidationError(
+                        ValidationErrorType.INVALID_VALUE,
+                        parameter.getKey(),
+                        parameter.getValue(),
+                        taskType.getName()));
                 break;
             } else {
                 result.put(parameter.getKey(), value);
@@ -181,8 +173,8 @@ public class TaskManagerTaskUtil {
      * Clean-up a task.
      *
      * @param task the task.
-     * @return true if the cleanup was entirely successful, false if one or more task clean-ups
-     *     failed, in which case the logs should be checked.
+     * @return true if the cleanup was entirely successful, false if one or more task clean-ups failed, in which case
+     *     the logs should be checked.
      */
     public boolean cleanup(Task task) {
         TaskType type = taskTypes.get(task.getType());
@@ -209,8 +201,8 @@ public class TaskManagerTaskUtil {
      * Clean-up a task.
      *
      * @param task the task.
-     * @return true if the cleanup was entirely successful, false if one or more task clean-ups
-     *     failed, in which case the logs should be checked.
+     * @return true if the cleanup was entirely successful, false if one or more task clean-ups failed, in which case
+     *     the logs should be checked.
      */
     public Map<String, Object> getParameterValues(Task task) throws TaskException {
         return parseParameters(taskTypes.get(task.getType()), getRawParameterValues(task));
@@ -245,9 +237,8 @@ public class TaskManagerTaskUtil {
             for (BatchElement el : task.getBatchElements()) {
                 if (el.getIndex() > 0) {
                     Batch batch = el.getBatch();
-                    int indexTaskBefore =
-                            orderedTasks.indexOf(
-                                    batch.getElements().get(el.getIndex() - 1).getTask());
+                    int indexTaskBefore = orderedTasks.indexOf(
+                            batch.getElements().get(el.getIndex() - 1).getTask());
                     if (indexTaskBefore >= 0 && indexTaskBefore < position) {
                         position = indexTaskBefore;
                     }
@@ -263,8 +254,8 @@ public class TaskManagerTaskUtil {
      * Clean-up a configuration.
      *
      * @param config the configuration.
-     * @return true if the cleanup was entirely successful, false if one or more task clean-ups
-     *     failed, in which case the logs should be checked.
+     * @return true if the cleanup was entirely successful, false if one or more task clean-ups failed, in which case
+     *     the logs should be checked.
      */
     public boolean cleanup(Configuration config) {
         boolean success = true;
@@ -331,21 +322,19 @@ public class TaskManagerTaskUtil {
     }
 
     /**
-     * Reorder a configuration's attributes and task parameters will only have lasting effect if
-     * this is a new configuration (no id's)
+     * Reorder a configuration's attributes and task parameters will only have lasting effect if this is a new
+     * configuration (no id's)
      *
      * @param config the configuration
      */
     public void reorderConfiguration(Configuration config) {
-        Map<String, Attribute> oldAttributes =
-                new HashMap<String, Attribute>(config.getAttributes());
+        Map<String, Attribute> oldAttributes = new HashMap<String, Attribute>(config.getAttributes());
         config.getAttributes().clear();
         for (Task task : config.getTasks().values()) {
             fixTask(task);
             reorderTask(task);
             for (Parameter pam : task.getParameters().values()) {
-                String attName =
-                        TaskManagerBeans.get().getDataUtil().getAssociatedAttributeName(pam);
+                String attName = TaskManagerBeans.get().getDataUtil().getAssociatedAttributeName(pam);
                 if (attName != null && oldAttributes.containsKey(attName)) {
                     config.getAttributes().put(attName, oldAttributes.remove(attName));
                 }
@@ -355,8 +344,7 @@ public class TaskManagerTaskUtil {
     }
 
     /**
-     * Makes sure that task contains all of its type's attributes and adds missing ones if
-     * necessary.
+     * Makes sure that task contains all of its type's attributes and adds missing ones if necessary.
      *
      * @param task the task
      */
@@ -406,8 +394,7 @@ public class TaskManagerTaskUtil {
         @Override
         public boolean equals(Object o) {
             if (o instanceof AttributeInfo) {
-                return type.equals(((AttributeInfo) o).type)
-                        && dependsOn.equals(((AttributeInfo) o).dependsOn);
+                return type.equals(((AttributeInfo) o).type) && dependsOn.equals(((AttributeInfo) o).dependsOn);
             }
             return false;
         }
@@ -436,8 +423,7 @@ public class TaskManagerTaskUtil {
             ParameterInfo info = taskType.getParameterInfo().get(param.getName());
             List<String> dependsOn = new ArrayList<String>();
             for (ParameterInfo dependsOnInfo : info.getDependsOn()) {
-                Parameter dependsOnParam =
-                        param.getTask().getParameters().get(dependsOnInfo.getName());
+                Parameter dependsOnParam = param.getTask().getParameters().get(dependsOnInfo.getName());
                 dependsOn.add(dependsOnParam == null ? null : getRawParameterValue(dependsOnParam));
             }
             attInfos.add(new AttributeInfo(info.getType(), dependsOn));
@@ -488,7 +474,8 @@ public class TaskManagerTaskUtil {
 
         for (Parameter parameter : dataUtil.getAssociatedParameters(attribute, config)) {
             TaskType taskType = taskTypes.get(parameter.getTask().getType());
-            parameterTypes.add(taskType.getParameterInfo().get(parameter.getName()).getType());
+            parameterTypes.add(
+                    taskType.getParameterInfo().get(parameter.getName()).getType());
         }
 
         return parameterTypes;
@@ -501,9 +488,7 @@ public class TaskManagerTaskUtil {
      * @param the domains
      */
     public void updateDomains(
-            Configuration configuration,
-            Map<String, List<String>> domains,
-            Set<String> updateAttributes) {
+            Configuration configuration, Map<String, List<String>> domains, Set<String> updateAttributes) {
         Iterator<String> it = domains.keySet().iterator();
         while (it.hasNext()) {
             String attName = it.next();
@@ -525,16 +510,14 @@ public class TaskManagerTaskUtil {
      * @param attribute the attribute.
      * @param domains the domains.
      */
-    public void updateDependentDomains(
-            Attribute attribute, Configuration config, Map<String, List<String>> domains) {
+    public void updateDependentDomains(Attribute attribute, Configuration config, Map<String, List<String>> domains) {
         Set<String> dependentAttributes = new HashSet<String>();
         List<Parameter> params = dataUtil.getAssociatedParameters(attribute, config);
         for (Parameter param : params) {
             TaskType taskType = taskTypes.get(param.getTask().getType());
             ParameterInfo info = taskType.getParameterInfo().get(param.getName());
             for (ParameterInfo dependentInfo : info.getDependents()) {
-                Parameter depedentParam =
-                        param.getTask().getParameters().get(dependentInfo.getName());
+                Parameter depedentParam = param.getTask().getParameters().get(dependentInfo.getName());
                 if (depedentParam != null) {
                     String attName = dataUtil.getAssociatedAttributeName(depedentParam);
                     if (attName != null) {
@@ -571,12 +554,8 @@ public class TaskManagerTaskUtil {
             for (Entry<String, String> parameter : rawParameters.entrySet()) {
                 ParameterInfo info = taskType.getParameterInfo().get(parameter.getKey());
                 if (info == null) {
-                    validationErrors.add(
-                            new ValidationError(
-                                    ValidationErrorType.INVALID_PARAM,
-                                    parameter.getKey(),
-                                    null,
-                                    taskType.getName()));
+                    validationErrors.add(new ValidationError(
+                            ValidationErrorType.INVALID_PARAM, parameter.getKey(), null, taskType.getName()));
                     continue;
                 }
                 if (parameter.getValue() != null && !"".equals(parameter.getValue())) {
@@ -586,22 +565,20 @@ public class TaskManagerTaskUtil {
                         ParameterInfo dependsOn = info.getDependsOn().get(i);
                         String value = rawParameters.get(dependsOn.getName());
                         if (value == null && i < info.getEnforcedDependsOn()) {
-                            validationErrors.add(
-                                    new ValidationError(
-                                            ValidationErrorType.MISSING_DEPENDENCY,
-                                            dependsOn.getName(),
-                                            parameter.getKey(),
-                                            taskType.getName()));
+                            validationErrors.add(new ValidationError(
+                                    ValidationErrorType.MISSING_DEPENDENCY,
+                                    dependsOn.getName(),
+                                    parameter.getKey(),
+                                    taskType.getName()));
                         }
                         dependsOnValues.add(value);
                     }
                     if (!pt.validate(parameter.getValue(), dependsOnValues)) {
-                        validationErrors.add(
-                                new ValidationError(
-                                        ValidationErrorType.INVALID_VALUE,
-                                        parameter.getKey(),
-                                        parameter.getValue(),
-                                        taskType.getName()));
+                        validationErrors.add(new ValidationError(
+                                ValidationErrorType.INVALID_VALUE,
+                                parameter.getKey(),
+                                parameter.getValue(),
+                                taskType.getName()));
                         continue;
                     }
                 }
@@ -634,8 +611,7 @@ public class TaskManagerTaskUtil {
     }
 
     /** Get dependent values for an attribute with respect to a particular action */
-    public List<String> getDependentRawValues(
-            String action, Attribute attribute, Configuration config) {
+    public List<String> getDependentRawValues(String action, Attribute attribute, Configuration config) {
         List<String> values = new ArrayList<String>();
         for (Parameter parameter : dataUtil.getAssociatedParameters(attribute, config)) {
             TaskType taskType = taskTypes.get(parameter.getTask().getType());
@@ -643,9 +619,8 @@ public class TaskManagerTaskUtil {
 
             if (info.getType().getActions().contains(action)) {
                 for (ParameterInfo dependsOn : info.getDependsOn()) {
-                    values.add(
-                            getRawParameterValue(
-                                    parameter.getTask().getParameters().get(dependsOn.getName())));
+                    values.add(getRawParameterValue(
+                            parameter.getTask().getParameters().get(dependsOn.getName())));
                 }
                 return values;
 

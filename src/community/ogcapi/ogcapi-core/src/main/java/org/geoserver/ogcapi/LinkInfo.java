@@ -5,10 +5,9 @@
 package org.geoserver.ogcapi;
 
 /**
- * Configurable links for OGC API services, they can be provided at the {@link
- * org.geoserver.catalog.ResourceInfo} and {@link org.geoserver.config.GeoServerInfo} level. More
- * places to be added in the future (e.g., {@link org.geoserver.catalog.LayerGroupInfo}, {@link
- * org.geoserver.config.ServiceInfo}
+ * Configurable links for OGC API services, they can be provided at the {@link org.geoserver.catalog.ResourceInfo} and
+ * {@link org.geoserver.config.GeoServerInfo} level. More places to be added in the future (e.g.,
+ * {@link org.geoserver.catalog.LayerGroupInfo}, {@link org.geoserver.config.ServiceInfo}
  */
 import java.io.Serializable;
 import org.geoserver.catalog.MetadataMap;
@@ -20,9 +19,7 @@ public interface LinkInfo extends Serializable {
     /** Returns the relation type, e.g., "self", "alternate", "service-desc", ... */
     String getRel();
 
-    /**
-     * Sets the relation type for this link (mandatory). e.g., "self", "alternate", "service-desc",
-     */
+    /** Sets the relation type for this link (mandatory). e.g., "self", "alternate", "service-desc", */
     void setRel(String rel);
 
     /** Returns the MIME type, e.g., "application/json", "text/html", "application/atom+xml", ... */
@@ -49,9 +46,7 @@ public interface LinkInfo extends Serializable {
     /** Sets the service type for this link (optional) */
     void setService(String service);
 
-    /**
-     * Returns the metadata map, which can be used to store additional information about the link
-     */
+    /** Returns the metadata map, which can be used to store additional information about the link */
     MetadataMap getMetadata();
 
     /** Returns a clone of this link info */

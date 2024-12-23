@@ -56,11 +56,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
+                "1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
 
     @Test
@@ -69,9 +66,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         Document dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
         // print(dom);
         NodeList list =
-                xpath.getMatchingNodes(
-                        "//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported",
-                        dom);
+                xpath.getMatchingNodes("//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported", dom);
         assertTrue(list.getLength() > 1000);
 
         // setup limited list
@@ -82,10 +77,7 @@ public class GetCapabilitiesTest extends WCSTestSupport {
 
         dom = getAsDOM("wcs?request=GetCapabilities&service=WCS");
         // print(dom);
-        list =
-                xpath.getMatchingNodes(
-                        "//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported",
-                        dom);
+        list = xpath.getMatchingNodes("//wcs:ServiceMetadata/wcs:Extension/crs:CrsMetadata/crs:crsSupported", dom);
         assertEquals(2, list.getLength());
     }
 
@@ -119,11 +111,8 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("0", "count(//ows:ExceptionReport)", dom);
         assertXpathEvaluatesTo("0", "count(//ows:ExceptionReport//ows:Exception)", dom);
         assertXpathEvaluatesTo(
-                "0",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        assertXpathEvaluatesTo(
-                "0", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
+                "0", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("0", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
 
     @Test
@@ -158,16 +147,11 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         assertXpathEvaluatesTo("2", "count(" + base + "ows:Metadata)", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org", base + "ows:Metadata[1]/@about", dom);
         assertXpathEvaluatesTo("simple", base + "ows:Metadata[1]/@xlink:type", dom);
-        assertXpathEvaluatesTo(
-                "http://www.geoserver.org/tasmania/dem.xml",
-                base + "ows:Metadata[1]/@xlink:href",
-                dom);
+        assertXpathEvaluatesTo("http://www.geoserver.org/tasmania/dem.xml", base + "ows:Metadata[1]/@xlink:href", dom);
         assertXpathEvaluatesTo("http://www.geoserver.org", base + "ows:Metadata[2]/@about", dom);
         assertXpathEvaluatesTo("simple", base + "ows:Metadata[2]/@xlink:type", dom);
         assertXpathEvaluatesTo(
-                "src/test/resources/geoserver/metadata?key=value",
-                base + "ows:Metadata[2]/@xlink:href",
-                dom);
+                "src/test/resources/geoserver/metadata?key=value", base + "ows:Metadata[2]/@xlink:href", dom);
     }
 
     @Test
@@ -185,14 +169,10 @@ public class GetCapabilitiesTest extends WCSTestSupport {
         ci.setInternationalAbstract(abstractInfo);
         catalog.save(ci);
 
-        Document dom =
-                getAsDOM(
-                        "wcs?service=WCS&version=2.0.1&request=GetCapabilities&AcceptLanguages=it");
+        Document dom = getAsDOM("wcs?service=WCS&version=2.0.1&request=GetCapabilities&AcceptLanguages=it");
 
         assertXpathEvaluatesTo(
-                "http://localhost:8080/geoserver/wcs?Language=it&",
-                "//ows:DCP/ows:HTTP/ows:Get/@xlink:href",
-                dom);
+                "http://localhost:8080/geoserver/wcs?Language=it&", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
     }
 
     @Test
@@ -208,7 +188,6 @@ public class GetCapabilitiesTest extends WCSTestSupport {
 
         Document dom = getAsDOM("wcs?service=WCS&version=2.0.1&request=GetCapabilities");
 
-        assertXpathEvaluatesTo(
-                "src/test/resources/geoserver/wcs?", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
+        assertXpathEvaluatesTo("src/test/resources/geoserver/wcs?", "//ows:DCP/ows:HTTP/ows:Get/@xlink:href", dom);
     }
 }

@@ -15,8 +15,7 @@ class TemplateInfoProvider extends GeoServerDataProvider<TemplateInfo> {
     static final Property<TemplateInfo> NAME = new BeanProperty<>("templateName", "templateName");
     static final Property<TemplateInfo> EXTENSION = new BeanProperty<>("extension", "extension");
     static final Property<TemplateInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace");
-    static final Property<TemplateInfo> FEATURE_TYPE_INFO =
-            new BeanProperty<>("featureTypeInfo", "featureType");
+    static final Property<TemplateInfo> FEATURE_TYPE_INFO = new BeanProperty<>("featureTypeInfo", "featureType");
 
     @Override
     protected List<Property<TemplateInfo>> getProperties() {

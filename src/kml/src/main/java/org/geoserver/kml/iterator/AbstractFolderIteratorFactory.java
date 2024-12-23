@@ -57,13 +57,9 @@ public abstract class AbstractFolderIteratorFactory implements IteratorFactory<F
                 if (layer instanceof FeatureLayer) {
                     try {
                         WMSMapContent mapContent = context.getMapContent();
-                        SimpleFeatureCollection fc =
-                                new KMLFeatureAccessor()
-                                        .loadFeatureCollection(
-                                                layer,
-                                                mapContent,
-                                                context.getWms(),
-                                                mapContent.getScaleDenominator());
+                        SimpleFeatureCollection fc = new KMLFeatureAccessor()
+                                .loadFeatureCollection(
+                                        layer, mapContent, context.getWms(), mapContent.getScaleDenominator());
                         context.setCurrentFeatureCollection(fc);
                     } catch (Exception e) {
                         if (e instanceof ServiceException) {
@@ -71,8 +67,7 @@ public abstract class AbstractFolderIteratorFactory implements IteratorFactory<F
                         } else if (e instanceof HttpErrorCodeException) {
                             throw (HttpErrorCodeException) e;
                         } else {
-                            throw new ServiceException(
-                                    "Failed to load vector data during KML generation", e);
+                            throw new ServiceException("Failed to load vector data during KML generation", e);
                         }
                     }
                 }

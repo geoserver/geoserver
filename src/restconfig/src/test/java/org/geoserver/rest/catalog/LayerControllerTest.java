@@ -144,10 +144,9 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetAllInWorkspaceAsXML() throws Exception {
         Document dom = getAsDOM(ROOT_PATH + "/workspaces/cite/layers.xml", 200);
-        int count =
-                catalog.getResourcesByNamespace("cite", ResourceInfo.class).stream()
-                        .mapToInt(info -> catalog.getLayers(info).size())
-                        .sum();
+        int count = catalog.getResourcesByNamespace("cite", ResourceInfo.class).stream()
+                .mapToInt(info -> catalog.getLayers(info).size())
+                .sum();
         assertXpathEvaluatesTo(count + "", "count(//layer)", dom);
     }
 
@@ -160,15 +159,13 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     public void testPut() throws Exception {
         LayerInfo l = catalog.getLayerByName("cite:Buildings");
         assertEquals("Buildings", l.getDefaultStyle().getName());
-        String xml =
-                "<layer>"
-                        + "<defaultStyle>Forests</defaultStyle>"
-                        + "<styles>"
-                        + "<style>Ponds</style>"
-                        + "</styles>"
-                        + "</layer>";
-        MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         l = catalog.getLayerByName("cite:Buildings");
@@ -180,16 +177,14 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     public void testPutInWorkspace() throws Exception {
         LayerInfo l = catalog.getLayerByName("cite:Buildings");
         assertEquals("Buildings", l.getDefaultStyle().getName());
-        String xml =
-                "<layer>"
-                        + "<defaultStyle>Forests</defaultStyle>"
-                        + "<styles>"
-                        + "<style>Ponds</style>"
-                        + "</styles>"
-                        + "</layer>";
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/cite/layers/Buildings", xml, "text/xml");
+                putAsServletResponse(ROOT_PATH + "/workspaces/cite/layers/Buildings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         l = catalog.getLayerByName("cite:Buildings");
@@ -206,15 +201,13 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         boolean isOpaque = l.isOpaque();
         boolean isQueryable = l.isQueryable();
 
-        String xml =
-                "<layer>"
-                        + "<defaultStyle>Forests</defaultStyle>"
-                        + "<styles>"
-                        + "<style>Ponds</style>"
-                        + "</styles>"
-                        + "</layer>";
-        MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
+        String xml = "<layer>"
+                + "<defaultStyle>Forests</defaultStyle>"
+                + "<styles>"
+                + "<style>Ponds</style>"
+                + "</styles>"
+                + "</layer>";
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         l = catalog.getLayerByName("cite:Buildings");
@@ -238,8 +231,7 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         style.put("href", "http://localhost:8080/geoserver/rest/styles/polygon.json");
         String updatedJson = json.toString();
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        ROOT_PATH + "/layers/cite:Buildings", updatedJson, "application/json");
+                putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", updatedJson, "application/json");
         assertEquals(200, response.getStatus());
 
         l = catalog.getLayerByName("cite:Buildings");
@@ -251,7 +243,8 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertNotNull(catalog.getLayerByName("cite:Buildings"));
         assertEquals(
-                200, deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
+                200,
+                deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
         assertNull(catalog.getLayerByName("cite:Buildings"));
     }
 
@@ -271,7 +264,8 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         assertNotNull(catalog.getFeatureTypeByName("cite", "Buildings"));
 
         assertEquals(
-                200, deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
+                200,
+                deleteAsServletResponse(ROOT_PATH + "/layers/cite:Buildings").getStatus());
 
         assertNull(catalog.getLayerByName("cite:Buildings"));
         assertNotNull(catalog.getFeatureTypeByName("cite", "Buildings"));
@@ -296,24 +290,21 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
 
-        MockHttpServletResponse response =
-                postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
+        MockHttpServletResponse response = postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
 
         // System.out.println(response.getContentAsString());
         assertEquals(201, response.getStatus());
         assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
-        xml =
-                "<layer>"
-                        + "<defaultStyle>"
-                        + "<name>foo</name>"
-                        + "<workspace>cite</workspace>"
-                        + "</defaultStyle>"
-                        + "<enabled>true</enabled>"
-                        + "</layer>";
-        response =
-                putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
+        xml = "<layer>"
+                + "<defaultStyle>"
+                + "<name>foo</name>"
+                + "<workspace>cite</workspace>"
+                + "</defaultStyle>"
+                + "<enabled>true</enabled>"
+                + "</layer>";
+        response = putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
         assertEquals(200, response.getStatus());
 
         LayerInfo l = cat.getLayerByName("cite:Buildings");
@@ -339,24 +330,21 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
         String xml = "<style>" + "<name>foo</name>" + "<filename>foo.sld</filename>" + "</style>";
 
-        MockHttpServletResponse response =
-                postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
+        MockHttpServletResponse response = postAsServletResponse(ROOT_PATH + "/workspaces/cite/styles", xml);
         assertEquals(201, response.getStatus());
         assertThat(response.getContentType(), CoreMatchers.startsWith(MediaType.TEXT_PLAIN_VALUE));
         assertNotNull(cat.getStyleByName("cite", "foo"));
 
-        xml =
-                "<layer>"
-                        + "<styles>"
-                        + "<style>"
-                        + "<name>foo</name>"
-                        + "<workspace>cite</workspace>"
-                        + "</style>"
-                        + "</styles>"
-                        + "<enabled>true</enabled>"
-                        + "</layer>";
-        response =
-                putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
+        xml = "<layer>"
+                + "<styles>"
+                + "<style>"
+                + "<name>foo</name>"
+                + "<workspace>cite</workspace>"
+                + "</style>"
+                + "</styles>"
+                + "<enabled>true</enabled>"
+                + "</layer>";
+        response = putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
         assertEquals(200, response.getStatus());
 
         LayerInfo l = cat.getLayerByName("cite:Buildings");
@@ -386,13 +374,12 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
         assertEquals("layer", dom.getDocumentElement().getNodeName());
         assertXpathNotExists("/layer/defaultWMSInterpolationMethod", dom);
 
-        String xml =
-                "<layer>"
-                        + "<defaultWMSInterpolationMethod>"
-                        + "Nearest"
-                        + "</defaultWMSInterpolationMethod>"
-                        + "<enabled>true</enabled>"
-                        + "</layer>";
+        String xml = "<layer>"
+                + "<defaultWMSInterpolationMethod>"
+                + "Nearest"
+                + "</defaultWMSInterpolationMethod>"
+                + "<enabled>true</enabled>"
+                + "</layer>";
         MockHttpServletResponse response =
                 putAsServletResponse(ROOT_PATH + "/layers/cite:Buildings", xml, "application/xml");
         assertEquals(200, response.getStatus());
@@ -429,32 +416,23 @@ public class LayerControllerTest extends CatalogRESTTestSupport {
 
     public void updateStyleNameInXmlFile() throws IOException {
 
-        File requiredFile =
-                Arrays.stream(
-                                Objects.requireNonNull(
-                                        getDataDirectory().get("styles").dir().listFiles()))
-                        .filter(file -> file.getName().equals("RoadSegments.xml"))
-                        .findFirst()
-                        .get();
+        File requiredFile = Arrays.stream(Objects.requireNonNull(
+                        getDataDirectory().get("styles").dir().listFiles()))
+                .filter(file -> file.getName().equals("RoadSegments.xml"))
+                .findFirst()
+                .get();
 
         StringBuilder fileContents = new StringBuilder();
-        try (BufferedReader reader =
-                new BufferedReader(new FileReader(requiredFile.getAbsolutePath()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(requiredFile.getAbsolutePath()))) {
             String currentLine;
             while ((currentLine = reader.readLine()) != null) {
                 fileContents.append(currentLine);
             }
         }
 
-        try (BufferedWriter writer =
-                new BufferedWriter(new FileWriter(requiredFile.getAbsolutePath()))) {
-            fileContents =
-                    new StringBuilder(
-                            fileContents
-                                    .toString()
-                                    .replace(
-                                            "<name>RoadSegments</name>",
-                                            "<name>demo:RoadSegmentsDup</name>"));
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(requiredFile.getAbsolutePath()))) {
+            fileContents = new StringBuilder(
+                    fileContents.toString().replace("<name>RoadSegments</name>", "<name>demo:RoadSegmentsDup</name>"));
             writer.write(fileContents.toString());
         }
     }

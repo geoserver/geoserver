@@ -30,8 +30,7 @@ import org.junit.Test;
 
 public class LayerPageTest extends GeoServerWicketTestSupport {
 
-    public static QName GS_BUILDINGS =
-            new QName(MockData.DEFAULT_URI, "Buildings", MockData.DEFAULT_PREFIX);
+    public static QName GS_BUILDINGS = new QName(MockData.DEFAULT_URI, "Buildings", MockData.DEFAULT_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -60,8 +59,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // check it has two layers
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         assertEquals(2, table.getDataProvider().size());
         List<String> workspaces = getWorkspaces(table);
         assertTrue(workspaces.contains("cite"));
@@ -98,8 +96,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // check it has two layers
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         assertEquals(2, table.getDataProvider().size());
         List<String> workspaces = getWorkspaces(table);
         assertTrue(workspaces.contains("cite"));
@@ -156,8 +153,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // check it has two layers
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         assertEquals(2, table.getDataProvider().size());
         List<String> workspaces = getWorkspaces(table);
         assertTrue(workspaces.contains("cite"));
@@ -215,8 +211,7 @@ public class LayerPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // check it has two columns
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage("table");
         LayerProvider layerProvider = (LayerProvider) table.getDataProvider();
         assertTrue(layerProvider.getProperties().contains(LayerProvider.CREATED_TIMESTAMP));
         assertTrue(layerProvider.getProperties().contains(LayerProvider.MODIFIED_TIMESTAMP));

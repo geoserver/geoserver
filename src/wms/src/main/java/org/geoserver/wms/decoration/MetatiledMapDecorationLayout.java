@@ -10,10 +10,9 @@ import java.awt.Rectangle;
 import org.geoserver.wms.WMSMapContent;
 
 /**
- * The MetatiledMapDecorationLayout class customizes the {MapDecorationLayout} to handle the special
- * case of metatiles; that is, maps that are rendered with the intent of being divided up into
- * smaller image segments. Basically, it divided the map up into a grid and repeats the layout and
- * rendering process for each section of the grid.
+ * The MetatiledMapDecorationLayout class customizes the {MapDecorationLayout} to handle the special case of metatiles;
+ * that is, maps that are rendered with the intent of being divided up into smaller image segments. Basically, it
+ * divided the map up into a grid and repeats the layout and rendering process for each section of the grid.
  *
  * @author David Winslow <dwinslow@opengeo.org>
  */

@@ -49,16 +49,14 @@ public class GeoServerEnvironmentTest {
 
         System.setProperty("GEOSERVER_REQUIRE_FILE", "pom.xml");
         try {
-            Assert.assertEquals(
-                    "data", GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
+            Assert.assertEquals("data", GeoServerResourceLoader.lookupGeoServerDataDirectory(context));
         } finally {
             System.clearProperty("GEOSERVER_REQUIRE_FILE");
         }
 
-        GeoServerResourceLoader loader =
-                EasyMock.createMockBuilder(GeoServerResourceLoader.class)
-                        .withConstructor()
-                        .createMock();
+        GeoServerResourceLoader loader = EasyMock.createMockBuilder(GeoServerResourceLoader.class)
+                .withConstructor()
+                .createMock();
 
         ApplicationContext appContext = EasyMock.createMock(ApplicationContext.class);
         EasyMock.expect(appContext.getBeanNamesForType(ExtensionFilter.class))
@@ -76,7 +74,9 @@ public class GeoServerEnvironmentTest {
                 .andReturn(genvMap)
                 .anyTimes();
         EasyMock.expect(appContext.getBean("geoServerLoader")).andReturn(loader).anyTimes();
-        EasyMock.expect(appContext.isSingleton("geoServerLoader")).andReturn(true).anyTimes();
+        EasyMock.expect(appContext.isSingleton("geoServerLoader"))
+                .andReturn(true)
+                .anyTimes();
 
         EasyMock.replay(appContext);
         GeoServerExtensions gsext = new GeoServerExtensions();

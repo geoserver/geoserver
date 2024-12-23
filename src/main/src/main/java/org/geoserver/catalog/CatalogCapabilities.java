@@ -5,9 +5,9 @@
 package org.geoserver.catalog;
 
 /**
- * Represents special capabilities that may not be supported by all catalog implementations.
- * Normally this capabilities should be defined at the catalog facade level but each catalog
- * implementation is free to provide is own set of capabilities.
+ * Represents special capabilities that may not be supported by all catalog implementations. Normally this capabilities
+ * should be defined at the catalog facade level but each catalog implementation is free to provide is own set of
+ * capabilities.
  */
 public final class CatalogCapabilities {
 
@@ -25,8 +25,7 @@ public final class CatalogCapabilities {
     /**
      * Specifies if isolated workspaces are supported or not.
      *
-     * @param supportsIsolatedWorkspaces TRUE or FALSE, specifying if isolated workspaces are
-     *     supported
+     * @param supportsIsolatedWorkspaces TRUE or FALSE, specifying if isolated workspaces are supported
      */
     public void setIsolatedWorkspacesSupport(boolean supportsIsolatedWorkspaces) {
         this.supportsIsolatedWorkspaces = supportsIsolatedWorkspaces;

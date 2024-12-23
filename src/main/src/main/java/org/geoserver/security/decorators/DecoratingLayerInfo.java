@@ -22,8 +22,8 @@ import org.geotools.api.util.InternationalString;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected
- * methods to perform their "decoration" job
+ * Delegates every method to the wrapped {@link LayerInfo}. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime
  */

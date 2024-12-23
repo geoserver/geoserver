@@ -16,9 +16,9 @@ import org.geoserver.wfs.request.GetCapabilitiesRequest;
 /**
  * Web Feature Service GetCapabilities operation.
  *
- * <p>This operation returns a {@link org.geotools.xml.transform.TransformerBase} instance which
- * will serialize the wfs capabilities document. This class uses ows version negotiation to
- * determine which version of the wfs capabilities document to return.
+ * <p>This operation returns a {@link org.geotools.xml.transform.TransformerBase} instance which will serialize the wfs
+ * capabilities document. This class uses ows version negotiation to determine which version of the wfs capabilities
+ * document to return.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -36,13 +36,10 @@ public class GetCapabilities {
      *
      * @param wfs The wfs configuration
      * @param catalog The geoserver catalog.
-     * @param extendedCapabilitiesProviders the providers for adding extra metadata to the
-     *     capabilities documents
+     * @param extendedCapabilitiesProviders the providers for adding extra metadata to the capabilities documents
      */
     public GetCapabilities(
-            WFSInfo wfs,
-            Catalog catalog,
-            Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders) {
+            WFSInfo wfs, Catalog catalog, Collection<WFSExtendedCapabilitiesProvider> extendedCapabilitiesProviders) {
         this.wfs = wfs;
         this.catalog = catalog;
         this.extendedCapabilitiesProviders = extendedCapabilitiesProviders;
@@ -80,17 +77,16 @@ public class GetCapabilities {
         } else {
             if ("1.1.0".equals(version)) {
                 capsTransformer =
-                        new CapabilitiesTransformer.WFS1_1(
-                                wfs, baseUrl, catalog, extendedCapabilitiesProviders);
+                        new CapabilitiesTransformer.WFS1_1(wfs, baseUrl, catalog, extendedCapabilitiesProviders);
             } else if ("2.0.0".equals(version)) {
                 capsTransformer =
-                        new CapabilitiesTransformer.WFS2_0(
-                                wfs, baseUrl, catalog, extendedCapabilitiesProviders);
+                        new CapabilitiesTransformer.WFS2_0(wfs, baseUrl, catalog, extendedCapabilitiesProviders);
             } else {
                 throw new WFSException(request, "Could not understand version:" + version);
             }
         }
-        capsTransformer.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
+        capsTransformer.setEncoding(
+                Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
         return capsTransformer;
     }
 

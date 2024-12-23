@@ -51,8 +51,7 @@ public final class ResponseUtils {
                     // interpret no host as backreference to server
                     Map<String, String> kvp = null;
                     if (uri.getQuery() != null && !"".equals(uri.getQuery())) {
-                        Map<String, Object> parsed =
-                                KvpUtils.parseQueryString("?" + uri.getQuery());
+                        Map<String, Object> parsed = KvpUtils.parseQueryString("?" + uri.getQuery());
                         kvp = new HashMap<>();
                         for (Entry<String, Object> entry : parsed.entrySet()) {
                             kvp.put(entry.getKey(), (String) entry.getValue());
@@ -62,10 +61,7 @@ public final class ResponseUtils {
                     content = buildURL(baseURL, uri.getPath(), kvp, URLType.RESOURCE);
                 }
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Unable to create proper back reference for url: " + content,
-                        e);
+                LOGGER.log(Level.WARNING, "Unable to create proper back reference for url: " + content, e);
             }
         } catch (URISyntaxException e) {
         }
@@ -93,16 +89,12 @@ public final class ResponseUtils {
         return content;
     }
 
-    public static List validate(
-            InputSource xml, URL schemaURL, boolean skipTargetNamespaceException) {
+    public static List validate(InputSource xml, URL schemaURL, boolean skipTargetNamespaceException) {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
     public static List<SAXException> validate(
-            InputSource xml,
-            URL schemaURL,
-            boolean skipTargetNamespaceException,
-            EntityResolver entityResolver) {
+            InputSource xml, URL schemaURL, boolean skipTargetNamespaceException, EntityResolver entityResolver) {
         StreamSource source = null;
         if (xml.getCharacterStream() != null) {
             source = new StreamSource(xml.getCharacterStream());
@@ -114,25 +106,18 @@ public final class ResponseUtils {
         return validate(source, schemaURL, skipTargetNamespaceException, entityResolver);
     }
 
-    public static List<SAXException> validate(
-            Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
+    public static List<SAXException> validate(Source xml, URL schemaURL, boolean skipTargetNamespaceException) {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 
     public static List<SAXException> validate(
-            Source xml,
-            URL schemaURL,
-            boolean skipTargetNamespaceException,
-            EntityResolver entityResolver) {
+            Source xml, URL schemaURL, boolean skipTargetNamespaceException, EntityResolver entityResolver) {
         try {
-            Schema schema =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
-                            .newSchema(schemaURL);
+            Schema schema = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI)
+                    .newSchema(schemaURL);
             Validator v = schema.newValidator();
             if (entityResolver != null) {
-                v.setResourceResolver(
-                        new EntityResolverToLSResourceResolver(
-                                v.getResourceResolver(), entityResolver));
+                v.setResourceResolver(new EntityResolverToLSResourceResolver(v.getResourceResolver(), entityResolver));
             }
             Handler handler = new Handler(skipTargetNamespaceException, entityResolver);
             v.setErrorHandler(handler);
@@ -181,8 +166,7 @@ public final class ResponseUtils {
         }
 
         @Override
-        public InputSource resolveEntity(String publicId, String systemId)
-                throws IOException, SAXException {
+        public InputSource resolveEntity(String publicId, String systemId) throws IOException, SAXException {
             if (entityResolver != null) {
                 return this.entityResolver.resolveEntity(publicId, systemId);
             } else {

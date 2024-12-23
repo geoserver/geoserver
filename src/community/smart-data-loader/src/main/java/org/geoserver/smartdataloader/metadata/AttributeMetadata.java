@@ -16,11 +16,7 @@ public abstract class AttributeMetadata implements Comparable<AttributeMetadata>
     protected boolean identifier = false;
 
     public AttributeMetadata(
-            EntityMetadata entity,
-            String name,
-            String type,
-            boolean externalReference,
-            boolean identifier) {
+            EntityMetadata entity, String name, String type, boolean externalReference, boolean identifier) {
         this.name = name;
         this.entity = entity;
         this.setType(type);
@@ -28,8 +24,7 @@ public abstract class AttributeMetadata implements Comparable<AttributeMetadata>
         this.identifier = identifier;
     }
 
-    public AttributeMetadata(
-            EntityMetadata entity, String name, String type, boolean externalReference) {
+    public AttributeMetadata(EntityMetadata entity, String name, String type, boolean externalReference) {
         this.name = name;
         this.entity = entity;
         this.setType(type);

@@ -60,8 +60,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * Class to render and manage the Elasticsearch modal dialog This dialog allow the user to choice
- * which Elasticsearch attributes include in layers, selects attribute to use as GEOMETRY.
+ * Class to render and manage the Elasticsearch modal dialog This dialog allow the user to choice which Elasticsearch
+ * attributes include in layers, selects attribute to use as GEOMETRY.
  */
 abstract class ElasticConfigurationPage extends Panel {
 
@@ -71,16 +71,15 @@ abstract class ElasticConfigurationPage extends Panel {
 
     private final String useAllMarkupId;
 
-    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES =
-            Arrays.asList(
-                    Geometry.class,
-                    GeometryCollection.class,
-                    Point.class,
-                    MultiPoint.class,
-                    LineString.class,
-                    MultiLineString.class,
-                    Polygon.class,
-                    MultiPolygon.class);
+    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES = Arrays.asList(
+            Geometry.class,
+            GeometryCollection.class,
+            Point.class,
+            MultiPoint.class,
+            LineString.class,
+            MultiLineString.class,
+            Polygon.class,
+            MultiPolygon.class);
 
     /**
      * Constructs the dialog to set Elasticsearch attributes and configuration options.
@@ -112,36 +111,33 @@ abstract class ElasticConfigurationPage extends Panel {
                 selectAll = false;
             }
         }
-        AjaxCheckBox useAllCheckBox =
-                new AjaxCheckBox("useAll", Model.of(selectAll)) {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        final boolean use = (Boolean) this.getDefaultModelObject();
-                        for (final ElasticAttribute attribute : attProvider.getItems()) {
-                            attribute.setUse(use);
-                        }
-                        target.add(elasticAttributePanel);
-                    }
-                };
+        AjaxCheckBox useAllCheckBox = new AjaxCheckBox("useAll", Model.of(selectAll)) {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                final boolean use = (Boolean) this.getDefaultModelObject();
+                for (final ElasticAttribute attribute : attProvider.getItems()) {
+                    attribute.setUse(use);
+                }
+                target.add(elasticAttributePanel);
+            }
+        };
         useAllCheckBox.setOutputMarkupId(true);
         elastic_form.add(useAllCheckBox);
         useAllMarkupId = useAllCheckBox.getMarkupId();
 
-        elastic_form.add(
-                new AjaxButton("es_save") {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        onSave(target);
-                    }
-                });
+        elastic_form.add(new AjaxButton("es_save") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                onSave(target);
+            }
+        });
 
-        elastic_form.add(
-                new AjaxButton("es_refresh") {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        onRefresh(target);
-                    }
-                });
+        elastic_form.add(new AjaxButton("es_refresh") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                onRefresh(target);
+            }
+        });
 
         FeedbackPanel feedbackPanel = new FeedbackPanel("es_feedback");
         feedbackPanel.setOutputMarkupId(true);
@@ -159,8 +155,8 @@ abstract class ElasticConfigurationPage extends Panel {
     }
 
     /**
-     * Validates Elasticsearch attributes configuration and stores the Elasticsearch layer
-     * configuration into feature type metadata as {@link ElasticLayerConfiguration#KEY} <br>
+     * Validates Elasticsearch attributes configuration and stores the Elasticsearch layer configuration into feature
+     * type metadata as {@link ElasticLayerConfiguration#KEY} <br>
      * Validation include the follow rules
      * <li>One attribute must be a GEOMETRY.
      *
@@ -219,9 +215,7 @@ abstract class ElasticConfigurationPage extends Panel {
 
         try {
             ElasticDataStore dataStore =
-                    (ElasticDataStore)
-                            ((DataStoreInfo) ri.getStore())
-                                    .getDataStore(new NullProgressListener());
+                    (ElasticDataStore) ((DataStoreInfo) ri.getStore()).getDataStore(new NullProgressListener());
 
             ArrayList<ElasticAttribute> result = new ArrayList<>();
             Map<String, ElasticAttribute> tempMap = new HashMap<>();
@@ -238,9 +232,7 @@ abstract class ElasticConfigurationPage extends Panel {
                 // empty one if we are refreshing
                 ElasticLayerConfiguration emptyLayerConfiguration =
                         new ElasticLayerConfiguration(layerConfig.getLayerName());
-                dataStore
-                        .getLayerConfigurations()
-                        .put(layerConfig.getLayerName(), emptyLayerConfiguration);
+                dataStore.getLayerConfigurations().put(layerConfig.getLayerName(), emptyLayerConfiguration);
             }
 
             for (ElasticAttribute at : dataStore.getElasticAttributes(layerName)) {
@@ -261,66 +253,47 @@ abstract class ElasticConfigurationPage extends Panel {
     /*
      * Builds attribute table
      */
-    private GeoServerTablePanel<ElasticAttribute> getElasticAttributePanel(
-            ElasticAttributeProvider attProvider) {
+    private GeoServerTablePanel<ElasticAttribute> getElasticAttributePanel(ElasticAttributeProvider attProvider) {
         GeoServerTablePanel<ElasticAttribute> atts =
                 new GeoServerTablePanel<ElasticAttribute>("esAttributes", attProvider) {
                     @Override
                     protected Component getComponentForProperty(
-                            String id,
-                            IModel<ElasticAttribute> itemModel,
-                            Property<ElasticAttribute> property) {
+                            String id, IModel<ElasticAttribute> itemModel, Property<ElasticAttribute> property) {
                         ElasticAttribute att = itemModel.getObject();
-                        boolean isGeometry =
-                                att.getType() != null
-                                        && Geometry.class.isAssignableFrom(att.getType());
+                        boolean isGeometry = att.getType() != null && Geometry.class.isAssignableFrom(att.getType());
                         if (property == ElasticAttributeProvider.NAME && isGeometry) {
                             Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
                             f.add(new Label("label", att.getDisplayName() + "*"));
                             return f;
                         } else if (property == ElasticAttributeProvider.TYPE && isGeometry) {
-                            Fragment f =
-                                    new Fragment(id, "geometry", ElasticConfigurationPage.this);
+                            Fragment f = new Fragment(id, "geometry", ElasticConfigurationPage.this);
                             //noinspection unchecked
-                            f.add(
-                                    new DropDownChoice<>(
-                                            "geometry",
-                                            new PropertyModel<>(itemModel, "type"),
-                                            GEOMETRY_TYPES,
-                                            new GeometryTypeRenderer()));
+                            f.add(new DropDownChoice<>(
+                                    "geometry",
+                                    new PropertyModel<>(itemModel, "type"),
+                                    GEOMETRY_TYPES,
+                                    new GeometryTypeRenderer()));
                             return f;
                         } else if (property == ElasticAttributeProvider.USE) {
-                            CheckBox checkBox =
-                                    new CheckBox("use", new PropertyModel<>(itemModel, "use"));
+                            CheckBox checkBox = new CheckBox("use", new PropertyModel<>(itemModel, "use"));
                             final String onclick =
-                                    "document.getElementById(\""
-                                            + useAllMarkupId
-                                            + "\").checked = false;";
-                            checkBox.add(
-                                    new AttributeAppender("onclick", new Model<>(onclick), ";"));
-                            Fragment f =
-                                    new Fragment(id, "checkboxUse", ElasticConfigurationPage.this);
+                                    "document.getElementById(\"" + useAllMarkupId + "\").checked = false;";
+                            checkBox.add(new AttributeAppender("onclick", new Model<>(onclick), ";"));
+                            Fragment f = new Fragment(id, "checkboxUse", ElasticConfigurationPage.this);
                             f.add(checkBox);
                             return f;
                         } else if (property == ElasticAttributeProvider.DEFAULT_GEOMETRY) {
                             if (isGeometry) {
-                                Fragment f =
-                                        new Fragment(
-                                                id,
-                                                "checkboxDefaultGeometry",
-                                                ElasticConfigurationPage.this);
-                                f.add(
-                                        new CheckBox(
-                                                "defaultGeometry",
-                                                new PropertyModel<>(itemModel, "defaultGeometry")));
+                                Fragment f = new Fragment(id, "checkboxDefaultGeometry", ElasticConfigurationPage.this);
+                                f.add(new CheckBox(
+                                        "defaultGeometry", new PropertyModel<>(itemModel, "defaultGeometry")));
                                 return f;
                             } else {
                                 return new Fragment(id, "empty", ElasticConfigurationPage.this);
                             }
                         } else if (property == ElasticAttributeProvider.SRID) {
                             if (isGeometry) {
-                                Fragment f =
-                                        new Fragment(id, "label", ElasticConfigurationPage.this);
+                                Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
                                 f.add(new Label("label", String.valueOf(att.getSrid())));
                                 return f;
                             } else {
@@ -338,8 +311,7 @@ abstract class ElasticConfigurationPage extends Panel {
                                 validFormats = att.getValidDateFormats();
                             }
                             if (validFormats != null) {
-                                Fragment f =
-                                        new Fragment(id, "label", ElasticConfigurationPage.this);
+                                Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
                                 String format = "";
                                 for (int i = 0; i < validFormats.size(); i++) {
                                     if (i != validFormats.size()) {
@@ -355,8 +327,7 @@ abstract class ElasticConfigurationPage extends Panel {
                             }
                         } else if (property == ElasticAttributeProvider.ANALYZED) {
                             if (att.getAnalyzed() != null && att.getAnalyzed()) {
-                                Fragment f =
-                                        new Fragment(id, "label", ElasticConfigurationPage.this);
+                                Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
                                 f.add(new Label("label", "x"));
                                 return f;
                             } else {
@@ -364,8 +335,7 @@ abstract class ElasticConfigurationPage extends Panel {
                             }
                         } else if (property == ElasticAttributeProvider.STORED) {
                             if (att.isStored()) {
-                                Fragment f =
-                                        new Fragment(id, "label", ElasticConfigurationPage.this);
+                                Fragment f = new Fragment(id, "label", ElasticConfigurationPage.this);
                                 f.add(new Label("label", "x"));
                                 return f;
                             } else {
@@ -373,23 +343,14 @@ abstract class ElasticConfigurationPage extends Panel {
                             }
                         } else if (property == ElasticAttributeProvider.ORDER) {
                             TextField<Integer> order =
-                                    new TextField<>(
-                                            "order", new PropertyModel<>(itemModel, "order"));
-                            Fragment f =
-                                    new Fragment(
-                                            id, "textOrderValue", ElasticConfigurationPage.this);
+                                    new TextField<>("order", new PropertyModel<>(itemModel, "order"));
+                            Fragment f = new Fragment(id, "textOrderValue", ElasticConfigurationPage.this);
                             f.add(order);
                             return f;
                         } else if (property == ElasticAttributeProvider.CUSTOM_NAME) {
                             TextField<String> customName =
-                                    new TextField<>(
-                                            "customName",
-                                            new PropertyModel<>(itemModel, "customName"));
-                            Fragment f =
-                                    new Fragment(
-                                            id,
-                                            "textCustomNameValue",
-                                            ElasticConfigurationPage.this);
+                                    new TextField<>("customName", new PropertyModel<>(itemModel, "customName"));
+                            Fragment f = new Fragment(id, "textCustomNameValue", ElasticConfigurationPage.this);
                             f.add(customName);
                             return f;
                         }
@@ -398,8 +359,7 @@ abstract class ElasticConfigurationPage extends Panel {
 
                     @Override
                     protected void onPopulateItem(
-                            Property<ElasticAttribute> property,
-                            ListItem<Property<ElasticAttribute>> item) {
+                            Property<ElasticAttribute> property, ListItem<Property<ElasticAttribute>> item) {
                         if (property == ElasticAttributeProvider.STORED) {
                             item.add(new AttributeModifier("style", Model.of("text-align:center")));
                         } else if (property == ElasticAttributeProvider.ANALYZED) {
@@ -418,8 +378,7 @@ abstract class ElasticConfigurationPage extends Panel {
     /*
      * Render geometry type select
      */
-    private static class GeometryTypeRenderer
-            implements IChoiceRenderer<Class<? extends Geometry>> {
+    private static class GeometryTypeRenderer implements IChoiceRenderer<Class<? extends Geometry>> {
 
         @Override
         public Object getDisplayValue(Class<? extends Geometry> object) {
@@ -453,8 +412,7 @@ abstract class ElasticConfigurationPage extends Panel {
      * @see #onSave
      * @see #onCancel
      */
-    abstract void done(
-            AjaxRequestTarget target, LayerInfo layerInfo, ElasticLayerConfiguration layerConfig);
+    abstract void done(AjaxRequestTarget target, LayerInfo layerInfo, ElasticLayerConfiguration layerConfig);
 
     abstract void refresh(AjaxRequestTarget target);
 }

@@ -32,7 +32,8 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     @Override
     protected void registerNamespaces(java.util.Map<String, String> namespaces) {
         namespaces.put("wms", "http://www.opengis.net/wms");
-    };
+    }
+    ;
 
     @Test
     public void testGlobalCapabilities() throws Exception {
@@ -44,7 +45,6 @@ public class LayerWorkspaceTest extends WMSTestSupport {
     @Test
     public void testWorkspaceCapabilities() throws Exception {
         Document doc = getAsDOM("/sf/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
-        assertXpathExists(
-                "//wms:Layer[wms:Name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']", doc);
+        assertXpathExists("//wms:Layer[wms:Name='" + MockData.PRIMITIVEGEOFEATURE.getLocalPart() + "']", doc);
     }
 }

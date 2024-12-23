@@ -195,9 +195,8 @@ public class ImportTask implements Serializable {
     }
 
     /**
-     * Returns a transient metadata map, useful for caching information that's expensive to compute.
-     * The map won't be stored in the {@link ImportStore} so don't use it for anything that needs to
-     * be persisted.
+     * Returns a transient metadata map, useful for caching information that's expensive to compute. The map won't be
+     * stored in the {@link ImportStore} so don't use it for anything that needs to be persisted.
      */
     public Map<Object, Object> getMetadata() {
         if (metadata == null) {

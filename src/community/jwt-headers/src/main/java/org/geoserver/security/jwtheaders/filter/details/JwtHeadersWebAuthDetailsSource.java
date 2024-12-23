@@ -10,9 +10,9 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 /**
- * We are marking our (JWT Headers) security context authentication's with the ID of the header it
- * came from. This allows for easily detecting when to loggout the user. NOTE: we logout a user when
- * the previously logged in (JWT Header), but then the headers are no longer there.
+ * We are marking our (JWT Headers) security context authentication's with the ID of the header it came from. This
+ * allows for easily detecting when to loggout the user. NOTE: we logout a user when the previously logged in (JWT
+ * Header), but then the headers are no longer there.
  */
 public class JwtHeadersWebAuthDetailsSource extends WebAuthenticationDetailsSource {
 

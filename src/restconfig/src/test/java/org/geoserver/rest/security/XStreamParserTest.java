@@ -18,8 +18,7 @@ import org.geoserver.security.xml.XMLUserGroupService;
 import org.junit.Test;
 
 /**
- * Unit tests designed in line with issue reported at
- * https://osgeo-org.atlassian.net/browse/GEOS-8486
+ * Unit tests designed in line with issue reported at https://osgeo-org.atlassian.net/browse/GEOS-8486
  *
  * @author ImranR
  */
@@ -42,8 +41,7 @@ public class XStreamParserTest extends SecurityRESTTestSupport {
         // preserve legacy single-element-array-as-object serialization
         boolean useSerializeAsArray = false;
 
-        XStream xstream =
-                new XStream(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
+        XStream xstream = new XStream(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
         xstream.setMode(XStream.NO_REFERENCES);
         xstream.alias("user", JaxbUser.class);
         xstream.allowTypes(new Class[] {JaxbUser.class});
@@ -64,8 +62,7 @@ public class XStreamParserTest extends SecurityRESTTestSupport {
     @Test
     public void postUserXMLTest() throws Exception, IOException {
 
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         // 201 means resources has been successfully created
         assertEquals(
@@ -82,8 +79,7 @@ public class XStreamParserTest extends SecurityRESTTestSupport {
 
     @Test
     public void postUserJSONTest() throws Exception, IOException {
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         // 201 means resources has been successfully created
         assertEquals(

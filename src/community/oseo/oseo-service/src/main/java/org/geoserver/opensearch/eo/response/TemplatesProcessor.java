@@ -69,8 +69,8 @@ import org.geotools.xsd.Encoder;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be
- * used for a single request, as it caches the template and won't react to on disk template changes.
+ * Loads, caches and processes Freemarker templates against a stream of features. It's meant to be used for a single
+ * request, as it caches the template and won't react to on disk template changes.
  */
 public class TemplatesProcessor {
 
@@ -99,8 +99,7 @@ public class TemplatesProcessor {
      * @param templateName The template name (with no extension)
      * @param feature The feature to be applied
      */
-    public String processTemplate(String collection, String templateName, Feature feature)
-            throws IOException {
+    public String processTemplate(String collection, String templateName, Feature feature) throws IOException {
         Template template = getTemplate(collection, templateName);
         StringWriter sw = new StringWriter();
         HashMap<String, Object> model = setupModel(feature);
@@ -112,8 +111,7 @@ public class TemplatesProcessor {
         return sw.toString();
     }
 
-    public String processTemplate(SearchResults searchResults)
-            throws IOException, TemplateException {
+    public String processTemplate(SearchResults searchResults) throws IOException, TemplateException {
         HashMap<String, Object> model = setupGenericHeaderModel(searchResults);
         StringWriter sw = new StringWriter();
         Template header = getTemplate("", "generic" + "-header");
@@ -136,12 +134,7 @@ public class TemplatesProcessor {
                 }
 
                 if (templateName.equals("product")) {
-                    collectionName =
-                            (String)
-                                    value(
-                                            feature,
-                                            ProductClass.GENERIC.getNamespace(),
-                                            "parentIdentifier");
+                    collectionName = (String) value(feature, ProductClass.GENERIC.getNamespace(), "parentIdentifier");
                 } else if (templateName.equals("collection")) {
                     collectionName = (String) value(feature, EO_NAMESPACE, "identifier");
                 }
@@ -162,7 +155,8 @@ public class TemplatesProcessor {
         HashMap<String, Object> model = new HashMap<>();
         model.put("model", feature);
         if (Dispatcher.REQUEST.get() != null) {
-            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+            final String baseURL =
+                    ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
             model.put("baseURL", baseURL);
             addUtilityFunctions(baseURL, model);
         }
@@ -176,7 +170,8 @@ public class TemplatesProcessor {
         model.put("searchResults", searchResults);
 
         if (Dispatcher.REQUEST.get() != null) {
-            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+            final String baseURL =
+                    ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
             model.put("baseURL", baseURL);
             addUtilityFunctions(baseURL, model);
         }
@@ -208,7 +203,8 @@ public class TemplatesProcessor {
 
         model.put("model", feature);
         if (Dispatcher.REQUEST.get() != null) {
-            final String baseURL = ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
+            final String baseURL =
+                    ResponseUtils.baseURL(Dispatcher.REQUEST.get().getHttpRequest());
             model.put("baseURL", baseURL);
             addUtilityFunctions(baseURL, model);
         }
@@ -216,8 +212,7 @@ public class TemplatesProcessor {
         return model;
     }
 
-    private void prepareGenericHeaderModel(
-            SearchResults searchResults, HashMap<String, Object> model) {
+    private void prepareGenericHeaderModel(SearchResults searchResults, HashMap<String, Object> model) {
         model.put("Query", getQueryAttributes(searchResults.getRequest()));
         String organization = gs.getSettings().getContact().getContactOrganization();
         if (organization != null) {
@@ -228,8 +223,7 @@ public class TemplatesProcessor {
             model.put("title", title);
         }
         model.put("updated", DateTimeFormatter.ISO_INSTANT.format(Instant.now()));
-        model.put(
-                "builder", new PaginationLinkBuilder(searchResults, info, AtomSearchResponse.MIME));
+        model.put("builder", new PaginationLinkBuilder(searchResults, info, AtomSearchResponse.MIME));
     }
 
     private void putDatesToContentModel(Feature feature, HashMap<String, Object> model) {
@@ -254,79 +248,54 @@ public class TemplatesProcessor {
     }
 
     /**
-     * Adds the <code>oseoLink</code> and <code>oseoLink</code> functions to the model, for usage in
-     * the template, and the bbox extraction ones.
+     * Adds the <code>oseoLink</code> and <code>oseoLink</code> functions to the model, for usage in the template, and
+     * the bbox extraction ones.
      */
     protected void addUtilityFunctions(String baseURL, Map<String, Object> model) {
-        model.put(
-                "oseoLink",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            Map<String, String> kvp = new LinkedHashMap<>();
-                            if (arguments.size() > 1 && (arguments.size() % 2) != 1) {
-                                throw new IllegalArgumentException(
-                                        "Expected a path argument, followed by an optional list of keys and values. Found a key that is not matched to a value: "
-                                                + arguments);
-                            }
-                            int i = 1;
-                            while (i < arguments.size()) {
-                                kvp.put(toString(arguments.get(i++)), toString(arguments.get(i++)));
-                            }
-                            return ResponseUtils.buildURL(
-                                    baseURL,
-                                    ResponseUtils.appendPath("oseo", toString(arguments.get(0))),
-                                    kvp,
-                                    URLMangler.URLType.SERVICE);
-                        });
-        model.put(
-                "resourceLink",
-                (TemplateMethodModelEx)
-                        arguments ->
-                                ResponseUtils.buildURL(
-                                        baseURL,
-                                        toString(arguments.get(0)),
-                                        null,
-                                        URLMangler.URLType.RESOURCE));
+        model.put("oseoLink", (TemplateMethodModelEx) arguments -> {
+            Map<String, String> kvp = new LinkedHashMap<>();
+            if (arguments.size() > 1 && (arguments.size() % 2) != 1) {
+                throw new IllegalArgumentException(
+                        "Expected a path argument, followed by an optional list of keys and values. Found a key that is not matched to a value: "
+                                + arguments);
+            }
+            int i = 1;
+            while (i < arguments.size()) {
+                kvp.put(toString(arguments.get(i++)), toString(arguments.get(i++)));
+            }
+            return ResponseUtils.buildURL(
+                    baseURL,
+                    ResponseUtils.appendPath("oseo", toString(arguments.get(0))),
+                    kvp,
+                    URLMangler.URLType.SERVICE);
+        });
+        model.put("resourceLink", (TemplateMethodModelEx) arguments ->
+                ResponseUtils.buildURL(baseURL, toString(arguments.get(0)), null, URLMangler.URLType.RESOURCE));
         // bbox extraction functions
-        model.put(
-                "minx",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            Geometry g = toGeometry(arguments.get(0));
-                            return g.getEnvelopeInternal().getMinX();
-                        });
-        model.put(
-                "miny",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            Geometry g = toGeometry(arguments.get(0));
-                            return g.getEnvelopeInternal().getMinY();
-                        });
-        model.put(
-                "maxx",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            Geometry g = toGeometry(arguments.get(0));
-                            return g.getEnvelopeInternal().getMaxX();
-                        });
-        model.put(
-                "maxy",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            Geometry g = toGeometry(arguments.get(0));
-                            return g.getEnvelopeInternal().getMaxY();
-                        });
-        model.put(
-                "gml",
-                (TemplateMethodModelEx)
-                        arguments -> {
-                            try {
-                                Geometry g = toGeometry(arguments.get(0));
-                                return encodeToGML(g);
-                            } catch (IOException e) {
-                                throw new RuntimeException("Failed to encode geometry", e);
-                            }
-                        });
+        model.put("minx", (TemplateMethodModelEx) arguments -> {
+            Geometry g = toGeometry(arguments.get(0));
+            return g.getEnvelopeInternal().getMinX();
+        });
+        model.put("miny", (TemplateMethodModelEx) arguments -> {
+            Geometry g = toGeometry(arguments.get(0));
+            return g.getEnvelopeInternal().getMinY();
+        });
+        model.put("maxx", (TemplateMethodModelEx) arguments -> {
+            Geometry g = toGeometry(arguments.get(0));
+            return g.getEnvelopeInternal().getMaxX();
+        });
+        model.put("maxy", (TemplateMethodModelEx) arguments -> {
+            Geometry g = toGeometry(arguments.get(0));
+            return g.getEnvelopeInternal().getMaxY();
+        });
+        model.put("gml", (TemplateMethodModelEx) arguments -> {
+            try {
+                Geometry g = toGeometry(arguments.get(0));
+                return encodeToGML(g);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to encode geometry", e);
+            }
+        });
         model.put("loadJSON", parseJSON());
     }
 
@@ -336,14 +305,12 @@ public class TemplatesProcessor {
 
     private String loadJSON(String filePath) {
         try {
-            GeoServerDataDirectory geoServerDataDirectory =
-                    GeoServerExtensions.bean(GeoServerDataDirectory.class);
+            GeoServerDataDirectory geoServerDataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
 
             File file = geoServerDataDirectory.findFile(filePath);
             if (file == null) {
                 LOGGER.warning("File is outside of data directory");
-                throw new RuntimeException(
-                        "File " + filePath + " is outside of the data directory");
+                throw new RuntimeException("File " + filePath + " is outside of the data directory");
             }
 
             ObjectMapper mapper = new ObjectMapper();
@@ -409,20 +376,13 @@ public class TemplatesProcessor {
                 // cheap re-projection support since there is no re-projecting collection
                 // wrapper for complex features
                 CoordinateReferenceSystem nativeCRS =
-                        ((GeometryDescriptor) property.getDescriptor())
-                                .getCoordinateReferenceSystem();
-                if (nativeCRS != null
-                        && !CRS.equalsIgnoreMetadata(nativeCRS, OpenSearchParameters.OUTPUT_CRS)) {
+                        ((GeometryDescriptor) property.getDescriptor()).getCoordinateReferenceSystem();
+                if (nativeCRS != null && !CRS.equalsIgnoreMetadata(nativeCRS, OpenSearchParameters.OUTPUT_CRS)) {
                     Geometry g = (Geometry) value;
                     try {
-                        return JTS.transform(
-                                g,
-                                CRS.findMathTransform(nativeCRS, OpenSearchParameters.OUTPUT_CRS));
-                    } catch (MismatchedDimensionException
-                            | TransformException
-                            | FactoryException e) {
-                        throw new OWS20Exception(
-                                "Failed to reproject geometry to EPSG:4326 lat/lon", e);
+                        return JTS.transform(g, CRS.findMathTransform(nativeCRS, OpenSearchParameters.OUTPUT_CRS));
+                    } catch (MismatchedDimensionException | TransformException | FactoryException e) {
+                        throw new OWS20Exception("Failed to reproject geometry to EPSG:4326 lat/lon", e);
                     }
                 }
             }
@@ -456,19 +416,14 @@ public class TemplatesProcessor {
         return parameters;
     }
 
-    private void encodeOgcLinksFromFeature(
-            Feature feature, SearchRequest request, HashMap<String, Object> model) {
+    private void encodeOgcLinksFromFeature(Feature feature, SearchRequest request, HashMap<String, Object> model) {
         // build ogc links if available
-        Collection<Property> linkProperties =
-                feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
+        Collection<Property> linkProperties = feature.getProperties(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME);
         if (linkProperties != null) {
-            Map<String, List<SimpleFeature>> linksByOffering =
-                    linkProperties.stream()
-                            .map(p -> (SimpleFeature) p)
-                            .sorted(LinkFeatureComparator.INSTANCE)
-                            .collect(
-                                    Collectors.groupingBy(
-                                            f -> (String) f.getAttribute("offering")));
+            Map<String, List<SimpleFeature>> linksByOffering = linkProperties.stream()
+                    .map(p -> (SimpleFeature) p)
+                    .sorted(LinkFeatureComparator.INSTANCE)
+                    .collect(Collectors.groupingBy(f -> (String) f.getAttribute("offering")));
             String hrefBase = getHRefBase(request);
             encodeOgcLinks(linksByOffering, hrefBase, model);
         }
@@ -484,20 +439,17 @@ public class TemplatesProcessor {
     }
 
     private void encodeOgcLinks(
-            Map<String, List<SimpleFeature>> linksByOffering,
-            String hrefBase,
-            HashMap<String, Object> model) {
+            Map<String, List<SimpleFeature>> linksByOffering, String hrefBase, HashMap<String, Object> model) {
         ArrayList<Offering> offerings = new ArrayList<>();
 
-        linksByOffering.forEach(
-                (offering, links) -> {
-                    ArrayList<OfferingDetail> offeringDetailList = new ArrayList<>();
+        linksByOffering.forEach((offering, links) -> {
+            ArrayList<OfferingDetail> offeringDetailList = new ArrayList<>();
 
-                    for (SimpleFeature link : links) {
-                        offeringDetailList.add(encodeOgcLink(link, hrefBase));
-                    }
-                    offerings.add(new Offering(offering, offeringDetailList));
-                });
+            for (SimpleFeature link : links) {
+                offeringDetailList.add(encodeOgcLink(link, hrefBase));
+            }
+            offerings.add(new Offering(offering, offeringDetailList));
+        });
         model.put("offerings", offerings);
     }
 
@@ -506,9 +458,7 @@ public class TemplatesProcessor {
         String code = (String) link.getAttribute("code");
         String type = (String) link.getAttribute("type");
         String href = (String) link.getAttribute("href");
-        String hrefExpanded =
-                QuickTemplate.replaceVariables(
-                        href, Collections.singletonMap(BASE_URL_KEY, hrefBase));
+        String hrefExpanded = QuickTemplate.replaceVariables(href, Collections.singletonMap(BASE_URL_KEY, hrefBase));
         return new OfferingDetail(method, code, type, hrefExpanded);
     }
 

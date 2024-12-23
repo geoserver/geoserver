@@ -17,8 +17,7 @@ public class RoleConverterTest {
 
     /**
      * tests parsing of the roleConverter string
-     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These check
-     * for empty maps
+     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These check for empty maps
      */
     @Test
     public void testParseNull() {
@@ -43,8 +42,8 @@ public class RoleConverterTest {
 
     /**
      * tests parsing of the roleConverter string
-     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These
-     * checks simple (correct) inputs
+     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These checks simple (correct)
+     * inputs
      */
     @Test
     public void testParseSimple() {
@@ -67,8 +66,7 @@ public class RoleConverterTest {
 
     /**
      * tests parsing of the roleConverter string
-     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These
-     * checks bad inputs
+     * format:externalRoleName1=GeoServerRoleName1;externalRoleName2=GeoServerRoleName2" These checks bad inputs
      */
     @Test
     public void testParseBad() {

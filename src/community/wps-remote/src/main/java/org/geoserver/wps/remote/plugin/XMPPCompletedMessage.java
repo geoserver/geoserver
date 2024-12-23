@@ -28,8 +28,7 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs)
             throws IOException {
 
         final String pID = signalArgs.get("id");
@@ -41,8 +40,7 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
         if (msg != null && msg.equals(this.topic)) {
             final Map<String, Object> outputs = new HashMap<String, Object>();
             try {
-                for (Entry<String, String> result :
-                        new TreeMap<String, String>(signalArgs).entrySet()) {
+                for (Entry<String, String> result : new TreeMap<String, String>(signalArgs).entrySet()) {
                     if (result.getKey().startsWith("result")) {
                         final String key = result.getKey();
                         final Object output = getOutPuts(xmppClient, result);
@@ -53,13 +51,7 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
                             // output
                             try {
                                 Object wpsOutputValue =
-                                        transformOutputs(
-                                                xmppClient,
-                                                pID,
-                                                baseURL,
-                                                outputProducer,
-                                                key,
-                                                resultParams);
+                                        transformOutputs(xmppClient, pID, baseURL, outputProducer, key, resultParams);
 
                                 // add the transformed result to the process
                                 // outputs
@@ -74,13 +66,8 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
                                             "At least one of the Oputput Producres failed transforming the WPS Output!");
                                 }
                             } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.SEVERE,
-                                        "Exception occurred while trying to produce the result:",
-                                        e);
-                                throw new IOException(
-                                        "Exception occurred while trying to produce the result:",
-                                        e);
+                                LOGGER.log(Level.SEVERE, "Exception occurred while trying to produce the result:", e);
+                                throw new IOException("Exception occurred while trying to produce the result:", e);
                             }
                         }
                     }
@@ -124,43 +111,30 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
             final String key,
             final Map<String, Object> resultParams)
             throws Exception {
-        final Object value =
-                (resultParams.get(key + "_value") != null
-                        ? resultParams.get(key + "_value")
-                        : null);
-        final String type =
-                (String)
-                        (resultParams.get(key + "_type") != null
-                                ? resultParams.get(key + "_type")
-                                : null);
-        final String description =
-                (resultParams.get(key + "_description") != null
-                                && resultParams.get(key + "_description") instanceof String
-                        ? (String) resultParams.get(key + "_description")
-                        : null);
+        final Object value = (resultParams.get(key + "_value") != null ? resultParams.get(key + "_value") : null);
+        final String type = (String) (resultParams.get(key + "_type") != null ? resultParams.get(key + "_type") : null);
+        final String description = (resultParams.get(key + "_description") != null
+                        && resultParams.get(key + "_description") instanceof String
+                ? (String) resultParams.get(key + "_description")
+                : null);
         final String title =
-                (resultParams.get(key + "_title") != null
-                                && resultParams.get(key + "_title") instanceof String
+                (resultParams.get(key + "_title") != null && resultParams.get(key + "_title") instanceof String
                         ? (String) resultParams.get(key + "_title")
                         : null);
-        final String layerName =
-                (resultParams.get(key + "_layer_name") != null
-                                && resultParams.get(key + "_layer_name") instanceof String
-                        ? (String) resultParams.get(key + "_layer_name")
-                        : null);
+        final String layerName = (resultParams.get(key + "_layer_name") != null
+                        && resultParams.get(key + "_layer_name") instanceof String
+                ? (String) resultParams.get(key + "_layer_name")
+                : null);
         final String defaultStyle =
-                (resultParams.get(key + "_style") != null
-                                && resultParams.get(key + "_style") instanceof String
+                (resultParams.get(key + "_style") != null && resultParams.get(key + "_style") instanceof String
                         ? (String) resultParams.get(key + "_style")
                         : null);
         final String targetWorkspace =
-                (resultParams.get(key + "_workspace") != null
-                                && resultParams.get(key + "_workspace") instanceof String
+                (resultParams.get(key + "_workspace") != null && resultParams.get(key + "_workspace") instanceof String
                         ? (String) resultParams.get(key + "_workspace")
                         : null);
         final String metadata =
-                (resultParams.get(key + "_metadata") != null
-                                && resultParams.get(key + "_metadata") instanceof String
+                (resultParams.get(key + "_metadata") != null && resultParams.get(key + "_metadata") instanceof String
                         ? (String) resultParams.get(key + "_metadata")
                         : null);
 
@@ -173,20 +147,19 @@ public class XMPPCompletedMessage extends XMPPOutputMessage {
                 publish = (Boolean) resultParams.get(key + "_pub");
         }
 
-        Object wpsOutputValue =
-                outputProducer.produceOutput(
-                        value,
-                        type,
-                        pID,
-                        baseURL,
-                        xmppClient,
-                        publish,
-                        layerName,
-                        title,
-                        description,
-                        defaultStyle,
-                        targetWorkspace,
-                        metadata);
+        Object wpsOutputValue = outputProducer.produceOutput(
+                value,
+                type,
+                pID,
+                baseURL,
+                xmppClient,
+                publish,
+                layerName,
+                title,
+                description,
+                defaultStyle,
+                targetWorkspace,
+                metadata);
 
         LOGGER.finest("[XMPPCompletedMessage] wpsOutputValue:" + wpsOutputValue);
         return wpsOutputValue;

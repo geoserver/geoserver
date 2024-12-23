@@ -181,8 +181,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         writeFilter(writeFilter, out);
     }
 
-    private void writeProperties(List<PropertyName> attributes, ObjectOutputStream oos)
-            throws IOException {
+    private void writeProperties(List<PropertyName> attributes, ObjectOutputStream oos) throws IOException {
         if (attributes == null) {
             oos.writeInt(-1);
         } else {
@@ -194,8 +193,7 @@ public class VectorAccessLimits extends DataAccessLimits {
         }
     }
 
-    private List<PropertyName> readProperties(ObjectInputStream ois)
-            throws IOException, ClassNotFoundException {
+    private List<PropertyName> readProperties(ObjectInputStream ois) throws IOException, ClassNotFoundException {
         int size = ois.readInt();
         if (size == -1) {
             return null;

@@ -92,9 +92,7 @@ public final class GwcServiceDispatcherCallbackTest {
         assertThat(wrappedRequest, notNullValue());
         assertThat(wrappedRequest.getHttpRequest(), notNullValue());
         assertThat(wrappedRequest.getHttpRequest().getContextPath(), is("geoserver/someWorkspace"));
-        assertThat(
-                wrappedRequest.getHttpRequest().getParameter("layer"),
-                is("someWorkspace:someLayer"));
+        assertThat(wrappedRequest.getHttpRequest().getParameter("layer"), is("someWorkspace:someLayer"));
         assertThat(wrappedRequest.getHttpRequest().getParameterMap(), notNullValue());
         assertThat(
                 wrappedRequest.getHttpRequest().getParameterMap().get("layer"),

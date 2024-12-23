@@ -214,8 +214,7 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
     @Test
     public void testPasswordRecoding() throws Exception {
 
-        SecurityUserGroupServiceConfig config =
-                getSecurityManager().loadUserGroupServiceConfig(service.getName());
+        SecurityUserGroupServiceConfig config = getSecurityManager().loadUserGroupServiceConfig(service.getName());
         config.setPasswordEncoderName(getPlainTextPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
         service.initializeFromConfig(config);
@@ -227,14 +226,12 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // no recoding
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getPlainTextPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getPlainTextPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getPlainTextPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getPlainTextPasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -242,14 +239,12 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // recoding
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getPBEPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getPBEPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getPBEPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getPBEPasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getDigestPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -257,14 +252,12 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // recoding
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -272,32 +265,27 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // recoding has no effect
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
 
         // add a user with pbe encoding
         store = service.createStore();
         store.addUser(store.createUserObject("u3", "p3", true));
         store.store();
 
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u3")
-                        .getPassword()
-                        .startsWith(getPBEPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3")
+                .getPassword()
+                .startsWith(getPBEPasswordEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getEmptyEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -305,18 +293,15 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // recode u3 to empty
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u3")
-                        .getPassword()
-                        .startsWith(getEmptyEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3")
+                .getPassword()
+                .startsWith(getEmptyEncoder().getPrefix()));
 
         config.setPasswordEncoderName(getPBEPasswordEncoder().getName());
         getSecurityManager().saveUserGroupService(config);
@@ -324,17 +309,14 @@ public abstract class AbstractUserGroupServiceTest extends AbstractSecurityServi
 
         Util.recodePasswords(service.createStore());
         // recode has no effect
-        assertTrue(
-                service.loadUserByUsername("u1")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u2")
-                        .getPassword()
-                        .startsWith(getDigestPasswordEncoder().getPrefix()));
-        assertTrue(
-                service.loadUserByUsername("u3")
-                        .getPassword()
-                        .startsWith(getEmptyEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u1")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u2")
+                .getPassword()
+                .startsWith(getDigestPasswordEncoder().getPrefix()));
+        assertTrue(service.loadUserByUsername("u3")
+                .getPassword()
+                .startsWith(getEmptyEncoder().getPrefix()));
     }
 }

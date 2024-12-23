@@ -173,8 +173,7 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
 
     @Override
     public boolean equals(Object o) {
-        return equalsIngnoreFeatureType(o)
-                && Objects.equals(featureType, ((AttributeTypeInfoImpl) o).featureType);
+        return equalsIngnoreFeatureType(o) && Objects.equals(featureType, ((AttributeTypeInfoImpl) o).featureType);
     }
 
     @Override
@@ -211,7 +210,6 @@ public class AttributeTypeInfoImpl implements AttributeTypeInfo {
                 && Objects.equals(length, that.length)
                 && Objects.equals(description, that.description)
                 // avoid false negatives, source is derived if unset
-                && (Objects.equals(source, that.source)
-                        || Objects.equals(getSource(), that.getSource()));
+                && (Objects.equals(source, that.source) || Objects.equals(getSource(), that.getSource()));
     }
 }

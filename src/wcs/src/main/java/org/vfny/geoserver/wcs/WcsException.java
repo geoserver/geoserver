@@ -8,8 +8,8 @@ package org.vfny.geoserver.wcs;
 import org.geoserver.platform.ServiceException;
 
 /**
- * This defines an exception that can be turned into a valid xml service exception that wcs clients
- * will expect. All errors should be wrapped in this before returning to clients.
+ * This defines an exception that can be turned into a valid xml service exception that wcs clients will expect. All
+ * errors should be wrapped in this before returning to clients.
  *
  * @author $Author: Alessio Fabiani (alessio.fabiani@gmail.com) $ (last modification)
  * @author Simone Giannecchini, GeoSolutions SAS

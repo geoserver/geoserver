@@ -66,8 +66,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         // username
         filterConfig.setUserNameJsonPath("preferred_username");
-        filterConfig.setUserNameFormatChoice(
-                GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.JSON);
+        filterConfig.setUserNameFormatChoice(GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.JSON);
         filterConfig.setUserNameHeaderAttributeName("json-header");
 
         // roles
@@ -109,8 +108,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         // username
         filterConfig.setUserNameJsonPath("preferred_username");
-        filterConfig.setUserNameFormatChoice(
-                GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.JWT);
+        filterConfig.setUserNameFormatChoice(GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.JWT);
         filterConfig.setUserNameHeaderAttributeName("json-header");
 
         // roles
@@ -132,10 +130,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
         return filterConfig;
     }
 
-    /**
-     * Enable the Spring Security authentication filters, we want the test to be complete and
-     * realistic
-     */
+    /** Enable the Spring Security authentication filters, we want the test to be complete and realistic */
     @Override
     protected List<Filter> getFilters() {
 
@@ -181,16 +176,14 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         Assert.assertNotNull(auth);
         Assert.assertEquals(PreAuthenticatedAuthenticationToken.class, auth.getClass());
-        Assert.assertEquals(JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
+        Assert.assertEquals(
+                JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
 
-        String authFilterId =
-                ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
+        String authFilterId = ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
         Assert.assertEquals(filterConfig.getId(), authFilterId);
 
         List<String> roles =
-                auth.getAuthorities().stream()
-                        .map(x -> x.getAuthority())
-                        .collect(Collectors.toList());
+                auth.getAuthorities().stream().map(x -> x.getAuthority()).collect(Collectors.toList());
         Assert.assertEquals(2, roles.size());
         Assert.assertTrue(roles.contains("ROLE_ADMINISTRATOR"));
         Assert.assertTrue(roles.contains("ROLE_AUTHENTICATED"));
@@ -224,16 +217,14 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         Assert.assertNotNull(auth);
         Assert.assertEquals(PreAuthenticatedAuthenticationToken.class, auth.getClass());
-        Assert.assertEquals(JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
+        Assert.assertEquals(
+                JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
 
-        String authFilterId =
-                ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
+        String authFilterId = ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
         Assert.assertEquals(filterConfig.getId(), authFilterId);
 
         List<String> roles =
-                auth.getAuthorities().stream()
-                        .map(x -> x.getAuthority())
-                        .collect(Collectors.toList());
+                auth.getAuthorities().stream().map(x -> x.getAuthority()).collect(Collectors.toList());
         Assert.assertEquals(2, roles.size());
         Assert.assertTrue(roles.contains("ROLE_ADMINISTRATOR"));
         Assert.assertTrue(roles.contains("ROLE_AUTHENTICATED"));
@@ -310,18 +301,15 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("david.blasby22@geocat.net", auth.getPrincipal());
     }
 
-    public Authentication getAuthentication(
-            MockHttpServletRequest request, MockHttpServletResponse response) {
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(request, response));
+    public Authentication getAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
         return auth;
     }
 
     public HttpSession getSession() {
-        ServletRequestAttributes attr =
-                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession();
         return session;
     }
@@ -329,8 +317,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, javax.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener()
-                .requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
         // run on the
         MockFilterChain chain = new MockFilterChain();

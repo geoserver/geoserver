@@ -33,8 +33,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
  */
 public class JDBCQueryHelper {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(JDBCQueryHelper.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JDBCQueryHelper.class);
 
     /**
      * Query DataType
@@ -47,79 +46,69 @@ public class JDBCQueryHelper {
         T getValue(ResultSet rs, String colName) throws SQLException;
     }
 
-    public static final Type<Integer> TYPE_INT =
-            new Type<Integer>() {
-                @Override
-                public void setValue(PreparedStatement s, int index, Integer value)
-                        throws SQLException {
-                    s.setInt(index, value);
-                }
+    public static final Type<Integer> TYPE_INT = new Type<Integer>() {
+        @Override
+        public void setValue(PreparedStatement s, int index, Integer value) throws SQLException {
+            s.setInt(index, value);
+        }
 
-                @Override
-                public Integer getValue(ResultSet rs, String colName) throws SQLException {
-                    int i = rs.getInt(colName);
-                    if (rs.wasNull()) return null;
-                    return i;
-                }
-            };
+        @Override
+        public Integer getValue(ResultSet rs, String colName) throws SQLException {
+            int i = rs.getInt(colName);
+            if (rs.wasNull()) return null;
+            return i;
+        }
+    };
 
-    public static final Type<Boolean> TYPE_BOOLEAN =
-            new Type<Boolean>() {
-                @Override
-                public void setValue(PreparedStatement s, int index, Boolean value)
-                        throws SQLException {
-                    s.setInt(index, index);
-                }
+    public static final Type<Boolean> TYPE_BOOLEAN = new Type<Boolean>() {
+        @Override
+        public void setValue(PreparedStatement s, int index, Boolean value) throws SQLException {
+            s.setInt(index, index);
+        }
 
-                @Override
-                public Boolean getValue(ResultSet rs, String colName) throws SQLException {
-                    boolean b = rs.getBoolean(colName);
-                    if (rs.wasNull()) return null;
-                    return b;
-                }
-            };
+        @Override
+        public Boolean getValue(ResultSet rs, String colName) throws SQLException {
+            boolean b = rs.getBoolean(colName);
+            if (rs.wasNull()) return null;
+            return b;
+        }
+    };
 
-    public static final Type<String> TYPE_STRING =
-            new Type<String>() {
-                @Override
-                public void setValue(PreparedStatement s, int index, String value)
-                        throws SQLException {
-                    s.setString(index, value);
-                }
+    public static final Type<String> TYPE_STRING = new Type<String>() {
+        @Override
+        public void setValue(PreparedStatement s, int index, String value) throws SQLException {
+            s.setString(index, value);
+        }
 
-                @Override
-                public String getValue(ResultSet rs, String colName) throws SQLException {
-                    return rs.getString(colName);
-                }
-            };
+        @Override
+        public String getValue(ResultSet rs, String colName) throws SQLException {
+            return rs.getString(colName);
+        }
+    };
 
-    public static final Type<Timestamp> TYPE_TIMESTAMP =
-            new Type<Timestamp>() {
-                @Override
-                public void setValue(PreparedStatement s, int index, Timestamp value)
-                        throws SQLException {
-                    s.setTimestamp(index, value);
-                }
+    public static final Type<Timestamp> TYPE_TIMESTAMP = new Type<Timestamp>() {
+        @Override
+        public void setValue(PreparedStatement s, int index, Timestamp value) throws SQLException {
+            s.setTimestamp(index, value);
+        }
 
-                @Override
-                public Timestamp getValue(ResultSet rs, String colName) throws SQLException {
-                    return rs.getTimestamp(colName);
-                }
-            };
+        @Override
+        public Timestamp getValue(ResultSet rs, String colName) throws SQLException {
+            return rs.getTimestamp(colName);
+        }
+    };
 
-    public static final Type<InputStream> TYPE_BLOB =
-            new Type<InputStream>() {
-                @Override
-                public void setValue(PreparedStatement s, int index, InputStream value)
-                        throws SQLException {
-                    s.setBinaryStream(index, value);
-                }
+    public static final Type<InputStream> TYPE_BLOB = new Type<InputStream>() {
+        @Override
+        public void setValue(PreparedStatement s, int index, InputStream value) throws SQLException {
+            s.setBinaryStream(index, value);
+        }
 
-                @Override
-                public InputStream getValue(ResultSet rs, String colName) throws SQLException {
-                    return rs.getBinaryStream(colName);
-                }
-            };
+        @Override
+        public InputStream getValue(ResultSet rs, String colName) throws SQLException {
+            return rs.getBinaryStream(colName);
+        }
+    };
 
     /**
      * Query Field.
@@ -218,8 +207,7 @@ public class JDBCQueryHelper {
             }
         }
 
-        public PreparedStatement toStatement(Connection c, int autoGeneratedKeys)
-                throws SQLException {
+        public PreparedStatement toStatement(Connection c, int autoGeneratedKeys) throws SQLException {
             PreparedStatement ps = c.prepareStatement(stringBuilder.toString(), autoGeneratedKeys);
             try {
                 parameters(ps);
@@ -324,8 +312,7 @@ public class JDBCQueryHelper {
         return anyQuery(createSelect(table, sel, fields), fields);
     }
 
-    public List<Map<String, Object>> multiSelectQuery(
-            String table, Selector sel, Field<?>... fields) {
+    public List<Map<String, Object>> multiSelectQuery(String table, Selector sel, Field<?>... fields) {
         return anyMultiQuery(createSelect(table, sel, fields), fields);
     }
 

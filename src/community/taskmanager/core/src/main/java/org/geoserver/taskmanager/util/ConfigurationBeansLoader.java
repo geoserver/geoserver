@@ -34,16 +34,13 @@ public class ConfigurationBeansLoader implements BeanDefinitionRegistryPostProce
     }
 
     @Override
-    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-            throws BeansException {
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 
         Resource res = resourceStore.get("/taskmanager/taskManager-applicationContext.xml");
 
         try {
             if (!Resources.exists(res)) {
-                IOUtils.copy(
-                        getClass().getResourceAsStream("/taskManager-applicationContext.xml"),
-                        res.out());
+                IOUtils.copy(getClass().getResourceAsStream("/taskManager-applicationContext.xml"), res.out());
             }
 
             try (InputStream in = res.in()) {
@@ -52,12 +49,10 @@ public class ConfigurationBeansLoader implements BeanDefinitionRegistryPostProce
                 reader.loadBeanDefinitions(new InputStreamResource(in));
             }
         } catch (IOException e) {
-            throw new ApplicationContextException(
-                    "Failed to load taskmanager's application context: ", e);
+            throw new ApplicationContextException("Failed to load taskmanager's application context: ", e);
         }
     }
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-            throws BeansException {}
+    public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {}
 }

@@ -31,20 +31,20 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
         SecurityContext sc = new SecurityContextImpl();
         sc.setAuthentication(new PreAuthenticatedAuthenticationToken("testadmin", null));
         SecurityContextHolder.setContext(sc);
-        GeoServerRequestHeaderAuthenticationFilter toTest =
-                new GeoServerRequestHeaderAuthenticationFilter();
+        GeoServerRequestHeaderAuthenticationFilter toTest = new GeoServerRequestHeaderAuthenticationFilter();
         toTest.setPrincipalHeaderAttribute("sec-username");
         request.addHeader("sec-username", "testuser");
-        toTest.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
-        toTest.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        toTest.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
 
         toTest.doFilter(request, response, filterChain);
 
         assertEquals(
                 "testuser",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getPrincipal()
+                        .toString());
     }
 
     @Test
@@ -55,13 +55,10 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
         SecurityContext sc = new SecurityContextImpl();
         sc.setAuthentication(new PreAuthenticatedAuthenticationToken("testadmin", null));
         SecurityContextHolder.setContext(sc);
-        GeoServerRequestHeaderAuthenticationFilter toTest =
-                new GeoServerRequestHeaderAuthenticationFilter();
+        GeoServerRequestHeaderAuthenticationFilter toTest = new GeoServerRequestHeaderAuthenticationFilter();
         toTest.setPrincipalHeaderAttribute("sec-username");
-        toTest.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
-        toTest.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        toTest.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
 
         toTest.doFilter(request, response, filterChain);
 

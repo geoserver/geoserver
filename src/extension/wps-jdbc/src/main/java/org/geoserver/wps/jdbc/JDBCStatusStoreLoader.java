@@ -55,8 +55,7 @@ public class JDBCStatusStoreLoader implements DisposableBean {
         Resource resource = dataDir.get(JDBCSTATUS_NAME);
         if (resource.getType() == Type.UNDEFINED) {
             try (OutputStream os = resource.out();
-                    InputStream is =
-                            JDBCStatusStoreLoader.class.getResourceAsStream(JDBCSTATUS_NAME)) {
+                    InputStream is = JDBCStatusStoreLoader.class.getResourceAsStream(JDBCSTATUS_NAME)) {
                 IOUtils.copy(is, os);
             }
         }

@@ -21,10 +21,6 @@ public class XlinkGeometryMockData extends AbstractAppSchemaMockData {
         putNamespace(EX_PREFIX, EX_URI);
 
         addFeatureType(
-                EX_PREFIX,
-                "MyTestFeature",
-                "XlinkGeometry.xml",
-                "XlinkGeometry.properties",
-                "XlinkGeometry.xsd");
+                EX_PREFIX, "MyTestFeature", "XlinkGeometry.xml", "XlinkGeometry.properties", "XlinkGeometry.xsd");
     }
 }

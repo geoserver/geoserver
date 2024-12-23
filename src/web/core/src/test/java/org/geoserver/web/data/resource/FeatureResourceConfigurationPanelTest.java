@@ -13,28 +13,22 @@ import org.junit.Test;
 public class FeatureResourceConfigurationPanelTest extends GeoServerWicketTestSupport {
     @Test()
     public void testResourceUpdatedAcceptsNull() {
-        FeatureResourceConfigurationPanel panel =
-                new FeatureResourceConfigurationPanel(
-                        "toto",
-                        new IModel() {
-                            @Override
-                            public FeatureTypeInfo getObject() {
-                                return getCatalog()
-                                        .getResourceByName(
-                                                MockData.BRIDGES.getLocalPart(),
-                                                FeatureTypeInfo.class);
-                            }
+        FeatureResourceConfigurationPanel panel = new FeatureResourceConfigurationPanel("toto", new IModel() {
+            @Override
+            public FeatureTypeInfo getObject() {
+                return getCatalog().getResourceByName(MockData.BRIDGES.getLocalPart(), FeatureTypeInfo.class);
+            }
 
-                            @Override
-                            public void setObject(Object o) {
-                                throw new RuntimeException("Not implemented");
-                            }
+            @Override
+            public void setObject(Object o) {
+                throw new RuntimeException("Not implemented");
+            }
 
-                            @Override
-                            public void detach() {
-                                throw new RuntimeException("Not implemented");
-                            }
-                        });
+            @Override
+            public void detach() {
+                throw new RuntimeException("Not implemented");
+            }
+        });
         panel.resourceUpdated(null);
     }
 }

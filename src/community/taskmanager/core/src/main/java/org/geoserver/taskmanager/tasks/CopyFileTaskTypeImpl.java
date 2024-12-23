@@ -35,10 +35,10 @@ public class CopyFileTaskTypeImpl implements TaskType {
 
     public static final String PARAM_AUTO_VERSIONED = "auto-versioned";
 
-    protected final Map<String, ParameterInfo> paramInfo =
-            new LinkedHashMap<String, ParameterInfo>();
+    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
 
-    @Autowired protected ExtTypes extTypes;
+    @Autowired
+    protected ExtTypes extTypes;
 
     @Override
     public String getName() {
@@ -47,26 +47,20 @@ public class CopyFileTaskTypeImpl implements TaskType {
 
     @PostConstruct
     public void initParamInfo() {
-        ParameterInfo sourceService =
-                new ParameterInfo(PARAM_SOURCE_SERVICE, extTypes.fileService, true);
+        ParameterInfo sourceService = new ParameterInfo(PARAM_SOURCE_SERVICE, extTypes.fileService, true);
         paramInfo.put(PARAM_SOURCE_SERVICE, sourceService);
         paramInfo.put(
                 PARAM_SOURCE_PATH,
-                new ParameterInfo(PARAM_SOURCE_PATH, extTypes.file(false, true), true)
-                        .dependsOn(sourceService));
-        ParameterInfo targetService =
-                new ParameterInfo(PARAM_TARGET_SERVICE, extTypes.fileService, true);
+                new ParameterInfo(PARAM_SOURCE_PATH, extTypes.file(false, true), true).dependsOn(sourceService));
+        ParameterInfo targetService = new ParameterInfo(PARAM_TARGET_SERVICE, extTypes.fileService, true);
         paramInfo.put(PARAM_TARGET_SERVICE, targetService);
-        ParameterInfo autoVersioned =
-                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
+        ParameterInfo autoVersioned = new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false);
         paramInfo.put(
                 PARAM_TARGET_PATH,
                 new ParameterInfo(PARAM_TARGET_PATH, extTypes.file(false, false), true)
                         .dependsOn(targetService)
                         .dependsOn(autoVersioned));
-        paramInfo.put(
-                PARAM_AUTO_VERSIONED,
-                new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false));
+        paramInfo.put(PARAM_AUTO_VERSIONED, new ParameterInfo(PARAM_AUTO_VERSIONED, ParameterType.BOOLEAN, false));
     }
 
     @Override
@@ -76,11 +70,9 @@ public class CopyFileTaskTypeImpl implements TaskType {
 
     @Override
     public TaskResult run(TaskContext ctx) throws TaskException {
-        final FileReference source =
-                (FileReference)
-                        ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_SOURCE_PATH));
-        final FileReference target =
-                (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
+        final FileReference source = (FileReference)
+                ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_SOURCE_PATH));
+        final FileReference target = (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
 
         try {
             if (target.getLatestVersion().equals(target.getNextVersion())) {
@@ -121,8 +113,7 @@ public class CopyFileTaskTypeImpl implements TaskType {
 
     @Override
     public void cleanup(TaskContext ctx) throws TaskException {
-        final FileReference target =
-                (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
+        final FileReference target = (FileReference) ctx.getParameterValues().get(PARAM_TARGET_PATH);
 
         try {
             target.getService().delete(target.getLatestVersion());

@@ -129,13 +129,11 @@ public class RSSGeoRSSTransformer extends GeoRSSTransformerBase {
             cdata(AtomUtils.getFeatureDescription(feature));
             end("description");
 
-            GeometryCollection col =
-                    feature.getDefaultGeometry() instanceof GeometryCollection
-                            ? (GeometryCollection) feature.getDefaultGeometry()
-                            : null;
+            GeometryCollection col = feature.getDefaultGeometry() instanceof GeometryCollection
+                    ? (GeometryCollection) feature.getDefaultGeometry()
+                    : null;
 
-            if (geometryEncoding == GeometryEncoding.LATLONG
-                    || (col == null && feature.getDefaultGeometry() != null)) {
+            if (geometryEncoding == GeometryEncoding.LATLONG || (col == null && feature.getDefaultGeometry() != null)) {
                 geometryEncoding.encode((Geometry) feature.getDefaultGeometry(), this);
                 end("item");
             } else if (col == null) {

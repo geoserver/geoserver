@@ -20,10 +20,9 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
 
     @Before
     public void setup() throws Exception {
-        baseGetMap =
-                "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-180,-90,180,90"
-                        + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
-                        + getLayerId(V_TIME_ELEVATION);
+        baseGetMap = "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-180,-90,180,90"
+                + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
+                + getLayerId(V_TIME_ELEVATION);
     }
 
     @Test
@@ -40,15 +39,8 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testBothDimensionsStaticDefaults() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
 
         BufferedImage image = getAsImage(baseGetMap, "image/png");
 
@@ -62,18 +54,10 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testTimeDynamicRestriction() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
-                "TimeElevation",
-                new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN));
+                "TimeElevation", new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN));
 
         BufferedImage image = getAsImage(baseGetMap + "&elevation=1.0", "image/png");
 
@@ -87,21 +71,12 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testTimeExpressionFull() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
                 "TimeElevation",
-                new DefaultValueConfiguration(
-                        ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN),
-                new DefaultValueConfiguration(
-                        ResourceInfo.TIME, "Concatenate('2011-05-0', round(elevation + 1))"));
+                new DefaultValueConfiguration(ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN),
+                new DefaultValueConfiguration(ResourceInfo.TIME, "Concatenate('2011-05-0', round(elevation + 1))"));
 
         BufferedImage image = getAsImage(baseGetMap, "image/png");
 
@@ -115,19 +90,11 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testTimeExpressionSingleElevation() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
                 "TimeElevation",
-                new DefaultValueConfiguration(
-                        ResourceInfo.TIME, "Concatenate('2011-05-0', round(elevation + 1))"));
+                new DefaultValueConfiguration(ResourceInfo.TIME, "Concatenate('2011-05-0', round(elevation + 1))"));
 
         BufferedImage image = getAsImage(baseGetMap + "&elevation=1.0", "image/png");
 
@@ -141,19 +108,11 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testElevationDynamicRestriction() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
                 "TimeElevation",
-                new DefaultValueConfiguration(
-                        ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN));
+                new DefaultValueConfiguration(ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN));
 
         BufferedImage image = getAsImage(baseGetMap + "&time=2011-05-02", "image/png");
 
@@ -166,18 +125,10 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testExplicitDefaultTime() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
-                "TimeElevation",
-                new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN));
+                "TimeElevation", new DefaultValueConfiguration(ResourceInfo.TIME, DefaultValuePolicy.LIMIT_DOMAIN));
 
         BufferedImage image = getAsImage(baseGetMap + "&elevation=1.0&time=current", "image/png");
 
@@ -190,19 +141,11 @@ public class DimensionsVectorGetMapTest extends WMSDynamicDimensionTestSupport {
     @Test
     public void testExplicitDefaultElevation() throws Exception {
         // setup both dimensions, there is no match records to the static defaults
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
         setupDynamicDimensions(
                 "TimeElevation",
-                new DefaultValueConfiguration(
-                        ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN));
+                new DefaultValueConfiguration(ResourceInfo.ELEVATION, DefaultValuePolicy.LIMIT_DOMAIN));
 
         BufferedImage image = getAsImage(baseGetMap + "&elevation=&time=2011-05-03", "image/png");
 

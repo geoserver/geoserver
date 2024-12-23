@@ -58,7 +58,8 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
     private static final String ldapServerUrl = LDAPTestUtils.LDAP_SERVER_URL;
     private static final String basePath = LDAPTestUtils.LDAP_BASE_PATH;
 
-    @ClassRule public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
+    @ClassRule
+    public static CreateLdapServerRule serverRule = new CreateLdapServerRule();
 
     @After
     public void tearDown() throws Exception {}
@@ -101,7 +102,8 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
                             public Component buildComponent(String id) {
 
                                 return current = new LDAPRoleServicePanel(id, new Model<>(config));
-                            };
+                            }
+                            ;
                         },
                         new CompoundPropertyModel<>(config)) {
 
@@ -123,12 +125,10 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(false, true);
         checkBaseConfig();
 
-        assertNull(
-                tester.getComponentFromLastRenderedPage(
-                        "form:panel:authenticationPanelContainer:authenticationPanel:user"));
-        assertNull(
-                tester.getComponentFromLastRenderedPage(
-                        "form:panel:authenticationPanelContainer:authenticationPanel:password"));
+        assertNull(tester.getComponentFromLastRenderedPage(
+                "form:panel:authenticationPanelContainer:authenticationPanel:user"));
+        assertNull(tester.getComponentFromLastRenderedPage(
+                "form:panel:authenticationPanelContainer:authenticationPanel:password"));
     }
 
     @Test
@@ -139,9 +139,7 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         tester.newFormTester("form").submit();
 
         tester.assertErrorMessages(
-                new String[] {
-                    "Field 'Server URL' is required.", "Field 'Group search base' is required."
-                });
+                new String[] {"Field 'Server URL' is required.", "Field 'Group search base' is required."});
     }
 
     @Test
@@ -150,11 +148,8 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         setupPanel(true, true);
         checkBaseConfig();
 
-        tester.assertModelValue(
-                "form:panel:authenticationPanelContainer:authenticationPanel:user", AUTH_USER);
-        tester.assertModelValue(
-                "form:panel:authenticationPanelContainer:authenticationPanel:password",
-                AUTH_PASSWORD);
+        tester.assertModelValue("form:panel:authenticationPanelContainer:authenticationPanel:user", AUTH_USER);
+        tester.assertModelValue("form:panel:authenticationPanelContainer:authenticationPanel:password", AUTH_PASSWORD);
     }
 
     @Test
@@ -181,7 +176,6 @@ public class LDAPRoleServicePanelTest extends AbstractSecurityWicketTestSupport 
         tester.assertModelValue("form:panel:serverURL", getServerURL());
         tester.assertModelValue("form:panel:groupSearchBase", GROUPS_BASE);
         tester.assertModelValue("form:panel:groupSearchFilter", GROUP_SEARCH_FILTER);
-        tester.assertModelValue(
-                "form:panel:allGroupsSearchFilter", config.getAllGroupsSearchFilter());
+        tester.assertModelValue("form:panel:allGroupsSearchFilter", config.getAllGroupsSearchFilter());
     }
 }

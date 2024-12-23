@@ -77,8 +77,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     }
 
     /**
-     * Allows write access to resources to authenticated users, if false only ADMINs have write
-     * access.
+     * Allows write access to resources to authenticated users, if false only ADMINs have write access.
      *
      * @return the grantWriteToWorkspacesToAuthenticatedUsers
      */
@@ -87,16 +86,12 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     }
 
     /**
-     * Allows write access to resources to authenticated users, if false only ADMINs have write
-     * access.
+     * Allows write access to resources to authenticated users, if false only ADMINs have write access.
      *
-     * @param grantWriteToWorkspacesToAuthenticatedUsers the
-     *     grantWriteToWorkspacesToAuthenticatedUsers to set
+     * @param grantWriteToWorkspacesToAuthenticatedUsers the grantWriteToWorkspacesToAuthenticatedUsers to set
      */
-    public void setGrantWriteToWorkspacesToAuthenticatedUsers(
-            boolean grantWriteToWorkspacesToAuthenticatedUsers) {
-        this.grantWriteToWorkspacesToAuthenticatedUsers =
-                grantWriteToWorkspacesToAuthenticatedUsers;
+    public void setGrantWriteToWorkspacesToAuthenticatedUsers(boolean grantWriteToWorkspacesToAuthenticatedUsers) {
+        this.grantWriteToWorkspacesToAuthenticatedUsers = grantWriteToWorkspacesToAuthenticatedUsers;
     }
 
     /**
@@ -175,8 +170,7 @@ public class GeoFenceConfiguration implements Serializable, Cloneable {
     public GeoFenceConfiguration clone() {
         try {
             GeoFenceConfiguration clone = (GeoFenceConfiguration) super.clone();
-            clone.setAcceptedRoles(
-                    acceptedRoles); // make sure the computed list is properly initted
+            clone.setAcceptedRoles(acceptedRoles); // make sure the computed list is properly initted
             return clone;
         } catch (CloneNotSupportedException ex) {
             throw new UnknownError("Unexpected exception: " + ex.getMessage());

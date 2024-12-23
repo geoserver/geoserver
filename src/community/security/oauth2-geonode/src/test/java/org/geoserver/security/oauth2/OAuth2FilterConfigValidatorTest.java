@@ -91,8 +91,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            assertEquals(
-                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             failed = true;
@@ -145,8 +144,7 @@ public class OAuth2FilterConfigValidatorTest extends GeoServerMockTestSupport {
         try {
             validator.validateOAuth2FilterConfig(config);
         } catch (OAuth2FilterConfigException ex) {
-            assertEquals(
-                    OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED, ex.getId());
+            assertEquals(OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             failed = true;

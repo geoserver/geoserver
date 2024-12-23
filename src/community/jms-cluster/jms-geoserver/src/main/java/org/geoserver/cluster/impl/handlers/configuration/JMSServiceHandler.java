@@ -70,8 +70,7 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + ev);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + ev);
             throw e;
         } finally {
             producer.enable();
@@ -80,18 +79,16 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
     }
 
     /**
-     * Starting from an incoming de-serialized ServiceInfo modify event, search for it (by name)
-     * into local geoserver and update changed members.
+     * Starting from an incoming de-serialized ServiceInfo modify event, search for it (by name) into local geoserver
+     * and update changed members.
      *
      * @param geoServer local GeoServer instance
      * @param ev the incoming event
      * @return the localized and updated ServiceInfo to save
      */
-    private static ServiceInfo localizeService(
-            final GeoServer geoServer, final JMSServiceModifyEvent ev)
+    private static ServiceInfo localizeService(final GeoServer geoServer, final JMSServiceModifyEvent ev)
             throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-        if (geoServer == null || ev == null)
-            throw new IllegalArgumentException("wrong passed arguments are null");
+        if (geoServer == null || ev == null) throw new IllegalArgumentException("wrong passed arguments are null");
 
         final ServiceInfo info = JMSServiceHandler.getLocalService(geoServer, ev);
 
@@ -103,12 +100,8 @@ public class JMSServiceHandler extends JMSConfigurationHandler<JMSServiceModifyE
         return info;
     }
 
-    /**
-     * get local object searching by name if name is changed (remotely), search is performed using
-     * the old one
-     */
-    public static ServiceInfo getLocalService(
-            final GeoServer geoServer, final JMSServiceModifyEvent ev) {
+    /** get local object searching by name if name is changed (remotely), search is performed using the old one */
+    public static ServiceInfo getLocalService(final GeoServer geoServer, final JMSServiceModifyEvent ev) {
 
         final ServiceInfo service = ev.getSource();
         if (service == null) {

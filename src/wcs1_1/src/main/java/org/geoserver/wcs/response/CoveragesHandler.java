@@ -16,8 +16,8 @@ import net.opengis.wcs11.GetCoverageType;
 import org.geoserver.catalog.CoverageInfo;
 
 /**
- * A data handler for the fake "geoserver/coverage" mime type. In fact, it encodes the WCS 1.1
- * coverages document (an xml document)
+ * A data handler for the fake "geoserver/coverage" mime type. In fact, it encodes the WCS 1.1 coverages document (an
+ * xml document)
  *
  * @author Andrea Aime - TOPP
  */
@@ -25,15 +25,12 @@ public class CoveragesHandler implements DataContentHandler {
 
     @Override
     public Object getContent(DataSource source) throws IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source)
-            throws UnsupportedFlavorException, IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+    public Object getTransferData(DataFlavor flavor, DataSource source) throws UnsupportedFlavorException, IOException {
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override

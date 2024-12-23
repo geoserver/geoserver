@@ -47,8 +47,8 @@ public class GetCapabilitiesRequest extends WMSRequest {
     }
 
     /**
-     * Returns the namespace prefix we should filter layers on (if any) (used in WMS only atm, but
-     * could be easily expanded to wfs/wcs too)
+     * Returns the namespace prefix we should filter layers on (if any) (used in WMS only atm, but could be easily
+     * expanded to wfs/wcs too)
      *
      * @return the namespace prefix which to filter the content for
      */
@@ -60,10 +60,7 @@ public class GetCapabilitiesRequest extends WMSRequest {
         this.namespace = namespace;
     }
 
-    /**
-     * @return whether to always include the root layer also when there is a single top Layer
-     *     element *
-     */
+    /** @return whether to always include the root layer also when there is a single top Layer element * */
     public Boolean isRootLayerEnabled() {
         return includeRootLayer;
     }

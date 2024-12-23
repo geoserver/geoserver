@@ -11,8 +11,8 @@ import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
 /**
- * Visitor to perform a validation of a template based on evaluation of xpath against the {@link
- * FeatureType} and on the checking of param count for CQL expression
+ * Visitor to perform a validation of a template based on evaluation of xpath against the {@link FeatureType} and on the
+ * checking of param count for CQL expression
  */
 public class ValidateExpressionVisitor extends DuplicatingFilterVisitor {
 
@@ -31,8 +31,7 @@ public class ValidateExpressionVisitor extends DuplicatingFilterVisitor {
         // attribute selector @ will not evaluate against featureType
         if (!expression.getPropertyName().contains("@")) {
             String xpathPath = expression.getPropertyName();
-            PropertyName pn =
-                    new AttributeExpressionImpl(xpathPath, expression.getNamespaceContext());
+            PropertyName pn = new AttributeExpressionImpl(xpathPath, expression.getNamespaceContext());
             result = pn.evaluate(context.getCurrentObj());
             if (result == null) valid = false;
         }

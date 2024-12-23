@@ -48,9 +48,7 @@ public class KeyStoreProviderTest extends GeoServerSystemTestSupport {
         assertThat(urlKey, not(equalTo(urlKey2)));
 
         ksp.setSecretKey(
-                KeyStoreProviderImpl.USERGROUP_PREFIX
-                        + "default"
-                        + KeyStoreProviderImpl.USERGROUP_POSTFIX,
+                KeyStoreProviderImpl.USERGROUP_PREFIX + "default" + KeyStoreProviderImpl.USERGROUP_POSTFIX,
                 "defaultKey".toCharArray());
 
         ksp.storeKeyStore();

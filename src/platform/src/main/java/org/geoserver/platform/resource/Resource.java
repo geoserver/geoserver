@@ -15,12 +15,11 @@ import org.apache.commons.io.IOUtils;
 /**
  * Resource used for configuration storage.
  *
- * <p>Resources represent {@link Type#DIRECTORY}, {@link Type#RESOURCE} and {@link Type#UNDEFINED}
- * content and is primarily used to manage configuration information.
+ * <p>Resources represent {@link Type#DIRECTORY}, {@link Type#RESOURCE} and {@link Type#UNDEFINED} content and is
+ * primarily used to manage configuration information.
  *
- * <p>Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()}
- * and the resource will be created as required. In a similar fashion setting up a child resource
- * will create any required parent directories.
+ * <p>Resource creation is handled in a lazy fashion, simply use {@link #file()} or {@link #out()} and the resource will
+ * be created as required. In a similar fashion setting up a child resource will create any required parent directories.
  */
 public interface Resource {
     /** Enumeration indicating kind of resource used. */
@@ -32,8 +31,7 @@ public interface Resource {
          */
         DIRECTORY,
         /**
-         * Resource used for content. Content access available through {@link Resource#in()} and
-         * {@link Resource#out()}.
+         * Resource used for content. Content access available through {@link Resource#in()} and {@link Resource#out()}.
          */
         RESOURCE,
 
@@ -52,16 +50,16 @@ public interface Resource {
     }
 
     /**
-     * Resource path used by {@link ResourceStore#get(String)}. The path uses unix conventions, thus
-     * uses "/" as the separator.
+     * Resource path used by {@link ResourceStore#get(String)}. The path uses unix conventions, thus uses "/" as the
+     * separator.
      *
      * @return resource path
      */
     String path();
 
     /**
-     * Name of the resource denoted by {@link #path()} . This is the last name in the path name
-     * sequence corresponding to {@link File#getName()}.
+     * Name of the resource denoted by {@link #path()} . This is the last name in the path name sequence corresponding
+     * to {@link File#getName()}.
      *
      * @return Resource name
      */
@@ -105,8 +103,8 @@ public interface Resource {
     /**
      * File access to resource contents.
      *
-     * <p>The resource may need to be unpacked into the GeoServer data directory prior to use. Do
-     * not assume the file exists before calling this method.
+     * <p>The resource may need to be unpacked into the GeoServer data directory prior to use. Do not assume the file
+     * exists before calling this method.
      *
      * @return file access to resource contents.
      */
@@ -115,8 +113,8 @@ public interface Resource {
     /**
      * Directory access to resource contents.
      *
-     * <p>Directory contents may need to be unpacked into the GeoServer data directory prior to use.
-     * Do not assume the file exists before calling this method.
+     * <p>Directory contents may need to be unpacked into the GeoServer data directory prior to use. Do not assume the
+     * file exists before calling this method.
      *
      * @return directory access to resource contents.
      */
@@ -139,17 +137,15 @@ public interface Resource {
     Resource parent();
 
     /**
-     * Path based resource access which can be used to access {@link #list()} contents or create a
-     * new undefined resource.
+     * Path based resource access which can be used to access {@link #list()} contents or create a new undefined
+     * resource.
      *
-     * <p>The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are
-     * created in a lazy fashion when used for the first time.
+     * <p>The returned Resource acts as a handle, and may be UNDEFINED. In general Resources are created in a lazy
+     * fashion when used for the first time.
      *
-     * <p>This method is used to access directory contents, relative paths such as ".." and "." are
-     * not supported.
+     * <p>This method is used to access directory contents, relative paths such as ".." and "." are not supported.
      *
-     * @param resourcePath path to child resource (using unix conventions, forward slash as
-     *     separator)
+     * @param resourcePath path to child resource (using unix conventions, forward slash as separator)
      * @return Resource at the indicated path
      */
     Resource get(String resourcePath);
@@ -188,8 +184,8 @@ public interface Resource {
     boolean renameTo(Resource dest);
 
     /**
-     * Returns a resource full contents as a byte array. Usage is suggested only if the resource is
-     * known to be small (e.g. a configuration file).
+     * Returns a resource full contents as a byte array. Usage is suggested only if the resource is known to be small
+     * (e.g. a configuration file).
      */
     default byte[] getContents() throws IOException {
         try (InputStream in = in()) {
@@ -198,8 +194,8 @@ public interface Resource {
     }
 
     /**
-     * Writes a resource contents as a byte array. Usage is suggested only if the resource is known
-     * to be small (e.g. a configuration file).
+     * Writes a resource contents as a byte array. Usage is suggested only if the resource is known to be small (e.g. a
+     * configuration file).
      */
     default void setContents(byte[] byteArray) throws IOException {
         try (OutputStream os = out()) {
@@ -208,10 +204,9 @@ public interface Resource {
     }
 
     /**
-     * Flag that says if this resource is a true resource, part of the internal resource store (and
-     * not for instance a resource adaptor of a file that may be anywhere on the hard drive.) Can
-     * for instance be used for security purposes. If this returns 'false', then path() will return
-     * a file path rather than a resource path.
+     * Flag that says if this resource is a true resource, part of the internal resource store (and not for instance a
+     * resource adaptor of a file that may be anywhere on the hard drive.) Can for instance be used for security
+     * purposes. If this returns 'false', then path() will return a file path rather than a resource path.
      *
      * @return
      */

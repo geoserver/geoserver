@@ -17,8 +17,7 @@ import org.junit.Test;
  */
 public class GeofenceFilterConfigTest extends GeofenceBaseTest {
 
-    protected static Logger LOGGER =
-            Logging.getLogger("org.geoserver.geoserver.authentication.auth");
+    protected static Logger LOGGER = Logging.getLogger("org.geoserver.geoserver.authentication.auth");
 
     private String geofenceUrl = "http://localhost:9191/geofence";
 

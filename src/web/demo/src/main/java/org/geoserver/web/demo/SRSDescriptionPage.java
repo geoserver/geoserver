@@ -64,52 +64,37 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
     @Override
     public void renderHead(IHeaderResponse headerResponse) {
         super.renderHead(headerResponse);
-        String onLoadJsCall =
-                "initMap('"
-                        + StringEscapeUtils.escapeEcmaScript(jsSrs)
-                        + "', '"
-                        + jsUnit
-                        + "', "
-                        + jsBbox
-                        + ", "
-                        + jsMaxResolution
-                        + ")";
+        String onLoadJsCall = "initMap('"
+                + StringEscapeUtils.escapeEcmaScript(jsSrs)
+                + "', '"
+                + jsUnit
+                + "', "
+                + jsBbox
+                + ", "
+                + jsMaxResolution
+                + ")";
         headerResponse.render(new OnDomReadyHeaderItem(onLoadJsCall));
     }
 
     public SRSDescriptionPage(PageParameters params) {
 
         // this two contributions should be relative to the root of the webbapp's context path
-        add(
-                new Behavior() {
-                    @Override
-                    public void renderHead(Component component, IHeaderResponse response) {
-                        HttpServletRequest req =
-                                getGeoServerApplication().servletRequest(getRequest());
-                        String baseUrl = baseURL(req);
+        add(new Behavior() {
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                HttpServletRequest req = getGeoServerApplication().servletRequest(getRequest());
+                String baseUrl = baseURL(req);
 
-                        response.render(
-                                new CssUrlReferenceHeaderItem(
-                                        buildURL(
-                                                baseUrl,
-                                                "openlayers3/ol.css",
-                                                null,
-                                                URLMangler.URLType.RESOURCE),
-                                        null,
-                                        null));
-                        response.render(
-                                new JavaScriptUrlReferenceHeaderItem(
-                                        buildURL(
-                                                baseUrl,
-                                                "openlayers3/ol.js",
-                                                null,
-                                                URLMangler.URLType.RESOURCE),
-                                        null,
-                                        false,
-                                        "UTF-8",
-                                        null));
-                    }
-                });
+                response.render(new CssUrlReferenceHeaderItem(
+                        buildURL(baseUrl, "openlayers3/ol.css", null, URLMangler.URLType.RESOURCE), null, null));
+                response.render(new JavaScriptUrlReferenceHeaderItem(
+                        buildURL(baseUrl, "openlayers3/ol.js", null, URLMangler.URLType.RESOURCE),
+                        null,
+                        false,
+                        "UTF-8",
+                        null));
+            }
+        });
 
         final Locale locale = getLocale();
         final String code = params.get("code").toString();
@@ -166,12 +151,10 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
 
             Extent domainOfValidity = crs.getDomainOfValidity();
             if (domainOfValidity != null) {
-                areaOfValidity =
-                        domainOfValidity.getDescription() == null
-                                ? ""
-                                : domainOfValidity.getDescription().toString(locale);
-                Collection<? extends GeographicExtent> geographicElements =
-                        domainOfValidity.getGeographicElements();
+                areaOfValidity = domainOfValidity.getDescription() == null
+                        ? ""
+                        : domainOfValidity.getDescription().toString(locale);
+                Collection<? extends GeographicExtent> geographicElements = domainOfValidity.getGeographicElements();
                 for (GeographicExtent ex : geographicElements) {
                     aovCoords.append(" ").append(ex);
                 }
@@ -188,12 +171,8 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
                 double x2;
                 double y2;
                 try {
-                    Envelope envelope =
-                            new Envelope(
-                                    westBoundLongitude,
-                                    eastBoundLongitude,
-                                    southBoundLatitude,
-                                    northBoundLatitude);
+                    Envelope envelope = new Envelope(
+                            westBoundLongitude, eastBoundLongitude, southBoundLatitude, northBoundLatitude);
                     MathTransform tr = CRS.findMathTransform(CRS.decode("EPSG:4326"), crs, true);
                     Envelope destEnvelope = JTS.transform(envelope, null, tr, 10);
 
@@ -230,36 +209,31 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         add(new Label("crsRemarks", remarks == null ? "-" : remarks.toString(locale)));
         List<ITab> tabs = new ArrayList<>();
         String finalEpsgWkt = epsgWkt;
-        tabs.add(
-                new AbstractTab(new ParamResourceModel("epsgOrder", this)) {
-                    @Override
-                    public WebMarkupContainer getPanel(String panelId) {
-                        return new WKTPanel(
-                                panelId,
-                                new ParamResourceModel(
-                                        "epsgOrderDescription", SRSDescriptionPage.this),
-                                new Model<>(finalEpsgWkt));
-                    }
-                });
+        tabs.add(new AbstractTab(new ParamResourceModel("epsgOrder", this)) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                return new WKTPanel(
+                        panelId,
+                        new ParamResourceModel("epsgOrderDescription", SRSDescriptionPage.this),
+                        new Model<>(finalEpsgWkt));
+            }
+        });
         String finalWkt = wkt;
-        tabs.add(
-                new AbstractTab(new ParamResourceModel("internalOrder", this)) {
-                    @Override
-                    public WebMarkupContainer getPanel(String panelId) {
-                        return new WKTPanel(
-                                panelId,
-                                new ParamResourceModel(
-                                        "internalOrderDescription", SRSDescriptionPage.this),
-                                new Model<>(finalWkt));
-                    }
-                });
-        TabbedPanel<ITab> wktTabs =
-                new TabbedPanel<ITab>("wktTabs", tabs) {
-                    @Override
-                    protected String getTabContainerCssClass() {
-                        return "tab-row tab-row-compact";
-                    }
-                };
+        tabs.add(new AbstractTab(new ParamResourceModel("internalOrder", this)) {
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                return new WKTPanel(
+                        panelId,
+                        new ParamResourceModel("internalOrderDescription", SRSDescriptionPage.this),
+                        new Model<>(finalWkt));
+            }
+        });
+        TabbedPanel<ITab> wktTabs = new TabbedPanel<ITab>("wktTabs", tabs) {
+            @Override
+            protected String getTabContainerCssClass() {
+                return "tab-row tab-row-compact";
+            }
+        };
         add(wktTabs);
         WebMarkupContainer avText = new WebMarkupContainer("areaOfValidityText");
         add(avText);
@@ -275,20 +249,14 @@ public class SRSDescriptionPage extends GeoServerBasePage implements IHeaderCont
         avMap.setVisible(hasAreaOfValidity);
 
         // link with the reprojection console
-        add(
-                new SimpleBookmarkableLink(
-                        "reprojectFrom",
-                        ReprojectPage.class,
-                        new ParamResourceModel("reprojectFrom", this, code),
-                        "fromSRS",
-                        code));
-        add(
-                new SimpleBookmarkableLink(
-                        "reprojectTo",
-                        ReprojectPage.class,
-                        new ParamResourceModel("reprojectTo", this, code),
-                        "toSRS",
-                        code));
+        add(new SimpleBookmarkableLink(
+                "reprojectFrom",
+                ReprojectPage.class,
+                new ParamResourceModel("reprojectFrom", this, code),
+                "fromSRS",
+                code));
+        add(new SimpleBookmarkableLink(
+                "reprojectTo", ReprojectPage.class, new ParamResourceModel("reprojectTo", this, code), "toSRS", code));
     }
 
     private double getMaxResolution(final double w, final double h) {

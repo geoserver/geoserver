@@ -26,9 +26,7 @@ public class XmlObjectEncodingResponseTest {
 
     @Before
     public void setUp() throws Exception {
-        response =
-                new XmlObjectEncodingResponse(
-                        GetCapabilitiesType.class, "GetCapabilities", OWSConfiguration.class);
+        response = new XmlObjectEncodingResponse(GetCapabilitiesType.class, "GetCapabilities", OWSConfiguration.class);
     }
 
     @Test
@@ -57,9 +55,7 @@ public class XmlObjectEncodingResponseTest {
         Document d = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         TransformerFactory.newInstance()
                 .newTransformer()
-                .transform(
-                        new StreamSource(new ByteArrayInputStream(output.toByteArray())),
-                        new DOMResult(d));
+                .transform(new StreamSource(new ByteArrayInputStream(output.toByteArray())), new DOMResult(d));
 
         Assert.assertEquals("ows:GetCapabilities", d.getDocumentElement().getNodeName());
         Assert.assertEquals(2, d.getElementsByTagName("ows:Version").getLength());

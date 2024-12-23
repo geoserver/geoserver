@@ -57,8 +57,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * Style page tab for displaying an OpenLayers 2 layer preview and legend. Includes a link for
- * changing the current preview layer.
+ * Style page tab for displaying an OpenLayers 2 layer preview and legend. Includes a link for changing the current
+ * preview layer.
  */
 public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeaderContributor {
 
@@ -84,23 +84,21 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         this.olPreview = new WebMarkupContainer("olPreview").setOutputMarkupId(true);
 
         // Change layer link
-        PropertyModel<String> layerNameModel =
-                new PropertyModel<>(parent.getLayerModel(), "prefixedName");
-        add(
-                new SimpleAjaxLink<String>("change.layer", layerNameModel) {
-                    private static final long serialVersionUID = 7341058018479354596L;
+        PropertyModel<String> layerNameModel = new PropertyModel<>(parent.getLayerModel(), "prefixedName");
+        add(new SimpleAjaxLink<String>("change.layer", layerNameModel) {
+            private static final long serialVersionUID = 7341058018479354596L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        ModalWindow popup = parent.getPopup();
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                ModalWindow popup = parent.getPopup();
 
-                        popup.setInitialHeight(400);
-                        popup.setInitialWidth(600);
-                        popup.setTitle(new Model<>("Choose layer to preview"));
-                        popup.setContent(new LayerChooser(popup.getContentId(), parent));
-                        popup.show(target);
-                    }
-                });
+                popup.setInitialHeight(400);
+                popup.setInitialWidth(600);
+                popup.setTitle(new Model<>("Choose layer to preview"));
+                popup.setContent(new LayerChooser(popup.getContentId(), parent));
+                popup.show(target);
+            }
+        });
         add(olPreview);
         olPreview.setMarkupId("olPreview");
         setOutputMarkupId(true);
@@ -108,15 +106,14 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         CheckBox previewStyleGroup =
                 new CheckBox("previewStyleGroup", new PropertyModel<>(this, "isPreviewStyleGroup"));
 
-        previewStyleGroup.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        parent.configurationChanged();
-                        parent.addFeedbackPanels(target);
-                        target.add(parent.styleForm);
-                    }
-                });
+        previewStyleGroup.add(new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                parent.configurationChanged();
+                parent.addFeedbackPanels(target);
+                target.add(parent.styleForm);
+            }
+        });
         add(previewStyleGroup);
 
         add(dialog = new GeoServerDialog("dialog"));
@@ -133,16 +130,13 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     }
 
     private void ensureLegendDecoration() throws IOException {
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         Resource layouts = dd.get("layouts");
         Resource legend = layouts.get("style-editor-legend.xml");
         if (!Resources.exists(legend)) {
-            String legendLayout =
-                    IOUtils.toString(
-                            OpenLayersPreviewPanel.class.getResourceAsStream(
-                                    "style-editor-legend.xml"),
-                            StandardCharsets.UTF_8);
+            String legendLayout = IOUtils.toString(
+                    OpenLayersPreviewPanel.class.getResourceAsStream("style-editor-legend.xml"),
+                    StandardCharsets.UTF_8);
             try (OutputStream os = legend.out()) {
                 IOUtils.write(legendLayout, os, "UTF-8");
             }
@@ -171,8 +165,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
 
     private void renderHeaderScript(IHeaderResponse header) throws IOException, TemplateException {
         Map<String, Object> context = new HashMap<>();
-        ReferencedEnvelope bbox =
-                getStylePage().getLayerInfo().getResource().getLatLonBoundingBox();
+        ReferencedEnvelope bbox = getStylePage().getLayerInfo().getResource().getLatLonBoundingBox();
         WorkspaceInfo workspace = getStylePage().getStyleInfo().getWorkspace();
         context.put("minx", bbox.getMinX());
         context.put("miny", bbox.getMinY());
@@ -190,13 +183,12 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
             if (StringUtils.isEmpty(proxyBaseUrl)) {
                 Request r = getRequest();
                 Url clientUrl = r.getClientUrl();
-                styleUrl =
-                        clientUrl.getProtocol()
-                                + "://"
-                                + clientUrl.getHost()
-                                + ":"
-                                + clientUrl.getPort()
-                                + r.getContextPath();
+                styleUrl = clientUrl.getProtocol()
+                        + "://"
+                        + clientUrl.getHost()
+                        + ":"
+                        + clientUrl.getPort()
+                        + r.getContextPath();
             } else {
                 styleUrl = proxyBaseUrl;
             }
@@ -224,18 +216,14 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         Template template = templates.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
-        header.render(
-                new CssUrlReferenceHeaderItem(
-                        ResponseUtils.buildURL(base, "/openlayers3/ol.css", null, URLType.RESOURCE),
-                        null,
-                        null));
-        header.render(
-                new JavaScriptUrlReferenceHeaderItem(
-                        ResponseUtils.buildURL(base, "/openlayers3/ol.js", null, URLType.RESOURCE),
-                        null,
-                        false,
-                        "UTF-8",
-                        null));
+        header.render(new CssUrlReferenceHeaderItem(
+                ResponseUtils.buildURL(base, "/openlayers3/ol.css", null, URLType.RESOURCE), null, null));
+        header.render(new JavaScriptUrlReferenceHeaderItem(
+                ResponseUtils.buildURL(base, "/openlayers3/ol.js", null, URLType.RESOURCE),
+                null,
+                false,
+                "UTF-8",
+                null));
         header.render(OnLoadHeaderItem.forScript(script.toString()));
     }
 

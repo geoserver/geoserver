@@ -18,13 +18,12 @@ import org.geoserver.platform.ServiceException;
  * <p>A response must specify the following information:
  *
  * <ul>
- *   <li>The type of object it is capable of serializing, the class is bound to. See {@link
- *       #getBinding()}.
+ *   <li>The type of object it is capable of serializing, the class is bound to. See {@link #getBinding()}.
  *   <li>The mime-type of the resulting response. See {@link #getMimeType(Object, Operation)}.
  * </ul>
  *
- * <p>Optionally, a response may declare a well-known name for it. This well known name corresponds
- * to the "outputFormat" parameter which is supported on many types of OWS request.
+ * <p>Optionally, a response may declare a well-known name for it. This well known name corresponds to the
+ * "outputFormat" parameter which is supported on many types of OWS request.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -49,8 +48,7 @@ public abstract class Response {
     }
 
     /**
-     * Constructor which specified the class this response is bound to, and a common name for the
-     * type of response.
+     * Constructor which specified the class this response is bound to, and a common name for the type of response.
      *
      * @param binding The class of object the response serializes
      * @param outputFormat A common name for the response.
@@ -60,8 +58,8 @@ public abstract class Response {
     }
 
     /**
-     * Constructor which specified the class this response is bound to, and a set of common names
-     * for the type of response.
+     * Constructor which specified the class this response is bound to, and a set of common names for the type of
+     * response.
      *
      * @param binding The class of object the response serializes
      * @param outputFormats A set of common names for the response.
@@ -94,8 +92,8 @@ public abstract class Response {
      *
      * <p>This method is called before {@link #write(Object, OutputStream, Operation)}.
      *
-     * <p>Subclasses should override this method to perform additional checks against the operation
-     * being performed. Example might be checking the version of the service.
+     * <p>Subclasses should override this method to perform additional checks against the operation being performed.
+     * Example might be checking the version of the service.
      *
      * @param operation The operation being performed.
      * @return <code>true</code> if the response can handle the operation, otherwise <code>false
@@ -115,8 +113,8 @@ public abstract class Response {
     public abstract String getMimeType(Object value, Operation operation) throws ServiceException;
 
     /**
-     * Returns a 2xn array of Strings, each of which is an HTTP header pair to be set on the HTTP
-     * Response. Can return null if there are no headers to be set on the response.
+     * Returns a 2xn array of Strings, each of which is an HTTP header pair to be set on the HTTP Response. Can return
+     * null if there are no headers to be set on the response.
      *
      * @param value The value to serialize
      * @param operation The operation being performed.
@@ -142,8 +140,8 @@ public abstract class Response {
             throws IOException, ServiceException;
 
     /**
-     * Get the preferred Content-Disposition header for this response. The default is inline.
-     * Subclasses can prefer attachment.
+     * Get the preferred Content-Disposition header for this response. The default is inline. Subclasses can prefer
+     * attachment.
      *
      * @param value The value that will be serialized
      * @param operation The operation which resulted in <code>value</code>
@@ -154,9 +152,8 @@ public abstract class Response {
     }
 
     /**
-     * Get a name for a Content-Disposition attachment filename. The mimetype should match the file
-     * extension. The default implementation will use the mimetype and operation id to attempt to
-     * build a name.
+     * Get a name for a Content-Disposition attachment filename. The mimetype should match the file extension. The
+     * default implementation will use the mimetype and operation id to attempt to build a name.
      *
      * @param value The value that will be serialized
      * @param operation The operation being performed
@@ -178,11 +175,10 @@ public abstract class Response {
     }
 
     /**
-     * Returns the charset for this response, the Dispatcher will set it in the ServletResponse. The
-     * default implementation returns <code>null</code>, in this case no encoding should be set.
-     * Subclasses returning text documents (CSV,HTML,JSON) should override taking into account
-     * SettingsInfo.getCharset() as well as the specific encoding requirements of the returned
-     * format.
+     * Returns the charset for this response, the Dispatcher will set it in the ServletResponse. The default
+     * implementation returns <code>null</code>, in this case no encoding should be set. Subclasses returning text
+     * documents (CSV,HTML,JSON) should override taking into account SettingsInfo.getCharset() as well as the specific
+     * encoding requirements of the returned format.
      */
     public String getCharset(Operation operation) {
         return null;

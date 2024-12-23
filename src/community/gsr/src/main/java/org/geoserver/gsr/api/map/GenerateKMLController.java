@@ -26,16 +26,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /** Simple Generate KML end point. Just redirect to GS KML service */
-@APIService(
-        service = "MapServer",
-        version = "1.0",
-        landingPage = "/gsr/services",
-        serviceClass = WMSInfo.class)
+@APIService(service = "MapServer", version = "1.0", landingPage = "/gsr/services", serviceClass = WMSInfo.class)
 @RestController
 @RequestMapping(path = "/gsr/services/{workspaceName}/MapServer/generateKml")
 public class GenerateKMLController {
 
-    @Autowired private Dispatcher dispatcher;
+    @Autowired
+    private Dispatcher dispatcher;
 
     @GetMapping
     public void generateKml(
@@ -45,10 +42,9 @@ public class GenerateKMLController {
             HttpServletResponse response)
             throws Exception {
         if (StringUtils.isNotEmpty(layers)) {
-            String workspacedLayers =
-                    Arrays.stream(layers.split(","))
-                            .map(l -> workspaceName + ":" + l)
-                            .collect(Collectors.joining(","));
+            String workspacedLayers = Arrays.stream(layers.split(","))
+                    .map(l -> workspaceName + ":" + l)
+                    .collect(Collectors.joining(","));
 
             MutableRequestProxy modifiedRequest = new MutableRequestProxy(request);
 
@@ -58,9 +54,7 @@ public class GenerateKMLController {
             modifiedRequest.getMutableParams().put("layers", new String[] {workspacedLayers});
             modifiedRequest
                     .getMutableParams()
-                    .put(
-                            "format",
-                            new String[] {"application/vnd.google-earth.kmz;mode=networklink"});
+                    .put("format", new String[] {"application/vnd.google-earth.kmz;mode=networklink"});
 
             dispatcher.handleRequest(modifiedRequest, response);
         }

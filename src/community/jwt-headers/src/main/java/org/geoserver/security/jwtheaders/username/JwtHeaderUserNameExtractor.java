@@ -52,9 +52,9 @@ public class JwtHeaderUserNameExtractor {
     }
 
     /**
-     * given a value of a request header, extract the username value. Handles: STRING (no conversion
-     * needed) JSON (use userNameJsonPath to get the username from inside the JSON) JWT (decoded the
-     * JWT to a JSON claimset, then use userNameJsonPath to get the username from inside the JSON)
+     * given a value of a request header, extract the username value. Handles: STRING (no conversion needed) JSON (use
+     * userNameJsonPath to get the username from inside the JSON) JWT (decoded the JWT to a JSON claimset, then use
+     * userNameJsonPath to get the username from inside the JSON)
      *
      * @param userNameHeader
      * @return

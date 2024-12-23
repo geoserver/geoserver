@@ -25,8 +25,7 @@ import org.geotools.api.coverage.grid.Format;
 public class CoverageStoreNewPage extends AbstractCoverageStorePage {
 
     /**
-     * @param coverageFactoryName the {@link Format#getName() name} of the format to create a new
-     *     raster coverage for
+     * @param coverageFactoryName the {@link Format#getName() name} of the format to create a new raster coverage for
      */
     public CoverageStoreNewPage(final String coverageFactoryName) {
         Catalog catalog = getCatalog();
@@ -66,9 +65,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
             catalog.save(savedStore);
         } catch (FileSandboxEnforcer.SandboxException e) {
             // this one is non recoverable, give up and inform the user
-            error(
-                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
-                            .getString());
+            error(new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath()).getString());
             return; // do not call onSuccessfulSave
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getURL(), e);
@@ -80,10 +77,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
     }
 
     protected void onSuccessfulSave(
-            final CoverageStoreInfo info,
-            final Catalog catalog,
-            CoverageStoreInfo savedStore,
-            boolean doReturn) {
+            final CoverageStoreInfo info, final Catalog catalog, CoverageStoreInfo savedStore, boolean doReturn) {
         if (doReturn) {
             // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
             // coverage while the getotools coverage api does not allow for more than one
@@ -93,10 +87,7 @@ public class CoverageStoreNewPage extends AbstractCoverageStorePage {
                 // The ID is assigned by the catalog and therefore cannot be cloned
                 layerChooserPage = new NewLayerPage(savedStore.getId());
             } catch (RuntimeException e) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Getting list of coverages for saved store " + info.getURL(),
-                        e);
+                LOGGER.log(Level.INFO, "Getting list of coverages for saved store " + info.getURL(), e);
                 // doh, can't present the list of coverages, means saving the StoreInfo is
                 // meaningless.
                 try { // be extra cautious

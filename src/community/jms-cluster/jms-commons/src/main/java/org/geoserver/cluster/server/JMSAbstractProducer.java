@@ -14,15 +14,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 /**
- * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer
- * implementations
+ * JMS MASTER (Producer) Listener used to provide basic functionalities to the producer implementations
  *
  * @see {@link JMSApplicationListener}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
 public abstract class JMSAbstractProducer extends JMSApplicationListener {
 
-    @Autowired public JMSFactory jmsFactory;
+    @Autowired
+    public JMSFactory jmsFactory;
 
     /** @return the jmsTemplate */
     public final JmsTemplate getJmsTemplate() {

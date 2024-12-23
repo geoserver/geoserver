@@ -67,14 +67,8 @@ public class SimpleCatalogStoreTest {
         assertFalse(capabilities.supportsTransactions());
         Name cswRecordName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
         assertTrue(capabilities.supportsGetRepositoryItem(cswRecordName));
-        assertTrue(
-                capabilities
-                        .getQueriables(cswRecordName)
-                        .contains(new NameImpl(CSW.NAMESPACE, "AnyText")));
-        assertTrue(
-                capabilities
-                        .getDomainQueriables(cswRecordName)
-                        .contains(new NameImpl(DC.NAMESPACE, "title")));
+        assertTrue(capabilities.getQueriables(cswRecordName).contains(new NameImpl(CSW.NAMESPACE, "AnyText")));
+        assertTrue(capabilities.getDomainQueriables(cswRecordName).contains(new NameImpl(DC.NAMESPACE, "title")));
     }
 
     @Test
@@ -96,8 +90,7 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testReadAllRecords() throws IOException {
-        FeatureCollection<FeatureType, Feature> records =
-                store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
+        FeatureCollection<FeatureType, Feature> records = store.getRecords(Query.ALL, Transaction.AUTO_COMMIT);
         int fileCount = root.list(new RegexFileFilter("Record_.*\\.xml")).length;
         assertEquals(fileCount, records.size());
 
@@ -109,10 +102,7 @@ public class SimpleCatalogStoreTest {
                 // the files)
                 String id = getSimpleLiteralValue(f, "identifier");
                 assertNotNull(id);
-                assertTrue(
-                        id.matches(
-                                "urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9"
-                                        + "]{12}"));
+                assertTrue(id.matches("urn:uuid:[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9" + "]{12}"));
 
                 // check the feature id is the same as the id attribute
                 assertEquals(id, f.getIdentifier().getID());
@@ -137,17 +127,13 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testElementValueFilter() throws IOException {
-        Filter filter =
-                FF.equals(
-                        FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
-        FeatureCollection records =
-                store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        Filter filter = FF.equals(
+                FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES),
+                FF.literal("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd"));
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
-        assertEquals(
-                "urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd",
-                getSimpleLiteralValue(record, "identifier"));
+        assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
         assertEquals("http://purl.org/dc/dcmitype/Service", getSimpleLiteralValue(record, "type"));
         assertEquals(
                 "Proin sit amet justo. In justo. Aenean adipiscing nulla id tellus.",
@@ -156,25 +142,19 @@ public class SimpleCatalogStoreTest {
 
     @Test
     public void testSpatialFilter() throws IOException {
-        Filter filter =
-                FF.bbox("", 60.042, 13.754, 68.410, 17.920, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records =
-                store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        Filter filter = FF.bbox("", 60.042, 13.754, 68.410, 17.920, CSWRecordDescriptor.DEFAULT_CRS_NAME);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
-        assertEquals(
-                "urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd",
-                getSimpleLiteralValue(record, "identifier"));
+        assertEquals("urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd", getSimpleLiteralValue(record, "identifier"));
     }
 
     @Test
     public void testScheme() throws IOException {
-        Filter filter =
-                FF.equals(
-                        FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
-        FeatureCollection records =
-                store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        Filter filter = FF.equals(
+                FF.property("dc:identifier/dc:value", CSWRecordDescriptor.NAMESPACES),
+                FF.literal("urn:uuid:6a3de50b-fa66-4b58-a0e6-ca146fdd18d4"));
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         assertEquals(1, records.size());
         Feature record = (Feature) records.toArray()[0];
         assertEquals("http://www.digest.org/2.1", getSimpleLiteralScheme(record, "subject"));
@@ -183,8 +163,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testSpatialFilterWorld() throws IOException {
         Filter filter = FF.bbox("", -90, -180, 90, 180, CSWRecordDescriptor.DEFAULT_CRS_NAME);
-        FeatureCollection records =
-                store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
+        FeatureCollection records = store.getRecords(new Query("Record", filter), Transaction.AUTO_COMMIT);
         // there are only 3 records with a bbox
         assertEquals(3, records.size());
     }
@@ -222,14 +201,11 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testSortAscend() throws IOException {
         Query queryImage = new Query("Record");
-        queryImage.setFilter(
-                FF.equals(
-                        FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setFilter(FF.equals(
+                FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
+                FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(
-                new SortByImpl(
-                        FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        SortOrder.ASCENDING));
+                new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING));
 
         FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
@@ -246,14 +222,11 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testSortDescend() throws IOException {
         Query queryImage = new Query("Record");
-        queryImage.setFilter(
-                FF.equals(
-                        FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        FF.literal("http://purl.org/dc/dcmitype/Image")));
+        queryImage.setFilter(FF.equals(
+                FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
+                FF.literal("http://purl.org/dc/dcmitype/Image")));
         queryImage.setSortBy(
-                new SortByImpl(
-                        FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        SortOrder.DESCENDING));
+                new SortByImpl(FF.property("dc:title/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.DESCENDING));
 
         FeatureCollection records = store.getRecords(queryImage, Transaction.AUTO_COMMIT);
         // there are only 3 records with Image type
@@ -282,8 +255,7 @@ public class SimpleCatalogStoreTest {
         assertEquals(sorted, values);
     }
 
-    private List<String> collectElement(FeatureCollection records, final String property)
-            throws IOException {
+    private List<String> collectElement(FeatureCollection records, final String property) throws IOException {
         final List<String> values = new ArrayList<>();
         records.accepts(
                 feature -> {
@@ -298,18 +270,14 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testLimitAttributes() throws IOException {
         Query query = new Query("Record");
-        Filter typeDataset =
-                FF.equals(
-                        FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        FF.literal("http://purl.org/dc/dcmitype/Dataset"));
+        Filter typeDataset = FF.equals(
+                FF.property("dc:type/dc:value", CSWRecordDescriptor.NAMESPACES),
+                FF.literal("http://purl.org/dc/dcmitype/Dataset"));
         query.setFilter(typeDataset);
-        query.setSortBy(
-                new SortByImpl(
-                        FF.property("dc:subject/dc:value", CSWRecordDescriptor.NAMESPACES),
-                        SortOrder.ASCENDING));
+        query.setSortBy(new SortByImpl(
+                FF.property("dc:subject/dc:value", CSWRecordDescriptor.NAMESPACES), SortOrder.ASCENDING));
         // select some properties we did not use for filtering and sorting
-        query.setProperties(
-                Arrays.asList(FF.property("dc:identifier", CSWRecordDescriptor.NAMESPACES)));
+        query.setProperties(Arrays.asList(FF.property("dc:identifier", CSWRecordDescriptor.NAMESPACES)));
 
         FeatureCollection records = store.getRecords(query, Transaction.AUTO_COMMIT);
         assertEquals(3, records.size());
@@ -338,8 +306,7 @@ public class SimpleCatalogStoreTest {
     @Test
     public void testGetDomain() throws IOException {
         Name name = new NameImpl(DC.NAMESPACE, "type");
-        try (CloseableIterator<String> domain =
-                store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name)) {
+        try (CloseableIterator<String> domain = store.getDomain(new NameImpl(CSW.NAMESPACE, "Record"), name)) {
             assertTrue(domain.hasNext());
             assertEquals("http://purl.org/dc/dcmitype/Dataset", domain.next());
             assertEquals("http://purl.org/dc/dcmitype/Image", domain.next());
@@ -358,8 +325,7 @@ public class SimpleCatalogStoreTest {
         assertNotNull(item);
         assertEquals("application/xml", item.getMime());
         String contents = IOUtils.toString(item.getContents(), StandardCharsets.UTF_8);
-        String expected =
-                "This is a random comment that will show up only when fetching the repository item";
+        String expected = "This is a random comment that will show up only when fetching the repository item";
         assertTrue(contents.contains(expected));
     }
 }

@@ -75,39 +75,27 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         // Use default value DimensionInfo setup, should return the minimum value
         setupFeatureCustomDimension(REFERENCE_TIME_DIMENSION, "referenceTime", null);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Date originallySmallest = Date.valueOf("2011-04-20");
 
         java.util.Date d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+                wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the smallest one",
-                d.getTime(),
-                originallySmallest.getTime());
+        assertEquals("Default value should be the smallest one", d.getTime(), originallySmallest.getTime());
 
         Date biggest = Date.valueOf("2021-01-01");
         addFeatureWithReferenceTime(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the smallest one",
-                d.getTime(),
-                originallySmallest.getTime());
+        assertEquals("Default value should be the smallest one", d.getTime(), originallySmallest.getTime());
 
         Date smaller = Date.valueOf("2010-01-01");
         addFeatureWithReferenceTime(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the smallest one", d.getTime(), smaller.getTime());
     }
@@ -119,15 +107,12 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         // Use default value DimensionInfo setup, should return the minimum value
         setupFeatureCustomDimension(SCANNING_ANGLE_DIMENSION, "scanningAngle", null);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Double originallySmallest = Double.valueOf(0d);
 
-        Double d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        Double d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
                 "Default value should be the smallest one",
@@ -136,9 +121,7 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         Double biggest = Double.valueOf(2.1d);
         addFeatureWithScanningAngle(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
                 "Default value should be the smallest one",
@@ -147,13 +130,10 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         Double smaller = Double.valueOf(-1d);
         addFeatureWithScanningAngle(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - smaller.doubleValue()) < 0.0001);
+                "Default value should be the smallest one", Math.abs(d.doubleValue() - smaller.doubleValue()) < 0.0001);
     }
 
     @Test
@@ -166,39 +146,27 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(REFERENCE_TIME_DIMENSION, "referenceTime", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Date originallySmallest = Date.valueOf("2011-04-20");
 
         java.util.Date d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+                wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the smallest one",
-                d.getTime(),
-                originallySmallest.getTime());
+        assertEquals("Default value should be the smallest one", d.getTime(), originallySmallest.getTime());
 
         Date biggest = Date.valueOf("2021-01-01");
         addFeatureWithReferenceTime(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the smallest one",
-                d.getTime(),
-                originallySmallest.getTime());
+        assertEquals("Default value should be the smallest one", d.getTime(), originallySmallest.getTime());
 
         Date smaller = Date.valueOf("2010-01-01");
         addFeatureWithReferenceTime(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the smallest one", d.getTime(), smaller.getTime());
     }
@@ -213,15 +181,12 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(SCANNING_ANGLE_DIMENSION, "scanningAngle", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Double originallySmallest = Double.valueOf(0d);
 
-        Double d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        Double d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
                 "Default value should be the smallest one",
@@ -230,9 +195,7 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         Double biggest = Double.valueOf(2.1d);
         addFeatureWithScanningAngle(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
                 "Default value should be the smallest one",
@@ -241,13 +204,10 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         Double smaller = Double.valueOf(-1d);
         addFeatureWithScanningAngle(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - smaller.doubleValue()) < 0.0001);
+                "Default value should be the smallest one", Math.abs(d.doubleValue() - smaller.doubleValue()) < 0.0001);
     }
 
     @Test
@@ -260,36 +220,27 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(REFERENCE_TIME_DIMENSION, "referenceTime", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Date originallyBiggest = Date.valueOf("2011-04-23");
 
         java.util.Date d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+                wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the biggest one",
-                d.getTime(),
-                originallyBiggest.getTime());
+        assertEquals("Default value should be the biggest one", d.getTime(), originallyBiggest.getTime());
 
         Date biggest = Date.valueOf("2021-01-01");
         addFeatureWithReferenceTime(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the biggest one", d.getTime(), biggest.getTime());
 
         Date smaller = Date.valueOf("2014-01-01");
         addFeatureWithReferenceTime(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the biggest one", d.getTime(), biggest.getTime());
     }
@@ -304,15 +255,12 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(SCANNING_ANGLE_DIMENSION, "scanningAngle", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         // From src/test/resources/org/geoserver/wms/TimeElevationCustom.properties:
         Double originallyBiggest = Double.valueOf(1.5d);
 
-        Double d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        Double d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
                 "Default value should be the smallest one",
@@ -321,24 +269,18 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         Double biggest = Double.valueOf(2.1d);
         addFeatureWithScanningAngle(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - biggest.doubleValue()) < 0.0001);
+                "Default value should be the smallest one", Math.abs(d.doubleValue() - biggest.doubleValue()) < 0.0001);
 
         Double smaller = Double.valueOf(1.8);
         addFeatureWithScanningAngle(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
         assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - biggest.doubleValue()) < 0.0001);
+                "Default value should be the smallest one", Math.abs(d.doubleValue() - biggest.doubleValue()) < 0.0001);
     }
 
     @Test
@@ -353,32 +295,26 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(REFERENCE_TIME_DIMENSION, "referenceTime", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         long fixed = DateUtil.parseDateTime(fixedStr);
 
         java.util.Date d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+                wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the fixed one", d.getTime(), fixed);
 
         Date biggest = Date.valueOf("2021-01-01");
         addFeatureWithReferenceTime(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the fixed one", d.getTime(), fixed);
 
         Date smaller = Date.valueOf("2010-01-01");
         addFeatureWithReferenceTime(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
         assertEquals("Default value should be the fixed one", d.getTime(), fixed);
     }
@@ -397,38 +333,25 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(SCANNING_ANGLE_DIMENSION, "scanningAngle", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
-        Double d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        Double d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - fixed) < 0.0001);
+        assertTrue("Default value should be the smallest one", Math.abs(d.doubleValue() - fixed) < 0.0001);
 
         Double biggest = Double.valueOf(2.1d);
         addFeatureWithScanningAngle(fid++, biggest);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - fixed) < 0.0001);
+        assertTrue("Default value should be the smallest one", Math.abs(d.doubleValue() - fixed) < 0.0001);
 
         Double smaller = Double.valueOf(1.8);
         addFeatureWithScanningAngle(fid++, smaller);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the smallest one",
-                Math.abs(d.doubleValue() - fixed) < 0.0001);
+        assertTrue("Default value should be the smallest one", Math.abs(d.doubleValue() - fixed) < 0.0001);
     }
 
     @Test
@@ -443,48 +366,32 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(REFERENCE_TIME_DIMENSION, "referenceTime", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         Date originallyBiggest = Date.valueOf("2011-04-23");
 
         java.util.Date d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+                wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the closest one",
-                d.getTime(),
-                originallyBiggest.getTime());
+        assertEquals("Default value should be the closest one", d.getTime(), originallyBiggest.getTime());
 
         Date biggerThanOriginal = Date.valueOf("2012-01-01");
         addFeatureWithReferenceTime(fid++, biggerThanOriginal);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the closest one",
-                d.getTime(),
-                biggerThanOriginal.getTime());
+        assertEquals("Default value should be the closest one", d.getTime(), biggerThanOriginal.getTime());
 
         Date biggerThanReference = Date.valueOf("2014-06-01");
         addFeatureWithReferenceTime(fid++, biggerThanReference);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
+        d = wms.getDefaultCustomDimensionValue(REFERENCE_TIME_DIMENSION, timeElevationCustom, java.util.Date.class);
         assertNotNull("Default value is null", d);
-        assertEquals(
-                "Default value should be the closest one",
-                d.getTime(),
-                biggerThanReference.getTime());
+        assertEquals("Default value should be the closest one", d.getTime(), biggerThanReference.getTime());
     }
 
     @Test
-    public void testExplicitNearestToGivenValueCustomDimDoubleValueVectorSelector()
-            throws Exception {
+    public void testExplicitNearestToGivenValueCustomDimDoubleValueVectorSelector() throws Exception {
         int fid = 1000;
 
         // Use explicit default value DimensionInfo setup:
@@ -495,44 +402,30 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
 
         setupFeatureCustomDimension(SCANNING_ANGLE_DIMENSION, "scanningAngle", defaultValueSetting);
 
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
 
         double originallyBiggest = Double.valueOf(1.5d);
-        Double d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        Double d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the closest one",
-                Math.abs(d.doubleValue() - originallyBiggest) < 0.0001);
+        assertTrue("Default value should be the closest one", Math.abs(d.doubleValue() - originallyBiggest) < 0.0001);
 
         double biggerThanOriginal = 1.7d;
         addFeatureWithScanningAngle(fid++, biggerThanOriginal);
 
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the closest one",
-                Math.abs(d.doubleValue() - biggerThanOriginal) < 0.0001);
+        assertTrue("Default value should be the closest one", Math.abs(d.doubleValue() - biggerThanOriginal) < 0.0001);
 
         double biggerThanReference = 2.45d;
         addFeatureWithScanningAngle(fid++, biggerThanReference);
-        d =
-                wms.getDefaultCustomDimensionValue(
-                        SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
+        d = wms.getDefaultCustomDimensionValue(SCANNING_ANGLE_DIMENSION, timeElevationCustom, Double.class);
         assertNotNull("Default value is null", d);
-        assertTrue(
-                "Default value should be the closest one",
-                Math.abs(d.doubleValue() - biggerThanReference) < 0.0001);
+        assertTrue("Default value should be the closest one", Math.abs(d.doubleValue() - biggerThanReference) < 0.0001);
     }
 
     protected void setupFeatureCustomDimension(
             String dimensionName, String attrName, DimensionDefaultValueSetting defaultValue) {
-        FeatureTypeInfo info =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setAttribute(attrName);
@@ -543,13 +436,10 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
         getCatalog().save(info);
     }
 
-    protected void addFeature(
-            int id, Date time, Double elevation, Date referenceTime, Double scanningAngle)
+    protected void addFeature(int id, Date time, Double elevation, Date referenceTime, Double scanningAngle)
             throws IOException {
-        FeatureTypeInfo timeElevationCustom =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
-        SimpleFeatureStore fs =
-                (SimpleFeatureStore) timeElevationCustom.getFeatureSource(null, null);
+        FeatureTypeInfo timeElevationCustom = getCatalog().getFeatureTypeByName(TIME_ELEVATION_CUSTOM.getLocalPart());
+        SimpleFeatureStore fs = (SimpleFeatureStore) timeElevationCustom.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeElevationCustom.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);
         StringBuffer content = new StringBuffer();
@@ -572,16 +462,10 @@ public class VectorCustomDimensionDefaultValueTest extends WMSTestSupport {
     }
 
     private void addFeatureWithReferenceTime(int fid, Date time) throws IOException {
-        this.addFeature(
-                fid, Date.valueOf("2013-01-13"), Double.valueOf(0d), time, Double.valueOf(0d));
+        this.addFeature(fid, Date.valueOf("2013-01-13"), Double.valueOf(0d), time, Double.valueOf(0d));
     }
 
     private void addFeatureWithScanningAngle(int fid, Double angle) throws IOException {
-        this.addFeature(
-                fid,
-                Date.valueOf("2013-01-13"),
-                Double.valueOf(0d),
-                Date.valueOf("2014-01-20"),
-                angle);
+        this.addFeature(fid, Date.valueOf("2013-01-13"), Double.valueOf(0d), Date.valueOf("2014-01-20"), angle);
     }
 }

@@ -29,8 +29,7 @@ public class HTMLImageMapResponse extends Response {
      * @param output final output stream
      */
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(EncodeHTMLImageMap.class, value);
         EncodeHTMLImageMap htmlImageMapEncoder = (EncodeHTMLImageMap) value;
         try {

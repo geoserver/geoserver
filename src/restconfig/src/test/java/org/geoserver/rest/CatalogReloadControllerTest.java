@@ -34,8 +34,7 @@ public class CatalogReloadControllerTest extends GeoServerSystemTestSupport {
     @Test
     public synchronized void testPutReload() throws Exception {
         reset();
-        MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/reload", (String) null, null);
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH + "/reload", (String) null, null);
         assertEquals(200, response.getStatus());
         assertTrue(watcher.didReload);
         assertTrue(watcher.didReset);
@@ -53,8 +52,7 @@ public class CatalogReloadControllerTest extends GeoServerSystemTestSupport {
     @Test
     public synchronized void testPutReset() throws Exception {
         reset();
-        MockHttpServletResponse response =
-                putAsServletResponse(ROOT_PATH + "/reset", (String) null, null);
+        MockHttpServletResponse response = putAsServletResponse(ROOT_PATH + "/reset", (String) null, null);
         assertEquals(200, response.getStatus());
         assertFalse(watcher.didReload);
         assertTrue(watcher.didReset);

@@ -35,13 +35,10 @@ import org.locationtech.jts.geom.Polygon;
  * @version $Id$
  */
 class SVGWriter extends OutputStreamWriter {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(SVGWriter.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            SVGWriter.class.getPackage().getName());
 
-    /**
-     * a number formatter setted up to write SVG legible numbers ('.' as decimal separator, no group
-     * separator
-     */
+    /** a number formatter setted up to write SVG legible numbers ('.' as decimal separator, no group separator */
     private static DecimalFormat formatter;
 
     /** map of geometry class to writer */
@@ -156,8 +153,8 @@ class SVGWriter extends OutputStreamWriter {
     }
 
     /**
-     * if a reference space has been set, returns a translated Y coordinate wich is inverted based
-     * on the height of such a reference space, otherwise just returns <code>y</code>
+     * if a reference space has been set, returns a translated Y coordinate wich is inverted based on the height of such
+     * a reference space, otherwise just returns <code>y</code>
      */
     public double getY(double y) {
         return (maxY - y) + minY;
@@ -195,8 +192,7 @@ class SVGWriter extends OutputStreamWriter {
         super.write('\n');
     }
 
-    public void writeFeatures(
-            SimpleFeatureType featureType, SimpleFeatureIterator reader, String style)
+    public void writeFeatures(SimpleFeatureType featureType, SimpleFeatureIterator reader, String style)
             throws IOException {
         SimpleFeature ft;
 
@@ -235,8 +231,7 @@ class SVGWriter extends OutputStreamWriter {
         }
     }
 
-    private void setUpWriterHandler(SimpleFeatureType featureType, boolean doCollect)
-            throws IOException {
+    private void setUpWriterHandler(SimpleFeatureType featureType, boolean doCollect) throws IOException {
         if (doCollect) {
             this.writerHandler = new CollectSVGHandler(featureWriter);
             LOGGER.finer("Established a collecting features writer handler");
@@ -277,28 +272,23 @@ class SVGWriter extends OutputStreamWriter {
     }
 
     public class SVGFeatureWriterHandler {
-        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.startElement(ft);
         }
 
-        public void endFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void endFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.endElement(ft);
         }
 
-        public void startGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void startGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.startGeometry((Geometry) ft.getDefaultGeometry());
         }
 
-        public void writeGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void writeGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.writeGeometry((Geometry) ft.getDefaultGeometry());
         }
 
-        public void endGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void endGeometry(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             featureWriter.endGeometry((Geometry) ft.getDefaultGeometry());
         }
     }
@@ -329,8 +319,7 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         @Override
-        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             handler.startFeature(featureWriter, ft);
             write(" id=\"");
 
@@ -355,8 +344,7 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         @Override
-        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             handler.startFeature(featureWriter, ft);
 
             Geometry geom = (Geometry) ft.getDefaultGeometry();
@@ -383,8 +371,7 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         @Override
-        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft)
-                throws IOException {
+        public void startFeature(SVGFeatureWriter featureWriter, SimpleFeature ft) throws IOException {
             handler.startFeature(featureWriter, ft);
 
             SimpleFeatureType type = ft.getFeatureType();
@@ -405,13 +392,12 @@ class SVGWriter extends OutputStreamWriter {
         }
 
         /**
-         * Parses the passed string, and encodes the special characters (used in xml for special
-         * purposes) with the appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
+         * Parses the passed string, and encodes the special characters (used in xml for special purposes) with the
+         * appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
          *
          * @param inData The string to encode into xml.
-         * @task REVISIT: Once we write directly to out, as we should, this method should be
-         *     simpler, as we can just write strings with escapes directly to out, replacing as we
-         *     iterate of chars to write them.
+         * @task REVISIT: Once we write directly to out, as we should, this method should be simpler, as we can just
+         *     write strings with escapes directly to out, replacing as we iterate of chars to write them.
          */
         private void encodeAttribute(String inData) throws IOException {
             // return null, if null is passed as argument
@@ -475,11 +461,10 @@ class SVGWriter extends OutputStreamWriter {
         /**
          * Writes the content of the <b>d</b> attribute in a <i>path</i> SVG element
          *
-         * <p>While iterating over the coordinate array passed as parameter, this method performs a
-         * kind of very basic path generalization, verifying that the distance between the current
-         * coordinate and the last encoded one is greater than the minimun distance expressed by the
-         * field <code>minCoordDistance</code> and established by the method {@link
-         * #setReferenceSpace(Envelope, float) setReferenceSpace(Envelope, blurFactor)}
+         * <p>While iterating over the coordinate array passed as parameter, this method performs a kind of very basic
+         * path generalization, verifying that the distance between the current coordinate and the last encoded one is
+         * greater than the minimun distance expressed by the field <code>minCoordDistance</code> and established by the
+         * method {@link #setReferenceSpace(Envelope, float) setReferenceSpace(Envelope, blurFactor)}
          */
         protected void writePathContent(Coordinate[] coords) throws IOException {
             write('M');
@@ -532,8 +517,8 @@ class SVGWriter extends OutputStreamWriter {
         protected void startGeometry(Geometry geom) throws IOException {}
 
         /**
-         * overrides writeBounds for points to do nothing. You can get the position of the point
-         * with the x and y attributes of the "use" SVG element written to represent each point
+         * overrides writeBounds for points to do nothing. You can get the position of the point with the x and y
+         * attributes of the "use" SVG element written to represent each point
          */
         protected void writeBounds(Envelope env) throws IOException {}
 
@@ -596,8 +581,8 @@ class SVGWriter extends OutputStreamWriter {
     }
 
     /**
-     * Writer to handle feature types which contain a Geometry attribute that is actually of the
-     * class Geometry. This can occur in heterogeneous data sets.
+     * Writer to handle feature types which contain a Geometry attribute that is actually of the class Geometry. This
+     * can occur in heterogeneous data sets.
      *
      * @author Justin Deoliveira, jdeolive@openplans.org
      */

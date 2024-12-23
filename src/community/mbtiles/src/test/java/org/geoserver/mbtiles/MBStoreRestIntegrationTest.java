@@ -34,8 +34,7 @@ public class MBStoreRestIntegrationTest extends CatalogRESTTestSupport {
     public void testPostGetDeleteGetMBStore() throws Exception {
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        ROOT_PATH + "/workspaces/sf/datastores", getMbStoreBody(), "text/xml");
+                postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", getMbStoreBody(), "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
@@ -56,19 +55,12 @@ public class MBStoreRestIntegrationTest extends CatalogRESTTestSupport {
     @Test
     public void testPostPutDeleteMBStore() throws Exception {
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        ROOT_PATH + "/workspaces/sf/datastores", getMbStoreBody(), "text/xml");
+                postAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores", getMbStoreBody(), "text/xml");
         assertEquals(response.getStatus(), 201);
         assertTrue(catalog.getDataStoreByName("mbStore").isEnabled());
-        String xml =
-                "<dataStore>"
-                        + "<name>mbStore</name>"
-                        + "<enabled>false</enabled>"
-                        + "</dataStore>";
+        String xml = "<dataStore>" + "<name>mbStore</name>" + "<enabled>false</enabled>" + "</dataStore>";
 
-        response =
-                putAsServletResponse(
-                        ROOT_PATH + "/workspaces/sf/datastores/mbStore", xml, "text/xml");
+        response = putAsServletResponse(ROOT_PATH + "/workspaces/sf/datastores/mbStore", xml, "text/xml");
         assertEquals(200, response.getStatus());
         assertFalse(catalog.getDataStoreByName("mbStore").isEnabled());
         assertNotNull(catalog.getDataStoreByName("sf", "mbStore").getDateModified());
@@ -80,8 +72,7 @@ public class MBStoreRestIntegrationTest extends CatalogRESTTestSupport {
     @Test
     public void testPutFileMBStore() throws Exception {
         MockHttpServletResponse resp =
-                getAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/datastores/mb_store/external.mbtiles");
+                getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/mb_store/external.mbtiles");
         assertEquals(404, resp.getStatus());
         URL url = getClass().getResource("madagascar/madagascar.mbtiles");
         String body = url.toExternalForm();
@@ -93,9 +84,7 @@ public class MBStoreRestIntegrationTest extends CatalogRESTTestSupport {
         DataStoreInfo ds = cat.getDataStoreByName("gs", "mb_store");
         assertNotNull(ds);
         assertEquals(1, cat.getFeatureTypesByDataStore(ds).size());
-        resp =
-                getAsServletResponse(
-                        ROOT_PATH + "/workspaces/gs/datastores/mb_store/external.mbtiles");
+        resp = getAsServletResponse(ROOT_PATH + "/workspaces/gs/datastores/mb_store/external.mbtiles");
         assertEquals(200, resp.getStatus());
         assertEquals("application/zip", resp.getContentType());
         ByteArrayInputStream bin = getBinaryInputStream(resp);
@@ -108,21 +97,21 @@ public class MBStoreRestIntegrationTest extends CatalogRESTTestSupport {
     }
 
     private String getMbStoreBody() throws URISyntaxException {
-        File mbStore = new File(getClass().getResource("madagascar/madagascar.mbtiles").toURI());
-        String xml =
-                "<dataStore>"
-                        + "<name>mbStore</name>"
-                        + "<connectionParameters>"
-                        + "<namespace><string>sf</string></namespace>"
-                        + "<database>"
-                        + "<string>"
-                        + mbStore.getAbsolutePath()
-                        + "</string>"
-                        + "</database>"
-                        + "<dbtype><string>mbtiles</string></dbtype>"
-                        + "</connectionParameters>"
-                        + "<workspace>sf</workspace>"
-                        + "</dataStore>";
+        File mbStore =
+                new File(getClass().getResource("madagascar/madagascar.mbtiles").toURI());
+        String xml = "<dataStore>"
+                + "<name>mbStore</name>"
+                + "<connectionParameters>"
+                + "<namespace><string>sf</string></namespace>"
+                + "<database>"
+                + "<string>"
+                + mbStore.getAbsolutePath()
+                + "</string>"
+                + "</database>"
+                + "<dbtype><string>mbtiles</string></dbtype>"
+                + "</connectionParameters>"
+                + "<workspace>sf</workspace>"
+                + "</dataStore>";
         return xml;
     }
 }

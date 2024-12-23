@@ -18,8 +18,8 @@ import org.locationtech.jts.geom.Geometry;
 /** @author "etj (Emanuele Tajariol @ GeoSolutions)" */
 public class AccessInfoUtils {
     /**
-     * @return a WPSAccessInfo where the WKT of the AccessInfo should not be taken into
-     *     consideration since the geometries are more up-to-date.
+     * @return a WPSAccessInfo where the WKT of the AccessInfo should not be taken into consideration since the
+     *     geometries are more up-to-date.
      */
     public static WPSAccessInfo intersect(AccessInfo... accessInfoArr) {
 
@@ -48,10 +48,8 @@ public class AccessInfoUtils {
             ret.setCatalogMode(getStricter(ret.getCatalogMode(), accessInfo.getCatalogMode()));
 
             // CQL (read + write)
-            ret.setCqlFilterRead(
-                    intersectCQL(ret.getCqlFilterRead(), accessInfo.getCqlFilterRead()));
-            ret.setCqlFilterWrite(
-                    intersectCQL(ret.getCqlFilterWrite(), accessInfo.getCqlFilterWrite()));
+            ret.setCqlFilterRead(intersectCQL(ret.getCqlFilterRead(), accessInfo.getCqlFilterRead()));
+            ret.setCqlFilterWrite(intersectCQL(ret.getCqlFilterWrite(), accessInfo.getCqlFilterWrite()));
 
             // Attributes
             ret.setAttributes(intersectAttributes(ret.getAttributes(), accessInfo.getAttributes()));
@@ -76,8 +74,7 @@ public class AccessInfoUtils {
         return "(" + c1 + ") AND (" + c2 + ")";
     }
 
-    public static Set<LayerAttribute> intersectAttributes(
-            Set<LayerAttribute> s1, Set<LayerAttribute> s2) {
+    public static Set<LayerAttribute> intersectAttributes(Set<LayerAttribute> s1, Set<LayerAttribute> s2) {
         if (s1 == null) {
             return s2;
         }
@@ -90,8 +87,7 @@ public class AccessInfoUtils {
             map.put(la.getName(), new LayerAttribute[] {la, null});
         }
         for (LayerAttribute la : s2) {
-            LayerAttribute[] arr =
-                    map.computeIfAbsent(la.getName(), k -> new LayerAttribute[] {null, la});
+            LayerAttribute[] arr = map.computeIfAbsent(la.getName(), k -> new LayerAttribute[] {null, la});
             arr[1] = la;
         }
 

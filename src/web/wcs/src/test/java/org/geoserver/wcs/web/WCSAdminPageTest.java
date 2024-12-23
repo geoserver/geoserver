@@ -39,15 +39,11 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
         FormTester form = tester.newFormTester("form");
 
         // enable i18n for title
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
@@ -56,8 +52,7 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
                 "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:addNew", "click");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
@@ -69,15 +64,11 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
                 "click");
 
         // enable i18n for abstract
-        form.setValue(
-                "serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                true);
+        form.setValue("serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "form:serviceTitleAndAbstract:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
@@ -85,8 +76,7 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:1:component:border:border_body:txt",
                 "an international title");
         tester.executeAjaxEvent(
-                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "form:serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:addNew", "click");
         form.select(
                 "serviceTitleAndAbstract:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
@@ -138,7 +128,6 @@ public class WCSAdminPageTest extends GeoServerWicketCoverageTestSupport {
         ft.setValue("defaultDeflateCompressionLevel", "20");
         ft.submit();
         // there should be an error
-        tester.assertErrorMessages(
-                "The value of 'Default Deflate Compression Level' must be between 1 and 9.");
+        tester.assertErrorMessages("The value of 'Default Deflate Compression Level' must be between 1 and 9.");
     }
 }

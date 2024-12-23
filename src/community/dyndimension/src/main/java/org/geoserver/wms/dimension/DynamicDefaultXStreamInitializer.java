@@ -10,8 +10,8 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterInitializer;
 
 /**
- * Initializes the XStream persister to treat the {@link DefaultValueConfigurations} values in the
- * ResourceInfo metadata map
+ * Initializes the XStream persister to treat the {@link DefaultValueConfigurations} values in the ResourceInfo metadata
+ * map
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -19,8 +19,7 @@ public class DynamicDefaultXStreamInitializer implements XStreamPersisterInitial
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType(
-                "DynamicDefaultValues", DefaultValueConfigurations.class);
+        persister.registerBreifMapComplexType("DynamicDefaultValues", DefaultValueConfigurations.class);
         XStream xs = persister.getXStream();
         xs.alias("configuration", DefaultValueConfiguration.class);
         xs.allowTypeHierarchy(org.geoserver.wms.dimension.DefaultValueConfiguration.class);

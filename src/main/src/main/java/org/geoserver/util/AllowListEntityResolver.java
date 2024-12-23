@@ -17,8 +17,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.ext.EntityResolver2;
 
 /**
- * Restricted EntityResolver allowing connections to geoserver base proxy, and OGC / W3C content,
- * and those provided by GEOSERVER_ENTITY_RESOLUTION.
+ * Restricted EntityResolver allowing connections to geoserver base proxy, and OGC / W3C content, and those provided by
+ * GEOSERVER_ENTITY_RESOLUTION.
  *
  * @author Jody Garnett (GeoCat)
  */
@@ -33,9 +33,7 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     public static String OGC2 = "www.opengis.net";
     public static String OGC = OGC1 + "|" + OGC2;
 
-    /**
-     * Location of {@code http://inspire.ec.europa.eu/schemas/ } XSD documents for INSPIRE program
-     */
+    /** Location of {@code http://inspire.ec.europa.eu/schemas/ } XSD documents for INSPIRE program */
     public static String INSPIRE = "inspire.ec.europa.eu/schemas";
 
     /** Location of W3C schema documents (for xlink, etc...) */
@@ -68,8 +66,8 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     private final GeoServer geoServer;
 
     /**
-     * AllowListEntityResolver willing to resolve commong ogc and w3c entities, and those relative
-     * to GeoServer proxy base url.
+     * AllowListEntityResolver willing to resolve commong ogc and w3c entities, and those relative to GeoServer proxy
+     * base url.
      *
      * @param geoServer Used to obtain settings for proxy base url
      */
@@ -78,8 +76,7 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     }
 
     /**
-     * AllowListEntityResolver willing to resolve common ogc and w3c entities, and those relative a
-     * base url.
+     * AllowListEntityResolver willing to resolve common ogc and w3c entities, and those relative a base url.
      *
      * @param geoServer Used to obtain settings for proxy base url
      * @param baseURL Base url provided by current request
@@ -88,20 +85,17 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
         this.geoServer = geoServer;
         this.baseURL = baseURL;
 
-        if (EntityResolverProvider.ALLOW_LIST == null
-                || EntityResolverProvider.ALLOW_LIST.isEmpty()) {
+        if (EntityResolverProvider.ALLOW_LIST == null || EntityResolverProvider.ALLOW_LIST.isEmpty()) {
             // Restrict using the built-in allow list
-            ALLOWED_URIS =
-                    Pattern.compile(
-                            "(?i)(http|https)://("
-                                    + Pattern.quote(W3C)
-                                    + "|"
-                                    + Pattern.quote(OGC1)
-                                    + "|"
-                                    + Pattern.quote(OGC2)
-                                    + "|"
-                                    + Pattern.quote(INSPIRE)
-                                    + ")/[^?#;]*\\.xsd");
+            ALLOWED_URIS = Pattern.compile("(?i)(http|https)://("
+                    + Pattern.quote(W3C)
+                    + "|"
+                    + Pattern.quote(OGC1)
+                    + "|"
+                    + Pattern.quote(OGC2)
+                    + "|"
+                    + Pattern.quote(INSPIRE)
+                    + ")/[^?#;]*\\.xsd");
         } else {
             StringBuilder pattern = new StringBuilder("(?i)(http|https)://(");
             boolean first = true;
@@ -122,14 +116,12 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     }
 
     @Override
-    public InputSource resolveEntity(String publicId, String systemId)
-            throws SAXException, IOException {
+    public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
         return resolveEntity(null, publicId, null, systemId);
     }
 
     @Override
-    public InputSource getExternalSubset(String name, String baseURI)
-            throws SAXException, IOException {
+    public InputSource getExternalSubset(String name, String baseURI) throws SAXException, IOException {
         return resolveEntity(name, null, baseURI, null);
     }
 
@@ -137,10 +129,9 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
     public InputSource resolveEntity(String name, String publicId, String baseURI, String systemId)
             throws SAXException, IOException {
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.finest(
-                    String.format(
-                            "resolveEntity request: name=%s, publicId=%s, baseURI=%s, systemId=%s",
-                            name, publicId, baseURI, systemId));
+            LOGGER.finest(String.format(
+                    "resolveEntity request: name=%s, publicId=%s, baseURI=%s, systemId=%s",
+                    name, publicId, baseURI, systemId));
         }
 
         try {
@@ -160,8 +151,7 @@ public class AllowListEntityResolver implements EntityResolver2, Serializable {
                 if (baseURI == null) {
                     throw new SAXException(ERROR_MESSAGE_BASE + systemId);
                 }
-                if ((baseURI.endsWith(".xsd") || baseURI.endsWith(".XSD"))
-                        && baseURI.lastIndexOf('/') != -1) {
+                if ((baseURI.endsWith(".xsd") || baseURI.endsWith(".XSD")) && baseURI.lastIndexOf('/') != -1) {
                     uri = baseURI.substring(0, baseURI.lastIndexOf('/')) + '/' + systemId;
                 } else {
                     uri = baseURI + '/' + systemId;

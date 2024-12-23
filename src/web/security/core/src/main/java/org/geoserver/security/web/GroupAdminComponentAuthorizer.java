@@ -18,7 +18,6 @@ public class GroupAdminComponentAuthorizer extends AdminComponentAuthorizer {
             return true;
         }
 
-        return getSecurityManager()
-                .checkAuthenticationForRole(authentication, GeoServerRole.GROUP_ADMIN_ROLE);
+        return getSecurityManager().checkAuthenticationForRole(authentication, GeoServerRole.GROUP_ADMIN_ROLE);
     }
 }

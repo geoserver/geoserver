@@ -14,8 +14,7 @@ import org.geotools.xsd.Node;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Subclass of {@link GMLBoxTypeBinding} that parses srsName and can inherit the CRS from the
- * containing elements
+ * Subclass of {@link GMLBoxTypeBinding} that parses srsName and can inherit the CRS from the containing elements
  *
  * @author Andrea Aime
  */

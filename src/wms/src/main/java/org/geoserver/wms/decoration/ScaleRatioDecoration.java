@@ -66,19 +66,16 @@ public class ScaleRatioDecoration implements MapDecoration {
     }
 
     @Override
-    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent)
-            throws Exception {
+    public void paint(Graphics2D g2d, Rectangle paintArea, WMSMapContent mapContent) throws Exception {
         FontMetrics metrics = g2d.getFontMetrics(g2d.getFont());
-        Dimension d =
-                new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
+        Dimension d = new Dimension(metrics.stringWidth(getScaleText(mapContent)), metrics.getHeight());
         Color oldColor = g2d.getColor();
         Stroke oldStroke = g2d.getStroke();
 
         float x = (float) (paintArea.getMinX() + (paintArea.getWidth() - d.getWidth()) / 2.0);
         float y = (float) (paintArea.getMaxY() - (paintArea.getHeight() - d.getHeight()) / 2.0);
         Rectangle2D bgRect =
-                new Rectangle2D.Double(
-                        x - 3.0, y - d.getHeight(), d.getWidth() + 6.0, d.getHeight() + 6.0);
+                new Rectangle2D.Double(x - 3.0, y - d.getHeight(), d.getWidth() + 6.0, d.getHeight() + 6.0);
         g2d.setColor(Color.WHITE);
         g2d.fill(bgRect);
 

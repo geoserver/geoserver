@@ -14,10 +14,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
-/**
- * Simple detachable model listing all the available workspaces from the {@link
- * Catalog#getWorkspaces()}.
- */
+/** Simple detachable model listing all the available workspaces from the {@link Catalog#getWorkspaces()}. */
 public class WorkspacesModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
     private static final long serialVersionUID = -2014677058862746780L;
 

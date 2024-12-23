@@ -9,10 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import org.geoserver.util.IOUtils;
 
-@SuppressWarnings({
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
+@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class LiveSystemTestData extends SystemTestData {
 
     protected File source;

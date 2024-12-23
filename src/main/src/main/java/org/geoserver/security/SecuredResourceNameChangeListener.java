@@ -31,8 +31,8 @@ import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geotools.util.logging.Logging;
 
 /**
- * Listens for changes on Workspace and Layer/LayerGroup names and updates Data Security Rules if
- * they exist on the modified Resource
+ * Listens for changes on Workspace and Layer/LayerGroup names and updates Data Security Rules if they exist on the
+ * modified Resource
  *
  * @author Imran Rajjad
  */
@@ -78,10 +78,7 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
                 return;
             }
 
-            Supplier<String> message =
-                    () ->
-                            String.format(
-                                    "Removing Security Rules for deleted %s", removedObjectName);
+            Supplier<String> message = () -> String.format("Removing Security Rules for deleted %s", removedObjectName);
             apply(filter, dao::removeRule, message);
         } finally {
             lock.release();
@@ -121,7 +118,8 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
             } else if (eventSource instanceof ResourceInfo) {
                 // if a layer has been renamed
                 // similar layer names can exist in different workspaces
-                String wsName = ((ResourceInfo) eventSource).getStore().getWorkspace().getName();
+                String wsName =
+                        ((ResourceInfo) eventSource).getStore().getWorkspace().getName();
                 filter = layerFilter(wsName, oldName);
                 updater = r -> r.setLayer(newName);
                 renamedObject = "Resource";
@@ -134,23 +132,19 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
                 return;
             }
 
-            Supplier<String> message =
-                    () ->
-                            String.format(
-                                    "Updating Security Rules for renamed %s: %s -> %s",
-                                    renamedObject, oldName, newName);
+            Supplier<String> message = () ->
+                    String.format("Updating Security Rules for renamed %s: %s -> %s", renamedObject, oldName, newName);
 
             // modifying directly a rule is not a good idea, depending on the DAO implementation
             // it might do nothing (the DAO uses defensive copies or secondary storage) or it
             // might cause troubles with the DAO internal data structures (e.g. sorted structures,
             // when the field update changes the position of the rule in the order).
             // This bit removes the rule, changes it, and adds it back
-            final Consumer<DataAccessRule> safeUpdater =
-                    r -> {
-                        dao.removeRule(r);
-                        updater.accept(r);
-                        dao.addRule(r);
-                    };
+            final Consumer<DataAccessRule> safeUpdater = r -> {
+                dao.removeRule(r);
+                updater.accept(r);
+                dao.addRule(r);
+            };
             apply(filter, safeUpdater, message);
         } finally {
             lock.release();
@@ -158,8 +152,8 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
     }
 
     /**
-     * Updates the {@link DataAccessRule#setRoot root} if it's a global layer group (i.e. {@code ws
-     * == null}), or the {@link DataAccessRule#setLayer layer} otherwsie.
+     * Updates the {@link DataAccessRule#setRoot root} if it's a global layer group (i.e. {@code ws == null}), or the
+     * {@link DataAccessRule#setLayer layer} otherwsie.
      */
     private Consumer<DataAccessRule> layerGroupRuleUpdater(WorkspaceInfo ws, String newName) {
         if (ws == null) {
@@ -169,18 +163,18 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
     }
 
     /**
-     * @return rule predicate that checks the rule relates to a workspace, matching {@link
-     *     DataAccessRule#getRoot() root} with the workspace name, and checking the {@link
-     *     DataAccessRule#getLayer() layer} <b>is not</b> {@code null}.
+     * @return rule predicate that checks the rule relates to a workspace, matching {@link DataAccessRule#getRoot()
+     *     root} with the workspace name, and checking the {@link DataAccessRule#getLayer() layer} <b>is not</b>
+     *     {@code null}.
      */
     private Predicate<DataAccessRule> workspaceFilter(String workspaceName) {
         return r -> r.getRoot().equalsIgnoreCase(workspaceName) && r.getLayer() != null;
     }
 
     /**
-     * @return rule predicate that matches both the {@link DataAccessRule#getRoot() root} and {@link
-     *     DataAccessRule#getLayer() layer} against the non-null {@code worksapce} and {@code
-     *     layerName}, respectively.
+     * @return rule predicate that matches both the {@link DataAccessRule#getRoot() root} and
+     *     {@link DataAccessRule#getLayer() layer} against the non-null {@code worksapce} and {@code layerName},
+     *     respectively.
      */
     private Predicate<DataAccessRule> layerFilter(String workspace, String layerName) {
         return filter(workspace::equalsIgnoreCase, layerName::equalsIgnoreCase);
@@ -189,9 +183,9 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
     /**
      * Predicate that matches if a rule applies to the given layer group.
      *
-     * <p>For global layer groups, checks the layer group name matches the rule's {@link
-     * DataAccessRule#getRoot() root}, and the rule's layer is {@code null}. For non global layer
-     * groups, behaves like {@link #layerFilter(String, String)}
+     * <p>For global layer groups, checks the layer group name matches the rule's {@link DataAccessRule#getRoot() root},
+     * and the rule's layer is {@code null}. For non global layer groups, behaves like {@link #layerFilter(String,
+     * String)}
      */
     private Predicate<DataAccessRule> layerGroupFilter(WorkspaceInfo ws, String lgName) {
         final boolean isGlobalLayerGroup = null == ws;
@@ -201,10 +195,7 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
         return layerFilter(ws.getName(), lgName);
     }
 
-    void apply(
-            Predicate<DataAccessRule> filter,
-            Consumer<DataAccessRule> action,
-            Supplier<String> logMessage) {
+    void apply(Predicate<DataAccessRule> filter, Consumer<DataAccessRule> action, Supplier<String> logMessage) {
         List<DataAccessRule> matches = getDataAccessRules(filter);
         if (!matches.isEmpty()) {
             LOGGER.info(logMessage);
@@ -228,11 +219,10 @@ public class SecuredResourceNameChangeListener implements CatalogListener {
     }
 
     /**
-     * Returns a {@code Predicate<DataAccessRule>} that satisfies both {@link
-     * DataAccessRule#getRoot() root} {@link DataAccessRule#getLayer() layer} predicates
+     * Returns a {@code Predicate<DataAccessRule>} that satisfies both {@link DataAccessRule#getRoot() root}
+     * {@link DataAccessRule#getLayer() layer} predicates
      */
-    private Predicate<DataAccessRule> filter(
-            Predicate<String> rootFilter, Predicate<String> layerFilter) {
+    private Predicate<DataAccessRule> filter(Predicate<String> rootFilter, Predicate<String> layerFilter) {
         return r -> rootFilter.test(r.getRoot()) && layerFilter.test(r.getLayer());
     }
 

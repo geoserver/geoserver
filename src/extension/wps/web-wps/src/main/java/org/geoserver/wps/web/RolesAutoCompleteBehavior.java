@@ -14,9 +14,7 @@ import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteBe
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteSettings;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.IAutoCompleteRenderer;
 
-/**
- * Implements auto complete behavior to manage the roles choice as a list of string separated by ";"
- */
+/** Implements auto complete behavior to manage the roles choice as a list of string separated by ";" */
 public class RolesAutoCompleteBehavior extends AutoCompleteBehavior<String> {
 
     private static final long serialVersionUID = -6743826046815447371L;

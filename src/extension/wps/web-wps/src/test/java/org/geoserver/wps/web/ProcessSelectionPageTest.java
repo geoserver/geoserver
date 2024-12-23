@@ -40,14 +40,9 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         buffer.setEnabled(true);
         buffer.setName(new NameImpl("geo", "buffer"));
         buffer.getValidators().put("geom", new MaxSizeValidator(1));
+        buffer.getValidators().put("distance", new NumberRangeValidator(new NumberRange<>(Double.class, 0d, 100d)));
         buffer.getValidators()
-                .put(
-                        "distance",
-                        new NumberRangeValidator(new NumberRange<>(Double.class, 0d, 100d)));
-        buffer.getValidators()
-                .put(
-                        "quadrantSegments",
-                        new NumberRangeValidator(new NumberRange<>(Integer.class, 2, 20)));
+                .put("quadrantSegments", new NumberRangeValidator(new NumberRange<>(Integer.class, 2, 20)));
         geoGroup.getFilteredProcesses().add(buffer);
 
         // save
@@ -69,9 +64,7 @@ public class ProcessSelectionPageTest extends WPSPagesTestSupport {
         // grab the table and check its contents
         @SuppressWarnings("unchecked")
         DataView<OddEvenItem> datas =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage(
-                                "form:selectionTable:listContainer:items");
+                (DataView) tester.getComponentFromLastRenderedPage("form:selectionTable:listContainer:items");
         for (Component c : datas) {
             OddEvenItem item = (OddEvenItem) c;
             FilteredProcess fp = (FilteredProcess) item.getDefaultModelObject();

@@ -26,8 +26,7 @@ import org.geotools.util.SuppressFBWarnings;
  *
  * @author Fernando Mino, Geosolutions
  */
-public class DisabledServiceResourceFilter extends AbstractCatalogFilter
-        implements GeoServerLifecycleHandler {
+public class DisabledServiceResourceFilter extends AbstractCatalogFilter implements GeoServerLifecycleHandler {
 
     /** Property set in context/environment/system for default disabled services. */
     public static String PROPERTY = "org.geoserver.service.disabled";
@@ -35,9 +34,7 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter
     protected static List<String> DEFAULT_SERVICE_TYPES;
 
     private boolean isFilterSubject() {
-        return request() != null
-                && request().getService() != null
-                && request().getRequest() != null;
+        return request() != null && request().getService() != null && request().getRequest() != null;
     }
 
     private Request request() {
@@ -78,11 +75,11 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter
     /**
      * Returns a list of disabled service types for the given resource.
      *
-     * <p>If {@link ResourceInfo#isServiceConfiguration()} is {@code true} the resource is
-     * responsible for providing the list of disabled service types.
+     * <p>If {@link ResourceInfo#isServiceConfiguration()} is {@code true} the resource is responsible for providing the
+     * list of disabled service types.
      *
-     * <p>If {@link ResourceInfo#isServiceConfiguration()} is {@code false} a default list of
-     * disabled service types is provided.
+     * <p>If {@link ResourceInfo#isServiceConfiguration()} is {@code false} a default list of disabled service types is
+     * provided.
      *
      * @return list of disabled service types
      */
@@ -90,10 +87,9 @@ public class DisabledServiceResourceFilter extends AbstractCatalogFilter
         List<String> disabledServices;
         // if service configuration is enabled get layer's disable services list
         if (resource.isServiceConfiguration()) {
-            disabledServices =
-                    CollectionUtils.isEmpty(resource.getDisabledServices())
-                            ? Collections.emptyList()
-                            : resource.getDisabledServices();
+            disabledServices = CollectionUtils.isEmpty(resource.getDisabledServices())
+                    ? Collections.emptyList()
+                    : resource.getDisabledServices();
         } else {
             // service configuration disabled, get global env default disabled services list
             disabledServices = defaultDisabledServiceTypes();

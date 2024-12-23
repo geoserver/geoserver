@@ -81,11 +81,10 @@ public class ScaleExtentKvpParser extends KvpParser {
 
                 se.getTargetAxisExtent().add(te);
             } catch (NumberFormatException e) {
-                WCS20Exception ex =
-                        new WCS20Exception(
-                                "Invalid ScaleExtent syntax, expecting a comma separate list of axisName(min,max)*",
-                                WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
-                                "scaleExtent");
+                WCS20Exception ex = new WCS20Exception(
+                        "Invalid ScaleExtent syntax, expecting a comma separate list of axisName(min,max)*",
+                        WCS20Exception.WCS20ExceptionCode.InvalidEncodingSyntax,
+                        "scaleExtent");
                 ex.initCause(e);
                 throw ex;
             }

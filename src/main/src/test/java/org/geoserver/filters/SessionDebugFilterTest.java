@@ -21,18 +21,16 @@ public class SessionDebugFilterTest {
         MockHttpServletRequest request = new MockHttpServletRequest();
         MockHttpServletResponse response = new MockHttpServletResponse();
         SessionDebugFilter filter = new SessionDebugFilter();
-        MockFilterChain chain =
-                new MockFilterChain() {
-                    @Override
-                    public void doFilter(ServletRequest request, ServletResponse response)
-                            throws IOException, ServletException {
-                        SessionDebugFilter.SessionDebugWrapper debugWrapper =
-                                (SessionDebugFilter.SessionDebugWrapper) request;
-                        assertNull(debugWrapper.getPathInfo());
-                        HttpSession session = debugWrapper.getSession();
-                        assertNotNull(session);
-                    }
-                };
+        MockFilterChain chain = new MockFilterChain() {
+            @Override
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                SessionDebugFilter.SessionDebugWrapper debugWrapper = (SessionDebugFilter.SessionDebugWrapper) request;
+                assertNull(debugWrapper.getPathInfo());
+                HttpSession session = debugWrapper.getSession();
+                assertNotNull(session);
+            }
+        };
         filter.doFilter(request, response, chain);
     }
 }

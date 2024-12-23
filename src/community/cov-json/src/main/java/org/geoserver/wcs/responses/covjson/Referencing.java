@@ -10,7 +10,8 @@ import java.util.List;
 /** The Referencing part of a CoverageJson */
 public class Referencing {
 
-    @JsonProperty List<String> coordinates;
+    @JsonProperty
+    List<String> coordinates;
 
     @JsonProperty(required = true)
     System system;
@@ -31,7 +32,8 @@ public class Referencing {
 
     static class TemporalRS extends System {
 
-        @JsonProperty String calendar;
+        @JsonProperty
+        String calendar;
 
         protected TemporalRS() {
             super("TemporalRS");
@@ -48,7 +50,8 @@ public class Referencing {
 
     static class HorizontalRS extends System {
 
-        @JsonProperty String id;
+        @JsonProperty
+        String id;
 
         protected HorizontalRS(String type, String code) {
             super(type);

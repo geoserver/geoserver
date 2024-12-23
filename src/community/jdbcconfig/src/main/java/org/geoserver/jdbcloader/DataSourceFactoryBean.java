@@ -48,17 +48,13 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
     }
 
     protected DataSource createDataSourceStub() {
-        return (DataSource)
-                Proxy.newProxyInstance(
-                        getClass().getClassLoader(),
-                        new Class[] {DataSource.class},
-                        new InvocationHandler() {
-                            @Override
-                            public Object invoke(Object proxy, Method method, Object[] args)
-                                    throws Throwable {
-                                return null;
-                            }
-                        });
+        return (DataSource) Proxy.newProxyInstance(
+                getClass().getClassLoader(), new Class[] {DataSource.class}, new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        return null;
+                    }
+                });
     }
 
     /** Look up or create a DataSource */
@@ -110,9 +106,7 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
                 if (LOGGER.isLoggable(Level.WARNING)) {
                     LOGGER.log(
                             Level.WARNING,
-                            "Could not resolve JNDI name "
-                                    + name.get()
-                                    + " for JDBCLoader Database",
+                            "Could not resolve JNDI name " + name.get() + " for JDBCLoader Database",
                             ex);
                 }
                 return Optional.absent();
@@ -143,21 +137,24 @@ public class DataSourceFactoryBean implements FactoryBean<DataSource>, Disposabl
         dataSource.setPassword(get(config, "password", String.class, false).orNull());
 
         dataSource.setMinIdle(get(config, "pool.minIdle", Integer.class, false).or(1));
-        dataSource.setMaxActive(get(config, "pool.maxActive", Integer.class, false).or(10));
+        dataSource.setMaxActive(
+                get(config, "pool.maxActive", Integer.class, false).or(10));
         dataSource.setPoolPreparedStatements(
                 get(config, "pool.poolPreparedStatements", Boolean.class, false).or(true));
-        dataSource.setMaxOpenPreparedStatements(
-                get(config, "pool.maxOpenPreparedStatements", Integer.class, false).or(50));
+        dataSource.setMaxOpenPreparedStatements(get(config, "pool.maxOpenPreparedStatements", Integer.class, false)
+                .or(50));
 
         dataSource.setTestWhileIdle(
                 get(config, "pool.testWhileIdle", Boolean.class, false).or(false));
 
-        dataSource.setTimeBetweenEvictionRunsMillis(
-                get(config, "pool.timeBetweenEvictionRunsMillis", Long.class, false).or(-1L));
+        dataSource.setTimeBetweenEvictionRunsMillis(get(config, "pool.timeBetweenEvictionRunsMillis", Long.class, false)
+                .or(-1L));
 
-        boolean testOnBorrow = get(config, "pool.testOnBorrow", Boolean.class, false).or(false);
+        boolean testOnBorrow =
+                get(config, "pool.testOnBorrow", Boolean.class, false).or(false);
         if (testOnBorrow) {
-            String validateQuery = get(config, "pool.validationQuery", String.class, true).get();
+            String validateQuery =
+                    get(config, "pool.validationQuery", String.class, true).get();
             dataSource.setTestOnBorrow(true);
             dataSource.setValidationQuery(validateQuery);
         }

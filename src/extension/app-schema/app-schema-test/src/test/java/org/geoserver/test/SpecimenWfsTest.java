@@ -28,8 +28,7 @@ public class SpecimenWfsTest extends AbstractAppSchemaTestSupport {
     /** Test whether GetFeature returns wfs:FeatureCollection. */
     @Test
     public void testGetFeature() {
-        String path =
-                "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputFormat=gml32";
+        String path = "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputFormat=gml32";
         String newline = System.getProperty("line.separator");
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
@@ -40,8 +39,7 @@ public class SpecimenWfsTest extends AbstractAppSchemaTestSupport {
     /** Test whether GetFeature response is schema-valid. */
     @Test
     public void testGetFeatureValid() {
-        String path =
-                "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputformat=gml32";
+        String path = "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputformat=gml32";
         String newline = System.getProperty("line.separator");
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));
@@ -51,8 +49,7 @@ public class SpecimenWfsTest extends AbstractAppSchemaTestSupport {
     /** Test whether GetFeature response has expected content. */
     @Test
     public void testGetFeatureContent() {
-        String path =
-                "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputformat=gml32";
+        String path = "wfs?version=1.1.0&request=GetFeature&typename=spec:SF_Specimen&outputformat=gml32";
         String newline = System.getProperty("line.separator");
         Document doc = getAsDOM(path);
         LOGGER.info("Response for " + path + " :" + newline + prettyString(doc));

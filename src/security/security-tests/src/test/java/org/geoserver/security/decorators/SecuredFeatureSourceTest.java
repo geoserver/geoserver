@@ -92,8 +92,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
     }
 
     @Test
-    public <T extends FeatureType, F extends Feature> void testReadOnlyFeatureSourceDataAccess()
-            throws Exception {
+    public <T extends FeatureType, F extends Feature> void testReadOnlyFeatureSourceDataAccess() throws Exception {
         // build the mock up
         @SuppressWarnings("unchecked")
         DataAccess<T, F> da = createNiceMock(DataAccess.class);
@@ -103,14 +102,13 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         expect(fs.getDataStore()).andReturn(da);
         replay(fs);
 
-        SecuredFeatureSource<T, F> ro =
-                new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyChallenge(null));
+        SecuredFeatureSource<T, F> ro = new SecuredFeatureSource<>(fs, WrapperPolicy.readOnlyChallenge(null));
         assertTrue(ro.getDataStore() instanceof ReadOnlyDataAccess);
     }
 
     @Test
-    public <T extends FeatureType, F extends Feature>
-            void testSecuredFeatureSourceLoggingWithComplex() throws Exception {
+    public <T extends FeatureType, F extends Feature> void testSecuredFeatureSourceLoggingWithComplex()
+            throws Exception {
         // build up the mock
         @SuppressWarnings("unchecked")
         T schema = (T) createNiceMock(ComplexFeatureTypeImpl.class);
@@ -158,8 +156,7 @@ public class SecuredFeatureSourceTest extends SecureObjectsTest {
         customLogHandler.setLevel(Level.SEVERE);
         logger.addHandler(customLogHandler);
         try {
-            SecuredFeatureStore ro =
-                    new SecuredFeatureStore<>(fStore, WrapperPolicy.readOnlyHide(null));
+            SecuredFeatureStore ro = new SecuredFeatureStore<>(fStore, WrapperPolicy.readOnlyHide(null));
             Query q = new Query("testComplextFt");
             List<PropertyName> pnames = new ArrayList<>(1);
             FilterFactory ff = CommonFactoryFinder.getFilterFactory();

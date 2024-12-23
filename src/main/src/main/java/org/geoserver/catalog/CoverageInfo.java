@@ -113,9 +113,8 @@ public interface CoverageInfo extends ResourceInfo {
     /**
      * Returns the underlying grid coverage instance.
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to
-     * report the progress of loading the coverage and also to report any errors or warnings that
-     * occur.
+     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> may be used to report the progress of
+     * loading the coverage and also to report any errors or warnings that occur.
      *
      * @param listener A progress listener, may be <code>null</code>.
      * @param hints Hints to be used when loading the coverage.
@@ -124,11 +123,10 @@ public interface CoverageInfo extends ResourceInfo {
      */
     GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException;
 
-    GridCoverage getGridCoverage(
-            ProgressListener listener, ReferencedEnvelope envelope, Hints hints) throws IOException;
-
-    GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
+    GridCoverage getGridCoverage(ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException;
+
+    GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException;
 
     /** Returns the native coverage name (might be null for single coverage formats) */
     String getNativeCoverageName();

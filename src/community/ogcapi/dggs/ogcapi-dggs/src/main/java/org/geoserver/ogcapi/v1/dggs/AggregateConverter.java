@@ -21,14 +21,12 @@ public class AggregateConverter implements Converter<String, Aggregate[]> {
     private static final Map<String, Aggregate> AGGREGATES = new HashMap<>();
 
     static {
-        Arrays.stream(Aggregate.values())
-                .forEach(
-                        a -> {
-                            if (a == Aggregate.STD_DEV) AGGREGATES.put("std-dev", a);
-                            else if (a == Aggregate.AVERAGE) AGGREGATES.put("mean", a);
-                            else if (a != Aggregate.SUMAREA && a != Aggregate.MEDIAN)
-                                AGGREGATES.put(a.name().toLowerCase(), a);
-                        });
+        Arrays.stream(Aggregate.values()).forEach(a -> {
+            if (a == Aggregate.STD_DEV) AGGREGATES.put("std-dev", a);
+            else if (a == Aggregate.AVERAGE) AGGREGATES.put("mean", a);
+            else if (a != Aggregate.SUMAREA && a != Aggregate.MEDIAN)
+                AGGREGATES.put(a.name().toLowerCase(), a);
+        });
     }
 
     public static Map<String, Aggregate> getAggregates() {
@@ -37,18 +35,14 @@ public class AggregateConverter implements Converter<String, Aggregate[]> {
 
     @Override
     public Aggregate[] convert(String s) {
-        return Arrays.stream(s.split("\\s*,\\s*"))
-                .map(n -> mapAggregate(n))
-                .toArray(n -> new Aggregate[n]);
+        return Arrays.stream(s.split("\\s*,\\s*")).map(n -> mapAggregate(n)).toArray(n -> new Aggregate[n]);
     }
 
     private Aggregate mapAggregate(String name) {
         Aggregate agg = AGGREGATES.get(name);
         if (agg == null)
             throw new APIException(
-                    APIException.INVALID_PARAMETER_VALUE,
-                    "Un-recognized aggregate : " + name,
-                    HttpStatus.BAD_REQUEST);
+                    APIException.INVALID_PARAMETER_VALUE, "Un-recognized aggregate : " + name, HttpStatus.BAD_REQUEST);
         return agg;
     }
 }

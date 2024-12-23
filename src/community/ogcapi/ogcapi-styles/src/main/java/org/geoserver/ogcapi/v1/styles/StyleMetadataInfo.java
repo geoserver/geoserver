@@ -10,9 +10,8 @@ import java.util.List;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * These may eventually be added to StyleInfo itself, but for the moment we don't know if the OGC
- * Styles service will become a formal spec, and what final shape it will take, so setting them up
- * in the metadata map for the time being
+ * These may eventually be added to StyleInfo itself, but for the moment we don't know if the OGC Styles service will
+ * become a formal spec, and what final shape it will take, so setting them up in the metadata map for the time being
  */
 public class StyleMetadataInfo implements Serializable {
 

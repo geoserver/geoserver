@@ -45,10 +45,7 @@ public class LockFeatureTest extends WFSTestSupport {
 
     @Test
     public void testLockGet() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=LockFeature&typename=sf:GenericEntity",
-                        200);
+        Document dom = getAsDOM("wfs?service=WFS&version=1.1.0&request=LockFeature&typename=sf:GenericEntity", 200);
 
         print(dom);
         assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
@@ -60,11 +57,10 @@ public class LockFeatureTest extends WFSTestSupport {
 
     @Test
     public void testLockWithNamespacesGet() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=LockFeature&typename=ns53:GenericEntity"
-                                + "&namespace=xmlns(ns53=http://cite.opengeospatial.org/gmlsf)",
-                        200);
+        Document dom = getAsDOM(
+                "wfs?service=WFS&version=1.1.0&request=LockFeature&typename=ns53:GenericEntity"
+                        + "&namespace=xmlns(ns53=http://cite.opengeospatial.org/gmlsf)",
+                200);
 
         // print(dom);
         assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());
@@ -80,11 +76,10 @@ public class LockFeatureTest extends WFSTestSupport {
 
     @Test
     public void testLockByBBOX() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=LockFeature&typeName=sf:PrimitiveGeoFeature"
-                                + "&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326",
-                        200);
+        Document dom = getAsDOM(
+                "wfs?service=WFS&version=1.1.0&request=LockFeature&typeName=sf:PrimitiveGeoFeature"
+                        + "&BBOX=57.0,-4.5,62.0,1.0,EPSG:4326",
+                200);
 
         // print(dom);
         assertEquals("wfs:LockFeatureResponse", dom.getDocumentElement().getNodeName());

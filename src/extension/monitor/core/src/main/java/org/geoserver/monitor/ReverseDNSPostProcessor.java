@@ -47,11 +47,7 @@ public class ReverseDNSPostProcessor implements RequestPostProcessor {
         try {
             cache = CacheBuilder.from(cacheConfiguration).build(new DNSCacheLoader());
         } catch (Throwable e) {
-            LOGGER.warning(
-                    "Invalid config "
-                            + cacheConfiguration
-                            + ", reverting to default."
-                            + e.getMessage());
+            LOGGER.warning("Invalid config " + cacheConfiguration + ", reverting to default." + e.getMessage());
             cache = CacheBuilder.from(MonitorConfig.DNS_CACHE_DEFAULT).build(new DNSCacheLoader());
         }
         reverseLookupCache = cache;

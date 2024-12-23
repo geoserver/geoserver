@@ -8,8 +8,8 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap.utils;
 import java.util.LinkedList;
 
 /**
- * Cyclical implementation of LinkedList: when a not available index is used, then index is wrapped
- * until it falls in tre available index range.
+ * Cyclical implementation of LinkedList: when a not available index is used, then index is wrapped until it falls in
+ * tre available index range.
  *
  * @author m.bartolomeoli
  */

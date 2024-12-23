@@ -38,9 +38,9 @@ public class GeoServerExceptions {
      * Returns a localized message for the specific exception, given the specified locale.
      *
      * <p>This method processes the {@link ResourceBundle} extension point to find the appropriate
-     * {@link ResourceBundle} containing the localized message. The base name used to look up the
-     * message is the name of the exception class. First the fully qualified exception name is used,
-     * and if no bundle found, the non qualified name is used.
+     * {@link ResourceBundle} containing the localized message. The base name used to look up the message is the name of
+     * the exception class. First the fully qualified exception name is used, and if no bundle found, the non qualified
+     * name is used.
      *
      * @param e The exception whose message to localize.
      * @param locale The locale to use.
@@ -69,8 +69,7 @@ public class GeoServerExceptions {
         return null;
     }
 
-    static String doLocalize(
-            String id, Object[] args, Class<? extends IGeoServerException> clazz, Locale locale) {
+    static String doLocalize(String id, Object[] args, Class<? extends IGeoServerException> clazz, Locale locale) {
 
         ResourceBundle bundle = null;
         try {

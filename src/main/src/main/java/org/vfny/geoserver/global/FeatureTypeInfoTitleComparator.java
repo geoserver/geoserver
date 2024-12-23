@@ -10,8 +10,7 @@ import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.geoserver.catalog.FeatureTypeInfo;
 
 /**
- * A comparator used to sort {@link FeatureTypeInfo} objects by title (useful for capabilities
- * output, for example)
+ * A comparator used to sort {@link FeatureTypeInfo} objects by title (useful for capabilities output, for example)
  *
  * @author Andrea Aime - TOPP
  */

@@ -9,8 +9,8 @@ import org.geoserver.wfs.request.TransactionRequest;
 import org.geoserver.wfs.request.TransactionResponse;
 
 /**
- * A transaction plugin is able to listen to a transaction evolution, perform checks and throw
- * exceptions, alter transaction requests, as well as
+ * A transaction plugin is able to listen to a transaction evolution, perform checks and throw exceptions, alter
+ * transaction requests, as well as
  */
 public interface TransactionCallback extends ExtensionPriority, TransactionListener {
     /** Check/alter the transaction request elements */
@@ -23,13 +23,11 @@ public interface TransactionCallback extends ExtensionPriority, TransactionListe
      * Notification the transaction ended
      *
      * @param request the originating transaction request
-     * @param result {@code null} if {@code committed == false}, the transaction result object to be
-     *     sent back to the client otherwise.
-     * @param committed true if the transaction was successful, false if the transaction was aborted
-     *     for any reason
+     * @param result {@code null} if {@code committed == false}, the transaction result object to be sent back to the
+     *     client otherwise.
+     * @param committed true if the transaction was successful, false if the transaction was aborted for any reason
      */
-    void afterTransaction(
-            TransactionRequest request, TransactionResponse result, boolean committed);
+    void afterTransaction(TransactionRequest request, TransactionResponse result, boolean committed);
 
     @Override
     default int getPriority() {

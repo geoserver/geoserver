@@ -15,9 +15,9 @@ import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.impl.AuthorityURL;
 
 /**
- * Utility class to serialize and deserialize a list of {@link AuthorityURLInfo} objects to and from
- * String using a JSON array representation as serialized form so that {@link XStreamPersister}
- * stores it under a single key in a catalog info's {@link MetadataMap}.
+ * Utility class to serialize and deserialize a list of {@link AuthorityURLInfo} objects to and from String using a JSON
+ * array representation as serialized form so that {@link XStreamPersister} stores it under a single key in a catalog
+ * info's {@link MetadataMap}.
  *
  * @author groldan
  */
@@ -54,8 +54,8 @@ public class AuthorityURLInfoInfoListConverter {
 
     /**
      * @param obj the list of layer identifiers to serialize
-     * @return {@code null} if {@code list} is null, empty or contains only null objects; the JSON
-     *     array representation of {@code list} otherwise, with any null element stripped off.
+     * @return {@code null} if {@code list} is null, empty or contains only null objects; the JSON array representation
+     *     of {@code list} otherwise, with any null element stripped off.
      */
     public static String toString(List<AuthorityURLInfo> obj) {
         if (obj == null || obj.isEmpty()) {

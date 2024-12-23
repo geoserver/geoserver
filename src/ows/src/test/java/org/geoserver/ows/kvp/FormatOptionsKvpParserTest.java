@@ -34,16 +34,11 @@ public class FormatOptionsKvpParserTest {
      */
     @Test
     public void testPairs() throws Exception {
-        Map<String, String> expected =
-                Map.ofEntries(
-                        entry("key1", "value1"),
-                        entry("key2", "value2"),
-                        entry("key3", "true"),
-                        entry("key4", "value4"));
+        Map<String, String> expected = Map.ofEntries(
+                entry("key1", "value1"), entry("key2", "value2"), entry("key3", "true"), entry("key4", "value4"));
 
         @SuppressWarnings("unchecked")
-        Map<String, String> actual =
-                (Map<String, String>) parser.parse("key1:value1;key2:value2;key3;key4:value4");
+        Map<String, String> actual = (Map<String, String>) parser.parse("key1:value1;key2:value2;key3;key4:value4");
         Assert.assertEquals(expected, actual);
     }
 
@@ -55,15 +50,11 @@ public class FormatOptionsKvpParserTest {
     @Test
     public void testEscapedSeparators() throws Exception {
         Map<String, String> expected =
-                Map.ofEntries(
-                        entry("key1", "value:1"),
-                        entry("key2", "value:2"),
-                        entry("key3", "value:3;ZZZ"));
+                Map.ofEntries(entry("key1", "value:1"), entry("key2", "value:2"), entry("key3", "value:3;ZZZ"));
 
         @SuppressWarnings("unchecked")
         Map<String, String> actual =
-                (Map<String, String>)
-                        parser.parse("key1:value\\:1;key2:value\\:2;key3:value\\:3\\;ZZZ");
+                (Map<String, String>) parser.parse("key1:value\\:1;key2:value\\:2;key3:value\\:3\\;ZZZ");
         Assert.assertEquals(expected, actual);
     }
 
@@ -75,15 +66,11 @@ public class FormatOptionsKvpParserTest {
     @Test
     public void testEmbeddedSeparators() throws Exception {
         Map<String, String> expected =
-                Map.ofEntries(
-                        entry("key1", "value:1"),
-                        entry("key2", "value:2"),
-                        entry("key3", "value:3:ZZ;XX"));
+                Map.ofEntries(entry("key1", "value:1"), entry("key2", "value:2"), entry("key3", "value:3:ZZ;XX"));
 
         @SuppressWarnings("unchecked")
         Map<String, String> actual =
-                (Map<String, String>)
-                        parser.parse("key1:value:1;key2:value:2;key3:value:3\\:ZZ\\;XX");
+                (Map<String, String>) parser.parse("key1:value:1;key2:value:2;key3:value:3\\:ZZ\\;XX");
         Assert.assertEquals(expected, actual);
     }
 
@@ -95,14 +82,10 @@ public class FormatOptionsKvpParserTest {
     @Test
     public void testErrors() throws Exception {
         Map<String, String> expected =
-                Map.ofEntries(
-                        entry("key1", "value:1"),
-                        entry("key2", "value:2"),
-                        entry("key3", "value:3"));
+                Map.ofEntries(entry("key1", "value:1"), entry("key2", "value:2"), entry("key3", "value:3"));
 
         @SuppressWarnings("unchecked")
-        Map<String, String> actual =
-                (Map<String, String>) parser.parse("key1:value:1;key2:value:2;key3:value:3");
+        Map<String, String> actual = (Map<String, String>) parser.parse("key1:value:1;key2:value:2;key3:value:3");
         Assert.assertEquals(expected.size(), actual.size());
         Assert.assertEquals(expected, actual);
     }

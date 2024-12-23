@@ -17,11 +17,10 @@ public class MaxBlockedThreadsException extends AuthenticationException {
     private int count;
 
     public MaxBlockedThreadsException(int count) {
-        super(
-                "Too many failed logins waiting on delay already: "
-                        + count
-                        + ". Please wait a bit and try again."
-                        + ". A brute force attack to crack user's passwords may be underway.");
+        super("Too many failed logins waiting on delay already: "
+                + count
+                + ". Please wait a bit and try again."
+                + ". A brute force attack to crack user's passwords may be underway.");
         this.count = count;
     }
 

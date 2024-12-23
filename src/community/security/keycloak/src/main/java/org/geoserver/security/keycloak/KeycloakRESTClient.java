@@ -30,9 +30,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.geoserver.security.impl.GeoServerRole;
 import org.springframework.util.StringUtils;
 
-/**
- * Class that provides methods to invoke Keycloak REST api endpoints to retrieve roles and users.
- */
+/** Class that provides methods to invoke Keycloak REST api endpoints to retrieve roles and users. */
 class KeycloakRESTClient {
 
     private KeycloakUrlBuilder builder;
@@ -40,15 +38,10 @@ class KeycloakRESTClient {
     private String clientSecret;
     private List<String> listOfClientIds;
 
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(KeycloakRESTClient.class);
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger(KeycloakRESTClient.class);
 
     KeycloakRESTClient(
-            String serverUrl,
-            String realm,
-            String clientID,
-            String clientSecret,
-            List<String> listOfClientIds) {
+            String serverUrl, String realm, String clientID, String clientSecret, List<String> listOfClientIds) {
         this.builder = new KeycloakUrlBuilder(realm, serverUrl);
         this.clientID = clientID;
         this.clientSecret = clientSecret;
@@ -56,8 +49,8 @@ class KeycloakRESTClient {
     }
 
     /**
-     * Get all the keycloak realm roles and eventually the client roles if id were configured. It
-     * converts keycloak roles to {@link GeoServerRole}
+     * Get all the keycloak realm roles and eventually the client roles if id were configured. It converts keycloak
+     * roles to {@link GeoServerRole}
      *
      * @return a SortedSet of {@link GeoServerRole}.
      * @throws IOException
@@ -70,8 +63,7 @@ class KeycloakRESTClient {
             String accessToken = getAccessToken(httpClient);
             if (!StringUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
-                List<Object> result =
-                        invoke(httpClient, builder.allRoles().build(), accessToken, List.class);
+                List<Object> result = invoke(httpClient, builder.allRoles().build(), accessToken, List.class);
                 if (result == null) result = new ArrayList<>();
                 result.add(rolesFromClients(httpClient, accessToken));
                 sortedSet = toGeoServerRoles(result);
@@ -81,8 +73,7 @@ class KeycloakRESTClient {
     }
 
     /**
-     * Get the list of the user realm roles. If client ids were configured it will get also the user
-     * clients' roles.
+     * Get the list of the user realm roles. If client ids were configured it will get also the user clients' roles.
      *
      * @param username the username.
      * @return a SortedSet of {@link GeoServerRole}.
@@ -97,21 +88,17 @@ class KeycloakRESTClient {
             if (!StringUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 List<Object> result =
-                        invoke(
-                                httpClient,
-                                builder.userByName(username).build(),
-                                accessToken,
-                                List.class);
+                        invoke(httpClient, builder.userByName(username).build(), accessToken, List.class);
                 if (result != null && !result.isEmpty()) {
                     LinkedTreeMap<?, ?> user = (LinkedTreeMap<?, ?>) result.get(0);
                     String userId = user.get("id").toString();
-                    String realmRolesUrl = builder.userById(userId).allUserRoles(true).build();
+                    String realmRolesUrl =
+                            builder.userById(userId).allUserRoles(true).build();
                     List<Object> roles = invoke(httpClient, realmRolesUrl, accessToken, List.class);
                     if (roles != null && !roles.isEmpty()) {
                         sortedSet.addAll(toGeoServerRoles(roles));
                     }
-                    List<Object> clientRoles =
-                            userRolesFromClients(httpClient, accessToken, userId);
+                    List<Object> clientRoles = userRolesFromClients(httpClient, accessToken, userId);
                     sortedSet.addAll(toGeoServerRoles(clientRoles));
                 }
             }
@@ -132,27 +119,20 @@ class KeycloakRESTClient {
             String accessToken = getAccessToken(httpClient);
             if (!StringUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
-                Map<?, ?> result =
-                        invoke(httpClient, builder.role(roleName).build(), accessToken, Map.class);
-                if (result == null)
-                    result = getRoleByNameInClients(httpClient, accessToken, roleName);
+                Map<?, ?> result = invoke(httpClient, builder.role(roleName).build(), accessToken, Map.class);
+                if (result == null) result = getRoleByNameInClients(httpClient, accessToken, roleName);
                 if (result != null) return toGeoServerRole(result);
             }
         }
         return null;
     }
 
-    private Map<?, ?> getRoleByNameInClients(
-            CloseableHttpClient httpClient, String accessToken, String roleName) {
+    private Map<?, ?> getRoleByNameInClients(CloseableHttpClient httpClient, String accessToken, String roleName) {
         Map<?, ?> result = null;
         if (listOfClientIds != null && !listOfClientIds.isEmpty()) {
             for (String clientId : listOfClientIds) {
-                result =
-                        invoke(
-                                httpClient,
-                                builder.client(clientId).role(roleName).build(),
-                                accessToken,
-                                Map.class);
+                result = invoke(
+                        httpClient, builder.client(clientId).role(roleName).build(), accessToken, Map.class);
                 if (result != null) break;
             }
         }
@@ -174,11 +154,7 @@ class KeycloakRESTClient {
             if (!StringUtils.isEmpty(accessToken)) {
                 LOGGER.config("Retrieving roles from Keycloak");
                 List<Object> users =
-                        invoke(
-                                httpClient,
-                                builder.role(roleName).users().build(),
-                                accessToken,
-                                List.class);
+                        invoke(httpClient, builder.role(roleName).users().build(), accessToken, List.class);
                 if (users != null) return toUserNames(users);
             }
         }
@@ -199,12 +175,14 @@ class KeycloakRESTClient {
     }
 
     @SuppressWarnings("unchecked")
-    private List<Object> userRolesFromClients(
-            CloseableHttpClient httpClient, String accessToken, String userId) {
+    private List<Object> userRolesFromClients(CloseableHttpClient httpClient, String accessToken, String userId) {
         List<Object> results = new ArrayList<>();
         if (listOfClientIds != null && !listOfClientIds.isEmpty()) {
             for (String clientId : listOfClientIds) {
-                String url = builder.userById(userId).allUserRoles(false).client(clientId).build();
+                String url = builder.userById(userId)
+                        .allUserRoles(false)
+                        .client(clientId)
+                        .build();
                 List<Object> result = invoke(httpClient, url, accessToken, List.class);
                 if (result != null) results.addAll(result);
             }
@@ -222,41 +200,29 @@ class KeycloakRESTClient {
      * @param <T> the type of the result.
      * @return the response converted to the type passed.
      */
-    <T> T invoke(
-            CloseableHttpClient httpClient,
-            String endpoint,
-            String accessToken,
-            Class<T> resultType) {
+    <T> T invoke(CloseableHttpClient httpClient, String endpoint, String accessToken, Class<T> resultType) {
         HttpGet httpGet = new HttpGet(endpoint);
         httpGet.setHeader("Authorization", "Bearer " + accessToken);
         LOGGER.fine(() -> "Calling Keycloak REST endpoint " + endpoint);
         try (CloseableHttpResponse response = httpClient.execute(httpGet)) {
             StatusLine statusLine = response.getStatusLine();
             if (statusLine == null || statusLine.getStatusCode() != 200) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Issue involing endpoint "
-                                + endpoint
-                                + ". Response status is "
-                                + statusLine);
+                LOGGER.log(Level.FINE, "Issue involing endpoint " + endpoint + ". Response status is " + statusLine);
                 return null;
             }
             String jsonString = getStringResponseMessage(response);
             LOGGER.fine(() -> "Response obtained is " + jsonString);
             return new Gson().fromJson(jsonString, resultType);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error while executing the REST call error is: " + e.getMessage(),
-                    e);
+            LOGGER.log(Level.SEVERE, "Error while executing the REST call error is: " + e.getMessage(), e);
         }
 
         return null;
     }
 
     /**
-     * Obtain an access token from Keycloak, using the server URL, realm name, and client secret
-     * from the config. Returns null if an error occurs.
+     * Obtain an access token from Keycloak, using the server URL, realm name, and client secret from the config.
+     * Returns null if an error occurs.
      *
      * @param httpClient a CloseableHttpClient to send the request through
      * @return a String access token on success, null on error.
@@ -264,11 +230,7 @@ class KeycloakRESTClient {
     String getAccessToken(CloseableHttpClient httpClient) {
         HttpPost httpPost = new HttpPost(builder.buildTokenEndpoint());
         String body =
-                "client_id="
-                        + this.clientID
-                        + "&client_secret="
-                        + this.clientSecret
-                        + "&grant_type=client_credentials";
+                "client_id=" + this.clientID + "&client_secret=" + this.clientSecret + "&grant_type=client_credentials";
         HttpEntity entity = new StringEntity(body, ContentType.APPLICATION_FORM_URLENCODED);
         httpPost.setEntity(entity);
 
@@ -282,10 +244,7 @@ class KeycloakRESTClient {
             Map<?, ?> map = new Gson().fromJson(jsonString, Map.class);
             return map.get("access_token").toString();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Error while executing the token call error is: " + e.getMessage(),
-                    e);
+            LOGGER.log(Level.SEVERE, "Error while executing the token call error is: " + e.getMessage(), e);
             return null;
         }
     }

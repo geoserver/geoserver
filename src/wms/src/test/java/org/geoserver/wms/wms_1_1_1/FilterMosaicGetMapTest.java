@@ -22,13 +22,12 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
 
     static final String layer = WATTEMP.getLocalPart();
 
-    static final String BASE_URL =
-            "wms?service=WMS&version=1.1.0"
-                    + "&request=GetMap&layers="
-                    + layer
-                    + "&styles="
-                    + "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
-                    + "&srs=EPSG:4326&format=image/png";
+    static final String BASE_URL = "wms?service=WMS&version=1.1.0"
+            + "&request=GetMap&layers="
+            + layer
+            + "&styles="
+            + "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
+            + "&srs=EPSG:4326&format=image/png";
 
     static final String MIME = "image/png";
 
@@ -70,11 +69,8 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         // CASE 'MOSAIC WITH FILTERS'
 
         // overriding the default filter using cql_filter parameter
-        BufferedImage image =
-                getAsImage(
-                        BASE_URL
-                                + "&cql_filter=elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                BASE_URL + "&cql_filter=elevation=100 AND ingestion=\'2008-10-31T00:00:00.000Z\'", "image/png");
 
         // setting the default filter
         super.setupMosaicFilter(cql_filter, layer);
@@ -90,11 +86,8 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         // CASE 'MOSAIC WITH FILTERS'
 
         // overriding the default filter using cql_filter parameter
-        BufferedImage image =
-                getAsImage(
-                        BASE_URL
-                                + "&cql_filter=elevation=100 AND ingestion=\'2008-11-01T00:00:00.000Z\'",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                BASE_URL + "&cql_filter=elevation=100 AND ingestion=\'2008-11-01T00:00:00.000Z\'", "image/png");
 
         // setting the default filter
         super.setupMosaicFilter(cql_filter, layer);
@@ -109,11 +102,8 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         // CASE 'MOSAIC WITH FILTERS'
 
         // overriding the default filter using cql_filter parameter
-        BufferedImage image =
-                getAsImage(
-                        BASE_URL
-                                + "&cql_filter=elevation=0 AND ingestion=\'2008-10-31T00:00:00.000Z\'",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                BASE_URL + "&cql_filter=elevation=0 AND ingestion=\'2008-10-31T00:00:00.000Z\'", "image/png");
 
         // setting the default filter
         super.setupMosaicFilter(cql_filter, layer);
@@ -128,11 +118,8 @@ public class FilterMosaicGetMapTest extends WMSFilterMosaicTestSupport {
         // CASE 'MOSAIC WITH FILTERS'
 
         // overriding the default filter using cql_filter parameter
-        BufferedImage image =
-                getAsImage(
-                        BASE_URL
-                                + "&cql_filter=elevation=0 AND ingestion=\'2008-11-01T00:00:00.000Z\'",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                BASE_URL + "&cql_filter=elevation=0 AND ingestion=\'2008-11-01T00:00:00.000Z\'", "image/png");
 
         // setting the default filter
         super.setupMosaicFilter(cql_filter, layer);

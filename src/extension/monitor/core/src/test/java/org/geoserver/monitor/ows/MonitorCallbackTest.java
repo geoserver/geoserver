@@ -102,25 +102,24 @@ public class MonitorCallbackTest {
         MonitorDAO dao = new MemoryMonitorDAO();
         new MonitorTestData(dao).setup();
 
-        MonitorConfig mc =
-                new MonitorConfig() {
+        MonitorConfig mc = new MonitorConfig() {
 
-                    @Override
-                    public MonitorDAO createDAO() {
-                        MonitorDAO dao = new MemoryMonitorDAO();
-                        try {
-                            new MonitorTestData(dao).setup();
-                            return dao;
-                        } catch (java.text.ParseException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+            @Override
+            public MonitorDAO createDAO() {
+                MonitorDAO dao = new MemoryMonitorDAO();
+                try {
+                    new MonitorTestData(dao).setup();
+                    return dao;
+                } catch (java.text.ParseException e) {
+                    throw new RuntimeException(e);
+                }
+            }
 
-                    @Override
-                    public BboxMode getBboxMode() {
-                        return BboxMode.FULL;
-                    }
-                };
+            @Override
+            public BboxMode getBboxMode() {
+                return BboxMode.FULL;
+            }
+        };
 
         GeoServer gs = createMock(GeoServer.class);
         monitor = new Monitor(mc);
@@ -189,8 +188,7 @@ public class MonitorCallbackTest {
     public void testWFSGetFeature() throws Exception {
         GetFeatureType gf = WfsFactory.eINSTANCE.createGetFeatureType();
         org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
-        org.geotools.api.filter.Filter f2 =
-                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+        org.geotools.api.filter.Filter f2 = parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
         QueryType q = WfsFactory.eINSTANCE.createQueryType();
         q.setTypeName(Arrays.asList(new QName("http://acme.org", "foo", "acme")));
         q.setFilter(f1);
@@ -206,8 +204,7 @@ public class MonitorCallbackTest {
 
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        BoundingBox expected =
-                new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
+        BoundingBox expected = new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
         // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73
         BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
     }
@@ -217,8 +214,7 @@ public class MonitorCallbackTest {
     public void testWFSGetFeature20() throws Exception {
         net.opengis.wfs20.GetFeatureType gf = Wfs20Factory.eINSTANCE.createGetFeatureType();
         org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
-        org.geotools.api.filter.Filter f2 =
-                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+        org.geotools.api.filter.Filter f2 = parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
         net.opengis.wfs20.QueryType q = Wfs20Factory.eINSTANCE.createQueryType();
         q.getTypeNames().addAll(Arrays.asList(new QName("http://acme.org", "foo", "acme")));
         q.setFilter(f1);
@@ -234,8 +230,7 @@ public class MonitorCallbackTest {
 
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        BoundingBox expected =
-                new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
+        BoundingBox expected = new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
         // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73
         BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
     }
@@ -260,8 +255,7 @@ public class MonitorCallbackTest {
     public void testWFSTransaction() throws Exception {
         TransactionType t = WfsFactory.eINSTANCE.createTransactionType();
         org.geotools.api.filter.Filter f1 = parseFilter("BBOX(the_geom, 40, -90, 45, -60)");
-        org.geotools.api.filter.Filter f2 =
-                parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
+        org.geotools.api.filter.Filter f2 = parseFilter("BBOX(the_geom, 5988504.35,851278.90, 7585113.55,1950872.01)");
 
         UpdateElementType ue = WfsFactory.eINSTANCE.createUpdateElementType();
         ue.setTypeName(new QName("http://acme.org", "foo", "acme"));
@@ -278,8 +272,7 @@ public class MonitorCallbackTest {
 
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        BoundingBox expected =
-                new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
+        BoundingBox expected = new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
         // xMin,yMin -95.1193,40 : xMax,yMax -60,53.73
         BBoxAsserts.assertEqualsBbox(expected, data.getBbox(), 0.01);
     }
@@ -293,8 +286,7 @@ public class MonitorCallbackTest {
 
         // ie.setSrsName(new URI("epsg:4326"));
 
-        BoundingBox expected =
-                new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
+        BoundingBox expected = new ReferencedEnvelope(53.73, 40, -60, -95.1193, CRS.decode("EPSG:4326"));
 
         SimpleFeatureType ft = createNiceMock(SimpleFeatureType.class);
         expect(ft.getTypeName()).andReturn("acme:foo").anyTimes();
@@ -330,8 +322,7 @@ public class MonitorCallbackTest {
         callback.operationDispatched(new Request(), op("GetMap", "WMS", "1.1.1", gm));
 
         assertEquals("acme:foo", data.getResources().get(0));
-        BBoxAsserts.assertEqualsBbox(
-                new ReferencedEnvelope(env, crs).toBounds(logCrs), data.getBbox(), 0.1);
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(env, crs).toBounds(logCrs), data.getBbox(), 0.1);
     }
 
     @Test
@@ -362,16 +353,13 @@ public class MonitorCallbackTest {
         gfi.setYPixel(63);
         gfi.setVersion("1.1.1");
 
-        gfi.setQueryLayers(
-                Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
+        gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
 
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
         BBoxAsserts.assertEqualsBbox(
-                new ReferencedEnvelope(48.62, 48.62, -123.15, -123.15, logCrs),
-                data.getBbox(),
-                0.01);
+                new ReferencedEnvelope(48.62, 48.62, -123.15, -123.15, logCrs), data.getBbox(), 0.01);
     }
 
     @Test
@@ -404,19 +392,16 @@ public class MonitorCallbackTest {
     @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS10GetCoverage() throws Exception {
         GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
-        net.opengis.wcs10.SpatialSubsetType spatialSubset =
-                Wcs10Factory.eINSTANCE.createSpatialSubsetType();
+        net.opengis.wcs10.SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-        GeneralBounds env =
-                new GeneralBounds(new double[] {-123.4, 48.2}, new double[] {-120.9, 50.1});
+        GeneralBounds env = new GeneralBounds(new double[] {-123.4, 48.2}, new double[] {-120.9, 50.1});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
 
         spatialSubset.getEnvelope().clear();
         spatialSubset.getEnvelope().add(env);
-        net.opengis.wcs10.DomainSubsetType domainSubset =
-                Wcs10Factory.eINSTANCE.createDomainSubsetType();
+        net.opengis.wcs10.DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
         domainSubset.setSpatialSubset(spatialSubset);
 
         gc.setSourceCoverage("acme:foo");
@@ -431,8 +416,7 @@ public class MonitorCallbackTest {
     @Test
     @SuppressWarnings("unchecked") // EMF mode without generics
     public void testWCS11DescribeCoverage() throws Exception {
-        net.opengis.wcs11.DescribeCoverageType dc =
-                Wcs11Factory.eINSTANCE.createDescribeCoverageType();
+        net.opengis.wcs11.DescribeCoverageType dc = Wcs11Factory.eINSTANCE.createDescribeCoverageType();
         dc.getIdentifier().add("acme:foo");
         dc.getIdentifier().add("acme:bar");
 
@@ -446,18 +430,15 @@ public class MonitorCallbackTest {
         net.opengis.wcs11.GetCoverageType gc = Wcs11Factory.eINSTANCE.createGetCoverageType();
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
-        GeneralBounds env =
-                new GeneralBounds(new double[] {48.2, -123.4}, new double[] {50.1, -120.9});
+        GeneralBounds env = new GeneralBounds(new double[] {48.2, -123.4}, new double[] {50.1, -120.9});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(env);
-        net.opengis.ows11.BoundingBoxType wcsBbox =
-                net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
+        net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
         wcsBbox.setLowerCorner(Arrays.asList(48.2d, -123.4d));
         wcsBbox.setUpperCorner(Arrays.asList(50.1d, -120.9d));
         // wcsBbox.setCrs("urn:ogc:def:crs:OGC:1.3:CRS84");
         wcsBbox.setCrs("urn:ogc:def:crs:EPSG:4326");
-        net.opengis.wcs11.DomainSubsetType domainSubset =
-                Wcs11Factory.eINSTANCE.createDomainSubsetType();
+        net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();
         domainSubset.setBoundingBox(wcsBbox);
 
         gc.setDomainSubset(domainSubset);
@@ -491,10 +472,7 @@ public class MonitorCallbackTest {
 
     Operation op(String name, String service, String version, Object request) {
         return new Operation(
-                name,
-                new Service(service, null, new Version(version), null),
-                null,
-                new Object[] {request});
+                name, new Service(service, null, new Version(version), null), null, new Object[] {request});
     }
 
     @Test
@@ -503,22 +481,18 @@ public class MonitorCallbackTest {
         // xMin,yMin 5988504.35,851278.90 : xMax,yMax 7585113.55,1950872.01
         // xMin,yMin -95.1193,42.2802 : xMax,yMax -71.295,53.73
         GetCoverageType gc = Wcs10Factory.eINSTANCE.createGetCoverageType();
-        net.opengis.wcs10.SpatialSubsetType spatialSubset =
-                Wcs10Factory.eINSTANCE.createSpatialSubsetType();
+        net.opengis.wcs10.SpatialSubsetType spatialSubset = Wcs10Factory.eINSTANCE.createSpatialSubsetType();
 
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", false);
         CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
         GeneralBounds env =
-                new GeneralBounds(
-                        new double[] {5988504.35, 851278.90},
-                        new double[] {7585113.55, 1950872.01});
+                new GeneralBounds(new double[] {5988504.35, 851278.90}, new double[] {7585113.55, 1950872.01});
         env.setCoordinateReferenceSystem(crs);
         BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
 
         spatialSubset.getEnvelope().clear();
         spatialSubset.getEnvelope().add(env);
-        net.opengis.wcs10.DomainSubsetType domainSubset =
-                Wcs10Factory.eINSTANCE.createDomainSubsetType();
+        net.opengis.wcs10.DomainSubsetType domainSubset = Wcs10Factory.eINSTANCE.createDomainSubsetType();
         domainSubset.setSpatialSubset(spatialSubset);
 
         gc.setSourceCoverage("acme:foo");
@@ -538,13 +512,11 @@ public class MonitorCallbackTest {
 
         CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
         BoundingBox bbox = new ReferencedEnvelope(42.2802, 53.73, -95.1193, -71.295, logCrs);
-        net.opengis.ows11.BoundingBoxType wcsBbox =
-                net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
+        net.opengis.ows11.BoundingBoxType wcsBbox = net.opengis.ows11.Ows11Factory.eINSTANCE.createBoundingBoxType();
         wcsBbox.setLowerCorner(Arrays.asList(5988504.35d, 851278.90d));
         wcsBbox.setUpperCorner(Arrays.asList(7585113.55d, 1950872.01d));
         wcsBbox.setCrs("urn:ogc:def:crs:EPSG:3348");
-        net.opengis.wcs11.DomainSubsetType domainSubset =
-                Wcs11Factory.eINSTANCE.createDomainSubsetType();
+        net.opengis.wcs11.DomainSubsetType domainSubset = Wcs11Factory.eINSTANCE.createDomainSubsetType();
         domainSubset.setBoundingBox(wcsBbox);
 
         gc.setDomainSubset(domainSubset);
@@ -608,9 +580,7 @@ public class MonitorCallbackTest {
         GetMapRequest gm = new GetMapRequest();
         gm.setHeight(423);
         gm.setWidth(512);
-        Envelope env =
-                new ReferencedEnvelope(
-                        3833170.221556, 4083455.358596, 1841755.690829, 2048534.231783, null);
+        Envelope env = new ReferencedEnvelope(3833170.221556, 4083455.358596, 1841755.690829, 2048534.231783, null);
         CoordinateReferenceSystem crs = CRS.decode("EPSG:3348", true);
         CoordinateReferenceSystem logCrs = CRS.decode("EPSG:4326", false);
         gm.setBbox(env);
@@ -620,14 +590,12 @@ public class MonitorCallbackTest {
         gfi.setYPixel(241);
         gfi.setVersion("1.1.1");
 
-        gfi.setQueryLayers(
-                Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
+        gfi.setQueryLayers(Arrays.asList(createMapLayer("foo", "acme"), createMapLayer("bar", "acme")));
         callback.operationDispatched(new Request(), op("GetFeatureInfo", "WMS", "1.1.1", gfi));
 
         assertEquals("acme:foo", data.getResources().get(0));
         assertEquals("acme:bar", data.getResources().get(1));
-        BBoxAsserts.assertEqualsBbox(
-                new ReferencedEnvelope(48.4, 48.4, -123.3, -123.3, logCrs), data.getBbox(), 0.1);
+        BBoxAsserts.assertEqualsBbox(new ReferencedEnvelope(48.4, 48.4, -123.3, -123.3, logCrs), data.getBbox(), 0.1);
     }
 
     @Test

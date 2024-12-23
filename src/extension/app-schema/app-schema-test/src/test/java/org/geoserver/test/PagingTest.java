@@ -42,8 +42,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     }
 
     private void checkMf1Values(Document doc) {
-        assertXpathEvaluatesTo(
-                "GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
+        assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='mf1']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:crs:EPSG::4326",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:shape/gml:Polygon/@srsName",
@@ -57,24 +56,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id=\"mf1\"]/gsml:samplingFrame/@xlink:href",
                 doc);
         // specification gu.25699
-        assertXpathCount(
-                1, "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
-                "gu.25699",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25699", "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         // description
         assertXpathEvaluatesTo(
                 "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         // name
         assertXpathCount(
-                2,
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name",
-                doc);
+                2, "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gml:name", doc);
         assertXpathEvaluatesTo(
                 "Yaugher Volcanic Group",
                 "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
@@ -86,23 +78,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.add("Yaugher Volcanic Group");
         names.add("-Py");
         String name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                        doc);
+                evaluate("//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf1']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
         assertTrue(names.isEmpty());
 
         assertXpathEvaluatesTo(
                 "instance",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:purpose",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gsml:purpose",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
@@ -112,13 +98,11 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         // occurrence
         assertXpathCount(
                 1,
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "",
-                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf1']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:cgi:feature:MappedFeature:mf1",
@@ -128,8 +112,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     }
 
     private void checkMf2Values(Document doc) {
-        assertXpathEvaluatesTo(
-                "MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
+        assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='mf2']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:crs:EPSG::4326",
                 "//gsml:MappedFeature[@gml:id='mf2']/gsml:shape/gml:Polygon/@srsName",
@@ -143,24 +126,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id=\"mf2\"]/gsml:samplingFrame/@xlink:href",
                 doc);
         // specification gu.25678
-        assertXpathCount(
-                1, "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
-                "gu.25678",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25678", "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         // description
         assertXpathEvaluatesTo(
                 "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         // name
         assertXpathCount(
-                3,
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name",
-                doc);
+                3, "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gml:name", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
         List<String> names = new ArrayList<>();
@@ -168,29 +144,20 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.add("Yaugher Volcanic Group 2");
         names.add("-Py");
         String name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                        doc);
+                evaluate("//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[3]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf2']/gsml:specification/gsml:GeologicUnit/gml:name[3]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
         assertTrue(names.isEmpty());
 
         assertXpathEvaluatesTo(
                 "instance",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:purpose",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gsml:purpose",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
@@ -200,13 +167,11 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         // occurrence
         assertXpathCount(
                 2,
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "",
-                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf2']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:cgi:feature:MappedFeature:mf2",
@@ -221,8 +186,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     }
 
     private void checkMf3Values(Document doc) {
-        assertXpathEvaluatesTo(
-                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
+        assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:crs:EPSG::4326",
                 "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName",
@@ -236,24 +200,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id=\"mf3\"]/gsml:samplingFrame/@xlink:href",
                 doc);
         // specification gu.25678
-        assertXpathCount(
-                1, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
-                "gu.25678",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25678", "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         // description
         assertXpathEvaluatesTo(
                 "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         // name
         assertXpathCount(
-                3,
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name",
-                doc);
+                3, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification" + "/gsml:GeologicUnit/gml:name", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
         List<String> names = new ArrayList<>();
@@ -261,29 +218,20 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.add("Yaugher Volcanic Group 2");
         names.add("-Py");
         String name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                        doc);
+                evaluate("//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[3]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit/gml:name[3]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
         assertTrue(names.isEmpty());
 
         assertXpathEvaluatesTo(
                 "instance",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:purpose",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification" + "/gsml:GeologicUnit/gsml:purpose",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
@@ -293,13 +241,11 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         // occurrence
         assertXpathCount(
                 2,
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:cgi:feature:MappedFeature:mf2",
@@ -314,15 +260,10 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     }
 
     private void checkMf4Values(Document doc, String epsgId)
-            throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException,
-                    TransformException {
-        assertXpathEvaluatesTo(
-                "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name", doc);
+            throws NoSuchAuthorityCodeException, FactoryException, MismatchedDimensionException, TransformException {
+        assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='mf4']/gml:name", doc);
         String srsName = "urn:ogc:def:crs:EPSG::" + (epsgId == null ? "4326" : epsgId);
-        assertXpathEvaluatesTo(
-                srsName,
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName",
-                doc);
+        assertXpathEvaluatesTo(srsName, "//gsml:MappedFeature[@gml:id='mf4']/gsml:shape/gml:Polygon/@srsName", doc);
         if (epsgId == null) {
             assertXpathEvaluatesTo(
                     "52.5 -1.3 52.6 -1.3 52.6 -1.2 52.5 -1.2 52.5 -1.3",
@@ -335,24 +276,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id=\"mf4\"]/gsml:samplingFrame/@xlink:href",
                 doc);
         // specification gu.25682
-        assertXpathCount(
-                1, "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit", doc);
         assertXpathEvaluatesTo(
-                "gu.25682",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/@gml:id",
-                doc);
+                "gu.25682", "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/@gml:id", doc);
         // description
         assertXpathEvaluatesTo(
                 "Olivine basalt",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:description",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification" + "/gsml:GeologicUnit/gml:description",
                 doc);
         // name
         assertXpathCount(
-                2,
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
-                        + "/gsml:GeologicUnit/gml:name",
-                doc);
+                2, "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification" + "/gsml:GeologicUnit/gml:name", doc);
         assertXpathEvaluatesTo(
                 "New Group",
                 "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
@@ -364,23 +298,17 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.add("New Group");
         names.add("-Xy");
         String name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                        doc);
+                evaluate("//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
-        name =
-                evaluate(
-                        "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                        doc);
+        name = evaluate("//gsml:MappedFeature[@gml:id='mf4']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
         assertTrue(names.contains(name));
         names.remove(name);
         assertTrue(names.isEmpty());
 
         assertXpathEvaluatesTo(
                 "instance",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:purpose",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification" + "/gsml:GeologicUnit/gsml:purpose",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
@@ -390,13 +318,11 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         // occurrence
         assertXpathCount(
                 1,
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "",
-                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification"
-                        + "/gsml:GeologicUnit/gsml:occurrence",
+                "//gsml:MappedFeature[@gml:id='mf4']/gsml:specification" + "/gsml:GeologicUnit/gsml:occurrence",
                 doc);
         assertXpathEvaluatesTo(
                 "urn:cgi:feature:MappedFeature:mf4",
@@ -407,11 +333,9 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testWfs110GetFeature()
-            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
-                    TransformException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2");
+            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException, TransformException {
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         // expecting mf3 and mf4
         assertXpathCount(2, "//gsml:MappedFeature", doc);
@@ -429,8 +353,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testWfs200GetFeature() {
         Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:MappedFeature&count=1&startIndex=1");
+                getAsDOM("wfs?request=GetFeature&version=2.0.0&typeNames=gsml:MappedFeature&count=1&startIndex=1");
         LOGGER.info("WFS GetFeature&typeNames=gsml:MappedFeature response:\n" + prettyString(doc));
         // expecting mf2
         assertXpathCount(1, "//gsml:MappedFeature", doc);
@@ -440,9 +363,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureDenormalised() {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:GeologicUnit&featureID=gu.25682");
+        Document doc = getAsDOM("wfs?request=GetFeature&version=2.0.0&typeNames=gsml:GeologicUnit&featureID=gu.25682");
         LOGGER.info("WFS GetFeature&typeNames=gsml:GeologicUnit response:\n" + prettyString(doc));
         // expecting gu.25682
         assertXpathCount(1, "//gsml:GeologicUnit", doc);
@@ -451,8 +372,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         assertXpathEvaluatesTo("Olivine basalt", "//gsml:GeologicUnit/gml:description", doc);
         // name
         assertXpathCount(2, "//gsml:GeologicUnit/gml:name", doc);
-        assertXpathEvaluatesTo(
-                "New Group", "//gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
+        assertXpathEvaluatesTo("New Group", "//gsml:GeologicUnit/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
         List<String> names = new ArrayList<>();
@@ -468,25 +388,19 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
         assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit/gsml:purpose", doc);
         assertXpathEvaluatesTo(
-                "urn:ogc:def:nil:OGC::unknown",
-                "//gsml:GeologicUnit/gsml:geologicUnitType/@xlink:href",
-                doc);
+                "urn:ogc:def:nil:OGC::unknown", "//gsml:GeologicUnit/gsml:geologicUnitType/@xlink:href", doc);
         // occurrence
         assertXpathCount(1, "//gsml:GeologicUnit/gsml:occurrence", doc);
         assertXpathEvaluatesTo("", "//gsml:GeologicUnit/gsml:occurrence", doc);
         assertXpathEvaluatesTo(
-                "urn:cgi:feature:MappedFeature:mf4",
-                "//gsml:GeologicUnit/gsml:occurrence/@xlink:href",
-                doc);
+                "urn:cgi:feature:MappedFeature:mf4", "//gsml:GeologicUnit/gsml:occurrence/@xlink:href", doc);
     }
 
     @Test
     public void testGetFeatureSortBy()
-            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
-                    TransformException {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2&featureID=mf1,mf2,mf3,mf4&sortBy=gsml:specification");
+            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException, TransformException {
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&outputFormat=gml32&maxFeatures=2&startIndex=2&featureID=mf1,mf2,mf3,mf4&sortBy=gsml:specification");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         assertXpathCount(2, "//gsml:MappedFeature", doc);
 
@@ -502,24 +416,21 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureSortByDenormalised() {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&outputFormat=gml32&maxFeatures=2&startIndex=0&sortBy=gml:name");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:GeologicUnit&outputFormat=gml32&maxFeatures=2&startIndex=0&sortBy=gml:name");
         LOGGER.info("WFS GetFeature&typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathCount(2, "//gsml:GeologicUnit", doc);
 
         // ensure order is correct too
         Node firstNode = doc.getElementsByTagName("gsml:GeologicUnit").item(0);
-        assertEquals("gu.25682", firstNode.getAttributes().getNamedItem("gml:id").getNodeValue());
+        assertEquals(
+                "gu.25682", firstNode.getAttributes().getNamedItem("gml:id").getNodeValue());
         // description
-        assertXpathEvaluatesTo(
-                "Olivine basalt", "//gsml:GeologicUnit[@gml:id='gu.25682']/gml:description", doc);
+        assertXpathEvaluatesTo("Olivine basalt", "//gsml:GeologicUnit[@gml:id='gu.25682']/gml:description", doc);
         // name
         assertXpathCount(2, "//gsml:GeologicUnit[@gml:id='gu.25682']/gml:name", doc);
         assertXpathEvaluatesTo(
-                "New Group",
-                "//gsml:GeologicUnit[@gml:id='gu.25682']/gml:name[@codeSpace='urn:ietf:rfc:2141']",
-                doc);
+                "New Group", "//gsml:GeologicUnit[@gml:id='gu.25682']/gml:name[@codeSpace='urn:ietf:rfc:2141']", doc);
         // multi-valued leaf attributes that are feature chained come in random order
         // when joining is used
         List<String> names = new ArrayList<>();
@@ -533,8 +444,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.remove(name);
         assertTrue(names.isEmpty());
 
-        assertXpathEvaluatesTo(
-                "instance", "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:purpose", doc);
+        assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:purpose", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
                 "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:geologicUnitType/@xlink:href",
@@ -548,7 +458,8 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
 
         Node secondNode = doc.getElementsByTagName("gsml:GeologicUnit").item(1);
-        assertEquals("gu.25699", secondNode.getAttributes().getNamedItem("gml:id").getNodeValue());
+        assertEquals(
+                "gu.25699", secondNode.getAttributes().getNamedItem("gml:id").getNodeValue());
         // description
         assertXpathEvaluatesTo(
                 "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
@@ -572,8 +483,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
         names.remove(name);
         assertTrue(names.isEmpty());
 
-        assertXpathEvaluatesTo(
-                "instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose", doc);
+        assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:purpose", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:nil:OGC::unknown",
                 "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:geologicUnitType/@xlink:href",
@@ -589,24 +499,18 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureReproject()
-            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
-                    TransformException {
+            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException, TransformException {
         Document doc;
         if (!isGeopkgTest()) {
 
-            doc =
-                    getAsDOM(
-                            "wfs?request=GetFeature&version=1.1"
-                                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
-                                    + ":crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
-            LOGGER.info(
-                    "WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
+            doc = getAsDOM("wfs?request=GetFeature&version=1.1"
+                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
+                    + ":crs:EPSG::4283&bbox=52.5,-1.3,52.51,-1.29&startIndex=1");
+            LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         } else {
-            doc =
-                    getAsDOM(
-                            "wfs?request=GetFeature&version=1.1"
-                                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
-                                    + ":crs:EPSG::4283&bbox=-1.3,52.5,-1.29,52.51&startIndex=1");
+            doc = getAsDOM("wfs?request=GetFeature&version=1.1"
+                    + ".0&typename=gsml:MappedFeature&outputFormat=gml32&srsName=urn:ogc:def"
+                    + ":crs:EPSG::4283&bbox=-1.3,52.5,-1.29,52.51&startIndex=1");
         }
 
         assertXpathCount(1, "//gsml:MappedFeature", doc);
@@ -616,8 +520,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureWithFilter()
-            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException,
-                    TransformException {
+            throws MismatchedDimensionException, NoSuchAuthorityCodeException, FactoryException, TransformException {
         String xml = //
                 "<wfs:GetFeature "
                         + "service=\"WFS\" " //
@@ -710,20 +613,14 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
         assertXpathEvaluatesTo("instance", "//gsml:GeologicUnit/gsml:purpose", doc);
         assertXpathEvaluatesTo(
-                "urn:ogc:def:nil:OGC::unknown",
-                "//gsml:GeologicUnit/gsml:geologicUnitType/@xlink:href",
-                doc);
+                "urn:ogc:def:nil:OGC::unknown", "//gsml:GeologicUnit/gsml:geologicUnitType/@xlink:href", doc);
         // occurrence
         assertXpathCount(2, "//gsml:GeologicUnit/gsml:occurrence", doc);
         assertXpathEvaluatesTo("", "//gsml:GeologicUnit/gsml:occurrence", doc);
         assertXpathEvaluatesTo(
-                "urn:cgi:feature:MappedFeature:mf2",
-                "//gsml:GeologicUnit/gsml:occurrence[1]/@xlink:href",
-                doc);
+                "urn:cgi:feature:MappedFeature:mf2", "//gsml:GeologicUnit/gsml:occurrence[1]/@xlink:href", doc);
         assertXpathEvaluatesTo(
-                "urn:cgi:feature:MappedFeature:mf3",
-                "//gsml:GeologicUnit/gsml:occurrence[2]/@xlink:href",
-                doc);
+                "urn:cgi:feature:MappedFeature:mf3", "//gsml:GeologicUnit/gsml:occurrence[2]/@xlink:href", doc);
     }
 
     @Test
@@ -832,8 +729,7 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
         Node secondNode = doc.getElementsByTagName("gsml:MappedFeature").item(1);
         assertEquals("mf3", secondNode.getAttributes().getNamedItem("gml:id").getNodeValue());
-        assertXpathEvaluatesTo(
-                "CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
+        assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='mf3']/gml:name", doc);
         assertXpathEvaluatesTo(
                 "urn:ogc:def:crs:EPSG::4326",
                 "//gsml:MappedFeature[@gml:id='mf3']/gsml:shape/gml:Polygon/@srsName",
@@ -848,12 +744,8 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
                 doc);
         // specification gu.25678
         assertXpathCount(1, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification", doc);
-        assertXpathCount(
-                0, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit", doc);
-        assertXpathEvaluatesTo(
-                "#gu.25678",
-                "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/@xlink:href",
-                doc);
+        assertXpathCount(0, "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/gsml:GeologicUnit", doc);
+        assertXpathEvaluatesTo("#gu.25678", "//gsml:MappedFeature[@gml:id='mf3']/gsml:specification/@xlink:href", doc);
 
         // test xlink:href and post filtering (using functions)
         xml = //
@@ -892,16 +784,14 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetFeatureWithCSVFormat() throws Exception {
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:MappedFeature&count=1&startIndex=1&outputFormat=csv");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?request=GetFeature&version=2.0.0&typeNames=gsml:MappedFeature&count=1&startIndex=1&outputFormat=csv");
 
         // check the mime type
         assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=MappedFeature.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=MappedFeature.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
         List<String[]> lines = CSVOutputFormatTest.readLines(resp.getContentAsString());
@@ -915,15 +805,12 @@ public class PagingTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testGetMap() throws IOException {
         if (isGeopkgTest()) return;
-        try (InputStream is =
-                getBinary(
-                        "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=namefilter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png&startIndex=1")) {
+        try (InputStream is = getBinary(
+                "wms?request=GetMap&SRS=EPSG:4326&layers=gsml:MappedFeature&styles=namefilter&BBOX=-2,52,0,54&X=0&Y=0&width=20&height=20&FORMAT=image/png&startIndex=1")) {
             BufferedImage imageBuffer = ImageIO.read(is);
             assertNotBlank("app-schema test getmap", imageBuffer, Color.WHITE);
             ImageAssert.assertEquals(
-                    URLs.urlToFile(getClass().getResource("/test-data/img/mappedfeature.png")),
-                    imageBuffer,
-                    10);
+                    URLs.urlToFile(getClass().getResource("/test-data/img/mappedfeature.png")), imageBuffer, 10);
         }
     }
 }

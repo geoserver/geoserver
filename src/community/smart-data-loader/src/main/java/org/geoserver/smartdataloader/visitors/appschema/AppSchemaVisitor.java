@@ -43,8 +43,7 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
 
     private Node currentFeatureTypeMapping;
 
-    public AppSchemaVisitor(
-            String targetNamespacePrefix, String targetNamespaceUrl, String schemaUri) {
+    public AppSchemaVisitor(String targetNamespacePrefix, String targetNamespaceUrl, String schemaUri) {
         this.targetNamespacePrefix = targetNamespacePrefix;
         this.schemaUri = schemaUri;
         // build and instantiate the gml schema document
@@ -85,18 +84,15 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
     @Override
     public void visitDomainRelation(DomainRelation relation) {
 
-        String containingTargetElementValue =
-                this.targetNamespacePrefix
-                        + ":"
-                        + relation.getContainingEntity().getGmlInfo().featureTypeName();
-        String destinationTargetElementValue =
-                this.targetNamespacePrefix
-                        + ":"
-                        + relation.getDestinationEntity().getGmlInfo().featureTypeName();
+        String containingTargetElementValue = this.targetNamespacePrefix
+                + ":"
+                + relation.getContainingEntity().getGmlInfo().featureTypeName();
+        String destinationTargetElementValue = this.targetNamespacePrefix
+                + ":"
+                + relation.getDestinationEntity().getGmlInfo().featureTypeName();
 
         int count = 1;
-        Node destinationFeatureTypeMapping =
-                getFeatureTypeMapping(appDocument, destinationTargetElementValue);
+        Node destinationFeatureTypeMapping = getFeatureTypeMapping(appDocument, destinationTargetElementValue);
         if (destinationFeatureTypeMapping == null) {
             destinationFeatureTypeMapping = handleEntity(relation.getDestinationEntity());
             // add destination to appDocument typeMappings
@@ -105,24 +101,19 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
         }
         count = countLinkedAttributeMapping(appDocument, destinationTargetElementValue);
         String linkName = "FEATURE_LINK[" + Integer.toString(count) + "]";
-        Node destinationAttributeMappingNode =
-                createAttributeMapping(
-                        appDocument, linkName, relation.getDestinationKeyAttribute().getName());
-        Node destAttributesMapping =
-                getChildByName(destinationFeatureTypeMapping, "attributeMappings");
+        Node destinationAttributeMappingNode = createAttributeMapping(
+                appDocument, linkName, relation.getDestinationKeyAttribute().getName());
+        Node destAttributesMapping = getChildByName(destinationFeatureTypeMapping, "attributeMappings");
         destAttributesMapping.appendChild(destinationAttributeMappingNode);
 
-        Node containingFeatureTypeMapping =
-                getFeatureTypeMapping(appDocument, containingTargetElementValue);
-        Node srcAttributeMappings =
-                getChildByName(containingFeatureTypeMapping, "attributeMappings");
-        Node attributeMappingNode =
-                createLinkedAttributeMapping(
-                        appDocument,
-                        relation.getDestinationEntity().getGmlInfo().complexTypeAttributeName(),
-                        relation.getContainingKeyAttribute().getName(),
-                        destinationTargetElementValue,
-                        linkName);
+        Node containingFeatureTypeMapping = getFeatureTypeMapping(appDocument, containingTargetElementValue);
+        Node srcAttributeMappings = getChildByName(containingFeatureTypeMapping, "attributeMappings");
+        Node attributeMappingNode = createLinkedAttributeMapping(
+                appDocument,
+                relation.getDestinationEntity().getGmlInfo().complexTypeAttributeName(),
+                relation.getContainingKeyAttribute().getName(),
+                destinationTargetElementValue,
+                linkName);
         srcAttributeMappings.appendChild(attributeMappingNode);
     }
 
@@ -136,20 +127,17 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
             appendOrUpdateIdExpression(featureTypeMapping, OCQLValue, attributeMappings);
         }
         String targetAttributeValue = this.targetNamespacePrefix + ":" + attribute.getName();
-        Node attributeMappingNode =
-                createAttributeMapping(appDocument, targetAttributeValue, OCQLValue);
+        Node attributeMappingNode = createAttributeMapping(appDocument, targetAttributeValue, OCQLValue);
         attributeMappings.appendChild(attributeMappingNode);
     }
 
-    private void appendOrUpdateIdExpression(
-            Node featureTypeMapping, String OCQLValue, Node attributeMappings) {
+    private void appendOrUpdateIdExpression(Node featureTypeMapping, String OCQLValue, Node attributeMappings) {
         Node idExpression = getIdExpression(featureTypeMapping);
         if (idExpression != null) updateAttributeMappingIdExpression(idExpression, OCQLValue);
         else {
             Node targetElement = getChildByName(featureTypeMapping, "targetElement");
             String targetElementId = targetElement.getTextContent();
-            Node idExpressionNode =
-                    createAttributeMappingIdExpression(appDocument, targetElementId, OCQLValue);
+            Node idExpressionNode = createAttributeMappingIdExpression(appDocument, targetElementId, OCQLValue);
             attributeMappings.appendChild(idExpressionNode);
         }
     }
@@ -167,8 +155,7 @@ public final class AppSchemaVisitor extends DomainModelVisitorImpl {
         Node typeMappingsNode = appDocument.getElementsByTagName("typeMappings").item(0);
         // insert entity into typeMappings node
         featureTypeMappingNode =
-                createFeatureTypeMappingNode(
-                        appDocument, sourceDataStoreValue, sourceTypeValue, targetElementValue);
+                createFeatureTypeMappingNode(appDocument, sourceDataStoreValue, sourceTypeValue, targetElementValue);
         typeMappingsNode.appendChild(featureTypeMappingNode);
         return featureTypeMappingNode;
     }

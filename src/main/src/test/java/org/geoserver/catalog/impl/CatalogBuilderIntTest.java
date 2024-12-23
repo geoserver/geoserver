@@ -97,7 +97,9 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
                     String.valueOf(-1),
                     ci.getParameters()
                             .get(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().toString()));
-            assertEquals("", ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
+            assertEquals(
+                    "",
+                    ci.getParameters().get(ImageMosaicFormat.FILTER.getName().toString()));
             cat.getResourcePool().dispose();
         } finally {
             if (mosaic.exists() && mosaic.isDirectory()) {
@@ -153,8 +155,7 @@ public class CatalogBuilderIntTest extends GeoServerSystemTestSupport {
         // and the regex itself
         p.clear();
         p.put("regex", "(?<=_)(\\d{4})");
-        try (FileOutputStream fos =
-                new FileOutputStream(new File(mosaic, "elevationregex.properties"))) {
+        try (FileOutputStream fos = new FileOutputStream(new File(mosaic, "elevationregex.properties"))) {
             p.store(fos, null);
         }
     }

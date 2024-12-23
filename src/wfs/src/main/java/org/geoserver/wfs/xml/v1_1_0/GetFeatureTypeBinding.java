@@ -204,8 +204,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         if (node.hasAttribute("startIndex")) {
             // since this is not going to be defined as a type in the schema we have to manually
             // convert it since the parser won't parse it into the correct type for us
-            getFeature.setStartIndex(
-                    Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class));
+            getFeature.setStartIndex(Converters.convert(node.getAttributeValue("startIndex"), BigInteger.class));
         }
 
         // &lt;xsd:attribute name="traverseXlinkDepth" type="xsd:string" use="optional"&gt;
@@ -216,8 +215,7 @@ public class GetFeatureTypeBinding extends AbstractComplexBinding {
         // &lt;xsd:attribute name="traverseXlinkExpiry"
         //		type="xsd:positiveInteger" use="optional"&gt;
         if (node.hasAttribute("traverseXlinkExpiry")) {
-            getFeature.setTraverseXlinkExpiry(
-                    (BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
+            getFeature.setTraverseXlinkExpiry((BigInteger) node.getAttributeValue("traverseXlinkExpiry"));
         }
 
         // viewParams

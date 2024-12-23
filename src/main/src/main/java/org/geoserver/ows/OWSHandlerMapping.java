@@ -19,8 +19,8 @@ import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 /**
  * Handler mapping for OWS services.
  *
- * <p>This handler mapping extends a set of mappings to allow for a request to specifying a local
- * workspace. Consider the following mappings:
+ * <p>This handler mapping extends a set of mappings to allow for a request to specifying a local workspace. Consider
+ * the following mappings:
  *
  * <pre>
  *   &lt;property name="mappings"&gt;
@@ -66,8 +66,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
 
                 WorkspaceInfo ws = catalog.getWorkspaceByName(first);
                 if ((ws == null) && LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.fine(
-                            "Could not find workspace " + first + ", trying a layer group lookup");
+                    LOGGER.fine("Could not find workspace " + first + ", trying a layer group lookup");
                 }
                 if (ws != null) {
                     String wsName = first;
@@ -77,14 +76,9 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                         first = last.substring(1, j);
                         NamespaceInfo ns = catalog.getNamespaceByPrefix(wsName);
                         if (ns != null) {
-                            final boolean layerFound =
-                                    catalog.getLayerByName(new NameImpl(ns.getURI(), first))
-                                            != null;
+                            final boolean layerFound = catalog.getLayerByName(new NameImpl(ns.getURI(), first)) != null;
                             if (!layerFound && LOGGER.isLoggable(Level.FINEST)) {
-                                LOGGER.fine(
-                                        "Could not find layer "
-                                                + first
-                                                + ", trying a layer group lookup");
+                                LOGGER.fine("Could not find layer " + first + ", trying a layer group lookup");
                             }
                             if (layerFound) {
                                 // found, strip off layer and allow call to fall through
@@ -93,11 +87,7 @@ public class OWSHandlerMapping extends SimpleUrlHandlerMapping {
                                 // found, strip off layer and allow call to fall through
                                 last = last.substring(j);
                             } else {
-                                LOGGER.fine(
-                                        "Could not find a layer group named "
-                                                + wsName
-                                                + ":"
-                                                + first);
+                                LOGGER.fine("Could not find a layer group named " + wsName + ":" + first);
                             }
                         }
                     }

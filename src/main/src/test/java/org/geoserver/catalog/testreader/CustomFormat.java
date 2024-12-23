@@ -36,20 +36,13 @@ public final class CustomFormat extends AbstractGridFormat {
     private static final String TYPE_NAME = "org.geoserver.catalog.testreader.CustomFormat";
     static final Logger LOGGER = Logging.getLogger(CustomFormat.class);
 
-    private static final ParameterDescriptor<List> CUSTOM_DIMENSION =
-            DefaultParameterDescriptor.create(
-                    CUSTOM_DIMENSION_NAME,
-                    "Optional list of nonstandard dimension values",
-                    List.class,
-                    null,
-                    false);
+    private static final ParameterDescriptor<List> CUSTOM_DIMENSION = DefaultParameterDescriptor.create(
+            CUSTOM_DIMENSION_NAME, "Optional list of nonstandard dimension values", List.class, null, false);
 
     public CustomFormat() {
         this.mInfo = new HashMap<>();
         this.mInfo.put("name", TYPE_NAME);
-        this.mInfo.put(
-                "description",
-                "Test custom coverage format - only visible with test jars in the classpath");
+        this.mInfo.put("description", "Test custom coverage format - only visible with test jars in the classpath");
         this.mInfo.put("docURL", "");
         this.mInfo.put("version", "1.0");
 
@@ -57,13 +50,9 @@ public final class CustomFormat extends AbstractGridFormat {
         this.writeParameters = null;
 
         // reading parameters
-        this.readParameters =
-                new ParameterGroup(
-                        new DefaultParameterDescriptorGroup(
-                                this.mInfo,
-                                new GeneralParameterDescriptor[] {
-                                    READ_GRIDGEOMETRY2D, INPUT_TRANSPARENT_COLOR, CUSTOM_DIMENSION
-                                }));
+        this.readParameters = new ParameterGroup(new DefaultParameterDescriptorGroup(
+                this.mInfo,
+                new GeneralParameterDescriptor[] {READ_GRIDGEOMETRY2D, INPUT_TRANSPARENT_COLOR, CUSTOM_DIMENSION}));
     }
 
     @Override

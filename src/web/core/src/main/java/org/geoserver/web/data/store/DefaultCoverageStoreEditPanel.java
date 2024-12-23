@@ -28,12 +28,8 @@ public class DefaultCoverageStoreEditPanel extends StoreEditPanel {
 
         final IModel formModel = storeEditForm.getModel();
         // url
-        TextParamPanel<String> url =
-                new TextParamPanel<>(
-                        "urlPanel",
-                        new PropertyModel<>(formModel, "URL"),
-                        new ResourceModel("url", "URL"),
-                        true);
+        TextParamPanel<String> url = new TextParamPanel<>(
+                "urlPanel", new PropertyModel<>(formModel, "URL"), new ResourceModel("url", "URL"), true);
         url.getFormComponent().add(new FileExistsValidator());
         add(url);
     }

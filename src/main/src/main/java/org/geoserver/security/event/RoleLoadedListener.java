@@ -8,8 +8,7 @@ package org.geoserver.security.event;
 import java.util.EventListener;
 
 /**
- * Classes implementing this interfaces may register for notifications on a successful load from
- * backend
+ * Classes implementing this interfaces may register for notifications on a successful load from backend
  *
  * @author christian
  */

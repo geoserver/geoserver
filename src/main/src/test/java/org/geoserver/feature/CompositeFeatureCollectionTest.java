@@ -31,12 +31,9 @@ public class CompositeFeatureCollectionTest extends DataTestCase {
     @Test
     public void testComposeOne() {
         CompositeFeatureCollection<SimpleFeatureType, SimpleFeature> fc =
-                new CompositeFeatureCollection<>(
-                        Arrays.asList(DataUtilities.collection(riverFeatures[0])));
+                new CompositeFeatureCollection<>(Arrays.asList(DataUtilities.collection(riverFeatures[0])));
         assertEquals(1, fc.size());
-        assertEquals(
-                new ReferencedEnvelope(5, 13, 3, 7, riverType.getCoordinateReferenceSystem()),
-                fc.getBounds());
+        assertEquals(new ReferencedEnvelope(5, 13, 3, 7, riverType.getCoordinateReferenceSystem()), fc.getBounds());
         assertEquals(riverFeatures[0], DataUtilities.first(fc));
     }
 
@@ -49,9 +46,7 @@ public class CompositeFeatureCollectionTest extends DataTestCase {
                 new CompositeFeatureCollection<>(Arrays.asList(roads, rivers, lakes));
         // 3 roads, 2 rivers, 1 lake
         assertEquals(6, fc.size());
-        assertEquals(
-                new ReferencedEnvelope(1, 16, 0, 10, riverType.getCoordinateReferenceSystem()),
-                fc.getBounds());
+        assertEquals(new ReferencedEnvelope(1, 16, 0, 10, riverType.getCoordinateReferenceSystem()), fc.getBounds());
         assertEquals(roadFeatures[0], DataUtilities.first(fc));
     }
 }

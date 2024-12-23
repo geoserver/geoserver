@@ -42,12 +42,9 @@ public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         tester.executeAjaxEvent(
-                "dataStoreForm:parametersPanel:configsContainer:gratpanel:generateBoundsFromCRS",
-                "click");
+                "dataStoreForm:parametersPanel:configsContainer:gratpanel:generateBoundsFromCRS", "click");
         FormTester ft = tester.newFormTester("dataStoreForm");
-        ft.setValue(
-                "parametersPanel:configsContainer:gratpanel:steps:border:border_body:paramValue",
-                "10");
+        ft.setValue("parametersPanel:configsContainer:gratpanel:steps:border:border_body:paramValue", "10");
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "graticule10");
         ft.submit("save");
 
@@ -58,10 +55,8 @@ public class GraticuleStoreEditPanelTest extends GeoServerWicketTestSupport {
         assertNotNull(graticule10);
         Map<String, Serializable> parameters = graticule10.getConnectionParameters();
         assertEquals("10", parameters.get(STEPS.key));
-        ReferencedEnvelope world =
-                new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326", true));
-        assertEquals(
-                world, Converters.convert(parameters.get(BOUNDS.key), ReferencedEnvelope.class));
+        ReferencedEnvelope world = new ReferencedEnvelope(-180, 180, -90, 90, CRS.decode("EPSG:4326", true));
+        assertEquals(world, Converters.convert(parameters.get(BOUNDS.key), ReferencedEnvelope.class));
 
         // open again, and save (used to fail due to empty bounds forced during panel construction)
         tester.startPage(new DataAccessEditPage(graticule10.getId()));

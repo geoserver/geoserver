@@ -26,6 +26,5 @@ public interface URLMangler {
      * @param kvp the GET request parameters
      * @param type URL type (External, resource or service) for consideration during mangling
      */
-    public void mangleURL(
-            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type);
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type);
 }

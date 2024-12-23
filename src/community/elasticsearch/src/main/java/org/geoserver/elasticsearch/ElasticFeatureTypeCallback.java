@@ -26,16 +26,13 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
     private static final Logger LOGGER = LoggerFactory.getLogger(ElasticFeatureTypeCallback.class);
 
     @Override
-    public boolean canHandle(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public boolean canHandle(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         return dataAccess instanceof ElasticDataStore;
     }
 
     @Override
     public boolean initialize(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName) {
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
 
         ElasticLayerConfiguration layerConfig;
         layerConfig = (ElasticLayerConfiguration) info.getMetadata().get(KEY);
@@ -53,9 +50,7 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
 
     @Override
     public void dispose(
-            FeatureTypeInfo info,
-            DataAccess<? extends FeatureType, ? extends Feature> dataAccess,
-            Name temporaryName) {
+            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess, Name temporaryName) {
         final ElasticLayerConfiguration layerConfig =
                 (ElasticLayerConfiguration) info.getMetadata().get(KEY);
         if (layerConfig != null) {
@@ -68,8 +63,7 @@ class ElasticFeatureTypeCallback implements FeatureTypeCallback {
     }
 
     @Override
-    public void flush(
-            FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
+    public void flush(FeatureTypeInfo info, DataAccess<? extends FeatureType, ? extends Feature> dataAccess) {
         // nothing to do
     }
 }

@@ -26,14 +26,12 @@ public class LayerAccessDataRulePanelInfo extends CommonPublishedEditTabPanelInf
         String layerName = manager.getLayerName(info);
         Set<String> authorities = manager.getAvailableRoles();
         Set<DataAccessRule> rules = manager.getResourceRule(workspaceName, info);
-        List<DataAccessRuleInfo> modelRules =
-                manager.mapTo(rules, authorities, workspaceName, layerName);
+        List<DataAccessRuleInfo> modelRules = manager.mapTo(rules, authorities, workspaceName, layerName);
         return new ListModel<>(modelRules);
     }
 
     @Override
     public boolean supports(PublishedInfo pi) {
-        return getPublishedInfoClass().isAssignableFrom(pi.getClass())
-                && AccessDataRuleInfoManager.canAccess();
+        return getPublishedInfoClass().isAssignableFrom(pi.getClass()) && AccessDataRuleInfoManager.canAccess();
     }
 }

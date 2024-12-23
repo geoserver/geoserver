@@ -5,8 +5,8 @@
 package org.geoserver.geopkg.wps;
 
 /**
- * Represents a semantic annotation, a "semantically grounded term that can be applied to another
- * concept", typically linked to either a full table or a record in a table.
+ * Represents a semantic annotation, a "semantically grounded term that can be applied to another concept", typically
+ * linked to either a full table or a record in a table.
  */
 public class GeoPkgSemanticAnnotation {
 
@@ -16,8 +16,7 @@ public class GeoPkgSemanticAnnotation {
     String description;
     String uri;
 
-    public GeoPkgSemanticAnnotation(
-            long id, String type, String title, String description, String uri) {
+    public GeoPkgSemanticAnnotation(long id, String type, String title, String description, String uri) {
         this.id = id;
         this.type = type;
         this.title = title;

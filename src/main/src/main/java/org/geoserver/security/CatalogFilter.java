@@ -15,14 +15,12 @@ import org.geoserver.ows.Dispatcher;
 import org.geotools.api.filter.Filter;
 
 /**
- * A pluggable extension point that can filter out catalog items you don't want the user to see, so
- * that upper levels in the code believe the item is not there.
+ * A pluggable extension point that can filter out catalog items you don't want the user to see, so that upper levels in
+ * the code believe the item is not there.
  *
- * <p>Instances of this class have to be registered as beans in the Spring context in order to be
- * picked up
+ * <p>Instances of this class have to be registered as beans in the Spring context in order to be picked up
  *
- * <p>The {@link Dispatcher#REQUEST} and Spring current user can be used to gather context about the
- * current request
+ * <p>The {@link Dispatcher#REQUEST} and Spring current user can be used to gather context about the current request
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -59,8 +57,7 @@ public interface CatalogFilter {
     boolean hideResource(ResourceInfo resource);
 
     /**
-     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified
-     * type.
+     * Returns a Filter equivalent to this CatalogFilter when applied to an object of the specified type.
      *
      * @param clazz CatalogInfo type to check against security filters
      */

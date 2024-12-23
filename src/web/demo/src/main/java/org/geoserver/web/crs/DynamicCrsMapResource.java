@@ -24,8 +24,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * A wicket resource that acts as a mini WMS to generate a map for a {@link
- * CoordinateReferenceSystem CRS}'s area of validity.
+ * A wicket resource that acts as a mini WMS to generate a map for a {@link CoordinateReferenceSystem CRS}'s area of
+ * validity.
  *
  * <p>This resource expects the following parameters in order to generate the area of validity map:
  *
@@ -52,37 +52,35 @@ public class DynamicCrsMapResource extends AbstractResource {
     @Override
     protected ResourceResponse newResourceResponse(Attributes attributes) {
         ResourceResponse rsp = new ResourceResponse();
-        rsp.setWriteCallback(
-                new WriteCallback() {
-                    @Override
-                    public void writeData(Attributes attributes) throws IOException {
-                        IRequestParameters params = attributes.getRequest().getQueryParameters();
-                        int width = params.getParameterValue("WIDTH").toInt(400);
-                        int height = params.getParameterValue("HEIGHT").toInt(200);
-                        String bboxStr = params.getParameterValue("BBOX").toOptionalString();
+        rsp.setWriteCallback(new WriteCallback() {
+            @Override
+            public void writeData(Attributes attributes) throws IOException {
+                IRequestParameters params = attributes.getRequest().getQueryParameters();
+                int width = params.getParameterValue("WIDTH").toInt(400);
+                int height = params.getParameterValue("HEIGHT").toInt(200);
+                String bboxStr = params.getParameterValue("BBOX").toOptionalString();
 
-                        ByteArrayOutputStream output = null;
-                        if (bboxStr != null) {
+                ByteArrayOutputStream output = null;
+                if (bboxStr != null) {
 
-                            try {
-                                CRSAreaOfValidityMapBuilder builder =
-                                        new CRSAreaOfValidityMapBuilder(width, height);
-                                Envelope envelope = parseEnvelope(bboxStr);
-                                RenderedImage image = builder.createMapFor(crs, envelope);
-                                output = new ByteArrayOutputStream();
-                                ImageIO.write(image, "PNG", output);
-                            } catch (Exception e) {
-                                output = null;
-                                LOGGER.log(Level.WARNING, "", e);
-                            }
-                        }
-
-                        final byte[] byteArray = output == null ? null : output.toByteArray();
-                        if (byteArray != null) {
-                            attributes.getResponse().write(byteArray);
-                        }
+                    try {
+                        CRSAreaOfValidityMapBuilder builder = new CRSAreaOfValidityMapBuilder(width, height);
+                        Envelope envelope = parseEnvelope(bboxStr);
+                        RenderedImage image = builder.createMapFor(crs, envelope);
+                        output = new ByteArrayOutputStream();
+                        ImageIO.write(image, "PNG", output);
+                    } catch (Exception e) {
+                        output = null;
+                        LOGGER.log(Level.WARNING, "", e);
                     }
-                });
+                }
+
+                final byte[] byteArray = output == null ? null : output.toByteArray();
+                if (byteArray != null) {
+                    attributes.getResponse().write(byteArray);
+                }
+            }
+        });
         return rsp;
     }
 

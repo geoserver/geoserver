@@ -27,12 +27,9 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
         GlobalFlowController controller = new GlobalFlowController(1, new SimpleThreadBlocker(1));
 
         // make three testing threads that will "process" forever, until we interrupt them
-        FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
-        FlowControllerTestingThread t3 =
-                new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
+        FlowControllerTestingThread t3 = new FlowControllerTestingThread(new Request(), 0, Long.MAX_VALUE, controller);
         try {
             // start threads making sure every one of them managed to block somewhere before
             // starting the next one
@@ -82,11 +79,9 @@ public class GlobalFlowControllerTest extends AbstractFlowControllerTest {
         // t2 may start "late" on a slow/noisy/otherwise loaded machine, make extra sture
         // t1 won't start counting until t2 has had an occasion to start
         CountDownLatch latch = new CountDownLatch(1);
-        FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(new Request(), 100, 400, controller);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(new Request(), 100, 400, controller);
         t1.setWaitLatch(latch);
-        FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(new Request(), 100, 400, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(new Request(), 100, 400, controller);
 
         // start t1 first, let go t2 after
         try {

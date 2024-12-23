@@ -30,16 +30,11 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
 
     @Before
     public void setupPanel() {
-        identifiers =
-                Converters.convert(
-                        "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
-                        UniqueResourceIdentifiers.class);
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id ->
-                                        new UniqueResourceIdentifiersEditor(
-                                                id, new Model<>(identifiers))));
+        identifiers = Converters.convert(
+                "one,http://www.geoserver.org/one;two,http://www.geoserver.org/two,http://metadata.geoserver.org/id?two",
+                UniqueResourceIdentifiers.class);
+        tester.startPage(new FormTestPage(
+                (ComponentBuilder) id -> new UniqueResourceIdentifiersEditor(id, new Model<>(identifiers))));
     }
 
     @Test
@@ -81,8 +76,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
 
         // remove the first identifier
         tester.executeAjaxEvent(
-                "form:panel:container:identifiers:listContainer:items:1:itemProperties:3:component:remove",
-                "click");
+                "form:panel:container:identifiers:listContainer:items:1:itemProperties:3:component:remove", "click");
         assertNull(
                 tester.getLastRenderedPage()
                         .get(
@@ -93,8 +87,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
 
         // remove the second as well
         tester.executeAjaxEvent(
-                "form:panel:container:identifiers:listContainer:items:2:itemProperties:3:component:remove",
-                "click");
+                "form:panel:container:identifiers:listContainer:items:2:itemProperties:3:component:remove", "click");
         assertNull(
                 tester.getLastRenderedPage()
                         .get(
@@ -110,9 +103,7 @@ public class UniqueResourceIdentifiersEditorTest extends GeoServerWicketTestSupp
         tester.submitForm("form");
 
         String error =
-                new ParamResourceModel(
-                                "UniqueResourceIdentifiersEditor.noSpatialDatasetIdentifiers", null)
-                        .getString();
+                new ParamResourceModel("UniqueResourceIdentifiersEditor.noSpatialDatasetIdentifiers", null).getString();
         tester.assertErrorMessages(new String[] {error});
     }
 

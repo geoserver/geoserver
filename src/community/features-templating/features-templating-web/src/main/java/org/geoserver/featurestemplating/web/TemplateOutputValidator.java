@@ -15,8 +15,8 @@ import org.geotools.xsd.Configuration;
 import org.geotools.xsd.Parser;
 
 /**
- * This class provides methods to validate a template output, performing different validations
- * according to the output format.
+ * This class provides methods to validate a template output, performing different validations according to the output
+ * format.
  */
 public class TemplateOutputValidator {
 
@@ -32,8 +32,8 @@ public class TemplateOutputValidator {
         boolean result = true;
         if (outputFormat.equals(SupportedFormat.JSONLD)) result = validateJSONLD(input);
         else if (outputFormat.equals(SupportedFormat.GML)) result = validateGML(input);
-        else if (outputFormat.equals(SupportedFormat.GEOJSON)
-                || outputFormat.equals(SupportedFormat.HTML)) result = validateGeoJSON(input);
+        else if (outputFormat.equals(SupportedFormat.GEOJSON) || outputFormat.equals(SupportedFormat.HTML))
+            result = validateGeoJSON(input);
         if (result) this.message = "Result is valid";
         return result;
     }
@@ -59,19 +59,16 @@ public class TemplateOutputValidator {
             Parser parser = new Parser(configuration);
             parser.setValidating(true);
             parser.parse(is);
-            validationErrors.addAll(
-                    parser.getValidationErrors().stream()
-                            .map(e -> e.getMessage())
-                            .collect(Collectors.toList()));
+            validationErrors.addAll(parser.getValidationErrors().stream()
+                    .map(e -> e.getMessage())
+                    .collect(Collectors.toList()));
         } catch (Exception e) {
             validationErrors.add(e.getMessage());
             result = false;
         }
         if (!validationErrors.isEmpty()) {
             result = false;
-            StringBuilder builder =
-                    new StringBuilder(
-                            "The following errors occured while validating the gml output: ");
+            StringBuilder builder = new StringBuilder("The following errors occured while validating the gml output: ");
             for (int i = 0; i < validationErrors.size(); i++) {
                 String error = validationErrors.get(i);
                 builder.append(i + 1).append(" ").append(error).append("");

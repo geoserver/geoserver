@@ -29,9 +29,7 @@ public interface GeoServerFacade {
     /** Saves the global geoserver configuration after modification. */
     void save(GeoServerInfo geoServer);
 
-    /**
-     * The settings configuration for the specified workspoace, or <code>null</code> if non exists.
-     */
+    /** The settings configuration for the specified workspoace, or <code>null</code> if non exists. */
     SettingsInfo getSettings(WorkspaceInfo workspace);
 
     /** Adds a settings configuration for the specified workspace. */
@@ -87,8 +85,7 @@ public interface GeoServerFacade {
      *
      * @param id The id of the service.
      * @param clazz The type of the service.
-     * @return The service with the specified id, or <code>null</code> if no such service coud be
-     *     found.
+     * @return The service with the specified id, or <code>null</code> if no such service coud be found.
      */
     <T extends ServiceInfo> T getService(String id, Class<T> clazz);
 
@@ -97,8 +94,7 @@ public interface GeoServerFacade {
      *
      * @param name The name of the service.
      * @param clazz The type of the service.
-     * @return The service with the specified name or <code>null</code> if no such service could be
-     *     found.
+     * @return The service with the specified name or <code>null</code> if no such service could be found.
      */
     <T extends ServiceInfo> T getServiceByName(String name, Class<T> clazz);
 
@@ -108,11 +104,9 @@ public interface GeoServerFacade {
      * @param name The name of the service.
      * @param workspace The workspace the service is specific to.
      * @param clazz The type of the service.
-     * @return The service with the specified name or <code>null</code> if no such service could be
-     *     found.
+     * @return The service with the specified name or <code>null</code> if no such service could be found.
      */
-    <T extends ServiceInfo> T getServiceByName(
-            String name, WorkspaceInfo workspace, Class<T> clazz);
+    <T extends ServiceInfo> T getServiceByName(String name, WorkspaceInfo workspace, Class<T> clazz);
 
     /** Disposes the configuration. */
     void dispose();

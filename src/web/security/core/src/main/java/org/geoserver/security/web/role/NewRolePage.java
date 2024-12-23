@@ -21,8 +21,7 @@ public class NewRolePage extends AbstractRolePage {
         super(roleServiceName, null);
 
         if (hasRoleStore(roleServiceName) == false) {
-            throw new RuntimeException(
-                    "Workflow error, new role not possible for read only service");
+            throw new RuntimeException("Workflow error, new role not possible for read only service");
         }
     }
 
@@ -34,8 +33,7 @@ public class NewRolePage extends AbstractRolePage {
 
             store = new RoleStoreValidationWrapper(getRoleStore(roleServiceName));
             // copy into a new one so we can set the name properly
-            GeoServerRole newRole =
-                    store.createRoleObject(get("form:name").getDefaultModelObjectAsString());
+            GeoServerRole newRole = store.createRoleObject(get("form:name").getDefaultModelObjectAsString());
             newRole.setUserName(role.getUserName());
             newRole.getProperties().putAll(role.getProperties());
             role = newRole;

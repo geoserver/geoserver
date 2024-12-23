@@ -13,8 +13,7 @@ import org.junit.Test;
 
 public class SRSIdentifierComparatorTest {
 
-    static final SRSProvider.SRSIdentifierComparator COMPARATOR =
-            new SRSProvider.SRSIdentifierComparator();
+    static final SRSProvider.SRSIdentifierComparator COMPARATOR = new SRSProvider.SRSIdentifierComparator();
     private static final Matcher<Integer> LOWER = Matchers.lessThan(0);
 
     private static final Matcher<Integer> EQUAL = Matchers.equalTo(0);

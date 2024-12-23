@@ -17,11 +17,8 @@ public class RootLayerConfig extends PublishedConfigurationPanel<PublishedInfo> 
 
     public RootLayerConfig(String id, IModel<? extends PublishedInfo> model) {
         super(id, model);
-        IModel<Boolean> rootLayerModel =
-                new MetadataMapModel<>(
-                        new PropertyModel<>(model, "metadata"),
-                        PublishedInfo.ROOT_IN_CAPABILITIES,
-                        Boolean.class);
+        IModel<Boolean> rootLayerModel = new MetadataMapModel<>(
+                new PropertyModel<>(model, "metadata"), PublishedInfo.ROOT_IN_CAPABILITIES, Boolean.class);
 
         RadioGroup<Boolean> rootLayer = new RadioGroup<>("rootLayer", rootLayerModel);
         add(rootLayer);

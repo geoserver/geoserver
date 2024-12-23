@@ -49,9 +49,7 @@ public class WCS20GetCoverageResponse extends Response {
             CoverageResponseDelegate delegate = responseFactory.encoderFor(format);
             if (delegate == null) {
                 throw new WCS20Exception(
-                        "Unsupported format " + format,
-                        OWSExceptionCode.InvalidParameterValue,
-                        "format");
+                        "Unsupported format " + format, OWSExceptionCode.InvalidParameterValue, "format");
             } else {
                 return format;
             }

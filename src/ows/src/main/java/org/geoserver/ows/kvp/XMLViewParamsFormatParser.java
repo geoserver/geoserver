@@ -22,8 +22,8 @@ import org.geotools.util.logging.Logging;
 /**
  * XML view params format parser. Parses view parameters which are of the form:
  *
- * <p>{@literal <VP><PS><P n="mmsi">538008302,244060802,538008505</P><P
- * n="mmsi">22,44</P></PS><PS/><PS><P n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>}
+ * <p>{@literal <VP><PS><P n="mmsi">538008302,244060802,538008505</P><P n="mmsi">22,44</P></PS><PS/><PS><P
+ * n="csvInput">acv,rrp;1,0;0,7;22,1</P></PS></VP>}
  */
 public class XMLViewParamsFormatParser implements ViewParamsFormatParser {
 
@@ -68,8 +68,7 @@ public class XMLViewParamsFormatParser implements ViewParamsFormatParser {
         }
         if (parsed == null) {
             if (LOGGER.isLoggable(Level.FINER))
-                LOGGER.finer(
-                        "Could not find kvp parser for: '" + key + "'. Storing as raw string.");
+                LOGGER.finer("Could not find kvp parser for: '" + key + "'. Storing as raw string.");
             parsed = raw;
         }
         paramsMap.put(key, parsed);

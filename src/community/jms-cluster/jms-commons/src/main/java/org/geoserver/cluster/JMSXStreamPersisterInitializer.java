@@ -13,8 +13,6 @@ public class JMSXStreamPersisterInitializer implements XStreamPersisterInitializ
 
     @Override
     public void init(XStreamPersister persister) {
-        persister
-                .getXStream()
-                .allowTypesByWildcard(new String[] {"org.geoserver.cluster.impl.events.**"});
+        persister.getXStream().allowTypesByWildcard(new String[] {"org.geoserver.cluster.impl.events.**"});
     }
 }

@@ -17,19 +17,17 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 /**
  * This interface is an extenstion to {@link UserDetailsService}
  *
- * <p>A class implementing this interface implements a read only backend for user and group
- * management
+ * <p>A class implementing this interface implements a read only backend for user and group management
  *
  * @author christian
  */
 public interface GeoServerUserGroupService extends GeoServerSecurityService, UserDetailsService {
 
     /**
-     * Creates the user group store that corresponds to this service, or null if creating a store is
-     * not supported.
+     * Creates the user group store that corresponds to this service, or null if creating a store is not supported.
      *
-     * <p>Implementations that do not support a store should ensure that {@link #canCreateStore()}
-     * returns <code>false</code>.
+     * <p>Implementations that do not support a store should ensure that {@link #canCreateStore()} returns <code>false
+     * </code>.
      */
     GeoServerUserGroupStore createStore() throws IOException;
 
@@ -54,12 +52,9 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     GeoServerUser getUserByUsername(String username) throws IOException;
 
     /** Create a user object. Implementations can use subclasses of {@link GeoServerUser} */
-    GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException;
+    GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException;
 
-    /**
-     * Create a user object. Implementations can use classes implementing {@link GeoServerUserGroup}
-     */
+    /** Create a user object. Implementations can use classes implementing {@link GeoServerUserGroup} */
     GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException;
 
     /**
@@ -84,8 +79,7 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     SortedSet<GeoServerUser> getUsersForGroup(GeoServerUserGroup group) throws IOException;
 
     /**
-     * get the groups for a user, an implementation not supporting user groups returns an empty
-     * collection
+     * get the groups for a user, an implementation not supporting user groups returns an empty collection
      *
      * @return a collection which cannot be modified
      */
@@ -101,9 +95,9 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     String getPasswordEncoderName();
 
     /**
-     * @return the name of the {@link PasswordValidator} object. mandatory, default is {@link
-     *     PasswordValidator#DEFAULT_NAME} Validators can be loaded using {@link
-     *     GeoServerSecurityManager#loadPasswordValidator(String)}
+     * @return the name of the {@link PasswordValidator} object. mandatory, default is
+     *     {@link PasswordValidator#DEFAULT_NAME} Validators can be loaded using
+     *     {@link GeoServerSecurityManager#loadPasswordValidator(String)}
      */
     String getPasswordValidatorName();
 
@@ -125,15 +119,9 @@ public interface GeoServerUserGroupService extends GeoServerSecurityService, Use
     /** Returns the number of {@link GeoServerUser} objects NOT having the specified property */
     int getUserCountNotHavingProperty(String propname) throws IOException;
 
-    /**
-     * Returns a set of {@link GeoServerUser} objects having the property with the specified value
-     */
-    SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException;
+    /** Returns a set of {@link GeoServerUser} objects having the property with the specified value */
+    SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException;
 
-    /**
-     * Returns the number of {@link GeoServerUser} objects having the property with the specified
-     * value
-     */
+    /** Returns the number of {@link GeoServerUser} objects having the property with the specified value */
     int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException;
 }

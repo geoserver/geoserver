@@ -23,8 +23,8 @@ public class JDBCResourceStoreProperties extends JDBCLoaderProperties {
     // jdbcstore specific properties may go here.
 
     /**
-     * Determines behaviour of the rename/move operation: linux-style (delete if exists) or
-     * windows-style (fail if exists).
+     * Determines behaviour of the rename/move operation: linux-style (delete if exists) or windows-style (fail if
+     * exists).
      *
      * @return true iff jdbcstore should delete destination on rename
      */
@@ -33,16 +33,16 @@ public class JDBCResourceStoreProperties extends JDBCLoaderProperties {
     }
 
     /**
-     * Directories that are to be ignored by the JDBCStore: they will not be imported and they will
-     * be retrieved from the file system.
+     * Directories that are to be ignored by the JDBCStore: they will not be imported and they will be retrieved from
+     * the file system.
      */
     public String[] getIgnoreDirs() {
         return getProperty("ignoreDirs", "").split(",");
     }
 
     /**
-     * Directories that are to be permanently cached by jdbc-store (if they need to be permantently
-     * available for non-resource aware components) )
+     * Directories that are to be permanently cached by jdbc-store (if they need to be permantently available for
+     * non-resource aware components) )
      */
     public String[] getCachedDirs() {
         return getProperty("cachedDirs", "").split(",");

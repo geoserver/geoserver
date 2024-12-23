@@ -25,16 +25,18 @@ public class ValidationException extends WPSException {
     }
 
     private static String buildMessage(Errors errors) {
-        StringBuilder sb =
-                new StringBuilder("Validation failed for input '")
-                        .append(errors.getObjectName())
-                        .append("': ");
+        StringBuilder sb = new StringBuilder("Validation failed for input '")
+                .append(errors.getObjectName())
+                .append("': ");
         for (ObjectError error : errors.getGlobalErrors()) {
             sb.append(error.getDefaultMessage());
             sb.append("\n");
         }
         for (FieldError error : errors.getFieldErrors()) {
-            sb.append(error.getField()).append("[").append(error.getDefaultMessage()).append("]");
+            sb.append(error.getField())
+                    .append("[")
+                    .append(error.getDefaultMessage())
+                    .append("]");
             sb.append("\n");
         }
         sb.setLength(sb.length() - 1);

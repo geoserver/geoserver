@@ -34,8 +34,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
      *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(false, false, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(false, false, true);
 
     public SVGStreamingMapOutputFormat() {
         //
@@ -61,8 +60,7 @@ public final class SVGStreamingMapOutputFormat implements GetMapOutputFormat {
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
     @Override
-    public StreamingSVGMap produceMap(WMSMapContent mapContent)
-            throws ServiceException, IOException {
+    public StreamingSVGMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         StreamingSVGMap svg = new StreamingSVGMap(mapContent);
         svg.setMimeType(getMimeType());
         return svg;

@@ -70,8 +70,7 @@ public class PKCEAuthenticationTest extends GeoServerSystemTestSupport {
         String validator = "1234";
         request.set(PkceParameterNames.CODE_VERIFIER, validator);
 
-        MultiValueMap<String, String> form =
-                new MultiValueMapAdapter(new HashMap<String, String>());
+        MultiValueMap<String, String> form = new MultiValueMapAdapter(new HashMap<String, String>());
         enhancer.enhance(request, null, form, null);
 
         assertEquals(validator, form.getFirst(PkceParameterNames.CODE_VERIFIER));

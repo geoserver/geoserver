@@ -39,8 +39,7 @@ public class ResponseUtilsTest {
 
         ProxifyingURLMangler mangler = new ProxifyingURLMangler(geoServer);
         ApplicationContext appContext = createNiceMock(ApplicationContext.class);
-        expect(appContext.getBeanNamesForType(URLMangler.class))
-                .andReturn(new String[] {"mangler"});
+        expect(appContext.getBeanNamesForType(URLMangler.class)).andReturn(new String[] {"mangler"});
         expect(appContext.getBean("mangler")).andReturn(mangler).anyTimes();
         replay(appContext);
         GeoServerExtensionsHelper.init(appContext);

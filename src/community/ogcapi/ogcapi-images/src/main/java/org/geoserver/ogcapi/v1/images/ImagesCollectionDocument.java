@@ -34,8 +34,8 @@ public class ImagesCollectionDocument extends AbstractCollectionDocument<Coverag
      * Builds a description of an image collection
      *
      * @param coverage The {@link CoverageInfo} that backs the images collection
-     * @param summary If true, the info provided is minimal and assumed to be part of a {@link
-     *     ImagesCollectionsDocument}, otherwise it's full and assumed to be the main response
+     * @param summary If true, the info provided is minimal and assumed to be part of a
+     *     {@link ImagesCollectionsDocument}, otherwise it's full and assumed to be the main response
      */
     public ImagesCollectionDocument(CoverageInfo coverage, boolean summary)
             throws FactoryException, TransformException, IOException {
@@ -52,22 +52,15 @@ public class ImagesCollectionDocument extends AbstractCollectionDocument<Coverag
         addSelfLinks("ogc/images/v1/collections/" + id);
 
         // add links to the images resource
-        Collection<MediaType> imagesFormats =
-                APIRequestInfo.get().getProducibleMediaTypes(ImagesResponse.class, true);
+        Collection<MediaType> imagesFormats = APIRequestInfo.get().getProducibleMediaTypes(ImagesResponse.class, true);
         for (MediaType format : imagesFormats) {
-            String metadataURL =
-                    buildURL(
-                            baseURL,
-                            "ogc/images/v1/collections/" + ResponseUtils.urlEncode(id) + "/images",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+            String metadataURL = buildURL(
+                    baseURL,
+                    "ogc/images/v1/collections/" + ResponseUtils.urlEncode(id) + "/images",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
 
-            Link link =
-                    new Link(
-                            metadataURL,
-                            "images",
-                            format.toString(),
-                            "The images metadata as " + format);
+            Link link = new Link(metadataURL, "images", format.toString(), "The images metadata as " + format);
             addLink(link);
         }
     }

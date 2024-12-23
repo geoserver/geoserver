@@ -17,8 +17,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.Hints;
 
 /**
- * FeatureCollection implementation wrapping around a java.util.List. Derived from {@link
- * ListFeatureCollection}, but adapted to work with complex features too
+ * FeatureCollection implementation wrapping around a java.util.List. Derived from {@link ListFeatureCollection}, but
+ * adapted to work with complex features too
  *
  * @see Hints#FEATURE_DETACHED
  * @author Oliver Gottwald
@@ -36,14 +36,13 @@ class ListComplexFeatureCollection extends BaseFeatureCollection {
     private ReferencedEnvelope bounds = null;
 
     /**
-     * Create a ListFeatureCollection around the provided list. The contents of the list should all
-     * be of the provided schema for this to make sense. Please keep in mind the feature collection
-     * control, no two Features in the list should have the same feature id, and you should not
-     * insert the same feature more then once.
+     * Create a ListFeatureCollection around the provided list. The contents of the list should all be of the provided
+     * schema for this to make sense. Please keep in mind the feature collection control, no two Features in the list
+     * should have the same feature id, and you should not insert the same feature more then once.
      *
-     * <p>The provided list is directly used for storage, most feature collection operations just
-     * use a simple iterator so there is no performance advantaged to be gained over using an
-     * ArrayList vs a LinkedList (other then for the size() method of course).
+     * <p>The provided list is directly used for storage, most feature collection operations just use a simple iterator
+     * so there is no performance advantaged to be gained over using an ArrayList vs a LinkedList (other then for the
+     * size() method of course).
      */
     public ListComplexFeatureCollection(FeatureType schema, List<? extends Feature> list) {
         super(schema);

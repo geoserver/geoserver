@@ -12,8 +12,8 @@ import org.geoserver.wms.GetLegendGraphicOutputFormat;
 import org.geoserver.wms.GetLegendGraphicRequest;
 
 /**
- * JAI based output format for the WMS {@link GetLegendGraphic} operation that creates legend
- * graphics to be encoded as {@code image/jpeg}.
+ * JAI based output format for the WMS {@link GetLegendGraphic} operation that creates legend graphics to be encoded as
+ * {@code image/jpeg}.
  *
  * @author Gabriel Roldan
  * @version $Id$
@@ -29,13 +29,11 @@ public class JPEGLegendOutputFormat implements GetLegendGraphicOutputFormat {
     /**
      * Builds a JPEG {@link BufferedImageLegendGraphic}
      *
-     * @return a {@link BufferedImageLegendGraphic} holding a legend image appropriate to be encoded
-     *     as JPEG
+     * @return a {@link BufferedImageLegendGraphic} holding a legend image appropriate to be encoded as JPEG
      * @see GetLegendGraphicOutputFormat#produceLegendGraphic(GetLegendGraphicRequest)
      */
     @Override
-    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request)
-            throws ServiceException {
+    public LegendGraphic produceLegendGraphic(GetLegendGraphicRequest request) throws ServiceException {
 
         request.setTransparent(false);
 

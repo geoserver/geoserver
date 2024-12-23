@@ -65,12 +65,10 @@ public class GetExecutionResultTest extends WPSTestSupport {
     }
 
     private String getGetExecutionResultHref() throws Exception {
-        String request =
-                "wps?service=WPS&version=1.0.0&request=Execute&Identifier=vec:Reproject"
-                        + "&DataInputs=features=foo@mimetype=text/csv"
-                        + "&ResponseDocument=result=@asReference=true@mimetype=text/csv";
-        String expression =
-                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href";
+        String request = "wps?service=WPS&version=1.0.0&request=Execute&Identifier=vec:Reproject"
+                + "&DataInputs=features=foo@mimetype=text/csv"
+                + "&ResponseDocument=result=@asReference=true@mimetype=text/csv";
+        String expression = "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Reference/@href";
         Document dom = getAsDOM(request);
         assertXpathExists(expression, dom);
         String href = xp.evaluate(expression, dom);

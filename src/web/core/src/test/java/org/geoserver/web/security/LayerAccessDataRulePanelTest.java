@@ -39,23 +39,19 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
     public void testPageLoad() throws IOException {
         LayerAccessDataRulePanelInfo info = new LayerAccessDataRulePanelInfo();
         ListModel<DataAccessRuleInfo> own = info.createOwnModel(layerModel, false);
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = -5907648151984337786L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = -5907648151984337786L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new LayerAccessDataRulePanel(id, layerModel, own);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new LayerAccessDataRulePanel(id, layerModel, own);
+            }
+        }));
 
         tester.assertComponent("form:panel", LayerAccessDataRulePanel.class);
         tester.assertComponent("form:panel:dataAccessPanel", AccessDataRulePanel.class);
-        tester.assertComponent(
-                "form:panel:dataAccessPanel:listContainer", WebMarkupContainer.class);
-        tester.assertComponent(
-                "form:panel:dataAccessPanel:listContainer:selectAll", CheckBox.class);
+        tester.assertComponent("form:panel:dataAccessPanel:listContainer", WebMarkupContainer.class);
+        tester.assertComponent("form:panel:dataAccessPanel:listContainer:selectAll", CheckBox.class);
         tester.assertComponent("form:panel:dataAccessPanel:listContainer:rules", ListView.class);
     }
 
@@ -64,45 +60,36 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
         LayerAccessDataRulePanelInfo info = new LayerAccessDataRulePanelInfo();
         AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
         Set<String> roles = manager.getAvailableRoles();
-        String wsName = layerModel.getObject().getResource().getStore().getWorkspace().getName();
+        String wsName =
+                layerModel.getObject().getResource().getStore().getWorkspace().getName();
         String layerName = layerModel.getObject().getName();
         List<DataAccessRuleInfo> rules = new ArrayList<>();
-        roles.forEach(
-                r -> {
-                    DataAccessRuleInfo rule = new DataAccessRuleInfo(r, layerName, wsName);
-                    rule.setRead(true);
-                    rules.add(rule);
-                });
+        roles.forEach(r -> {
+            DataAccessRuleInfo rule = new DataAccessRuleInfo(r, layerName, wsName);
+            rule.setRead(true);
+            rules.add(rule);
+        });
         Set<DataAccessRule> newRules = manager.mapFrom(rules, roles, wsName, layerName, false);
         manager.saveRules(new HashSet<>(), newRules);
         try {
             ListModel<DataAccessRuleInfo> own = info.createOwnModel(layerModel, false);
-            tester.startPage(
-                    new FormTestPage(
-                            new ComponentBuilder() {
-                                private static final long serialVersionUID = -5907648151984337786L;
+            tester.startPage(new FormTestPage(new ComponentBuilder() {
+                private static final long serialVersionUID = -5907648151984337786L;
 
-                                @Override
-                                public Component buildComponent(final String id) {
-                                    return new LayerAccessDataRulePanel(id, layerModel, own);
-                                }
-                            }));
+                @Override
+                public Component buildComponent(final String id) {
+                    return new LayerAccessDataRulePanel(id, layerModel, own);
+                }
+            }));
 
             tester.assertComponent("form:panel", LayerAccessDataRulePanel.class);
             tester.assertComponent("form:panel:dataAccessPanel", AccessDataRulePanel.class);
-            tester.assertComponent(
-                    "form:panel:dataAccessPanel:listContainer", WebMarkupContainer.class);
-            tester.assertComponent(
-                    "form:panel:dataAccessPanel:listContainer:selectAll", CheckBox.class);
-            tester.assertComponent(
-                    "form:panel:dataAccessPanel:listContainer:rules", ListView.class);
+            tester.assertComponent("form:panel:dataAccessPanel:listContainer", WebMarkupContainer.class);
+            tester.assertComponent("form:panel:dataAccessPanel:listContainer:selectAll", CheckBox.class);
+            tester.assertComponent("form:panel:dataAccessPanel:listContainer:rules", ListView.class);
             for (int i = 0; i < roles.size(); i++) {
-                CheckBox checkBox =
-                        (CheckBox)
-                                tester.getComponentFromLastRenderedPage(
-                                        "form:panel:dataAccessPanel:listContainer:rules:"
-                                                + i
-                                                + ":read");
+                CheckBox checkBox = (CheckBox) tester.getComponentFromLastRenderedPage(
+                        "form:panel:dataAccessPanel:listContainer:rules:" + i + ":read");
                 if (checkBox.getId().equals("read")) assertTrue(checkBox.getModelObject());
                 else assertFalse(checkBox.getModelObject());
             }
@@ -114,29 +101,28 @@ public class LayerAccessDataRulePanelTest extends GeoServerWicketTestSupport {
     @Test
     public void testSaveRules() throws IOException {
         AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
-        String wsName = layerModel.getObject().getResource().getStore().getWorkspace().getName();
+        String wsName =
+                layerModel.getObject().getResource().getStore().getWorkspace().getName();
         try {
             LayerAccessDataRulePanelInfo info = new LayerAccessDataRulePanelInfo();
             ListModel<DataAccessRuleInfo> own = info.createOwnModel(layerModel, false);
-            FormTestPage form =
-                    new FormTestPage(
-                            new ComponentBuilder() {
-                                private static final long serialVersionUID = -5907648151984337786L;
+            FormTestPage form = new FormTestPage(new ComponentBuilder() {
+                private static final long serialVersionUID = -5907648151984337786L;
 
-                                @Override
-                                public Component buildComponent(final String id) {
-                                    return new LayerAccessDataRulePanel(id, layerModel, own);
-                                }
-                            });
+                @Override
+                public Component buildComponent(final String id) {
+                    return new LayerAccessDataRulePanel(id, layerModel, own);
+                }
+            });
             assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).isEmpty());
             tester.startPage(form);
             tester.assertComponent("form:panel", LayerAccessDataRulePanel.class);
             own.getObject().forEach(r -> r.setRead(true));
             LayerAccessDataRulePanel panel =
-                    (LayerAccessDataRulePanel)
-                            tester.getComponentFromLastRenderedPage("form:panel");
+                    (LayerAccessDataRulePanel) tester.getComponentFromLastRenderedPage("form:panel");
             panel.save();
-            assertEquals(1, manager.getResourceRule(wsName, layerModel.getObject()).size());
+            assertEquals(
+                    1, manager.getResourceRule(wsName, layerModel.getObject()).size());
         } finally {
             manager.removeAllResourceRules(wsName, layerModel.getObject());
             assertTrue(manager.getResourceRule(wsName, layerModel.getObject()).isEmpty());

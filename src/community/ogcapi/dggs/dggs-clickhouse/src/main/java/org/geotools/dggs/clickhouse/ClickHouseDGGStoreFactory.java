@@ -31,8 +31,8 @@ import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 
 /**
- * Factory for {@link org.geotools.dggs.gstore.DGGSStore} based on ClickHouse storage . TODO:
- * generalize this so that it can take DGGS parameters as well.
+ * Factory for {@link org.geotools.dggs.gstore.DGGSStore} based on ClickHouse storage . TODO: generalize this so that it
+ * can take DGGS parameters as well.
  */
 // TODO: add a limit to the complexity of queries the store is willing to accept? And suggest the
 // user to switch to a lower resolution instead. Though maybe this ought to be done at the
@@ -44,12 +44,7 @@ public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
     /** parameter for database type */
     // TODO: find some better way to separate this from the DGGSGeometryStore?
     public static final Param DGGS_FACTORY_ID =
-            new Param(
-                    "dggs_id",
-                    String.class,
-                    "DGGS Factory identifier, e.g., H3 or rHEALPix",
-                    true,
-                    null);
+            new Param("dggs_id", String.class, "DGGS Factory identifier, e.g., H3 or rHEALPix", true, null);
 
     @Override
     public DataStore createNewDataStore(Map<String, ?> params) throws IOException {
@@ -61,8 +56,7 @@ public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
         // setup the JDBC data store based on Clickhouse
         Map<String, Object> delegateParams = new HashMap<>(params);
         delegateParams.put(JDBCDataStoreFactory.DBTYPE.key, DATABASE_ID);
-        delegateParams.put(
-                JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));
+        delegateParams.put(JDBCDataStoreFactory.SCHEMA.key, params.get(JDBCDataStoreFactory.DATABASE.key));
         JDBCDataStore jdbcStore = delegate.createDataStore(delegateParams);
 
         // setup the DGGS instance
@@ -84,12 +78,9 @@ public class ClickHouseDGGStoreFactory implements DataStoreFactorySpi {
 
     @Override
     public Param[] getParametersInfo() {
-        Stream<Param> delegateParams =
-                Stream.of(delegate.getParametersInfo())
-                        .filter(
-                                p ->
-                                        !JDBCDataStoreFactory.DBTYPE.key.equals(p.key)
-                                                && !JDBCDataStoreFactory.SCHEMA.key.equals(p.key));
+        Stream<Param> delegateParams = Stream.of(delegate.getParametersInfo())
+                .filter(p -> !JDBCDataStoreFactory.DBTYPE.key.equals(p.key)
+                        && !JDBCDataStoreFactory.SCHEMA.key.equals(p.key));
         return Stream.concat(Stream.of(DGGS_FACTORY_ID), delegateParams).toArray(n -> new Param[n]);
     }
 

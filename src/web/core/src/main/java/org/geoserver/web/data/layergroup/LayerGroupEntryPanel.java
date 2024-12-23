@@ -44,13 +44,11 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     private static final long serialVersionUID = -5483938812185582866L;
 
-    public static final Property<LayerGroupEntry> LAYER_TYPE =
-            new PropertyPlaceholder<>("layerType");
+    public static final Property<LayerGroupEntry> LAYER_TYPE = new PropertyPlaceholder<>("layerType");
 
     public static final Property<LayerGroupEntry> LAYER = new PropertyPlaceholder<>("layer");
 
-    public static final Property<LayerGroupEntry> DEFAULT_STYLE =
-            new PropertyPlaceholder<>("defaultStyle");
+    public static final Property<LayerGroupEntry> DEFAULT_STYLE = new PropertyPlaceholder<>("defaultStyle");
 
     public static final Property<LayerGroupEntry> STYLE = new PropertyPlaceholder<>("style");
 
@@ -78,10 +76,9 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
      * @param id the panel id.
      * @param tModel the model.
      * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
-     * @param horizontalBtn flag to require the add entry button to be displayed horizontally
-     *     instead of vertically.
-     * @param bigLegendTitle flag to require the panel title to be render as a big fieldset label
-     *     (true) or as a normal field label (false).
+     * @param horizontalBtn flag to require the add entry button to be displayed horizontally instead of vertically.
+     * @param bigLegendTitle flag to require the panel title to be render as a big fieldset label (true) or as a normal
+     *     field label (false).
      */
     public LayerGroupEntryPanel(
             String id,
@@ -90,11 +87,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
             boolean horizontalBtn,
             boolean bigLegendTitle) {
         super(id);
-        initUI(
-                getLayers(tModel.getObject()),
-                getStyles(tModel.getObject()),
-                groupWorkspace,
-                bigLegendTitle);
+        initUI(getLayers(tModel.getObject()), getStyles(tModel.getObject()), groupWorkspace, bigLegendTitle);
     }
 
     /**
@@ -114,18 +107,12 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
      * @param groupWorkspace the LayerGroup workspace to filter published info that can be added.
      */
     public LayerGroupEntryPanel(
-            String id,
-            List<PublishedInfo> layers,
-            List<StyleInfo> styles,
-            IModel<WorkspaceInfo> groupWorkspace) {
+            String id, List<PublishedInfo> layers, List<StyleInfo> styles, IModel<WorkspaceInfo> groupWorkspace) {
         super(id);
         initUI(layers, styles, groupWorkspace);
     }
 
-    private void initUI(
-            List<PublishedInfo> layers,
-            List<StyleInfo> styles,
-            IModel<WorkspaceInfo> groupWorkspace) {
+    private void initUI(List<PublishedInfo> layers, List<StyleInfo> styles, IModel<WorkspaceInfo> groupWorkspace) {
         initUI(layers, styles, groupWorkspace, true);
     }
 
@@ -155,36 +142,33 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 };
         // layers
         add(
-                layerTable =
-                        new ReorderableTablePanel<LayerGroupEntry>(
-                                "layers", LayerGroupEntry.class, items, propertiesModel) {
+                layerTable = new ReorderableTablePanel<LayerGroupEntry>(
+                        "layers", LayerGroupEntry.class, items, propertiesModel) {
 
-                            private static final long serialVersionUID = -3270471094618284639L;
+                    private static final long serialVersionUID = -3270471094618284639L;
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<LayerGroupEntry> itemModel,
-                                    Property<LayerGroupEntry> property) {
-                                if (property == LAYER_TYPE) {
-                                    return typeLink(id, itemModel);
-                                }
-                                if (property == LAYER) {
-                                    return layerLink(id, itemModel);
-                                }
-                                if (property == DEFAULT_STYLE) {
-                                    return defaultStyleCheckbox(id, itemModel);
-                                }
-                                if (property == STYLE) {
-                                    return styleLink(id, itemModel);
-                                }
-                                if (property == REMOVE) {
-                                    return removeLink(id, itemModel);
-                                }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<LayerGroupEntry> itemModel, Property<LayerGroupEntry> property) {
+                        if (property == LAYER_TYPE) {
+                            return typeLink(id, itemModel);
+                        }
+                        if (property == LAYER) {
+                            return layerLink(id, itemModel);
+                        }
+                        if (property == DEFAULT_STYLE) {
+                            return defaultStyleCheckbox(id, itemModel);
+                        }
+                        if (property == STYLE) {
+                            return styleLink(id, itemModel);
+                        }
+                        if (property == REMOVE) {
+                            return removeLink(id, itemModel);
+                        }
 
-                                return null;
-                            }
-                        }.setFilterable(false));
+                        return null;
+                    }
+                }.setFilterable(false));
         layerTable.setItemReuseStrategy(new DefaultItemReuseStrategy());
         layerTable.setOutputMarkupId(true);
         layerTable.setPageable(false);
@@ -210,20 +194,19 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 popupWindow.setInitialHeight(375);
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                popupWindow.setContent(
-                        new LayerListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
-                            private static final long serialVersionUID = -47811496174289699L;
+                popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
+                    private static final long serialVersionUID = -47811496174289699L;
 
-                            @Override
-                            protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
-                                popupWindow.close(target);
+                    @Override
+                    protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
+                        popupWindow.close(target);
 
-                                items.add(new LayerGroupEntry(layer, layer.getDefaultStyle()));
+                        items.add(new LayerGroupEntry(layer, layer.getDefaultStyle()));
 
-                                // getCatalog().save( lg );
-                                target.add(layerTable);
-                            }
-                        });
+                        // getCatalog().save( lg );
+                        target.add(layerTable);
+                    }
+                });
 
                 popupWindow.show(target);
             }
@@ -239,21 +222,18 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 popupWindow.setInitialHeight(375);
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseLayerGroup", this));
-                popupWindow.setContent(
-                        new LayerGroupListPanel(
-                                popupWindow.getContentId(), groupWorkspace.getObject()) {
-                            private static final long serialVersionUID = 4052338807144204692L;
+                popupWindow.setContent(new LayerGroupListPanel(popupWindow.getContentId(), groupWorkspace.getObject()) {
+                    private static final long serialVersionUID = 4052338807144204692L;
 
-                            @Override
-                            protected void handleLayerGroup(
-                                    LayerGroupInfo layerGroup, AjaxRequestTarget target) {
-                                popupWindow.close(target);
+                    @Override
+                    protected void handleLayerGroup(LayerGroupInfo layerGroup, AjaxRequestTarget target) {
+                        popupWindow.close(target);
 
-                                items.add(new LayerGroupEntry(layerGroup, null));
+                        items.add(new LayerGroupEntry(layerGroup, null));
 
-                                target.add(layerTable);
-                            }
-                        });
+                        target.add(layerTable);
+                    }
+                });
 
                 popupWindow.show(target);
             }
@@ -270,9 +250,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                 popupWindow.setInitialWidth(525);
                 popupWindow.setTitle(new ParamResourceModel("chooseStyleGroup", this));
                 popupWindow.setContent(
-                        new StyleListPanel(
-                                popupWindow.getContentId(),
-                                new StyleListPanel.StyleListProvider()) {
+                        new StyleListPanel(popupWindow.getContentId(), new StyleListPanel.StyleListProvider()) {
 
                             @Override
                             protected void handleStyle(StyleInfo style, AjaxRequestTarget target) {
@@ -297,8 +275,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
 
     Component typeLink(String id, IModel<LayerGroupEntry> itemModel) {
         LayerGroupEntry entry = itemModel.getObject();
-        return new Label(id, "<i>" + entry.getType().toString() + "</i>")
-                .setEscapeModelStrings(false);
+        return new Label(id, "<i>" + entry.getType().toString() + "</i>").setEscapeModelStrings(false);
     }
 
     Component layerLink(String id, IModel<LayerGroupEntry> itemModel) {
@@ -310,18 +287,17 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         final LayerGroupEntry entry = itemModel.getObject();
         Fragment f = new Fragment(id, "defaultStyle", this);
         CheckBox ds = new CheckBox("checkbox", new Model<>(entry.isDefaultStyle()));
-        ds.add(
-                new OnChangeAjaxBehavior() {
+        ds.add(new OnChangeAjaxBehavior() {
 
-                    private static final long serialVersionUID = 7700386104410665242L;
+            private static final long serialVersionUID = 7700386104410665242L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
-                        entry.setDefaultStyle(useDefault);
-                        target.add(layerTable);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Boolean useDefault = (Boolean) getComponent().getDefaultModelObject();
+                entry.setDefaultStyle(useDefault);
+                target.add(layerTable);
+            }
+        });
         f.add(ds);
         return f;
     }
@@ -346,38 +322,35 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         }
 
         // build and returns the link, but disable it if the style is the default
-        SimpleAjaxLink<String> link =
-                new SimpleAjaxLink<String>(id, new Model<>(styleName)) {
+        SimpleAjaxLink<String> link = new SimpleAjaxLink<String>(id, new Model<>(styleName)) {
 
-                    private static final long serialVersionUID = 4677068931971673637L;
+            private static final long serialVersionUID = 4677068931971673637L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
-                        popupWindow.setTitle(new ParamResourceModel("chooseStyle", this));
-                        popupWindow.setContent(
-                                new StyleListPanel(
-                                        popupWindow.getContentId(),
-                                        itemModel.getObject().getLayer()) {
-                                    private static final long serialVersionUID =
-                                            -8463999379475701401L;
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight(375);
+                popupWindow.setInitialWidth(525);
+                popupWindow.setTitle(new ParamResourceModel("chooseStyle", this));
+                popupWindow.setContent(
+                        new StyleListPanel(
+                                popupWindow.getContentId(),
+                                itemModel.getObject().getLayer()) {
+                            private static final long serialVersionUID = -8463999379475701401L;
 
-                                    @Override
-                                    protected void handleStyle(
-                                            StyleInfo style, AjaxRequestTarget target) {
-                                        popupWindow.close(target);
+                            @Override
+                            protected void handleStyle(StyleInfo style, AjaxRequestTarget target) {
+                                popupWindow.close(target);
 
-                                        LayerGroupEntry entry = itemModel.getObject();
-                                        entry.setStyle(style);
+                                LayerGroupEntry entry = itemModel.getObject();
+                                entry.setStyle(style);
 
-                                        // redraw
-                                        target.add(layerTable);
-                                    }
-                                });
-                        popupWindow.show(target);
-                    }
-                };
+                                // redraw
+                                target.add(layerTable);
+                            }
+                        });
+                popupWindow.show(target);
+            }
+        };
         link.getLink().setEnabled(!defaultStyle);
         return link;
     }
@@ -386,9 +359,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
         final LayerGroupEntry entry = itemModel.getObject();
         ImageAjaxLink<Object> link =
                 new ImageAjaxLink<Object>(
-                        id,
-                        new PackageResourceReference(
-                                getClass(), "../../img/icons/silk/delete.png")) {
+                        id, new PackageResourceReference(getClass(), "../../img/icons/silk/delete.png")) {
 
                     private static final long serialVersionUID = 4050942811476326745L;
 
@@ -399,11 +370,7 @@ public abstract class LayerGroupEntryPanel<T> extends Panel {
                         target.add(layerTable);
                     }
                 };
-        link.getImage()
-                .add(
-                        new AttributeModifier(
-                                "alt",
-                                new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
 

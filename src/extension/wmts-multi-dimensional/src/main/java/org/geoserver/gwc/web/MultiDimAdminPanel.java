@@ -20,21 +20,16 @@ public class MultiDimAdminPanel extends AdminPagePanel {
     public MultiDimAdminPanel(String id, IModel<? extends ServiceInfo> model) {
         super(id, model);
 
-        MapModel<Integer> expandLimitDefaultModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"),
-                        MultiDimensionalExtension.EXPAND_LIMIT_KEY);
+        MapModel<Integer> expandLimitDefaultModel = new MapModel<>(
+                new PropertyModel<MetadataMap>(model, "metadata"), MultiDimensionalExtension.EXPAND_LIMIT_KEY);
         TextField<Integer> expandLimitDefault =
                 new TextField<>("defaultExpandLimit", expandLimitDefaultModel, Integer.class);
         expandLimitDefault.add(RangeValidator.minimum(0));
         add(expandLimitDefault);
 
-        MapModel<Integer> expandLimitMaxModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"),
-                        MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY);
-        TextField<Integer> expandLimitMax =
-                new TextField<>("maxExpandLimit", expandLimitMaxModel, Integer.class);
+        MapModel<Integer> expandLimitMaxModel = new MapModel<>(
+                new PropertyModel<MetadataMap>(model, "metadata"), MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY);
+        TextField<Integer> expandLimitMax = new TextField<>("maxExpandLimit", expandLimitMaxModel, Integer.class);
         expandLimitMax.add(RangeValidator.minimum(0));
         add(expandLimitMax);
     }

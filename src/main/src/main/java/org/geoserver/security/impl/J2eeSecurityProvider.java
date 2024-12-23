@@ -33,14 +33,12 @@ public class J2eeSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new GeoServerJ2eeRoleService();
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new SecurityConfigValidator(securityManager);
     }
 }

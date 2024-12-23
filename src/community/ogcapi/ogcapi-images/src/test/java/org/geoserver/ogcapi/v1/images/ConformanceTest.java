@@ -24,8 +24,7 @@ public class ConformanceTest extends ImagesTestSupport {
         assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
         assertEquals(ImagesService.IMAGES_CORE, json.read("$.conformsTo[2]", String.class));
-        assertEquals(
-                ImagesService.IMAGES_TRANSACTIONAL, json.read("$.conformsTo[3]", String.class));
+        assertEquals(ImagesService.IMAGES_TRANSACTIONAL, json.read("$.conformsTo[3]", String.class));
     }
 
     @Test
@@ -37,11 +36,17 @@ public class ConformanceTest extends ImagesTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/images/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Images Conformance", document.select("#title").text());
-        assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
-        assertEquals(ConformanceClass.COLLECTIONS, document.select("#content li:eq(1)").text());
-        assertEquals(ImagesService.IMAGES_CORE, document.select("#content li:eq(2)").text());
         assertEquals(
-                ImagesService.IMAGES_TRANSACTIONAL, document.select("#content li:eq(3)").text());
+                "GeoServer OGC API Images Conformance",
+                document.select("#title").text());
+        assertEquals(ConformanceClass.CORE, document.select("#content li:eq(0)").text());
+        assertEquals(
+                ConformanceClass.COLLECTIONS,
+                document.select("#content li:eq(1)").text());
+        assertEquals(
+                ImagesService.IMAGES_CORE, document.select("#content li:eq(2)").text());
+        assertEquals(
+                ImagesService.IMAGES_TRANSACTIONAL,
+                document.select("#content li:eq(3)").text());
     }
 }

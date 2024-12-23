@@ -19,10 +19,7 @@ public class DirectoryParamPanel extends FileParamPanel {
 
     private static final long serialVersionUID = -8317791966175845831L;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public DirectoryParamPanel(
             final String id,

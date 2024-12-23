@@ -40,10 +40,7 @@ public class HitsOutputFormat extends WFSResponse {
         this.configuration = configuration;
     }
 
-    /**
-     * for WFS 1.1.1 - returns "text/xml; subtype=gml/3.1.1" - as required by WFS 1.1.0 Spec
-     * otherwise "text/xml"
-     */
+    /** for WFS 1.1.1 - returns "text/xml; subtype=gml/3.1.1" - as required by WFS 1.1.0 Spec otherwise "text/xml" */
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
         if (operation.getService().getVersion().toString().equals("1.1.0")) {
@@ -55,15 +52,13 @@ public class HitsOutputFormat extends WFSResponse {
     /** Checks that the resultType is of type "hits". */
     @Override
     public boolean canHandle(Operation operation) {
-        GetFeatureType request =
-                OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
+        GetFeatureType request = OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
 
         return (request != null) && (request.getResultType() == ResultTypeType.HITS_LITERAL);
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         WFSInfo wfs = getInfo();
 
         FeatureCollectionResponse featureCollection = (FeatureCollectionResponse) value;
@@ -103,8 +98,7 @@ public class HitsOutputFormat extends WFSResponse {
         return count;
     }
 
-    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs)
-            throws IOException {
+    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs) throws IOException {
         XSDSchema result;
         try {
             result = configuration.getXSD().getSchema();
@@ -117,7 +111,6 @@ public class HitsOutputFormat extends WFSResponse {
                 org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
                 ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/1.1.0/wfs.xsd"));
 
-        encoder.encode(
-                hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
+        encoder.encode(hits.getAdaptee(), org.geoserver.wfs.xml.v1_1_0.WFS.FEATURECOLLECTION, output);
     }
 }

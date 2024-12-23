@@ -21,10 +21,9 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
     @Before
     public void setUp() throws Exception {
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
@@ -38,12 +37,11 @@ public class MasterPasswordChangePanelTest extends AbstractSecurityWicketTestSup
     @Test
     public void testRequiredFields() throws Exception {
         ft.submit();
-        tester.assertErrorMessages(
-                new String[] {
-                    "Field 'Current password' is required.",
-                    "Field 'New password' is required.",
-                    "Field 'Confirmation' is required."
-                });
+        tester.assertErrorMessages(new String[] {
+            "Field 'Current password' is required.",
+            "Field 'New password' is required.",
+            "Field 'Confirmation' is required."
+        });
     }
 
     @Test

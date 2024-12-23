@@ -29,19 +29,16 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
      * @param panelId
      * @param model
      */
-    public MapMLLayerGroupConfigurationPanel(
-            final String panelId, final IModel<LayerGroupInfo> model) {
+    public MapMLLayerGroupConfigurationPanel(final String panelId, final IModel<LayerGroupInfo> model) {
         super(panelId, model);
 
         MapModel<String> licenseTitleModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseTitle");
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseTitle");
         TextField<String> licenseTitle = new TextField<>("licenseTitle", licenseTitleModel);
         add(licenseTitle);
 
         MapModel<String> licenseLinkModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseLink");
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.licenseLink");
         TextField<String> licenseLink = new TextField<>("licenseLink", licenseLinkModel);
         add(licenseLink);
 
@@ -53,23 +50,18 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
 
         // add the checkbox to enable sharding or not
         MapModel<Boolean> enableShardingModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"), "mapml.enableSharding");
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.enableSharding");
         CheckBox enableSharding = new CheckBox("enableSharding", enableShardingModel);
         add(enableSharding);
 
         MapModel<String> shardListModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"), "mapml.shardList");
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.shardList");
         TextField<String> shardList = new TextField<>("shardList", shardListModel);
         add(shardList);
 
         MapModel<String> shardServerPatternModel =
-                new MapModel<>(
-                        new PropertyModel<MetadataMap>(model, "metadata"),
-                        "mapml.shardServerPattern");
-        TextField<String> shardServerPattern =
-                new TextField<>("shardServerPattern", shardServerPatternModel);
+                new MapModel<>(new PropertyModel<MetadataMap>(model, "metadata"), "mapml.shardServerPattern");
+        TextField<String> shardServerPattern = new TextField<>("shardServerPattern", shardServerPatternModel);
         add(shardServerPattern);
     }
 }

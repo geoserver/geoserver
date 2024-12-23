@@ -57,14 +57,12 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response =
                 getAsServletResponse("wms?service=WMS&request=GetCapabilities&version=1.1.1");
         assertTrue(
-                "Response does not contain ServiceExceptionReport: "
-                        + response.getContentAsString(),
+                "Response does not contain ServiceExceptionReport: " + response.getContentAsString(),
                 response.getContentAsString().endsWith("</ServiceExceptionReport>"));
     }
 
     @Test
-    public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay()
-            throws Exception {
+    public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);
@@ -77,19 +75,16 @@ public class CapabilitiesModifyingTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig_1_3_0()
-            throws Exception {
+    public void testMisconfiguredLayerGeneratesErrorDocumentInDefaultConfig_1_3_0() throws Exception {
         MockHttpServletResponse response =
                 getAsServletResponse("wms?service=WMS&request=GetCapabilities&version=1.3.0");
         assertTrue(
-                "Response does not contain ServiceExceptionReport: "
-                        + response.getContentAsString(),
+                "Response does not contain ServiceExceptionReport: " + response.getContentAsString(),
                 response.getContentAsString().endsWith("</ServiceExceptionReport>"));
     }
 
     @Test
-    public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay_1_3_0()
-            throws Exception {
+    public void testMisconfiguredLayerIsSkippedWhenWMSServiceIsConfiguredThatWay_1_3_0() throws Exception {
         GeoServerInfo global = getGeoServer().getGlobal();
         global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
         getGeoServer().save(global);

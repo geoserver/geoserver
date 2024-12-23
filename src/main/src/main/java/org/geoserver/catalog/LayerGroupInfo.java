@@ -20,8 +20,8 @@ public interface LayerGroupInfo extends PublishedInfo {
     /** Enumeration for mode of layer group. */
     public enum Mode {
         /**
-         * The layer group is seen as a single exposed layer with a name, does not actually contain
-         * the layers it's referencing
+         * The layer group is seen as a single exposed layer with a name, does not actually contain the layers it's
+         * referencing
          */
         SINGLE {
             @Override
@@ -35,9 +35,8 @@ public interface LayerGroupInfo extends PublishedInfo {
             }
         },
         /**
-         * The layer group is seen as a single exposed layer with a name, but contains the layers
-         * it's referencing, thus hiding them from the caps document unless also shown in other tree
-         * mode layers
+         * The layer group is seen as a single exposed layer with a name, but contains the layers it's referencing, thus
+         * hiding them from the caps document unless also shown in other tree mode layers
          */
         OPAQUE_CONTAINER {
             @Override
@@ -53,8 +52,8 @@ public interface LayerGroupInfo extends PublishedInfo {
             }
         },
         /**
-         * The layer group retains a Name in the layer tree, but also exposes its nested layers in
-         * the capabilities document.
+         * The layer group retains a Name in the layer tree, but also exposes its nested layers in the capabilities
+         * document.
          */
         NAMED {
             @Override
@@ -68,8 +67,8 @@ public interface LayerGroupInfo extends PublishedInfo {
             }
         },
         /**
-         * The layer group is exposed in the tree, but does not have a Name element, showing
-         * structure but making it impossible to get all the layers at once.
+         * The layer group is exposed in the tree, but does not have a Name element, showing structure but making it
+         * impossible to get all the layers at once.
          */
         CONTAINER {
             @Override
@@ -107,21 +106,18 @@ public interface LayerGroupInfo extends PublishedInfo {
     void setMode(Mode mode);
 
     /**
-     * Get whether the layer group is forced to be not queryable and hence can not be subject of a
-     * GetFeatureInfo request.
+     * Get whether the layer group is forced to be not queryable and hence can not be subject of a GetFeatureInfo
+     * request.
      *
-     * <p>In order to preserve current default behavior (A LayerGroup is queryable when at least a
-     * child layer is queryable), this flag allows explicitly indicate that it is not queryable
-     * independently how the child layers are configured.
+     * <p>In order to preserve current default behavior (A LayerGroup is queryable when at least a child layer is
+     * queryable), this flag allows explicitly indicate that it is not queryable independently how the child layers are
+     * configured.
      *
      * <p>Default is {@code false}
      */
     boolean isQueryDisabled();
 
-    /**
-     * Set the layer group to be not queryable and hence can not be subject of a GetFeatureInfo
-     * request.
-     */
+    /** Set the layer group to be not queryable and hence can not be subject of a GetFeatureInfo request. */
     void setQueryDisabled(boolean queryDisabled);
 
     /** Returns a workspace or <code>null</code> if global. */
@@ -156,8 +152,8 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<StyleInfo> styles();
 
     /**
-     * Retrieves all the contained LayerInfo, resolving also nested LayerGroups, according to the
-     * specified LayerGroup style name.
+     * Retrieves all the contained LayerInfo, resolving also nested LayerGroups, according to the specified LayerGroup
+     * style name.
      *
      * @param layerGroupStyleName
      * @return the list of all the contained LayerInfo instances.
@@ -165,8 +161,8 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<LayerInfo> layers(String layerGroupStyleName);
 
     /**
-     * Retrieves all the contained StyleInfo, resolving also the nested LayerGroups, according to
-     * the specified LayerGroup style name.
+     * Retrieves all the contained StyleInfo, resolving also the nested LayerGroups, according to the specified
+     * LayerGroup style name.
      *
      * @param layerGroupStyleName
      * @return the list of all the contained StyleInfo instances.
@@ -205,8 +201,8 @@ public interface LayerGroupInfo extends PublishedInfo {
     List<MetadataLinkInfo> getMetadataLinks();
 
     /**
-     * Return the keywords associated with this layer group. If no keywords are available an empty
-     * list should be returned.
+     * Return the keywords associated with this layer group. If no keywords are available an empty list should be
+     * returned.
      *
      * @return a non NULL list containing the keywords associated with this layer group
      */
@@ -215,11 +211,10 @@ public interface LayerGroupInfo extends PublishedInfo {
     }
 
     /**
-     * A way to compare two LayerGroupInfo instances that works around all the wrappers we have
-     * around (secured, decorating ecc) all changing some aspects of the bean and breaking usage of
-     * "common" equality). This method only uses getters to fetch the fields. Could have been build
-     * using EqualsBuilder and reflection, but would have been very slow and we do lots of these
-     * calls on large catalogs.
+     * A way to compare two LayerGroupInfo instances that works around all the wrappers we have around (secured,
+     * decorating ecc) all changing some aspects of the bean and breaking usage of "common" equality). This method only
+     * uses getters to fetch the fields. Could have been build using EqualsBuilder and reflection, but would have been
+     * very slow and we do lots of these calls on large catalogs.
      */
     public static boolean equals(LayerGroupInfo lg, Object obj) {
         if (lg == obj) return true;
@@ -293,9 +288,8 @@ public interface LayerGroupInfo extends PublishedInfo {
     }
 
     /**
-     * Styles, especially when using defaults, can be represented in too many ways (null, list of
-     * nulls, and so on). This returns a single canonical representation for those cases, trying not
-     * to allocate new objects.
+     * Styles, especially when using defaults, can be represented in too many ways (null, list of nulls, and so on).
+     * This returns a single canonical representation for those cases, trying not to allocate new objects.
      */
     static List<StyleInfo> canonicalStyles(List<StyleInfo> styles, List<PublishedInfo> layers) {
         if (styles == null || styles.isEmpty()) {
@@ -327,11 +321,10 @@ public interface LayerGroupInfo extends PublishedInfo {
     }
 
     /**
-     * A way to build a hash code based only on LayerGroupInfo instances that works around all the
-     * wrappers we have around (secured, decorating ecc) all changing some aspects of the bean and
-     * breaking usage o "common" equality). This method only uses getters to fetch the fields. Could
-     * have been build using HashCodeBuilder and reflection, but would have been very slow and we do
-     * lots of these calls on large catalogs.
+     * A way to build a hash code based only on LayerGroupInfo instances that works around all the wrappers we have
+     * around (secured, decorating ecc) all changing some aspects of the bean and breaking usage o "common" equality).
+     * This method only uses getters to fetch the fields. Could have been build using HashCodeBuilder and reflection,
+     * but would have been very slow and we do lots of these calls on large catalogs.
      */
     public static int hashCode(LayerGroupInfo lg) {
         final int prime = 31;
@@ -339,31 +332,28 @@ public interface LayerGroupInfo extends PublishedInfo {
         result = prime * result + ((lg.getBounds() == null) ? 0 : lg.getBounds().hashCode());
         result = prime * result + ((lg.getId() == null) ? 0 : lg.getId().hashCode());
         result = prime * result + ((lg.getLayers() == null) ? 0 : lg.getLayers().hashCode());
-        result = prime * result + ((lg.getMetadata() == null) ? 0 : lg.getMetadata().hashCode());
+        result = prime * result
+                + ((lg.getMetadata() == null) ? 0 : lg.getMetadata().hashCode());
         result = prime * result + ((lg.getName() == null) ? 0 : lg.getName().hashCode());
         result = prime * result + ((lg.getMode() == null) ? 0 : lg.getMode().hashCode());
         result = prime * result + ((lg.getTitle() == null) ? 0 : lg.getTitle().hashCode());
-        result = prime * result + ((lg.getAbstract() == null) ? 0 : lg.getAbstract().hashCode());
-        result = prime * result + ((lg.getWorkspace() == null) ? 0 : lg.getWorkspace().hashCode());
+        result = prime * result
+                + ((lg.getAbstract() == null) ? 0 : lg.getAbstract().hashCode());
+        result = prime * result
+                + ((lg.getWorkspace() == null) ? 0 : lg.getWorkspace().hashCode());
         result = prime * result + ((lg.getStyles() == null) ? 0 : lg.getStyles().hashCode());
-        result = prime * result + ((lg.getRootLayer() == null) ? 0 : lg.getRootLayer().hashCode());
-        result =
-                prime * result
-                        + ((lg.getRootLayerStyle() == null)
-                                ? 0
-                                : lg.getRootLayerStyle().hashCode());
-        result =
-                prime * result
-                        + ((lg.getAuthorityURLs() == null) ? 0 : lg.getAuthorityURLs().hashCode());
-        result =
-                prime * result
-                        + ((lg.getIdentifiers() == null) ? 0 : lg.getIdentifiers().hashCode());
-        result =
-                prime * result
-                        + ((lg.getAttribution() == null) ? 0 : lg.getAttribution().hashCode());
-        result =
-                prime * result
-                        + ((lg.getMetadataLinks() == null) ? 0 : lg.getMetadataLinks().hashCode());
+        result = prime * result
+                + ((lg.getRootLayer() == null) ? 0 : lg.getRootLayer().hashCode());
+        result = prime * result
+                + ((lg.getRootLayerStyle() == null) ? 0 : lg.getRootLayerStyle().hashCode());
+        result = prime * result
+                + ((lg.getAuthorityURLs() == null) ? 0 : lg.getAuthorityURLs().hashCode());
+        result = prime * result
+                + ((lg.getIdentifiers() == null) ? 0 : lg.getIdentifiers().hashCode());
+        result = prime * result
+                + ((lg.getAttribution() == null) ? 0 : lg.getAttribution().hashCode());
+        result = prime * result
+                + ((lg.getMetadataLinks() == null) ? 0 : lg.getMetadataLinks().hashCode());
         result = prime * result + Boolean.hashCode(lg.isQueryDisabled());
         return result;
     }

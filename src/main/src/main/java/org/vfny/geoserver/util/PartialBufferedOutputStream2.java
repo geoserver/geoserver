@@ -14,27 +14,23 @@ import javax.servlet.http.HttpServletResponse;
  * <b>PartialBufferedOutputStream</b><br>
  * Oct 19, 2005<br>
  * <b>Purpose:</b><br>
- * I have modelled this class after the BufferedOutputStream. Several methods are synchronized as a
- * result. The interior of this class uses a ByteArrayOutputStream when it starts and then a
- * BufferedOutputStream. This is essentially a decorator. This class uses a temporary to-memory
- * OutputStream for initial bufferring. This OutputStream is a ByteArrayOutputStream. Once a
- * pre-defined BUFFER_SIZE has been reached, the output that is stored in the ByteArrayOutputStream
- * is output to the real OutputStream to the response. Further data is then written to that response
- * OutputStream. For the first run of this, we will write to memory for the buffered part. Writing
- * to disk is another option. NOTE: If we switch to writing out to disk, we will have to clean up
- * our temporary files with abort(). WARNING: IF you abuse the size of the buffer, you may leak
- * memory if this OutputStream is not terminated. The ByteArrayOutputStream will hold onto its
- * allocated memory even after you call reset() on it. So if you put in 60MB of buffer space, it
- * will stay there until the object is no longer referenced and the garbage collector decides to
- * pick it up. A solution to this would be to use a FileOutputStream instead of the
- * ByteArrayOutputStream. CONTRACT: -close() will NOT flush remaining bytes to the output stream, as
- * per the contract with OutputStream. Close will remove any references to OutputStreams and its
- * HttpServletResponse. -fush() will NOT flush if the buffer is not full. -abort() will succeed if
- * the buffer is not full yet. If the buffer has been filled and the information has been written
- * out to response's OutputStream, the abort reports as having failed. The point of this
- * PartialBufferedOutputStream is to allow an abort before the information has been written out to
- * the real OutputStream. When abort is called the references to any OutputStreams and the
- * HttpServletResponse are removed.
+ * I have modelled this class after the BufferedOutputStream. Several methods are synchronized as a result. The interior
+ * of this class uses a ByteArrayOutputStream when it starts and then a BufferedOutputStream. This is essentially a
+ * decorator. This class uses a temporary to-memory OutputStream for initial bufferring. This OutputStream is a
+ * ByteArrayOutputStream. Once a pre-defined BUFFER_SIZE has been reached, the output that is stored in the
+ * ByteArrayOutputStream is output to the real OutputStream to the response. Further data is then written to that
+ * response OutputStream. For the first run of this, we will write to memory for the buffered part. Writing to disk is
+ * another option. NOTE: If we switch to writing out to disk, we will have to clean up our temporary files with abort().
+ * WARNING: IF you abuse the size of the buffer, you may leak memory if this OutputStream is not terminated. The
+ * ByteArrayOutputStream will hold onto its allocated memory even after you call reset() on it. So if you put in 60MB of
+ * buffer space, it will stay there until the object is no longer referenced and the garbage collector decides to pick
+ * it up. A solution to this would be to use a FileOutputStream instead of the ByteArrayOutputStream. CONTRACT: -close()
+ * will NOT flush remaining bytes to the output stream, as per the contract with OutputStream. Close will remove any
+ * references to OutputStreams and its HttpServletResponse. -fush() will NOT flush if the buffer is not full. -abort()
+ * will succeed if the buffer is not full yet. If the buffer has been filled and the information has been written out to
+ * response's OutputStream, the abort reports as having failed. The point of this PartialBufferedOutputStream is to
+ * allow an abort before the information has been written out to the real OutputStream. When abort is called the
+ * references to any OutputStreams and the HttpServletResponse are removed.
  *
  * @author Brent Owens (The Open Planning Project)
  * @version
@@ -71,8 +67,7 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * @param response the response with its output stream to write to once the buffer is full
      * @param kilobytes size, in kilobytes, of the buffer
      */
-    public PartialBufferedOutputStream2(HttpServletResponse response, int kilobytes)
-            throws IOException {
+    public PartialBufferedOutputStream2(HttpServletResponse response, int kilobytes) throws IOException {
         if (kilobytes < 1) {
             throw new IllegalArgumentException("Buffer size not greater than 0: " + kilobytes);
         }
@@ -182,8 +177,8 @@ public class PartialBufferedOutputStream2 extends OutputStream {
     }
 
     /**
-     * Closes the stream. If we're still working against the in memory buffer that will be written
-     * out before close occurs
+     * Closes the stream. If we're still working against the in memory buffer that will be written out before close
+     * occurs
      */
     @Override
     public void close() throws IOException {
@@ -207,10 +202,9 @@ public class PartialBufferedOutputStream2 extends OutputStream {
      * <b>abort</b><br>
      * <br>
      * <b>Description:</b><br>
-     * Abort is called when something bad has happened and we want to get out of writing out to the
-     * real stream. This is why we have a buffer. Abort will succeed if the buffer is not full yet.
-     * If that is true, then the buffer is cleared and closed. It does NOT close the response's
-     * OutputStream
+     * Abort is called when something bad has happened and we want to get out of writing out to the real stream. This is
+     * why we have a buffer. Abort will succeed if the buffer is not full yet. If that is true, then the buffer is
+     * cleared and closed. It does NOT close the response's OutputStream
      */
     public boolean abort() throws IOException {
         if ((out_buffer != null) && (out_buffer.size() < BUFFER_SIZE)) {

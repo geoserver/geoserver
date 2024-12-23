@@ -56,8 +56,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     protected SortedSet<GeoServerUserGroup> emptyGroups;
 
     /** logger */
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     protected Set<UserGroupLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
@@ -91,8 +90,8 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and {@link
-     * #checkORCreateJDBCPropertyFile(String, File, String)} for initializing
+     * Uses {@link #initializeDSFromConfig(SecurityNamedServiceConfig)} and
+     * {@link #checkORCreateJDBCPropertyFile(String, File, String)} for initializing
      *
      * @see
      *     org.geoserver.security.GeoServerUserGroupService#initializeFromConfig(org.geoserver.security.config.SecurityNamedServiceConfig)
@@ -109,30 +108,24 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
             JDBCUserGroupServiceConfig jdbcConfig = (JDBCUserGroupServiceConfig) config;
 
             String fileNameDML = jdbcConfig.getPropertyFileNameDML();
-            Resource file =
-                    checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
+            Resource file = checkORCreateJDBCPropertyFile(fileNameDML, getConfigRoot(), DEFAULT_DML_FILE);
             dmlProps = Util.loadUniversal(file.in());
 
             String fileNameDDL = jdbcConfig.getPropertyFileNameDDL();
             if (fileNameDDL != null && fileNameDDL.length() > 0) {
-                file =
-                        checkORCreateJDBCPropertyFile(
-                                fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
+                file = checkORCreateJDBCPropertyFile(fileNameDDL, getConfigRoot(), DEFAULT_DDL_FILE);
                 ddlProps = Util.loadUniversal(file.in());
                 createTablesIfRequired((JDBCSecurityServiceConfig) config);
             }
 
-            GeoServerPasswordEncoder enc =
-                    getSecurityManager().loadPasswordEncoder(passwordEncoderName);
+            GeoServerPasswordEncoder enc = getSecurityManager().loadPasswordEncoder(passwordEncoderName);
             if (enc.getEncodingType() == PasswordEncodingType.ENCRYPT) {
                 KeyStoreProvider prov = getSecurityManager().getKeyStoreProvider();
                 String alias = prov.aliasForGroupService(name);
                 if (prov.containsAlias(alias) == false) {
                     prov.setUserGroupKey(
                             name,
-                            getSecurityManager()
-                                    .getRandomPassworddProvider()
-                                    .getRandomPasswordWithDefaultLength());
+                            getSecurityManager().getRandomPassworddProvider().getRandomPasswordWithDefaultLength());
                     prov.storeKeyStore();
                 }
             }
@@ -197,9 +190,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
         return u;
     }
 
-    /**
-     * @see org.geoserver.security.GeoServerUserGroupService#getGroupByGroupname(java.lang.String)
-     */
+    /** @see org.geoserver.security.GeoServerUserGroupService#getGroupByGroupname(java.lang.String) */
     @Override
     public GeoServerUserGroup getGroupByGroupname(String groupname) throws IOException {
         Connection con = null;
@@ -301,33 +292,27 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     /**
-     * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String,
-     *     java.lang.String, boolean)
+     * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String, java.lang.String,
+     *     boolean)
      */
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         GeoServerUser user = new GeoServerUser(username);
         user.setEnabled(isEnabled);
         user.setPassword(password);
         return user;
     }
 
-    /**
-     * @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String,
-     *     boolean)
-     */
+    /** @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String, boolean) */
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         GeoServerUserGroup group = new GeoServerUserGroup(groupname);
         group.setEnabled(isEnabled);
         return group;
     }
 
     /**
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
+     * @see org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
      */
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
@@ -495,8 +480,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
      * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
      */
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         GeoServerUser user = null;
         try {
             user = getUserByUsername(username);
@@ -661,8 +645,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
 
         if (StringUtils.hasLength(propname) == false) return emptyUsers;
 
@@ -715,8 +698,7 @@ public class JDBCUserGroupService extends AbstractJDBCService implements GeoServ
     }
 
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
 
         if (StringUtils.hasLength(propname) == false) return 0;
 

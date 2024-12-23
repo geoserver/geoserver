@@ -18,14 +18,12 @@ public class GuavaAuthenticationCacheTest extends BaseAuthenticationCacheTest {
 
     @Override
     protected AuthenticationCache createAuthenticationCache() {
-        return new GuavaAuthenticationCacheImpl(
-                MAX_ENTRIES, TIME_IDLE, TIME_LIVE, TIME_CLEANUP, CONCURRENCY);
+        return new GuavaAuthenticationCacheImpl(MAX_ENTRIES, TIME_IDLE, TIME_LIVE, TIME_CLEANUP, CONCURRENCY);
     }
 
     @Test
     public void testCleanUp() throws InterruptedException {
         putAuthenticationInCache();
-        await().atMost(TIME_CLEANUP + 1, SECONDS)
-                .until(() -> ((GuavaAuthenticationCacheImpl) cache).isEmpty());
+        await().atMost(TIME_CLEANUP + 1, SECONDS).until(() -> ((GuavaAuthenticationCacheImpl) cache).isEmpty());
     }
 }

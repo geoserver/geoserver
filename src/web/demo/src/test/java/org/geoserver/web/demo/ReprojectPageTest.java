@@ -39,9 +39,7 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(0, tester.getMessages(FeedbackMessage.ERROR).size());
-        String tx =
-                tester.getComponentFromLastRenderedPage("form:targetGeom")
-                        .getDefaultModelObjectAsString();
+        String tx = tester.getComponentFromLastRenderedPage("form:targetGeom").getDefaultModelObjectAsString();
         String[] ordinateStrings = tx.split("\\s+");
         assertEquals(736446.0261038465, Double.parseDouble(ordinateStrings[0]), 1e-6);
         assertEquals(4987329.504699742, Double.parseDouble(ordinateStrings[1]), 1e-6);
@@ -59,10 +57,10 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message =
-                ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0))
-                        .getMessage()
-                        .toString();
+        String message = ((ValidationErrorFeedback)
+                        tester.getMessages(FeedbackMessage.ERROR).get(0))
+                .getMessage()
+                .toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -79,12 +77,9 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(0, tester.getMessages(FeedbackMessage.ERROR).size());
-        String tx =
-                tester.getComponentFromLastRenderedPage("form:targetGeom")
-                        .getDefaultModelObjectAsString();
-        Matcher matcher =
-                Pattern.compile("LINESTRING \\(([\\d\\.]+) ([\\d\\.]+), ([\\d\\.]+) ([\\d\\.]+)\\)")
-                        .matcher(tx);
+        String tx = tester.getComponentFromLastRenderedPage("form:targetGeom").getDefaultModelObjectAsString();
+        Matcher matcher = Pattern.compile("LINESTRING \\(([\\d\\.]+) ([\\d\\.]+), ([\\d\\.]+) ([\\d\\.]+)\\)")
+                .matcher(tx);
         assertTrue(tx, matcher.matches());
         assertEquals(736446.0261038465, Double.parseDouble(matcher.group(1)), 1e-6);
         assertEquals(4987329.504699742, Double.parseDouble(matcher.group(2)), 1e-6);
@@ -104,10 +99,10 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
 
         assertEquals(ReprojectPage.class, tester.getLastRenderedPage().getClass());
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        String message =
-                ((ValidationErrorFeedback) tester.getMessages(FeedbackMessage.ERROR).get(0))
-                        .getMessage()
-                        .toString();
+        String message = ((ValidationErrorFeedback)
+                        tester.getMessages(FeedbackMessage.ERROR).get(0))
+                .getMessage()
+                .toString();
         String expected = new ParamResourceModel("GeometryTextArea.parseError", null).getString();
         assertEquals(expected, message);
     }
@@ -118,11 +113,9 @@ public class ReprojectPageTest extends GeoServerWicketTestSupport {
                 ReprojectPage.class,
                 new PageParameters().add("fromSRS", "EPSG:4326").add("toSRS", "EPSG:32632"));
         String source =
-                tester.getComponentFromLastRenderedPage("form:sourceCRS:srs")
-                        .getDefaultModelObjectAsString();
+                tester.getComponentFromLastRenderedPage("form:sourceCRS:srs").getDefaultModelObjectAsString();
         String target =
-                tester.getComponentFromLastRenderedPage("form:targetCRS:srs")
-                        .getDefaultModelObjectAsString();
+                tester.getComponentFromLastRenderedPage("form:targetCRS:srs").getDefaultModelObjectAsString();
         assertEquals("EPSG:4326", source);
         assertEquals("EPSG:32632", target);
     }

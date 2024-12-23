@@ -50,8 +50,7 @@ public abstract class SLDServiceBaseTest extends CatalogRESTTestSupport {
             Style style = namedLayer.getStyles()[0];
             assertNotNull(style.featureTypeStyles().toArray(new FeatureTypeStyle[0]));
             assertEquals(1, style.featureTypeStyles().toArray(new FeatureTypeStyle[0]).length);
-            FeatureTypeStyle featureTypeStyle =
-                    style.featureTypeStyles().toArray(new FeatureTypeStyle[0])[0];
+            FeatureTypeStyle featureTypeStyle = style.featureTypeStyles().toArray(new FeatureTypeStyle[0])[0];
             assertNotNull(featureTypeStyle.rules().toArray(new Rule[0]));
             return featureTypeStyle.rules().toArray(new Rule[0]);
         } else {

@@ -58,11 +58,10 @@ import org.geotools.util.logging.Logging;
 /**
  * {@literal datadir.loader.enabled}
  *
- * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
- * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
- * number of available processors as reported by {@link Runtime#availableProcessors()}, or
- * overridden by the value passed through the environment variable or system property {@literal
- * DATADIR_LOAD_PARALLELISM}.
+ * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose parallelism is determined
+ * by an heuristic resolving to the minimum between {@code 16} and the number of available processors as reported by
+ * {@link Runtime#availableProcessors()}, or overridden by the value passed through the environment variable or system
+ * property {@literal DATADIR_LOAD_PARALLELISM}.
  */
 public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
@@ -93,17 +92,16 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
     }
 
     /**
-     * Loads a new {@link CatalogImpl} through {@link DataDirectoryLoader} and transfers its
-     * contents to {@code targetCatalog}, which is expected to be the real raw catalog spring-bean.
+     * Loads a new {@link CatalogImpl} through {@link DataDirectoryLoader} and transfers its contents to
+     * {@code targetCatalog}, which is expected to be the real raw catalog spring-bean.
      *
      * @param targetCatalog the actual catalog bean to load config objects into
-     * @param xp not used by this {@link GeoServerLoader} implementation , the {@link
-     *     DataDirectoryLoader} collaborator creates one per loading thread.
-     * @implNote note while {@link DefaultGeoServerLoader} decrypts {@link DataStoreInfo} password
-     *     connection parameters on the fly as stores are loaded, this implementation does it after
-     *     the catalog is completely loaded, to avoid deadlocks on the main thread produced by
-     *     loading with multiple threads while {@link GeoServerExtensions} is called and forces
-     *     loading beans which only works on the main thread for spring.
+     * @param xp not used by this {@link GeoServerLoader} implementation , the {@link DataDirectoryLoader} collaborator
+     *     creates one per loading thread.
+     * @implNote note while {@link DefaultGeoServerLoader} decrypts {@link DataStoreInfo} password connection parameters
+     *     on the fly as stores are loaded, this implementation does it after the catalog is completely loaded, to avoid
+     *     deadlocks on the main thread produced by loading with multiple threads while {@link GeoServerExtensions} is
+     *     called and forces loading beans which only works on the main thread for spring.
      */
     @Override
     public void loadCatalog(Catalog targetCatalog, XStreamPersister xp) throws Exception {
@@ -135,17 +133,11 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         }
         GeoServerImpl loaded = loader.loadGeoServer(rawCatalog);
 
-        LOGGER.log(
-                Level.CONFIG,
-                "GeoServer config (settings and services) loaded in {0}",
-                stopWatch.stop());
+        LOGGER.log(Level.CONFIG, "GeoServer config (settings and services) loaded in {0}", stopWatch.stop());
 
         stopWatch.reset().start();
         transferContents(loaded, geoServer, xp);
-        LOGGER.log(
-                Level.CONFIG,
-                "Transferred GeoServer config to actual service bean in {0}",
-                stopWatch.stop());
+        LOGGER.log(Level.CONFIG, "Transferred GeoServer config to actual service bean in {0}", stopWatch.stop());
 
         getLoaderListener().loadGeoServer(geoServer, xp);
     }
@@ -169,27 +161,22 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
         List<WorkspaceInfo> workspaces = target.getCatalog().getWorkspaces();
 
-        workspaces.stream()
-                .parallel()
-                .forEach(
-                        ws -> {
-                            SettingsInfo settings = source.getSettings(ws);
-                            Collection<? extends ServiceInfo> services = source.getServices(ws);
-                            if (null != settings) target.add(unwrap(settings));
-                            for (ServiceInfo service : services) target.add(unwrap(service));
-                        });
+        workspaces.stream().parallel().forEach(ws -> {
+            SettingsInfo settings = source.getSettings(ws);
+            Collection<? extends ServiceInfo> services = source.getServices(ws);
+            if (null != settings) target.add(unwrap(settings));
+            for (ServiceInfo service : services) target.add(unwrap(service));
+        });
     }
 
     private void clear(GeoServer target) {
         target.getServices().forEach(target::remove);
 
-        target.getCatalog().getWorkspaces().stream()
-                .forEach(
-                        ws -> {
-                            SettingsInfo settings = target.getSettings(ws);
-                            if (null != settings) target.remove(settings);
-                            target.getServices(ws).forEach(target::remove);
-                        });
+        target.getCatalog().getWorkspaces().stream().forEach(ws -> {
+            SettingsInfo settings = target.getSettings(ws);
+            if (null != settings) target.remove(settings);
+            target.getServices(ws).forEach(target::remove);
+        });
     }
 
     private void removePersisterListeners(GeoServer geoServer) {
@@ -227,11 +214,10 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         catalog.getStores(HTTPStoreInfo.class).stream()
                 .filter(store -> store.getPassword() != null)
                 .map(ModificationProxy::unwrap)
-                .forEach(
-                        store -> {
-                            String decoded = helper.decode(store.getPassword());
-                            store.setPassword(decoded);
-                        });
+                .forEach(store -> {
+                    String decoded = helper.decode(store.getPassword());
+                    store.setPassword(decoded);
+                });
 
         catalog.getDataStores().stream()
                 .filter(this::shouldTryDecrypt)
@@ -240,22 +226,16 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
     }
 
     /**
-     * Determines whether to even attempt to decrypt password connection parameters, returns {@code
-     * false} for known DataStore types that won't have such parameters, in order to avoid the
-     * overhead from {@link ConfigurationPasswordEncryptionHelper} which would end up loading the
-     * {@link DataStoreFactorySpi} and forcing thousands of calls to {@link
-     * GeoTools#getInitialContext()}.
+     * Determines whether to even attempt to decrypt password connection parameters, returns {@code false} for known
+     * DataStore types that won't have such parameters, in order to avoid the overhead from
+     * {@link ConfigurationPasswordEncryptionHelper} which would end up loading the {@link DataStoreFactorySpi} and
+     * forcing thousands of calls to {@link GeoTools#getInitialContext()}.
      */
     private boolean shouldTryDecrypt(DataStoreInfo ds) {
-        return null != ds.getType()
-                && !"Shapefile".equals(ds.getType())
-                && !"OGR".equals(ds.getType());
+        return null != ds.getType() && !"Shapefile".equals(ds.getType()) && !"OGR".equals(ds.getType());
     }
 
-    /**
-     * @throws UnsupportedOperationException, this method is defined in {@link GeoServerLoader} but
-     *     not called by it
-     */
+    /** @throws UnsupportedOperationException, this method is defined in {@link GeoServerLoader} but not called by it */
     @Override
     protected void readCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
         throw new UnsupportedOperationException();
@@ -277,9 +257,8 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
     private FileSystemResourceStore resolveResourceStore(GeoServerResourceLoader resourceLoader) {
         ResourceStore resourceStore = resourceLoader.getResourceStore();
         if (!(resourceStore instanceof FileSystemResourceStore)) {
-            throw new IllegalArgumentException(
-                    "Expected ResourceStore to be FileSystemResourceStore, got "
-                            + resourceStore.getClass().getName());
+            throw new IllegalArgumentException("Expected ResourceStore to be FileSystemResourceStore, got "
+                    + resourceStore.getClass().getName());
         }
         return (FileSystemResourceStore) resourceStore;
     }
@@ -289,10 +268,7 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
         Stopwatch stopWatch = Stopwatch.createStarted();
         sync(source, target);
-        LOGGER.log(
-                Level.CONFIG,
-                "Transferred Catalog config to actual service bean in {0}",
-                stopWatch.stop());
+        LOGGER.log(Level.CONFIG, "Transferred Catalog config to actual service bean in {0}", stopWatch.stop());
 
         restoreListeners(target, preservedListeners, xp);
     }
@@ -316,8 +292,7 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
         }
     }
 
-    private void restoreListeners(
-            Catalog target, List<CatalogListener> preservedListeners, XStreamPersister xp) {
+    private void restoreListeners(Catalog target, List<CatalogListener> preservedListeners, XStreamPersister xp) {
         // attach back the old listeners
         preservedListeners.forEach(target::addListener);
 
@@ -350,28 +325,26 @@ public class DataDirectoryGeoServerLoader extends GeoServerLoader {
 
     private void logStop(Stopwatch stoppedSw, final Catalog catalog) {
         LOGGER.log(Level.INFO, "Read catalog {0}", stoppedSw);
-        LOGGER.config(
-                () -> {
-                    String msg =
-                            "Loaded Catalog contents: "
-                                    + "workspaces: %,d, "
-                                    + "namespaces: %,d, "
-                                    + "styles: %,d, "
-                                    + "stores: %,d, "
-                                    + "resources: %,d, "
-                                    + "layers: %,d, "
-                                    + "layer groups: %,d.";
+        LOGGER.config(() -> {
+            String msg = "Loaded Catalog contents: "
+                    + "workspaces: %,d, "
+                    + "namespaces: %,d, "
+                    + "styles: %,d, "
+                    + "stores: %,d, "
+                    + "resources: %,d, "
+                    + "layers: %,d, "
+                    + "layer groups: %,d.";
 
-                    final IncludeFilter all = Filter.INCLUDE;
-                    return String.format(
-                            msg,
-                            catalog.count(WorkspaceInfo.class, all),
-                            catalog.count(NamespaceInfo.class, all),
-                            catalog.count(StyleInfo.class, all),
-                            catalog.count(StoreInfo.class, all),
-                            catalog.count(ResourceInfo.class, all),
-                            catalog.count(LayerInfo.class, all),
-                            catalog.count(LayerGroupInfo.class, all));
-                });
+            final IncludeFilter all = Filter.INCLUDE;
+            return String.format(
+                    msg,
+                    catalog.count(WorkspaceInfo.class, all),
+                    catalog.count(NamespaceInfo.class, all),
+                    catalog.count(StyleInfo.class, all),
+                    catalog.count(StoreInfo.class, all),
+                    catalog.count(ResourceInfo.class, all),
+                    catalog.count(LayerInfo.class, all),
+                    catalog.count(LayerGroupInfo.class, all));
+        });
     }
 }

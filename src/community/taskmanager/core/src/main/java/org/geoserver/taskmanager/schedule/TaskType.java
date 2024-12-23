@@ -15,9 +15,8 @@ import org.geoserver.taskmanager.util.Named;
 public interface TaskType extends Named {
 
     /**
-     * Return parameter info for this task type. It is recommended to use a LinkedHashMap and add
-     * the parameters in a intuitive order. This order will be preserved to present parameters to
-     * the user.
+     * Return parameter info for this task type. It is recommended to use a LinkedHashMap and add the parameters in a
+     * intuitive order. This order will be preserved to present parameters to the user.
      *
      * @return the parameter info
      */
@@ -48,8 +47,7 @@ public interface TaskType extends Named {
     }
 
     /**
-     * task type can only be added via template this is when task should be run as part of an
-     * initialization
+     * task type can only be added via template this is when task should be run as part of an initialization
      *
      * @return true if task type is only addable in template
      */

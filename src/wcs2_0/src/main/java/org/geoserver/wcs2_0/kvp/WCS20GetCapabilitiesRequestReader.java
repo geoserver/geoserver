@@ -54,8 +54,7 @@ public class WCS20GetCapabilitiesRequestReader extends EMFKvpRequestReader {
             String value = (String) rawKvp.get("sections");
             LOGGER.info("Sections: " + value);
             EObject sections = Ows20Factory.eINSTANCE.createSectionsType();
-            ((Collection) EMFUtils.get(sections, "section"))
-                    .addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
+            ((Collection) EMFUtils.get(sections, "section")).addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
             kvp.put("sections", sections);
         }
         request = super.read(request, kvp, rawKvp);

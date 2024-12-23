@@ -33,10 +33,7 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
     }
 
     public static final WrapperPolicy readWrite(AccessLimits limits) {
-        Response respone =
-                limits == null || limits.getMode() == CatalogMode.HIDE
-                        ? Response.HIDE
-                        : Response.CHALLENGE;
+        Response respone = limits == null || limits.getMode() == CatalogMode.HIDE ? Response.HIDE : Response.CHALLENGE;
         return new WrapperPolicy(AccessLevel.READ_WRITE, respone, limits);
     }
 
@@ -86,13 +83,13 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
     /**
      * Sorts wrapper policies from more to less restrictive limits.
      *
-     * <p>That is, first comparison order is {@link #getAccessLevel() getAccessLevel() ==} {@link
-     * AccessLevel#HIDDEN HIDDEN}/{@link AccessLevel#METADATA METADATA}/ {@link
-     * AccessLevel#READ_ONLY READ_ONLY}/{@link AccessLevel#READ_WRITE READ_WRITE}.
+     * <p>That is, first comparison order is {@link #getAccessLevel() getAccessLevel() ==} {@link AccessLevel#HIDDEN
+     * HIDDEN}/{@link AccessLevel#METADATA METADATA}/ {@link AccessLevel#READ_ONLY
+     * READ_ONLY}/{@link AccessLevel#READ_WRITE READ_WRITE}.
      *
-     * <p>Second comparison criteria is {@link AccessLimits#getMode() getLimits().getMode()} {@code
-     * == } {@link CatalogMode#HIDE HIDE}/ {@link CatalogMode#CHALLENGE CHALLENGE}/ {@link
-     * CatalogMode#MIXED MIXED}/{@link #getLimits() getLimits() == null} (i.e. no limits)
+     * <p>Second comparison criteria is {@link AccessLimits#getMode() getLimits().getMode()} {@code == }
+     * {@link CatalogMode#HIDE HIDE}/ {@link CatalogMode#CHALLENGE CHALLENGE}/ {@link CatalogMode#MIXED
+     * MIXED}/{@link #getLimits() getLimits() == null} (i.e. no limits)
      *
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
@@ -112,12 +109,6 @@ public class WrapperPolicy implements Serializable, Comparable<WrapperPolicy> {
 
     @Override
     public String toString() {
-        return "WrapperPolicy [level="
-                + level
-                + ", response="
-                + response
-                + ", limits="
-                + limits
-                + "]";
+        return "WrapperPolicy [level=" + level + ", response=" + response + ", limits=" + limits + "]";
     }
 }

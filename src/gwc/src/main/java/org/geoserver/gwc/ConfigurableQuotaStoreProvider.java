@@ -24,8 +24,8 @@ import org.geowebcache.layer.TileLayer;
 import org.springframework.context.ApplicationContext;
 
 /**
- * A quota store whose store is a {@link ConfigurableQuotaStore} whose delegate can be reloaded by
- * calling onto {@link #reloadQuotaStore()}
+ * A quota store whose store is a {@link ConfigurableQuotaStore} whose delegate can be reloaded by calling onto
+ * {@link #reloadQuotaStore()}
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -41,20 +41,16 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
     private JDBCConfigurationStorage jdbcConfigManager;
 
     public ConfigurableQuotaStoreProvider(
-            ConfigLoader loader,
-            TilePageCalculator calculator,
-            JDBCConfigurationStorage jdbcConfigManager) {
+            ConfigLoader loader, TilePageCalculator calculator, JDBCConfigurationStorage jdbcConfigManager) {
         super(loader);
         this.calculator = calculator;
         this.jdbcConfigManager = jdbcConfigManager;
 
-        boolean disabled =
-                Boolean.parseBoolean(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED));
+        boolean disabled = Boolean.parseBoolean(GeoServerExtensions.getProperty(GWC_DISKQUOTA_DISABLED));
         if (disabled) {
-            LOGGER.warning(
-                    " -- Found environment variable "
-                            + GWC_DISKQUOTA_DISABLED
-                            + " set to true. DiskQuotaMonitor is disabled.");
+            LOGGER.warning(" -- Found environment variable "
+                    + GWC_DISKQUOTA_DISABLED
+                    + " set to true. DiskQuotaMonitor is disabled.");
         }
         this.diskQuotaEnabled = !disabled;
     }
@@ -88,8 +84,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
             } catch (Exception e) {
                 LOGGER.log(
                         Level.SEVERE,
-                        "Failed to get a quota store, "
-                                + "the GeoWebCache disk quota subsystem will stop working now",
+                        "Failed to get a quota store, " + "the GeoWebCache disk quota subsystem will stop working now",
                         e);
                 this.exception = e;
                 store = new DummyQuotaStore(calculator);
@@ -113,10 +108,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
                     try {
                         oldStore.close();
                     } catch (Exception e) {
-                        LOGGER.log(
-                                Level.SEVERE,
-                                "An error occurred while closing up the previous quota store",
-                                e);
+                        LOGGER.log(Level.SEVERE, "An error occurred while closing up the previous quota store", e);
                     }
                 }
             }
@@ -136,8 +128,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
     }
 
     @Override
-    protected QuotaStore getQuotaStoreByName(String quotaStoreName)
-            throws ConfigurationException, IOException {
+    protected QuotaStore getQuotaStoreByName(String quotaStoreName) throws ConfigurationException, IOException {
         if ("JDBC".equals(quotaStoreName)) {
             return loadJDBCQuotaStore(applicationContext, quotaStoreName);
         } else {
@@ -145,8 +136,7 @@ public class ConfigurableQuotaStoreProvider extends QuotaStoreProvider {
         }
     }
 
-    private QuotaStore loadJDBCQuotaStore(
-            ApplicationContext applicationContext, String quotaStoreName)
+    private QuotaStore loadJDBCQuotaStore(ApplicationContext applicationContext, String quotaStoreName)
             throws ConfigurationException, IOException {
         // special case for the JDBC quota store, allows us to unencrypt passwords before
         // creating the GUI

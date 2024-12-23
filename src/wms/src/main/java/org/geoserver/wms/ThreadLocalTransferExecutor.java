@@ -13,9 +13,8 @@ import java.util.concurrent.TimeUnit;
 import org.geoserver.threadlocals.ThreadLocalsTransfer;
 
 /**
- * An equivalent to {@link Executors#newCachedThreadPool()} that will also perform thread locals
- * transfer using Spring registered {@link org.geoserver.threadlocals.ThreadLocalTransfer} when
- * starting a new task
+ * An equivalent to {@link Executors#newCachedThreadPool()} that will also perform thread locals transfer using Spring
+ * registered {@link org.geoserver.threadlocals.ThreadLocalTransfer} when starting a new task
  */
 class ThreadLocalTransferExecutor extends ThreadPoolExecutor {
 
@@ -26,43 +25,40 @@ class ThreadLocalTransferExecutor extends ThreadPoolExecutor {
     @Override
     public Future<?> submit(Runnable task) {
         ThreadLocalsTransfer threadLocalTransfer = new ThreadLocalsTransfer();
-        return super.submit(
-                () -> {
-                    threadLocalTransfer.apply();
-                    try {
-                        task.run();
-                    } finally {
-                        threadLocalTransfer.cleanup();
-                    }
-                });
+        return super.submit(() -> {
+            threadLocalTransfer.apply();
+            try {
+                task.run();
+            } finally {
+                threadLocalTransfer.cleanup();
+            }
+        });
     }
 
     @Override
     public <T> Future<T> submit(Callable<T> task) {
         ThreadLocalsTransfer threadLocalTransfer = new ThreadLocalsTransfer();
-        return super.submit(
-                () -> {
-                    threadLocalTransfer.apply();
-                    try {
-                        return task.call();
-                    } finally {
-                        threadLocalTransfer.cleanup();
-                    }
-                });
+        return super.submit(() -> {
+            threadLocalTransfer.apply();
+            try {
+                return task.call();
+            } finally {
+                threadLocalTransfer.cleanup();
+            }
+        });
     }
 
     @Override
     public <T> Future<T> submit(Runnable task, T result) {
         ThreadLocalsTransfer threadLocalTransfer = new ThreadLocalsTransfer();
-        return super.submit(
-                () -> {
-                    threadLocalTransfer.apply();
-                    try {
-                        task.run();
-                        return result;
-                    } finally {
-                        threadLocalTransfer.cleanup();
-                    }
-                });
+        return super.submit(() -> {
+            threadLocalTransfer.apply();
+            try {
+                task.run();
+                return result;
+            } finally {
+                threadLocalTransfer.cleanup();
+            }
+        });
     }
 }

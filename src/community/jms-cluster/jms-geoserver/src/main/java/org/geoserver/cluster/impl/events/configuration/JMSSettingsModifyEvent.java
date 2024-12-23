@@ -11,34 +11,26 @@ import org.geoserver.cluster.impl.events.JMSModifyEvent;
 import org.geoserver.config.SettingsInfo;
 
 /**
- * This class defines an event for modified settings. This settings represents metadata information
- * for the GeoServer instance or for a specific workspace. By default an workspace doesn't have any
- * settings and use GeoServer global settings
+ * This class defines an event for modified settings. This settings represents metadata information for the GeoServer
+ * instance or for a specific workspace. By default an workspace doesn't have any settings and use GeoServer global
+ * settings
  *
  * <p>
  *
- * <p>A settings modified event can represent three situations, the settings were added, removed or
- * the settings were modified.
+ * <p>A settings modified event can represent three situations, the settings were added, removed or the settings were
+ * modified.
  */
 public class JMSSettingsModifyEvent extends JMSModifyEvent<SettingsInfo> {
 
     private static final long serialVersionUID = 1L;
 
     public JMSSettingsModifyEvent(
-            SettingsInfo source,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo source, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         this(source, propertyNames, oldValues, newValues, JMSEventType.MODIFIED);
     }
 
     public JMSSettingsModifyEvent(SettingsInfo source, JMSEventType eventType) {
-        this(
-                source,
-                Collections.emptyList(),
-                Collections.emptyList(),
-                Collections.emptyList(),
-                eventType);
+        this(source, Collections.emptyList(), Collections.emptyList(), Collections.emptyList(), eventType);
     }
 
     public JMSSettingsModifyEvent(

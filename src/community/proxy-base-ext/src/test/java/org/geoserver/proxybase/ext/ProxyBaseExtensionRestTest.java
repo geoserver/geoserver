@@ -34,8 +34,7 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void getGetRulesJSON() throws Exception {
-        JSONObject json =
-                (JSONObject) getAsJSON("/rest/proxy-base-ext/rules.json", "application/json", 200);
+        JSONObject json = (JSONObject) getAsJSON("/rest/proxy-base-ext/rules.json", "application/json", 200);
         JSONObject wrapper = json.getJSONObject("ProxyBaseExtensionRules");
         assertNotNull(wrapper);
         JSONArray array = wrapper.getJSONArray("ProxyBaseExtensionRule");
@@ -68,12 +67,11 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPutRuleXML() throws Exception {
-        String ruleXML =
-                "<ProxyBaseExtensionRule id=\"1\"\n"
-                        + "          activated=\"true\"\n"
-                        + "          position=\"5\"\n"
-                        + "          matcher=\"foobar\"\n"
-                        + "          transformer=\"abc='$2'\"/>";
+        String ruleXML = "<ProxyBaseExtensionRule id=\"1\"\n"
+                + "          activated=\"true\"\n"
+                + "          position=\"5\"\n"
+                + "          matcher=\"foobar\"\n"
+                + "          transformer=\"abc='$2'\"/>";
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/proxy-base-ext/rules/1", ruleXML, "application/xml");
         assertEquals(200, response.getStatus());
@@ -90,21 +88,18 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPutRuleJson() throws Exception {
-        String ruleJSON =
-                "{\"ProxyBaseExtensionRule\": {\n"
-                        + "  \"id\": 0,\n"
-                        + "  \"activated\": \"true\",\n"
-                        + "  \"position\": 5,\n"
-                        + "  \"transformer\": \"abc='$2'\",\n"
-                        + "  \"matcher\": \"foobar\"\n"
-                        + "}}";
+        String ruleJSON = "{\"ProxyBaseExtensionRule\": {\n"
+                + "  \"id\": 0,\n"
+                + "  \"activated\": \"true\",\n"
+                + "  \"position\": 5,\n"
+                + "  \"transformer\": \"abc='$2'\",\n"
+                + "  \"matcher\": \"foobar\"\n"
+                + "}}";
         MockHttpServletResponse response =
                 putAsServletResponse("/rest/proxy-base-ext/rules/0", ruleJSON, "application/json");
         assertEquals(200, response.getStatus());
 
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON("/rest/proxy-base-ext/rules/0.json", "application/json", 200);
+        JSONObject json = (JSONObject) getAsJSON("/rest/proxy-base-ext/rules/0.json", "application/json", 200);
 
         // checking it matches the current serialization
         JSONObject param = json.getJSONObject("ProxyBaseExtensionRule");
@@ -117,12 +112,11 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
 
     @Test
     public void testPostRuleXML() throws Exception {
-        String ruleXML =
-                "<ProxyBaseExtensionRule \n"
-                        + "          activated=\"true\"\n"
-                        + "          position=\"5\"\n"
-                        + "          matcher=\"foobar\"\n"
-                        + "          transformer=\"abc='$2'\"/>";
+        String ruleXML = "<ProxyBaseExtensionRule \n"
+                + "          activated=\"true\"\n"
+                + "          position=\"5\"\n"
+                + "          matcher=\"foobar\"\n"
+                + "          transformer=\"abc='$2'\"/>";
         MockHttpServletResponse response =
                 postAsServletResponse("/rest/proxy-base-ext/rules", ruleXML, "application/xml");
         checkCreateWithPost(response);
@@ -131,8 +125,7 @@ public class ProxyBaseExtensionRestTest extends ProxyBaseExtensionTestSupport {
     private void checkCreateWithPost(MockHttpServletResponse response) throws Exception {
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
         String location = response.getHeader(HttpHeaders.LOCATION);
-        Pattern pattern =
-                Pattern.compile("http://localhost:8080/geoserver/rest/proxy-base-ext/rules/(.+)");
+        Pattern pattern = Pattern.compile("http://localhost:8080/geoserver/rest/proxy-base-ext/rules/(.+)");
         Matcher matcher = pattern.matcher(location);
         assertTrue(matcher.matches());
         String id = matcher.group(1);

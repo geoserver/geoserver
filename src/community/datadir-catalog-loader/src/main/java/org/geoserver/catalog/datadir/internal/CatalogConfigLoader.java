@@ -59,10 +59,7 @@ class CatalogConfigLoader {
     }
 
     public CatalogConfigLoader(
-            CatalogImpl catalog,
-            DataDirectoryWalker fileWalk,
-            XStreamLoader xstreamLoader,
-            ExecutorService executor) {
+            CatalogImpl catalog, DataDirectoryWalker fileWalk, XStreamLoader xstreamLoader, ExecutorService executor) {
         requireNonNull(catalog);
         requireNonNull(fileWalk);
         requireNonNull(xstreamLoader);
@@ -129,11 +126,9 @@ class CatalogConfigLoader {
 
     private void loadStore(StoreDirectory storeDir) {
         Optional<StoreInfo> store = depersist(storeDir.storeFile);
-        store.flatMap(this::save)
-                .ifPresent(
-                        storeInfo -> {
-                            loadLayers(storeDir.layers());
-                        });
+        store.flatMap(this::save).ifPresent(storeInfo -> {
+            loadLayers(storeDir.layers());
+        });
     }
 
     private void loadLayers(Stream<LayerDirectory> layers) {
@@ -179,10 +174,9 @@ class CatalogConfigLoader {
             saver.accept(info);
         } catch (Exception e) {
             final String name = (String) OwsUtils.get(info, "name");
-            LOGGER.log(
-                    Level.WARNING,
-                    "Error saving {0} {1}: {2}",
-                    new Object[] {info.getClass().getSimpleName(), name, e.getMessage()});
+            LOGGER.log(Level.WARNING, "Error saving {0} {1}: {2}", new Object[] {
+                info.getClass().getSimpleName(), name, e.getMessage()
+            });
             return Optional.empty();
         }
         return Optional.of(info);
@@ -214,23 +208,15 @@ class CatalogConfigLoader {
         int layers = catalog.count(LayerInfo.class, Filter.INCLUDE);
         int layergroups = catalog.count(LayerGroupInfo.class, Filter.INCLUDE);
         int styles = catalog.count(StyleInfo.class, Filter.INCLUDE);
-        LOGGER.info(
-                String.format(
-                        "%s:\n\t"
-                                + "workspaces: %,d\n\t"
-                                + "namespaces: %,d\n\t"
-                                + "stores: %,d\n\t"
-                                + "resources: %,d\n\t"
-                                + "layers: %,d\n\t"
-                                + "layerGroups: %,d\n\t"
-                                + "styles: %,d\n",
-                        loaderName,
-                        workspaces,
-                        namespaces,
-                        stores,
-                        resources,
-                        layers,
-                        layergroups,
-                        styles));
+        LOGGER.info(String.format(
+                "%s:\n\t"
+                        + "workspaces: %,d\n\t"
+                        + "namespaces: %,d\n\t"
+                        + "stores: %,d\n\t"
+                        + "resources: %,d\n\t"
+                        + "layers: %,d\n\t"
+                        + "layerGroups: %,d\n\t"
+                        + "styles: %,d\n",
+                loaderName, workspaces, namespaces, stores, resources, layers, layergroups, styles));
     }
 }

@@ -60,8 +60,7 @@ class FeatureTypeValidator {
 
             SimpleFeatureType ft = ds.getSchema(typeName);
             Map<String, AttributeDescriptor> nativeAttributes =
-                    ft.getAttributeDescriptors().stream()
-                            .collect(Collectors.toMap(ad -> ad.getLocalName(), ad -> ad));
+                    ft.getAttributeDescriptors().stream().collect(Collectors.toMap(ad -> ad.getLocalName(), ad -> ad));
 
             // validate each attribute
             Set<String> names = new HashSet<>();
@@ -71,24 +70,19 @@ class FeatureTypeValidator {
                 String name = attribute.getName();
                 if (names.contains(name)) {
                     throw new ValidationException(
-                            "multiAttributeSameName",
-                            "Found multiple definitions for output attribute {0}",
-                            name);
+                            "multiAttributeSameName", "Found multiple definitions for output attribute {0}", name);
                 }
                 names.add(name);
             }
 
         } catch (IOException e) {
-            throw new IllegalArgumentException(
-                    "Failed to access data source to check attribute customization", e);
+            throw new IllegalArgumentException("Failed to access data source to check attribute customization", e);
         } finally {
             if (temporaryVirtualTable && jds != null) jds.dropVirtualTable(typeName);
         }
     }
 
-    /**
-     * Creates a temporary virtual table in the data store, returns the name of the virtual table
-     */
+    /** Creates a temporary virtual table in the data store, returns the name of the virtual table */
     private String setupTempVirtualTable(VirtualTable vt, JDBCDataStore ds) throws IOException {
         String temporaryName = null;
         do {
@@ -100,18 +94,14 @@ class FeatureTypeValidator {
     }
 
     private void validate(
-            AttributeTypeInfo attribute,
-            SimpleFeatureType schema,
-            Map<String, AttributeDescriptor> nativeAttributes) {
+            AttributeTypeInfo attribute, SimpleFeatureType schema, Map<String, AttributeDescriptor> nativeAttributes) {
         try {
             if (attribute.getName() == null || attribute.getName().isEmpty()) {
-                throw new ValidationException(
-                        "attributeNullName", "Attribute name must not be null or empty");
+                throw new ValidationException("attributeNullName", "Attribute name must not be null or empty");
             }
 
             if (attribute.getSource() == null || attribute.getSource().isEmpty()) {
-                throw new ValidationException(
-                        "attributeNullSource", "Attribute source must not be null or empty");
+                throw new ValidationException("attributeNullSource", "Attribute source must not be null or empty");
             }
 
             // parses the CQL expression, will throw exception if invalid
@@ -139,7 +129,8 @@ class FeatureTypeValidator {
                 if (!Object.class.equals(expressionType)
                         && !expressionType.equals(binding)
                         && !binding.equals(String.class) // can do even without a Converter
-                        && Converters.getConverterFactories(expressionType, binding).isEmpty()) {
+                        && Converters.getConverterFactories(expressionType, binding)
+                                .isEmpty()) {
                     throw new ValidationException(
                             "attributeInvalidConversion",
                             "Issue found in attribute {0}, unable to convert from native type, "
@@ -151,10 +142,7 @@ class FeatureTypeValidator {
             }
         } catch (CQLException e) {
             throw new ValidationException(
-                    "attributeInvalidCQL",
-                    "Invalid CQL for {0} source. {1}",
-                    attribute.getName(),
-                    e.getMessage());
+                    "attributeInvalidCQL", "Invalid CQL for {0} source. {1}", attribute.getName(), e.getMessage());
         }
     }
 }

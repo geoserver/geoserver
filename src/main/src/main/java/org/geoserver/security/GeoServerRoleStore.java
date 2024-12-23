@@ -9,8 +9,8 @@ import java.io.IOException;
 import org.geoserver.security.impl.GeoServerRole;
 
 /**
- * A class implementing this interface is capable of storing roles to a backend. The store always
- * operates on a {@link GeoServerRoleService} object.
+ * A class implementing this interface is capable of storing roles to a backend. The store always operates on a
+ * {@link GeoServerRoleService} object.
  *
  * @author christian
  */
@@ -43,10 +43,7 @@ public interface GeoServerRoleStore extends GeoServerRoleService {
     /** Disassociates a role from a user. */
     void disAssociateRoleFromUser(GeoServerRole role, String username) throws IOException;
 
-    /**
-     * Synchronizes all changes with the backend store. On success, the associated service object
-     * should be reloaded
-     */
+    /** Synchronizes all changes with the backend store. On success, the associated service object should be reloaded */
     abstract void store() throws IOException;
 
     /**
@@ -57,8 +54,8 @@ public interface GeoServerRoleStore extends GeoServerRoleService {
     boolean isModified();
 
     /**
-     * Sets the parent role, the method must check if parentRole is not equal to role and if
-     * parentRole is not contained in the descendants of role
+     * Sets the parent role, the method must check if parentRole is not equal to role and if parentRole is not contained
+     * in the descendants of role
      *
      * <p>This code sequence will do the job <code>
      *   RoleHierarchyHelper helper = new RoleHierarchyHelper(getParentMappings());

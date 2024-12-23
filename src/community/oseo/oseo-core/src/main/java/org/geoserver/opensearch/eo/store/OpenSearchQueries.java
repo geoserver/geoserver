@@ -20,8 +20,8 @@ public class OpenSearchQueries {
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
     /**
-     * Returns all the simple properties of products, plus the collection, so that it can be used in
-     * the templates. For the time being, skips the OGC links thumbnails and the like.
+     * Returns all the simple properties of products, plus the collection, so that it can be used in the templates. For
+     * the time being, skips the OGC links thumbnails and the like.
      */
     public static List<PropertyName> getProductProperties(OpenSearchAccess osa) throws IOException {
         Collection<PropertyDescriptor> descriptors =
@@ -38,7 +38,6 @@ public class OpenSearchQueries {
 
     private static boolean isSimple(PropertyDescriptor pd) {
         Class<?> binding = pd.getType().getBinding();
-        return !(List.class.isAssignableFrom(binding))
-                && !(FeatureType.class.isAssignableFrom(binding));
+        return !(List.class.isAssignableFrom(binding)) && !(FeatureType.class.isAssignableFrom(binding));
     }
 }

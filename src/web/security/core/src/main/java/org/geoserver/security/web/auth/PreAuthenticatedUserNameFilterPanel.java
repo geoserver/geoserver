@@ -28,8 +28,7 @@ import org.geoserver.web.wicket.HelpLink;
  *
  * @author mcr
  */
-public abstract class PreAuthenticatedUserNameFilterPanel<
-                T extends PreAuthenticatedUserNameFilterConfig>
+public abstract class PreAuthenticatedUserNameFilterPanel<T extends PreAuthenticatedUserNameFilterConfig>
         extends AuthenticationFilterPanel<T> {
 
     protected DropDownChoice<RoleSource> roleSourceChoice;
@@ -43,17 +42,16 @@ public abstract class PreAuthenticatedUserNameFilterPanel<
 
         roleSourceChoice.setNullValid(false);
 
-        roleSourceChoice.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Panel p = getRoleSourcePanel(roleSourceChoice.getModelObject());
+        roleSourceChoice.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Panel p = getRoleSourcePanel(roleSourceChoice.getModelObject());
 
-                        WebMarkupContainer c = (WebMarkupContainer) get("container");
-                        c.addOrReplace(p);
-                        target.add(c);
-                    }
-                });
+                WebMarkupContainer c = (WebMarkupContainer) get("container");
+                c.addOrReplace(p);
+                target.add(c);
+            }
+        });
 
         WebMarkupContainer container = new WebMarkupContainer("container");
         add(container.setOutputMarkupId(true));

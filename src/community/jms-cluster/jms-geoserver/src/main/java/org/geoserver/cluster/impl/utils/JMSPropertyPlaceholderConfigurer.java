@@ -18,15 +18,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.core.io.Resource;
 
-public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer
-        implements InitializingBean {
+public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigurer implements InitializingBean {
 
     private final JMSConfiguration config;
 
     private final Resource defaults;
 
-    public JMSPropertyPlaceholderConfigurer(Resource defaultFile, JMSConfiguration config)
-            throws IOException {
+    public JMSPropertyPlaceholderConfigurer(Resource defaultFile, JMSConfiguration config) throws IOException {
         if (!defaultFile.exists()) {
             throw new IOException("Unable to locate the default properties file at:" + defaultFile);
         }
@@ -40,12 +38,10 @@ public class JMSPropertyPlaceholderConfigurer extends PropertyPlaceholderConfigu
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        org.geoserver.platform.resource.Resource properties =
-                Resources.fromPath(
-                        config.getConfiguration(
-                                        EmbeddedBrokerConfiguration.EMBEDDED_BROKER_PROPERTIES_KEY)
-                                .toString(),
-                        JMSConfiguration.getConfigPathDir());
+        org.geoserver.platform.resource.Resource properties = Resources.fromPath(
+                config.getConfiguration(EmbeddedBrokerConfiguration.EMBEDDED_BROKER_PROPERTIES_KEY)
+                        .toString(),
+                JMSConfiguration.getConfigPathDir());
         if (properties.getType() != Type.RESOURCE) {
             // copy the defaults
             try (InputStream inputStream = defaults.getInputStream()) {

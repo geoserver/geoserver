@@ -68,8 +68,7 @@ public class JDBCLoaderProperties extends Properties {
         }
 
         Resource resource = Resources.fromPath(initScript, factory.getDataDir());
-        Preconditions.checkState(
-                Resources.exists(resource), "Init script does not exist: " + resource.path());
+        Preconditions.checkState(Resources.exists(resource), "Init script does not exist: " + resource.path());
 
         return resource;
     }
@@ -87,9 +86,7 @@ public class JDBCLoaderProperties extends Properties {
     }
 
     String fillInPlaceholders(String value) {
-        return value != null
-                ? value.replace("${GEOSERVER_DATA_DIR}", factory.getDataDirStr())
-                : value;
+        return value != null ? value.replace("${GEOSERVER_DATA_DIR}", factory.getDataDirStr()) : value;
     }
 
     public Optional<String> getJndiName() {

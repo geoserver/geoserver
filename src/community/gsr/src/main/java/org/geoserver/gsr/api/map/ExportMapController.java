@@ -46,26 +46,18 @@ public class ExportMapController extends AbstractGSRController {
     public ExportMap exportMap(@PathVariable String workspaceName, HttpServletRequest request) {
         String requestURL = request.getRequestURL().toString();
         String requestParameters = request.getQueryString();
-        String updatedRequestParameters =
-                requestParameters.replaceAll("\\bf=[^&]+", "f=image&format=png");
+        String updatedRequestParameters = requestParameters.replaceAll("\\bf=[^&]+", "f=image&format=png");
 
         return new ExportMap(requestURL + updatedRequestParameters);
     }
 
-    @GetMapping(
-            path = "/gsr/services/{workspaceName}/MapServer/export",
-            name = "MapServerExportMapImage")
-    public void exportMap(
-            @PathVariable String workspaceName,
-            HttpServletRequest request,
-            HttpServletResponse response)
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/export", name = "MapServerExportMapImage")
+    public void exportMap(@PathVariable String workspaceName, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
         this.exportMapImage(workspaceName, request, response);
     }
 
-    @GetMapping(
-            path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export",
-            name = "MapServerExportLayerMap")
+    @GetMapping(path = "/gsr/services/{workspaceName}/MapServer/{layerId}/export", name = "MapServerExportLayerMap")
     public void exportMapOfLayer(
             @PathVariable String workspaceName,
             @PathVariable String layerId,
@@ -76,17 +68,15 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     /**
-     * All of the capitalized fallbacks you see in this are for OpenLayers compat, which feels the
-     * need to capitalize EVERY REQUEST PARAMETER. Read RFC 3986 yall query params is case
-     * sensitive.
+     * All of the capitalized fallbacks you see in this are for OpenLayers compat, which feels the need to capitalize
+     * EVERY REQUEST PARAMETER. Read RFC 3986 yall query params is case sensitive.
      *
      * @param workspaceName the workspace name
      * @param request the request
      * @param response the response
      * @throws Exception when an exception occurs
      */
-    private void exportMapImage(
-            String workspaceName, HttpServletRequest request, HttpServletResponse response)
+    private void exportMapImage(String workspaceName, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
 
         String layers = request.getParameter("layers");
@@ -97,10 +87,7 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     private void exportMapImageForLayers(
-            String workspaceName,
-            HttpServletRequest request,
-            HttpServletResponse response,
-            String layers)
+            String workspaceName, HttpServletRequest request, HttpServletResponse response, String layers)
             throws Exception {
 
         Map<String, String[]> parameterMap = request.getParameterMap();
@@ -109,18 +96,13 @@ public class ExportMapController extends AbstractGSRController {
         requestProxy.getMutableParams().put("service", new String[] {"WMS"});
         requestProxy.getMutableParams().put("request", new String[] {"GetMap"});
 
-        requestProxy
-                .getMutableParams()
-                .put("layers", new String[] {translateLayersParam(layers, workspaceName)});
+        requestProxy.getMutableParams().put("layers", new String[] {translateLayersParam(layers, workspaceName)});
 
         String format = parameterMap.getOrDefault("format", parameterMap.get("FORMAT"))[0];
         requestProxy.getMutableParams().put("format", translateImageFormatParam(format));
 
         String imageSR =
-                parameterMap
-                        .getOrDefault(
-                                "imageSR", parameterMap.getOrDefault("IMAGESR", new String[] {""}))[
-                        0];
+                parameterMap.getOrDefault("imageSR", parameterMap.getOrDefault("IMAGESR", new String[] {""}))[0];
         requestProxy.getMutableParams().put("crs", translateImageSRParam(imageSR));
 
         String sizeParam = parameterMap.getOrDefault("size", parameterMap.get("SIZE"))[0];
@@ -155,8 +137,7 @@ public class ExportMapController extends AbstractGSRController {
     }
 
     /**
-     * Translate the ArcGis image SR parameter into CRS compatible parameter. Only supports EPSG for
-     * now.
+     * Translate the ArcGis image SR parameter into CRS compatible parameter. Only supports EPSG for now.
      *
      * @param imageSR the image SR parameter
      * @return an EPSG code matching that parameter
@@ -182,24 +163,19 @@ public class ExportMapController extends AbstractGSRController {
             String[] layersSpecAndLayers = layers.split(":");
             if (layersSpecAndLayers.length < 2) {
                 throw new IllegalArgumentException(
-                        "Malformed layers spec. "
-                                + "Expected [show | hide | include | exclude]:layerId1,layerId2");
+                        "Malformed layers spec. " + "Expected [show | hide | include | exclude]:layerId1,layerId2");
             }
 
             String layerSpec = layersSpecAndLayers[0];
             if (!"show".equals(layerSpec)) {
-                throw new UnsupportedOperationException(
-                        "Only SHOW layer spec is currently supported");
+                throw new UnsupportedOperationException("Only SHOW layer spec is currently supported");
             }
 
             // We look up each layer individually to get its name. This has the potential to be slow
             // in non FS based
             // catalogs
             return Arrays.stream(layersSpecAndLayers[1].split(","))
-                    .map(
-                            layerName ->
-                                    LayersAndTables.integerIdToGeoserverLayerName(
-                                            catalog, layerName, workspaceName))
+                    .map(layerName -> LayersAndTables.integerIdToGeoserverLayerName(catalog, layerName, workspaceName))
                     .collect(Collectors.joining(","));
         } else {
             return null;
@@ -209,13 +185,11 @@ public class ExportMapController extends AbstractGSRController {
     private String getAllLayersInEsriFormat(String workspaceName) {
         return "show:"
                 + catalog.getLayers().stream()
-                        .filter(
-                                li ->
-                                        li.getResource()
-                                                .getStore()
-                                                .getWorkspace()
-                                                .getName()
-                                                .equals(workspaceName))
+                        .filter(li -> li.getResource()
+                                .getStore()
+                                .getWorkspace()
+                                .getName()
+                                .equals(workspaceName))
                         .map(LayerInfo::getName)
                         .collect(Collectors.joining(","));
     }

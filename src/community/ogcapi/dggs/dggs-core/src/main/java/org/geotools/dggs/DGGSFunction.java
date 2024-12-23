@@ -19,10 +19,7 @@ package org.geotools.dggs;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.factory.CommonFactoryFinder;
 
-/**
- * Implemented by functions needing a {@link DGGSInstance} reference to work, and used by {@link
- * DGGSFilterVisitor}.
- */
+/** Implemented by functions needing a {@link DGGSInstance} reference to work, and used by {@link DGGSFilterVisitor}. */
 public interface DGGSFunction {
 
     public static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();

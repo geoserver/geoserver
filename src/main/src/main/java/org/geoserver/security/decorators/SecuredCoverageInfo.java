@@ -31,8 +31,7 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
 
     @Override
     public GridCoverage getGridCoverage(ProgressListener listener, Hints hints) throws IOException {
-        if (policy.level == AccessLevel.METADATA)
-            throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        if (policy.level == AccessLevel.METADATA) throw SecureCatalogImpl.unauthorizedAccess(this.getName());
 
         // go through the secured reader
         GridCoverageReader reader = getGridCoverageReader(listener, hints);
@@ -40,11 +39,9 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
     }
 
     @Override
-    public GridCoverage getGridCoverage(
-            ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
+    public GridCoverage getGridCoverage(ProgressListener listener, ReferencedEnvelope envelope, Hints hints)
             throws IOException {
-        if (policy.level == AccessLevel.METADATA)
-            throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        if (policy.level == AccessLevel.METADATA) throw SecureCatalogImpl.unauthorizedAccess(this.getName());
 
         // go through the secured reader
         GridCoverageReader reader = getGridCoverageReader(listener, hints);
@@ -52,8 +49,7 @@ public class SecuredCoverageInfo extends DecoratingCoverageInfo {
     }
 
     @Override
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
-            throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException {
         Request request = Dispatcher.REQUEST.get();
         if (policy.level == AccessLevel.METADATA
                 && (request == null

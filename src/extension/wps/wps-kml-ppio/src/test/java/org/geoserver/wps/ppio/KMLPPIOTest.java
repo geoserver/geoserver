@@ -79,16 +79,12 @@ public class KMLPPIOTest extends GeoServerTestSupport {
         assertEquals(
                 "-92.99887316950249,4.523788751137377 -92.99842243632469,4.524241087719057",
                 xpath.evaluate("//kml:LineString/kml:coordinates", dom));
-        assertEquals(
-                "t0001 ",
-                xpath.evaluate(
-                        "//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
+        assertEquals("t0001 ", xpath.evaluate("//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
     }
 
     @Test
     public void testEncodePolygon() throws Exception {
-        FeatureTypeInfo fti =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection) fti.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -99,8 +95,7 @@ public class KMLPPIOTest extends GeoServerTestSupport {
         assertEquals(
                 "-1.0,5.0 2.0,5.0 2.0,2.0 -1.0,2.0 -1.0,5.0",
                 xpath.evaluate(
-                        "//kml:Placemark[@id='BasicPolygons.1107531493644']//kml:LinearRing/kml:coordinates",
-                        dom));
+                        "//kml:Placemark[@id='BasicPolygons.1107531493644']//kml:LinearRing/kml:coordinates", dom));
     }
 
     @Test
@@ -114,17 +109,9 @@ public class KMLPPIOTest extends GeoServerTestSupport {
         // print(dom);
         checkValidationErorrs(dom, "./src/test/resources/org/geoserver/wps/ppio/ogckml22.xsd");
         assertEquals(1, xpath.getMatchingNodes("//kml:Placemark", dom).getLength());
-        assertEquals(
-                "t0000",
-                xpath.evaluate(
-                        "//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
-        assertEquals(
-                "-92.99954926766114,4.52401492058674",
-                xpath.evaluate("//kml:Point/kml:coordinates", dom));
-        assertEquals(
-                "t0000",
-                xpath.evaluate(
-                        "//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
+        assertEquals("t0000", xpath.evaluate("//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
+        assertEquals("-92.99954926766114,4.52401492058674", xpath.evaluate("//kml:Point/kml:coordinates", dom));
+        assertEquals("t0000", xpath.evaluate("//kml:ExtendedData/kml:SchemaData/kml:SimpleData[@name='id']", dom));
     }
 
     @Test
@@ -138,8 +125,7 @@ public class KMLPPIOTest extends GeoServerTestSupport {
             // parsing should respect input order, using a ListFeatureCollection
             SimpleFeature poi = DataUtilities.first(pois);
             assertEquals(
-                    new WKTReader().read("POINT(-74.01046109936333 40.707587626256554)"),
-                    poi.getDefaultGeometry());
+                    new WKTReader().read("POINT(-74.01046109936333 40.707587626256554)"), poi.getDefaultGeometry());
             assertEquals("museam", poi.getAttribute("NAME"));
             assertEquals("pics/22037827-Ti.jpg", poi.getAttribute("THUMBNAIL"));
             assertEquals("pics/22037827-L.jpg", poi.getAttribute("MAINPAGE"));
@@ -148,9 +134,8 @@ public class KMLPPIOTest extends GeoServerTestSupport {
 
     @Test
     public void testDecodeXXE() throws Exception {
-        String kml =
-                "<!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///\" >]>"
-                        + "<kml><Placemark><name>&xxe;</name></Placemark></kml>";
+        String kml = "<!DOCTYPE foo [<!ENTITY xxe SYSTEM \"file:///\" >]>"
+                + "<kml><Placemark><name>&xxe;</name></Placemark></kml>";
         // StreamingParser returns null if the parsing fails
         assertNull(ppio.decode(kml));
     }

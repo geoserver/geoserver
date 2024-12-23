@@ -71,8 +71,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         return createUserGroupService(name, getPBEPasswordEncoder().getName());
     }
 
-    public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName)
-            throws Exception {
+    public GeoServerUserGroupService createUserGroupService(String name, String passwordEncoderName) throws Exception {
         MemoryUserGroupServiceConfigImpl config = getUserGroupConfg(name, passwordEncoderName);
         GeoServerUserGroupService service = new MemoryUserGroupService();
         service.setSecurityManager(GeoServerExtensions.bean(GeoServerSecurityManager.class));
@@ -81,8 +80,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         return service;
     }
 
-    public MemoryUserGroupServiceConfigImpl getUserGroupConfg(
-            String name, String passwordEncoderName) {
+    public MemoryUserGroupServiceConfigImpl getUserGroupConfg(String name, String passwordEncoderName) {
         MemoryUserGroupServiceConfigImpl config = new MemoryUserGroupServiceConfigImpl();
         config.setName(name);
         config.setClassName(MemoryUserGroupService.class.getName());
@@ -115,8 +113,10 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         copyFrom(service1, service2);
 
         // from plain to plain
-        service1 = createUserGroupService("copyFrom1", getPlainTextPasswordEncoder().getName());
-        service2 = createUserGroupService("copyTo1", getPlainTextPasswordEncoder().getName());
+        service1 = createUserGroupService(
+                "copyFrom1", getPlainTextPasswordEncoder().getName());
+        service2 =
+                createUserGroupService("copyTo1", getPlainTextPasswordEncoder().getName());
         copyFrom(service1, service2);
 
         // cypt to digest
@@ -125,18 +125,19 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         copyFrom(service1, service2);
 
         // digest to digest
-        service1 = createUserGroupService("copyFrom3", getDigestPasswordEncoder().getName());
+        service1 =
+                createUserGroupService("copyFrom3", getDigestPasswordEncoder().getName());
         service2 = createUserGroupService("copyTo3", getDigestPasswordEncoder().getName());
         copyFrom(service1, service2);
 
         // digest to crypt
-        service1 = createUserGroupService("copyFrom4", getDigestPasswordEncoder().getName());
+        service1 =
+                createUserGroupService("copyFrom4", getDigestPasswordEncoder().getName());
         service2 = createUserGroupService("copyTo4");
         copyFrom(service1, service2);
     }
 
-    protected void copyFrom(GeoServerUserGroupService service1, GeoServerUserGroupService service2)
-            throws Exception {
+    protected void copyFrom(GeoServerUserGroupService service1, GeoServerUserGroupService service2) throws Exception {
         GeoServerUserGroupStore store1 = createStore(service1);
         GeoServerUserGroupStore store2 = createStore(service2);
 
@@ -162,8 +163,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveSecurityConfig(config);
 
         String serviceName = "testEncrypt";
-        String cryptprefix =
-                getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
+        String cryptprefix = getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
 
         MemoryRoleServiceConfigImpl roleConfig = getRoleConfig(serviceName);
         MemoryUserGroupServiceConfigImpl ugConfig =
@@ -180,22 +180,22 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertTrue(roleFile.exists());
         assertTrue(ugFile.exists());
 
-        Document ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
+        Document ugDoc =
+                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
         Document roleDoc =
                 DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
-        Element roleElem =
-                (Element)
-                        roleDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
-        Element ugElem =
-                (Element) ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
+        Element roleElem = (Element) roleDoc.getDocumentElement()
+                .getElementsByTagName("toBeEncrypted")
+                .item(0);
+        Element ugElem = (Element)
+                ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
 
         // check file
         assertEquals(plainprefix + plainTextRole, roleElem.getTextContent());
         assertEquals(plainprefix + plainTextUserGroup, ugElem.getTextContent());
 
         // reload and check
-        MemoryRoleService roleService =
-                (MemoryRoleService) getSecurityManager().loadRoleService(serviceName);
+        MemoryRoleService roleService = (MemoryRoleService) getSecurityManager().loadRoleService(serviceName);
         assertEquals(plainTextRole, roleService.getToBeEncrypted());
         MemoryUserGroupService ugService =
                 (MemoryUserGroupService) getSecurityManager().loadUserGroupService(serviceName);
@@ -209,10 +209,11 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
 
         ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
         roleDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
-        roleElem =
-                (Element)
-                        roleDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
-        ugElem = (Element) ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
+        roleElem = (Element) roleDoc.getDocumentElement()
+                .getElementsByTagName("toBeEncrypted")
+                .item(0);
+        ugElem = (Element)
+                ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
 
         // check file
         assertTrue(roleElem.getTextContent().startsWith(cryptprefix));
@@ -230,8 +231,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         config.setConfigPasswordEncrypterName(getPBEPasswordEncoder().getName());
         getSecurityManager().saveSecurityConfig(config);
         String serviceName = "testEncrypt2";
-        String prefix =
-                getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
+        String prefix = getPBEPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
 
         MemoryRoleServiceConfigImpl roleConfig = getRoleConfig(serviceName);
         MemoryUserGroupServiceConfigImpl ugConfig =
@@ -248,22 +248,22 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         assertTrue(roleFile.exists());
         assertTrue(ugFile.exists());
 
-        Document ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
+        Document ugDoc =
+                DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
         Document roleDoc =
                 DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
-        Element roleElem =
-                (Element)
-                        roleDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
-        Element ugElem =
-                (Element) ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
+        Element roleElem = (Element) roleDoc.getDocumentElement()
+                .getElementsByTagName("toBeEncrypted")
+                .item(0);
+        Element ugElem = (Element)
+                ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
 
         // check file
         assertTrue(roleElem.getTextContent().startsWith(prefix));
         assertTrue(ugElem.getTextContent().startsWith(prefix));
 
         // reload and check
-        MemoryRoleService roleService =
-                (MemoryRoleService) getSecurityManager().loadRoleService(serviceName);
+        MemoryRoleService roleService = (MemoryRoleService) getSecurityManager().loadRoleService(serviceName);
         assertEquals(plainTextRole, roleService.getToBeEncrypted());
         MemoryUserGroupService ugService =
                 (MemoryUserGroupService) getSecurityManager().loadUserGroupService(serviceName);
@@ -272,18 +272,17 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         // SWITCH TO PLAINTEXT
 
         config.setConfigPasswordEncrypterName(getPlainTextPasswordEncoder().getName());
-        String plainprefix =
-                getPlainTextPasswordEncoder().getPrefix()
-                        + GeoServerPasswordEncoder.PREFIX_DELIMTER;
+        String plainprefix = getPlainTextPasswordEncoder().getPrefix() + GeoServerPasswordEncoder.PREFIX_DELIMTER;
         getSecurityManager().saveSecurityConfig(config);
         getSecurityManager().updateConfigurationFilesWithEncryptedFields();
 
         ugDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(ugFile);
         roleDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(roleFile);
-        roleElem =
-                (Element)
-                        roleDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
-        ugElem = (Element) ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
+        roleElem = (Element) roleDoc.getDocumentElement()
+                .getElementsByTagName("toBeEncrypted")
+                .item(0);
+        ugElem = (Element)
+                ugDoc.getDocumentElement().getElementsByTagName("toBeEncrypted").item(0);
 
         // check file
         // check file
@@ -306,8 +305,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         getSecurityManager().saveSecurityConfig(config);
 
         GeoServerConfigPersister cp =
-                new GeoServerConfigPersister(
-                        getResourceLoader(), new XStreamPersisterFactory().createXMLPersister());
+                new GeoServerConfigPersister(getResourceLoader(), new XStreamPersisterFactory().createXMLPersister());
         GeoServerResourcePersister rp = new GeoServerResourcePersister(cat);
         cat.addListener(cp);
         cat.addListener(rp);
@@ -333,8 +331,7 @@ public class MemoryUserDetailsServiceTest extends AbstractUserDetailsServiceTest
         //        dataStore.dispose();
 
         // MockData data = getTestData();
-        File store =
-                new File(getDataDirectory().root(), "workspaces/password/password/datastore.xml");
+        File store = new File(getDataDirectory().root(), "workspaces/password/password/datastore.xml");
         Document dom = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(store);
         XPath xpath = XPathFactory.newInstance().newXPath();
         String encrypted = xpath.evaluate("//entry[@key='passwd']", dom.getDocumentElement());

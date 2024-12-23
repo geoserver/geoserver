@@ -24,8 +24,7 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(TurboJPEGMapResponse.class.toString());
 
-    private static final boolean TURBO_JPEG_LIB_AVAILABLE =
-            TurboJpegUtilities.isTurboJpegAvailable();
+    private static final boolean TURBO_JPEG_LIB_AVAILABLE = TurboJpegUtilities.isTurboJpegAvailable();
 
     private static final boolean DISABLE_TURBO = Boolean.getBoolean("disable.turbojpeg");
 
@@ -47,8 +46,7 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
      *
      * <p>We should soon support multipage tiff.
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, false, false);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, false, false);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/jpeg";
@@ -60,8 +58,7 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
         fallback = new JPEGMapResponse(wms);
         if (!TURBO_JPEG_LIB_AVAILABLE) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning(
-                        "The turbo jpeg encoder is not available, check the native libs installation");
+                LOGGER.warning("The turbo jpeg encoder is not available, check the native libs installation");
             }
         } else {
             if (LOGGER.isLoggable(Level.WARNING)) {
@@ -76,8 +73,7 @@ public class TurboJPEGMapResponse extends RenderedImageMapResponse {
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws IOException {
 
         // FALLBACK

@@ -33,8 +33,8 @@ import org.springframework.web.servlet.mvc.AbstractController;
 /**
  * Controller which publishes files through a web interface from the classpath
  *
- * <p>To use this controller, it should be mapped to a particular url in the url mapping of the
- * spring dispatcher servlet. Example:
+ * <p>To use this controller, it should be mapped to a particular url in the url mapping of the spring dispatcher
+ * servlet. Example:
  *
  * <pre>
  * <code>
@@ -59,8 +59,8 @@ public abstract class AbstractURLPublisher extends AbstractController {
     protected boolean replaceWindowsFileSeparator = false;
 
     @Override
-    protected ModelAndView handleRequestInternal(
-            HttpServletRequest request, HttpServletResponse response) throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response)
+            throws Exception {
         String reqPath = getRequestPath(request);
         URL url = getUrl(request, reqPath);
 
@@ -92,7 +92,10 @@ public abstract class AbstractURLPublisher extends AbstractController {
         String dispositionType = isAttachment(reqPath, filename, mime) ? "attachment" : "inline";
         response.setHeader(
                 "Content-Disposition",
-                ContentDisposition.builder(dispositionType).filename(filename).build().toString());
+                ContentDisposition.builder(dispositionType)
+                        .filename(filename)
+                        .build()
+                        .toString());
 
         // set the content length and content type
         URLConnection connection = url.openConnection();
@@ -114,8 +117,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
             // Read the first four bytes, and determine charset encoding
             count = input.read(b4);
             encInfo = XmlCharsetDetector.getEncodingName(b4, count);
-            response.setCharacterEncoding(
-                    encInfo.getEncoding() != null ? encInfo.getEncoding() : "UTF-8");
+            response.setCharacterEncoding(encInfo.getEncoding() != null ? encInfo.getEncoding() : "UTF-8");
 
             // count < 1 -> empty file
             if (count > 0) {
@@ -138,10 +140,9 @@ public abstract class AbstractURLPublisher extends AbstractController {
 
     private boolean checkNotModified(HttpServletRequest request, long timeStamp) {
         Enumeration headers = request.getHeaders("If-Modified-Since");
-        String header =
-                headers != null && headers.hasMoreElements()
-                        ? headers.nextElement().toString()
-                        : null;
+        String header = headers != null && headers.hasMoreElements()
+                ? headers.nextElement().toString()
+                : null;
         if (header != null && header.length() > 0) {
             long ifModSinceSeconds = lastModified(header);
             // the HTTP header has second precision
@@ -152,9 +153,8 @@ public abstract class AbstractURLPublisher extends AbstractController {
     }
 
     private String getRequestPath(HttpServletRequest request) throws IOException {
-        String reqPath =
-                URLDecoder.decode(request.getRequestURI(), "UTF-8")
-                        .substring(request.getContextPath().length());
+        String reqPath = URLDecoder.decode(request.getRequestURI(), "UTF-8")
+                .substring(request.getContextPath().length());
         if (this.replaceWindowsFileSeparator) {
             reqPath = reqPath.replace(File.separatorChar, '/');
         }
@@ -183,10 +183,7 @@ public abstract class AbstractURLPublisher extends AbstractController {
         return 1000 * (ifModifiedSince / 1000);
     }
 
-    /**
-     * Can be overridden to replace specific mime types to mitigate potential XSS issues with
-     * certain resources
-     */
+    /** Can be overridden to replace specific mime types to mitigate potential XSS issues with certain resources */
     protected String getMimeType(String reqPath, String filename) {
         // set the mime if known by the servlet container, otherwise default to
         // application/octet-stream to mitigate potential cross-site scripting
@@ -196,8 +193,8 @@ public abstract class AbstractURLPublisher extends AbstractController {
     }
 
     /**
-     * Can be overridden to set the Content-Disposition: attachment to mitigate potential XSS issues
-     * with certain resources
+     * Can be overridden to set the Content-Disposition: attachment to mitigate potential XSS issues with certain
+     * resources
      */
     protected boolean isAttachment(String reqPath, String filename, String mime) {
         return false;

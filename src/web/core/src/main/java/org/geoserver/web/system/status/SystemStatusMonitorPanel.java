@@ -7,9 +7,9 @@ package org.geoserver.web.system.status;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
- * Container for system status refreshable values, this isolates the periodicity refreshed panel
- * from the rest of the page components, this will make the auto-refresh stop if the refreshed panel
- * is hidden, e.g. when a new tab is selected.
+ * Container for system status refreshable values, this isolates the periodicity refreshed panel from the rest of the
+ * page components, this will make the auto-refresh stop if the refreshed panel is hidden, e.g. when a new tab is
+ * selected.
  */
 public class SystemStatusMonitorPanel extends Panel {
 

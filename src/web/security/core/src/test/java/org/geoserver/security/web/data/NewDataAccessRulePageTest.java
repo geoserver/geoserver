@@ -76,7 +76,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         // assign the new role to the method
         form = tester.newFormTester("form");
         tester.assertRenderedPage(NewDataAccessRulePage.class);
-        form.setValue("roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
 
         // reopen new role dialog again to ensure that the current state is not lost
         if (testSwitchToNewRole) {
@@ -114,13 +115,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         addRule();
         tester.assertNoErrorMessage();
         addRule();
-        assertTrue(
-                testErrorMessagesWithRegExp(
-                        ".*"
-                                + MockData.CITE_PREFIX
-                                + "\\."
-                                + MockData.BRIDGES.getLocalPart()
-                                + ".*"));
+        assertTrue(testErrorMessagesWithRegExp(
+                ".*" + MockData.CITE_PREFIX + "\\." + MockData.BRIDGES.getLocalPart() + ".*"));
         tester.assertRenderedPage(NewDataAccessRulePage.class);
     }
 
@@ -199,7 +195,8 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
         // assign the new role to the method
         form = tester.newFormTester("form");
         tester.assertRenderedPage(NewDataAccessRulePage.class);
-        form.setValue("roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
 
         // reopen new role dialog again to ensure that the current state is not lost
         form.submit("roles:addRole");
@@ -209,8 +206,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
 
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
 
-        DataAccessRule rule =
-                new DataAccessRule(MockData.CITE_PREFIX, DataAccessRule.ANY, AccessMode.ADMIN);
+        DataAccessRule rule = new DataAccessRule(MockData.CITE_PREFIX, DataAccessRule.ANY, AccessMode.ADMIN);
         assertFalse(dao.getRules().contains(rule));
 
         // now save
@@ -285,8 +281,7 @@ public class NewDataAccessRulePageTest extends AbstractSecurityWicketTestSupport
 
         // check the global group rule has been setup
         DataAccessRuleDAO dao = DataAccessRuleDAO.get();
-        DataAccessRule rule =
-                new DataAccessRule(MockData.CITE_PREFIX, CITE_NATURE_GROUP, AccessMode.READ);
+        DataAccessRule rule = new DataAccessRule(MockData.CITE_PREFIX, CITE_NATURE_GROUP, AccessMode.READ);
         final List<DataAccessRule> rules = dao.getRules();
         assertTrue(rules.contains(rule));
     }

@@ -61,17 +61,15 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
     Pattern lookForEscapedParam =
-            Pattern.compile(
-                    Pattern.quote(
-                            "\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
+            Pattern.compile(Pattern.quote("\"</script><script>alert('x-scripted');</script><script>\": 'foo'"));
 
-    @Rule public TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @Rule
+    public TestHttpClientRule clientMocker = new TestHttpClientRule();
 
     @Override
     protected String getLogConfiguration() {
         // needed for a test on logging capabilities
-        GeoServerResourceLoader loader =
-                new GeoServerResourceLoader(testData.getDataDirectoryRoot());
+        GeoServerResourceLoader loader = new GeoServerResourceLoader(testData.getDataDirectoryRoot());
 
         Resource resource = loader.get("logs/OL_LOGGING.properties");
         if (resource.getType() == Resource.Type.UNDEFINED) {
@@ -97,20 +95,17 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test for GEOS-5318: xss vulnerability when a weird parameter is added to the request
-     * (something like: %3C%2Fscript%
-     * 3E%3Cscript%3Ealert%28%27x-scripted%27%29%3C%2Fscript%3E%3Cscript%3E=foo) the causes js code
+     * Test for GEOS-5318: xss vulnerability when a weird parameter is added to the request (something like:
+     * %3C%2Fscript% 3E%3Cscript%3Ealert%28%27x-scripted%27%29%3C%2Fscript%3E%3Cscript%3E=foo) the causes js code
      * execution.
      */
     @Test
     public void testXssFix() throws Exception {
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                MockData.BASIC_POLYGONS.getPrefix(),
-                                MockData.BASIC_POLYGONS.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
 
         final Envelope env = fs.getBounds();
 
@@ -142,8 +137,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             // check that weird param is correctly encoded to avoid js code execution
             assertThat(
                     htmlDoc,
-                    containsString(
-                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
+                    containsString("\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
             assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
             assertThat(htmlDoc, not(containsString(layer.getTitle())));
             assertThat(htmlDoc, containsString("Title<\\/foo"));
@@ -158,30 +152,25 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     public void testRastersFilteringCapabilities() throws Exception {
         // static raster layer supports filtering
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:staticRaster"
-                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
-                                + "14.592757149389236,44.55808294568743&width=768&height=330"
-                                + "&srs=EPSG:4326&format=application/openlayers");
+                getAsServletResponse("wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:staticRaster"
+                        + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                        + "14.592757149389236,44.55808294568743&width=768&height=330"
+                        + "&srs=EPSG:4326&format=application/openlayers");
         String content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
         // world raster layer doesn't support filtering
-        response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World"
-                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
-                                + "14.592757149389236,44.55808294568743&width=768&height=330"
-                                + "&srs=EPSG:4326&format=application/openlayers");
+        response = getAsServletResponse("wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World"
+                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = false;"), is(true));
 
         // if at least one layer supports filtering, overall filtering should be supported
-        response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World,gs:staticRaster"
-                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
-                                + "14.592757149389236,44.55808294568743&width=768&height=330"
-                                + "&srs=EPSG:4326&format=application/openlayers");
+        response = getAsServletResponse("wms?service=WMS&version=1.1.0&request=GetMap&layers=wcs:World,gs:staticRaster"
+                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                + "14.592757149389236,44.55808294568743&width=768&height=330"
+                + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
     }
@@ -194,21 +183,19 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
 
         // wmts by itself should not support filtering
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername"
-                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
-                                + "14.592757149389236,44.55808294568743&width=768&height=330"
-                                + "&srs=EPSG:4326&format=application/openlayers");
+                getAsServletResponse("wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername"
+                        + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                        + "14.592757149389236,44.55808294568743&width=768&height=330"
+                        + "&srs=EPSG:4326&format=application/openlayers");
         String content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = false;"), is(true));
 
         // wmts along with filterable layer should support filtering
-        response =
-                getAsServletResponse(
-                        "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername,gs:staticRaster"
-                                + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
-                                + "14.592757149389236,44.55808294568743&width=768&height=330"
-                                + "&srs=EPSG:4326&format=application/openlayers");
+        response = getAsServletResponse(
+                "wms?service=WMS&version=1.1.0&request=GetMap&layers=gs:wmtslayername,gs:staticRaster"
+                        + "&styles=&bbox=0.2372206885127698,40.562080748421806,"
+                        + "14.592757149389236,44.55808294568743&width=768&height=330"
+                        + "&srs=EPSG:4326&format=application/openlayers");
         content = response.getContentAsString();
         assertThat(content.contains("var supportsFiltering = true;"), is(true));
     }
@@ -228,18 +215,14 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         return store;
     }
 
-    /**
-     * Helper method that creates a static WMTS store and related layer and adds it to the catalog.
-     */
+    /** Helper method that creates a static WMTS store and related layer and adds it to the catalog. */
     private StoreInfo createWMTSCatalogStuff() throws MalformedURLException, IOException {
         // use a local mock capabilities
         String capabilities =
-                clientMocker.getServer()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+                clientMocker.getServer() + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
-                new URL(capabilities),
-                new MockHttpResponse(getClass().getResource("/nasa.getcapa.xml"), "text/xml"));
+                new URL(capabilities), new MockHttpResponse(getClass().getResource("/nasa.getcapa.xml"), "text/xml"));
         clientMocker.bind(client, capabilities);
 
         Catalog catalog = getCatalog();
@@ -276,8 +259,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     /** Helper method that creates a static raster layer and adds it to the catalog. */
-    private void createStaticRasterLayer(
-            NamespaceInfo namespace, StoreInfo store, String layerName) {
+    private void createStaticRasterLayer(NamespaceInfo namespace, StoreInfo store, String layerName) {
         Catalog catalog = getCatalog();
         // creating the coverage info
         CoverageInfoImpl coverageInfo = new CoverageInfoImpl(catalog);
@@ -301,22 +283,18 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     }
 
     /**
-     * Test for GEOS-8178: OpenLayersOutputFormat NoSuchAuthorityCodeExceptions being thrown due to
-     * malformed URN codes.
+     * Test for GEOS-8178: OpenLayersOutputFormat NoSuchAuthorityCodeExceptions being thrown due to malformed URN codes.
      *
-     * <p>Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap,
-     * test uses produceMap and reads the resulting output steam to ensure "yx: true" is returned
-     * for EPSG:4326, output is false before fix
+     * <p>Exception is thrown when decoding CRS in isWms13FlippedCRS which is called by produceMap, test uses produceMap
+     * and reads the resulting output steam to ensure "yx: true" is returned for EPSG:4326, output is false before fix
      */
     @Test
     public void testUrnCodeFix() throws Exception {
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                MockData.BASIC_POLYGONS.getPrefix(),
-                                MockData.BASIC_POLYGONS.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
 
         final Envelope env = fs.getBounds();
 
@@ -340,55 +318,39 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testOL3vsOL2() throws Exception {
         // the base request
-        String path =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
-                        + "&srs=EPSG:4326&format=";
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
+                + "&srs=EPSG:4326&format=";
         final String firefoxAgent = "Firefox 40.1";
         String ie8Agent = "MSIE 8.";
 
         // generic request on browser supporting OL3
-        String contentFirefox =
-                getResponseContent(
-                        path + "application/openlayers",
-                        firefoxAgent,
-                        getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
+        String contentFirefox = getResponseContent(
+                path + "application/openlayers", firefoxAgent, getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
         assertThat(contentFirefox, containsString("openlayers3/ol.js"));
 
         // generic request on browser not supporting OL3
-        String contentIE8 =
-                getResponseContent(
-                        path + "application/openlayers",
-                        ie8Agent,
-                        getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
+        String contentIE8 = getResponseContent(
+                path + "application/openlayers", ie8Agent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
         assertThat(contentIE8, containsString("OpenLayers.js"));
 
         // ask explicitly for OL2
-        String contentOL2 =
-                getResponseContent(
-                        path + "application/openlayers2",
-                        firefoxAgent,
-                        getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
+        String contentOL2 = getResponseContent(
+                path + "application/openlayers2", firefoxAgent, getBaseMimeType(OpenLayers2MapOutputFormat.MIME_TYPE));
         assertThat(contentOL2, containsString("OpenLayers.js"));
 
         // ask explicitly for OL3
-        String contentOL3 =
-                getResponseContent(
-                        path + "application/openlayers3",
-                        firefoxAgent,
-                        getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
+        String contentOL3 = getResponseContent(
+                path + "application/openlayers3", firefoxAgent, getBaseMimeType(OpenLayers3MapOutputFormat.MIME_TYPE));
         assertThat(contentOL3, containsString("openlayers3/ol.js"));
 
         // ask explicitly for OL3 on a non supporting browser
-        String exception =
-                getResponseContent(
-                        path + "application/openlayers3", ie8Agent, "application/vnd.ogc.se_xml");
+        String exception = getResponseContent(path + "application/openlayers3", ie8Agent, "application/vnd.ogc.se_xml");
         assertThat(exception, containsString("not supported"));
     }
 
-    public String getResponseContent(String path, String userAgent, String expectedMimeType)
-            throws Exception {
+    public String getResponseContent(String path, String userAgent, String expectedMimeType) throws Exception {
         MockHttpServletRequest request = createRequest(path);
         request.setMethod("GET");
         request.setContent(new byte[] {});
@@ -421,11 +383,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testExceptionsInImage() throws Exception {
         // the base request
-        String path =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
-                        + "&srs=EPSG:4326&format=application/openlayers";
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
+                + "&srs=EPSG:4326&format=application/openlayers";
 
         String html = getAsString(path);
         assertThat(html, containsString("\"exceptions\": 'application/vnd.ogc.se_inimage'"));
@@ -434,12 +395,11 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testExceptionsXML() throws Exception {
         // the base request
-        String path =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.BASIC_POLYGONS)
-                        + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
-                        + "&srs=EPSG:4326&format=application/openlayers"
-                        + "&exceptions=application/vnd.ogc.se_xml";
+        String path = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles=&bbox=-180,-90,180,90&width=768&height=330"
+                + "&srs=EPSG:4326&format=application/openlayers"
+                + "&exceptions=application/vnd.ogc.se_xml";
 
         String html = getAsString(path);
         assertThat(html, containsString("\"EXCEPTIONS\": 'application/vnd.ogc.se_xml'"));
@@ -450,11 +410,9 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
     public void testXssOL3() throws Exception {
 
         Catalog catalog = getCatalog();
-        final FeatureSource fs =
-                catalog.getFeatureTypeByName(
-                                MockData.BASIC_POLYGONS.getPrefix(),
-                                MockData.BASIC_POLYGONS.getLocalPart())
-                        .getFeatureSource(null, null);
+        final FeatureSource fs = catalog.getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart())
+                .getFeatureSource(null, null);
 
         final Envelope env = fs.getBounds();
 
@@ -487,8 +445,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             // check that weird param is correctly encoded to avoid js code execution
             assertThat(
                     htmlDoc,
-                    containsString(
-                            "\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
+                    containsString("\"<\\/script><script>alert(\\'x-scripted\\');<\\/script><script>\": 'foo'"));
             assertThat(htmlDoc, containsString("\"25064;ALERT(1)//419\": '1'"));
             assertThat(htmlDoc, not(containsString(otherStyle.getName())));
             assertThat(htmlDoc, containsString("style&lt;&gt;"));
@@ -503,8 +460,7 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
         LayerGroupInfo group = null;
         Catalog catalog = getCatalog();
         try {
-            createLakesPlacesLayerGroup(
-                    catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
+            createLakesPlacesLayerGroup(catalog, "lakes_and_places_group", LayerGroupInfo.Mode.SINGLE, null);
             group = catalog.getLayerGroupByName("lakes_and_places_group");
             LayerGroupStyle groupStyle = new LayerGroupStyleImpl();
             StyleInfo styleName = new StyleInfoImpl(getCatalog());
@@ -516,11 +472,10 @@ public class OpenLayersMapOutputFormatTest extends WMSTestSupport {
             groupStyle.getStyles().add(null);
             group.getLayerGroupStyles().add(groupStyle);
             catalog.save(group);
-            String url =
-                    "wms?LAYERS="
-                            + group.getName()
-                            + "&STYLES=&format=application/openlayers"
-                            + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
+            String url = "wms?LAYERS="
+                    + group.getName()
+                    + "&STYLES=&format=application/openlayers"
+                    + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG%3A4326&WIDTH=256&HEIGHT=256&bbox=-0.002,-0.003,0.005,0.002";
             MockHttpServletResponse response = getAsServletResponse(url);
             String content = response.getContentAsString();
             assertTrue(content.contains("<option value=\"nature-style\">nature-style</option>"));

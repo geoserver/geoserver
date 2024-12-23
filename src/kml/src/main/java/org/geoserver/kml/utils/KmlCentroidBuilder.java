@@ -28,8 +28,8 @@ public class KmlCentroidBuilder {
     /**
      * Returns the centroid of the geometry, handling a geometry collection.
      *
-     * <p>In the case of a collection a multi point containing the centroid of each geometry in the
-     * collection is calculated. The first point in the multi point is returned as the controid.
+     * <p>In the case of a collection a multi point containing the centroid of each geometry in the collection is
+     * calculated. The first point in the multi point is returned as the controid.
      */
     public Coordinate geometryCentroid(Geometry g) {
         return geometryCentroid(g, null, null);
@@ -38,15 +38,13 @@ public class KmlCentroidBuilder {
     /**
      * Returns the centroid of the geometry, handling a geometry collection.
      *
-     * <p>In the case of a collection a multi point containing the centroid of each geometry in the
-     * collection is calculated. The first point in the multi point is returned as the controid.
+     * <p>In the case of a collection a multi point containing the centroid of each geometry in the collection is
+     * calculated. The first point in the multi point is returned as the controid.
      *
-     * <p>The <tt>opts</tt> parameter is used to provide additional options controlling how the
-     * centroid is computed.
+     * <p>The <tt>opts</tt> parameter is used to provide additional options controlling how the centroid is computed.
      *
      * @param g The geometry to compute the centroid.
-     * @param bbox The request bbox, used to potentially clip the geometry before computting the
-     *     centroid.
+     * @param bbox The request bbox, used to potentially clip the geometry before computting the centroid.
      * @param opts The centroid options controlling whether clipping/sampling/etc... are used.
      */
     public Coordinate geometryCentroid(Geometry g, Envelope bbox, KmlCentroidOptions opts) {
@@ -80,9 +78,8 @@ public class KmlCentroidBuilder {
         } else if (g instanceof Polygon) {
             if (opts.isContain()) {
                 try {
-                    Point p =
-                            RendererUtilities.sampleForInternalPoint(
-                                    (Polygon) g, null, null, null, -1, opts.getSamples());
+                    Point p = RendererUtilities.sampleForInternalPoint(
+                            (Polygon) g, null, null, null, -1, opts.getSamples());
                     if (p != null && !p.isEmpty()) {
                         return p.getCoordinate();
                     }

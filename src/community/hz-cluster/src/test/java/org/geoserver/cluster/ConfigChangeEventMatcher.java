@@ -27,8 +27,7 @@ public class ConfigChangeEventMatcher extends EventMatcher {
 
     public static <T extends Info> ConfigChangeEvent configChangeEvent(
             Object source, String id, String name, String workspaceId, Class<T> clazz, Type type) {
-        EasyMock.reportMatcher(
-                new ConfigChangeEventMatcher(source, id, name, workspaceId, clazz, type));
+        EasyMock.reportMatcher(new ConfigChangeEventMatcher(source, id, name, workspaceId, clazz, type));
         return null;
     }
 

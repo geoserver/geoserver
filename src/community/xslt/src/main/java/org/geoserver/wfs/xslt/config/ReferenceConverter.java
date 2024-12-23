@@ -16,10 +16,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.ows.util.OwsUtils;
 
-/**
- * Transforms CatalogInfo into id references. Derived and heavily simplified from {@link
- * XStreamPersister}
- */
+/** Transforms CatalogInfo into id references. Derived and heavily simplified from {@link XStreamPersister} */
 class ReferenceConverter implements Converter {
     Class<?> clazz;
 
@@ -36,8 +33,7 @@ class ReferenceConverter implements Converter {
     }
 
     @Override
-    public void marshal(
-            Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         // could be a proxy, unwrap it
         source = CatalogImpl.unwrap(source);
 

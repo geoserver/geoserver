@@ -7,8 +7,7 @@
 package org.geoserver.test;
 
 /** Test the proper encoding of duplicated/repeated features with Ids */
-public class GetFeatureNumberMatchedWithoutPrimaryKeyGMLTest
-        extends GetFeatureNumberMatchedGMLTest {
+public class GetFeatureNumberMatchedWithoutPrimaryKeyGMLTest extends GetFeatureNumberMatchedGMLTest {
 
     @Override
     protected FeatureGML32MockData createTestData() {

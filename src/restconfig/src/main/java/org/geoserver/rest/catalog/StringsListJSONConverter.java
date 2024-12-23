@@ -47,8 +47,7 @@ public class StringsListJSONConverter extends BaseMessageConverter<StringsList> 
     public void writeInternal(StringsList stringsList, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         Map<String, Object> values =
-                Collections.singletonMap(
-                        "list", Collections.singletonMap("string", stringsList.getValues()));
+                Collections.singletonMap("list", Collections.singletonMap("string", stringsList.getValues()));
         Writer outWriter = new BufferedWriter(new OutputStreamWriter(outputMessage.getBody()));
         JSONObject.fromObject(values).write(outWriter);
         outWriter.flush();

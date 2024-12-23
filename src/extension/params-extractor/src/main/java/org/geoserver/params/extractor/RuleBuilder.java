@@ -27,8 +27,7 @@ public final class RuleBuilder {
         this.activated = other.getActivated();
         this.position = other.getPosition();
         if (position != null) {
-            this.matchPattern =
-                    Pattern.compile(String.format("^(?:/[^/]*){%d}(/([^/]+)).*$", position));
+            this.matchPattern = Pattern.compile(String.format("^(?:/[^/]*){%d}(/([^/]+)).*$", position));
         } else {
             this.matchPattern = null;
         }
@@ -108,11 +107,9 @@ public final class RuleBuilder {
 
     public Rule build() {
         Utils.checkCondition(
-                position == null || match == null,
-                "Only one of the attributes position and match can be selected.");
+                position == null || match == null, "Only one of the attributes position and match can be selected.");
         Utils.checkCondition(id != null && !id.isEmpty(), "Rule id cannot be NULL or EMPTY.");
-        Utils.checkCondition(
-                matchPattern != null, "Both attributes position or match cannot be NULL.");
+        Utils.checkCondition(matchPattern != null, "Both attributes position or match cannot be NULL.");
         Utils.checkCondition(
                 parameter != null && !parameter.isEmpty(),
                 "Parameter attribute is mandatory it cannot be NULL or EMPTY.");

@@ -12,9 +12,8 @@ import org.geoserver.metadata.data.dto.impl.MetadataConfigurationImpl;
 /**
  * Toplevel Object that matches yaml structure.
  *
- * <p>Contains the Gui description for the metadata and a list of geonetwork endpoints for importing
- * geonetwork metadata. The Gui is constructed from MetadataAttributeConfiguration and
- * MetadataAttributeComplexTypeConfiguration.
+ * <p>Contains the Gui description for the metadata and a list of geonetwork endpoints for importing geonetwork
+ * metadata. The Gui is constructed from MetadataAttributeConfiguration and MetadataAttributeComplexTypeConfiguration.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

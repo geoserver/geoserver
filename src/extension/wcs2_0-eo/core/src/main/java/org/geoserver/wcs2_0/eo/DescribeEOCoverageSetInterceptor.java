@@ -68,8 +68,7 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
     @Override
     public Object invoke(MethodInvocation invocation) throws Throwable {
-        if (invocation.getMethod().getName().equals("describeEOCoverageSet")
-                && isEarthObservationEnabled()) {
+        if (invocation.getMethod().getName().equals("describeEOCoverageSet") && isEarthObservationEnabled()) {
             try {
                 DescribeEOCoverageSetType dcs =
                         (DescribeEOCoverageSetType) invocation.getArguments()[0];
@@ -92,9 +91,7 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
         if (dcs.getEoId() == null || dcs.getEoId().isEmpty()) {
             throw new OWS20Exception(
-                    "Required parameter eoID missing",
-                    new OWSExceptionCode("emptyEoIdList", 404),
-                    "eoid");
+                    "Required parameter eoID missing", new OWSExceptionCode("emptyEoIdList", 404), "eoid");
         }
 
         // check coverages are legit
@@ -116,7 +113,6 @@ public class DescribeEOCoverageSetInterceptor implements MethodInterceptor {
 
         WCS20DescribeCoverageTransformer tx =
                 new WCS20DescribeCoverageTransformer(catalog, envelopeAxesMapper, mimemapper);
-        return new DescribeEOCoverageSetTransformer(
-                getServiceInfo(), resourceCodec, envelopeAxesMapper, tx);
+        return new DescribeEOCoverageSetTransformer(getServiceInfo(), resourceCodec, envelopeAxesMapper, tx);
     }
 }

@@ -26,8 +26,7 @@ import org.geoserver.util.IOUtils;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public abstract class AbstractCommandLinePreTransform extends AbstractCommandLineTransform
-        implements PreTransform {
+public abstract class AbstractCommandLinePreTransform extends AbstractCommandLineTransform implements PreTransform {
 
     public AbstractCommandLinePreTransform(List<String> options) {
         super(options);
@@ -114,8 +113,7 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
                 return false;
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
+            LOGGER.log(Level.SEVERE, "Failure to locate executable for class " + this.getClass(), e);
             return false;
         }
 
@@ -123,8 +121,8 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     }
 
     /**
-     * Returns the list of options to be passed the executable to test its availability and ability
-     * to run. e.g. "--help"
+     * Returns the list of options to be passed the executable to test its availability and ability to run. e.g.
+     * "--help"
      */
     protected abstract List<String> getAvailabilityTestOptions();
 
@@ -149,8 +147,8 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     }
 
     /**
-     * Returns the name of all the files that should be transferred from input to output (sometimes
-     * the output is made of several files)
+     * Returns the name of all the files that should be transferred from input to output (sometimes the output is made
+     * of several files)
      */
     protected abstract List<String> getReplacementTargetNames(ImportData data) throws IOException;
 
@@ -160,8 +158,8 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     }
 
     /**
-     * Returns true if in the command line the output file comes after the input one. The default
-     * implementation returns true
+     * Returns true if in the command line the output file comes after the input one. The default implementation returns
+     * true
      */
     protected boolean isOutputAfterInput() {
         return true;
@@ -187,8 +185,7 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
     protected abstract File getExecutable() throws IOException;
 
     /**
-     * Locates and executable in the system path. On windows it will automatically append .exe to
-     * the searched file name
+     * Locates and executable in the system path. On windows it will automatically append .exe to the searched file name
      */
     protected File getExecutableFromPath(String name) throws IOException {
         if (SystemUtils.IS_OS_WINDOWS) {
@@ -210,7 +207,6 @@ public abstract class AbstractCommandLinePreTransform extends AbstractCommandLin
             }
         }
         throw new IOException(
-                "Could not locate executable (or could locate, but does not have execution rights): "
-                        + name);
+                "Could not locate executable (or could locate, but does not have execution rights): " + name);
     }
 }

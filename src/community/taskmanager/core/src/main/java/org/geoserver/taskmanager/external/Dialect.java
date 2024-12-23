@@ -46,11 +46,7 @@ public interface Dialect {
      *
      * @return statement to create index
      */
-    String createIndex(
-            String tableName,
-            Set<String> columnNames,
-            boolean isSpatialIndex,
-            boolean isUniqueIndex);
+    String createIndex(String tableName, Set<String> columnNames, boolean isSpatialIndex, boolean isUniqueIndex);
 
     /** @return set of spatial columns */
     Set<String> getSpatialColumns(Connection connection, String tableName, String defaultSchema);
@@ -77,8 +73,7 @@ public interface Dialect {
      *
      * @throws SQLException
      */
-    List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
-            throws SQLException;
+    List<Column> getColumns(Connection connection, String tableName, ResultSet rs) throws SQLException;
 
     /** Return a geometry type */
     String getGeometryType(String type, int srid);
@@ -101,6 +96,5 @@ public interface Dialect {
      * @throws SQLException
      */
     Map<String, GeometryColumn> getRawSpatialColumns(
-            GeometryTable geometryTable, Connection connection, String tableName)
-            throws SQLException;
+            GeometryTable geometryTable, Connection connection, String tableName) throws SQLException;
 }

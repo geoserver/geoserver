@@ -13,8 +13,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.platform.GeoServerResourceLoader;
 
 /**
- * Extension of GeoServerLoader which uses the legacy (1.x) style data directory to load
- * configuration.
+ * Extension of GeoServerLoader which uses the legacy (1.x) style data directory to load configuration.
  *
  * @author Justin Deoliveira, OpenGEO
  */

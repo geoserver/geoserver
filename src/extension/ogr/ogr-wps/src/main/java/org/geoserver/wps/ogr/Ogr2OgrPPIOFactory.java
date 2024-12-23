@@ -28,10 +28,9 @@ public class Ogr2OgrPPIOFactory implements PPIOFactory {
     }
 
     /**
-     * This allow to instantiate the right type of PPIO subclass, {@link
-     * org.geoserver.wps.ppio.BinaryPPIO} for binary, {@link org.geoserver.wps.ppio.CDataPPIO} for
-     * text, {@link org.geoserver.wps.ppio.XMLPPIO} for xml to serve the format as a process
-     * parameter output.
+     * This allow to instantiate the right type of PPIO subclass, {@link org.geoserver.wps.ppio.BinaryPPIO} for binary,
+     * {@link org.geoserver.wps.ppio.CDataPPIO} for text, {@link org.geoserver.wps.ppio.XMLPPIO} for xml to serve the
+     * format as a process parameter output.
      */
     @Override
     public List<ProcessParameterIO> getProcessParameterIO() {
@@ -40,13 +39,11 @@ public class Ogr2OgrPPIOFactory implements PPIOFactory {
             ProcessParameterIO ppio = null;
             GetFeatureType gft = WfsFactory.eINSTANCE.createGetFeatureType();
             gft.setOutputFormat(of.getGeoserverFormat());
-            Operation operation =
-                    new Operation(
-                            "GetFeature",
-                            new Service(
-                                    "WFS", null, new Version("1.1.0"), Arrays.asList("GetFeature")),
-                            null,
-                            new Object[] {gft});
+            Operation operation = new Operation(
+                    "GetFeature",
+                    new Service("WFS", null, new Version("1.1.0"), Arrays.asList("GetFeature")),
+                    null,
+                    new Object[] {gft});
             // String computedMimeType = of.mimeType;
             // if (computedMimeType == null || computedMimeType.isEmpty()) {
             String computedMimeType = ogr2OgrOutputFormat.getMimeType(null, operation);
@@ -56,37 +53,19 @@ public class Ogr2OgrPPIOFactory implements PPIOFactory {
             // }
             if (of.getType() == null) {
                 // Binary is default type
-                ppio =
-                        new OgrBinaryPPIO(
-                                computedMimeType,
-                                of.getFileExtension(),
-                                ogr2OgrOutputFormat,
-                                operation);
+                ppio = new OgrBinaryPPIO(computedMimeType, of.getFileExtension(), ogr2OgrOutputFormat, operation);
             } else {
                 switch (of.getType()) {
                     case BINARY:
-                        ppio =
-                                new OgrBinaryPPIO(
-                                        computedMimeType,
-                                        of.getFileExtension(),
-                                        ogr2OgrOutputFormat,
-                                        operation);
+                        ppio = new OgrBinaryPPIO(
+                                computedMimeType, of.getFileExtension(), ogr2OgrOutputFormat, operation);
                         break;
                     case TEXT:
-                        ppio =
-                                new OgrCDataPPIO(
-                                        computedMimeType,
-                                        of.getFileExtension(),
-                                        ogr2OgrOutputFormat,
-                                        operation);
+                        ppio = new OgrCDataPPIO(
+                                computedMimeType, of.getFileExtension(), ogr2OgrOutputFormat, operation);
                         break;
                     case XML:
-                        ppio =
-                                new OgrXMLPPIO(
-                                        computedMimeType,
-                                        of.getFileExtension(),
-                                        ogr2OgrOutputFormat,
-                                        operation);
+                        ppio = new OgrXMLPPIO(computedMimeType, of.getFileExtension(), ogr2OgrOutputFormat, operation);
                         break;
                     default:
                         break;

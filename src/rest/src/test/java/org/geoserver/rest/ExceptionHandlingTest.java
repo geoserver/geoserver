@@ -36,8 +36,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
     @Test
     public void testRestException() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
+                getAsServletResponse(RestBaseController.ROOT_PATH + "/exception?code=400&message=error");
         assertEquals(400, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         String txt = response.getContentAsString();
@@ -46,8 +45,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testInternalError() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/error");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/error");
         assertEquals(500, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         String txt = response.getContentAsString();
@@ -56,8 +54,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testNotFound() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/notfound");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/notfound");
         assertEquals(404, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         String txt = response.getContentAsString();
@@ -66,8 +63,7 @@ public class ExceptionHandlingTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testNullPointerException() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/npe");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/npe");
         assertEquals(500, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         String txt = response.getContentAsString();

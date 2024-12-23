@@ -68,23 +68,16 @@ public class DimensionInfoSerializationTest extends WMSTestSupport {
         assertXpathEvaluatesTo(endValue, "//endValue", doc);
 
         DimensionInfo di2 = unmarshallFromXML(doc);
-        assertEquals(
-                "Unmarshalled startValue does not match the original one",
-                di2.getStartValue(),
-                startValue);
+        assertEquals("Unmarshalled startValue does not match the original one", di2.getStartValue(), startValue);
 
-        assertEquals(
-                "Unmarshalled endValue does not match the original one",
-                di2.getEndValue(),
-                endValue);
+        assertEquals("Unmarshalled endValue does not match the original one", di2.getEndValue(), endValue);
     }
 
     protected void assertBackAndForthSerialization(Strategy used) throws Exception {
         assertBackAndForthSerialization(used, null);
     }
 
-    protected void assertBackAndForthSerialization(Strategy used, String referenceValue)
-            throws Exception {
+    protected void assertBackAndForthSerialization(Strategy used, String referenceValue) throws Exception {
         DimensionDefaultValueSetting setting = new DimensionDefaultValueSetting();
         setting.setStrategyType(used);
         if (referenceValue != null) {

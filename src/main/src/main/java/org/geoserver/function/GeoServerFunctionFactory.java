@@ -16,9 +16,8 @@ import org.geotools.feature.NameImpl;
 import org.geotools.filter.FunctionFactory;
 
 /**
- * This class implements the {@link FunctionFactory} interface and can be used for creating a new
- * Function from the input parameters. Actually it implements only the {@link IsInstanceOf}
- * function.
+ * This class implements the {@link FunctionFactory} interface and can be used for creating a new Function from the
+ * input parameters. Actually it implements only the {@link IsInstanceOf} function.
  *
  * @author Nicola Lagomarsini geosolutions
  */

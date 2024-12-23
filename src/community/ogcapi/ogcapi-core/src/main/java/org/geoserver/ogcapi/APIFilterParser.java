@@ -25,30 +25,26 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 public class APIFilterParser {
 
     private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
-    public static String CQL_TEXT =
-            "cql-text"; // for compatibility, but should not really be advertised
+    public static String CQL_TEXT = "cql-text"; // for compatibility, but should not really be advertised
     public static String ECQL_TEXT = "ecql-text"; // GeoServer own CQL
     public static String CQL2_TEXT = "cql2-text"; // OGC CQL2
     public static String CQL2_JSON = "cql2-json"; // OGC CQL2-JSON, see requirement 38
     // https://portal.ogc.org/files/96288#cql-json
 
     /** The list of encodings that should go in API documents */
-    public static Set<String> SUPPORTED_ENCODINGS =
-            new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT, CQL2_JSON));
+    public static Set<String> SUPPORTED_ENCODINGS = new LinkedHashSet<>(Arrays.asList(ECQL_TEXT, CQL2_TEXT, CQL2_JSON));
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT},
-     * {@link #CQL2_JSON} and {@link #CQL_OBJECT}) and defaults the geometry literals in spatial
-     * filters to CRS84
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT}, {@link #CQL2_JSON} and
+     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to CRS84
      */
     public Filter parse(String filter, String filterLang) {
         return parse(filter, filterLang, null);
     }
 
     /**
-     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT},
-     * {@link #CQL2_JSON} and {@link #CQL_OBJECT}) and defaults the geometry literals in spatial
-     * filters to filter crs.
+     * Parses the filter over the supported filter languages (right now, only {@link #CQL_TEXT}, {@link #CQL2_JSON} and
+     * {@link #CQL_OBJECT}) and defaults the geometry literals in spatial filters to filter crs.
      */
     public Filter parse(String filter, String filterLang, String filterCRS) {
         if (filter == null) {
@@ -76,12 +72,11 @@ public class APIFilterParser {
         // languages are recognized (could have its own extension point too,
         // if we want to allow easy extension with new custom languages)
         if (filterLang != null && (!SUPPORTED_ENCODINGS.contains(filterLang))) {
-            throw new InvalidParameterValueException(
-                    "Only supported filter-lang options at the moment are "
-                            + SUPPORTED_ENCODINGS
-                            + " but '"
-                            + filterLang
-                            + "' was found instead");
+            throw new InvalidParameterValueException("Only supported filter-lang options at the moment are "
+                    + SUPPORTED_ENCODINGS
+                    + " but '"
+                    + filterLang
+                    + "' was found instead");
         }
 
         try {
@@ -89,8 +84,7 @@ public class APIFilterParser {
             if (ECQL_TEXT.equals(filterLang)) {
                 parsedFilter = ECQL.toFilter(filter);
             } else if (CQL2_JSON.equals(filterLang)) {
-                CQLJsonCompiler cqlJsonCompiler =
-                        new CQLJsonCompiler(filter, new FilterFactoryImpl());
+                CQLJsonCompiler cqlJsonCompiler = new CQLJsonCompiler(filter, new FilterFactoryImpl());
                 cqlJsonCompiler.compileFilter();
                 parsedFilter = cqlJsonCompiler.getFilter();
             } else {

@@ -32,7 +32,8 @@ public abstract class ComplexTransmuter implements Transmuter {
         Configuration config = null;
 
         try {
-            config = (Configuration) (this.getXMLConfiguration().getConstructor().newInstance());
+            config =
+                    (Configuration) (this.getXMLConfiguration().getConstructor().newInstance());
         } catch (Exception e) {
             throw new WPSException("NoApplicableCode", "Failed to initialize XMLConfiguration");
         }

@@ -22,11 +22,9 @@ import org.springframework.util.PathMatcher;
 import org.springframework.util.StringUtils;
 
 /** @author Chris Berry http://opensource.atlassian.com/projects/spring/browse/SEC-531 */
-public class RESTfulPathBasedFilterInvocationDefinitionMap
-        implements FilterInvocationSecurityMetadataSource {
+public class RESTfulPathBasedFilterInvocationDefinitionMap implements FilterInvocationSecurityMetadataSource {
 
-    private static Logger log =
-            Logging.getLogger(RESTfulPathBasedFilterInvocationDefinitionMap.class);
+    private static Logger log = Logging.getLogger(RESTfulPathBasedFilterInvocationDefinitionMap.class);
 
     // ~ Instance fields
     // ================================================================================================
@@ -42,18 +40,16 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         return FilterInvocation.class.isAssignableFrom(clazz);
     }
 
-    public void addSecureUrl(
-            String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
+    public void addSecureUrl(String antPath, String[] httpMethods, Collection<ConfigAttribute> attrs) {
         requestMap.add(new EntryHolder(antPath, httpMethods, attrs));
 
         if (log.isLoggable(Level.FINE)) {
-            log.fine(
-                    "Added Ant path: "
-                            + antPath
-                            + "; attributes: "
-                            + attrs
-                            + ", httpMethods: "
-                            + Arrays.toString(httpMethods));
+            log.fine("Added Ant path: "
+                    + antPath
+                    + "; attributes: "
+                    + attrs
+                    + ", httpMethods: "
+                    + Arrays.toString(httpMethods));
         }
     }
 
@@ -82,14 +78,12 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         return convertUrlToLowercaseBeforeComparison;
     }
 
-    public void setConvertUrlToLowercaseBeforeComparison(
-            boolean convertUrlToLowercaseBeforeComparison) {
+    public void setConvertUrlToLowercaseBeforeComparison(boolean convertUrlToLowercaseBeforeComparison) {
         this.convertUrlToLowercaseBeforeComparison = convertUrlToLowercaseBeforeComparison;
     }
 
     @Override
-    public Collection<ConfigAttribute> getAttributes(Object object)
-            throws IllegalArgumentException {
+    public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
         if ((object == null) || !this.supports(object.getClass())) {
             throw new IllegalArgumentException("Object must be a FilterInvocation");
         }
@@ -101,8 +95,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
     }
 
     public Collection<ConfigAttribute> lookupAttributes(String url) {
-        throw new IllegalArgumentException(
-                "lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
+        throw new IllegalArgumentException("lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
     }
 
     public Collection<ConfigAttribute> lookupAttributes(String url, String httpMethod) {
@@ -117,13 +110,12 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             url = url.toLowerCase();
 
             if (log.isLoggable(Level.FINE)) {
-                log.fine(
-                        "Converted URL to lowercase, from: '"
-                                + url
-                                + "'; to: '"
-                                + url
-                                + "'  and httpMethod= "
-                                + httpMethod);
+                log.fine("Converted URL to lowercase, from: '"
+                        + url
+                        + "'; to: '"
+                        + url
+                        + "'  and httpMethod= "
+                        + httpMethod);
             }
         }
 
@@ -134,11 +126,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
             String antPath = entryHolder.getAntPath();
             String[] methodList = entryHolder.getHttpMethodList();
             if (log.isLoggable(Level.FINE)) {
-                log.fine(
-                        "~~~~~~~~~~ antPath= "
-                                + antPath
-                                + " methodList= "
-                                + Arrays.toString(methodList));
+                log.fine("~~~~~~~~~~ antPath= " + antPath + " methodList= " + Arrays.toString(methodList));
             }
 
             boolean matchedPath = pathMatcher.match(antPath, url);
@@ -153,21 +141,18 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
                 }
             }
             if (log.isLoggable(Level.FINE))
-                log.fine(
-                        "Candidate is: '"
-                                + url
-                                + "'; antPath is "
-                                + antPath
-                                + "; matchedPath="
-                                + matchedPath
-                                + "; matchedMethods="
-                                + matchedMethods);
+                log.fine("Candidate is: '"
+                        + url
+                        + "'; antPath is "
+                        + antPath
+                        + "; matchedPath="
+                        + matchedPath
+                        + "; matchedMethods="
+                        + matchedMethods);
 
             if (matchedPath && matchedMethods) {
                 log.fine(
-                        "returning "
-                                + StringUtils.collectionToCommaDelimitedString(
-                                        entryHolder.getConfigAttributes()));
+                        "returning " + StringUtils.collectionToCommaDelimitedString(entryHolder.getConfigAttributes()));
                 return entryHolder.getConfigAttributes();
             }
         }
@@ -182,8 +167,7 @@ public class RESTfulPathBasedFilterInvocationDefinitionMap
         private String antPath;
         private String[] httpMethodList;
 
-        public EntryHolder(
-                String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs) {
+        public EntryHolder(String antPath, String[] httpMethodList, Collection<ConfigAttribute> attrs) {
             this.antPath = antPath;
             this.configAttributes = attrs;
             this.httpMethodList = httpMethodList;

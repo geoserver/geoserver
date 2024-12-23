@@ -43,8 +43,7 @@ public class RangeSubsetKvpParser extends KvpParser {
     public Object parse(String value) throws Exception {
         RangeSubsetParser parser = new RangeSubsetParser(new StringReader(value));
         SimpleNode root = parser.RangeSubset();
-        RangeSubsetType result =
-                (RangeSubsetType) root.jjtAccept(new RangeSubsetKvpParserVisitor(), null);
+        RangeSubsetType result = (RangeSubsetType) root.jjtAccept(new RangeSubsetKvpParserVisitor(), null);
 
         for (Object o : result.getFieldSubset()) {
             FieldSubsetType type = (FieldSubsetType) o;
@@ -54,9 +53,7 @@ public class RangeSubsetKvpParser extends KvpParser {
                     InterpolationMethod.valueOf(interpolationType);
                 } catch (IllegalArgumentException e) {
                     throw new WcsException(
-                            "Unknown interpolation method " + interpolationType,
-                            InvalidParameterValue,
-                            "RangeSubset");
+                            "Unknown interpolation method " + interpolationType, InvalidParameterValue, "RangeSubset");
                 }
             }
         }

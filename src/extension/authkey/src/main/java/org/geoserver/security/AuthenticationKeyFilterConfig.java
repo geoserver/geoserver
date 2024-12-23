@@ -18,16 +18,14 @@ import org.geoserver.security.config.SecurityFilterConfig;
 /**
  * {@link GeoServerAuthenticationKeyFilter} configuration object.
  *
- * <p>{@link #authKeyParamName} is the name of the URL parameter, default is {@link
- * KeyAuthenticationToken#DEFAULT_URL_PARAM}
+ * <p>{@link #authKeyParamName} is the name of the URL parameter, default is
+ * {@link KeyAuthenticationToken#DEFAULT_URL_PARAM}
  *
- * <p>{@link #authKeyMapperName} is the bean name of an {@link AuthenticationKeyMapper}
- * implementation.
+ * <p>{@link #authKeyMapperName} is the bean name of an {@link AuthenticationKeyMapper} implementation.
  *
  * @author mcr
  */
-public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
-        implements SecurityAuthFilterConfig {
+public class AuthenticationKeyFilterConfig extends SecurityFilterConfig implements SecurityAuthFilterConfig {
 
     private static final long serialVersionUID = 1L;
     private String authKeyMapperName;
@@ -107,20 +105,19 @@ public class AuthenticationKeyFilterConfig extends SecurityFilterConfig
 
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        AuthenticationKeyFilterConfig target =
-                (AuthenticationKeyFilterConfig) SerializationUtils.clone(this);
+        AuthenticationKeyFilterConfig target = (AuthenticationKeyFilterConfig) SerializationUtils.clone(this);
         if (target != null) {
             // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment =
-                    GeoServerExtensions.bean(GeoServerEnvironment.class);
-            if (target.getMapperParameters() != null && !target.getMapperParameters().isEmpty()) {
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
+            if (target.getMapperParameters() != null
+                    && !target.getMapperParameters().isEmpty()) {
                 if (allowEnvParametrization) {
-                    for (Entry<String, String> param : target.getMapperParameters().entrySet()) {
+                    for (Entry<String, String> param :
+                            target.getMapperParameters().entrySet()) {
                         String key = param.getKey();
                         Object value = param.getValue();
 
-                        if (gsEnvironment != null
-                                && GeoServerEnvironment.allowEnvParametrization()) {
+                        if (gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                             value = gsEnvironment.resolveValue(value);
                         }
 

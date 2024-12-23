@@ -56,18 +56,16 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         Properties props = new Properties();
         props.load(new StringReader(Stream.of(theRules).collect(Collectors.joining("\n"))));
         DefaultResourceAccessManager manager =
-                new DefaultResourceAccessManager(
-                        new MemoryDataAccessRuleDAO(catalog, props), catalog);
+                new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props), catalog);
         manager.setGroupsCache(new LayerGroupContainmentCache(catalog));
 
-        sc =
-                new SecureCatalogImpl(catalog, manager) {
+        sc = new SecureCatalogImpl(catalog, manager) {
 
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);
 
         return manager;
@@ -76,8 +74,7 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
     private LayerGroupInfo prepareStandaloneOpaqueGroup() throws Exception {
         // setup group
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(opaque);
         populateCatalog();
 
@@ -120,10 +117,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
     private LayerGroupInfo prepareNamedAndOpaqueGroup() throws Exception {
         // setup group
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(named, opaque);
         populateCatalog();
 
@@ -168,10 +163,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo single =
-                buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo single = buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(single, opaque);
         populateCatalog();
 
@@ -198,10 +191,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(named, opaque);
         populateCatalog();
 
@@ -233,10 +224,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, roadsLayer);
-        LayerGroupInfo single =
-                buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, roadsLayer);
+        LayerGroupInfo single = buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(single, opaque);
         populateCatalog();
 
@@ -280,10 +269,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, roadsLayer);
-        LayerGroupInfo single =
-                buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, roadsLayer);
+        LayerGroupInfo single = buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, statesLayer, roadsLayer);
         layerGroups = Arrays.asList(single, opaque);
         populateCatalog();
 
@@ -328,10 +315,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
 
         layerGroups = Arrays.asList(named, opaque);
         populateCatalog();
@@ -356,10 +341,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
 
         layerGroups = Arrays.asList(named, opaque);
         populateCatalog();
@@ -378,7 +361,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         // and via group access we cannot reach the nested one either
         LayerGroupInfo securedNamedGroup = sc.getLayerGroupByName(NAMED_GROUP_NAME);
         assertEquals(1, securedNamedGroup.layers().size());
-        assertEquals(forestsLayer.getName(), securedNamedGroup.getLayers().get(0).getName());
+        assertEquals(
+                forestsLayer.getName(), securedNamedGroup.getLayers().get(0).getName());
         // nested nor accessible directly either
         assertNull(sc.getLayerGroupByName(OPAQUE_GROUP_NAME));
     }
@@ -388,10 +372,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
+                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, statesLayer, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, forestsLayer, opaque);
 
         layerGroups = Arrays.asList(named, opaque);
         populateCatalog();
@@ -427,16 +409,13 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertEquals(2, securedOpaqueGroup.layers().size());
     }
 
-    /**
-     * Same as {@link #testWmsStandaloneOpaqueGroup()} but with a nested group as the testing target
-     */
+    /** Same as {@link #testWmsStandaloneOpaqueGroup()} but with a nested group as the testing target */
     @Test
     public void testWmsNestedInStandaloneOpaqueGroup() throws Exception {
         setupRequestThreadLocal("WMS");
         // setup group
         LayerGroupInfo nested = buildLayerGroup(NESTED_GROUP_NAME, Mode.NAMED, null, statesLayer);
-        LayerGroupInfo opaque =
-                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
+        LayerGroupInfo opaque = buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
         layerGroups = Arrays.asList(nested, opaque);
         populateCatalog();
 
@@ -463,10 +442,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         setupRequestThreadLocal("WMS");
         // setup group
         LayerGroupInfo nested = buildLayerGroup(NESTED_GROUP_NAME, Mode.NAMED, null, statesLayer);
-        LayerGroupInfo opaque =
-                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, nested, roadsLayer);
+        LayerGroupInfo opaque = buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, nested, roadsLayer);
         layerGroups = Arrays.asList(nested, named, opaque);
         populateCatalog();
 
@@ -492,19 +469,15 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertThat(securedNamedGroup.getLayers(), contains(nested, roadsLayer));
     }
 
-    /**
-     * Same as {@link #testWmsSingleAndOpaqueGroup()} but with a nested group as the testing target
-     */
+    /** Same as {@link #testWmsSingleAndOpaqueGroup()} but with a nested group as the testing target */
     @Test
     public void testWmsNestedInSingleAndOpaqueGroup() throws Exception {
         setupRequestThreadLocal("WMS");
 
         // setup groups
         LayerGroupInfo nested = buildLayerGroup(NESTED_GROUP_NAME, Mode.NAMED, null, statesLayer);
-        LayerGroupInfo opaque =
-                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
-        LayerGroupInfo single =
-                buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, nested, roadsLayer);
+        LayerGroupInfo opaque = buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
+        LayerGroupInfo single = buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, nested, roadsLayer);
         layerGroups = Arrays.asList(nested, single, opaque);
         populateCatalog();
 
@@ -530,19 +503,14 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertThat(securedSingleGroup.getLayers(), contains(nested, roadsLayer));
     }
 
-    /**
-     * Same as {@link #testWmsMilitaryNamedAndPublicOpaqueGroup()} but with a nested group as the
-     * testing target
-     */
+    /** Same as {@link #testWmsMilitaryNamedAndPublicOpaqueGroup()} but with a nested group as the testing target */
     @Test
     public void testWmsNestedInMilitaryNamedAndPublicOpaqueGroup() throws Exception {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo nested = buildLayerGroup(NESTED_GROUP_NAME, Mode.NAMED, null, statesLayer);
-        LayerGroupInfo opaque =
-                buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
-        LayerGroupInfo named =
-                buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, nested, roadsLayer);
+        LayerGroupInfo opaque = buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, nested, roadsLayer);
+        LayerGroupInfo named = buildLayerGroup(NAMED_GROUP_NAME, Mode.NAMED, null, nested, roadsLayer);
         layerGroups = Arrays.asList(nested, opaque, named);
         populateCatalog();
 
@@ -572,20 +540,14 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertNotNull(sc.getLayerByName(roadsLayer.prefixedName()));
     }
 
-    /**
-     * Same as {@link #testWmsPublicSingleAndSecuredOpaqueGroup} but with a nested group as the
-     * testing target
-     */
+    /** Same as {@link #testWmsPublicSingleAndSecuredOpaqueGroup} but with a nested group as the testing target */
     @Test
     public void testWmsNestedInPublicSingleAndSecuredOpaqueGroup() throws Exception {
         setupRequestThreadLocal("WMS");
         // setup groups
         LayerGroupInfo nested = buildLayerGroup(NESTED_GROUP_NAME, Mode.NAMED, null, statesLayer);
-        LayerGroupInfo opaque =
-                buildLayerGroup(
-                        OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, nested);
-        LayerGroupInfo single =
-                buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, roadsLayer, nested);
+        LayerGroupInfo opaque = buildLayerGroup(OPAQUE_GROUP_NAME, Mode.OPAQUE_CONTAINER, null, forestsLayer, nested);
+        LayerGroupInfo single = buildLayerGroup(SINGLE_GROUP_NAME, Mode.SINGLE, null, roadsLayer, nested);
         layerGroups = Arrays.asList(nested, single, opaque);
         populateCatalog();
 
@@ -622,7 +584,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertNotNull(securedSingleGroup);
         assertEquals(2, securedSingleGroup.getLayers().size());
         assertThat(securedSingleGroup.getLayers(), contains(roadsLayer, nested));
-        LayerGroupInfo nestedInSingle = (LayerGroupInfo) securedSingleGroup.getLayers().get(1);
+        LayerGroupInfo nestedInSingle =
+                (LayerGroupInfo) securedSingleGroup.getLayers().get(1);
         assertEquals(1, nestedInSingle.getLayers().size());
         assertThat(nestedInSingle.getLayers(), contains(statesLayer));
 
@@ -630,7 +593,8 @@ public class SecureCatalogImplGroupsTest extends AbstractAuthorizationTest {
         assertNotNull(securedOpaqueGroup);
         assertEquals(2, securedOpaqueGroup.getLayers().size());
         assertThat(securedOpaqueGroup.getLayers(), contains(forestsLayer, nested));
-        LayerGroupInfo nestedInOpaque = (LayerGroupInfo) securedSingleGroup.getLayers().get(1);
+        LayerGroupInfo nestedInOpaque =
+                (LayerGroupInfo) securedSingleGroup.getLayers().get(1);
         assertEquals(1, nestedInOpaque.getLayers().size());
         assertThat(nestedInOpaque.getLayers(), contains(statesLayer));
     }

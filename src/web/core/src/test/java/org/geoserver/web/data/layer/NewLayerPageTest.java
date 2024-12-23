@@ -39,8 +39,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
 
         tester.assertRenderedPage(NewLayerPage.class);
         assertNull(tester.getComponentFromLastRenderedPage("selector"));
-        GeoServerTablePanel table =
-                (GeoServerTablePanel) tester.getComponentFromLastRenderedPage(TABLE_PATH);
+        GeoServerTablePanel table = (GeoServerTablePanel) tester.getComponentFromLastRenderedPage(TABLE_PATH);
         assertEquals(
                 getCatalog().getResourcesByStore(store, FeatureTypeInfo.class).size(),
                 table.getDataProvider().size());
@@ -61,8 +60,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         tester.executeAjaxEvent("selector:storesDropDown", "change");
 
         // now it should be there
-        assertNotNull(
-                tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
+        assertNotNull(tester.getComponentFromLastRenderedPage("selectLayersContainer:selectLayers"));
 
         // select "choose one" item (unselect the form)
         tester.newFormTester("selector").setValue("storesDropDown", "");
@@ -75,8 +73,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testAddLayer() throws Exception {
         login();
-        DataStoreInfo store =
-                getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
+        DataStoreInfo store = getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
         NewLayerPage page = new NewLayerPage(store.getId());
         tester.startPage(page);
 
@@ -84,8 +81,7 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
         String[] names = ((DataStore) store.getDataStore(null)).getTypeNames();
         Arrays.sort(names);
 
-        tester.clickLink(
-                TABLE_PATH + ":listContainer:items:1:itemProperties:2:component:link", true);
+        tester.clickLink(TABLE_PATH + ":listContainer:items:1:itemProperties:2:component:link", true);
         tester.assertRenderedPage(ResourceConfigurationPage.class);
         assertEquals(
                 names[0],
@@ -114,9 +110,8 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
 
             NewLayerPage page = new NewLayerPage(storeInfo.getId());
             tester.startPage(page);
-            Component link =
-                    tester.getComponentFromLastRenderedPage("selectLayersContainer")
-                            .get("createCascadedWFSStoredQueryContainer");
+            Component link = tester.getComponentFromLastRenderedPage("selectLayersContainer")
+                    .get("createCascadedWFSStoredQueryContainer");
 
             assertTrue(link.isVisible());
         } finally {
@@ -127,14 +122,12 @@ public class NewLayerPageTest extends GeoServerWicketTestSupport {
     @Test
     public void testAddLayerFromNotWFSDataStore() throws Exception {
         login();
-        DataStoreInfo store =
-                getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
+        DataStoreInfo store = getCatalog().getStoreByName(MockData.CITE_PREFIX, DataStoreInfo.class);
         NewLayerPage page = new NewLayerPage(store.getId());
         tester.startPage(page);
 
-        Component link =
-                tester.getComponentFromLastRenderedPage("selectLayersContainer")
-                        .get("createCascadedWFSStoredQueryContainer");
+        Component link = tester.getComponentFromLastRenderedPage("selectLayersContainer")
+                .get("createCascadedWFSStoredQueryContainer");
 
         assertFalse(link.isVisible());
     }

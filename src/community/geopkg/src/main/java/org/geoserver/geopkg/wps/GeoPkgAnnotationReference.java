@@ -16,10 +16,7 @@ public class GeoPkgAnnotationReference {
     }
 
     public GeoPkgAnnotationReference(
-            String tableName,
-            String keyColumnName,
-            Long keyValue,
-            GeoPkgSemanticAnnotation annotation) {
+            String tableName, String keyColumnName, Long keyValue, GeoPkgSemanticAnnotation annotation) {
         this.tableName = tableName;
         this.keyColumnName = keyColumnName;
         this.keyValue = keyValue;

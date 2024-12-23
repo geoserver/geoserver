@@ -34,8 +34,7 @@ public class XMLValidator {
     protected XMLValidator() {}
 
     /**
-     * Validates a User/Group DOM against the XMLSchema. The schema is determined by the version of
-     * the User/Group DOM
+     * Validates a User/Group DOM against the XMLSchema. The schema is determined by the version of the User/Group DOM
      */
     public void validateUserGroupRegistry(Document doc) throws IOException {
         if (versionMapUR == null) initializeSchemataUR();
@@ -55,10 +54,7 @@ public class XMLValidator {
         }
     }
 
-    /**
-     * Validates a Role DOM against the XMLSchema. The schema is determined by the version of the
-     * Role DOM
-     */
+    /** Validates a Role DOM against the XMLSchema. The schema is determined by the version of the Role DOM */
     public void validateRoleRegistry(Document doc) throws IOException {
         if (versionMapRR == null) initializeSchemataRR();
         XPathExpression expr = XMLXpathFactory.Singleton.getVersionExpressionRR();
@@ -82,13 +78,11 @@ public class XMLValidator {
         synchronized (lockUR) {
             if (versionMapUR != null) return; // another tread was faster
             versionMapUR = new HashMap<>();
-            SchemaFactory factory =
-                    SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             Schema schema = null;
             try {
-                schema =
-                        factory.newSchema(this.getClass().getResource(XMLConstants.FILE_UR_SCHEMA));
+                schema = factory.newSchema(this.getClass().getResource(XMLConstants.FILE_UR_SCHEMA));
             } catch (SAXException e) {
                 throw new IOException(e); // this should not happen
             }
@@ -103,13 +97,11 @@ public class XMLValidator {
             if (versionMapRR != null) return; // another tread was faster
 
             versionMapRR = new HashMap<>();
-            SchemaFactory factory =
-                    SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            SchemaFactory factory = SchemaFactory.newInstance(javax.xml.XMLConstants.W3C_XML_SCHEMA_NS_URI);
 
             Schema schema = null;
             try {
-                schema =
-                        factory.newSchema(this.getClass().getResource(XMLConstants.FILE_RR_SCHEMA));
+                schema = factory.newSchema(this.getClass().getResource(XMLConstants.FILE_RR_SCHEMA));
             } catch (SAXException e) {
                 throw new IOException(e); // this should not happen
             }

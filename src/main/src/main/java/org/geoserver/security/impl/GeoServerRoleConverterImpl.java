@@ -16,8 +16,7 @@ import org.geoserver.security.GeoServerRoleConverter;
 import org.springframework.security.core.GrantedAuthority;
 
 /**
- * Converts {@link GeoServerRole} and collections of roles into a string representation and vice
- * versa.
+ * Converts {@link GeoServerRole} and collections of roles into a string representation and vice versa.
  *
  * <p>Default format by example:
  *
@@ -196,8 +195,7 @@ public class GeoServerRoleConverterImpl implements GeoServerRoleConverter {
         working = splitString(roleParamString, getRoleParameterDelimiterString());
         for (String kvp : working) {
             List<String> tmp = splitString(kvp.trim(), getRoleParameterAssignmentString());
-            if (tmp.size() != 2)
-                throw createExcpetion(roleString + " Invalid role string:  " + roleString);
+            if (tmp.size() != 2) throw createExcpetion(roleString + " Invalid role string:  " + roleString);
             result.getProperties().put(tmp.get(0).trim(), tmp.get(1).trim());
         }
         return result;

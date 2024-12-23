@@ -56,26 +56,19 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetRecordById",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        GetRecordByIdType dr =
-                (GetRecordByIdType)
-                        reader.read(null, getResourceAsReader("GetRecordById.xml"), null);
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetRecordById", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        GetRecordByIdType dr = (GetRecordByIdType) reader.read(null, getResourceAsReader("GetRecordById.xml"), null);
         assertGetRecordByIdValid(dr);
     }
 
     @Test
     public void testEntityExpansion() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetRecordById",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        GeoServerExtensions.bean(EntityResolverProvider.class));
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetRecordById",
+                "2.0.2",
+                new CSWConfiguration(),
+                GeoServerExtensions.bean(EntityResolverProvider.class));
         try {
             reader.read(null, getResourceAsReader("GetRecordByIdEntityExpansion.xml"), null);
             fail("Should have failed with an entity expansion disallowed exception");
@@ -93,22 +86,18 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testGetSingle() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        Document dom = getAsDOM(
+                BASEPATH
+                        + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);
         checkValidationErrors(dom);
 
         // check we have the expected results
         assertXpathEvaluatesTo("1", "count(//csw:SummaryRecord/dc:identifier)", dom);
         assertXpathEvaluatesTo(
-                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f",
-                "//csw:SummaryRecord/dc:identifier",
-                dom);
+                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:SummaryRecord/dc:identifier", dom);
         assertXpathEvaluatesTo("Lorem ipsum", "//csw:SummaryRecord/dc:title", dom);
-        assertXpathEvaluatesTo(
-                "http://purl.org/dc/dcmitype/Image", "//csw:SummaryRecord/dc:type", dom);
+        assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:SummaryRecord/dc:type", dom);
         assertXpathEvaluatesTo("Tourism--Greece", "//csw:SummaryRecord/dc:subject", dom);
         assertXpathEvaluatesTo("image/svg+xml", "//csw:SummaryRecord/dc:format", dom);
         assertXpathEvaluatesTo(
@@ -120,23 +109,18 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testGetMultiple() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f,urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd");
+        Document dom = getAsDOM(
+                BASEPATH
+                        + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f,urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd");
         // print(dom);
         checkValidationErrors(dom);
 
         // check we have the expected results
         assertXpathEvaluatesTo("2", "count(//csw:SummaryRecord/dc:identifier)", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:SummaryRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])",
-                dom);
+                "1", "count(//csw:SummaryRecord[dc:identifier='urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f'])", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//csw:SummaryRecord[dc:identifier='urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd'])",
-                dom);
+                "1", "count(//csw:SummaryRecord[dc:identifier='urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd'])", dom);
         assertXpathEvaluatesTo(
                 "http://purl.org/dc/dcmitype/Service",
                 "//csw:SummaryRecord[dc:identifier='urn:uuid:1ef30a8b-876d-4828-9246-c37ab4510bbd']/dc:type",
@@ -149,10 +133,8 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testGetNothing() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=REC-1,REC-2");
+        Document dom = getAsDOM(
+                BASEPATH + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=summary&id=REC-1,REC-2");
         // print(dom);
         checkValidationErrors(dom);
 
@@ -162,16 +144,14 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testGetFull() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=full&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        Document dom = getAsDOM(
+                BASEPATH
+                        + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=full&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);
         checkValidationErrors(dom);
 
         // check we have the expected results
-        assertXpathEvaluatesTo(
-                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:Record/dc:identifier", dom);
+        assertXpathEvaluatesTo("urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:Record/dc:identifier", dom);
         assertXpathEvaluatesTo("Lorem ipsum", "//csw:Record/dc:title", dom);
         assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:Record/dc:type", dom);
         assertXpathEvaluatesTo("Tourism--Greece", "//csw:Record/dc:subject", dom);
@@ -185,22 +165,17 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
     @Test
     public void testGetBrief() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=brief&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
+        Document dom = getAsDOM(
+                BASEPATH
+                        + "?service=csw&version=2.0.2&request=GetRecordById&elementsetname=brief&id=urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f");
         // print(dom);
         checkValidationErrors(dom);
 
         // check we have the expected results
         assertXpathEvaluatesTo("1", "count(//csw:BriefRecord/dc:identifier)", dom);
-        assertXpathEvaluatesTo(
-                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f",
-                "//csw:BriefRecord/dc:identifier",
-                dom);
+        assertXpathEvaluatesTo("urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:BriefRecord/dc:identifier", dom);
         assertXpathEvaluatesTo("Lorem ipsum", "//csw:BriefRecord/dc:title", dom);
-        assertXpathEvaluatesTo(
-                "http://purl.org/dc/dcmitype/Image", "//csw:BriefRecord/dc:type", dom);
+        assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:BriefRecord/dc:type", dom);
         assertXpathEvaluatesTo("", "//csw:BriefRecord/dc:subject", dom);
     }
 
@@ -214,12 +189,9 @@ public class GetRecordByIdTest extends CSWSimpleTestSupport {
 
         // check we have the expected results
         assertXpathEvaluatesTo(
-                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f",
-                "//csw:SummaryRecord/dc:identifier",
-                dom);
+                "urn:uuid:19887a8a-f6b0-4a63-ae56-7fba0e17801f", "//csw:SummaryRecord/dc:identifier", dom);
         assertXpathEvaluatesTo("Lorem ipsum", "//csw:SummaryRecord/dc:title", dom);
-        assertXpathEvaluatesTo(
-                "http://purl.org/dc/dcmitype/Image", "//csw:SummaryRecord/dc:type", dom);
+        assertXpathEvaluatesTo("http://purl.org/dc/dcmitype/Image", "//csw:SummaryRecord/dc:type", dom);
         assertXpathEvaluatesTo("Tourism--Greece", "//csw:SummaryRecord/dc:subject", dom);
         assertXpathEvaluatesTo("image/svg+xml", "//csw:SummaryRecord/dc:format", dom);
         assertXpathEvaluatesTo(

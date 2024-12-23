@@ -84,8 +84,7 @@ public abstract class LockFeatureResponse extends RequestObject {
 
         @Override
         public void addLockedFeature(FeatureId fid) {
-            net.opengis.wfs20.LockFeatureResponseType lfr =
-                    (net.opengis.wfs20.LockFeatureResponseType) adaptee;
+            net.opengis.wfs20.LockFeatureResponseType lfr = (net.opengis.wfs20.LockFeatureResponseType) adaptee;
             if (lfr.getFeaturesLocked() == null) {
                 lfr.setFeaturesLocked(((Wfs20Factory) getFactory()).createFeaturesLockedType());
             }
@@ -94,11 +93,9 @@ public abstract class LockFeatureResponse extends RequestObject {
 
         @Override
         public void addNotLockedFeature(FeatureId fid) {
-            net.opengis.wfs20.LockFeatureResponseType lfr =
-                    (net.opengis.wfs20.LockFeatureResponseType) adaptee;
+            net.opengis.wfs20.LockFeatureResponseType lfr = (net.opengis.wfs20.LockFeatureResponseType) adaptee;
             if (lfr.getFeaturesNotLocked() == null) {
-                lfr.setFeaturesNotLocked(
-                        ((Wfs20Factory) getFactory()).createFeaturesNotLockedType());
+                lfr.setFeaturesNotLocked(((Wfs20Factory) getFactory()).createFeaturesNotLockedType());
             }
             lfr.getFeaturesNotLocked().getResourceId().add(fid);
         }

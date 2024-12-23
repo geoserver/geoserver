@@ -34,8 +34,7 @@ public final class GmlSchemaUtils {
     private GmlSchemaUtils() {}
 
     /** Helper method that creates a new empty GML schema document. */
-    static Document buildGmlSchemaDocument(
-            String targetNamespacePrefix, String targetNamespaceUrl) {
+    static Document buildGmlSchemaDocument(String targetNamespacePrefix, String targetNamespaceUrl) {
         // build the gml schema document
         try {
             DocumentBuilder docBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -62,8 +61,7 @@ public final class GmlSchemaUtils {
         // add the import of the gml 3.2 schema
         Element importGmlNode = document.createElement("xs:import");
         importGmlNode.setAttribute("namespace", "http://www.opengis.net/gml/3.2");
-        importGmlNode.setAttribute(
-                "schemaLocation", "http://schemas.opengis.net/gml/3.2.1/gml.xsd");
+        importGmlNode.setAttribute("schemaLocation", "http://schemas.opengis.net/gml/3.2.1/gml.xsd");
         metadataNode.appendChild(importGmlNode);
         // return the initiated gml schema document
         return document;
@@ -118,8 +116,7 @@ public final class GmlSchemaUtils {
      *   <xs:attributeGroup ref="gml:AssociationAttributeGroup" />
      * </xs:complexType>}
      */
-    static Element createPropertyTypeNode(
-            Document gmlSchema, DomainEntity entity, String targetNamespacePrefix) {
+    static Element createPropertyTypeNode(Document gmlSchema, DomainEntity entity, String targetNamespacePrefix) {
         // create complex type node
         Element complexTypeNode = gmlSchema.createElement("xs:complexType");
         complexTypeNode.setAttribute("name", entity.getGmlInfo().complexPropertyTypeName());
@@ -148,8 +145,7 @@ public final class GmlSchemaUtils {
      *
      * <pre>{@code <xs:element name="Parameter" type="st:ParameterType" substitutionGroup="gml:AbstractFeature"/>}
      */
-    static Element createFeatureElementNode(
-            Document gmlSchema, DomainEntity entity, String targetNamespacePrefix) {
+    static Element createFeatureElementNode(Document gmlSchema, DomainEntity entity, String targetNamespacePrefix) {
         // create element node
         Element elementNode = gmlSchema.createElement("xs:element");
         elementNode.setAttribute("name", entity.getGmlInfo().featureTypeName());
@@ -168,8 +164,7 @@ public final class GmlSchemaUtils {
      *
      * <pre>{@code <xs:element name="<ATTRIBUTE_NAME>" minOccurs="0" maxOccurs="1" type="<ATTRIBUTE_TYPE>"/>}
      */
-    static Element createSimpleAttributeElementNode(
-            Document gmlSchema, DomainEntitySimpleAttribute attribute) {
+    static Element createSimpleAttributeElementNode(Document gmlSchema, DomainEntitySimpleAttribute attribute) {
         // create element node
         Element elementNode = gmlSchema.createElement("xs:element");
         elementNode.setAttribute("name", attribute.getName());
@@ -197,16 +192,14 @@ public final class GmlSchemaUtils {
         elementNode.setAttribute("maxOccurs", "unbounded");
         elementNode.setAttribute(
                 "type",
-                targetNamespacePrefix
-                        + ":"
-                        + destinationEntity.getGmlInfo().complexPropertyTypeName());
+                targetNamespacePrefix + ":" + destinationEntity.getGmlInfo().complexPropertyTypeName());
         // we are done, return the created element detached from the document
         return elementNode;
     }
 
     /**
-     * Helper method that finds a complex type declaration by name on the provided GML document.
-     * NULL is returned if no matching complex type declaration is found.
+     * Helper method that finds a complex type declaration by name on the provided GML document. NULL is returned if no
+     * matching complex type declaration is found.
      */
     static Node getFeatureElementNodeByName(Document gmlSchema, String complexTypeName) {
         NodeList complexTypes = gmlSchema.getElementsByTagName("xs:complexType");

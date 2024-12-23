@@ -12,8 +12,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
 /**
- * A {@link ReferencedEnvelope} subclass that keeps the original SRS after the KVP parse, to ensure
- * we are true to the original SRS when building a BBOX filter
+ * A {@link ReferencedEnvelope} subclass that keeps the original SRS after the KVP parse, to ensure we are true to the
+ * original SRS when building a BBOX filter
  *
  * @author Andrea Aime - GeoSolutions
  */

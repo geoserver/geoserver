@@ -31,8 +31,7 @@ abstract class OutputFormatProvider {
 
         @Override
         List<String> getFormatNames(LayerInfo layer) {
-            CoverageResponseDelegateFinder finder =
-                    GeoServerExtensions.bean(CoverageResponseDelegateFinder.class);
+            CoverageResponseDelegateFinder finder = GeoServerExtensions.bean(CoverageResponseDelegateFinder.class);
             List<String> formats = new ArrayList<>();
             for (String format : finder.getOutputFormats()) {
                 CoverageResponseDelegate delegate = finder.encoderFor(format);
@@ -58,9 +57,7 @@ abstract class OutputFormatProvider {
         List<String> getFormatNames(LayerInfo layer) {
             GeoServerTileLayer tileLayer = GWC.get().getTileLayer(layer);
             if (tileLayer == null) return Collections.emptyList();
-            return tileLayer.getMimeTypes().stream()
-                    .map(m -> m.getMimeType())
-                    .collect(Collectors.toList());
+            return tileLayer.getMimeTypes().stream().map(m -> m.getMimeType()).collect(Collectors.toList());
         }
     }
 
@@ -80,10 +77,6 @@ abstract class OutputFormatProvider {
             throw new IllegalArgumentException("Unknown service " + service);
         }
         // clean up, deduplicate, return in a predictable order
-        return formats.stream()
-                .filter(f -> isValidMime(f))
-                .distinct()
-                .sorted()
-                .collect(Collectors.toList());
+        return formats.stream().filter(f -> isValidMime(f)).distinct().sorted().collect(Collectors.toList());
     }
 }

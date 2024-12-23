@@ -61,10 +61,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         xs.alias("wms", WMSInfo.class, WMSInfoImpl.class);
         xs.registerConverter(new WMSInfoConverter(xp));
         xs.addDefaultImplementation(WatermarkInfoImpl.class, WatermarkInfo.class);
-        xs.allowTypes(
-                new Class[] {
-                    WatermarkInfo.class, WatermarkInfoImpl.class, CacheConfiguration.class
-                });
+        xs.allowTypes(new Class[] {WatermarkInfo.class, WatermarkInfoImpl.class, CacheConfiguration.class});
     }
 
     @Override
@@ -96,8 +93,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
     }
 
     /**
-     * Converter for WMSInfo, stores authority urls and identifiers under metadata map in the 2.1.x
-     * series.
+     * Converter for WMSInfo, stores authority urls and identifiers under metadata map in the 2.1.x series.
      *
      * @since 2.1.3
      */
@@ -114,8 +110,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
 
         /** @since 2.1.3 */
         @Override
-        protected void doMarshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        protected void doMarshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
             //            WMSInfo service = (WMSInfo) source;
             //            {
@@ -141,8 +136,7 @@ public class WMSXStreamLoader extends XStreamServiceLoader<WMSInfo> {
         }
 
         @Override
-        public Object doUnmarshal(
-                Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+        public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
 
             WMSInfoImpl service = (WMSInfoImpl) super.doUnmarshal(result, reader, context);
             MetadataMap metadata = service.getMetadata();

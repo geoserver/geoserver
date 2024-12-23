@@ -38,8 +38,8 @@ import org.geotools.api.feature.type.FeatureType;
 import org.geotools.util.logging.Logging;
 
 /**
- * Configures expansion limits on a layer by layer basis. TODO: would be nice if this panel could go
- * into the Dimension tab, but there are no extension points there.
+ * Configures expansion limits on a layer by layer basis. TODO: would be nice if this panel could go into the Dimension
+ * tab, but there are no extension points there.
  */
 public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
@@ -51,12 +51,9 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer sidecarTypeContainer = new WebMarkupContainer("sidecarTypeContainer");
         add(sidecarTypeContainer);
 
-        PropertyModel<MetadataMap> metadataModel =
-                new PropertyModel<>(layerModel, "resource.metadata");
-        MapModel<String> sidecarTypeModel =
-                new MapModel<>(metadataModel, MultiDimensionalExtension.SIDECAR_TYPE);
-        DropDownChoice<String> sidecarType =
-                new DropDownChoice<>("sidecarType", sidecarTypeModel, getAvailableTypes());
+        PropertyModel<MetadataMap> metadataModel = new PropertyModel<>(layerModel, "resource.metadata");
+        MapModel<String> sidecarTypeModel = new MapModel<>(metadataModel, MultiDimensionalExtension.SIDECAR_TYPE);
+        DropDownChoice<String> sidecarType = new DropDownChoice<>("sidecarType", sidecarTypeModel, getAvailableTypes());
         sidecarType.add(new SidecarValidator());
         sidecarTypeContainer.add(sidecarType);
         LayerInfo layer = (LayerInfo) getDefaultModelObject();
@@ -71,8 +68,7 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
 
         MapModel<Integer> expandLimitMaxModel =
                 new MapModel<>(metadataModel, MultiDimensionalExtension.EXPAND_LIMIT_MAX_KEY);
-        TextField<Integer> expandLimitMax =
-                new TextField<>("maxExpandLimit", expandLimitMaxModel, Integer.class);
+        TextField<Integer> expandLimitMax = new TextField<>("maxExpandLimit", expandLimitMaxModel, Integer.class);
         expandLimitMax.add(RangeValidator.minimum(0));
         add(expandLimitMax);
     }
@@ -106,33 +102,22 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
                 String nativeType = layer.getResource().getNativeName();
 
                 DataStore store =
-                        (DataStore)
-                                ((DataStoreInfo) layer.getResource().getStore()).getDataStore(null);
-                Map<String, AttributeDescriptor> sidecarAttributes =
-                        getAttributesMap(store, sidecarType);
-                Map<String, AttributeDescriptor> mainAttributes =
-                        getAttributesMap(store, nativeType);
+                        (DataStore) ((DataStoreInfo) layer.getResource().getStore()).getDataStore(null);
+                Map<String, AttributeDescriptor> sidecarAttributes = getAttributesMap(store, sidecarType);
+                Map<String, AttributeDescriptor> mainAttributes = getAttributesMap(store, nativeType);
 
-                layer.getResource()
-                        .getMetadata()
-                        .forEach(
-                                (k, v) -> {
-                                    // validate enabled dimensions
-                                    if (v instanceof DimensionInfo) {
-                                        DimensionInfo di = (DimensionInfo) v;
-                                        if (di.isEnabled()) {
-                                            validateDimension(
-                                                    di,
-                                                    sidecarType,
-                                                    sidecarAttributes,
-                                                    mainAttributes);
-                                        }
-                                    }
-                                });
+                layer.getResource().getMetadata().forEach((k, v) -> {
+                    // validate enabled dimensions
+                    if (v instanceof DimensionInfo) {
+                        DimensionInfo di = (DimensionInfo) v;
+                        if (di.isEnabled()) {
+                            validateDimension(di, sidecarType, sidecarAttributes, mainAttributes);
+                        }
+                    }
+                });
 
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.SEVERE, "Failed to load the target feature type for validation", e);
+                LOGGER.log(Level.SEVERE, "Failed to load the target feature type for validation", e);
             }
         }
 
@@ -141,11 +126,9 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
                 String sidecarTypeName,
                 Map<String, AttributeDescriptor> sidecarAttributes,
                 Map<String, AttributeDescriptor> mainAttributes) {
-            validateAttribute(
-                    di.getAttribute(), sidecarTypeName, sidecarAttributes, mainAttributes);
+            validateAttribute(di.getAttribute(), sidecarTypeName, sidecarAttributes, mainAttributes);
             if (di.getEndAttribute() != null) {
-                validateAttribute(
-                        di.getEndAttribute(), sidecarTypeName, sidecarAttributes, mainAttributes);
+                validateAttribute(di.getEndAttribute(), sidecarTypeName, sidecarAttributes, mainAttributes);
             }
         }
 
@@ -154,24 +137,19 @@ public class MultiDimLayerPanel extends PublishedConfigurationPanel<LayerInfo> {
                 String sidecarTypeName,
                 Map<String, AttributeDescriptor> sidecarAttributes,
                 Map<String, AttributeDescriptor> mainAttributes) {
-            if (!sidecarAttributes.containsKey(attribute)
-                    || !mainAttributes.containsKey(attribute)) {
+            if (!sidecarAttributes.containsKey(attribute) || !mainAttributes.containsKey(attribute)) {
                 error(getErrorMessage("attributeNotFound", attribute, sidecarTypeName));
                 return;
             }
             Class<?> expectedType = mainAttributes.get(attribute).getType().getBinding();
             if (!sidecarAttributes.get(attribute).getType().getBinding().equals(expectedType)) {
-                error(
-                        getErrorMessage(
-                                "attributeTypeMismatch",
-                                attribute,
-                                sidecarTypeName,
-                                expectedType.getSimpleName()));
+                error(getErrorMessage(
+                        "attributeTypeMismatch", attribute, sidecarTypeName, expectedType.getSimpleName()));
             }
         }
 
-        private Map<String, AttributeDescriptor> getAttributesMap(
-                DataStore store, String sidecarType) throws IOException {
+        private Map<String, AttributeDescriptor> getAttributesMap(DataStore store, String sidecarType)
+                throws IOException {
             SimpleFeatureType sidecarSchema = store.getSchema(sidecarType);
             return sidecarSchema.getAttributeDescriptors().stream()
                     .collect(Collectors.toMap(ad -> ad.getLocalName(), ad -> ad));

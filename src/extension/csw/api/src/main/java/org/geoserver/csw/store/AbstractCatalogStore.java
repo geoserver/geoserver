@@ -53,8 +53,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public CloseableIterator<String> getDomain(Name typeName, final Name attributeName)
-            throws IOException {
+    public CloseableIterator<String> getDomain(Name typeName, final Name attributeName) throws IOException {
         final RecordDescriptor rd = descriptorByType.get(typeName);
 
         if (rd == null) {
@@ -80,10 +79,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
                             for (PropertyName property : properties) {
                                 Property prop = (Property) property.evaluate(feature);
                                 if (prop != null) {
-                                    values.add(
-                                            new String(
-                                                    ((String) prop.getValue()).getBytes(ISO_8859_1),
-                                                    UTF_8));
+                                    values.add(new String(((String) prop.getValue()).getBytes(ISO_8859_1), UTF_8));
                                     break;
                                 }
                             }
@@ -120,8 +116,8 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public FeatureCollection<FeatureType, Feature> getRecords(
-            Query q, Transaction t, RecordDescriptor rdOutput) throws IOException {
+    public FeatureCollection<FeatureType, Feature> getRecords(Query q, Transaction t, RecordDescriptor rdOutput)
+            throws IOException {
         Name typeName = null;
         if (q.getTypeName() == null) {
             typeName = CSWRecordDescriptor.RECORD_DESCRIPTOR.getName();
@@ -140,8 +136,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     public abstract FeatureCollection<FeatureType, Feature> getRecordsInternal(
-            RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
-            throws IOException;
+            RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException;
 
     @Override
     public RepositoryItem getRepositoryItem(String recordId) throws IOException {
@@ -150,8 +145,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
     }
 
     @Override
-    public int getRecordsCount(Query q, Transaction t, RecordDescriptor rdOutput)
-            throws IOException {
+    public int getRecordsCount(Query q, Transaction t, RecordDescriptor rdOutput) throws IOException {
         // simply delegate to the feature collection, we have no optimizations
         // available for the time being (even counting the files in case of no filtering
         // would be wrong as we have to
@@ -170,11 +164,7 @@ public abstract class AbstractCatalogStore implements CatalogStore {
 
     @Override
     public void updateRecord(
-            Name typeName,
-            Name[] attributeNames,
-            Object[] attributeValues,
-            Filter filter,
-            Transaction t)
+            Name typeName, Name[] attributeNames, Object[] attributeValues, Filter filter, Transaction t)
             throws IOException {
         throw new UnsupportedOperationException("This store does not support transactions yet");
     }
@@ -186,7 +176,6 @@ public abstract class AbstractCatalogStore implements CatalogStore {
 
     @Override
     public List<PropertyName> translateToPropertyNames(RecordDescriptor rd, Name name) {
-        return Collections.singletonList(
-                AbstractRecordDescriptor.buildPropertyName(rd.getNamespaceSupport(), name));
+        return Collections.singletonList(AbstractRecordDescriptor.buildPropertyName(rd.getNamespaceSupport(), name));
     }
 }

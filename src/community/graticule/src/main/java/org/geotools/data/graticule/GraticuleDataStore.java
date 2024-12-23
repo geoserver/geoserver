@@ -33,8 +33,7 @@ public class GraticuleDataStore extends ContentDataStore implements DataStore {
     }
 
     @Override
-    protected ContentFeatureSource createFeatureSource(ContentEntry contentEntry)
-            throws IOException {
+    protected ContentFeatureSource createFeatureSource(ContentEntry contentEntry) throws IOException {
         return new GraticuleFeatureSource(contentEntry, steps, bounds);
     }
 

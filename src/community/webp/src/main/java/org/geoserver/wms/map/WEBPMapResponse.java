@@ -27,25 +27,21 @@ import org.geotools.image.io.ImageIOExt;
 public final class WEBPMapResponse extends RenderedImageMapResponse {
 
     /** Logger. */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(WEBPMapResponse.class.toString());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(WEBPMapResponse.class.toString());
 
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, true, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/webp";
 
-    private static final ImageWriterSpi writerSPI =
-            new com.luciad.imageio.webp.WebPImageWriterSpi();
+    private static final ImageWriterSpi writerSPI = new com.luciad.imageio.webp.WebPImageWriterSpi();
 
     public WEBPMapResponse(WMS wms) {
         super(MIME_TYPE, wms);
     }
 
     @Override
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws IOException {
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("About to write a WEBP image.");
@@ -53,10 +49,8 @@ public final class WEBPMapResponse extends RenderedImageMapResponse {
         image = applyPalette(image, mapContent, MIME_TYPE, true);
         final ImageWriter writer = writerSPI.createWriterInstance();
 
-        try (final ImageOutputStream ioutstream =
-                ImageIOExt.createImageOutputStream(image, outStream)) {
-            if (ioutstream == null)
-                throw new ServiceException("Unable to create ImageOutputStream.");
+        try (final ImageOutputStream ioutstream = ImageIOExt.createImageOutputStream(image, outStream)) {
+            if (ioutstream == null) throw new ServiceException("Unable to create ImageOutputStream.");
             writer.setOutput(ioutstream);
             writer.write(image);
         } finally {
@@ -64,8 +58,7 @@ public final class WEBPMapResponse extends RenderedImageMapResponse {
 
                 writer.dispose();
             } catch (Throwable e) {
-                if (LOGGER.isLoggable(Level.FINEST))
-                    LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
+                if (LOGGER.isLoggable(Level.FINEST)) LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
             }
 
             RasterCleaner.addImage(image);

@@ -15,8 +15,8 @@ import org.geotools.feature.collection.DecoratingFeatureCollection;
 import org.geotools.feature.collection.DecoratingSimpleFeatureCollection;
 
 /**
- * Simple interface allowing access to the original main {@link FeatureTypeInfo} behind a feature
- * collection. Has a simple and a complex implementation.
+ * Simple interface allowing access to the original main {@link FeatureTypeInfo} behind a feature collection. Has a
+ * simple and a complex implementation.
  */
 public interface TypeInfoCollectionWrapper {
 
@@ -24,15 +24,14 @@ public interface TypeInfoCollectionWrapper {
     static <T extends FeatureType, F extends Feature> FeatureCollection<T, F> wrap(
             FeatureCollection<T, F> delegate, FeatureTypeInfo featureTypeInfo) {
         if (delegate instanceof SimpleFeatureCollection) {
-            return (FeatureCollection<T, F>)
-                    new Simple((SimpleFeatureCollection) delegate, featureTypeInfo);
+            return (FeatureCollection<T, F>) new Simple((SimpleFeatureCollection) delegate, featureTypeInfo);
         } else {
             return new Complex<>(delegate, featureTypeInfo);
         }
     }
 
-    class Complex<T extends FeatureType, F extends Feature>
-            extends DecoratingFeatureCollection<T, F> implements TypeInfoCollectionWrapper {
+    class Complex<T extends FeatureType, F extends Feature> extends DecoratingFeatureCollection<T, F>
+            implements TypeInfoCollectionWrapper {
 
         private final FeatureTypeInfo featureTypeInfo;
 

@@ -44,9 +44,7 @@ public abstract class AbstractFlowControllerTest {
      * @param maxWait max amount of time we'll wait
      */
     void waitTerminated(Thread t, long maxWait) {
-        await().atMost(maxWait, MILLISECONDS)
-                .pollDelay(10, MILLISECONDS)
-                .until(() -> t.getState() == State.TERMINATED);
+        await().atMost(maxWait, MILLISECONDS).pollDelay(10, MILLISECONDS).until(() -> t.getState() == State.TERMINATED);
     }
 
     /** Waits maxWait for the thread to finish by itself, then forcefully kills it */
@@ -97,12 +95,10 @@ public abstract class AbstractFlowControllerTest {
     }
 
     /**
-     * Waits for he flow controller testing thread to get into a specified state for a max given
-     * amount of time, fail otherwise
+     * Waits for he flow controller testing thread to get into a specified state for a max given amount of time, fail
+     * otherwise
      */
     protected void waitState(ThreadState state, FlowControllerTestingThread tt, long maxWait) {
-        await().atMost(maxWait, MILLISECONDS)
-                .pollDelay(20, MILLISECONDS)
-                .until(() -> state.equals(tt.state));
+        await().atMost(maxWait, MILLISECONDS).pollDelay(20, MILLISECONDS).until(() -> state.equals(tt.state));
     }
 }

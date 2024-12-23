@@ -19,30 +19,25 @@ import org.geoserver.platform.resource.NullLockProvider;
  */
 public class LockProviderInitializer implements GeoServerInitializer {
 
-    ConfigurationListenerAdapter listener =
-            new ConfigurationListenerAdapter() {
-                @Override
-                public void handleGlobalChange(
-                        GeoServerInfo global,
-                        List<String> propertyNames,
-                        List<Object> oldValues,
-                        List<Object> newValues) {
-                    boolean reload = false;
-                    String lockProviderName = null;
-                    if (propertyNames.contains("lockProviderName")) {
-                        lockProviderName =
-                                (String) newValues.get(propertyNames.indexOf("lockProviderName"));
-                        reload = true;
-                    }
-                    if (reload) {
-                        try {
-                            setLockProvider(lockProviderName);
-                        } catch (Exception e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
+    ConfigurationListenerAdapter listener = new ConfigurationListenerAdapter() {
+        @Override
+        public void handleGlobalChange(
+                GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
+            boolean reload = false;
+            String lockProviderName = null;
+            if (propertyNames.contains("lockProviderName")) {
+                lockProviderName = (String) newValues.get(propertyNames.indexOf("lockProviderName"));
+                reload = true;
+            }
+            if (reload) {
+                try {
+                    setLockProvider(lockProviderName);
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
                 }
-            };
+            }
+        }
+    };
 
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
@@ -63,21 +58,17 @@ public class LockProviderInitializer implements GeoServerInitializer {
             Object provider = GeoServerExtensions.bean(lockProviderName);
             if (provider == null) {
                 throw new IllegalStateException(
-                        "Could not find "
-                                + lockProviderName
-                                + " lock provider in spring application context");
+                        "Could not find " + lockProviderName + " lock provider in spring application context");
             } else if (!(provider instanceof LockProvider)) {
-                throw new IllegalStateException(
-                        "Found "
-                                + lockProviderName
-                                + "("
-                                + provider.getClass().getName()
-                                + ") in application context, but it was not a LockProvider");
+                throw new IllegalStateException("Found "
+                        + lockProviderName
+                        + "("
+                        + provider.getClass().getName()
+                        + ") in application context, but it was not a LockProvider");
             }
             delegate = (LockProvider) provider;
         }
-        GlobalLockProvider lockProvider =
-                (GlobalLockProvider) GeoServerExtensions.bean("lockProvider");
+        GlobalLockProvider lockProvider = (GlobalLockProvider) GeoServerExtensions.bean("lockProvider");
         if (lockProvider.getDelegate() != delegate) {
             lockProvider.setDelegate(delegate);
         }

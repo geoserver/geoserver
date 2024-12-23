@@ -26,25 +26,24 @@ import org.locationtech.jts.geom.Polygon;
 @SuppressWarnings("serial")
 class AttributeDescription implements Serializable {
 
-    static final List<Class<?>> BINDINGS =
-            Arrays.asList(
-                    String.class,
-                    Boolean.class,
-                    Integer.class,
-                    Long.class,
-                    Float.class,
-                    Double.class,
-                    Date.class,
-                    Time.class,
-                    Timestamp.class,
-                    Geometry.class,
-                    Point.class,
-                    LineString.class,
-                    Polygon.class,
-                    MultiPoint.class,
-                    MultiLineString.class,
-                    MultiPolygon.class,
-                    GeometryCollection.class);
+    static final List<Class<?>> BINDINGS = Arrays.asList(
+            String.class,
+            Boolean.class,
+            Integer.class,
+            Long.class,
+            Float.class,
+            Double.class,
+            Date.class,
+            Time.class,
+            Timestamp.class,
+            Geometry.class,
+            Point.class,
+            LineString.class,
+            Polygon.class,
+            MultiPoint.class,
+            MultiLineString.class,
+            MultiPolygon.class,
+            GeometryCollection.class);
 
     static final CoordinateReferenceSystem WGS84;
 
@@ -71,8 +70,7 @@ class AttributeDescription implements Serializable {
         if (binding == null) {
             return "-";
         } else if (BINDINGS.contains(binding)) {
-            return new ParamResourceModel("AttributeType." + binding.getSimpleName(), null)
-                    .getString();
+            return new ParamResourceModel("AttributeType." + binding.getSimpleName(), null).getString();
         } else {
             return binding.getSimpleName();
         }

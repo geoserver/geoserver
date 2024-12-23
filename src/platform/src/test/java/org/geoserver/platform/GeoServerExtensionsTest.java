@@ -54,8 +54,7 @@ public class GeoServerExtensionsTest {
 
         GeoServerExtensions gse = new GeoServerExtensions();
         gse.setApplicationContext(appContext1);
-        GeoServerExtensions.extensionsCache.put(
-                GeoServerExtensionsTest.class, new String[] {"fake"});
+        GeoServerExtensions.extensionsCache.put(GeoServerExtensionsTest.class, new String[] {"fake"});
 
         assertSame(appContext1, GeoServerExtensions.context);
 
@@ -83,8 +82,7 @@ public class GeoServerExtensionsTest {
         expect(appContext.getBean("fakeKey")).andReturn(null);
         replay(appContext);
 
-        List<GeoServerExtensionsTest> extensions =
-                GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
+        List<GeoServerExtensionsTest> extensions = GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
         assertNotNull(extensions);
         assertEquals(2, extensions.size());
         assertTrue(extensions.contains(this));
@@ -93,15 +91,14 @@ public class GeoServerExtensionsTest {
         assertEquals(3, GeoServerExtensions.extensionsCache.size());
         assertTrue(GeoServerExtensions.extensionsCache.containsKey(GeoServerExtensionsTest.class));
         assertNotNull(GeoServerExtensions.extensionsCache.get(GeoServerExtensionsTest.class));
-        assertEquals(
-                2, GeoServerExtensions.extensionsCache.get(GeoServerExtensionsTest.class).length);
+        assertEquals(2, GeoServerExtensions.extensionsCache.get(GeoServerExtensionsTest.class).length);
 
         verify(appContext);
     }
 
     /**
-     * If a context is explicitly provided that is not the one set through setApplicationContext(),
-     * the extensions() method shall look into it and bypass the cache
+     * If a context is explicitly provided that is not the one set through setApplicationContext(), the extensions()
+     * method shall look into it and bypass the cache
      */
     @Test
     public void testExtensionsApplicationContext() {
@@ -114,14 +111,11 @@ public class GeoServerExtensionsTest {
         // setApplicationContext cleared the static cache
         assertEquals(0, GeoServerExtensions.extensionsCache.size());
         // set the expectation over the app context used as argument
-        expect(customAppContext.getBeanNamesForType(ExtensionFilter.class))
-                .andReturn(new String[0]);
+        expect(customAppContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(customAppContext.getBeanNamesForType(GeoServerExtensionsTest.class))
                 .andReturn(new String[] {"itDoesntMatterForThePurpose"});
-        expect(customAppContext.getBeanNamesForType(ExtensionProvider.class))
-                .andReturn(new String[0]);
-        expect(customAppContext.getBeanNamesForType(ExtensionFilter.class))
-                .andReturn(new String[0]);
+        expect(customAppContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
+        expect(customAppContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
         expect(customAppContext.getBean("itDoesntMatterForThePurpose")).andReturn(this);
         expect(appContext.isSingleton(anyObject())).andReturn(true).anyTimes();
         expect(customAppContext.isSingleton(anyObject())).andReturn(true).anyTimes();
@@ -164,8 +158,7 @@ public class GeoServerExtensionsTest {
         gse.setApplicationContext(appContext);
 
         // check we get nothing
-        List<GeoServerExtensionsTest> extensions =
-                GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
+        List<GeoServerExtensionsTest> extensions = GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
         assertEquals(0, extensions.size());
 
         // change the bean id and we should get one result instead
@@ -198,8 +191,7 @@ public class GeoServerExtensionsTest {
         gse.setApplicationContext(appContext);
 
         // check we get nothing
-        List<GeoServerExtensionsTest> extensions =
-                GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
+        List<GeoServerExtensionsTest> extensions = GeoServerExtensions.extensions(GeoServerExtensionsTest.class);
         assertEquals(0, extensions.size());
 
         // change the bean id and we should get one result instead
@@ -246,10 +238,8 @@ public class GeoServerExtensionsTest {
         gse.setApplicationContext(appContext);
 
         expect(appContext.getBeanNamesForType(ExtensionFilter.class)).andReturn(new String[0]);
-        expect(appContext.getBeanNamesForType(GeoServerExtensionsTest.class))
-                .andReturn(new String[0]);
-        expect(appContext.getBeanNamesForType(ExtensionProvider.class))
-                .andReturn(new String[] {"testKey2"});
+        expect(appContext.getBeanNamesForType(GeoServerExtensionsTest.class)).andReturn(new String[0]);
+        expect(appContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[] {"testKey2"});
 
         ExtensionProvider xp = createMock(ExtensionProvider.class);
         expect(xp.getExtensionPoint()).andReturn(GeoServerExtensionsTest.class);
@@ -259,7 +249,8 @@ public class GeoServerExtensionsTest {
 
         replay(xp);
         replay(appContext);
-        assertEquals(1, GeoServerExtensions.extensions(GeoServerExtensionsTest.class).size());
+        assertEquals(
+                1, GeoServerExtensions.extensions(GeoServerExtensionsTest.class).size());
 
         verify(xp);
         verify(appContext);
@@ -268,16 +259,16 @@ public class GeoServerExtensionsTest {
     @Test
     public void testSystemProperty() {
         // check for a property we did set up in the setUp
-        assertEquals(
-                "ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ApplicationContext) null));
-        assertEquals(
-                "ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ServletContext) null));
+        assertEquals("ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ApplicationContext) null));
+        assertEquals("ABC", GeoServerExtensions.getProperty("TEST_PROPERTY", (ServletContext) null));
     }
 
     @Test
     public void testWebProperty() {
         ServletContext servletContext = createMock(ServletContext.class);
-        expect(servletContext.getInitParameter("TEST_PROPERTY")).andReturn("DEF").anyTimes();
+        expect(servletContext.getInitParameter("TEST_PROPERTY"))
+                .andReturn("DEF")
+                .anyTimes();
         expect(servletContext.getInitParameter("WEB_PROPERTY")).andReturn("WWW").anyTimes();
         replay(servletContext);
 

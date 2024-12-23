@@ -62,25 +62,18 @@ public class ConfigTest extends HzSynchronizerTest {
         assertTrue(
                 "The file 'cluster.properties' does not exist!",
                 Resources.exists(tmpDir1.get("cluster/cluster.properties")));
-        assertTrue(
-                "The file 'hazelcast.xml' does not exist!",
-                Resources.exists(tmpDir1.get("cluster/hazelcast.xml")));
+        assertTrue("The file 'hazelcast.xml' does not exist!", Resources.exists(tmpDir1.get("cluster/hazelcast.xml")));
 
         this.cluster.saveConfiguration(resourceLoader2);
 
         assertTrue(
                 "The file 'cluster.properties' does not exist!",
                 Resources.exists(tmpDir2.get("cluster/cluster.properties")));
-        assertTrue(
-                "The file 'hazelcast.xml' does not exist!",
-                Resources.exists(tmpDir2.get("cluster/hazelcast.xml")));
+        assertTrue("The file 'hazelcast.xml' does not exist!", Resources.exists(tmpDir2.get("cluster/hazelcast.xml")));
 
-        assertEquals(
-                lines(tmpDir1, "cluster/cluster.properties"),
-                lines(tmpDir2, "cluster/cluster.properties"));
+        assertEquals(lines(tmpDir1, "cluster/cluster.properties"), lines(tmpDir2, "cluster/cluster.properties"));
 
-        assertEquals(
-                lines(tmpDir1, "cluster/hazelcast.xml"), lines(tmpDir2, "cluster/hazelcast.xml"));
+        assertEquals(lines(tmpDir1, "cluster/hazelcast.xml"), lines(tmpDir2, "cluster/hazelcast.xml"));
     }
 
     @Override

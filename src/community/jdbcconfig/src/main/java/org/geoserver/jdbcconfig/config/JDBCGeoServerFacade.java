@@ -77,23 +77,23 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
             if (realLogInfo == null) {
                 return;
             }
-            LoggingInfo startLogInfo =
-                    LoggingStartupContextListener.getLogging(
-                            ddResourceStore == null ? resourceLoader : ddResourceStore);
+            LoggingInfo startLogInfo = LoggingStartupContextListener.getLogging(
+                    ddResourceStore == null ? resourceLoader : ddResourceStore);
 
             // Doing this reflectively so that if LoggingInfo gets new properties, this should still
             // work. KS
 
             ClassProperties properties = OwsUtils.getClassProperties(LoggingInfo.class);
 
-            List<String> propertyNames = new ArrayList<String>(properties.properties().size());
-            List<Object> newValues = new ArrayList<Object>(properties.properties().size());
-            List<Object> oldValues = new ArrayList<Object>(properties.properties().size());
+            List<String> propertyNames =
+                    new ArrayList<String>(properties.properties().size());
+            List<Object> newValues =
+                    new ArrayList<Object>(properties.properties().size());
+            List<Object> oldValues =
+                    new ArrayList<Object>(properties.properties().size());
 
             final Level propertyTableLevel = Level.FINE;
-            LOGGER.log(
-                    propertyTableLevel,
-                    "Checking Logging configuration in case it neeeds to be reinitialized");
+            LOGGER.log(propertyTableLevel, "Checking Logging configuration in case it neeeds to be reinitialized");
             for (String propName : properties.properties()) {
 
                 // Don't care about the return type
@@ -102,22 +102,19 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
                 Object newVal = read.invoke(realLogInfo);
                 Object oldVal = read.invoke(startLogInfo);
 
-                if ((newVal == null && oldVal == null)
-                        || (newVal != null && newVal.equals(oldVal))) {
+                if ((newVal == null && oldVal == null) || (newVal != null && newVal.equals(oldVal))) {
                     // Values the same
-                    LOGGER.log(
-                            propertyTableLevel,
-                            "=== {0} (logging.xml: {1}, JDBCConfig: {2})",
-                            new Object[] {read.getName(), oldVal, newVal});
+                    LOGGER.log(propertyTableLevel, "=== {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {
+                        read.getName(), oldVal, newVal
+                    });
                 } else {
                     // Values different
                     propertyNames.add(propName);
                     newValues.add(newVal);
                     oldValues.add(oldVal);
-                    LOGGER.log(
-                            propertyTableLevel,
-                            "=/= {0} (logging.xml: {1}, JDBCConfig: {2})",
-                            new Object[] {read.getName(), oldVal, newVal});
+                    LOGGER.log(propertyTableLevel, "=/= {0} (logging.xml: {1}, JDBCConfig: {2})", new Object[] {
+                        read.getName(), oldVal, newVal
+                    });
                 }
             }
             // If there's a difference other than the ID
@@ -318,8 +315,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ServiceInfo> T getService(
-            final WorkspaceInfo workspace, final Class<T> clazz) {
+    public <T extends ServiceInfo> T getService(final WorkspaceInfo workspace, final Class<T> clazz) {
         return (T) db.getService(workspace, clazz);
     }
 
@@ -341,9 +337,7 @@ public class JDBCGeoServerFacade implements GeoServerFacade {
     }
 
     private <T extends Info> T findByName(
-            @Nonnull final String name,
-            @Nullable final WorkspaceInfo workspace,
-            @Nonnull final Class<T> clazz)
+            @Nonnull final String name, @Nullable final WorkspaceInfo workspace, @Nonnull final Class<T> clazz)
             throws AssertionError {
 
         Filter filter = equal("name", name);

@@ -49,16 +49,12 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
 
     protected final QNameKvpParser qNameParser;
 
-    public BaseFeatureKvpRequestReader(
-            Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
+    public BaseFeatureKvpRequestReader(Class<?> requestBean, GeoServer geoServer, FilterFactory filterFactory) {
         this(requestBean, WfsFactory.eINSTANCE, geoServer, filterFactory);
     }
 
     public BaseFeatureKvpRequestReader(
-            Class<?> requestBean,
-            EFactory factory,
-            GeoServer geoServer,
-            FilterFactory filterFactory) {
+            Class<?> requestBean, EFactory factory, GeoServer geoServer, FilterFactory filterFactory) {
         super(requestBean, factory);
         this.catalog = geoServer.getCatalog();
         this.geoServer = geoServer;
@@ -70,23 +66,16 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         return geoServer.getService(WFSInfo.class);
     }
 
-    /**
-     * Reads the commons elements to GetFeature, GetFeatureWithLock, LockFeature (typenames,
-     * filters, namespaces)
-     */
+    /** Reads the commons elements to GetFeature, GetFeatureWithLock, LockFeature (typenames, filters, namespaces) */
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         request = super.read(request, kvp, rawKvp);
 
         // get feature has some additional parsing requirements
         EObject eObject = (EObject) request;
 
         // make sure the filter is specified in just one way
-        ensureMutuallyExclusive(
-                kvp,
-                new String[] {"featureId", "resourceId", "filter", "bbox", "cql_filter"},
-                eObject);
+        ensureMutuallyExclusive(kvp, new String[] {"featureId", "resourceId", "filter", "bbox", "cql_filter"}, eObject);
 
         // did the user supply alternate namespace prefixes?
         NamespaceSupport namespaces = null;
@@ -96,18 +85,16 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             } else if (kvp.get("namespaces") instanceof NamespaceSupport) {
                 namespaces = (NamespaceSupport) kvp.get("namespaces");
             } else {
-                LOGGER.warning(
-                        "There's a namespace parameter but it seems it wasn't parsed to a "
-                                + NamespaceSupport.class.getName()
-                                + ": "
-                                + kvp.get("namespace"));
+                LOGGER.warning("There's a namespace parameter but it seems it wasn't parsed to a "
+                        + NamespaceSupport.class.getName()
+                        + ": "
+                        + kvp.get("namespace"));
             }
         }
 
         // typeName (in WFS 2.0 it is typeNames, not typeName)
         List<List<QName>> typeNames = null;
-        if ((kvp.containsKey("typeName") || kvp.containsKey("typeNames"))
-                && !kvp.containsKey("STOREDQUERY_ID")) {
+        if ((kvp.containsKey("typeName") || kvp.containsKey("typeNames")) && !kvp.containsKey("STOREDQUERY_ID")) {
             // HACK, the kvp reader gives us a list of QName, need to wrap in
             // another
             typeNames = getTypeNames(kvp);
@@ -164,8 +151,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 } else {
                     throw new WFSException(
                             eObject,
-                            "The query should specify either typeName, featureId filter"
-                                    + ", or a stored query id",
+                            "The query should specify either typeName, featureId filter" + ", or a stored query id",
                             "MissingParameterValue");
                 }
             }
@@ -195,14 +181,10 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
                 if (getWFS().isCiteCompliant() && typeNames != null && !typeNames.isEmpty()) {
                     QName qName = getTypeNameFromFeatureId(fid);
                     if (qName != null) {
-                        if (!typeNames.stream()
-                                .flatMap(List::stream)
-                                .anyMatch(q -> typeNameMatch(qName, q))) {
+                        if (!typeNames.stream().flatMap(List::stream).anyMatch(q -> typeNameMatch(qName, q))) {
                             String locator = isFeatureId ? "FEATUREID" : "RESOURCEID";
                             WFSException exception =
-                                    new WFSException(
-                                            eObject,
-                                            "ResourceId is incosistent with " + "typenames");
+                                    new WFSException(eObject, "ResourceId is incosistent with " + "typenames");
                             exception.setCode(ServiceException.INVALID_PARAMETER_VALUE);
                             exception.setLocator(locator);
                             throw exception;
@@ -299,19 +281,13 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         }
     }
 
-    /**
-     * Given a set of keys, this method will ensure that no two keys are specified at the same time
-     */
+    /** Given a set of keys, this method will ensure that no two keys are specified at the same time */
     protected void ensureMutuallyExclusive(Map kvp, String[] keys, EObject request) {
         for (int i = 0; i < keys.length; i++) {
             if (kvp.containsKey(keys[i])) {
                 for (int j = i + 1; j < keys.length; j++) {
                     if (kvp.containsKey(keys[j])) {
-                        String msg =
-                                keys[i]
-                                        + " and "
-                                        + keys[j]
-                                        + " both specified but are mutually exclusive";
+                        String msg = keys[i] + " and " + keys[j] + " both specified but are mutually exclusive";
                         throw new WFSException(request, msg);
                     }
                 }
@@ -341,9 +317,7 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             NamespaceInfo ns = catalog.getNamespaceByURI(namespaceURI);
             if (ns == null) {
                 throw new WFSException(
-                        "Unknown namespace [" + qName.getPrefix() + "]",
-                        "InvalidParameterValue",
-                        "namespace");
+                        "Unknown namespace [" + qName.getPrefix() + "]", "InvalidParameterValue", "namespace");
             }
             prefix = ns.getPrefix();
             qName = new QName(namespaceURI, localPart, prefix);
@@ -352,15 +326,12 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
         if (!XMLConstants.DEFAULT_NS_PREFIX.equals(qName.getPrefix())
                 && catalog.getNamespaceByPrefix(qName.getPrefix()) == null) {
             throw new WFSException(
-                    "Unknown namespace [" + qName.getPrefix() + "]",
-                    "InvalidParameterValue",
-                    "namespace");
+                    "Unknown namespace [" + qName.getPrefix() + "]", "InvalidParameterValue", "namespace");
         }
 
         if (catalog.getFeatureTypeByName(namespaceURI, localPart) == null) {
             String name = qName.getPrefix() + ":" + qName.getLocalPart();
-            throw new WFSException(
-                    "Feature type " + name + " unknown", "InvalidParameterValue", "typeName");
+            throw new WFSException("Feature type " + name + " unknown", "InvalidParameterValue", "typeName");
         }
         return qName;
     }
@@ -380,19 +351,16 @@ public abstract class BaseFeatureKvpRequestReader extends WFSKvpRequestReader {
             SRSEnvelope se = (SRSEnvelope) bbox;
             epsgCode = se.getSrs();
         } else if (bbox instanceof ReferencedEnvelope) {
-            CoordinateReferenceSystem crs =
-                    ((ReferencedEnvelope) bbox).getCoordinateReferenceSystem();
+            CoordinateReferenceSystem crs = ((ReferencedEnvelope) bbox).getCoordinateReferenceSystem();
             if (crs != null) {
                 epsgCode = GML2EncodingUtils.toURI(crs);
             }
         }
 
-        return filterFactory.bbox(
-                name, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), epsgCode);
+        return filterFactory.bbox(name, bbox.getMinX(), bbox.getMinY(), bbox.getMaxX(), bbox.getMaxY(), epsgCode);
     }
 
     protected abstract <T> void querySet(EObject eObject, String key, List<T> value);
 
-    protected abstract void buildStoredQueries(
-            EObject eObject, List<URI> storedQueryId, Map<String, Object> rawKvp);
+    protected abstract void buildStoredQueries(EObject eObject, List<URI> storedQueryId, Map<String, Object> rawKvp);
 }

@@ -20,10 +20,8 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testSingleDelay() throws Exception {
         // create a single item flow controller
-        HttpHeaderPriorityProvider priorityProvider =
-                new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
-        GlobalFlowController controller =
-                new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
+        HttpHeaderPriorityProvider priorityProvider = new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
+        GlobalFlowController controller = new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
 
         // make three testing threads that will "process" forever, until we interrupt them
         FlowControllerTestingThread t1 =
@@ -75,10 +73,8 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testFirstInFirstOut() throws Exception {
         // create a single item flow controller
-        HttpHeaderPriorityProvider priorityProvider =
-                new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
-        GlobalFlowController controller =
-                new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
+        HttpHeaderPriorityProvider priorityProvider = new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
+        GlobalFlowController controller = new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
 
         // make three testing threads that will "process" forever, until we interrupt them,
         // all having the same priority
@@ -132,21 +128,17 @@ public class PriorityFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testTimeout() {
         // create a single item flow controller
-        HttpHeaderPriorityProvider priorityProvider =
-                new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
-        GlobalFlowController controller =
-                new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
+        HttpHeaderPriorityProvider priorityProvider = new HttpHeaderPriorityProvider(PRIORITY_HEADER_NAME, 0);
+        GlobalFlowController controller = new GlobalFlowController(1, new PriorityThreadBlocker(1, priorityProvider));
 
         // make two testing threads that will "process" for 400ms, but with a timeout of 100 on the
         // flow controller
         // t2 may start "late" on a slow/noisy/otherwise loaded machine, make extra sture
         // t1 won't start counting until t2 has had an occasion to start
         CountDownLatch latch = new CountDownLatch(1);
-        FlowControllerTestingThread t1 =
-                new FlowControllerTestingThread(buildRequest(1), 100, 400, controller);
+        FlowControllerTestingThread t1 = new FlowControllerTestingThread(buildRequest(1), 100, 400, controller);
         t1.setWaitLatch(latch);
-        FlowControllerTestingThread t2 =
-                new FlowControllerTestingThread(buildRequest(2), 100, 400, controller);
+        FlowControllerTestingThread t2 = new FlowControllerTestingThread(buildRequest(2), 100, 400, controller);
 
         // start t1 first, let go t2 after
         try {

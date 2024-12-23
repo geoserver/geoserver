@@ -31,9 +31,8 @@ public class WatermarkDecorationTest extends GeoServerSystemTestSupport {
         File file = new File("src/test/resources/org/geoserver/wms/world.png");
         options.put(
                 "url",
-                FF.literal(
-                        URLs.fileToUrl(file.getAbsoluteFile().getCanonicalFile())
-                                .toExternalForm()));
+                FF.literal(URLs.fileToUrl(file.getAbsoluteFile().getCanonicalFile())
+                        .toExternalForm()));
         d.loadOptions(options);
         BufferedImage logo = d.getLogo();
 

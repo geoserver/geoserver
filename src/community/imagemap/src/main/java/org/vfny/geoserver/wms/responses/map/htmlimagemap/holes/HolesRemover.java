@@ -18,43 +18,37 @@ import org.vfny.geoserver.wms.responses.map.htmlimagemap.utils.CyclicalList;
 import org.vfny.geoserver.wms.responses.map.htmlimagemap.utils.IndexableCyclicalLinkedList;
 
 /**
- * Utility class able to transform a polygon with holes into one without holes, cutting the original
- * geometry.
+ * Utility class able to transform a polygon with holes into one without holes, cutting the original geometry.
  *
  * <p>HolesRemover is an implementation of Dave Eberly's ear clipping algorithm as described here:
  * http://www.geometrictools.com/Documentation/TriangulationByEarClipping.pdf.
  *
- * <p>The code is taken from Triangulator, by Nick Gravelyn (http://www.nickontech.com) which is
- * open sourced under the terms of the Ms-PL.
+ * <p>The code is taken from Triangulator, by Nick Gravelyn (http://www.nickontech.com) which is open sourced under the
+ * terms of the Ms-PL.
  *
- * <p>Microsoft Public License (Ms-PL), which follows: This license governs use of the accompanying
- * software. If you use the software, you accept this license. If you do not accept the license, do
- * not use the software. 1. Definitions The terms "reproduce," "reproduction," "derivative works,"
- * and "distribution" have the same meaning here as under U.S. copyright law. A "contribution" is
- * the original software, or any additions or changes to the software. A "contributor" is any person
- * that distributes its contribution under this license. "Licensed patents" are a contributor's
- * patent claims that read directly on its contribution. 2. Grant of Rights (A) Copyright Grant-
- * Subject to the terms of this license, including the license conditions and limitations in section
- * 3, each contributor grants you a non-exclusive, worldwide, royalty-free copyright license to
- * reproduce its contribution, prepare derivative works of its contribution, and distribute its
- * contribution or any derivative works that you create. (B) Patent Grant- Subject to the terms of
- * this license, including the license conditions and limitations in section 3, each contributor
- * grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make,
- * have made, use, sell, offer for sale, import, and/or otherwise dispose of its contribution in the
- * software or derivative works of the contribution in the software. 3. Conditions and Limitations
- * (A) No Trademark License- This license does not grant you rights to use any contributors' name,
- * logo, or trademarks. (B) If you bring a patent claim against any contributor over patents that
- * you claim are infringed by the software, your patent license from such contributor to the
- * software ends automatically. (C) If you distribute any portion of the software, you must retain
- * all copyright, patent, trademark, and attribution notices that are present in the software. (D)
- * If you distribute any portion of the software in source code form, you may do so only under this
- * license by including a complete copy of this license with your distribution. If you distribute
- * any portion of the software in compiled or object code form, you may only do so under a license
- * that complies with this license. (E) The software is licensed "as-is." You bear the risk of using
- * it. The contributors give no express warranties, guarantees or conditions. You may have
- * additional consumer rights under your local laws which this license cannot change. To the extent
- * permitted under your local laws, the contributors exclude the implied warranties of
- * merchantability, fitness for a particular purpose and non-infringement.
+ * <p>Microsoft Public License (Ms-PL), which follows: This license governs use of the accompanying software. If you use
+ * the software, you accept this license. If you do not accept the license, do not use the software. 1. Definitions The
+ * terms "reproduce," "reproduction," "derivative works," and "distribution" have the same meaning here as under U.S.
+ * copyright law. A "contribution" is the original software, or any additions or changes to the software. A
+ * "contributor" is any person that distributes its contribution under this license. "Licensed patents" are a
+ * contributor's patent claims that read directly on its contribution. 2. Grant of Rights (A) Copyright Grant- Subject
+ * to the terms of this license, including the license conditions and limitations in section 3, each contributor grants
+ * you a non-exclusive, worldwide, royalty-free copyright license to reproduce its contribution, prepare derivative
+ * works of its contribution, and distribute its contribution or any derivative works that you create. (B) Patent Grant-
+ * Subject to the terms of this license, including the license conditions and limitations in section 3, each contributor
+ * grants you a non-exclusive, worldwide, royalty-free license under its licensed patents to make, have made, use, sell,
+ * offer for sale, import, and/or otherwise dispose of its contribution in the software or derivative works of the
+ * contribution in the software. 3. Conditions and Limitations (A) No Trademark License- This license does not grant you
+ * rights to use any contributors' name, logo, or trademarks. (B) If you bring a patent claim against any contributor
+ * over patents that you claim are infringed by the software, your patent license from such contributor to the software
+ * ends automatically. (C) If you distribute any portion of the software, you must retain all copyright, patent,
+ * trademark, and attribution notices that are present in the software. (D) If you distribute any portion of the
+ * software in source code form, you may do so only under this license by including a complete copy of this license with
+ * your distribution. If you distribute any portion of the software in compiled or object code form, you may only do so
+ * under a license that complies with this license. (E) The software is licensed "as-is." You bear the risk of using it.
+ * The contributors give no express warranties, guarantees or conditions. You may have additional consumer rights under
+ * your local laws which this license cannot change. To the extent permitted under your local laws, the contributors
+ * exclude the implied warranties of merchantability, fitness for a particular purpose and non-infringement.
  *
  * @author m.bartolomeoli
  */
@@ -67,8 +61,7 @@ public class HolesRemover {
     private LineString holeVerts = null;
     private GeometryFactory gFac = null;
 
-    private IndexableCyclicalLinkedList<Vertex> polygonVertices =
-            new IndexableCyclicalLinkedList<>();
+    private IndexableCyclicalLinkedList<Vertex> polygonVertices = new IndexableCyclicalLinkedList<>();
     private CyclicalList<Vertex> convexVertices = new CyclicalList<>();
     private CyclicalList<Vertex> reflexVertices = new CyclicalList<>();
 
@@ -159,9 +152,7 @@ public class HolesRemover {
         Float closestPoint = null;
         LineSegment closestSegment = new LineSegment();
         for (LineSegment segment : segmentsToTest) {
-            Float intersection =
-                    segment.intersectsWithRay(
-                            rightMostHoleVertex.getPosition(), new Coordinate(1.0, 0.0));
+            Float intersection = segment.intersectsWithRay(rightMostHoleVertex.getPosition(), new Coordinate(1.0, 0.0));
             if (intersection != null) {
                 if (closestPoint == null || closestPoint.floatValue() > intersection.floatValue()) {
                     closestPoint = intersection;
@@ -180,10 +171,9 @@ public class HolesRemover {
         GVector i = new GVector(new double[] {I.x, I.y});
         i.add(new GVector(new double[] {closestPoint.floatValue(), 0.0}));
 
-        Vertex P =
-                (closestSegment.A.getPosition().x > closestSegment.B.getPosition().x)
-                        ? closestSegment.A
-                        : closestSegment.B;
+        Vertex P = (closestSegment.A.getPosition().x > closestSegment.B.getPosition().x)
+                ? closestSegment.A
+                : closestSegment.B;
 
         // construct triangle MIP
         Triangle mip = new Triangle(rightMostHoleVertex, new Vertex(I, 1), P);
@@ -199,12 +189,8 @@ public class HolesRemover {
             float closestDot = -1f;
             for (Vertex v : interiorReflexVertices) {
                 GVector n = new GVector(new double[] {v.getPosition().x, v.getPosition().y});
-                n.sub(
-                        new GVector(
-                                new double[] {
-                                    rightMostHoleVertex.getPosition().x,
-                                    rightMostHoleVertex.getPosition().y
-                                }));
+                n.sub(new GVector(
+                        new double[] {rightMostHoleVertex.getPosition().x, rightMostHoleVertex.getPosition().y}));
                 n.normalize();
                 GVector m = new GVector(new double[] {1.0, 0.0});
                 float dot = (float) m.dot(n);
@@ -293,15 +279,12 @@ public class HolesRemover {
             GVector e2 = new GVector(new double[] {p3.x, p3.y});
             e2.sub(new GVector(new double[] {p2.x, p2.y}));
 
-            if (e1.getElement(0) * e2.getElement(1) - e1.getElement(1) * e2.getElement(0) >= 0)
-                clockWiseCount++;
+            if (e1.getElement(0) * e2.getElement(1) - e1.getElement(1) * e2.getElement(0) >= 0) clockWiseCount++;
             else counterClockWiseCount++;
 
             p1 = p2;
         }
 
-        return (clockWiseCount > counterClockWiseCount)
-                ? WINDING_CLOCKWISE
-                : WINDING_COUNTER_CLOCKWISE;
+        return (clockWiseCount > counterClockWiseCount) ? WINDING_CLOCKWISE : WINDING_COUNTER_CLOCKWISE;
     }
 }

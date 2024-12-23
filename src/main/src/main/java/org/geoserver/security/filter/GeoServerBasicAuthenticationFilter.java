@@ -60,8 +60,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
 
         if (authConfig.isUseRememberMe()) {
             filter.setRememberMeServices(securityManager.getRememberMeService());
-            GeoServerWebAuthenticationDetailsSource s =
-                    new GeoServerWebAuthenticationDetailsSource();
+            GeoServerWebAuthenticationDetailsSource s = new GeoServerWebAuthenticationDetailsSource();
             filter.setAuthenticationDetailsSource(s);
         }
         filter.afterPropertiesSet();
@@ -113,11 +112,7 @@ public class GeoServerBasicAuthenticationFilter extends GeoServerCompositeFilter
             String digestString = null;
             try {
                 MessageDigest md = (MessageDigest) digest.clone();
-                digestString =
-                        new String(
-                                Hex.encode(
-                                        md.digest(
-                                                buff.toString().getBytes(StandardCharsets.UTF_8))));
+                digestString = new String(Hex.encode(md.digest(buff.toString().getBytes(StandardCharsets.UTF_8))));
             } catch (CloneNotSupportedException e) {
                 throw new RuntimeException(e);
             }

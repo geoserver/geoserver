@@ -23,11 +23,9 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         wfs.setFeatureBounding(true);
         getGeoServer().save(wfs);
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS)
-                                + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName="
+                + getLayerId(SystemTestData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
         // print(doc);
 
         // check it's a feature collection
@@ -36,9 +34,9 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:boundedBy/gml:Box)", doc);
         // check that each feature has non null bounds
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(
-                xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc)
+                        .getLength()
+                > 0);
     }
 
     @Test
@@ -47,11 +45,9 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         wfs.setFeatureBounding(false);
         getGeoServer().save(wfs);
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + getLayerId(SystemTestData.BUILDINGS)
-                                + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeName="
+                + getLayerId(SystemTestData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&propertyName=ADDRESS");
         //        print(doc);
 
         // check it's a feature collection
@@ -62,6 +58,7 @@ public class GetFeatureBboxTest extends WFSTestSupport {
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals(
                 0,
-                xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc).getLength());
+                xpath.getMatchingNodes("//cite:Buildings/gml:boundedBy/gml:Box", doc)
+                        .getLength());
     }
 }

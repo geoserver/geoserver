@@ -71,21 +71,29 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_LAYER = "layer";
     static final String ATT_EXT_GS = "geoserver";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private GeoServerDataDirectory dd;
+    @Autowired
+    private GeoServerDataDirectory dd;
 
     private Configuration config;
 
@@ -126,19 +134,15 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task1);
 
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(MetadataSyncTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, MetadataSyncTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task2, MetadataSyncTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task2, MetadataSyncTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task2, MetadataSyncTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
         dataUtil.addTaskToConfiguration(config, task2);
 
         config = dao.save(config);
@@ -217,11 +221,10 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger()
-                        .forJob(batchCreate.getId().toString())
-                        .startNow()
-                        .build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batchCreate.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -264,18 +267,19 @@ public class MetaDataSyncTaskTest extends AbstractTaskManagerTest {
             }
         }
 
-        trigger =
-                TriggerBuilder.newTrigger().forJob(batchSync.getId().toString()).startNow().build();
+        trigger = TriggerBuilder.newTrigger()
+                .forJob(batchSync.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
-        assertTrue(
-                dao.getBatch(batchSync.getId())
-                        .getLatestBatchRun()
-                        .getBatchRun()
-                        .getStatus()
-                        .equals(Status.COMMITTED));
+        assertTrue(dao.getBatch(batchSync.getId())
+                .getLatestBatchRun()
+                .getBatchRun()
+                .getStatus()
+                .equals(Status.COMMITTED));
 
         cov = restManager.getReader().getCoverage("wcs", "DEM", "DEM");
         assertEquals(ci.getTitle(), cov.getTitle());

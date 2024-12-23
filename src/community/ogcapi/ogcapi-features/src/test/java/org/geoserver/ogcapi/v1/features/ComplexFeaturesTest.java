@@ -20,8 +20,7 @@ public class ComplexFeaturesTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testHTMLMappedFeature() throws Exception {
-        Document doc =
-                getAsJSoup("ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html");
+        Document doc = getAsJSoup("ogc/features/v1/collections/gsml:MappedFeature/items?f=text/html");
 
         // all the five root feature are present
         assertEquals(5, doc.select("ul[id=rootUL]").size());

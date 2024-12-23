@@ -45,10 +45,7 @@ public class LineFeatureBuilder extends GridFeatureBuilder {
 
     public static final String OFFSET_Y = "offsetY";
 
-    /**
-     * "start", "mid", "end" to indicate where this line belongs in the progression of horizontal or
-     * vertical lines
-     */
+    /** "start", "mid", "end" to indicate where this line belongs in the progression of horizontal or vertical lines */
     public static final String SEQUENCE = "sequence";
 
     public static final String SEQUENCE_START = "start";

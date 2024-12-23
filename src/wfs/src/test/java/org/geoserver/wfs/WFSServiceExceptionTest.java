@@ -46,13 +46,11 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         testJsonException("2.0.0");
     }
 
-    private void testJsonpException(String wfsVersion)
-            throws UnsupportedEncodingException, Exception {
+    private void testJsonpException(String wfsVersion) throws UnsupportedEncodingException, Exception {
 
         String path = getPath(wfsVersion);
         JSONType.setJsonpEnabled(true);
-        MockHttpServletResponse response =
-                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.jsonp);
+        MockHttpServletResponse response = getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.jsonp);
         JSONType.setJsonpEnabled(false);
 
         // MimeType
@@ -63,12 +61,10 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
         testJson(testJsonP(content), wfsVersion);
     }
 
-    private void testJsonException(String wfsVersion)
-            throws UnsupportedEncodingException, Exception {
+    private void testJsonException(String wfsVersion) throws UnsupportedEncodingException, Exception {
 
         String path = getPath(wfsVersion);
-        MockHttpServletResponse response =
-                getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
+        MockHttpServletResponse response = getAsServletResponse(path + "&EXCEPTIONS=" + JSONType.json);
 
         // MimeType
         assertEquals(JSONType.json, getBaseMimeType(response.getContentType()));
@@ -79,15 +75,14 @@ public class WFSServiceExceptionTest extends WFSTestSupport {
     }
 
     private String getPath(String wfsVersion) {
-        String path =
-                "wfs/?service=wfs"
-                        + "&version="
-                        + wfsVersion
-                        + "&request=DescribeFeatureType"
-                        + "&typeName=foobar"
-                        + "&format_options="
-                        + JSONType.CALLBACK_FUNCTION_KEY
-                        + ":myMethod";
+        String path = "wfs/?service=wfs"
+                + "&version="
+                + wfsVersion
+                + "&request=DescribeFeatureType"
+                + "&typeName=foobar"
+                + "&format_options="
+                + JSONType.CALLBACK_FUNCTION_KEY
+                + ":myMethod";
         return path;
     }
 

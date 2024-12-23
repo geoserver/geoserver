@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/hello/v1")
 public class HelloController {
 
-    static interface HelloServiceInfo extends ServiceInfo {};
+    static interface HelloServiceInfo extends ServiceInfo {}
+    ;
 
     String defaultValue = "hello";
 

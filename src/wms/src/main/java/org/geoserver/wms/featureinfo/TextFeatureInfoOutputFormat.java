@@ -28,9 +28,9 @@ import org.geotools.feature.FeatureIterator;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Generates a FeatureInfoResponse of type text. This simply reports the attributes of the feature
- * requested as a text string. This class just performs the writeTo, the GetFeatureInfoDelegate and
- * abstract feature info class handle the rest.
+ * Generates a FeatureInfoResponse of type text. This simply reports the attributes of the feature requested as a text
+ * string. This class just performs the writeTo, the GetFeatureInfoDelegate and abstract feature info class handle the
+ * rest.
  *
  * @author James Macgill, PSU
  * @version $Id$
@@ -51,8 +51,7 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
      */
     @Override
     @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
-    public void write(
-            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+    public void write(FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
         Charset charSet = wms.getCharSet();
         OutputStreamWriter osw = new OutputStreamWriter(out, charSet);
@@ -138,18 +137,12 @@ public class TextFeatureInfoOutputFormat extends GetFeatureInfoOutputFormat {
                 Geometry g = (Geometry) f.getAttribute(name);
                 if (g != null) {
                     writer.println(
-                            name
-                                    + " = [GEOMETRY ("
-                                    + g.getGeometryType()
-                                    + ") with "
-                                    + g.getNumPoints()
-                                    + " points]");
+                            name + " = [GEOMETRY (" + g.getGeometryType() + ") with " + g.getNumPoints() + " points]");
                 } else {
                     // GEOS-6829
                     writer.println(name + " = null");
                 }
-            } else if (Date.class.isAssignableFrom(binding)
-                    && TemporalUtils.isDateTimeFormatEnabled()) {
+            } else if (Date.class.isAssignableFrom(binding) && TemporalUtils.isDateTimeFormatEnabled()) {
                 // Temporal types print handling
                 String printValue = TemporalUtils.printDate((Date) f.getAttribute(name));
                 writer.println(name + " = " + printValue);

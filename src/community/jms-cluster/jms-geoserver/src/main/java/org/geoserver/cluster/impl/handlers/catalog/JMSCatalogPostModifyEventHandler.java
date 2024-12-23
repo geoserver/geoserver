@@ -29,8 +29,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
     private final ToggleSwitch producer;
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public JMSCatalogPostModifyEventHandler(
-            Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
+    public JMSCatalogPostModifyEventHandler(Catalog catalog, XStream xstream, Class clazz, ToggleSwitch producer) {
         super(xstream, clazz);
         this.catalog = catalog;
         this.producer = producer;
@@ -52,15 +51,13 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
             } else {
                 // incoming object not recognized
-                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                    LOGGER.severe("Unrecognized event type");
+                if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) LOGGER.severe("Unrecognized event type");
                 return false;
             }
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE))
-                LOGGER.severe(
-                        this.getClass() + " is unable to synchronize the incoming event: " + event);
+                LOGGER.severe(this.getClass() + " is unable to synchronize the incoming event: " + event);
             throw e;
         } finally {
             // re enable the producer
@@ -77,8 +74,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         if (info instanceof LayerGroupInfo) {
 
-            final LayerGroupInfo localizedObject =
-                    CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
+            final LayerGroupInfo localizedObject = CatalogUtils.localizeLayerGroup((LayerGroupInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -105,8 +101,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof NamespaceInfo) {
 
-            final NamespaceInfo localizedObject =
-                    CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
+            final NamespaceInfo localizedObject = CatalogUtils.localizeNamespace((NamespaceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -124,8 +119,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof ResourceInfo) {
 
-            final ResourceInfo localizedObject =
-                    CatalogUtils.localizeResource((ResourceInfo) info, catalog);
+            final ResourceInfo localizedObject = CatalogUtils.localizeResource((ResourceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),
@@ -143,8 +137,7 @@ public class JMSCatalogPostModifyEventHandler extends JMSCatalogEventHandler {
 
         } else if (info instanceof WorkspaceInfo) {
 
-            final WorkspaceInfo localizedObject =
-                    CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
+            final WorkspaceInfo localizedObject = CatalogUtils.localizeWorkspace((WorkspaceInfo) info, catalog);
             catalog.firePostModified(
                     ModificationProxy.unwrap(localizedObject),
                     modifyEv.getPropertyNames(),

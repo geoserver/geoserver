@@ -47,9 +47,7 @@ public class GraticuleDataStoreFactoryTest {
     @Test
     public void testValid() throws Throwable {
         HashMap<String, Object> params = getGraticuleParamsMap();
-        assertThat(
-                DataStoreFinder.getDataStore(params),
-                CoreMatchers.instanceOf(GraticuleDataStore.class));
+        assertThat(DataStoreFinder.getDataStore(params), CoreMatchers.instanceOf(GraticuleDataStore.class));
     }
 
     private static HashMap<String, Object> getGraticuleParamsMap() {

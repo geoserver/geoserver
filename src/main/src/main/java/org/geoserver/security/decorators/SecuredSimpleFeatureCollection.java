@@ -28,18 +28,15 @@ import org.geotools.feature.SchemaException;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class SecuredSimpleFeatureCollection
-        extends SecuredFeatureCollection<SimpleFeatureType, SimpleFeature>
+public class SecuredSimpleFeatureCollection extends SecuredFeatureCollection<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureCollection {
 
     SimpleFeatureType readSchema;
 
-    SecuredSimpleFeatureCollection(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> delegate, WrapperPolicy policy) {
+    SecuredSimpleFeatureCollection(FeatureCollection<SimpleFeatureType, SimpleFeature> delegate, WrapperPolicy policy) {
         super(delegate, policy);
         if (policy.getLimits() instanceof VectorAccessLimits) {
-            List<PropertyName> properties =
-                    ((VectorAccessLimits) policy.getLimits()).getReadAttributes();
+            List<PropertyName> properties = ((VectorAccessLimits) policy.getLimits()).getReadAttributes();
             if (properties == null) {
                 this.readSchema = getSchema();
             } else {
@@ -77,8 +74,7 @@ public class SecuredSimpleFeatureCollection
 
     @Override
     public void accepts(
-            org.geotools.api.feature.FeatureVisitor visitor,
-            org.geotools.api.util.ProgressListener progress)
+            org.geotools.api.feature.FeatureVisitor visitor, org.geotools.api.util.ProgressListener progress)
             throws IOException {
         if (canDelegate(visitor)) {
             delegate.accepts(visitor, progress);

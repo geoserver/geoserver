@@ -64,19 +64,18 @@ public class BeanProcessFactoryTest extends WPSTestSupport {
 
         // check SPI will see the factory if we register it using an iterator
         // provider
-        GeoTools.addFactoryIteratorProvider(
-                new FactoryIteratorProvider() {
+        GeoTools.addFactoryIteratorProvider(new FactoryIteratorProvider() {
 
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public <T> Iterator<T> iterator(Class<T> category) {
-                        if (ProcessFactory.class.isAssignableFrom(category)) {
-                            return (Iterator<T>) Collections.singletonList(factory).iterator();
-                        } else {
-                            return null;
-                        }
-                    }
-                });
+            @Override
+            @SuppressWarnings("unchecked")
+            public <T> Iterator<T> iterator(Class<T> category) {
+                if (ProcessFactory.class.isAssignableFrom(category)) {
+                    return (Iterator<T>) Collections.singletonList(factory).iterator();
+                } else {
+                    return null;
+                }
+            }
+        });
     }
 
     @Test
@@ -112,13 +111,12 @@ public class BeanProcessFactoryTest extends WPSTestSupport {
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.setName("test");
         final ReferencedEnvelope re = new ReferencedEnvelope(-10, 10, -10, 10, null);
-        FeatureCollection fc =
-                new ListFeatureCollection(tb.buildFeatureType()) {
-                    @Override
-                    public synchronized ReferencedEnvelope getBounds() {
-                        return re;
-                    }
-                };
+        FeatureCollection fc = new ListFeatureCollection(tb.buildFeatureType()) {
+            @Override
+            public synchronized ReferencedEnvelope getBounds() {
+                return re;
+            }
+        };
 
         org.geotools.process.Process p = factory.create(new NameImpl("bean", "Bounds"));
         Map<String, Object> inputs = new HashMap<>();

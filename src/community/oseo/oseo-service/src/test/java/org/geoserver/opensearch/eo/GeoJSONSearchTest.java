@@ -23,8 +23,7 @@ import org.junit.Test;
 
 public class GeoJSONSearchTest extends OSEOTestSupport {
 
-    private static final String ENCODED_GEOJSON =
-            ResponseUtils.urlEncode(GeoJSONSearchResponse.MIME);
+    private static final String ENCODED_GEOJSON = ResponseUtils.urlEncode(GeoJSONSearchResponse.MIME);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -49,9 +48,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         print(json);
 
         // top level properties
-        assertEquals(
-                "http://localhost:8080/geoserver/oseo/search?httpAccept=application%2Fgeo%2Bjson",
-                json.get("id"));
+        assertEquals("http://localhost:8080/geoserver/oseo/search?httpAccept=application%2Fgeo%2Bjson", json.get("id"));
         assertEquals(6, json.get("totalResults"));
         assertEquals(10, json.get("itemsPerPage"));
         assertEquals(1, json.get("startIndex"));
@@ -90,9 +87,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sample = getFeature(features, featureId);
         assertNotNull(sample);
         assertEquals(
-                "http://localhost:8080/geoserver/oseo/search?uid="
-                        + featureId
-                        + "&httpAccept=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/oseo/search?uid=" + featureId + "&httpAccept=application%2Fgeo%2Bjson",
                 sample.getString("id"));
         assertEquals("Feature", sample.getString("type"));
         JSONObject sp = sample.getJSONObject("properties");
@@ -119,9 +114,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         JSONObject sample = getFeature(features, featureId);
         assertNotNull(sample);
         assertEquals(
-                "http://localhost:8080/geoserver/oseo/search?uid="
-                        + featureId
-                        + "&httpAccept=application%2Fgeo%2Bjson",
+                "http://localhost:8080/geoserver/oseo/search?uid=" + featureId + "&httpAccept=application%2Fgeo%2Bjson",
                 sample.getString("id"));
         assertEquals("Feature", sample.getString("type"));
         JSONObject sp = sample.getJSONObject("properties");
@@ -136,7 +129,8 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
         assertEquals("OLI", instrument.get("instrumentShortName"));
         assertEquals("OPTICAL", instrument.get("sensorType"));
 
-        JSONObject ogcLink = (JSONObject) sp.getJSONObject("links").getJSONArray("ogc").get(0);
+        JSONObject ogcLink =
+                (JSONObject) sp.getJSONObject("links").getJSONArray("ogc").get(0);
         assertEquals(ogcLink.get("intTest").toString(), "2");
         assertEquals(ogcLink.get("floatTest").toString(), "2.1");
         assertEquals(ogcLink.get("booleanTest").toString(), "false");
@@ -146,9 +140,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
     @Test
     public void testAllSentinel2ProductsFirstPage() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON("oseo/search?parentId=SENTINEL2&httpAccept=" + ENCODED_GEOJSON);
+        JSONObject json = (JSONObject) getAsJSON("oseo/search?parentId=SENTINEL2&httpAccept=" + ENCODED_GEOJSON);
         print(json);
 
         // top level properties
@@ -219,12 +211,8 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
     @Test
     public void testAllSentinel2ProductsSecondPage() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                "oseo/search?parentId=SENTINEL2&httpAccept="
-                                        + ENCODED_GEOJSON
-                                        + "&startIndex=11");
+        JSONObject json = (JSONObject)
+                getAsJSON("oseo/search?parentId=SENTINEL2&httpAccept=" + ENCODED_GEOJSON + "&startIndex=11");
         print(json);
 
         // top level properties
@@ -282,9 +270,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
     @Test
     public void testLandsat8Products() throws Exception {
         // checking the custom template
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON("oseo/search?parentId=LANDSAT8&httpAccept=" + ENCODED_GEOJSON);
+        JSONObject json = (JSONObject) getAsJSON("oseo/search?parentId=LANDSAT8&httpAccept=" + ENCODED_GEOJSON);
         print(json);
 
         // check features
@@ -303,8 +289,7 @@ public class GeoJSONSearchTest extends OSEOTestSupport {
 
         assertEquals(featureId, sp.getString("identifier"));
         assertEquals("2018-02-27T10:20:21.000+00:00", sp.getString("date"));
-        JSONObject acquisition =
-                sp.getJSONObject("acquisitionInformation").getJSONObject("acquisitionParameters");
+        JSONObject acquisition = sp.getJSONObject("acquisitionInformation").getJSONObject("acquisitionParameters");
         assertEquals("DESCENDING", acquisition.getString("orbitDirection"));
         assertEquals(65, acquisition.getInt("orbitNumber"));
         JSONObject landsat = acquisition.getJSONObject("landsat"); // landsat specific entry

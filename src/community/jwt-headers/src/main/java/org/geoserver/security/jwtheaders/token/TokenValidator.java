@@ -11,8 +11,8 @@ import org.geoserver.security.jwtheaders.filter.GeoServerJwtHeadersFilterConfig;
 import org.geotools.util.logging.Logging;
 
 /**
- * validates a token - according to the GeoServerJwtHeadersFilterConfig. This will use the various
- * Token...Validator classes to do the actual validation.
+ * validates a token - according to the GeoServerJwtHeadersFilterConfig. This will use the various Token...Validator
+ * classes to do the actual validation.
  */
 public class TokenValidator {
 

@@ -26,12 +26,9 @@ public class MapMLAdminPanel extends AdminPagePanel {
     public MapMLAdminPanel(String id, IModel<?> model) {
         super(id, model);
         WMSInfo wmsInfo = (WMSInfo) model.getObject();
-        CheckBox multiextent =
-                new CheckBox(
-                        "multiextent",
-                        new MapModel<>(
-                                wmsInfo.getMetadata(),
-                                MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT));
+        CheckBox multiextent = new CheckBox(
+                "multiextent",
+                new MapModel<>(wmsInfo.getMetadata(), MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT));
         this.add(new Component[] {multiextent});
     }
 }

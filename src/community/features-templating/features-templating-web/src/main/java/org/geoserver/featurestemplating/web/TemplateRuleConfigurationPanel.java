@@ -52,10 +52,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
     Model<String> panelLabelModel;
 
     public TemplateRuleConfigurationPanel(
-            String id,
-            CompoundPropertyModel<TemplateRule> model,
-            boolean isUpdate,
-            LayerInfo layer) {
+            String id, CompoundPropertyModel<TemplateRule> model, boolean isUpdate, LayerInfo layer) {
         super(id, model);
         this.layer = layer;
         this.templateRuleModel = model;
@@ -63,10 +60,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
     }
 
     private void initUI(CompoundPropertyModel<TemplateRule> model, boolean isUpdate) {
-        panelLabel =
-                new Label(
-                        "ruleConfigurationLabel",
-                        panelLabelModel = Model.of(getPanelLabelValue("add")));
+        panelLabel = new Label("ruleConfigurationLabel", panelLabelModel = Model.of(getPanelLabelValue("add")));
         panelLabel.setOutputMarkupId(true);
         add(panelLabel);
         this.theForm = new Form<>("theForm", model);
@@ -77,14 +71,9 @@ public class TemplateRuleConfigurationPanel extends Panel {
 
         priorityField = new NumberTextField<Integer>("priority", model.bind("priority"));
         theForm.add(priorityField);
-        ChoiceRenderer<TemplateInfo> templateInfoChoicheRenderer =
-                new ChoiceRenderer<>("fullName", "identifier");
-        templateInfoDropDownChoice =
-                new DropDownChoice<>(
-                        "templateIdentifier",
-                        model.bind("templateInfo"),
-                        getTemplateInfoList(),
-                        templateInfoChoicheRenderer);
+        ChoiceRenderer<TemplateInfo> templateInfoChoicheRenderer = new ChoiceRenderer<>("fullName", "identifier");
+        templateInfoDropDownChoice = new DropDownChoice<>(
+                "templateIdentifier", model.bind("templateInfo"), getTemplateInfoList(), templateInfoChoicheRenderer);
         templateInfoDropDownChoice.setOutputMarkupId(true);
         theForm.add(templateInfoDropDownChoice);
 
@@ -102,44 +91,41 @@ public class TemplateRuleConfigurationPanel extends Panel {
         cqlFilterArea.add(getCqlValidator());
         theForm.add(cqlFilterArea);
 
-        AjaxSubmitLink submitLink =
-                new AjaxSubmitLink("save") {
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        super.onSubmit(target, form);
-                        cleanFeedbackPanel();
-                        TemplateRule rule = theForm.getModelObject();
-                        if (!validateAndReport(rule)) return;
-                        updateModelRules(rule);
-                        target.add(tablePanel);
-                        target.add(tablePanel.getTable());
-                        clearForm(target);
-                    }
+        AjaxSubmitLink submitLink = new AjaxSubmitLink("save") {
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                super.onSubmit(target, form);
+                cleanFeedbackPanel();
+                TemplateRule rule = theForm.getModelObject();
+                if (!validateAndReport(rule)) return;
+                updateModelRules(rule);
+                target.add(tablePanel);
+                target.add(tablePanel.getTable());
+                clearForm(target);
+            }
 
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
-                        if (theForm.hasError()) target.add(ruleFeedbackPanel);
-                    }
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target, Form<?> form) {
+                if (theForm.hasError()) target.add(ruleFeedbackPanel);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        super.onError(target, form);
-                        if (theForm.hasError()) target.add(ruleFeedbackPanel);
-                    }
-                };
-        submitLabel =
-                new Label("submitLabel", submitLabelModel = Model.of(getSubmitLabelValue("add")));
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                super.onError(target, form);
+                if (theForm.hasError()) target.add(ruleFeedbackPanel);
+            }
+        };
+        submitLabel = new Label("submitLabel", submitLabelModel = Model.of(getSubmitLabelValue("add")));
         submitLabel.setOutputMarkupId(true);
         submitLink.add(submitLabel);
         theForm.add(submitLink);
-        theForm.add(
-                new AjaxSubmitLink("cancel") {
+        theForm.add(new AjaxSubmitLink("cancel") {
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        clearForm(target);
-                    }
-                });
+            @Override
+            public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                clearForm(target);
+            }
+        });
     }
 
     private boolean validateAndReport(TemplateRule rule) {
@@ -219,9 +205,7 @@ public class TemplateRuleConfigurationPanel extends Panel {
                 } catch (CQLException e) {
                     ValidationError error = new ValidationError();
                     String message =
-                            new ParamResourceModel(
-                                            "invalidCQL", TemplateRuleConfigurationPanel.this)
-                                    .getObject();
+                            new ParamResourceModel("invalidCQL", TemplateRuleConfigurationPanel.this).getObject();
                     message += " " + e.getMessage();
                     error.setMessage(message);
                     iValidatable.error(error);

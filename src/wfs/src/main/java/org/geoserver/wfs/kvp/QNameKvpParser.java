@@ -14,8 +14,7 @@ import org.geoserver.wfs.WFSException;
 /**
  * Abstract kvp parser for parsing qualified names of the form "([prefix:]local)+".
  *
- * <p>This parser will parse strings of the above format into a list of {@link
- * javax.xml.namespace.QName}
+ * <p>This parser will parse strings of the above format into a list of {@link javax.xml.namespace.QName}
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -31,11 +30,10 @@ public class QNameKvpParser extends FlatKvpParser {
 
     /**
      * @param key the key this kvp parser parses the value for
-     * @param catalog the catalog where to check if the namespace given by the qualified name prefix
-     *     exists
-     * @param strict if {@code true} and the qname being parsed contains a namespace prefix that
-     *     does not match a namespace from {@code catalog}, an exception will be thrown, otherwise a
-     *     {@code QName} with prefix and localName but without namespace will be returned.
+     * @param catalog the catalog where to check if the namespace given by the qualified name prefix exists
+     * @param strict if {@code true} and the qname being parsed contains a namespace prefix that does not match a
+     *     namespace from {@code catalog}, an exception will be thrown, otherwise a {@code QName} with prefix and
+     *     localName but without namespace will be returned.
      */
     protected QNameKvpParser(String key, Catalog catalog, boolean strict) {
         super(key, QName.class);
@@ -44,11 +42,9 @@ public class QNameKvpParser extends FlatKvpParser {
     }
 
     /**
-     * Parses the token representing a type name, ( <prefix>:<local>, or <local> ) into a {@link
-     * QName }.
+     * Parses the token representing a type name, ( <prefix>:<local>, or <local> ) into a {@link QName }.
      *
-     * <p>If the latter form is supplied the QName is given the default namespace as specified in
-     * the catalog.
+     * <p>If the latter form is supplied the QName is given the default namespace as specified in the catalog.
      */
     @Override
     protected Object parseToken(String token) throws Exception {

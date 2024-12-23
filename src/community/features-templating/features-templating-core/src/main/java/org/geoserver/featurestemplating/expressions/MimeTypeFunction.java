@@ -13,8 +13,7 @@ import org.geotools.filter.capability.FunctionNameImpl;
 /** Returns the Mime Type of the current {@link Request}. */
 public class MimeTypeFunction extends RequestFunction {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("mimeType", parameter("result", String.class));
+    public static FunctionName NAME = new FunctionNameImpl("mimeType", parameter("result", String.class));
 
     public MimeTypeFunction() {
         super(NAME);

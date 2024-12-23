@@ -30,17 +30,18 @@ public class SecuritySettingsPageTest extends AbstractSecurityWicketTestSupport 
         SecurityManagerConfig config = manager.getSecurityConfig();
 
         tester.assertModelValue("form:roleServiceName", "default");
+        tester.assertModelValue("form:encryption:encryptingUrlParams", config.isEncryptingUrlParams());
         tester.assertModelValue(
-                "form:encryption:encryptingUrlParams", config.isEncryptingUrlParams());
-        tester.assertModelValue(
-                "form:encryption:configPasswordEncrypterName", getPBEPasswordEncoder().getName());
+                "form:encryption:configPasswordEncrypterName",
+                getPBEPasswordEncoder().getName());
 
         FormTester form = tester.newFormTester("form");
 
         form.setValue("roleServiceName", getRORoleServiceName());
         form.setValue("encryption:encryptingUrlParams", false);
         form.setValue(
-                "encryption:configPasswordEncrypterName", getPlainTextPasswordEncoder().getName());
+                "encryption:configPasswordEncrypterName",
+                getPlainTextPasswordEncoder().getName());
         form.submit("save");
         tester.assertNoErrorMessage();
 

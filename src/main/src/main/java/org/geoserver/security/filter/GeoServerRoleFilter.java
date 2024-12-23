@@ -21,8 +21,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Servlet filter for sending the roles (and role parameters) of the authenticated principal to
- * client
+ * Servlet filter for sending the roles (and role parameters) of the authenticated principal to client
  *
  * @author mcr
  */

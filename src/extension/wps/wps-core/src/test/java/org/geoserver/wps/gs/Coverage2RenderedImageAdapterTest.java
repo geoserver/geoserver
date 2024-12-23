@@ -53,8 +53,7 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
 
         final GridCoverageFactory factory = CoverageFactoryFinder.getGridCoverageFactory(null);
 
-        WritableRaster raster =
-                RasterFactory.createBandedRaster(DataBuffer.TYPE_FLOAT, width, height, 1, null);
+        WritableRaster raster = RasterFactory.createBandedRaster(DataBuffer.TYPE_FLOAT, width, height, 1, null);
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (x < 50 && y < 50) { // upper left square: vertical lines
@@ -63,12 +62,10 @@ public class Coverage2RenderedImageAdapterTest extends WPSTestSupport {
                 } else if (x < 50 && y > height - 50) { // lower left square: horizontal lines
                     if (y % 5 == 0) raster.setSample(x, y, 0, 0);
                     else raster.setSample(x, y, 0, width);
-                } else if (x > width - 50
-                        && y < 50) { // upper right square: descending diagonal lines
+                } else if (x > width - 50 && y < 50) { // upper right square: descending diagonal lines
                     if ((x - y) % 5 == 0) raster.setSample(x, y, 0, 0);
                     else raster.setSample(x, y, 0, width);
-                } else if (x > width - 50
-                        && y > height - 50) { // lower right square: ascending diagonal lines
+                } else if (x > width - 50 && y > height - 50) { // lower right square: ascending diagonal lines
                     if ((x + y) % 5 == 0) raster.setSample(x, y, 0, 0);
                     else raster.setSample(x, y, 0, width);
                 } else if (x % 50 == 0 || y % 50 == 0 || (x - y) % 100 == 0)

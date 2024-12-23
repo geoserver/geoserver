@@ -51,11 +51,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @ControllerAdvice
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/br/",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class RestoreController extends AbstractBackupRestoreController {
 
     @Autowired
@@ -66,11 +62,7 @@ public class RestoreController extends AbstractBackupRestoreController {
 
     @GetMapping(
             path = "restore{.+}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper restoreGet(@RequestParam(name = "format", required = false) String format) {
 
         Object lookup = lookupRestoreExecutionsContext(null, true, false);
@@ -79,8 +71,7 @@ public class RestoreController extends AbstractBackupRestoreController {
             if (lookup instanceof RestoreExecutionAdapter) {
                 return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
             } else {
-                return wrapList(
-                        (List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
+                return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
             }
         }
 
@@ -100,15 +91,16 @@ public class RestoreController extends AbstractBackupRestoreController {
             @PathVariable String restoreId,
             HttpServletResponse response) {
 
-        Object lookup =
-                lookupRestoreExecutionsContext(getExecutionIdFilter(restoreId), true, false);
+        Object lookup = lookupRestoreExecutionsContext(getExecutionIdFilter(restoreId), true, false);
 
         if (lookup != null) {
             if (lookup instanceof RestoreExecutionAdapter) {
                 if (restoreId.endsWith(".zip")) {
                     try {
                         // get your file as InputStream
-                        File file = ((RestoreExecutionAdapter) lookup).getArchiveFile().file();
+                        File file = ((RestoreExecutionAdapter) lookup)
+                                .getArchiveFile()
+                                .file();
                         InputStream is = new FileInputStream(file);
                         // copy it to response's OutputStream
                         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
@@ -118,12 +110,10 @@ public class RestoreController extends AbstractBackupRestoreController {
                         throw new RuntimeException("IOError writing file to output stream");
                     }
                 } else {
-                    return wrapObject(
-                            (RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
+                    return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
                 }
             } else {
-                return wrapList(
-                        (List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
+                return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
             }
         }
 
@@ -132,14 +122,9 @@ public class RestoreController extends AbstractBackupRestoreController {
 
     @DeleteMapping(
             path = "restore/{restoreId:.+}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper restoreDelete(
-            @RequestParam(name = "format", required = false) String format,
-            @PathVariable String restoreId)
+            @RequestParam(name = "format", required = false) String format, @PathVariable String restoreId)
             throws IOException {
 
         final String executionId = getExecutionIdFilter(restoreId);
@@ -154,8 +139,7 @@ public class RestoreController extends AbstractBackupRestoreController {
                 }
                 return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
             } else {
-                return wrapList(
-                        (List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
+                return wrapList((List<RestoreExecutionAdapter>) lookup, RestoreExecutionAdapter.class);
             }
         }
 
@@ -181,8 +165,7 @@ public class RestoreController extends AbstractBackupRestoreController {
         RestoreExecutionAdapter execution = null;
 
         if (restore.getId() != null) {
-            Object lookup =
-                    lookupBackupExecutionsContext(String.valueOf(restore.getId()), false, false);
+            Object lookup = lookupBackupExecutionsContext(String.valueOf(restore.getId()), false, false);
             if (lookup != null) {
                 // Restore instance already exists... trying to restart it.
                 try {
@@ -190,13 +173,10 @@ public class RestoreController extends AbstractBackupRestoreController {
 
                     LOGGER.log(Level.INFO, "Restore restarted: " + restore.getArchiveFile());
 
-                    return wrapObject(
-                            (RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
+                    return wrapObject((RestoreExecutionAdapter) lookup, RestoreExecutionAdapter.class);
                 } catch (Exception e) {
 
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Could not restart the restore: " + restore.getArchiveFile());
+                    LOGGER.log(Level.WARNING, "Could not restart the restore: " + restore.getArchiveFile());
 
                     throw new IOException(e);
                 }
@@ -204,14 +184,13 @@ public class RestoreController extends AbstractBackupRestoreController {
         } else {
             // Start a new execution asynchronously. You will need to query for the status in order
             // to follow the progress.
-            execution =
-                    getBackupFacade()
-                            .runRestoreAsync(
-                                    restore.getArchiveFile(),
-                                    restore.getWsFilter(),
-                                    restore.getSiFilter(),
-                                    restore.getLiFilter(),
-                                    asParams(restore.getOptions()));
+            execution = getBackupFacade()
+                    .runRestoreAsync(
+                            restore.getArchiveFile(),
+                            restore.getWsFilter(),
+                            restore.getSiFilter(),
+                            restore.getLiFilter(),
+                            asParams(restore.getOptions()));
 
             LOGGER.log(Level.INFO, "Restore file: " + restore.getArchiveFile());
 
@@ -225,16 +204,13 @@ public class RestoreController extends AbstractBackupRestoreController {
      * From {@link RestBaseController}
      *
      * <p>... * Any extending classes which override {@link #configurePersister(XStreamPersister,
-     * XStreamMessageConverter)}, and require this configuration for reading objects from incoming
-     * requests must also be annotated with {@link
-     * org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link
-     * #supports(MethodParameter, Type, Class)} method...
+     * XStreamMessageConverter)}, and require this configuration for reading objects from incoming requests must also be
+     * annotated with {@link org.springframework.web.bind.annotation.ControllerAdvice} and override the
+     * {@link #supports(MethodParameter, Type, Class)} method...
      */
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return RestoreExecutionAdapter.class.isAssignableFrom(methodParameter.getParameterType());
     }
 

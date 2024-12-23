@@ -52,8 +52,7 @@ public class CollectionTest extends MapsTestSupport {
 
     @Test
     public void testLayerJson() throws Exception {
-        DocumentContext json =
-                getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.LAKES), 200);
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/" + getLayerId(MockData.LAKES), 200);
         testLakesJson(json);
     }
 
@@ -88,8 +87,7 @@ public class CollectionTest extends MapsTestSupport {
     @Test
     public void testTemporalCollectionHTML() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, DimensionPresentation.LIST, null, null, null);
-        org.jsoup.nodes.Document document =
-                getAsJSoup("ogc/maps/v1/collections/sf:timeseries?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/collections/sf:timeseries?f=html");
 
         String id = getLayerId(TIMESERIES).replace(":", "__");
 
@@ -107,8 +105,7 @@ public class CollectionTest extends MapsTestSupport {
     @Test
     public void testTemporalSqlDateHTML() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END_DATE, "time", "startTime", "endTime");
-        org.jsoup.nodes.Document document =
-                getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEndDate?f=html");
+        org.jsoup.nodes.Document document = getAsJSoup("ogc/maps/v1/collections/sf:TimeWithStartEndDate?f=html");
 
         String id = getLayerId(TIME_WITH_START_END_DATE).replace(":", "__");
 
@@ -126,8 +123,7 @@ public class CollectionTest extends MapsTestSupport {
     @Test
     public void testTemporalSqlDateJSON() throws Exception {
         setupStartEndTimeDimension(TIME_WITH_START_END_DATE, "time", "startTime", "endTime");
-        DocumentContext json =
-                getAsJSONPath("ogc/maps/v1/collections/sf:TimeWithStartEndDate", 200);
+        DocumentContext json = getAsJSONPath("ogc/maps/v1/collections/sf:TimeWithStartEndDate", 200);
         assertEquals("2012-02-11T00:00:00Z", json.read("$.extent.temporal.interval[0][0]"));
         assertEquals("2012-02-14T00:00:00Z", json.read("$.extent.temporal.interval[0][1]"));
     }

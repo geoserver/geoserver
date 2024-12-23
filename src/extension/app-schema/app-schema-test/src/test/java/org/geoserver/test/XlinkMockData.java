@@ -21,10 +21,6 @@ public class XlinkMockData extends AbstractAppSchemaMockData {
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeatureXlink.xml",
-                "MappedFeaturePropertyfile.properties");
+        addFeatureType(GSML_PREFIX, "MappedFeature", "MappedFeatureXlink.xml", "MappedFeaturePropertyfile.properties");
     }
 }

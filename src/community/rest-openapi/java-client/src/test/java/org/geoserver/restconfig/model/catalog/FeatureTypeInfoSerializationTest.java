@@ -21,8 +21,7 @@ import org.junit.Test;
 public class FeatureTypeInfoSerializationTest extends SerializationTest {
 
     public @Test void testFeatureTypeResponse() throws IOException {
-        FeatureTypeInfo fti =
-                decode("FeatureTypeInfo.json", FeatureTypeInfo.class, FeatureTypeInfo.class);
+        FeatureTypeInfo fti = decode("FeatureTypeInfo.json", FeatureTypeInfo.class, FeatureTypeInfo.class);
         assertNotNull(fti);
         assertEquals("tasmania_roads", fti.getName());
         assertEquals("tasmania_roads", fti.getNativeName());
@@ -39,10 +38,7 @@ public class FeatureTypeInfoSerializationTest extends SerializationTest {
                 Arrays.asList(
                         new KeywordInfo().value("Roads"), //
                         new KeywordInfo().value("Tasmania"), //
-                        new KeywordInfo()
-                                .value("test keyword")
-                                .language("es")
-                                .vocabulary("spanish")), //
+                        new KeywordInfo().value("test keyword").language("es").vocabulary("spanish")), //
                 fti.getKeywords());
 
         //		ResourceResponseDataLinks dataLinks = r.getDataLinks();
@@ -56,19 +52,9 @@ public class FeatureTypeInfoSerializationTest extends SerializationTest {
         assertEquals("EPSG:4326", fti.getSrs());
 
         super.assertResponseBounds(
-                fti.getNativeBoundingBox(),
-                145.19754,
-                148.27298000000002,
-                -43.423512,
-                -40.852802,
-                "EPSG:4326");
+                fti.getNativeBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802, "EPSG:4326");
         super.assertResponseBounds(
-                fti.getLatLonBoundingBox(),
-                145.19754,
-                148.27298000000002,
-                -43.423512,
-                -40.852802,
-                "EPSG:4326");
+                fti.getLatLonBoundingBox(), 145.19754, 148.27298000000002, -43.423512, -40.852802, "EPSG:4326");
 
         assertEquals(ProjectionPolicy.FORCE_DECLARED, fti.getProjectionPolicy());
         assertEquals(Boolean.TRUE, fti.getEnabled());
@@ -94,14 +80,7 @@ public class FeatureTypeInfoSerializationTest extends SerializationTest {
         List<AttributeTypeInfo> attributes = fti.getAttributes();
         assertNotNull(attributes);
         assertEquals(2, attributes.size());
-        assertAttribue(
-                attributes.get(0),
-                "the_geom",
-                0,
-                1,
-                true,
-                "org.locationtech.jts.geom.MultiLineString",
-                null);
+        assertAttribue(attributes.get(0), "the_geom", 0, 1, true, "org.locationtech.jts.geom.MultiLineString", null);
         assertAttribue(attributes.get(1), "TYPE", 0, 1, true, "java.lang.String", 7);
     }
 

@@ -46,9 +46,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         private List<StyleInfo> filteredStyles;
 
         public AdvertisedLayerGroup(
-                LayerGroupInfo delegate,
-                List<PublishedInfo> filteredLayers,
-                List<StyleInfo> filteredStyles) {
+                LayerGroupInfo delegate, List<PublishedInfo> filteredLayers, List<StyleInfo> filteredStyles) {
             super(delegate);
             this.filteredLayers = filteredLayers;
             this.filteredStyles = filteredStyles;
@@ -65,16 +63,16 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         }
 
         /**
-         * Returns the original layers, including the advertised ones. Use this method only if
-         * strictly necessary (current use case, figuring out if the group is queryable or not)
+         * Returns the original layers, including the advertised ones. Use this method only if strictly necessary
+         * (current use case, figuring out if the group is queryable or not)
          */
         public List<PublishedInfo> getOriginalLayers() {
             return delegate.getLayers();
         }
 
         /**
-         * Returns the original styles, including the advertised ones. Use this method only if
-         * strictly necessary (current use case, figuring out if the group is queryable or not)
+         * Returns the original styles, including the advertised ones. Use this method only if strictly necessary
+         * (current use case, figuring out if the group is queryable or not)
          */
         public List<StyleInfo> getOriginalStyles() {
             return delegate.getStyles();
@@ -134,8 +132,7 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
         Request request = Dispatcher.REQUEST.get();
         if (request != null) {
             if ("GetCapabilities".equalsIgnoreCase(request.getRequest())) {
-                String resourceContext =
-                        resource.getNamespace().getPrefix() + "/" + resource.getName();
+                String resourceContext = resource.getNamespace().getPrefix() + "/" + resource.getName();
                 return !resourceContext.equalsIgnoreCase(request.getContext());
             }
         }
@@ -257,27 +254,22 @@ public class AdvertisedCatalog extends AbstractFilteredCatalog {
             return filter;
         }
 
-        org.geotools.api.filter.expression.Function visible =
-                new InternalVolatileFunction() {
-                    /**
-                     * Returns {@code false} if the catalog info shall be hidden, {@code true}
-                     * otherwise.
-                     */
-                    @Override
-                    public Boolean evaluate(Object info) {
-                        if (info instanceof ResourceInfo) {
-                            return !hideResource((ResourceInfo) info);
-                        } else if (info instanceof LayerInfo) {
-                            return !hideLayer((LayerInfo) info);
-                        } else if (info instanceof LayerGroupInfo) {
-                            return checkAccess((LayerGroupInfo) info) != null;
-                        } else {
-                            throw new IllegalArgumentException(
-                                    "Can't build filter for objects of type "
-                                            + info.getClass().getName());
-                        }
-                    }
-                };
+        org.geotools.api.filter.expression.Function visible = new InternalVolatileFunction() {
+            /** Returns {@code false} if the catalog info shall be hidden, {@code true} otherwise. */
+            @Override
+            public Boolean evaluate(Object info) {
+                if (info instanceof ResourceInfo) {
+                    return !hideResource((ResourceInfo) info);
+                } else if (info instanceof LayerInfo) {
+                    return !hideLayer((LayerInfo) info);
+                } else if (info instanceof LayerGroupInfo) {
+                    return checkAccess((LayerGroupInfo) info) != null;
+                } else {
+                    throw new IllegalArgumentException("Can't build filter for objects of type "
+                            + info.getClass().getName());
+                }
+            }
+        };
 
         FilterFactory factory = Predicates.factory;
 

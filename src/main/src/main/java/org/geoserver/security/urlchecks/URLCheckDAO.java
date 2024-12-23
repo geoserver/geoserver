@@ -57,8 +57,7 @@ public class URLCheckDAO {
     }
 
     /**
-     * Executes a {@link ThrowingRunnable} on the configuration file, locking it to avoid concurrent
-     * access
+     * Executes a {@link ThrowingRunnable} on the configuration file, locking it to avoid concurrent access
      *
      * @param action the action to execute
      * @throws IOException
@@ -74,12 +73,11 @@ public class URLCheckDAO {
     }
 
     public void saveConfiguration(URLChecksConfiguration configuration) throws IOException {
-        configurationAction(
-                () -> {
-                    try (OutputStream fos = configurationWatcher.getResource().out()) {
-                        xp.save(configuration, fos);
-                    }
-                });
+        configurationAction(() -> {
+            try (OutputStream fos = configurationWatcher.getResource().out()) {
+                xp.save(configuration, fos);
+            }
+        });
         this.configuration = configuration;
     }
 
@@ -91,10 +89,9 @@ public class URLCheckDAO {
             if (!checks.stream().anyMatch(c -> c.getName().equals(check.getName()))) {
                 checks.add(check);
             } else {
-                checks =
-                        checks.stream()
-                                .map(c -> c.getName().equals(check.getName()) ? check : c)
-                                .collect(Collectors.toList());
+                checks = checks.stream()
+                        .map(c -> c.getName().equals(check.getName()) ? check : c)
+                        .collect(Collectors.toList());
             }
             config.setChecks(checks);
             saveConfiguration(config);
@@ -111,11 +108,8 @@ public class URLCheckDAO {
      */
     public URLChecksConfiguration getConfiguration() throws IOException {
         if (configurationWatcher.isModified() || this.configuration == null) {
-            configurationAction(
-                    () ->
-                            this.configuration =
-                                    Optional.ofNullable(configurationWatcher.read())
-                                            .orElseGet(() -> new URLChecksConfiguration()));
+            configurationAction(() -> this.configuration =
+                    Optional.ofNullable(configurationWatcher.read()).orElseGet(() -> new URLChecksConfiguration()));
         }
 
         return this.configuration;
@@ -138,7 +132,10 @@ public class URLCheckDAO {
      * @return the check with the same name, or null if no check with the same name exists
      */
     public AbstractURLCheck getCheckByName(String name) throws IOException {
-        return getChecks().stream().filter(c -> c.getName().equals(name)).findFirst().orElse(null);
+        return getChecks().stream()
+                .filter(c -> c.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 
     /**
@@ -147,19 +144,15 @@ public class URLCheckDAO {
      * @param check the check to add
      */
     public void add(AbstractURLCheck check) throws IOException {
-        configurationAction(
-                () -> {
-                    URLChecksConfiguration config = getConfiguration();
-                    if (config.getChecks().stream()
-                            .anyMatch(c -> c.getName().equals(check.getName())))
-                        throw new IllegalArgumentException(
-                                "A URL check with the same name already exists: "
-                                        + check.getName());
-                    List<AbstractURLCheck> checks = new ArrayList<>(config.getChecks());
-                    checks.add(check);
-                    config.setChecks(checks);
-                    saveConfiguration(configuration);
-                });
+        configurationAction(() -> {
+            URLChecksConfiguration config = getConfiguration();
+            if (config.getChecks().stream().anyMatch(c -> c.getName().equals(check.getName())))
+                throw new IllegalArgumentException("A URL check with the same name already exists: " + check.getName());
+            List<AbstractURLCheck> checks = new ArrayList<>(config.getChecks());
+            checks.add(check);
+            config.setChecks(checks);
+            saveConfiguration(configuration);
+        });
     }
 
     /**
@@ -168,21 +161,17 @@ public class URLCheckDAO {
      * @param name the name of the check to remove
      */
     public void removeByName(String name) throws IOException {
-        configurationAction(
-                () -> {
-                    URLChecksConfiguration config = getConfiguration();
-                    List<AbstractURLCheck> checks = config.getChecks();
-                    if (checks.stream().noneMatch(c -> c.getName().equals(name)))
-                        throw new IllegalArgumentException(
-                                "No URL check with the specified name exists: " + name);
-                    checks.removeIf(c -> c.getName().equals(name));
-                    saveConfiguration(configuration);
-                });
+        configurationAction(() -> {
+            URLChecksConfiguration config = getConfiguration();
+            List<AbstractURLCheck> checks = config.getChecks();
+            if (checks.stream().noneMatch(c -> c.getName().equals(name)))
+                throw new IllegalArgumentException("No URL check with the specified name exists: " + name);
+            checks.removeIf(c -> c.getName().equals(name));
+            saveConfiguration(configuration);
+        });
     }
 
-    /**
-     * Resets the DAO, forcing it to reload the configuration from disk the next time it is accessed
-     */
+    /** Resets the DAO, forcing it to reload the configuration from disk the next time it is accessed */
     public void reset() {
         this.configuration = null;
         this.configurationWatcher.setKnownLastModified(Long.MIN_VALUE);

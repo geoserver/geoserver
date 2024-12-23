@@ -42,8 +42,8 @@ import ucar.nc2.Variable;
 import ucar.nc2.dataset.NetcdfDataset;
 
 /**
- * A class which takes care of initializing NetCDF dimension from coverages dimension, variables,
- * values for the NetCDF output file and finally write them when invoking the write method.
+ * A class which takes care of initializing NetCDF dimension from coverages dimension, variables, values for the NetCDF
+ * output file and finally write them when invoking the write method.
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
@@ -56,11 +56,11 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
     private String variableUoM;
 
     /**
-     * The unitConverter to be used to convert the pixel values from the input unit (the one coming
-     * from the original coverage) to output unit (the one specified by the user). As an instance,
-     * we may work against a sea_surface_temperature coverage having temperature in celsius whilst
-     * we want to store it back as a sea_surface_temperature in kelvin. In that case the machinery
-     * will setup a not-null unitConverter to be used at time of data writing.
+     * The unitConverter to be used to convert the pixel values from the input unit (the one coming from the original
+     * coverage) to output unit (the one specified by the user). As an instance, we may work against a
+     * sea_surface_temperature coverage having temperature in celsius whilst we want to store it back as a
+     * sea_surface_temperature in kelvin. In that case the machinery will setup a not-null unitConverter to be used at
+     * time of data writing.
      */
     private UnitConverter unitConverter;
 
@@ -78,10 +78,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
      * @param encodingParameters customized encoding params
      */
     public DefaultNetCDFEncoder(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException {
         super(granuleStack, file, encodingParameters, outputFormat);
     }
@@ -138,8 +135,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
 
         // Adding long-name
         if (variableName != null && !variableName.isEmpty()) {
-            writer.addVariableAttribute(
-                    var, new Attribute(NetCDFUtilities.LONG_NAME, variableName));
+            writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.LONG_NAME, variableName));
         }
 
         // Adding Units
@@ -160,12 +156,11 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     if (outputUoM != null && !inputUoM.equals(outputUoM)) {
                         if (!inputUoM.isCompatible(outputUoM)) {
                             if (LOGGER.isLoggable(Level.WARNING)) {
-                                LOGGER.warning(
-                                        "input unit "
-                                                + inputUoM.toString()
-                                                + " and output unit "
-                                                + outputUoM.toString()
-                                                + " are incompatible.\nNo unit conversion will be performed");
+                                LOGGER.warning("input unit "
+                                        + inputUoM.toString()
+                                        + " and output unit "
+                                        + outputUoM.toString()
+                                        + " are incompatible.\nNo unit conversion will be performed");
                             }
                         } else {
                             unitConverter = getConverter(inputUoM, outputUoM);
@@ -173,25 +168,22 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     }
                 } catch (UnconvertibleException ce) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe(
-                                "Unable to create a converter for the specified unit: "
-                                        + variableUoM
-                                        + "\nNo unit conversion will be performed");
+                        LOGGER.severe("Unable to create a converter for the specified unit: "
+                                + variableUoM
+                                + "\nNo unit conversion will be performed");
                     }
                 } catch (IllegalArgumentException e) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe(
-                                "Unable to parse the specified unit: "
-                                        + variableUoM
-                                        + "\nNo unit conversion will be performed");
+                        LOGGER.severe("Unable to parse the specified unit: "
+                                + variableUoM
+                                + "\nNo unit conversion will be performed");
                     }
                 }
             }
         }
         // Adding standard name if name and units are cf-compliant
         if (checkCompliant(var)) {
-            writer.addVariableAttribute(
-                    var, new Attribute(NetCDFUtilities.STANDARD_NAME, variableName));
+            writer.addVariableAttribute(var, new Attribute(NetCDFUtilities.STANDARD_NAME, variableName));
         }
         if (dataPacking != DataPacking.NONE) {
             // Get the dimension values from the coverage and put them on the mapping
@@ -212,19 +204,15 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                 updatedStats.setMin(unitConverter.convert(updatedStats.getMin()));
             }
             dataPacker = dataPacking.getDataPacker(updatedStats);
-            writer.addVariableAttribute(
-                    var, new Attribute(DataPacking.ADD_OFFSET, dataPacker.getOffset()));
-            writer.addVariableAttribute(
-                    var, new Attribute(DataPacking.SCALE_FACTOR, dataPacker.getScale()));
+            writer.addVariableAttribute(var, new Attribute(DataPacking.ADD_OFFSET, dataPacker.getOffset()));
+            writer.addVariableAttribute(var, new Attribute(DataPacking.SCALE_FACTOR, dataPacker.getScale()));
         }
 
         if (noDataSet) {
             Number noData = dataPacker != null ? dataPacker.getReservedValue() : noDataValue;
             writer.addVariableAttribute(
                     var,
-                    new Attribute(
-                            NetCDFUtilities.FILL_VALUE,
-                            NetCDFUtilities.transcodeNumber(varDataType, noData)));
+                    new Attribute(NetCDFUtilities.FILL_VALUE, NetCDFUtilities.transcodeNumber(varDataType, noData)));
         }
 
         // Initialize the gridMapping part of the variable
@@ -238,18 +226,14 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                         Variable sourceVar =
                                 source.findVariable(sampleGranule.getName().toString());
                         if (sourceVar == null) {
-                            LOGGER.info(
-                                    String.format(
-                                            "Could not copy attributes because "
-                                                    + "variable '%s' not found in NetCDF/GRIB %s",
-                                            sampleGranule.getName().toString(),
-                                            source.getLocation()));
+                            LOGGER.info(String.format(
+                                    "Could not copy attributes because " + "variable '%s' not found in NetCDF/GRIB %s",
+                                    sampleGranule.getName().toString(), source.getLocation()));
                         } else {
                             for (Attribute att : sourceVar.getAttributes()) {
                                 // do not allow overwrite or attributes in blacklist
                                 if (var.findAttribute(att.getFullName()) == null
-                                        && !COPY_ATTRIBUTES_BLACKLIST.contains(
-                                                att.getShortName())) {
+                                        && !COPY_ATTRIBUTES_BLACKLIST.contains(att.getShortName())) {
                                     writer.addVariableAttribute(var, att);
                                 }
                             }
@@ -259,37 +243,24 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                         for (ExtraVariable extra : extraVariables) {
                             Variable sourceVar = source.findVariable(extra.getSource());
                             if (sourceVar == null) {
-                                LOGGER.info(
-                                        String.format(
-                                                "Could not find extra variable source '%s' "
-                                                        + "in NetCDF/GRIB %s",
-                                                extra.getSource(), source.getLocation()));
+                                LOGGER.info(String.format(
+                                        "Could not find extra variable source '%s' " + "in NetCDF/GRIB %s",
+                                        extra.getSource(), source.getLocation()));
                             } else if (!sourceVar.getDimensionsString().isEmpty()) {
-                                LOGGER.info(
-                                        String.format(
-                                                "Only scalar extra variables are supported but source "
-                                                        + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
-                                                extra.getSource(),
-                                                source.getLocation(),
-                                                sourceVar.getDimensionsString()));
+                                LOGGER.info(String.format(
+                                        "Only scalar extra variables are supported but source "
+                                                + "'%s' in NetCDF/GRIB %s has dimensions '%s'",
+                                        extra.getSource(), source.getLocation(), sourceVar.getDimensionsString()));
                             } else if (writer.findVariable(extra.getOutput()) != null) {
                                 LOGGER.info(
-                                        String.format(
-                                                "Extra variable output '%s' already exists",
-                                                extra.getOutput()));
+                                        String.format("Extra variable output '%s' already exists", extra.getOutput()));
                             } else if (extra.getDimensions().split("\\s").length > 1) {
-                                LOGGER.info(
-                                        String.format(
-                                                "Extra variable output '%s' "
-                                                        + "has too many dimensions '%s'",
-                                                extra.getOutput(), extra.getDimensions()));
+                                LOGGER.info(String.format(
+                                        "Extra variable output '%s' " + "has too many dimensions '%s'",
+                                        extra.getOutput(), extra.getDimensions()));
                             } else {
-                                Variable outputVar =
-                                        writer.addVariable(
-                                                null,
-                                                extra.getOutput(),
-                                                sourceVar.getDataType(),
-                                                extra.getDimensions());
+                                Variable outputVar = writer.addVariable(
+                                        null, extra.getOutput(), sourceVar.getDataType(), extra.getDimensions());
                                 for (Attribute att : sourceVar.getAttributes()) {
                                     writer.addVariableAttribute(outputVar, att);
                                 }
@@ -332,7 +303,8 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
             dimName[iDim] = dimension.getNetCDFDimension().getShortName();
             iDim++;
         }
-        String name = variableName != null ? variableName : sampleGranule.getName().toString();
+        String name =
+                variableName != null ? variableName : sampleGranule.getName().toString();
         final Variable var = writer.findVariable(name);
         if (var == null) {
             throw new IllegalArgumentException("The requested variable doesn't exists: " + name);
@@ -342,7 +314,8 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
 
         // Get the data type for a sample image (All granules of the same coverage will use
         // the same sample model
-        final int imageDataType = sampleGranule.getRenderedImage().getSampleModel().getDataType();
+        final int imageDataType =
+                sampleGranule.getRenderedImage().getSampleModel().getDataType();
         final DataType netCDFDataType = var.getDataType();
         final Array matrix = NetCDFUtilities.getArray(dimSize, netCDFDataType);
 
@@ -391,8 +364,7 @@ public class DefaultNetCDFEncoder extends AbstractNetCDFEncoder {
                     try (NetcdfDataset source = getSourceNetcdfDataset(gridCoverage)) {
                         if (source != null) {
                             for (ExtraVariableRecord record : nonscalarExtraVariables) {
-                                if (!record.writtenIndices.contains(
-                                        indexing[record.dimensionIndex])) {
+                                if (!record.writtenIndices.contains(indexing[record.dimensionIndex])) {
                                     writer.write(
                                             writer.findVariable(record.extraVariable.getOutput()),
                                             new int[] {indexing[record.dimensionIndex]},

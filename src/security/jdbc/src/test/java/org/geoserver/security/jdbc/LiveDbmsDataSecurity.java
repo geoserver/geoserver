@@ -20,12 +20,10 @@ import org.geoserver.util.IOUtils;
 
 public class LiveDbmsDataSecurity extends LiveDbmsData {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
     protected Boolean available = null;
 
-    public LiveDbmsDataSecurity(File dataDirSourceDirectory, String fixtureId, File sqlScript)
-            throws IOException {
+    public LiveDbmsDataSecurity(File dataDirSourceDirectory, String fixtureId, File sqlScript) throws IOException {
         super(dataDirSourceDirectory, fixtureId, sqlScript);
     }
 
@@ -65,16 +63,14 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
 
         String driverClassName = props.getProperty("driver");
         if (driverClassName == null) {
-            LOGGER.warning(
-                    msgPrefix + "property \"driver\" not found in " + fixture.getAbsolutePath());
+            LOGGER.warning(msgPrefix + "property \"driver\" not found in " + fixture.getAbsolutePath());
             available = false;
             return available;
         }
 
         String url = props.getProperty("url");
         if (url == null) {
-            LOGGER.warning(
-                    msgPrefix + "property \"url\" not found in " + fixture.getAbsolutePath());
+            LOGGER.warning(msgPrefix + "property \"url\" not found in " + fixture.getAbsolutePath());
             available = false;
             return available;
         }
@@ -92,9 +88,7 @@ public class LiveDbmsDataSecurity extends LiveDbmsData {
         }
 
         try (Connection con =
-                user == null
-                        ? DriverManager.getConnection(url)
-                        : DriverManager.getConnection(url, user, password)) {
+                user == null ? DriverManager.getConnection(url) : DriverManager.getConnection(url, user, password)) {
             // nothing to do
         } catch (SQLException ex) {
             LOGGER.warning(msgPrefix + " an sql error:\n " + ex.getMessage());

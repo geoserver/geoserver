@@ -39,11 +39,10 @@ public class DropStoredQuery {
         if (query != null) {
             storedQueryProvider.removeStoredQuery(query);
         } else {
-            WFSException exception =
-                    new WFSException(
-                            request,
-                            String.format("Stored query %s does not exist.", request.getId()),
-                            ServiceException.INVALID_PARAMETER_VALUE);
+            WFSException exception = new WFSException(
+                    request,
+                    String.format("Stored query %s does not exist.", request.getId()),
+                    ServiceException.INVALID_PARAMETER_VALUE);
             // CITE tests vagary, the XML uses "id" and KVP uses "STOREDQUERY_ID", the CITE tests
             // mandate "id"
             // in all bindings

@@ -21,8 +21,8 @@ public interface WorkspaceInfo extends CatalogInfo {
     /**
      * A persistent map of metadata.
      *
-     * <p>Data in this map is intended to be persisted. Common case of use is to have services
-     * associate various bits of data with a particular workspace.
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services associate various bits of
+     * data with a particular workspace.
      */
     MetadataMap getMetadata();
 

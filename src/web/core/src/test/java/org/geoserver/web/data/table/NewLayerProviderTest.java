@@ -40,8 +40,7 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
 
     @Test
     public void testCoverages() {
-        StoreInfo dem =
-                getCatalog().getStoreByName(MockData.TASMANIA_DEM.getLocalPart(), StoreInfo.class);
+        StoreInfo dem = getCatalog().getStoreByName(MockData.TASMANIA_DEM.getLocalPart(), StoreInfo.class);
         NewLayerPageProvider provider = new NewLayerPageProvider();
         provider.setStoreId(dem.getId());
         provider.setShowPublished(true);
@@ -61,9 +60,9 @@ public class NewLayerProviderTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * As per GEOS-3120, if a resource is published but it's name changed, it should still show up
-     * as published. It wasn't being the case due to comparing the resource's name instead of the
-     * nativeName against the name the DataStore provides
+     * As per GEOS-3120, if a resource is published but it's name changed, it should still show up as published. It
+     * wasn't being the case due to comparing the resource's name instead of the nativeName against the name the
+     * DataStore provides
      */
     @Test
     public void testPublishedUnpublishedWithChangedResourceName() {

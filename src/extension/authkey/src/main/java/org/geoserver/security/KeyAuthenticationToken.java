@@ -23,10 +23,7 @@ public class KeyAuthenticationToken extends AbstractAuthenticationToken {
     }
 
     public KeyAuthenticationToken(
-            String key,
-            String authKeyParamName,
-            UserDetails user,
-            Collection<? extends GrantedAuthority> authorities) {
+            String key, String authKeyParamName, UserDetails user, Collection<? extends GrantedAuthority> authorities) {
         super(authorities);
         this.key = key;
         setDetails(user);

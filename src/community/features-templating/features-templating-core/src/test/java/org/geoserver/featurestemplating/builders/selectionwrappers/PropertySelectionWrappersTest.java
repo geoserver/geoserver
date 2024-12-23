@@ -38,25 +38,23 @@ import org.xml.sax.helpers.NamespaceSupport;
 
 public class PropertySelectionWrappersTest extends DataTestCase {
 
-    private static final String BASE_JSON_NODE =
-            "{\n"
-                    + "  \"attr1\":\"${attr1}\",\n"
-                    + "  \"attr2\":\"${attr2}\",\n"
-                    + "  \"attrE\":\"${attrE}\",\n"
-                    + "  \"attr3\":{\n"
-                    + "     \"attr4\":\"${attr4}\"\n"
-                    + "  }\n"
-                    + "   }";
+    private static final String BASE_JSON_NODE = "{\n"
+            + "  \"attr1\":\"${attr1}\",\n"
+            + "  \"attr2\":\"${attr2}\",\n"
+            + "  \"attrE\":\"${attrE}\",\n"
+            + "  \"attr3\":{\n"
+            + "     \"attr4\":\"${attr4}\"\n"
+            + "  }\n"
+            + "   }";
 
-    private static final String JSON_ATTRIBUTE =
-            "{\n"
-                    + "  \"attrA\":\"a\",\n"
-                    + "  \"attrB\": {\n"
-                    + "     \"attrC\":\"c\",\n"
-                    + "     \"attrD\":\"d\"\n"
-                    + "  },\n"
-                    + "  \"attrE\":\"e\"\n"
-                    + "}";
+    private static final String JSON_ATTRIBUTE = "{\n"
+            + "  \"attrA\":\"a\",\n"
+            + "  \"attrB\": {\n"
+            + "     \"attrC\":\"c\",\n"
+            + "     \"attrD\":\"d\"\n"
+            + "  },\n"
+            + "  \"attrE\":\"e\"\n"
+            + "}";
 
     private String TYPE_NAME = "propertySel";
 
@@ -73,9 +71,7 @@ public class PropertySelectionWrappersTest extends DataTestCase {
         tb.add("jsonField", String.class);
         tb.setName(TYPE_NAME);
         SimpleFeatureType schema = tb.buildFeatureType();
-        schema.getDescriptor("jsonField")
-                .getUserData()
-                .put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
+        schema.getDescriptor("jsonField").getUserData().put(JDBCDataStore.JDBC_NATIVE_TYPENAME, "json");
 
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         fb.add("attr1Value");
@@ -89,24 +85,21 @@ public class PropertySelectionWrappersTest extends DataTestCase {
     @Test
     public void testIncludeFlatSelection() throws IOException {
         DynamicIncludeFlatBuilder builder =
-                new DynamicIncludeFlatBuilder(
-                        "${jsonField}", new NamespaceSupport(), readJsonString(BASE_JSON_NODE));
+                new DynamicIncludeFlatBuilder("${jsonField}", new NamespaceSupport(), readJsonString(BASE_JSON_NODE));
 
-        AbstractPropertySelection propertySelection =
-                new AbstractPropertySelection() {
-                    @Override
-                    protected boolean isKeySelected(String key) {
-                        if (key != null && key.endsWith("attrC")) return false;
-                        return true;
-                    }
+        AbstractPropertySelection propertySelection = new AbstractPropertySelection() {
+            @Override
+            protected boolean isKeySelected(String key) {
+                if (key != null && key.endsWith("attrC")) return false;
+                return true;
+            }
 
-                    @Override
-                    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
-                        return true;
-                    }
-                };
-        IncludeFlatPropertySelection wrapper =
-                new IncludeFlatPropertySelection(builder, propertySelection);
+            @Override
+            public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
+                return true;
+            }
+        };
+        IncludeFlatPropertySelection wrapper = new IncludeFlatPropertySelection(builder, propertySelection);
 
         String result = encodeTemplateToString(wrapper);
         JsonNode node = readJsonString(result);
@@ -124,27 +117,21 @@ public class PropertySelectionWrappersTest extends DataTestCase {
 
     @Test
     public void testMergeSelection() throws IOException {
-        DynamicMergeBuilder builder =
-                new DynamicMergeBuilder(
-                        "nestedAttr",
-                        "${jsonField}",
-                        new NamespaceSupport(),
-                        readJsonString(BASE_JSON_NODE),
-                        true);
+        DynamicMergeBuilder builder = new DynamicMergeBuilder(
+                "nestedAttr", "${jsonField}", new NamespaceSupport(), readJsonString(BASE_JSON_NODE), true);
 
-        AbstractPropertySelection propertySelection =
-                new AbstractPropertySelection() {
-                    @Override
-                    protected boolean isKeySelected(String key) {
-                        if (key != null && key.endsWith("attrD")) return false;
-                        return true;
-                    }
+        AbstractPropertySelection propertySelection = new AbstractPropertySelection() {
+            @Override
+            protected boolean isKeySelected(String key) {
+                if (key != null && key.endsWith("attrD")) return false;
+                return true;
+            }
 
-                    @Override
-                    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
+                return true;
+            }
+        };
         MergePropertySelection wrapper = new MergePropertySelection(builder, propertySelection);
 
         String result = encodeTemplateToString(wrapper);
@@ -163,22 +150,20 @@ public class PropertySelectionWrappersTest extends DataTestCase {
     @Test
     public void testStaticSelection() throws IOException {
         StaticBuilder builder =
-                new StaticBuilder(
-                        "staticBuilder", readJsonString(JSON_ATTRIBUTE), new NamespaceSupport());
+                new StaticBuilder("staticBuilder", readJsonString(JSON_ATTRIBUTE), new NamespaceSupport());
 
-        AbstractPropertySelection propertySelection =
-                new AbstractPropertySelection() {
-                    @Override
-                    protected boolean isKeySelected(String key) {
-                        if (key != null && key.endsWith("attrB")) return false;
-                        return true;
-                    }
+        AbstractPropertySelection propertySelection = new AbstractPropertySelection() {
+            @Override
+            protected boolean isKeySelected(String key) {
+                if (key != null && key.endsWith("attrB")) return false;
+                return true;
+            }
 
-                    @Override
-                    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
+                return true;
+            }
+        };
         StaticPropertySelection wrapper = new StaticPropertySelection(builder, propertySelection);
 
         String result = encodeTemplateToString(wrapper);
@@ -191,37 +176,33 @@ public class PropertySelectionWrappersTest extends DataTestCase {
 
     @Test
     public void testCompositeWithDynamicKey() throws IOException {
-        AbstractPropertySelection propertySelection =
-                new AbstractPropertySelection() {
-                    @Override
-                    protected boolean isKeySelected(String key) {
-                        if (key != null && key.endsWith("attr1Value")) return false;
-                        return true;
-                    }
+        AbstractPropertySelection propertySelection = new AbstractPropertySelection() {
+            @Override
+            protected boolean isKeySelected(String key) {
+                if (key != null && key.endsWith("attr1Value")) return false;
+                return true;
+            }
 
-                    @Override
-                    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
+                return true;
+            }
+        };
         CompositeBuilder builder = new CompositeBuilder("${attr1}", new NamespaceSupport(), false);
         CompositeBuilder builder2 = new CompositeBuilder("${attr2}", new NamespaceSupport(), false);
         DynamicValueBuilder dynamicValueBuilder =
                 new DynamicValueBuilder("nested", "${jsonField}", new NamespaceSupport());
         builder.addChild(new DynamicPropertySelection(dynamicValueBuilder, propertySelection));
         StaticBuilder staticBuilder =
-                new StaticBuilder(
-                        "staticBuilder", readJsonString(JSON_ATTRIBUTE), new NamespaceSupport());
+                new StaticBuilder("staticBuilder", readJsonString(JSON_ATTRIBUTE), new NamespaceSupport());
         builder2.addChild(new StaticPropertySelection(staticBuilder, propertySelection));
         PropertySelectionWrapper one = new CompositePropertySelection(builder, propertySelection);
         PropertySelectionWrapper two = new CompositePropertySelection(builder2, propertySelection);
-        CompositeBuilder container =
-                new CompositeBuilder("container", new NamespaceSupport(), false);
+        CompositeBuilder container = new CompositeBuilder("container", new NamespaceSupport(), false);
         container.addChild(one);
         container.addChild(two);
 
-        String result =
-                encodeTemplateToString(new PropertySelectionWrapper(container, propertySelection));
+        String result = encodeTemplateToString(new PropertySelectionWrapper(container, propertySelection));
         JsonNode node = readJsonString(result);
         ObjectNode object = (ObjectNode) node.get("container");
         ObjectNode dynamicKeySelected = (ObjectNode) object.get("0.2");
@@ -236,9 +217,7 @@ public class PropertySelectionWrappersTest extends DataTestCase {
     private String encodeTemplateToString(TemplateBuilder builder) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         GeoJSONWriter writer =
-                new GeoJSONWriter(
-                        new JsonFactory().createGenerator(baos, JsonEncoding.UTF8),
-                        TemplateIdentifier.JSON);
+                new GeoJSONWriter(new JsonFactory().createGenerator(baos, JsonEncoding.UTF8), TemplateIdentifier.JSON);
         writer.writeStartObject();
         builder.evaluate(writer, new TemplateBuilderContext(feature));
         writer.writeEndObject();

@@ -34,10 +34,8 @@ import org.w3c.dom.NodeList;
 
 public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
-    private static final String WFS_1_0_0_GETCAPREQUEST =
-            "wfs?request=GetCapabilities&service=WFS&version=1.0.0";
-    private static final String WFS_1_1_0_GETCAPREQUEST =
-            "wfs?request=GetCapabilities&service=WFS&version=1.1.0";
+    private static final String WFS_1_0_0_GETCAPREQUEST = "wfs?request=GetCapabilities&service=WFS&version=1.0.0";
+    private static final String WFS_1_1_0_GETCAPREQUEST = "wfs?request=GetCapabilities&service=WFS&version=1.1.0";
     private static final String WFS_2_0_0_GETCAPREQUEST =
             "wfs?request=GetCapabilities&service=WFS&acceptVersions=2.0.0";
 
@@ -100,11 +98,8 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
         ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "two",
-                        "http://www.geoserver.org/two",
-                        "http://metadata.geoserver.org/id?two"));
+        ids.add(new UniqueResourceIdentifier(
+                "two", "http://www.geoserver.org/two", "http://metadata.geoserver.org/id?two"));
 
         assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
     }
@@ -138,11 +133,8 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
         ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "two",
-                        "http://www.geoserver.org/two",
-                        "http://metadata.geoserver.org/id?two"));
+        ids.add(new UniqueResourceIdentifier(
+                "two", "http://www.geoserver.org/two", "http://metadata.geoserver.org/id?two"));
 
         assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
     }
@@ -164,10 +156,7 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         final Document dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
 
         NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(
-                "Number of INSPIRE ExtendedCapabilities elements after settings reload",
-                1,
-                nodeList.getLength());
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements after settings reload", 1, nodeList.getLength());
     }
 
     // No INSPIRE ExtendedCapabilities should be returned in a WFS 1.0.0 response
@@ -327,14 +316,9 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
         assertEquals("Number of MediaType elements", 1, nodeList.getLength());
         Element mdUrl = (Element) nodeList.item(0);
-        assertInspireMetadataUrlResponse(
-                mdUrl, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
+        assertInspireMetadataUrlResponse(mdUrl, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
 
-        serviceInfo
-                .getMetadata()
-                .put(
-                        SERVICE_METADATA_TYPE.key,
-                        "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+        serviceInfo.getMetadata().put(SERVICE_METADATA_TYPE.key, "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
         getGeoServer().save(serviceInfo);
 
         dom = getAsDOM(WFS_2_0_0_GETCAPREQUEST);
@@ -343,9 +327,7 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertEquals("Number of MediaType elements", 1, nodeList.getLength());
         mdUrl = (Element) nodeList.item(0);
         assertInspireMetadataUrlResponse(
-                mdUrl,
-                "http://foo.com?bar=baz",
-                "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+                mdUrl, "http://foo.com?bar=baz", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
     @Test
@@ -412,11 +394,9 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
@@ -449,23 +429,20 @@ public class WFSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         final Element extendedCaps = (Element) nodeList.item(0);
 
-        final Element suppLangs =
-                (Element)
-                        extendedCaps
-                                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
-                                .item(0);
+        final Element suppLangs = (Element) extendedCaps
+                .getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
 
-        final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                        .item(0)
-                        .getFirstChild()
-                        .getFirstChild()
-                        .getNodeValue();
+        final String responseLanguage = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                .item(0)
+                .getFirstChild()
+                .getFirstChild()
+                .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
     }
 }

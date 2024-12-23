@@ -18,8 +18,7 @@ public class MasterPasswordChangeException extends AbstractSecurityException {
     public static final String CURRENT_PASSWORD_REQUIRED = "CURRENT_PASSWORD_REQUIRED";
     public static final String CURRENT_PASSWORD_ERROR = "CURRENT_PASSWORD_ERROR";
     public static final String CONFIRMATION_PASSWORD_REQUIRED = "CONFIRMATION_PASSWORD_REQUIRED";
-    public static final String PASSWORD_AND_CONFIRMATION_NOT_EQUAL =
-            "PASSWORD_AND_CONFIRMATION_NOT_EQUAL";
+    public static final String PASSWORD_AND_CONFIRMATION_NOT_EQUAL = "PASSWORD_AND_CONFIRMATION_NOT_EQUAL";
     public static final String NEW_PASSWORD_REQUIRED = "NEW_PASSWORD_REQUIRED";
     public static final String NEW_EQUALS_CURRENT = "NEW_EQUALS_CURRENT";
 

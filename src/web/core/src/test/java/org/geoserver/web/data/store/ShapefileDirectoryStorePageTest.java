@@ -47,8 +47,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
         startPage();
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
 
         // configure the store
         FormTester ft = tester.newFormTester("dataStoreForm");
@@ -57,8 +56,7 @@ public class ShapefileDirectoryStorePageTest extends GeoServerWicketTestSupport 
                 "parametersPanel:url:fileInput:border:border_body:paramValue",
                 "file://" + new File("./target").getCanonicalPath());
         ft.select("workspacePanel:border:border_body:paramValue", 2);
-        tester.executeAjaxEvent(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", "change");
+        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:border_body:paramValue", "change");
 
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
         ft.setValue(

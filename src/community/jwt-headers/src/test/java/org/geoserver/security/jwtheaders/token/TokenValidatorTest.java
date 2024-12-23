@@ -46,8 +46,8 @@ public class TokenValidatorTest {
     }
 
     /**
-     * quick test - make sure that when an individual validator failed. - tokenSignatureValidator
-     * will fail --> throw exception
+     * quick test - make sure that when an individual validator failed. - tokenSignatureValidator will fail --> throw
+     * exception
      *
      * @throws Exception
      */
@@ -64,17 +64,15 @@ public class TokenValidatorTest {
         validator.tokenEndpointValidator = Mockito.mock(TokenEndpointValidator.class);
         validator.tokenAudienceValidator = Mockito.mock(TokenAudienceValidator.class);
 
-        doThrow(new Exception("boom"))
-                .when(validator.tokenSignatureValidator)
-                .validate(ArgumentMatchers.any());
+        doThrow(new Exception("boom")).when(validator.tokenSignatureValidator).validate(ArgumentMatchers.any());
 
         String token = JwtHeaderUserNameExtractorTest.accessToken;
         validator.validate(token);
     }
 
     /**
-     * quick test - make sure that when an individual validator failed. - tokenExpiryValidator will
-     * fail --> throw exception
+     * quick test - make sure that when an individual validator failed. - tokenExpiryValidator will fail --> throw
+     * exception
      *
      * @throws Exception
      */
@@ -91,17 +89,15 @@ public class TokenValidatorTest {
         validator.tokenEndpointValidator = Mockito.mock(TokenEndpointValidator.class);
         validator.tokenAudienceValidator = Mockito.mock(TokenAudienceValidator.class);
 
-        doThrow(new Exception("boom"))
-                .when(validator.tokenExpiryValidator)
-                .validate(ArgumentMatchers.any());
+        doThrow(new Exception("boom")).when(validator.tokenExpiryValidator).validate(ArgumentMatchers.any());
 
         String token = JwtHeaderUserNameExtractorTest.accessToken;
         validator.validate(token);
     }
 
     /**
-     * quick test - make sure that when an individual validator failed. - tokenEndpointValidator
-     * will fail --> throw exception
+     * quick test - make sure that when an individual validator failed. - tokenEndpointValidator will fail --> throw
+     * exception
      *
      * @throws Exception
      */
@@ -118,17 +114,15 @@ public class TokenValidatorTest {
         validator.tokenEndpointValidator = Mockito.mock(TokenEndpointValidator.class);
         validator.tokenAudienceValidator = Mockito.mock(TokenAudienceValidator.class);
 
-        doThrow(new Exception("boom"))
-                .when(validator.tokenEndpointValidator)
-                .validate(ArgumentMatchers.any());
+        doThrow(new Exception("boom")).when(validator.tokenEndpointValidator).validate(ArgumentMatchers.any());
 
         String token = JwtHeaderUserNameExtractorTest.accessToken;
         validator.validate(token);
     }
 
     /**
-     * quick test - make sure that when an individual validator failed. - tokenAudienceValidator
-     * will fail --> throw exception
+     * quick test - make sure that when an individual validator failed. - tokenAudienceValidator will fail --> throw
+     * exception
      *
      * @throws Exception
      */
@@ -145,9 +139,7 @@ public class TokenValidatorTest {
         validator.tokenEndpointValidator = Mockito.mock(TokenEndpointValidator.class);
         validator.tokenAudienceValidator = Mockito.mock(TokenAudienceValidator.class);
 
-        doThrow(new Exception("boom"))
-                .when(validator.tokenAudienceValidator)
-                .validate(ArgumentMatchers.any());
+        doThrow(new Exception("boom")).when(validator.tokenAudienceValidator).validate(ArgumentMatchers.any());
 
         String token = JwtHeaderUserNameExtractorTest.accessToken;
         validator.validate(token);

@@ -47,8 +47,7 @@ public class WPSDownloadController extends RestBaseController {
     @ResponseBody
     @GetMapping
     public RestWrapper<DownloadServiceConfiguration> getConfiguration() {
-        return new RestWrapperAdapter<>(
-                watcher.getConfiguration(), DownloadServiceConfiguration.class, this);
+        return new RestWrapperAdapter<>(watcher.getConfiguration(), DownloadServiceConfiguration.class, this);
     }
 
     @PutMapping(
@@ -58,18 +57,14 @@ public class WPSDownloadController extends RestBaseController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public void setConfiguration(@RequestBody DownloadServiceConfiguration configuration)
-            throws IOException {
+    public void setConfiguration(@RequestBody DownloadServiceConfiguration configuration) throws IOException {
         watcher.setConfiguration(configuration);
     }
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
-        return DownloadServiceConfiguration.class.isAssignableFrom(
-                methodParameter.getParameterType());
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
+        return DownloadServiceConfiguration.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override

@@ -62,14 +62,13 @@ import org.geowebcache.layer.TileLayer;
 import org.geowebcache.storage.blobstore.memory.CacheProvider;
 
 /**
- * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both {@link
- * LayerInfo} and {@link LayerGroupInfo}.
+ * Edit panel for a {@link GeoServerTileLayerInfo} (used to edit caching options for both {@link LayerInfo} and
+ * {@link LayerGroupInfo}.
  *
- * <p>If a tile layer existed for the given layer or layer group and the "create a cached layer"
- * checkbox is unchecked, then the metadata properties defining the cached layers will be removed
- * from the layer/group {@link MetadataMap}. Once the save button is pressed on the enclosing page,
- * the {@link CatalogLayerEventListener} will caught the modification to the layer or layer group
- * and delete the cache for the layer.
+ * <p>If a tile layer existed for the given layer or layer group and the "create a cached layer" checkbox is unchecked,
+ * then the metadata properties defining the cached layers will be removed from the layer/group {@link MetadataMap}.
+ * Once the save button is pressed on the enclosing page, the {@link CatalogLayerEventListener} will caught the
+ * modification to the layer or layer group and delete the cache for the layer.
  *
  * @author groldan
  * @see GridSubsetsEditor
@@ -81,17 +80,15 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
     private static final long serialVersionUID = 7870938096047218989L;
 
     /**
-     * Flag to indicate whether a cached layer initially existed for the given layer/group info so
-     * that the cache for the layer is deleted at {@link #convertInput()}
+     * Flag to indicate whether a cached layer initially existed for the given layer/group info so that the cache for
+     * the layer is deleted at {@link #convertInput()}
      */
     private final boolean cachedLayerExistedInitially;
 
     /** the confirm removal of existing tile layer and its associated cache dialog */
     private final GeoServerDialog confirmRemovalDialog;
 
-    /**
-     * Whether to create a {@link TileLayer} for this {@link LayerInfo} or {@link LayerGroupInfo}
-     */
+    /** Whether to create a {@link TileLayer} for this {@link LayerInfo} or {@link LayerGroupInfo} */
     private final FormComponent<Boolean> createLayer;
 
     /** Whether the cached layer is enabled (like in {@link TileLayer#isEnabled()} */
@@ -209,72 +206,59 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         enabled.add(new AttributeModifier("title", new ResourceModel("enabled.title")));
         configs.add(enabled);
 
-        ChoiceRenderer<String> blobStoreRenderer =
-                new ChoiceRenderer<String>() {
-                    private static final long serialVersionUID = 1L;
+        ChoiceRenderer<String> blobStoreRenderer = new ChoiceRenderer<String>() {
+            private static final long serialVersionUID = 1L;
 
-                    final String defaultStore = getDefaultBlobStoreId();
+            final String defaultStore = getDefaultBlobStoreId();
 
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
 
-                    @Override
-                    public Object getDisplayValue(String object) {
-                        String value = object;
-                        if (object.equals(defaultStore)) {
-                            value += " (*)";
-                        }
-                        return value;
-                    }
-                };
+            @Override
+            public Object getDisplayValue(String object) {
+                String value = object;
+                if (object.equals(defaultStore)) {
+                    value += " (*)";
+                }
+                return value;
+            }
+        };
         PropertyModel<String> blobStoreModel = new PropertyModel<>(getModel(), "blobStoreId");
         List<String> blobStoreChoices = getBlobStoreIds();
         configs.add(
-                blobStoreId =
-                        new DropDownChoice<>(
-                                "blobStoreId",
-                                blobStoreModel,
-                                blobStoreChoices,
-                                blobStoreRenderer));
+                blobStoreId = new DropDownChoice<>("blobStoreId", blobStoreModel, blobStoreChoices, blobStoreRenderer));
         blobStoreId.setNullValid(true);
         blobStoreId.add(new AttributeModifier("title", new ResourceModel("blobStoreId.title")));
 
-        add(
-                new IValidator<GeoServerTileLayerInfo>() {
-                    private static final long serialVersionUID = 5240602030478856537L;
+        add(new IValidator<GeoServerTileLayerInfo>() {
+            private static final long serialVersionUID = 5240602030478856537L;
 
-                    @Override
-                    public void validate(IValidatable<GeoServerTileLayerInfo> validatable) {
-                        final Boolean createVal = createLayer.getConvertedInput();
-                        final Boolean enabledVal = enabled.getConvertedInput();
-                        final String blobStoreIdVal = blobStoreId.getConvertedInput();
+            @Override
+            public void validate(IValidatable<GeoServerTileLayerInfo> validatable) {
+                final Boolean createVal = createLayer.getConvertedInput();
+                final Boolean enabledVal = enabled.getConvertedInput();
+                final String blobStoreIdVal = blobStoreId.getConvertedInput();
 
-                        if (createVal && enabledVal && !isBlobStoreEnabled(blobStoreIdVal)) {
-                            error(
-                                    new ParamResourceModel(
-                                                    "enabledError", GeoServerTileLayerEditor.this)
-                                            .getString());
-                        }
-                    }
-                });
+                if (createVal && enabledVal && !isBlobStoreEnabled(blobStoreIdVal)) {
+                    error(new ParamResourceModel("enabledError", GeoServerTileLayerEditor.this).getString());
+                }
+            }
+        });
 
         // CheckBox for enabling/disabling inner caching for the layer
-        enableInMemoryCaching =
-                new CheckBox("inMemoryCached", new PropertyModel<>(getModel(), "inMemoryCached"));
+        enableInMemoryCaching = new CheckBox("inMemoryCached", new PropertyModel<>(getModel(), "inMemoryCached"));
         ConfigurableBlobStore store = GeoServerExtensions.bean(ConfigurableBlobStore.class);
         if (store != null && store.getCache() != null) {
-            enableInMemoryCaching.setEnabled(
-                    mediator.getConfig().isInnerCachingEnabled()
-                            && !store.getCache().isImmutable());
+            enableInMemoryCaching.setEnabled(mediator.getConfig().isInnerCachingEnabled()
+                    && !store.getCache().isImmutable());
         }
 
         configs.add(enableInMemoryCaching);
 
         List<Integer> metaTilingChoices =
-                Arrays.asList(
-                        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
+                Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20);
         IModel<Integer> metaTilingXModel = new PropertyModel<>(getModel(), "metaTilingX");
         metaTilingX = new DropDownChoice<>("metaTilingX", metaTilingXModel, metaTilingChoices);
         configs.add(metaTilingX);
@@ -284,8 +268,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(metaTilingY);
 
         IModel<Integer> gutterModel = new PropertyModel<>(getModel(), "gutter");
-        List<Integer> gutterChoices =
-                Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50, 100);
+        List<Integer> gutterChoices = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 50, 100);
         gutter = new DropDownChoice<>("gutter", gutterModel, gutterChoices);
         configs.add(gutter);
 
@@ -295,20 +278,18 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         cacheFormats.setLabel(new ResourceModel("cacheFormats"));
         configs.add(cacheFormats);
 
-        final List<String> formats =
-                Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
+        final List<String> formats = Lists.newArrayList(GWC.getAdvertisedCachedFormats(info.getType()));
         mergeExisting(formats, mimeFormatsModel.getObject());
 
-        ListView<String> cacheFormatsList =
-                new ListView<String>("cacheFormats", formats) {
-                    private static final long serialVersionUID = 1L;
+        ListView<String> cacheFormatsList = new ListView<String>("cacheFormats", formats) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void populateItem(ListItem<String> item) {
-                        item.add(new Check<>("cacheFormatsOption", item.getModel()));
-                        item.add(new Label("name", item.getModel()));
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem<String> item) {
+                item.add(new Check<>("cacheFormatsOption", item.getModel()));
+                item.add(new Label("name", item.getModel()));
+            }
+        };
         cacheFormatsList.setReuseItems(true); // otherwise it looses state on invalid form state
         // submits
         cacheFormats.add(cacheFormatsList);
@@ -322,40 +303,35 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         configs.add(expireClients);
 
         // cache skips
-        IModel<Set<WarningType>> warningSkipsModel =
-                new PropertyModel<>(getModel(), "cacheWarningSkips");
+        IModel<Set<WarningType>> warningSkipsModel = new PropertyModel<>(getModel(), "cacheWarningSkips");
         configs.add(new WarningSkipsPanel("warningSkips", warningSkipsModel));
 
-        IModel<Set<XMLGridSubset>> gridSubsetsModel =
-                new PropertyModel<>(getModel(), "gridSubsets");
+        IModel<Set<XMLGridSubset>> gridSubsetsModel = new PropertyModel<>(getModel(), "gridSubsets");
         gridSubsets = new GridSubsetsEditor("cachedGridsets", gridSubsetsModel);
         configs.add(gridSubsets);
 
-        IModel<Set<ParameterFilter>> parameterFilterModel =
-                new PropertyModel<>(getModel(), "parameterFilters");
-        parameterFilters =
-                new ParameterFilterEditor("parameterFilters", parameterFilterModel, layerModel);
+        IModel<Set<ParameterFilter>> parameterFilterModel = new PropertyModel<>(getModel(), "parameterFilters");
+        parameterFilters = new ParameterFilterEditor("parameterFilters", parameterFilterModel, layerModel);
         configs.add(parameterFilters);
 
         // behavior phase
         configs.setVisible(createLayer.getModelObject());
         setValidating(createLayer.getModelObject());
 
-        createLayer.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        createLayer.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        final boolean createTileLayer = createLayer.getModelObject().booleanValue();
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                final boolean createTileLayer = createLayer.getModelObject().booleanValue();
 
-                        if (!createTileLayer && cachedLayerExistedInitially) {
-                            confirmRemovalOfExistingTileLayer(target);
-                        } else {
-                            updateConfigsVisibility(target);
-                        }
-                    }
-                });
+                if (!createTileLayer && cachedLayerExistedInitially) {
+                    confirmRemovalOfExistingTileLayer(target);
+                } else {
+                    updateConfigsVisibility(target);
+                }
+            }
+        });
     }
 
     private List<String> getBlobStoreIds() {
@@ -396,9 +372,7 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
         final boolean tileLayerExists = gwc.hasTileLayer(layer);
         GeoServerTileLayerInfoModel model = (GeoServerTileLayerInfoModel) getModel();
         final boolean createLayer =
-                model.getEnabled() == null
-                        ? GWC.get().getConfig().isCacheLayersByDefault()
-                        : model.getEnabled();
+                model.getEnabled() == null ? GWC.get().getConfig().isCacheLayersByDefault() : model.getEnabled();
 
         if (!createLayer) {
             if (tileLayerExists) {
@@ -461,47 +435,41 @@ class GeoServerTileLayerEditor extends FormComponentPanel<GeoServerTileLayerInfo
 
         // if there is something to cancel, let's warn the user about what
         // could go wrong, and if the user accepts, let's delete what's needed
-        confirmRemovalDialog.showOkCancel(
-                origTarget,
-                new GeoServerDialog.DialogDelegate() {
-                    private static final long serialVersionUID = 1L;
+        confirmRemovalDialog.showOkCancel(origTarget, new GeoServerDialog.DialogDelegate() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected Component getContents(final String id) {
-                        // show a confirmation panel for all the objects we have to remove
-                        GWC gwc = GWC.get();
-                        Quota usedQuota = gwc.getUsedQuota(originalLayerName);
-                        if (usedQuota == null) {
-                            usedQuota = new Quota();
-                        }
-                        String usedQuotaStr = usedQuota.toNiceString();
-                        return new Label(
-                                id,
-                                new ParamResourceModel(
-                                        "confirmTileLayerRemoval",
-                                        GeoServerTileLayerEditor.this,
-                                        usedQuotaStr));
-                    }
+            @Override
+            protected Component getContents(final String id) {
+                // show a confirmation panel for all the objects we have to remove
+                GWC gwc = GWC.get();
+                Quota usedQuota = gwc.getUsedQuota(originalLayerName);
+                if (usedQuota == null) {
+                    usedQuota = new Quota();
+                }
+                String usedQuotaStr = usedQuota.toNiceString();
+                return new Label(
+                        id,
+                        new ParamResourceModel("confirmTileLayerRemoval", GeoServerTileLayerEditor.this, usedQuotaStr));
+            }
 
-                    @Override
-                    protected boolean onSubmit(
-                            final AjaxRequestTarget target, final Component contents) {
-                        return true;
-                    }
+            @Override
+            protected boolean onSubmit(final AjaxRequestTarget target, final Component contents) {
+                return true;
+            }
 
-                    @Override
-                    public void onClose(final AjaxRequestTarget target) {
-                        target.add(createLayer);
-                        updateConfigsVisibility(target);
-                    }
+            @Override
+            public void onClose(final AjaxRequestTarget target) {
+                target.add(createLayer);
+                updateConfigsVisibility(target);
+            }
 
-                    @Override
-                    protected boolean onCancel(final AjaxRequestTarget target) {
-                        createLayer.setModelObject(Boolean.TRUE);
-                        final boolean closeWindow = true;
-                        return closeWindow;
-                    }
-                });
+            @Override
+            protected boolean onCancel(final AjaxRequestTarget target) {
+                createLayer.setModelObject(Boolean.TRUE);
+                final boolean closeWindow = true;
+                return closeWindow;
+            }
+        });
     }
 
     private void setValidating(final boolean validate) {

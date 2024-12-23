@@ -69,8 +69,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         getGeoServer().save(global);
 
         // introduce misconfiguration
-        FeatureTypeInfo ftype =
-                getCatalog().getFeatureTypeByName(CiteTestData.UPDATES.getLocalPart());
+        FeatureTypeInfo ftype = getCatalog().getFeatureTypeByName(CiteTestData.UPDATES.getLocalPart());
         ftype.setLatLonBoundingBox(null);
         getCatalog().save(ftype);
 
@@ -88,15 +87,13 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     @Test
     public void testNamespaceFilter() throws Exception {
         // filter on an existing namespace
-        Document doc =
-                getAsDOM("wfs?service=WFS&version=1.0.0&request=getCapabilities&namespace=sf");
+        Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=getCapabilities&namespace=sf");
         Element e = doc.getDocumentElement();
         assertEquals("WFS_Capabilities", e.getLocalName());
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(
-                xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[starts-with(., sf)]", doc)
-                                .getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[starts-with(., sf)]", doc)
+                        .getLength()
+                > 0);
         assertEquals(
                 0,
                 xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[not(starts-with(., sf))]", doc)
@@ -111,12 +108,11 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     @Test
     public void testPost() throws Exception {
-        String xml =
-                "<GetCapabilities service=\"WFS\" version=\"1.0.0\""
-                        + " xmlns=\"http://www.opengis.net/wfs\" "
-                        + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + " xsi:schemaLocation=\"http://www.opengis.net/wfs "
-                        + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\"/>";
+        String xml = "<GetCapabilities service=\"WFS\" version=\"1.0.0\""
+                + " xmlns=\"http://www.opengis.net/wfs\" "
+                + " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + " xsi:schemaLocation=\"http://www.opengis.net/wfs "
+                + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\"/>";
         Document doc = postAsDOM("wfs", xml);
 
         assertEquals("WFS_Capabilities", doc.getDocumentElement().getNodeName());
@@ -218,8 +214,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
         assertEquals(
                 enabledCount,
-                xpath.getMatchingNodes(
-                                "/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType", doc)
+                xpath.getMatchingNodes("/wfs:WFS_Capabilities/wfs:FeatureTypeList/wfs:FeatureType", doc)
                         .getLength());
     }
 
@@ -236,11 +231,10 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             if (ft.enabled()) {
                 String prefixedName = ft.prefixedName();
 
-                String xpathExpr =
-                        "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"
-                                + "wfs:FeatureType/wfs:Name[text()=\""
-                                + prefixedName
-                                + "\"]";
+                String xpathExpr = "/wfs:WFS_Capabilities/wfs:FeatureTypeList/"
+                        + "wfs:FeatureType/wfs:Name[text()=\""
+                        + prefixedName
+                        + "\"]";
 
                 XMLAssert.assertXpathExists(xpathExpr, doc);
             }
@@ -256,10 +250,9 @@ public class GetCapabilitiesTest extends WFSTestSupport {
         assertEquals("WFS_Capabilities", e.getLocalName());
 
         XpathEngine xpath = XMLUnit.newXpathEngine();
-        assertTrue(
-                xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[starts-with(., sf)]", doc)
-                                .getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[starts-with(., sf)]", doc)
+                        .getLength()
+                > 0);
         assertEquals(
                 0,
                 xpath.getMatchingNodes("//wfs:FeatureType/wfs:Name[not(starts-with(., sf))]", doc)
@@ -280,9 +273,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     @Test
     public void testLayerQualified() throws Exception {
         // filter on an existing namespace
-        Document doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        Document doc = getAsDOM("sf/PrimitiveGeoFeature/wfs?service=WFS&version=1.0.0&request=getCapabilities");
 
         Element e = doc.getDocumentElement();
         assertEquals("WFS_Capabilities", e.getLocalName());
@@ -299,15 +290,11 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
         assertEquals(
                 6,
-                xpath.getMatchingNodes(
-                                "//wfs:Get[contains(@onlineResource,'sf/PrimitiveGeoFeature/wfs')]",
-                                doc)
+                xpath.getMatchingNodes("//wfs:Get[contains(@onlineResource,'sf/PrimitiveGeoFeature/wfs')]", doc)
                         .getLength());
         assertEquals(
                 6,
-                xpath.getMatchingNodes(
-                                "//wfs:Post[contains(@onlineResource,'sf/PrimitiveGeoFeature/wfs')]",
-                                doc)
+                xpath.getMatchingNodes("//wfs:Post[contains(@onlineResource,'sf/PrimitiveGeoFeature/wfs')]", doc)
                         .getLength());
 
         // TODO: test with a non existing workspace
@@ -337,8 +324,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
     public void testCachingHeaders() throws Exception {
         // Check the cache control headers are set
         MockHttpServletRequest request =
-                createGetRequestWithHeaders(
-                        "wfs?service=WFS&version=1.0.0&request=getCapabilities");
+                createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities");
         MockHttpServletResponse response = dispatch(request);
         assertEquals(HttpStatus.OK.value(), response.getStatus());
 
@@ -348,16 +334,14 @@ public class GetCapabilitiesTest extends WFSTestSupport {
 
     @Test
     public void testCachingHeadersDisabled() throws Exception {
-        CapabilitiesCacheHeadersCallback callback =
-                GeoServerExtensions.bean(CapabilitiesCacheHeadersCallback.class);
+        CapabilitiesCacheHeadersCallback callback = GeoServerExtensions.bean(CapabilitiesCacheHeadersCallback.class);
         boolean backup = callback.isCapabilitiesCacheHeadersEnabled();
         try {
             callback.setCapabilitiesCacheHeadersEnabled(false);
 
             // first request, get the etag
             MockHttpServletRequest request =
-                    createGetRequestWithHeaders(
-                            "wfs?service=WFS&version=1.0.0&request=getCapabilities");
+                    createGetRequestWithHeaders("wfs?service=WFS&version=1.0.0&request=getCapabilities");
             MockHttpServletResponse response = dispatch(request);
             assertEquals(HttpStatus.OK.value(), response.getStatus());
 

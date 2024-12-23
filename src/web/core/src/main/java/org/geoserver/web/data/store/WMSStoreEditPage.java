@@ -32,8 +32,7 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
     }
 
     @Override
-    protected void onSave(WMSStoreInfo info, AjaxRequestTarget target)
-            throws IllegalArgumentException {
+    protected void onSave(WMSStoreInfo info, AjaxRequestTarget target) throws IllegalArgumentException {
         if (!info.isEnabled()) {
             doSaveStore(info);
         } else {
@@ -84,36 +83,33 @@ public class WMSStoreEditPage extends AbstractWMSStorePage {
             exceptionMessage = message;
         }
 
-        dialog.showOkCancel(
-                requestTarget,
-                new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
 
-                    boolean accepted = false;
+            boolean accepted = false;
 
-                    @Override
-                    protected Component getContents(String id) {
-                        return new StoreConnectionFailedInformationPanel(
-                                id, info.getName(), exceptionMessage);
-                    }
+            @Override
+            protected Component getContents(String id) {
+                return new StoreConnectionFailedInformationPanel(id, info.getName(), exceptionMessage);
+            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        doSaveStore(info);
-                        accepted = true;
-                        return true;
-                    }
+            @Override
+            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                doSaveStore(info);
+                accepted = true;
+                return true;
+            }
 
-                    @Override
-                    protected boolean onCancel(AjaxRequestTarget target) {
-                        return true;
-                    }
+            @Override
+            protected boolean onCancel(AjaxRequestTarget target) {
+                return true;
+            }
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        if (accepted) {
-                            doReturn(StorePage.class);
-                        }
-                    }
-                });
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                if (accepted) {
+                    doReturn(StorePage.class);
+                }
+            }
+        });
     }
 }

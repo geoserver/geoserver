@@ -12,8 +12,8 @@ import org.geoserver.metadata.data.dto.impl.AttributeTypeMappingConfigurationImp
 /**
  * Object that matches yaml structure.
  *
- * <p>The part describes one mapping for an object. The object mapping is made from a list of
- * mappings for each attribute.
+ * <p>The part describes one mapping for an object. The object mapping is made from a list of mappings for each
+ * attribute.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

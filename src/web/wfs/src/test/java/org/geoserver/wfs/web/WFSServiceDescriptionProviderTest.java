@@ -29,8 +29,7 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
 
     @Test
     public void serviceDescriptorAndLinks() {
-        WFSServiceDescriptionProvider provider =
-                GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        WFSServiceDescriptionProvider provider = GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
 
         List<ServiceDescription> services = provider.getServices(null, null);
         List<ServiceLinkDescription> links = provider.getServiceLinks(null, null);
@@ -52,8 +51,7 @@ public class WFSServiceDescriptionProviderTest extends GeoServerSystemTestSuppor
 
     @Test
     public void ignoreCoverage() {
-        WFSServiceDescriptionProvider provider =
-                GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
+        WFSServiceDescriptionProvider provider = GeoServerExtensions.bean(WFSServiceDescriptionProvider.class);
         Catalog catalog = getCatalog();
         WorkspaceInfo gs = catalog.getWorkspaceByName("gs");
         LayerInfo world = catalog.getLayerByName("World");

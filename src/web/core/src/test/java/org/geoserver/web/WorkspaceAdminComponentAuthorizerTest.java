@@ -35,13 +35,12 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
     @SuppressWarnings("serial")
     public void setUp() {
         this.accessManager = new WorkspaceAdminComponentAuthorizer().getAccessManager();
-        authorizer =
-                new WorkspaceAdminComponentAuthorizer() {
-                    @Override
-                    ResourceAccessManager getAccessManager() {
-                        return accessManager;
-                    }
-                };
+        authorizer = new WorkspaceAdminComponentAuthorizer() {
+            @Override
+            ResourceAccessManager getAccessManager() {
+                return accessManager;
+            }
+        };
     }
 
     @After
@@ -117,10 +116,8 @@ public class WorkspaceAdminComponentAuthorizerTest extends GeoServerWicketTestSu
         verify(authorizer, times(1)).setCachedValue(true);
         verify(authorizer, times(1)).isWorkspaceAdmin(user);
 
-        Object cached =
-                atts.getAttribute(
-                        WorkspaceAdminComponentAuthorizer.REQUEST_CONTEXT_CACHE_KEY,
-                        RequestAttributes.SCOPE_REQUEST);
+        Object cached = atts.getAttribute(
+                WorkspaceAdminComponentAuthorizer.REQUEST_CONTEXT_CACHE_KEY, RequestAttributes.SCOPE_REQUEST);
         assertEquals(Boolean.TRUE, cached);
     }
 

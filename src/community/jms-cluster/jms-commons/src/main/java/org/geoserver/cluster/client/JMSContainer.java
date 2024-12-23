@@ -34,13 +34,12 @@ import org.springframework.jms.listener.DefaultMessageListenerContainer;
  * @author Carlo Cancellieri - GeoSolutions SAS
  */
 public final class JMSContainer extends DefaultMessageListenerContainer
-        implements DisposableBean,
-                ApplicationListener<ContextRefreshedEvent>,
-                ApplicationContextAware {
+        implements DisposableBean, ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
     private static final Logger LOGGER = Logging.getLogger(JMSContainer.class);
 
-    @Autowired public JMSFactory jmsFactory;
+    @Autowired
+    public JMSFactory jmsFactory;
 
     @Autowired
     public List<JMSContainerHandlerExceptionListener> jmsContainerHandleExceptionListener;
@@ -79,25 +78,20 @@ public final class JMSContainer extends DefaultMessageListenerContainer
         setPubSubDomain(true);
 
         // set subscription durability
-        setSubscriptionDurable(
-                Boolean.parseBoolean(
-                        config.getConfiguration(TopicConfiguration.DURABLE_KEY).toString()));
+        setSubscriptionDurable(Boolean.parseBoolean(
+                config.getConfiguration(TopicConfiguration.DURABLE_KEY).toString()));
 
         // set subscription ID
         setDurableSubscriptionName(
                 config.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY).toString());
 
         // times to test (connection)
-        max =
-                Integer.parseInt(
-                        config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY)
-                                .toString());
+        max = Integer.parseInt(config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY)
+                .toString());
 
         // millisecs to wait between tests (connection)
-        maxWait =
-                Long.parseLong(
-                        config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY)
-                                .toString());
+        maxWait = Long.parseLong(config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY)
+                .toString());
 
         // check configuration for connection and try to start if needed
         // configure (needed by initializeBean)
@@ -106,8 +100,7 @@ public final class JMSContainer extends DefaultMessageListenerContainer
 
     private static void verify(final Object type, final String message) {
         if (type == null)
-            throw new IllegalArgumentException(
-                    message != null ? message : "Verify fails the argument check");
+            throw new IllegalArgumentException(message != null ? message : "Verify fails the argument check");
     }
 
     /**
@@ -167,13 +160,11 @@ public final class JMSContainer extends DefaultMessageListenerContainer
                         LOGGER.info("Now GeoServer is registered with the destination");
                         return true;
                     } else if (repReg == max) {
-                        LOGGER.log(
-                                Level.SEVERE, "Registration aborted due to a connection problem");
+                        LOGGER.log(Level.SEVERE, "Registration aborted due to a connection problem");
                         stop();
                         LOGGER.info("Disconnected");
                     } else {
-                        LOGGER.info(
-                                "Impossible to register GeoServer with destination, waiting...");
+                        LOGGER.info("Impossible to register GeoServer with destination, waiting...");
                     }
                     LOGGER.info("Waiting for registration...(" + repReg + "/" + max + ")");
                     try {
@@ -224,8 +215,7 @@ public final class JMSContainer extends DefaultMessageListenerContainer
         super.handleListenerSetupFailure(ex, alreadyRecovered);
 
         if (jmsContainerHandleExceptionListener != null) {
-            for (JMSContainerHandlerExceptionListener handler :
-                    jmsContainerHandleExceptionListener) {
+            for (JMSContainerHandlerExceptionListener handler : jmsContainerHandleExceptionListener) {
                 handler.handleListenerSetupFailure(ex, alreadyRecovered);
             }
         }
@@ -239,20 +229,16 @@ public final class JMSContainer extends DefaultMessageListenerContainer
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         if (event.getApplicationContext() == applicationContext) {
-            final String startString =
-                    config.getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
-            if (startString != null
-                    && startString.equals(ConnectionConfigurationStatus.enabled.toString())) {
+            final String startString = config.getConfiguration(ConnectionConfiguration.CONNECTION_KEY);
+            if (startString != null && startString.equals(ConnectionConfigurationStatus.enabled.toString())) {
                 if (!connect()) {
                     if (LOGGER.isLoggable(Level.SEVERE)) {
-                        LOGGER.severe(
-                                "Unable to connect to the broker, force connection status to disabled");
+                        LOGGER.severe("Unable to connect to the broker, force connection status to disabled");
                     }
 
                     // change configuration status
                     config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY,
-                            ConnectionConfigurationStatus.disabled.toString());
+                            ConnectionConfiguration.CONNECTION_KEY, ConnectionConfigurationStatus.disabled.toString());
 
                     // store changes to the configuration
                     try {

@@ -26,10 +26,9 @@ public interface WCSInfo extends ServiceInfo {
     void setGMLPrefixing(boolean gmlPrefixing);
 
     /**
-     * Returns the maximum input size, in kilobytes. The input size is computed as the amount of
-     * bytes needed to fully store in memory the input data, {code}width x heigth x pixelsize{code}
-     * (whether that memory will actually be fully used or not depends on the data source) A
-     * negative or null value implies there is no input limit.
+     * Returns the maximum input size, in kilobytes. The input size is computed as the amount of bytes needed to fully
+     * store in memory the input data, {code}width x heigth x pixelsize{code} (whether that memory will actually be
+     * fully used or not depends on the data source) A negative or null value implies there is no input limit.
      */
     long getMaxInputMemory();
 
@@ -37,10 +36,10 @@ public interface WCSInfo extends ServiceInfo {
     void setMaxInputMemory(long size);
 
     /**
-     * Returns the maximum output size, in kilobytes. The output size is computed as the amount of
-     * bytes needed to store in memory the resulting image {code}width x heigth x pixelsize{code}.
-     * Whether that memory will be used or not depends on the data source as well as the output
-     * format. A negative or null value implies there is no output limit.
+     * Returns the maximum output size, in kilobytes. The output size is computed as the amount of bytes needed to store
+     * in memory the resulting image {code}width x heigth x pixelsize{code}. Whether that memory will be used or not
+     * depends on the data source as well as the output format. A negative or null value implies there is no output
+     * limit.
      */
     long getMaxOutputMemory();
 
@@ -79,17 +78,16 @@ public interface WCSInfo extends ServiceInfo {
     List<String> getSRS();
 
     /**
-     * Returns the maximum number of dimension items that can be requested by a client without
-     * getting a service exception. The default is
-     * {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
+     * Returns the maximum number of dimension items that can be requested by a client without getting a service
+     * exception. The default is {DimensionInfo#DEFAULT_MAX_REQUESTED_DIMENSION_VALUES} that is, no limit.
      */
     default int getMaxRequestedDimensionValues() {
         return DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES;
     }
 
     /**
-     * Sets the maximum number of dimension items that can be requested by a client without. Zero or
-     * negative will disable the limit.
+     * Sets the maximum number of dimension items that can be requested by a client without. Zero or negative will
+     * disable the limit.
      *
      * @param maxRequestedDimensionValues Any integer number
      */

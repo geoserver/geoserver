@@ -73,13 +73,12 @@ public abstract class AbstractCommandLineTransform extends AbstractTransform {
                 if (executor.isFailure(result)) {
                     // toString call is routed to ByteArrayOutputStream, which does the right string
                     // conversion
-                    throw new IOException(
-                            "Failed to execute command "
-                                    + cmd.toString()
-                                    + "\nStandard output is:\n"
-                                    + os.toString()
-                                    + "\nStandard error is:\n"
-                                    + es.toString());
+                    throw new IOException("Failed to execute command "
+                            + cmd.toString()
+                            + "\nStandard output is:\n"
+                            + os.toString()
+                            + "\nStandard error is:\n"
+                            + es.toString());
                 }
             } catch (Exception e) {
                 throw new IOException(

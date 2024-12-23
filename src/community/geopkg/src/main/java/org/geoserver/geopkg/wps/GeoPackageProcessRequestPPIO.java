@@ -22,10 +22,7 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
     EntityResolverProvider resolverProvider;
 
     protected GeoPackageProcessRequestPPIO(EntityResolverProvider resolverProvider) {
-        super(
-                GeoPackageProcessRequest.class,
-                GeoPackageProcessRequest.class,
-                "text/xml; subtype=geoserver/geopackage");
+        super(GeoPackageProcessRequest.class, GeoPackageProcessRequest.class, "text/xml; subtype=geoserver/geopackage");
         this.resolverProvider = resolverProvider;
     }
 
@@ -37,8 +34,7 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
 
         if (!p.getValidationErrors().isEmpty()) {
             throw new ServiceException(
-                    "Errors were encountered while parsing GeoPackage contents: "
-                            + p.getValidationErrors());
+                    "Errors were encountered while parsing GeoPackage contents: " + p.getValidationErrors());
         }
 
         input.reset();
@@ -54,8 +50,7 @@ public class GeoPackageProcessRequestPPIO extends ComplexPPIO {
         } else if (input instanceof String) {
             return decode(IOUtils.toInputStream((String) input, "UTF-8"));
         } else {
-            throw new IllegalArgumentException(
-                    "Cannot convert " + input + " into a GeoPackageProcessRequest object");
+            throw new IllegalArgumentException("Cannot convert " + input + " into a GeoPackageProcessRequest object");
         }
     }
 

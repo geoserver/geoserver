@@ -24,8 +24,8 @@ public interface ImportTransform extends Serializable {
     boolean stopOnError(Exception e);
 
     /**
-     * Initialize any transient or temporary state. This should be called prior to invoking any
-     * other methods on the transform.
+     * Initialize any transient or temporary state. This should be called prior to invoking any other methods on the
+     * transform.
      */
     void init();
 }

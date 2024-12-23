@@ -31,8 +31,8 @@ public class ResponseUtils {
     public static final String SCHEMAS = "schemas";
 
     /**
-     * Parses the passed string, and encodes the special characters (used in xml for special
-     * purposes) with the appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
+     * Parses the passed string, and encodes the special characters (used in xml for special purposes) with the
+     * appropriate codes. e.g. '&lt;' is changed to '&amp;lt;'
      *
      * @param inData The string to encode into xml.
      * @return the encoded string. Returns null, if null is passed as argument
@@ -89,10 +89,7 @@ public class ResponseUtils {
         return buffer.toString();
     }
 
-    /**
-     * Writes <code>string</code> into writer, escaping &amp;, ', ", ^lt;, and &gt; with the XML
-     * excape strings.
-     */
+    /** Writes <code>string</code> into writer, escaping &amp;, ', ", ^lt;, and &gt; with the XML excape strings. */
     public static void writeEscapedString(Writer writer, String string) throws IOException {
         for (int i = 0; i < string.length(); i++) {
             char c = string.charAt(i);
@@ -116,11 +113,10 @@ public class ResponseUtils {
     /**
      * Appends a query string to a url.
      *
-     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or
-     * '&amp;' to be prepended.
+     * <p>This method checks <code>url</code> to see if the appended query string requires a '?' or '&amp;' to be
+     * prepended.
      *
-     * <p>This code can be used to make sure the url ends with ? or &amp; by calling
-     * appendQueryString(url, "")
+     * <p>This code can be used to make sure the url ends with ? or &amp; by calling appendQueryString(url, "")
      *
      * @param url The base url.
      * @param queryString The query string to be appended, should not contain the '?' character.
@@ -218,8 +214,7 @@ public class ResponseUtils {
      * Given a set of path components a full path is built
      *
      * @param pathComponents The set of path components
-     * @return The full url with the path appended. TODO: remove this and replace with
-     *     Requetss.appendContextPath
+     * @return The full url with the path appended. TODO: remove this and replace with Requetss.appendContextPath
      */
     public static String appendPath(String... pathComponents) {
         StringBuilder result = new StringBuilder(pathComponents[0]);
@@ -371,16 +366,15 @@ public class ResponseUtils {
     }
 
     /**
-     * Builds and mangles a URL given its constitutent components. The components will be eventually
-     * modified by registered {@link URLMangler} instances to handle proxies or add security tokens
+     * Builds and mangles a URL given its constitutent components. The components will be eventually modified by
+     * registered {@link URLMangler} instances to handle proxies or add security tokens
      *
      * @param baseURL the base URL, containing host, port and application
      * @param path the path after the application name
      * @param kvp the GET request parameters
      * @param type URL type
      */
-    public static String buildURL(
-            String baseURL, String path, Map<String, String> kvp, URLType type) {
+    public static String buildURL(String baseURL, String path, Map<String, String> kvp, URLType type) {
         // prepare modifiable parameters
         StringBuilder baseURLBuffer = new StringBuilder(baseURL);
         StringBuilder pathBuffer = new StringBuilder(path != null ? path : "");
@@ -447,9 +441,8 @@ public class ResponseUtils {
     public static Map<String, String> params(String... parameters) {
         Map<String, String> result = new LinkedHashMap<>();
         if (parameters.length % 2 != 0)
-            throw new IllegalArgumentException(
-                    "The parameters sequence should be "
-                            + "composed of key/value pairs, but the params passed are odd in number");
+            throw new IllegalArgumentException("The parameters sequence should be "
+                    + "composed of key/value pairs, but the params passed are odd in number");
 
         for (int i = 0; i < parameters.length; ) {
             String key = parameters[i++];
@@ -464,8 +457,7 @@ public class ResponseUtils {
      * URL encodes the value towards the UTF-8 charset
      *
      * @param value the string you want encoded
-     * @param exclude any reserved URL character that and should not be percent encoded (such as
-     *     '/').
+     * @param exclude any reserved URL character that and should not be percent encoded (such as '/').
      */
     public static String urlEncode(String value, char... exclude) {
         StringBuilder resultStr = new StringBuilder();

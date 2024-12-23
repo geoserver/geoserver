@@ -74,14 +74,12 @@ public class WCSDimensionsHelper {
     String coverageId;
 
     /**
-     * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which
-     * deals with up to timeDimensions
+     * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which deals with up to
+     * timeDimensions
      */
     public WCSDimensionsHelper(CoverageInfo ci) throws IOException {
         this.coverageId = NCNameResourceCodec.encode(ci);
-        this.accessor =
-                new ReaderDimensionsAccessor(
-                        (GridCoverage2DReader) ci.getGridCoverageReader(null, null));
+        this.accessor = new ReaderDimensionsAccessor((GridCoverage2DReader) ci.getGridCoverageReader(null, null));
 
         Map<String, DimensionInfo> dimensions = new HashMap<>();
         for (Map.Entry<String, Serializable> entry : ci.getMetadata().entrySet()) {
@@ -95,21 +93,17 @@ public class WCSDimensionsHelper {
     }
 
     /**
-     * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which
-     * deals with up to timeDimensions
+     * Base constructor which only deals with timeDimension. It is used by WCS-EO classes which deals with up to
+     * timeDimensions
      */
     public WCSDimensionsHelper(
-            final DimensionInfo timeDimension,
-            final GridCoverage2DReader reader,
-            final String coverageId)
+            final DimensionInfo timeDimension, final GridCoverage2DReader reader, final String coverageId)
             throws IOException {
         this(Map.of(ResourceInfo.TIME, timeDimension), reader, coverageId);
     }
 
     public WCSDimensionsHelper(
-            final Map<String, DimensionInfo> dimensions,
-            final GridCoverage2DReader reader,
-            final String coverageId)
+            final Map<String, DimensionInfo> dimensions, final GridCoverage2DReader reader, final String coverageId)
             throws IOException {
         this.accessor = new ReaderDimensionsAccessor(reader);
         this.coverageId = coverageId;
@@ -160,9 +154,8 @@ public class WCSDimensionsHelper {
             }
         }
         // uh oh? it's a value in milliseconds?
-        throw new WcsException(
-                "Dimension's resolution requires milliseconds for full representation, "
-                        + "but this cannot be represented in WCS 2.0 describe coverage output");
+        throw new WcsException("Dimension's resolution requires milliseconds for full representation, "
+                + "but this cannot be represented in WCS 2.0 describe coverage output");
     }
 
     public DimensionInfo getTimeDimension() {
@@ -244,17 +237,12 @@ public class WCSDimensionsHelper {
         }
     }
 
-    /**
-     * Returns the time resolution unit, choosing among "year", "month", "day", "hour", "minute",
-     * "second"
-     */
+    /** Returns the time resolution unit, choosing among "year", "month", "day", "hour", "minute", "second" */
     public String getTimeResolutionUnit() {
         return timeResolutionUnit;
     }
 
-    /**
-     * The time resolution value, expressed in the unit returned by {@link #getTimeResolutionUnit()}
-     */
+    /** The time resolution value, expressed in the unit returned by {@link #getTimeResolutionUnit()} */
     public long getTimeResolutionValue() {
         return timeResolutionValue;
     }
@@ -275,8 +263,8 @@ public class WCSDimensionsHelper {
     }
 
     /**
-     * Scan the metadataMap looking for resources related to {@link DimensionInfo} objects and
-     * return a dimensions Map. Return an empty map if no dimensions are found.
+     * Scan the metadataMap looking for resources related to {@link DimensionInfo} objects and return a dimensions Map.
+     * Return an empty map if no dimensions are found.
      */
     public static Map<String, DimensionInfo> getDimensionsFromMetadata(MetadataMap metadata) {
         Map<String, DimensionInfo> dimensionsMap = new HashMap<>();
@@ -304,9 +292,7 @@ public class WCSDimensionsHelper {
     }
 
     public static DimensionDescriptor getDimensionDescriptor(
-            final StructuredGridCoverage2DReader reader,
-            final String coverageName,
-            final String dimensionName) {
+            final StructuredGridCoverage2DReader reader, final String coverageName, final String dimensionName) {
         try {
             List<DimensionDescriptor> descriptors = reader.getDimensionDescriptors(coverageName);
             for (DimensionDescriptor dd : descriptors) {
@@ -317,8 +303,7 @@ public class WCSDimensionsHelper {
 
             return null;
         } catch (IOException e) {
-            throw new WCS20Exception(
-                    "Failed to locate the reader's " + dimensionName + " dimension descriptor", e);
+            throw new WCS20Exception("Failed to locate the reader's " + dimensionName + " dimension descriptor", e);
         }
     }
 
@@ -341,8 +326,7 @@ public class WCSDimensionsHelper {
             String encodedId, CoverageInfo ci, GridCoverage2DReader reader) throws Exception {
         WCSDimensionsHelper dimensionsHelper = null;
         MetadataMap metadata = ci.getMetadata();
-        Map<String, DimensionInfo> dimensionsMap =
-                WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
+        Map<String, DimensionInfo> dimensionsMap = WCSDimensionsHelper.getDimensionsFromMetadata(metadata);
 
         // Setup a dimension helper in case we found some dimensions for that coverage
         if (!dimensionsMap.isEmpty()) {

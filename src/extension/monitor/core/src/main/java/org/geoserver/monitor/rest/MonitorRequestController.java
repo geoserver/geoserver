@@ -74,11 +74,7 @@ public class MonitorRequestController extends RestBaseController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.TEXT_HTML_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE
-            })
+            produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     protected RestWrapper handleObjectGetRestWrapper(
             @PathVariable(name = "request", required = false) String req,
@@ -91,8 +87,7 @@ public class MonitorRequestController extends RestBaseController {
             @RequestParam(name = "live", required = false) Boolean live,
             @RequestParam(name = "fields", required = false) String fieldsSpec)
             throws Exception {
-        MonitorQueryResults results =
-                handleObjectGet(req, from, to, filter, order, offset, count, live, fieldsSpec);
+        MonitorQueryResults results = handleObjectGet(req, from, to, filter, order, offset, count, live, fieldsSpec);
         Object object = results.getResult();
 
         // HTML specific bits
@@ -100,8 +95,7 @@ public class MonitorRequestController extends RestBaseController {
             return wrapObject((RequestData) object, RequestData.class);
         } else {
             final List<RequestData> requests = new ArrayList<>();
-            BaseMonitorConverter.handleRequests(
-                    object, (data, aggregates) -> requests.add(data), monitor);
+            BaseMonitorConverter.handleRequests(object, (data, aggregates) -> requests.add(data), monitor);
             return wrapList(requests, RequestData.class);
         }
     }
@@ -136,19 +130,14 @@ public class MonitorRequestController extends RestBaseController {
         String[] fields = getFields(fieldsSpec);
 
         if (req == null) {
-            Query q =
-                    new Query()
-                            .between(
-                                    from != null ? parseDate(from) : null,
-                                    to != null ? parseDate(to) : null);
+            Query q = new Query().between(from != null ? parseDate(from) : null, to != null ? parseDate(to) : null);
 
             // filter
             if (filter != null) {
                 try {
                     parseFilter(filter, q);
                 } catch (Exception e) {
-                    throw new RestException(
-                            "Error parsing filter " + filter, HttpStatus.BAD_REQUEST, e);
+                    throw new RestException("Error parsing filter " + filter, HttpStatus.BAD_REQUEST, e);
                 }
             }
 
@@ -245,8 +234,7 @@ public class MonitorRequestController extends RestBaseController {
         if (req == null) {
             monitor.getDAO().clear();
         } else {
-            throw new RestException(
-                    "Cannot delete a specific request", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Cannot delete a specific request", HttpStatus.METHOD_NOT_ALLOWED);
         }
     }
 }

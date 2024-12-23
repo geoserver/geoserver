@@ -19,9 +19,7 @@ public class QueryablesBuilderComplexFeaturesTest extends AbstractAppSchemaTestS
 
     @Test
     public void testQueryablesBuilder() throws Exception {
-        QueryablesBuilder qb =
-                new QueryablesBuilder("id")
-                        .forType(getCatalog().getFeatureTypeByName("MappedFeature"));
+        QueryablesBuilder qb = new QueryablesBuilder("id").forType(getCatalog().getFeatureTypeByName("MappedFeature"));
         assertTrue(qb.queryables.getProperties().containsKey("observationMethod"));
     }
 }

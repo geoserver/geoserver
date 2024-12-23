@@ -49,8 +49,7 @@ public class CachedLayerProviderTest extends GeoServerTestSupport {
     }
 
     @Test
-    public void testQuotaEnabled()
-            throws ConfigurationException, IOException, InterruptedException {
+    public void testQuotaEnabled() throws ConfigurationException, IOException, InterruptedException {
         GWC gwc = GWC.get();
         DiskQuotaConfig config = gwc.getDiskQuotaConfig();
         config.setEnabled(true);
@@ -65,8 +64,7 @@ public class CachedLayerProviderTest extends GeoServerTestSupport {
     }
 
     @Test
-    public void testQuotaDisabled()
-            throws ConfigurationException, IOException, InterruptedException {
+    public void testQuotaDisabled() throws ConfigurationException, IOException, InterruptedException {
         GWC gwc = GWC.get();
         DiskQuotaConfig config = gwc.getDiskQuotaConfig();
         config.setEnabled(false);

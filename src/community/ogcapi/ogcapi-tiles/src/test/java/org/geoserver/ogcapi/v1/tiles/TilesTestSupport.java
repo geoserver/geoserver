@@ -90,8 +90,7 @@ public class TilesTestSupport extends OGCApiTestSupport {
         catalog.save(layer);
 
         // configure caching headers on lakes
-        FeatureTypeInfo lakes =
-                catalog.getResourceByName(getLayerId(MockData.LAKES), FeatureTypeInfo.class);
+        FeatureTypeInfo lakes = catalog.getResourceByName(getLayerId(MockData.LAKES), FeatureTypeInfo.class);
         lakes.getMetadata().put(ResourceInfo.CACHING_ENABLED, true);
 
         // prepare a layer with vector formats only
@@ -101,14 +100,9 @@ public class TilesTestSupport extends OGCApiTestSupport {
         // setup a layer group
         LayerInfo lakesLayer = catalog.getLayerByName(getLayerId(MockData.LAKES));
         LayerInfo forestsLayer = catalog.getLayerByName(getLayerId(MockData.FORESTS));
-        createsLayerGroup(
-                catalog, NATURE_GROUP, null, null, null, Arrays.asList(lakesLayer, forestsLayer));
+        createsLayerGroup(catalog, NATURE_GROUP, null, null, null, Arrays.asList(lakesLayer, forestsLayer));
         // add a style groupd
-        testData.addStyle(
-                BASIC_STYLE_GROUP_STYLE,
-                "BasicStyleGroup.sld",
-                TilesTestSupport.class,
-                getCatalog());
+        testData.addStyle(BASIC_STYLE_GROUP_STYLE, "BasicStyleGroup.sld", TilesTestSupport.class, getCatalog());
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         StyleInfo s = catalog.getStyleByName("BasicStyleGroupStyle");
 
@@ -124,29 +118,19 @@ public class TilesTestSupport extends OGCApiTestSupport {
 
         Map<SystemTestData.LayerProperty, Object> properties = new HashMap<>();
         properties.put(SystemTestData.LayerProperty.STYLE, FOREST_WITH_SCALES_STYLE);
-        testData.addVectorLayer(
-                FORESTS_ZOOM, properties, "ForestsZoomTest.properties", getClass(), catalog);
+        testData.addVectorLayer(FORESTS_ZOOM, properties, "ForestsZoomTest.properties", getClass(), catalog);
         properties.put(SystemTestData.LayerProperty.STYLE, LAKES_WITH_SCALES_STYLE);
-        testData.addVectorLayer(
-                LAKES_ZOOM, properties, "LakesZoomTest.properties", getClass(), catalog);
+        testData.addVectorLayer(LAKES_ZOOM, properties, "LakesZoomTest.properties", getClass(), catalog);
 
         LayerInfo lakesZoom =
-                catalog.getLayerByName(
-                        new NameImpl(LAKES_ZOOM.getNamespaceURI(), LAKES_ZOOM.getLocalPart()));
+                catalog.getLayerByName(new NameImpl(LAKES_ZOOM.getNamespaceURI(), LAKES_ZOOM.getLocalPart()));
         LayerInfo forestsZoom =
-                catalog.getLayerByName(
-                        new NameImpl(FORESTS_ZOOM.getNamespaceURI(), FORESTS_ZOOM.getLocalPart()));
+                catalog.getLayerByName(new NameImpl(FORESTS_ZOOM.getNamespaceURI(), FORESTS_ZOOM.getLocalPart()));
 
         addVectorTileFormats(getLayerId(LAKES_ZOOM), true);
         addVectorTileFormats(getLayerId(FORESTS_ZOOM), true);
 
-        createsLayerGroup(
-                catalog,
-                NATURES_ZOOM_GROUP,
-                null,
-                null,
-                null,
-                Arrays.asList(lakesZoom, forestsZoom));
+        createsLayerGroup(catalog, NATURES_ZOOM_GROUP, null, null, null, Arrays.asList(lakesZoom, forestsZoom));
     }
 
     protected void addVectorTileFormats(String layerId, boolean clear) {

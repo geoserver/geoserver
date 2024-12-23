@@ -30,8 +30,8 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Describes the ISO MetaData records and provides some handy constants to help building features
- * representing MD_Metadata.
+ * Describes the ISO MetaData records and provides some handy constants to help building features representing
+ * MD_Metadata.
  *
  * @author Niels Charlier
  */
@@ -55,8 +55,7 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
     public static FeatureType METADATA_TYPE;
     public static AttributeDescriptor METADATA_DESCRIPTOR;
 
-    public static final NameImpl RECORD_BBOX_NAME =
-            new NameImpl(NAMESPACE_GMD, "EX_GeographicBoundingBox");
+    public static final NameImpl RECORD_BBOX_NAME = new NameImpl(NAMESPACE_GMD, "EX_GeographicBoundingBox");
 
     public static final List<Name> BRIEF_ELEMENTS;
     public static final List<Name> SUMMARY_ELEMENTS;
@@ -85,27 +84,17 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
         SchemaIndex indexGMX = null;
         SchemaIndex indexService = null;
         try {
-            index =
-                    reader.parse(
-                            new URL("http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd"));
-            indexGMX =
-                    reader.parse(
-                            new URL("http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"));
+            index = reader.parse(new URL("http://schemas.opengis.net/iso/19139/20070417/gmd/gmd.xsd"));
+            indexGMX = reader.parse(new URL("http://schemas.opengis.net/iso/19139/20070417/gmx/gmx.xsd"));
             indexService =
-                    reader.parse(
-                            new URL(
-                                    "http://schemas.opengis.net/iso/19139/20070417/srv/serviceMetadata.xsd"));
+                    reader.parse(new URL("http://schemas.opengis.net/iso/19139/20070417/srv/serviceMetadata.xsd"));
         } catch (IOException e) {
             // this is fatal
             throw new RuntimeException(e);
         }
 
-        FeatureTypeRegistry featureTypeRegistry =
-                new FeatureTypeRegistry(
-                        NAMESPACES,
-                        typeFactory,
-                        new RecordFeatureTypeRegistryConfiguration("MD_Metadata_Type"),
-                        true);
+        FeatureTypeRegistry featureTypeRegistry = new FeatureTypeRegistry(
+                NAMESPACES, typeFactory, new RecordFeatureTypeRegistryConfiguration("MD_Metadata_Type"), true);
 
         TypeBuilder builder = new TypeBuilder(typeFactory);
         builder.setNamespaceURI(NAMESPACE_GMD);
@@ -120,57 +109,52 @@ public class MetaDataDescriptor extends QueryableMappingRecordDescriptor {
         featureTypeRegistry.addSchemas(indexService);
 
         METADATA_TYPE =
-                (FeatureType)
-                        featureTypeRegistry.getAttributeType(
-                                new NameImpl(NAMESPACE_GMD, "MD_Metadata_Type"));
-        METADATA_DESCRIPTOR =
-                featureTypeRegistry.getDescriptor(new NameImpl(NAMESPACE_GMD, "MD_Metadata"), null);
+                (FeatureType) featureTypeRegistry.getAttributeType(new NameImpl(NAMESPACE_GMD, "MD_Metadata_Type"));
+        METADATA_DESCRIPTOR = featureTypeRegistry.getDescriptor(new NameImpl(NAMESPACE_GMD, "MD_Metadata"), null);
 
-        BRIEF_ELEMENTS =
-                createNameList(
-                        NAMESPACES,
-                        "Identifier",
-                        "Title",
-                        "Type",
-                        QUERYABLE_BBOX,
-                        "GraphicOverview",
-                        "ServiceType",
-                        "ServiceTypeVersion");
-        SUMMARY_ELEMENTS =
-                createNameList(
-                        NAMESPACES,
-                        "Abstract",
-                        "CharacterSet",
-                        "Creator",
-                        "Contributor",
-                        "CouplingType",
-                        QUERYABLE_BBOX,
-                        "Format",
-                        "FormatVersion",
-                        "GraphicOverview",
-                        "HierarchyLevelName",
-                        "Identifier",
-                        "Language",
-                        "Lineage",
-                        "MetadataCharacterSet",
-                        "MetadataStandardName",
-                        "MetadataStandardVersion",
-                        "Modified",
-                        "OnlineResource",
-                        "ParentIdentifier",
-                        "Publisher",
-                        "ResourceLanguage",
-                        "ReferenceSystem",
-                        "RevisionDate",
-                        "Rights",
-                        "ServiceOperation",
-                        "ServiceType",
-                        "ServiceTypeVersion",
-                        "SpatialResolution",
-                        "SpatialRepresentationType",
-                        "Title",
-                        "TopicCategory",
-                        "Type");
+        BRIEF_ELEMENTS = createNameList(
+                NAMESPACES,
+                "Identifier",
+                "Title",
+                "Type",
+                QUERYABLE_BBOX,
+                "GraphicOverview",
+                "ServiceType",
+                "ServiceTypeVersion");
+        SUMMARY_ELEMENTS = createNameList(
+                NAMESPACES,
+                "Abstract",
+                "CharacterSet",
+                "Creator",
+                "Contributor",
+                "CouplingType",
+                QUERYABLE_BBOX,
+                "Format",
+                "FormatVersion",
+                "GraphicOverview",
+                "HierarchyLevelName",
+                "Identifier",
+                "Language",
+                "Lineage",
+                "MetadataCharacterSet",
+                "MetadataStandardName",
+                "MetadataStandardVersion",
+                "Modified",
+                "OnlineResource",
+                "ParentIdentifier",
+                "Publisher",
+                "ResourceLanguage",
+                "ReferenceSystem",
+                "RevisionDate",
+                "Rights",
+                "ServiceOperation",
+                "ServiceType",
+                "ServiceTypeVersion",
+                "SpatialResolution",
+                "SpatialRepresentationType",
+                "Title",
+                "TopicCategory",
+                "Type");
 
         QUERYABLES = SUMMARY_ELEMENTS;
     }

@@ -75,8 +75,7 @@ public class Dialect {
         return sql.append(debugMode ? ifEnabled : ifDisabled);
     }
 
-    public void applyOffsetLimit(
-            StringBuilder sql, @Nullable Integer offset, @Nullable Integer limit) {
+    public void applyOffsetLimit(StringBuilder sql, @Nullable Integer offset, @Nullable Integer limit) {
         // some db's require limit to be present of offset is
         if (offset != null && limit == null) {
             limit = Integer.MAX_VALUE;

@@ -78,11 +78,7 @@ public class GeofenceWMSTestSupport extends WMSTestSupport {
     }
 
     static void addRuleLimits(
-            long ruleId,
-            CatalogMode mode,
-            String allowedArea,
-            Integer srid,
-            RuleAdminService ruleService)
+            long ruleId, CatalogMode mode, String allowedArea, Integer srid, RuleAdminService ruleService)
             throws ParseException {
         addRuleLimits(ruleId, mode, allowedArea, srid, null, ruleService);
     }
@@ -111,8 +107,7 @@ public class GeofenceWMSTestSupport extends WMSTestSupport {
         }
     }
 
-    protected LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name)
-            throws Exception {
+    protected LayerGroupInfo addLakesPlacesLayerGroup(LayerGroupInfo.Mode mode, String name) throws Exception {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
         LayerGroupInfo group = createLakesPlacesLayerGroup(getCatalog(), name, mode, null);
         logout();

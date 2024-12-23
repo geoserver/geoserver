@@ -23,17 +23,14 @@ public class PlacemarkStyleDecoratorTest extends org.geoserver.wms.icons.IconTes
     /**
      * Test partial style transformation.
      *
-     * <p>The YSLD parser is not supplying the same defaults as the SLD parser, producing styles
-     * that violate some of the (perfectly sensible SLD 1.0) assumptions made by
-     * PlacemarkStyleDecorator.
+     * <p>The YSLD parser is not supplying the same defaults as the SLD parser, producing styles that violate some of
+     * the (perfectly sensible SLD 1.0) assumptions made by PlacemarkStyleDecorator.
      */
     @Test
     public void testYSLDTextSymbolizerEncoding() {
-        TextSymbolizer text =
-                text("text", "NAME", font("Arial Black", null, "bold", 8), fill(Color.white, null));
+        TextSymbolizer text = text("text", "NAME", font("Arial Black", null, "bold", 8), fill(Color.white, null));
 
-        PlacemarkStyleDecoratorFactory.PlacemarkStyleDecorator decorator =
-                new PlacemarkStyleDecorator();
+        PlacemarkStyleDecoratorFactory.PlacemarkStyleDecorator decorator = new PlacemarkStyleDecorator();
 
         KmlEncodingContext context = new FakeKmlEncodingContext(featureType);
         SimpleFeatureCollection collection = DataUtilities.collection(fieldIs1);

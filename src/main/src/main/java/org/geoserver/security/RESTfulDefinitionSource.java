@@ -37,8 +37,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
     /** Override the method in FilterInvocationSecurityMetadataSource */
     @Override
-    public Collection<ConfigAttribute> getAttributes(Object object)
-            throws IllegalArgumentException {
+    public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
 
         if ((object == null) || !this.supports(object.getClass())) {
             throw new IllegalArgumentException("Object must be a FilterInvocation");
@@ -52,8 +51,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
     /** this form is invalid for this implementation */
     public Collection<ConfigAttribute> lookupAttributes(String url) {
-        throw new IllegalArgumentException(
-                "lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
+        throw new IllegalArgumentException("lookupAttributes(String url) is INVALID for RESTfulDefinitionSource");
     }
 
     public Collection<ConfigAttribute> lookupAttributes(String url, String method) {
@@ -136,8 +134,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                 }
 
                 if (line.lastIndexOf("==") != -1) {
-                    throw new IllegalArgumentException(
-                            "Only single equals should be used in line " + line);
+                    throw new IllegalArgumentException("Only single equals should be used in line " + line);
                 }
 
                 // Tokenize the line into its name/value tokens
@@ -147,8 +144,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                 String value = substringAfterLast(line, "=");
 
                 if (!StringUtils.hasText(name) || !StringUtils.hasText(value)) {
-                    throw new IllegalArgumentException(
-                            "Failed to parse a valid name/value pair from " + line);
+                    throw new IllegalArgumentException("Failed to parse a valid name/value pair from " + line);
                 }
 
                 String antPath = name;
@@ -163,13 +159,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                     methods = name.substring((firstColonIndex + 1), name.length());
                 }
                 if (log.isLoggable(Level.FINE))
-                    log.fine(
-                            "~~~~~~~~~~ name= "
-                                    + name
-                                    + " antPath= "
-                                    + antPath
-                                    + " methods= "
-                                    + methods);
+                    log.fine("~~~~~~~~~~ name= " + name + " antPath= " + antPath + " methods= " + methods);
 
                 String[] methodList = null;
                 if (methods != null) {
@@ -185,10 +175,9 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                             }
                         }
                         if (!matched) {
-                            throw new IllegalArgumentException(
-                                    "The HTTP Method Name ("
-                                            + s
-                                            + " does NOT equal a valid name (GET,PUT,POST,DELETE)");
+                            throw new IllegalArgumentException("The HTTP Method Name ("
+                                    + s
+                                    + " does NOT equal a valid name (GET,PUT,POST,DELETE)");
                         }
                     }
                 }
@@ -236,8 +225,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
         Iterator<RESTfulDefinitionSourceMapping> it = mappings.iterator();
         while (it.hasNext()) {
             RESTfulDefinitionSourceMapping mapping = it.next();
-            delegate.addSecureUrl(
-                    mapping.getUrl(), mapping.getHttpMethods(), mapping.getConfigAttributes());
+            delegate.addSecureUrl(mapping.getUrl(), mapping.getHttpMethods(), mapping.getConfigAttributes());
         }
 
         //        Iterator it = mappings.iterator();

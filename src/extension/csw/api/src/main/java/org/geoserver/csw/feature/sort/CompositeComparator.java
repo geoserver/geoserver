@@ -9,8 +9,8 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * A composite comparator that applies the provided comparators as a hierarchical list, the first
- * comparator that returns a non zero value "wins"
+ * A composite comparator that applies the provided comparators as a hierarchical list, the first comparator that
+ * returns a non zero value "wins"
  *
  * @author Andrea Aime - GeoSolutions
  */

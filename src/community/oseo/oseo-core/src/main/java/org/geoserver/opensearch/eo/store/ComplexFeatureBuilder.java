@@ -12,8 +12,8 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.AttributeBuilder;
 
 /**
- * A {@link org.geotools.feature.ComplexFeatureBuilder} that allows to append attributes to a
- * feature using their simple name and their value.
+ * A {@link org.geotools.feature.ComplexFeatureBuilder} that allows to append attributes to a feature using their simple
+ * name and their value.
  */
 class ComplexFeatureBuilder extends org.geotools.feature.ComplexFeatureBuilder {
 

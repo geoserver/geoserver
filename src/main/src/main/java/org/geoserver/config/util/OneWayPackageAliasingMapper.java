@@ -8,9 +8,8 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import com.thoughtworks.xstream.mapper.PackageAliasingMapper;
 
 /**
- * Variant of {@link PackageAliasingMapper} that only applies aliases when reading a serialized
- * representation. When writing to a serialized representation it delegates to the wrapped {@link
- * Mapper}
+ * Variant of {@link PackageAliasingMapper} that only applies aliases when reading a serialized representation. When
+ * writing to a serialized representation it delegates to the wrapped {@link Mapper}
  */
 public class OneWayPackageAliasingMapper extends PackageAliasingMapper {
     private final Mapper wrapped;

@@ -41,14 +41,12 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         voters.add(roleVoter);
         voters.add(new AuthenticatedVoter());
         AffirmativeBased accessDecisionManager = new AffirmativeBased(voters);
-        accessDecisionManager.setAllowIfAllAbstainDecisions(
-                siConfig.isAllowIfAllAbstainDecisions());
+        accessDecisionManager.setAllowIfAllAbstainDecisions(siConfig.isAllowIfAllAbstainDecisions());
         filter.setAccessDecisionManager(accessDecisionManager);
 
         // TODO, Justin, is this correct
-        filter.setSecurityMetadataSource(
-                (FilterInvocationSecurityMetadataSource)
-                        GeoServerExtensions.bean(siConfig.getSecurityMetadataSource()));
+        filter.setSecurityMetadataSource((FilterInvocationSecurityMetadataSource)
+                GeoServerExtensions.bean(siConfig.getSecurityMetadataSource()));
         try {
             filter.afterPropertiesSet();
         } catch (Exception e) {

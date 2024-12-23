@@ -86,10 +86,8 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
 
     @Override
     protected ReferencedEnvelope getBoundsInternal(Query query) throws IOException {
-        if (query == Query.ALL
-                || query == null
-                || query.getFilter() == Filter.INCLUDE
-                || query.getFilter() == null) return WORLD;
+        if (query == Query.ALL || query == null || query.getFilter() == Filter.INCLUDE || query.getFilter() == null)
+            return WORLD;
 
         // TODO: compute bounds based on actual filtering?
         return null;
@@ -165,8 +163,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
         // sorting, for basic paging just use the DGGS iteration order
         SortBy[] sortBy = query.getSortBy();
         if (sortBy != null && sortBy.length != 0) {
-            if (sortBy != SortBy.UNSORTED
-                    && !(sortBy.length == 1 && sortBy[0] == SortBy.NATURAL_ORDER)) {
+            if (sortBy != SortBy.UNSORTED && !(sortBy.length == 1 && sortBy[0] == SortBy.NATURAL_ORDER)) {
                 reader = new SortedFeatureReader(DataUtilities.simple(reader), query);
             }
         }
@@ -303,8 +300,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
             FeatureAttributeVisitor fav = (FeatureAttributeVisitor) visitor;
             Set<String> attributes = getAttributeSet(fav);
             // can optimize a few visits based on resolution alone
-            if (attributes != null
-                    && attributes.equals(Collections.singleton(DGGSStore.RESOLUTION))) {
+            if (attributes != null && attributes.equals(Collections.singleton(DGGSStore.RESOLUTION))) {
                 int[] resolutions = getDGGS().getResolutions();
                 if (fav instanceof MinVisitor) {
                     ((MinVisitor) fav).setValue(resolutions[0]);
@@ -316,9 +312,7 @@ class DGGSGeometryFeatureSource extends ContentFeatureSource implements DGGSFeat
                     // converting an array to a list it's harder than it seems, Arrays.asList
                     // would produce a List with one item, the array given as a param
                     List<Integer> rl =
-                            Arrays.stream(resolutions)
-                                    .mapToObj(v -> v)
-                                    .collect(Collectors.toList());
+                            Arrays.stream(resolutions).mapToObj(v -> v).collect(Collectors.toList());
                     ((UniqueVisitor) fav).setValue(rl);
                     return true;
                 }

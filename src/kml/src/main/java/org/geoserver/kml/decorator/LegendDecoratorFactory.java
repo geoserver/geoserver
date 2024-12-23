@@ -26,8 +26,7 @@ import org.geotools.map.Layer;
 public class LegendDecoratorFactory implements KmlDecoratorFactory {
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         // this decorator makes sense only for WMS
         if (!(context.getService() instanceof WMSInfo)) {
             return null;
@@ -64,8 +63,7 @@ public class LegendDecoratorFactory implements KmlDecoratorFactory {
             }
             List<Layer> layerList = context.getMapContent().layers();
             Layer[] layers = layerList.toArray(new Layer[layerList.size()]);
-            icon.setHref(
-                    WMSRequests.getGetLegendGraphicUrl(context.getRequest(), layers, kvpArray));
+            icon.setHref(WMSRequests.getGetLegendGraphicUrl(context.getRequest(), layers, kvpArray));
 
             return feature;
         }

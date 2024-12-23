@@ -24,9 +24,8 @@ import org.geotools.util.SuppressFBWarnings;
 import org.geotools.util.logging.Logging;
 
 /**
- * An iterator listing and mapping resources to a target object via a {@link ResourceMapper}. The
- * mapping is performed in a background thread pool, allowing to decouple CPU bound activities from
- * IO bound ones.
+ * An iterator listing and mapping resources to a target object via a {@link ResourceMapper}. The mapping is performed
+ * in a background thread pool, allowing to decouple CPU bound activities from IO bound ones.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -112,43 +111,36 @@ public class AsynchResourceIterator<T> implements Iterator<T>, Closeable {
      * @param mapper The mapper performing work on the resources found
      */
     @SuppressFBWarnings("SC_START_IN_CTOR")
-    public AsynchResourceIterator(
-            Resource root, Filter<Resource> filter, ResourceMapper<T> mapper) {
+    public AsynchResourceIterator(Resource root, Filter<Resource> filter, ResourceMapper<T> mapper) {
         // parallelize filtering (this is still synch'ed, cannot do anything in parallel with this)
         List<Resource> resources =
-                root.list()
-                        .parallelStream()
-                        .filter(r -> filter.accept(r))
-                        .collect(Collectors.toList());
+                root.list().parallelStream().filter(r -> filter.accept(r)).collect(Collectors.toList());
         // decide if we want to have a background thread for loading resources, or not
         if (resources.size() > 1) {
             queue = new LinkedBlockingQueue<>(10000);
             // create a background thread allowing this constructor to return immediately and
             // start accumulating in the queue asynchronously
-            Runnable runnable =
-                    () -> {
-                        // parallelize IO in a local thread pool
-                        ExecutorService executor =
-                                Executors.newFixedThreadPool(ASYNCH_RESOURCE_THREADS);
-                        BlockingQueue<Object> sourceQueue = new LinkedBlockingQueue<>(resources);
-                        for (int i = 0; i < ASYNCH_RESOURCE_THREADS; i++) {
-                            // each IO thread will exit when close is called or when the
-                            // terminator is
-                            // reached, we need one terminator per IO thread
-                            sourceQueue.add(TERMINATOR);
-                            executor.submit(new MapperRunner(sourceQueue, mapper));
-                        }
-                        // wait for everything to comlete and then add the terminator marker
-                        try {
-                            executor.shutdown();
-                            executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
-                            // add the terminator
-                            queue.put(TERMINATOR);
-                        } catch (InterruptedException e) {
-                            LOGGER.log(
-                                    Level.WARNING, "Failed to put the terminator in the queue", e);
-                        }
-                    };
+            Runnable runnable = () -> {
+                // parallelize IO in a local thread pool
+                ExecutorService executor = Executors.newFixedThreadPool(ASYNCH_RESOURCE_THREADS);
+                BlockingQueue<Object> sourceQueue = new LinkedBlockingQueue<>(resources);
+                for (int i = 0; i < ASYNCH_RESOURCE_THREADS; i++) {
+                    // each IO thread will exit when close is called or when the
+                    // terminator is
+                    // reached, we need one terminator per IO thread
+                    sourceQueue.add(TERMINATOR);
+                    executor.submit(new MapperRunner(sourceQueue, mapper));
+                }
+                // wait for everything to comlete and then add the terminator marker
+                try {
+                    executor.shutdown();
+                    executor.awaitTermination(Long.MAX_VALUE, TimeUnit.MILLISECONDS);
+                    // add the terminator
+                    queue.put(TERMINATOR);
+                } catch (InterruptedException e) {
+                    LOGGER.log(Level.WARNING, "Failed to put the terminator in the queue", e);
+                }
+            };
             thread = new Thread(runnable, "Loader" + root.name());
             thread.start();
         } else if (resources.size() == 1) {

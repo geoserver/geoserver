@@ -24,9 +24,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Hint: all tests are annotated with {@code @Test(timeout = 1000)}. If one fails, will most
- * probably result in a cascade failure, so look at the first one that failed or the immediate
- * previous one that succeeded in case it didn't unlock and fix it.
+ * Hint: all tests are annotated with {@code @Test(timeout = 1000)}. If one fails, will most probably result in a
+ * cascade failure, so look at the first one that failed or the immediate previous one that succeeded in case it didn't
+ * unlock and fix it.
  */
 public class GeoServerConfigurationLockTest {
 
@@ -70,10 +70,7 @@ public class GeoServerConfigurationLockTest {
         assertEquals(WRITE, lock.getCurrentLock());
 
         lock.lock(READ);
-        assertEquals(
-                "A read lock request shall preserve the write lock if already held",
-                WRITE,
-                lock.getCurrentLock());
+        assertEquals("A read lock request shall preserve the write lock if already held", WRITE, lock.getCurrentLock());
         lock.unlock();
     }
 
@@ -104,22 +101,17 @@ public class GeoServerConfigurationLockTest {
             lock.lock(READ);
 
             secondThread
-                    .submit(
-                            () -> {
-                                assertTrue(lock.tryLock(READ));
-                            })
+                    .submit(() -> {
+                        assertTrue(lock.tryLock(READ));
+                    })
                     .get();
 
             assertEquals(READ, lock.getCurrentLock());
 
             RuntimeException ex = assertThrows(RuntimeException.class, () -> lock.tryUpgradeLock());
-            assertThat(
-                    ex.getMessage(),
-                    containsString("Failed to upgrade lock from read to write state"));
+            assertThat(ex.getMessage(), containsString("Failed to upgrade lock from read to write state"));
 
-            assertNull(
-                    "lock should have been lost after a failed tryUpgradeLock()",
-                    lock.getCurrentLock());
+            assertNull("lock should have been lost after a failed tryUpgradeLock()", lock.getCurrentLock());
 
             lock.lock(READ);
 
@@ -166,9 +158,7 @@ public class GeoServerConfigurationLockTest {
 
         assertTrue(lock.tryLock(READ));
         assertEquals(
-                "tryLock(READ) while holding a write lock shall preserve the write lock",
-                WRITE,
-                lock.getCurrentLock());
+                "tryLock(READ) while holding a write lock shall preserve the write lock", WRITE, lock.getCurrentLock());
 
         lock.unlock();
         assertNull(lock.getCurrentLock());
@@ -214,8 +204,7 @@ public class GeoServerConfigurationLockTest {
             } finally {
                 // first release
                 lock.unlock();
-                assertEquals(
-                        lockType + " lock should still be held", lockType, lock.getCurrentLock());
+                assertEquals(lockType + " lock should still be held", lockType, lock.getCurrentLock());
             }
         } finally {
             // second release
@@ -249,8 +238,7 @@ public class GeoServerConfigurationLockTest {
             } finally {
                 // first release
                 lock.unlock();
-                assertEquals(
-                        lockType + " lock should still be held", lockType, lock.getCurrentLock());
+                assertEquals(lockType + " lock should still be held", lockType, lock.getCurrentLock());
             }
         } finally {
             // second release

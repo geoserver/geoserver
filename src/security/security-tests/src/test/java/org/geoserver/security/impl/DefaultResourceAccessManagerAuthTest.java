@@ -57,10 +57,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     }
 
     private void checkUserAccessFlat(
-            ResourceAccessManager manager,
-            Authentication user,
-            boolean expectedRead,
-            boolean expectedWrite) {
+            ResourceAccessManager manager, Authentication user, boolean expectedRead, boolean expectedWrite) {
         // states as a layer
         assertEquals(expectedRead, canAccess(manager, user, statesLayer, AccessMode.READ));
         assertEquals(expectedWrite, canAccess(manager, user, statesLayer, AccessMode.WRITE));
@@ -178,8 +175,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     @Test
     public void testWmsNamedTreeAMilitaryOnly() throws Exception {
         setupRequestThreadLocal("WMS");
-        DefaultResourceAccessManager manager =
-                buildAccessManager("namedTreeAMilitaryOnly.properties");
+        DefaultResourceAccessManager manager = buildAccessManager("namedTreeAMilitaryOnly.properties");
         assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
         // only contained in the hidden group and in a "single mode" one
         assertFalse(canAccess(manager, roUser, statesLayer, AccessMode.READ));
@@ -204,8 +200,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     @Test
     public void testContainerGroupBMilitaryOnly() throws Exception {
         setupRequestThreadLocal("WMS");
-        DefaultResourceAccessManager manager =
-                buildAccessManager("containerTreeGroupBMilitaryOnly.properties");
+        DefaultResourceAccessManager manager = buildAccessManager("containerTreeGroupBMilitaryOnly.properties");
 
         // layer group A and its contents should be visible
         assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
@@ -233,8 +228,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     @Test
     public void testWmsbothGroupABMilitaryOnly() throws Exception {
         setupRequestThreadLocal("WMS");
-        DefaultResourceAccessManager manager =
-                buildAccessManager("bothGroupABMilitaryOnly.properties");
+        DefaultResourceAccessManager manager = buildAccessManager("bothGroupABMilitaryOnly.properties");
         assertFalse(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
         // only contained in the hidden group and in a "single mode" one
         assertFalse(canAccess(manager, roUser, statesLayer, AccessMode.READ));
@@ -261,8 +255,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     @Test
     public void testSingleGroupCMilitaryOnly() throws Exception {
         setupRequestThreadLocal("WMS");
-        DefaultResourceAccessManager manager =
-                buildAccessManager("singleGroupCMilitaryOnly.properties");
+        DefaultResourceAccessManager manager = buildAccessManager("singleGroupCMilitaryOnly.properties");
 
         // layer group A and its contents should be visible
         assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
@@ -286,8 +279,7 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     @Test
     public void testWsContainerGroupDMilitaryOnly() throws Exception {
         setupRequestThreadLocal("WMS");
-        DefaultResourceAccessManager manager =
-                buildAccessManager("wsContainerGroupDMilitaryOnly.properties");
+        DefaultResourceAccessManager manager = buildAccessManager("wsContainerGroupDMilitaryOnly.properties");
 
         // layer group A and its contents should be visible
         assertTrue(canAccess(manager, roUser, namedTreeA, AccessMode.READ));
@@ -314,19 +306,13 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     }
 
     private boolean canAccess(
-            ResourceAccessManager manager,
-            Authentication user,
-            LayerInfo catalogInfo,
-            AccessMode mode) {
+            ResourceAccessManager manager, Authentication user, LayerInfo catalogInfo, AccessMode mode) {
         DataAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
         return canAccess(mode, limits);
     }
 
     private boolean canAccess(
-            ResourceAccessManager manager,
-            Authentication user,
-            LayerGroupInfo catalogInfo,
-            AccessMode mode) {
+            ResourceAccessManager manager, Authentication user, LayerGroupInfo catalogInfo, AccessMode mode) {
         LayerGroupAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
         return limits == null;
     }
@@ -348,19 +334,13 @@ public class DefaultResourceAccessManagerAuthTest extends AbstractAuthorizationT
     }
 
     private boolean canAccess(
-            ResourceAccessManager manager,
-            Authentication user,
-            ResourceInfo catalogInfo,
-            AccessMode mode) {
+            ResourceAccessManager manager, Authentication user, ResourceInfo catalogInfo, AccessMode mode) {
         DataAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
         return canAccess(mode, limits);
     }
 
     private boolean canAccess(
-            ResourceAccessManager manager,
-            Authentication user,
-            WorkspaceInfo catalogInfo,
-            AccessMode mode) {
+            ResourceAccessManager manager, Authentication user, WorkspaceInfo catalogInfo, AccessMode mode) {
         WorkspaceAccessLimits limits = manager.getAccessLimits(user, catalogInfo);
         if (limits == null) {
             return true;

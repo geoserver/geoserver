@@ -128,18 +128,10 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         result = prime * result + (int) (maxOutputMemory ^ (maxOutputMemory >>> 32));
         result = prime * result + ((overviewPolicy == null) ? 0 : overviewPolicy.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
-        result =
-                prime * result + ((subsamplingEnabled == null) ? 0 : subsamplingEnabled.hashCode());
-        result =
-                prime * result
-                        + ((maxRequestedDimensionValues == null)
-                                ? 0
-                                : maxRequestedDimensionValues.hashCode());
-        result =
-                prime * result
-                        + ((defaultDeflateCompressionLevel == null)
-                                ? 0
-                                : defaultDeflateCompressionLevel.hashCode());
+        result = prime * result + ((subsamplingEnabled == null) ? 0 : subsamplingEnabled.hashCode());
+        result = prime * result + ((maxRequestedDimensionValues == null) ? 0 : maxRequestedDimensionValues.hashCode());
+        result = prime * result
+                + ((defaultDeflateCompressionLevel == null) ? 0 : defaultDeflateCompressionLevel.hashCode());
         return result;
     }
 
@@ -162,12 +154,10 @@ public class WCSInfoImpl extends ServiceInfoImpl implements WCSInfo {
         } else if (!subsamplingEnabled.equals(other.subsamplingEnabled)) return false;
         if (maxRequestedDimensionValues == null) {
             if (other.maxRequestedDimensionValues != null) return false;
-        } else if (!maxRequestedDimensionValues.equals(other.maxRequestedDimensionValues))
-            return false;
+        } else if (!maxRequestedDimensionValues.equals(other.maxRequestedDimensionValues)) return false;
         if (defaultDeflateCompressionLevel == null) {
             if (other.defaultDeflateCompressionLevel != null) return false;
-        } else if (!defaultDeflateCompressionLevel.equals(other.defaultDeflateCompressionLevel))
-            return false;
+        } else if (!defaultDeflateCompressionLevel.equals(other.defaultDeflateCompressionLevel)) return false;
 
         return true;
     }

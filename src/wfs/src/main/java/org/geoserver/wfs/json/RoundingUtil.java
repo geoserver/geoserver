@@ -11,9 +11,7 @@ package org.geoserver.wfs.json;
  */
 public class RoundingUtil {
     // How to scale the double, indexed by the number of digits
-    private static double[] SCALE = {
-        1d, 10d, 100d, 1000d, 10000d, 100000d, 1000000d, 10000000d, 100000000d
-    };
+    private static double[] SCALE = {1d, 10d, 100d, 1000d, 10000d, 100000d, 1000000d, 10000000d, 100000000d};
 
     /**
      * Round a value to the specified number of decimal places using the "Round Half Up" strategy.

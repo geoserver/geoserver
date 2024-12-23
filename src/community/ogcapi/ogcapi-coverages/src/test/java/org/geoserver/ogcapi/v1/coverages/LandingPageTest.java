@@ -135,11 +135,7 @@ public class LandingPageTest extends CoveragesTestSupport {
         // check API with right API mime type
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/coverages/v1/openapi?f=application%2Fvnd.oai.openapi%2Bjson%3Bversion%3D3.0",
-                readSingle(
-                        json,
-                        "links[?(@.type=='"
-                                + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE
-                                + "')].href"));
+                readSingle(json, "links[?(@.type=='" + OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE + "')].href"));
         // check conformance links
         assertJSONList(
                 json,
@@ -167,8 +163,7 @@ public class LandingPageTest extends CoveragesTestSupport {
         service.setEnabled(false);
         gs.save(service);
         try {
-            MockHttpServletResponse httpServletResponse =
-                    getAsMockHttpServletResponse("ogc/coverages/v1", 404);
+            MockHttpServletResponse httpServletResponse = getAsMockHttpServletResponse("ogc/coverages/v1", 404);
             assertEquals("Service Coverages is disabled", httpServletResponse.getErrorMessage());
         } finally {
             service.setEnabled(true);

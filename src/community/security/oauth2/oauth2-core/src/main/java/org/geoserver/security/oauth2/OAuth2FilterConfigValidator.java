@@ -23,8 +23,7 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
     }
 
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
         if (config instanceof OAuth2FilterConfig) {
             validateOAuth2FilterConfig((OAuth2FilterConfig) config);
@@ -33,14 +32,12 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
         }
     }
 
-    public void validateOAuth2FilterConfig(OAuth2FilterConfig filterConfig)
-            throws FilterConfigException {
+    public void validateOAuth2FilterConfig(OAuth2FilterConfig filterConfig) throws FilterConfigException {
         if (StringUtils.hasLength(filterConfig.getLogoutUri())) {
             try {
                 new URL(filterConfig.getLogoutUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_URL_IN_LOGOUT_URI_MALFORMED);
             }
         }
         super.validateFilterConfig((SecurityNamedServiceConfig) filterConfig);
@@ -52,13 +49,11 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
             try {
                 accessTokenUri = new URL(filterConfig.getAccessTokenUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_MALFORMED);
             }
             if (filterConfig.getForceAccessTokenUriHttps()
                     && "https".equalsIgnoreCase(accessTokenUri.getProtocol()) == false)
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_ACCESSTOKENURI_NOT_HTTPS);
         }
 
         if (StringUtils.hasLength(filterConfig.getUserAuthorizationUri())) {
@@ -66,21 +61,18 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
             try {
                 userAuthorizationUri = new URL(filterConfig.getUserAuthorizationUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_MALFORMED);
             }
             if (filterConfig.getForceUserAuthorizationUriHttps()
                     && "https".equalsIgnoreCase(userAuthorizationUri.getProtocol()) == false)
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_USERAUTHURI_NOT_HTTPS);
         }
 
         if (StringUtils.hasLength(filterConfig.getRedirectUri())) {
             try {
                 new URL(filterConfig.getRedirectUri());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_REDIRECT_URI_MALFORMED);
             }
         }
 
@@ -98,20 +90,17 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
     /**
      * Check OAuth2FilterConfig#getCheckTokenEndpointUrl value.
      *
-     * <p>The default implementation requires checkTokenEndpointUrl to be provided. Subclasses can
-     * override (to allow alternatives such as WTKS).
+     * <p>The default implementation requires checkTokenEndpointUrl to be provided. Subclasses can override (to allow
+     * alternatives such as WTKS).
      */
-    protected void validateCheckTokenEndpointUrl(OAuth2FilterConfig filterConfig)
-            throws FilterConfigException {
+    protected void validateCheckTokenEndpointUrl(OAuth2FilterConfig filterConfig) throws FilterConfigException {
         if (StringUtils.hasLength(filterConfig.getCheckTokenEndpointUrl()) == false)
-            throw createFilterException(
-                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_REQUIRED);
 
         try {
             new URL(filterConfig.getCheckTokenEndpointUrl());
         } catch (MalformedURLException ex) {
-            throw createFilterException(
-                    OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
+            throw createFilterException(OAuth2FilterConfigException.OAUTH2_CHECKTOKENENDPOINT_URL_MALFORMED);
         }
 
         // introspection endpoint is optional, used only to validate opaque tokens
@@ -119,8 +108,7 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
             try {
                 new URL(filterConfig.getIntrospectionEndpointUrl());
             } catch (MalformedURLException ex) {
-                throw createFilterException(
-                        OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
+                throw createFilterException(OAuth2FilterConfigException.OAUTH2_INTROSPECTIONENDPOINT_URL_MALFORMED);
             }
         }
     }
@@ -128,11 +116,10 @@ public class OAuth2FilterConfigValidator extends FilterConfigValidator {
     /**
      * Validate {@code client_secret} if required.
      *
-     * <p>Default implementation requires {@code client_secret} to be provided. Subclasses can
-     * override if working with a public client that cannot keep a secret.
+     * <p>Default implementation requires {@code client_secret} to be provided. Subclasses can override if working with
+     * a public client that cannot keep a secret.
      */
-    protected void validateClientSecret(OAuth2FilterConfig filterConfig)
-            throws FilterConfigException {
+    protected void validateClientSecret(OAuth2FilterConfig filterConfig) throws FilterConfigException {
         if (!StringUtils.hasLength(filterConfig.getClientSecret())) {
             throw createFilterException(OAuth2FilterConfigException.OAUTH2_CLIENT_SECRET_REQUIRED);
         }

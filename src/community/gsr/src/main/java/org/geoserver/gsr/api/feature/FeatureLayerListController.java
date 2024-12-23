@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the Feature Service layers list endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/FeatureServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureLayerListController extends AbstractGSRController {
 
     @Autowired
@@ -36,15 +34,10 @@ public class FeatureLayerListController extends AbstractGSRController {
     public LayersAndTables getLayers(@PathVariable String workspaceName) {
         LayersAndTables layers = LayerDAO.find(catalog, workspaceName);
         layers.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
-        layers.getInterfaces()
-                .add(
-                        new Link(
-                                workspaceName + "/" + "FeatureServer/layers?f=json&pretty=true",
-                                "REST"));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "FeatureServer", "FeatureServer")));
+        layers.getInterfaces().add(new Link(workspaceName + "/" + "FeatureServer/layers?f=json&pretty=true", "REST"));
         return layers;
     }
 }

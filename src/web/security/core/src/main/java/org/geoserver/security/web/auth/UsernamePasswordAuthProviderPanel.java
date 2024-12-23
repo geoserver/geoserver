@@ -18,8 +18,7 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
 public class UsernamePasswordAuthProviderPanel
         extends AuthenticationProviderPanel<UsernamePasswordAuthenticationProviderConfig> {
 
-    public UsernamePasswordAuthProviderPanel(
-            String id, IModel<UsernamePasswordAuthenticationProviderConfig> model) {
+    public UsernamePasswordAuthProviderPanel(String id, IModel<UsernamePasswordAuthenticationProviderConfig> model) {
         super(id, model);
 
         add(new UserGroupServiceChoice("userGroupServiceName"));

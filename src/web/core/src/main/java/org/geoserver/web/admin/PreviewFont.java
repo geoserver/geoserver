@@ -35,8 +35,7 @@ public class PreviewFont implements Serializable {
     private transient BufferedDynamicImageResource previewImage;
 
     /** The text for the preview image */
-    private final String PREVIEW_TEXT =
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private final String PREVIEW_TEXT = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
     /** The font to be displayed */
     Font font;
@@ -65,16 +64,11 @@ public class PreviewFont implements Serializable {
     private BufferedDynamicImageResource createPreviewImage() {
 
         // convert into integer pixels, set the font and turn on antialiasing
-        BufferedImage bi =
-                new BufferedImage(
-                        PREVIEW_IMAGE_WIDTH, PREVIEW_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage bi = new BufferedImage(PREVIEW_IMAGE_WIDTH, PREVIEW_IMAGE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics2D = bi.createGraphics();
-        graphics2D.setRenderingHint(
-                RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics2D.setRenderingHint(
-                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        graphics2D.setRenderingHint(
-                RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         graphics2D.setFont(font);
 
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
@@ -86,12 +80,8 @@ public class PreviewFont implements Serializable {
 
         // write the name of the font to the graphic. Use the same rendering method used by the
         // WMS (more convoluted, but the only one that can be actually centered within a halo)
-        GlyphVector gv =
-                font.createGlyphVector(
-                        graphics2D.getFontRenderContext(), PREVIEW_TEXT.toCharArray());
-        final AffineTransform at =
-                AffineTransform.getTranslateInstance(
-                        2, PREVIEW_IMAGE_HEIGHT / 2 + stringHeight / 4);
+        GlyphVector gv = font.createGlyphVector(graphics2D.getFontRenderContext(), PREVIEW_TEXT.toCharArray());
+        final AffineTransform at = AffineTransform.getTranslateInstance(2, PREVIEW_IMAGE_HEIGHT / 2 + stringHeight / 4);
         Shape sample = at.createTransformedShape(gv.getOutline());
         graphics2D.fill(sample);
 

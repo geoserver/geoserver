@@ -35,21 +35,17 @@ public class ChangeSetLinkCallback implements DocumentCallback {
         if (document instanceof TilesDocument) {
             TilesDocument tiles = (TilesDocument) document;
             try {
-                CoverageInfo coverage =
-                        changesetService.getStructuredCoverageInfo(tiles.getId(), false);
+                CoverageInfo coverage = changesetService.getStructuredCoverageInfo(tiles.getId(), false);
                 if (coverage != null) {
-                    List<Link> links =
-                            APIRequestInfo.get()
-                                    .getLinksFor(
-                                            "ogc/tiles/collections/"
-                                                    + tiles.getId()
-                                                    + "/map/{styleId}/{tileMatrixSetId}",
-                                            ChangeSet.class,
-                                            "Changeset as ",
-                                            "multitile",
-                                            false,
-                                            null,
-                                            null);
+                    List<Link> links = APIRequestInfo.get()
+                            .getLinksFor(
+                                    "ogc/tiles/collections/" + tiles.getId() + "/map/{styleId}/{tileMatrixSetId}",
+                                    ChangeSet.class,
+                                    "Changeset as ",
+                                    "multitile",
+                                    false,
+                                    null,
+                                    null);
                     tiles.getLinks().addAll(links);
                 }
             } catch (IOException e) {

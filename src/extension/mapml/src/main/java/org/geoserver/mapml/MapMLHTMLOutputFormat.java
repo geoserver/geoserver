@@ -25,10 +25,8 @@ public class MapMLHTMLOutputFormat implements GetMapOutputFormat {
     private WMS wms;
     private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
-            Collections.unmodifiableSet(
-                    new HashSet<>(List.of(MapMLConstants.MAPML_HTML_MIME_TYPE)));
-    static final MapProducerCapabilities MAPML_CAPABILITIES =
-            new MapProducerCapabilities(false, true, true);
+            Collections.unmodifiableSet(new HashSet<>(List.of(MapMLConstants.MAPML_HTML_MIME_TYPE)));
+    static final MapProducerCapabilities MAPML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
 
     /**
      * Constructor

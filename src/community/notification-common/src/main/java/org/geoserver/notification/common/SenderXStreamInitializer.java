@@ -78,16 +78,13 @@ public class SenderXStreamInitializer implements NotificationXStreamInitializer 
             NotificationSender sender = null;
             String nodeName = reader.getNodeName();
 
-            List<SenderXStreamInitializer> serializers =
-                    GeoServerExtensions.extensions(SenderXStreamInitializer.class);
+            List<SenderXStreamInitializer> serializers = GeoServerExtensions.extensions(SenderXStreamInitializer.class);
 
             for (SenderXStreamInitializer serializer : serializers) {
                 if (serializer.name.equals(nodeName)) {
                     try {
                         sender = serializer.clazz.getDeclaredConstructor().newInstance();
-                        sender =
-                                (NotificationSender)
-                                        context.convertAnother(sender, serializer.clazz);
+                        sender = (NotificationSender) context.convertAnother(sender, serializer.clazz);
                         break;
                     } catch (Exception e) {
                         throw new RuntimeException(e);

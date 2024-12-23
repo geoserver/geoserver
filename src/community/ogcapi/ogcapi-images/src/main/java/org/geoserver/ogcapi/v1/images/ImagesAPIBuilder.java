@@ -41,45 +41,39 @@ public class ImagesAPIBuilder extends OpenAPIBuilder<ImagesServiceInfo> {
 
         // adjust path output formats
         declareGetResponseFormats(api, "/collections", ImagesCollectionsDocument.class);
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}", ImagesCollectionDocument.class);
+        declareGetResponseFormats(api, "/collections/{collectionId}", ImagesCollectionDocument.class);
 
         // the external documentation
-        api.externalDocs(
-                new ExternalDocumentation()
-                        .description("Images specification")
-                        .url(
-                                "https://app.swaggerhub.com/apis/UAB-CREAF/ogc-api-images-opf-xml/1.0.0"));
+        api.externalDocs(new ExternalDocumentation()
+                .description("Images specification")
+                .url("https://app.swaggerhub.com/apis/UAB-CREAF/ogc-api-images-opf-xml/1.0.0"));
 
         // provide a list of valid values for collectionId
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
 
         boolean skipInvalid =
-                geoServer.getGlobal().getResourceErrorHandling()
-                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
-        List<String> validCollectionIds =
-                Streams.stream(geoServer.getCatalog().getCoverages().iterator())
-                        .filter(
-                                c -> {
-                                    try {
-                                        return c.getGridCoverageReader(null, null)
-                                                instanceof StructuredGridCoverage2DReader;
-                                    } catch (IOException e) {
-                                        if (skipInvalid) {
-                                            LOGGER.log(Level.WARNING, "Skipping coverage  " + c);
-                                            return false;
-                                        } else {
-                                            throw new APIException(
-                                                    "InternalError",
-                                                    "Failed to iterate over the coverages in the catalog",
-                                                    HttpStatus.INTERNAL_SERVER_ERROR,
-                                                    e);
-                                        }
-                                    }
-                                })
-                        .map(c -> c.prefixedName())
-                        .collect(Collectors.toList());
+                geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+        List<String> validCollectionIds = Streams.stream(
+                        geoServer.getCatalog().getCoverages().iterator())
+                .filter(c -> {
+                    try {
+                        return c.getGridCoverageReader(null, null) instanceof StructuredGridCoverage2DReader;
+                    } catch (IOException e) {
+                        if (skipInvalid) {
+                            LOGGER.log(Level.WARNING, "Skipping coverage  " + c);
+                            return false;
+                        } else {
+                            throw new APIException(
+                                    "InternalError",
+                                    "Failed to iterate over the coverages in the catalog",
+                                    HttpStatus.INTERNAL_SERVER_ERROR,
+                                    e);
+                        }
+                    }
+                })
+                .map(c -> c.prefixedName())
+                .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
         return api;

@@ -21,32 +21,44 @@ import org.springframework.stereotype.Service;
 @Service
 public class TaskManagerBeans {
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
-    @Autowired private LookupService<TaskType> taskTypes;
+    @Autowired
+    private LookupService<TaskType> taskTypes;
 
-    @Autowired private LookupService<Action> actions;
+    @Autowired
+    private LookupService<Action> actions;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private ReportBuilder reportBuilder;
+    @Autowired
+    private ReportBuilder reportBuilder;
 
     @Autowired(required = false)
     private List<ReportService> reportServices = Collections.emptyList();
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private TaskManagerSecurityUtil secUtil;
+    @Autowired
+    private TaskManagerSecurityUtil secUtil;
 
-    @Autowired private InitConfigUtil initConfigUtil;
+    @Autowired
+    private InitConfigUtil initConfigUtil;
 
-    @Autowired private ImportTool importTool;
+    @Autowired
+    private ImportTool importTool;
 
     public LookupService<FileService> getFileServices() {
         return fileServices;

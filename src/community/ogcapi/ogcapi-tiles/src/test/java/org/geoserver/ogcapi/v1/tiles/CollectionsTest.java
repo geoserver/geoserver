@@ -40,8 +40,7 @@ public class CollectionsTest extends TilesTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        FeatureTypeInfo basicPolygons =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo basicPolygons = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         basicPolygons.setTitle(BASIC_POLYGONS_TITLE);
         basicPolygons.setAbstract(BASIC_POLYGONS_DESCRIPTION);
         getCatalog().save(basicPolygons);
@@ -53,18 +52,14 @@ public class CollectionsTest extends TilesTestSupport {
         testCollectionsJson(json, MediaType.APPLICATION_JSON);
     }
 
-    private void testCollectionsJson(DocumentContext json, MediaType defaultFormat)
-            throws Exception {
+    private void testCollectionsJson(DocumentContext json, MediaType defaultFormat) throws Exception {
         int expected = getGWC().getTileLayerNames().size();
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
         // check we have the expected number of links and they all use the right "rel" relation
-        Collection<MediaType> formats =
-                GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
-                        .getProducibleMediaTypes(TiledCollectionDocument.class, true);
-        assertThat(
-                formats.size(),
-                lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
+        Collection<MediaType> formats = GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
+                .getProducibleMediaTypes(TiledCollectionDocument.class, true);
+        assertThat(formats.size(), lessThanOrEqualTo((int) json.read("collections[0].links.length()", Integer.class)));
         for (MediaType format : formats) {
             // check title and rel
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
@@ -80,10 +75,9 @@ public class CollectionsTest extends TilesTestSupport {
     @Test
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("cdf/ogc/tiles/v1/collections", 200);
-        long expected =
-                Streams.stream(getGWC().getTileLayers())
-                        .filter(tl -> tl.getName().startsWith("cdf:"))
-                        .count();
+        long expected = Streams.stream(getGWC().getTileLayers())
+                .filter(tl -> tl.getName().startsWith("cdf:"))
+                .count();
         // check the filtering
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
@@ -128,11 +122,11 @@ public class CollectionsTest extends TilesTestSupport {
         }
 
         // go and check a specific collection title and description
-        FeatureTypeInfo basicPolygons =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo basicPolygons = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         String basicPolygonsName = basicPolygons.prefixedName().replace(":", "__");
         assertEquals(
-                BASIC_POLYGONS_TITLE, document.select("#" + basicPolygonsName + "_title").text());
+                BASIC_POLYGONS_TITLE,
+                document.select("#" + basicPolygonsName + "_title").text());
         assertEquals(
                 BASIC_POLYGONS_DESCRIPTION,
                 document.select("#" + basicPolygonsName + "_description").text());
@@ -140,8 +134,7 @@ public class CollectionsTest extends TilesTestSupport {
 
     @Test
     public void testVersionHeader() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/tiles/v1/collections/?f=application/x-yaml");
+        MockHttpServletResponse response = getAsServletResponse("ogc/tiles/v1/collections/?f=application/x-yaml");
         assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 }

@@ -22,10 +22,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
-/**
- * An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior
- * for OK/cancel
- */
+/** An abstract OK/cancel dialog, subclasses will have to provide the actual contents and behavior for OK/cancel */
 @SuppressWarnings("serial")
 public class GeoServerDialog extends Panel {
 
@@ -92,8 +89,8 @@ public class GeoServerDialog extends Panel {
     }
 
     /**
-     * Shows an OK/cancel dialog. The delegate will provide contents and behavior for the OK button
-     * (and if needed, for the cancel one as well)
+     * Shows an OK/cancel dialog. The delegate will provide contents and behavior for the OK button (and if needed, for
+     * the cancel one as well)
      */
     public void showOkCancel(AjaxRequestTarget target, final DialogDelegate delegate) {
         // wire up the contents
@@ -101,10 +98,8 @@ public class GeoServerDialog extends Panel {
         window.setContent(new ContentsPage(userPanel));
 
         // make sure close == cancel behavior wise
-        window.setCloseButtonCallback(
-                (ModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
-        window.setWindowClosedCallback(
-                (ModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
+        window.setCloseButtonCallback((ModalWindow.CloseButtonCallback) target12 -> delegate.onCancel(target12));
+        window.setWindowClosedCallback((ModalWindow.WindowClosedCallback) target1 -> delegate.onClose(target1));
 
         // show the window
         this.delegate = delegate;
@@ -115,14 +110,12 @@ public class GeoServerDialog extends Panel {
      * Shows an information style dialog box.
      *
      * @param heading The heading of the information topic.
-     * @param messages A list of models, displayed each as a separate paragraphs, containing the
-     *     information dialog content.
+     * @param messages A list of models, displayed each as a separate paragraphs, containing the information dialog
+     *     content.
      */
     @SafeVarargs
     public final void showInfo(
-            AjaxRequestTarget target,
-            final IModel<String> heading,
-            final IModel<String>... messages) {
+            AjaxRequestTarget target, final IModel<String> heading, final IModel<String>... messages) {
         window.setPageCreator((ModalWindow.PageCreator) () -> new InfoPage(heading, messages));
         window.show(target);
     }
@@ -130,8 +123,7 @@ public class GeoServerDialog extends Panel {
     /**
      * Forcibly closes the dialog.
      *
-     * <p>Note that calling this method does not result in any {@link DialogDelegate} callbacks
-     * being called.
+     * <p>Note that calling this method does not result in any {@link DialogDelegate} callbacks being called.
      */
     public void close(AjaxRequestTarget target) {
         window.close(target);
@@ -152,19 +144,18 @@ public class GeoServerDialog extends Panel {
 
     /** Submit link that will forward to the {@link DialogDelegate} */
     AjaxSubmitLink sumbitLink(Component contents) {
-        AjaxSubmitLink link =
-                new AjaxSubmitLink("submit") {
+        AjaxSubmitLink link = new AjaxSubmitLink("submit") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                        submit(target, (Component) this.getDefaultModelObject());
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                submit(target, (Component) this.getDefaultModelObject());
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target, Form<?> form) {
-                        delegate.onError(target, form);
-                    }
-                };
+            @Override
+            protected void onError(AjaxRequestTarget target, Form<?> form) {
+                delegate.onError(target, form);
+            }
+        };
         link.setDefaultModel(new Model<>(contents));
         return link;
     }
@@ -186,9 +177,8 @@ public class GeoServerDialog extends Panel {
     /**
      * This represents the contents of the dialog.
      *
-     * <p>As of wicket 1.3.6 it still has to be a page, see
-     * http://www.nabble.com/Nesting-ModalWindow-td19925848.html for details (ajax submit buttons
-     * won't work with a panel)
+     * <p>As of wicket 1.3.6 it still has to be a page, see http://www.nabble.com/Nesting-ModalWindow-td19925848.html
+     * for details (ajax submit buttons won't work with a panel)
      */
     protected class ContentsPage extends Panel {
 
@@ -208,15 +198,12 @@ public class GeoServerDialog extends Panel {
         @SafeVarargs
         public InfoPage(IModel<String> title, IModel<String>... messages) {
             add(new Label("title", title));
-            add(
-                    new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
-                        @Override
-                        protected void populateItem(ListItem<IModel<String>> item) {
-                            item.add(
-                                    new Label("message", item.getModelObject())
-                                            .setEscapeModelStrings(false));
-                        }
-                    });
+            add(new ListView<IModel<String>>("messages", Arrays.asList(messages)) {
+                @Override
+                protected void populateItem(ListItem<IModel<String>> item) {
+                    item.add(new Label("message", item.getModelObject()).setEscapeModelStrings(false));
+                }
+            });
         }
     }
 
@@ -226,32 +213,26 @@ public class GeoServerDialog extends Panel {
      * <ul>
      *   <li>a content pane, that will be hosted inside a {@link Form}
      *   <li>a behavior for the OK button
-     *   <li>an eventual behavior for the Cancel button (the base implementation just returns true
-     *       to make the window close)
+     *   <li>an eventual behavior for the Cancel button (the base implementation just returns true to make the window
+     *       close)
      */
     public abstract static class DialogDelegate implements Serializable {
 
         /** Builds the contents for this dialog */
         protected abstract Component getContents(String id);
 
-        /**
-         * Called when the form inside the dialog breaks. By default adds all feedback panels to the
-         * target
-         */
+        /** Called when the form inside the dialog breaks. By default adds all feedback panels to the target */
         public void onError(final AjaxRequestTarget target, Form<?> form) {
-            form.getPage()
-                    .visitChildren(
-                            IFeedback.class,
-                            (component, visit) -> {
-                                if (component.getOutputMarkupId()) {
-                                    target.add(component);
-                                }
-                            });
+            form.getPage().visitChildren(IFeedback.class, (component, visit) -> {
+                if (component.getOutputMarkupId()) {
+                    target.add(component);
+                }
+            });
         }
 
         /**
-         * Called when the dialog is closed, allows the delegate to perform ajax updates on the page
-         * underlying the dialog
+         * Called when the dialog is closed, allows the delegate to perform ajax updates on the page underlying the
+         * dialog
          */
         public void onClose(AjaxRequestTarget target) {
             // by default do nothing

@@ -64,7 +64,8 @@ class LegendEntry {
                 final Shape sample = samplePolygon();
                 final Color fillColor = colorForRGBA(simpleFillSymbol.getColor());
                 final Stroke stroke = strokeForLineSymbol(simpleFillSymbol.getOutline());
-                final Color strokeColor = colorForRGBA(simpleFillSymbol.getOutline().getColor());
+                final Color strokeColor =
+                        colorForRGBA(simpleFillSymbol.getOutline().getColor());
 
                 canvas.setColor(fillColor);
                 canvas.fill(sample);
@@ -87,8 +88,7 @@ class LegendEntry {
         }
         byte[] buff = toPNGBytes(image);
         return Base64.encodeBytes(
-                buff,
-                Base64.DONT_BREAK_LINES); // ArcGIS doesn't break at 76 columns, so neither do we.
+                buff, Base64.DONT_BREAK_LINES); // ArcGIS doesn't break at 76 columns, so neither do we.
     }
 
     private static Stroke strokeForLineSymbol(SimpleLineSymbol outline) {
@@ -187,8 +187,7 @@ class LegendEntry {
         try {
             ImageIO.write(image, "PNG", bytes);
         } catch (IOException e) {
-            throw new RuntimeException(
-                    "Writing to ByteArrayOutputStream should not throw IOException", e);
+            throw new RuntimeException("Writing to ByteArrayOutputStream should not throw IOException", e);
         }
 
         return bytes.toByteArray();

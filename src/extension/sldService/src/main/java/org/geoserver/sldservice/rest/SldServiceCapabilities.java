@@ -9,19 +9,13 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * This class represents sldService capabilities. At the moment holds only raster and vector
- * supported classification's methods.
+ * This class represents sldService capabilities. At the moment holds only raster and vector supported classification's
+ * methods.
  */
 class SldServiceCapabilities {
 
     private final List<String> vectorClassifications =
-            Arrays.asList(
-                    "quantile",
-                    "jenks",
-                    "equalArea",
-                    "equalInterval",
-                    "uniqueInterval",
-                    "standardDeviation");
+            Arrays.asList("quantile", "jenks", "equalArea", "equalInterval", "uniqueInterval", "standardDeviation");
 
     private final List<String> rasterClassifications =
             Arrays.asList("quantile", "jenks", "equalArea", "equalInterval", "uniqueInterval");

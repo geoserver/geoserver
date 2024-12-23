@@ -57,17 +57,15 @@ import org.geotools.util.factory.Hints;
 /**
  * Visitor for standalone {@link org.geotools.api.style.StyledLayerDescriptor}s
  *
- * <p>Visits each {@link StyledLayer}s of an SLD. Resolves LayerGroups, Remote OWS references, and
- * inline features into individual layers Visits each {@link Style} in each{@link StyledLayer},
- * alongside each of these resolved layers
+ * <p>Visits each {@link StyledLayer}s of an SLD. Resolves LayerGroups, Remote OWS references, and inline features into
+ * individual layers Visits each {@link Style} in each{@link StyledLayer}, alongside each of these resolved layers
  *
- * <p>Intended to provide a definitive, extensible approach to parsing standalone {@link
- * org.geotools.api.style.StyledLayerDescriptor}s, including style groups and external SLDs.
+ * <p>Intended to provide a definitive, extensible approach to parsing standalone
+ * {@link org.geotools.api.style.StyledLayerDescriptor}s, including style groups and external SLDs.
  */
 public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     protected final Catalog catalog;
     protected final CoordinateReferenceSystem fallbackCrs;
@@ -80,10 +78,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     /**
      * Constructs a new GeoServerSLDVisitor
      *
-     * @param catalog GeoServer catalog to use for looking up catalog objects (Layers, LayerGroups,
-     *     Styles)
-     * @param fallbackCrs The CRS to use for inline features if it is not specified in the feature.
-     *     Defaults to {@link DefaultGeographicCRS#WGS84}.
+     * @param catalog GeoServer catalog to use for looking up catalog objects (Layers, LayerGroups, Styles)
+     * @param fallbackCrs The CRS to use for inline features if it is not specified in the feature. Defaults to
+     *     {@link DefaultGeographicCRS#WGS84}.
      */
     public GeoServerSLDVisitor(Catalog catalog, CoordinateReferenceSystem fallbackCrs) {
         this.catalog = catalog;
@@ -115,9 +112,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     public abstract void visitUserLayerInlineFeature(UserLayer userLayer);
 
     /**
-     * Called on each named style for each styled layer. In cases where the styled layer references
-     * multiple layers, such as a remote OWS user layer exposing multiple layers, this will be
-     * called for once of each of these layers, which will be passed in through the info argument.
+     * Called on each named style for each styled layer. In cases where the styled layer references multiple layers,
+     * such as a remote OWS user layer exposing multiple layers, this will be called for once of each of these layers,
+     * which will be passed in through the info argument.
      *
      * <p>Implementations may resolve and return the corresponding StyleInfo
      *
@@ -127,14 +124,12 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     public abstract StyleInfo visitNamedStyleInternal(NamedStyle namedStyle);
 
     /**
-     * Called on each named style for each styled layer. In cases where the styled layer references
-     * multiple layers, such as a named layer referencing a layer group, or remote OWS user layer
-     * exposing multiple layers, this will be called for once of each of these layers, which will be
-     * passed in through the info argument.
+     * Called on each named style for each styled layer. In cases where the styled layer references multiple layers,
+     * such as a named layer referencing a layer group, or remote OWS user layer exposing multiple layers, this will be
+     * called for once of each of these layers, which will be passed in through the info argument.
      *
-     * <p>Note: currently, in the case of a named layer referencing a layer group, any styles
-     * defined in the SLD will be ignored, and the layer groups defined styles will be used instead,
-     * being handled as user layers.
+     * <p>Note: currently, in the case of a named layer referencing a layer group, any styles defined in the SLD will be
+     * ignored, and the layer groups defined styles will be used instead, being handled as user layers.
      *
      * @param userStyle The user style
      */
@@ -143,19 +138,18 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     /**
      * Visit the SLD
      *
-     * <p>Visit each layer. Construct temporary stores for inline features and remote OWS layers.
-     * After visiting a layer, visit each style in that layer. In cases where the styled layer
-     * references multiple layers, such as a named layer referencing a layer group, or remote OWS
-     * user layer exposing multiple layers, visit each style for each of these sublayers instead.
+     * <p>Visit each layer. Construct temporary stores for inline features and remote OWS layers. After visiting a
+     * layer, visit each style in that layer. In cases where the styled layer references multiple layers, such as a
+     * named layer referencing a layer group, or remote OWS user layer exposing multiple layers, visit each style for
+     * each of these sublayers instead.
      *
      * @param sld The sld the visitor is applied to
-     * @throws UnsupportedOperationException, If the sld uses features not supported by GeoServer,
-     *     such as if an OWS service other than WFS is specified for a UserLayer
-     * @throws IllegalStateException If the sld is somehow invalid, such as if there is a NamedLayer
-     *     without a name
+     * @throws UnsupportedOperationException, If the sld uses features not supported by GeoServer, such as if an OWS
+     *     service other than WFS is specified for a UserLayer
+     * @throws IllegalStateException If the sld is somehow invalid, such as if there is a NamedLayer without a name
      * @throws ServiceException if there was a problem accessing a remote OWS service
-     * @throws UncheckedIOException if there is an underlying {@link IOException} when reading
-     *     {@link Style} objects from the catalog
+     * @throws UncheckedIOException if there is an underlying {@link IOException} when reading {@link Style} objects
+     *     from the catalog
      */
     @Override
     public void visit(StyledLayerDescriptor sld) {
@@ -281,9 +275,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     }
 
     /**
-     * Constructs a {@link DataStore} from a remote OWS specified in a {@link UserLayer}, and wraps
-     * each feature matching one of the supplied {@link FeatureTypeConstraint}s in a {@link
-     * LayerInfo}
+     * Constructs a {@link DataStore} from a remote OWS specified in a {@link UserLayer}, and wraps each feature
+     * matching one of the supplied {@link FeatureTypeConstraint}s in a {@link LayerInfo}
      *
      * @return The list of layers wrapping the exposed features
      * @throws UnsupportedOperationException, if an OWS service other than WFS is specified
@@ -293,11 +286,9 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         try {
             RemoteOWS service = ul.getRemoteOWS();
             if (!service.getService().equalsIgnoreCase("WFS"))
-                throw new UnsupportedOperationException(
-                        "GeoServer only supports WFS as remoteOWS service");
+                throw new UnsupportedOperationException("GeoServer only supports WFS as remoteOWS service");
             if (service.getOnlineResource() == null)
-                throw new IllegalStateException(
-                        "OnlineResource for remote WFS not specified in SLD");
+                throw new IllegalStateException("OnlineResource for remote WFS not specified in SLD");
             final FeatureTypeConstraint[] featureConstraints = ul.getLayerFeatureConstraints();
             if (featureConstraints == null || featureConstraints.length == 0)
                 throw new IllegalStateException(
@@ -312,8 +303,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
                 Collections.sort(remoteTypeNames);
 
             } catch (MalformedURLException e) {
-                throw new IllegalStateException(
-                        "Invalid online resource url: '" + service.getOnlineResource() + "'");
+                throw new IllegalStateException("Invalid online resource url: '" + service.getOnlineResource() + "'");
             }
 
             List<LayerInfo> layers = new ArrayList<>();
@@ -323,11 +313,10 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
                 // make sure the layer is there
                 String name = featureConstraint.getFeatureTypeName();
                 if (Collections.binarySearch(remoteTypeNames, name) < 0) {
-                    throw new IllegalStateException(
-                            "Could not find layer feature type '"
-                                    + name
-                                    + "' on remote WFS '"
-                                    + service.getOnlineResource());
+                    throw new IllegalStateException("Could not find layer feature type '"
+                            + name
+                            + "' on remote WFS '"
+                            + service.getOnlineResource());
                 }
                 layers.add(getLayerFromFeatureSource(remoteWFS.getFeatureSource(name)));
             }
@@ -346,9 +335,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         try {
             WFSDataStoreFactory storeFactory = new WFSDataStoreFactory();
             Map<String, Serializable> params = new HashMap<>();
-            params.put(
-                    WFSDataStoreFactory.URL.key,
-                    remoteOwsUrl + "&request=GetCapabilities&service=WFS");
+            params.put(WFSDataStoreFactory.URL.key, remoteOwsUrl + "&request=GetCapabilities&service=WFS");
             params.put(WFSDataStoreFactory.TRY_GZIP.key, Boolean.TRUE);
             DataStore dataStore = storeFactory.createDataStore(params);
 
@@ -359,11 +346,11 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
     }
 
     /**
-     * Constructs a {@link MemoryDataStore} from an inline feature specifies in a {@link UserLayer},
-     * and wraps it in a {@link LayerInfo}
+     * Constructs a {@link MemoryDataStore} from an inline feature specifies in a {@link UserLayer}, and wraps it in a
+     * {@link LayerInfo}
      *
-     * @param fallbackCrs {@link CoordinateReferenceSystem} to fall back to in case one is not
-     *     specified in the inline feature definition.
+     * @param fallbackCrs {@link CoordinateReferenceSystem} to fall back to in case one is not specified in the inline
+     *     feature definition.
      * @return The layer
      */
     protected LayerInfo getInlineFeatureLayer(UserLayer ul, CoordinateReferenceSystem fallbackCrs)
@@ -385,15 +372,10 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             Query q = new Query(currFt.getTypeName(), Filter.INCLUDE);
 
             DataStore inlineFeatureDatastore = (DataStore) ul.getInlineFeatureDatastore();
-            CoordinateReferenceSystem crs =
-                    (fallbackCrs == null) ? DefaultGeographicCRS.WGS84 : fallbackCrs;
+            CoordinateReferenceSystem crs = (fallbackCrs == null) ? DefaultGeographicCRS.WGS84 : fallbackCrs;
             String typeName = inlineFeatureDatastore.getTypeNames()[0];
-            MemoryDataStore reTypedDS =
-                    new MemoryDataStore(
-                            new ForceCoordinateSystemFeatureReader(
-                                    inlineFeatureDatastore.getFeatureReader(
-                                            q, Transaction.AUTO_COMMIT),
-                                    crs));
+            MemoryDataStore reTypedDS = new MemoryDataStore(new ForceCoordinateSystemFeatureReader(
+                    inlineFeatureDatastore.getFeatureReader(q, Transaction.AUTO_COMMIT), crs));
 
             featureSource = reTypedDS.getFeatureSource(typeName);
         } else {
@@ -446,8 +428,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
             this.featureSource = featureSource;
             setName(featureSource.getName().getLocalPart());
             setEnabled(true);
-            setLatLonBoundingBox(
-                    featureSource.getBounds().transform(DefaultGeographicCRS.WGS84, true));
+            setLatLonBoundingBox(featureSource.getBounds().transform(DefaultGeographicCRS.WGS84, true));
         }
 
         @Override
@@ -480,8 +461,8 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         public DataStoreInfo getStore() {
             return new DataStoreInfoImpl() {
                 @Override
-                public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(
-                        ProgressListener listener) throws IOException {
+                public DataAccess<? extends FeatureType, ? extends Feature> getDataStore(ProgressListener listener)
+                        throws IOException {
                     return DataUtilities.dataStore((SimpleFeatureSource) featureSource);
                 }
             };

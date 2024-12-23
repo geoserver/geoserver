@@ -40,22 +40,21 @@ public enum AttributeType {
         return getType();
     }
 
-    private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS =
-            new ImmutableMap.Builder<Class<?>, Class<?>>()
-                    .put(boolean.class, Boolean.class)
-                    .put(byte.class, Byte.class)
-                    .put(char.class, Character.class)
-                    .put(double.class, Double.class)
-                    .put(float.class, Float.class)
-                    .put(int.class, Integer.class)
-                    .put(long.class, Long.class)
-                    .put(short.class, Short.class)
-                    .put(void.class, Void.class)
-                    .build();
+    private static final Map<Class<?>, Class<?>> PRIMITIVES_TO_WRAPPERS = new ImmutableMap.Builder<Class<?>, Class<?>>()
+            .put(boolean.class, Boolean.class)
+            .put(byte.class, Byte.class)
+            .put(char.class, Character.class)
+            .put(double.class, Double.class)
+            .put(float.class, Float.class)
+            .put(int.class, Integer.class)
+            .put(long.class, Long.class)
+            .put(short.class, Short.class)
+            .put(void.class, Void.class)
+            .build();
 
     /**
-     * Returns an AttributeType for the given class. Always returns a value, in case there is no
-     * better match {@link AttributeType#STRING} is returned.
+     * Returns an AttributeType for the given class. Always returns a value, in case there is no better match
+     * {@link AttributeType#STRING} is returned.
      */
     public static AttributeType fromClass(Class<?> binding) {
         // some funtions fail to declare their return type, assume the most generic

@@ -12,10 +12,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 
-/**
- * Test the JVM argument GEOSERVER_CONSOLE_DISABLED actually disables the GeoServer web console when
- * set
- */
+/** Test the JVM argument GEOSERVER_CONSOLE_DISABLED actually disables the GeoServer web console when set */
 public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
 
     private static final String CONSOLE_DISABLED_PUBLISHER = "filePublisher";
@@ -47,9 +44,7 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
 
         assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_DISABLED_PUBLISHER);
         assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_DISABLED_PUBLISHER);
-        assertEquals(
-                mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING),
-                CONSOLE_DISABLED_PUBLISHER);
+        assertEquals(mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_DISABLED_PUBLISHER);
     }
 
     @Test
@@ -60,8 +55,7 @@ public class GeoServerConsoleFlagTest extends GeoServerSystemTestSupport {
 
         assertEquals(mapping.getUrlMap().get(WEB_MAPPING), CONSOLE_ENABLED_PUBLISHER);
         assertEquals(mapping.getUrlMap().get(WEB_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
-        assertEquals(
-                mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
+        assertEquals(mapping.getUrlMap().get(WEB_RESOURCES_WILDCARD_MAPPING), CONSOLE_ENABLED_PUBLISHER);
     }
 
     @After

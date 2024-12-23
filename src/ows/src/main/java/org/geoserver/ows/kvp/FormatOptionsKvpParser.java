@@ -33,8 +33,8 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
     }
 
     /**
-     * Builds a {@link FormatOptionsKvpParser} with a user specified key (for params that have the
-     * syntax of format_options, but not the same name)
+     * Builds a {@link FormatOptionsKvpParser} with a user specified key (for params that have the syntax of
+     * format_options, but not the same name)
      */
     public FormatOptionsKvpParser(String key) {
         super(key, Map.class);
@@ -70,8 +70,7 @@ public class FormatOptionsKvpParser extends KvpParser implements ApplicationCont
 
             if (parsed == null) {
                 if (LOGGER.isLoggable(Level.FINER))
-                    LOGGER.finer(
-                            "Could not find kvp parser for: '" + key + "'. Storing as raw string.");
+                    LOGGER.finer("Could not find kvp parser for: '" + key + "'. Storing as raw string.");
                 parsed = raw;
             }
 

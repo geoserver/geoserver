@@ -7,8 +7,7 @@ package org.geoserver.security.jdbc.config;
 
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
-public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig
-        implements SecurityRoleServiceConfig {
+public class JDBCRoleServiceConfig extends JDBCSecurityServiceConfig implements SecurityRoleServiceConfig {
 
     private static final long serialVersionUID = 1L;
 

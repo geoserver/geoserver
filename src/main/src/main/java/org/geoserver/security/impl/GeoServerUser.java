@@ -84,8 +84,7 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
         this.accountNonLocked = other.isAccountNonLocked();
         this.credentialsNonExpired = other.isCredentialsNonExpired();
         this.enabled = other.isEnabled();
-        this.authorities =
-                other.getAuthorities() != null ? new ArrayList<>(other.getAuthorities()) : null;
+        this.authorities = other.getAuthorities() != null ? new ArrayList<>(other.getAuthorities()) : null;
     }
 
     /** The user name. */
@@ -185,8 +184,8 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
     /**
      * Additional properties associated with the user.
      *
-     * <p>This typically is information filled in by the backend user/group service. For examples:
-     * eMail Address, telephone number, etc..
+     * <p>This typically is information filled in by the backend user/group service. For examples: eMail Address,
+     * telephone number, etc..
      */
     public Properties getProperties() {
         if (properties == null) properties = new Properties();
@@ -207,11 +206,9 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
     }
 
     /**
-     * Returns {@code true} if the supplied object is a {@code User} instance with the same {@code
-     * username} value.
+     * Returns {@code true} if the supplied object is a {@code User} instance with the same {@code username} value.
      *
-     * <p>In other words, the objects are equal if they have the same username, representing the
-     * same principal.
+     * <p>In other words, the objects are equal if they have the same username, representing the same principal.
      */
     @Override
     public boolean equals(Object rhs) {
@@ -238,8 +235,7 @@ public class GeoServerUser implements UserDetails, CredentialsContainer, Compara
         sb.append("CredentialsNonExpired: ").append(this.credentialsNonExpired).append("; ");
         sb.append("AccountNonLocked: ").append(this.accountNonLocked).append("; ");
         sb.append(" [ ");
-        if (authorities != null)
-            sb.append(StringUtils.collectionToCommaDelimitedString(authorities));
+        if (authorities != null) sb.append(StringUtils.collectionToCommaDelimitedString(authorities));
         sb.append(" ] ");
 
         return sb.toString();

@@ -10,8 +10,8 @@ import java.util.List;
 /**
  * Event for the modification of an object in the catalog.
  *
- * <p>The {@link #getSource()} method returns the object unmodified. For access to the object after
- * it has been modified, see {@link CatalogPostModifyEvent}.
+ * <p>The {@link #getSource()} method returns the object unmodified. For access to the object after it has been
+ * modified, see {@link CatalogPostModifyEvent}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

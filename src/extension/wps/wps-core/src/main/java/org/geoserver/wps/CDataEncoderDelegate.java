@@ -37,11 +37,10 @@ public class CDataEncoderDelegate implements EncoderDelegate {
     @Override
     public void encode(ContentHandler output) throws Exception {
         ((LexicalHandler) output).startCDATA();
-        try (OutputStream os =
-                WriterOutputStream.builder()
-                        .setWriter(new ContentHandlerWriter(output))
-                        .setCharset(UTF_8)
-                        .get()) {
+        try (OutputStream os = WriterOutputStream.builder()
+                .setWriter(new ContentHandlerWriter(output))
+                .setCharset(UTF_8)
+                .get()) {
             ppio.encode(object, os);
         }
         ((LexicalHandler) output).endCDATA();

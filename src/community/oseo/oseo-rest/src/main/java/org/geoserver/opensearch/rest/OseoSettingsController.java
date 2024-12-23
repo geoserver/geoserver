@@ -32,11 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/services/oseo",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class OseoSettingsController extends ServiceSettingsController<OSEOInfo> {
 
     @Autowired
@@ -53,8 +49,7 @@ public class OseoSettingsController extends ServiceSettingsController<OSEOInfo> 
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public void serviceSettingsPut(
-            @RequestBody OSEOInfo info, @PathVariable(required = false) String workspaceName) {
+    public void serviceSettingsPut(@RequestBody OSEOInfo info, @PathVariable(required = false) String workspaceName) {
 
         super.serviceSettingsPut(info, workspaceName);
     }
@@ -66,36 +61,33 @@ public class OseoSettingsController extends ServiceSettingsController<OSEOInfo> 
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return OSEOInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setHideFeatureTypeAttributes();
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected ServiceInfo getServiceObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
-                        ServiceInfo service;
-                        if (workspace != null) {
-                            WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                            service = geoServer.getService(ws, OSEOInfo.class);
-                        } else {
-                            service = geoServer.getService(OSEOInfo.class);
-                        }
-                        return service;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected ServiceInfo getServiceObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
+                ServiceInfo service;
+                if (workspace != null) {
+                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                    service = geoServer.getService(ws, OSEOInfo.class);
+                } else {
+                    service = geoServer.getService(OSEOInfo.class);
+                }
+                return service;
+            }
 
-                    @Override
-                    protected Class<OSEOInfo> getObjectClass() {
-                        return OSEOInfo.class;
-                    }
-                });
+            @Override
+            protected Class<OSEOInfo> getObjectClass() {
+                return OSEOInfo.class;
+            }
+        });
         OSEOXStreamLoader.initXStreamPersister(persister);
     }
 }

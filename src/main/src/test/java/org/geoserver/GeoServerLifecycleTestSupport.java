@@ -12,12 +12,11 @@ import org.geoserver.test.GeoServerSystemTestSupport;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * Base test class for GeoServer lifecycle tests to verify different {@link
- * GeoServerLifecycleHandler} calls.
+ * Base test class for GeoServer lifecycle tests to verify different {@link GeoServerLifecycleHandler} calls.
  *
- * <p>Subclasses may ask the internal {@link LifecycleWatcher} if the expected call took place. A
- * special case is the onDispose() call, which can not be addressed by a unit test. Therefor an
- * assertion was placed in the destroyGeoServer() hook.
+ * <p>Subclasses may ask the internal {@link LifecycleWatcher} if the expected call took place. A special case is the
+ * onDispose() call, which can not be addressed by a unit test. Therefor an assertion was placed in the
+ * destroyGeoServer() hook.
  *
  * @author d.stueken (con terra)
  */

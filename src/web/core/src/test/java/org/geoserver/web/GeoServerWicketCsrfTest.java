@@ -29,8 +29,7 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(
-                new Object[][] {{"true", "foo.com"}, {"false", "geoserver.org"}, {"false", ""}});
+        return Arrays.asList(new Object[][] {{"true", "foo.com"}, {"false", "geoserver.org"}, {"false", ""}});
     }
 
     @Parameter(0)
@@ -46,8 +45,7 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         // Update the Csrf properties and re-init the test app
         System.setProperty(GEOSERVER_CSRF_WHITELIST, csrfWhitelist);
         System.setProperty(GEOSERVER_CSRF_DISABLED, csrfDisabled);
-        GeoServerApplication app =
-                (GeoServerApplication) applicationContext.getBean("webApplication");
+        GeoServerApplication app = (GeoServerApplication) applicationContext.getBean("webApplication");
         tester = new WicketTester(app, false);
         app.init();
 
@@ -105,12 +103,11 @@ public class GeoServerWicketCsrfTest extends GeoServerWicketTestSupport {
         MockHttpServletRequest request = tester.getRequest();
 
         // this bit of code is taken from FormTester.submitForm (for reference in future upgrades)
-        String relativePath =
-                form.getForm()
-                        .getRootForm()
-                        .urlForListener(new PageParameters())
-                        .toString()
-                        .substring(1);
+        String relativePath = form.getForm()
+                .getRootForm()
+                .urlForListener(new PageParameters())
+                .toString()
+                .substring(1);
 
         request.setServerName("geoserver.org");
         request.setHeader("Origin", url);

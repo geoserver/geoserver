@@ -56,8 +56,7 @@ public class BruteForcePreventionConfig implements SecurityConfig {
         this.enabled = other.enabled;
         this.minDelaySeconds = other.minDelaySeconds;
         this.maxDelaySeconds = other.maxDelaySeconds;
-        this.whitelistedMasks =
-                other.whitelistedMasks != null ? new ArrayList<>(other.whitelistedMasks) : null;
+        this.whitelistedMasks = other.whitelistedMasks != null ? new ArrayList<>(other.whitelistedMasks) : null;
         this.maxBlockedThreads = other.maxBlockedThreads;
     }
 
@@ -99,10 +98,9 @@ public class BruteForcePreventionConfig implements SecurityConfig {
     public List<IpAddressMatcher> getWhitelistAddressMatchers() {
         try {
             if (this.getWhitelistedMasks() != null && this.whitelistedAddressMatchers == null) {
-                this.whitelistedAddressMatchers =
-                        whitelistedMasks.stream()
-                                .map(mask -> new IpAddressMatcher(mask))
-                                .collect(Collectors.toList());
+                this.whitelistedAddressMatchers = whitelistedMasks.stream()
+                        .map(mask -> new IpAddressMatcher(mask))
+                        .collect(Collectors.toList());
             }
         } catch (Exception e) {
             // an error here and no request can be made, best be cautious (yes, it actually
@@ -125,12 +123,9 @@ public class BruteForcePreventionConfig implements SecurityConfig {
         BruteForcePreventionConfig clone = new BruteForcePreventionConfig(this);
 
         // allow parametrization of the whitelisted masks
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
         if (clone != null) {
-            if (allowEnvParametrization
-                    && gsEnvironment != null
-                    && GeoServerEnvironment.allowEnvParametrization()) {
+            if (allowEnvParametrization && gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 List<String> resolvedMasks = new ArrayList<>();
                 for (String mask : whitelistedMasks) {
                     String resolved = (String) gsEnvironment.resolveValue(mask);

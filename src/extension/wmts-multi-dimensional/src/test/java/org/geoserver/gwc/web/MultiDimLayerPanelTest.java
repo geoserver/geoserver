@@ -33,8 +33,7 @@ import org.junit.Test;
 
 public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
 
-    protected static final QName WATERTEMP =
-            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName WATERTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -84,9 +83,7 @@ public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
 
         // setup dimensions
         FeatureTypeInfo timeElevationSidecar =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MAINSTORE_URI, VECTOR_ELEVATION_TIME_SS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MAINSTORE_URI, VECTOR_ELEVATION_TIME_SS.getLocalPart());
         TestsSupport.registerLayerDimension(
                 timeElevationSidecar,
                 ResourceInfo.ELEVATION,
@@ -116,9 +113,7 @@ public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("foo:maxExpandLimit", "100");
     }
 
-    /**
-     * Simple sidecar setup, one store for both main and sidecar types (only one choice available)
-     */
+    /** Simple sidecar setup, one store for both main and sidecar types (only one choice available) */
     @Test
     public void testSimpleSidecar() {
         LayerInfo vector = getCatalog().getLayerByName(getLayerId(VECTOR_ELEVATION));
@@ -135,9 +130,7 @@ public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
         assertEquals(metadata.get(SIDECAR_TYPE), SIDECAR_VECTOR_ET.getLocalPart());
     }
 
-    /**
-     * Simple sidecar setup, one store for both main and sidecar types (only one choice available)
-     */
+    /** Simple sidecar setup, one store for both main and sidecar types (only one choice available) */
     @Test
     public void testSeparateSidecar() {
         LayerInfo vector = getCatalog().getLayerByName(getLayerId(VECTOR_ELEVATION_TIME_SS));
@@ -160,9 +153,7 @@ public class MultiDimLayerPanelTest extends GeoServerWicketTestSupport {
         assertEquals(SIDECAR_VECTOR_ET_SS.getLocalPart(), metadata.get(SIDECAR_TYPE));
     }
 
-    /**
-     * Simple sidecar setup, one store for both main and sidecar types (only one choice available)
-     */
+    /** Simple sidecar setup, one store for both main and sidecar types (only one choice available) */
     @Test
     public void testSidecarValidation() {
         LayerInfo vector = getCatalog().getLayerByName(getLayerId(VECTOR_ELEVATION_TIME_SS));

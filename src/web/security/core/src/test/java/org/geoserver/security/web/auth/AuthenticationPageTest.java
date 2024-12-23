@@ -40,8 +40,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
 
         @SuppressWarnings("unchecked")
         List<String> selected =
-                (List<String>)
-                        (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();
+                (List<String>) (page.get("form:providerChain:authProviderNames")).getDefaultModelObject();
         assertEquals(1, selected.size());
         assertTrue(selected.contains("default"));
 
@@ -51,8 +50,7 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertNoErrorMessage();
 
         boolean authProvFound = false;
-        for (GeoServerAuthenticationProvider prov :
-                getSecurityManager().getAuthenticationProviders()) {
+        for (GeoServerAuthenticationProvider prov : getSecurityManager().getAuthenticationProviders()) {
             if (UsernamePasswordAuthenticationProvider.class.isAssignableFrom(prov.getClass())) {
                 if (prov.getName().equals("default2")) {
                     authProvFound = true;
@@ -84,8 +82,6 @@ public class AuthenticationPageTest extends AbstractSecurityWicketTestSupport {
         tester.assertRenderedPage(AuthenticationPage.class);
         TagTester logoutform = tester.getTagByWicketId("logoutform");
         // used to be http://localhost/j_spring_security_logout
-        assertEquals(
-                "http://localhost/context/j_spring_security_logout",
-                logoutform.getAttribute("action"));
+        assertEquals("http://localhost/context/j_spring_security_logout", logoutform.getAttribute("action"));
     }
 }

@@ -7,8 +7,7 @@ package org.geoserver.security.ldap;
 
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
-public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig
-        implements SecurityAuthProviderConfig {
+public class LDAPSecurityServiceConfig extends LDAPBaseSecurityServiceConfig implements SecurityAuthProviderConfig {
 
     private static final long serialVersionUID = 6093735229286602599L;
 

@@ -35,11 +35,10 @@ import org.w3c.dom.Document;
 
 public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
-    static final String BASE_URL =
-            "wms?service=WMS&version=1.1.0"
-                    + "&request=GetMap&layers=watertemp&styles="
-                    + "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
-                    + "&srs=EPSG:4326";
+    static final String BASE_URL = "wms?service=WMS&version=1.1.0"
+            + "&request=GetMap&layers=watertemp&styles="
+            + "&bbox=0.237,40.562,14.593,44.558&width=200&height=80"
+            + "&srs=EPSG:4326";
     static final String BASE_PNG_URL = BASE_URL + "&format=image/png";
     static final String MIME = "image/png";
 
@@ -83,8 +82,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
     public void testSortTwoAttributes() throws Exception {
         // setting up no dimension, will also sort on elevation
 
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&sortBy=ingestion D,elevation", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&sortBy=ingestion D,elevation", "image/png");
 
         // should be light red pixel and the first pixel is there only at the default elevation
         assertPixel(image, 36, 31, new Color(246, 246, 255));
@@ -139,9 +137,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         try {
             BufferedImage image =
-                    getAsImage(
-                            BASE_PNG_URL + "&bgcolor=0xFF0000&sortBy=elevation D,ingestion D",
-                            "image/png");
+                    getAsImage(BASE_PNG_URL + "&bgcolor=0xFF0000&sortBy=elevation D,ingestion D", "image/png");
 
             // at this elevation the pixel is black
             assertPixel(image, 36, 31, new Color(255, 0, 0));
@@ -149,7 +145,8 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
             assertPixel(image, 68, 72, new Color(246, 246, 255));
         } finally {
             ci = getCatalog().getCoverageByName(getLayerId(WATTEMP));
-            ci.getParameters().remove(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().getCode());
+            ci.getParameters()
+                    .remove(ImageMosaicFormat.MAX_ALLOWED_TILES.getName().getCode());
             getCatalog().save(ci);
         }
     }
@@ -159,8 +156,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
         // should be similar to the default, but with different shades of color
         assertPixel(image, 36, 31, new Color(246, 246, 255));
@@ -173,8 +169,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
         setExceptionsOnInvalidDimension(false);
 
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
 
         // no match, so we're getting th default background color
         assertPixel(image, 36, 31, Color.WHITE);
@@ -189,10 +184,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         Document dom = getAsDOM(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z");
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
-        assertThat(
-                message,
-                containsString(
-                        "Could not find a match for 'time' value: '2008-10-31T08:00:00.000Z'"));
+        assertThat(message, containsString("Could not find a match for 'time' value: '2008-10-31T08:00:00.000Z'"));
     }
 
     @Test
@@ -201,8 +193,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, TIME, LIST, null, ResourceInfo.TIME_UNIT, null);
         setupNearestMatch(WATTEMP, TIME, true);
 
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z", "image/png");
         assertNearestTimeWarning(getLayerId(WATTEMP), "2008-10-31T00:00:00.000Z");
 
         // same as testTime
@@ -239,9 +230,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupNearestMatch(WATTEMP, TIME, true, "PT4H/P0D", EXCEPTION, false);
         Document dom = getAsDOM(BASE_PNG_URL + "&time=2008-10-31T08:00:00.000Z");
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
-        assertThat(
-                message,
-                containsString("No nearest match found on sf:watertemp for time dimension"));
+        assertThat(message, containsString("No nearest match found on sf:watertemp for time dimension"));
 
         // now force a search in the future only
         setupNearestMatch(WATTEMP, TIME, true, "P0D/P10D");
@@ -311,8 +300,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
         // should be similar to the default, but with different shades of color
         assertPixel(image, 36, 31, new Color(246, 246, 255));
@@ -325,10 +313,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, null);
 
         BufferedImage image =
-                getAsImage(
-                        BASE_PNG_URL
-                                + "&time=2008-10-31T00:00:00.000Z&elevation=100&bgcolor=0xFF0000",
-                        "image/png");
+                getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z&elevation=100&bgcolor=0xFF0000", "image/png");
 
         // at this elevation the pixel is NODATA -> bgcolor
         assertPixel(image, 36, 31, new Color(255, 0, 0));
@@ -344,33 +329,26 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupRasterDimension(TIMERANGES, "date", LIST, null, null, null);
 
         // Setting a BLUE Background Color
-        String baseUrl =
-                "wms?LAYERS="
-                        + getLayerId(TIMERANGES)
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+        String baseUrl = "wms?LAYERS="
+                + getLayerId(TIMERANGES)
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
 
         // in the last range, it's bluish
         BufferedImage image =
-                getAsImage(
-                        baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z",
-                        "image/png");
+                getAsImage(baseUrl + "&TIME=2008-11-05T00:00:00.000Z/2008-11-06T12:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, new Color(249, 249, 255));
 
         // in the middle hole, no data, thus blue
         setExceptionsOnInvalidDimension(false);
-        image =
-                getAsImage(
-                        baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z",
-                        "image/png");
+        image = getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, Color.BLUE);
 
         // same as above, but with more attitude
         setExceptionsOnInvalidDimension(true);
-        Document dom =
-                getAsDOM(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z");
+        Document dom = getAsDOM(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z");
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "time");
         assertThat(
                 message,
@@ -378,10 +356,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
                         "Could not find a match for 'time' value: '2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z'"));
 
         // first range, red-ish
-        image =
-                getAsImage(
-                        baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z",
-                        "image/png");
+        image = getAsImage(baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-10-31T16:00:00.000Z", "image/png");
         assertPixel(image, 36, 31, Color.BLUE);
         assertPixel(image, 68, 72, new Color(255, 172, 172));
     }
@@ -396,11 +371,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         // Setting a BLUE Background Color
         String timeRangesId = getLayerId(TIMERANGES);
-        String baseUrl =
-                "wms?LAYERS="
-                        + timeRangesId
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+        String baseUrl = "wms?LAYERS="
+                + timeRangesId
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
 
         // after last range, as a range
         BufferedImage image = getAsImage(baseUrl + "&TIME=2018-11-8/2018-11-09", "image/png");
@@ -419,10 +393,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         assertPixel(image, 68, 72, new Color(249, 249, 255));
 
         // in the middle hole, but closer to the latest value, as a range
-        image =
-                getAsImage(
-                        baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z",
-                        "image/png");
+        image = getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
         assertWarningCount(2);
         assertNearestTimeWarning(timeRangesId, "2008-11-05T00:00:00.000Z");
         assertDefaultDimensionWarning(timeRangesId, ELEVATION, UNITS, "20.0");
@@ -471,11 +442,10 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
 
         // Setting a BLUE Background Color
         String timeRangesId = getLayerId(TIMERANGES);
-        String baseUrl =
-                "wms?LAYERS="
-                        + timeRangesId
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+        String baseUrl = "wms?LAYERS="
+                + timeRangesId
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
 
         // after last range, as a range, large enough acceptable range to find it
         setupNearestMatch(TIMERANGES, TIME, true, "P100Y");
@@ -506,8 +476,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // in the middle hole, closer to the latest value, but with a search radius that will match
         // the earlier one
         setupNearestMatch(TIMERANGES, TIME, true, "P1D/P0D");
-        getAsImage(
-                baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
+        getAsImage(baseUrl + "&TIME=2008-11-04T12:00:00.000Z/2008-11-04T16:00:00.000Z", "image/png");
         assertWarningCount(2);
         assertNearestTimeWarning(timeRangesId, "2008-11-04T00:00:00.000Z");
         assertDefaultDimensionWarning(timeRangesId, ELEVATION, UNITS, "20.0");
@@ -572,8 +541,7 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         setupResourceDimensionDefaultValue(WATTEMP, ELEVATION, defaultValueSetting);
 
         // default elevation, specific time
-        BufferedImage image =
-                getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
+        BufferedImage image = getAsImage(BASE_PNG_URL + "&time=2008-10-31T00:00:00.000Z", "image/png");
 
         // at this elevation the pixel is NODATA -> bgcolor
         assertPixel(image, 36, 31, new Color(255, 255, 255));
@@ -620,14 +588,13 @@ public class DimensionsRasterGetMapTest extends WMSDimensionsTestSupport {
         // Setting a BLUE Background Color
         String timeRangesId = getLayerId(TIMERANGES);
         String waterTempId = getLayerId(WATTEMP);
-        String baseUrl =
-                "wms?LAYERS="
-                        + timeRangesId
-                        + ","
-                        + waterTempId
-                        + "&STYLES=,&FORMAT=image%2Fpng"
-                        + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
-                        + "&BBOX=-180,-90,180,90&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
+        String baseUrl = "wms?LAYERS="
+                + timeRangesId
+                + ","
+                + waterTempId
+                + "&STYLES=,&FORMAT=image%2Fpng"
+                + "&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326"
+                + "&BBOX=-180,-90,180,90&WIDTH=200&HEIGHT=80&bgcolor=0x0000FF";
 
         // before both
         getAsImage(baseUrl + "&TIME=2000-01-01", "image/png");

@@ -72,10 +72,7 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
         String json =
                 "{'oseo': {'id':'oseo','enabled':'false','name':'OSEO','globalQueryables': { 'string': ['id','geometry']}}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/oseo/settings",
-                        json,
-                        "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/oseo/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/oseo/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -90,16 +87,14 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml =
-                "<oseo>"
-                        + "<id>oseo</id>"
-                        + "<enabled>disabled</enabled>"
-                        + "<name>oseo</name><title>GeoServer OSEO Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</oseo>";
+        String xml = "<oseo>"
+                + "<id>oseo</id>"
+                + "<enabled>disabled</enabled>"
+                + "<name>oseo</name><title>GeoServer OSEO Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</oseo>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/oseo/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/oseo/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/oseo/settings.xml");
         assertXpathEvaluatesTo("false", "/oseo/enabled", dom);
@@ -111,15 +106,13 @@ public class OseoSettingsControllerTest extends OSEORestTestSupport {
         GeoServer geoServer = getGeoServer();
         OSEOInfo i = geoServer.getService(OSEOInfo.class);
         i.setEnabled(true);
-        String xml =
-                "<oseo>"
-                        + "<id>oseo</id>"
-                        + "<name>oseo</name><title>GeoServer Web Feature Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</oseo>";
+        String xml = "<oseo>"
+                + "<id>oseo</id>"
+                + "<name>oseo</name><title>GeoServer Web Feature Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</oseo>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/oseo/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/oseo/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/oseo/settings.xml");
         assertXpathEvaluatesTo("true", "/oseo/enabled", dom);

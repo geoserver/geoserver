@@ -24,8 +24,8 @@ public interface ImportStore {
     void init();
 
     /**
-     * Negotiate an ID and reserver the spot for an import. The returned ID will be equal to or
-     * greater than the proposal.
+     * Negotiate an ID and reserver the spot for an import. The returned ID will be equal to or greater than the
+     * proposal.
      *
      * @param id the non-null proposed ID
      * @return the negotiated id

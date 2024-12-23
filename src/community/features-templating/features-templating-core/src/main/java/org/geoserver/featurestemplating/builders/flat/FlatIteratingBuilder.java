@@ -15,8 +15,8 @@ import org.geotools.util.Converters;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * IteratingBuilder to produce a flat GeoJSON output. Takes care of passing its attribute key to its
- * children, adding an index to the attribute name if needed.
+ * IteratingBuilder to produce a flat GeoJSON output. Takes care of passing its attribute key to its children, adding an
+ * index to the attribute name if needed.
  */
 public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilder {
 
@@ -27,8 +27,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
 
-    public FlatIteratingBuilder(
-            String key, NamespaceSupport namespaces, String separator, boolean topLevelComplex) {
+    public FlatIteratingBuilder(String key, NamespaceSupport namespaces, String separator, boolean topLevelComplex) {
         super(key, namespaces, topLevelComplex);
         nameHelper = new AttributeNameHelper(this.key, separator);
     }
@@ -39,8 +38,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (ownOutput) {
             context = evaluateSource(context);
             Object o = context.getCurrentObj();
@@ -71,10 +69,7 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
 
     @Override
     public void evaluateCollection(
-            TemplateOutputWriter writer,
-            List elements,
-            TemplateBuilderContext parent,
-            boolean iterateKey)
+            TemplateOutputWriter writer, List elements, TemplateBuilderContext parent, boolean iterateKey)
             throws IOException {
 
         int elementsSize = elements.size();
@@ -91,15 +86,10 @@ public class FlatIteratingBuilder extends IteratingBuilder implements FlatBuilde
     }
 
     protected void evaluateInternal(
-            TemplateOutputWriter writer,
-            TemplateBuilderContext context,
-            int elementsSize,
-            int index)
+            TemplateOutputWriter writer, TemplateBuilderContext context, int elementsSize, int index)
             throws IOException {
         for (TemplateBuilder child : children) {
-            ((FlatBuilder) child)
-                    .setParentKey(
-                            nameHelper.getCompleteIteratingAttributeName(elementsSize, index));
+            ((FlatBuilder) child).setParentKey(nameHelper.getCompleteIteratingAttributeName(elementsSize, index));
             child.evaluate(writer, context);
         }
     }

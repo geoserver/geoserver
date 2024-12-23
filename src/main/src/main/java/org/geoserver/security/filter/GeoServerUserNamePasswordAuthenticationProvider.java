@@ -20,8 +20,7 @@ public class GeoServerUserNamePasswordAuthenticationProvider extends AbstractFil
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream()
-                .alias("usernamePasswordFilter", UsernamePasswordAuthenticationFilterConfig.class);
+        xp.getXStream().alias("usernamePasswordFilter", UsernamePasswordAuthenticationFilterConfig.class);
     }
 
     @Override

@@ -50,28 +50,23 @@ public class NestedTreePanel extends Panel {
     }
 
     public void buildTree(DefaultTreeModel treeModel, Set<DefaultMutableTreeNode> checkedNodes) {
-        modelProvider =
-                new TreeModelProvider<DefaultMutableTreeNode>(treeModel) {
-                    @Override
-                    public IModel<DefaultMutableTreeNode> model(DefaultMutableTreeNode object) {
-                        IModel<DefaultMutableTreeNode> model = Model.of(object);
-                        return model;
-                    }
-                };
+        modelProvider = new TreeModelProvider<DefaultMutableTreeNode>(treeModel) {
+            @Override
+            public IModel<DefaultMutableTreeNode> model(DefaultMutableTreeNode object) {
+                IModel<DefaultMutableTreeNode> model = Model.of(object);
+                return model;
+            }
+        };
         final SetModel<DefaultMutableTreeNode> checkedNodesModel = new SetModel<>(checkedNodes);
-        tree =
-                new NestedTree<DefaultMutableTreeNode>(
-                        "paramValue", modelProvider, checkedNodesModel) {
-                    private static final long serialVersionUID = 1L;
+        tree = new NestedTree<DefaultMutableTreeNode>("paramValue", modelProvider, checkedNodesModel) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected Component newContentComponent(
-                            String id, IModel<DefaultMutableTreeNode> model) {
-                        CheckedFolder<DefaultMutableTreeNode> ret =
-                                new AutocheckedFolder<>(id, this, model, checkedNodesModel);
-                        return ret;
-                    }
-                };
+            @Override
+            protected Component newContentComponent(String id, IModel<DefaultMutableTreeNode> model) {
+                CheckedFolder<DefaultMutableTreeNode> ret = new AutocheckedFolder<>(id, this, model, checkedNodesModel);
+                return ret;
+            }
+        };
         tree.add(new WindowsTheme());
         tree.setOutputMarkupId(true);
 

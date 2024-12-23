@@ -23,8 +23,7 @@ public class SRSListPage extends GeoServerBasePage {
 
             @Override
             protected void onCodeClicked(AjaxRequestTarget target, String identifier) {
-                setResponsePage(
-                        SRSDescriptionPage.class, new PageParameters().add("code", identifier));
+                setResponsePage(SRSDescriptionPage.class, new PageParameters().add("code", identifier));
             }
         };
     }

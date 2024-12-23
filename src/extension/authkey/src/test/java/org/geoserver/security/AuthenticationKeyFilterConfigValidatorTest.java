@@ -72,9 +72,7 @@ public class AuthenticationKeyFilterConfigValidatorTest extends GeoServerMockTes
         try {
             validator.validateFilterConfig(config);
         } catch (AuthenticationKeyFilterConfigException ex) {
-            assertEquals(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_PARAM_NAME_REQUIRED,
-                    ex.getId());
+            assertEquals(AuthenticationKeyFilterConfigException.AUTH_KEY_PARAM_NAME_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             failed = true;
@@ -86,9 +84,7 @@ public class AuthenticationKeyFilterConfigValidatorTest extends GeoServerMockTes
         try {
             validator.validateFilterConfig(config);
         } catch (AuthenticationKeyFilterConfigException ex) {
-            assertEquals(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NAME_REQUIRED,
-                    ex.getId());
+            assertEquals(AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NAME_REQUIRED, ex.getId());
             assertEquals(0, ex.getArgs().length);
             LOGGER.info(ex.getMessage());
             failed = true;
@@ -100,9 +96,7 @@ public class AuthenticationKeyFilterConfigValidatorTest extends GeoServerMockTes
         try {
             validator.validateFilterConfig(config);
         } catch (AuthenticationKeyFilterConfigException ex) {
-            assertEquals(
-                    AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NOT_FOUND_$1,
-                    ex.getId());
+            assertEquals(AuthenticationKeyFilterConfigException.AUTH_KEY_MAPPER_NOT_FOUND_$1, ex.getId());
             assertEquals(1, ex.getArgs().length);
             assertEquals("blabla", ex.getArgs()[0]);
             LOGGER.info(ex.getMessage());

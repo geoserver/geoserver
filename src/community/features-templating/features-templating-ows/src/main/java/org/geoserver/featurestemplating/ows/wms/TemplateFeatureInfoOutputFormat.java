@@ -25,8 +25,7 @@ public abstract class TemplateFeatureInfoOutputFormat extends GetFeatureInfoOutp
     }
 
     @Override
-    public void write(
-            FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
+    public void write(FeatureCollectionType results, GetFeatureInfoRequest request, OutputStream out)
             throws ServiceException, IOException {
         BaseTemplateGetFeatureResponse response =
                 OWSResponseFactory.getInstance().getFeatureResponse(identifier);

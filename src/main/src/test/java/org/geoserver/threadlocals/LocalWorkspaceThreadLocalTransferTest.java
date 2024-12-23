@@ -27,18 +27,17 @@ public class LocalWorkspaceThreadLocalTransferTest extends AbstractThreadLocalTr
         final WorkspaceInfo ws = new WorkspaceInfoImpl();
         LocalWorkspace.set(ws);
         // test it's transferred properly using the base class machinery
-        testThreadLocalTransfer(
-                new ThreadLocalTransferCallable(new LocalWorkspaceThreadLocalTransfer()) {
+        testThreadLocalTransfer(new ThreadLocalTransferCallable(new LocalWorkspaceThreadLocalTransfer()) {
 
-                    @Override
-                    void assertThreadLocalCleaned() {
-                        assertNull(LocalWorkspace.get());
-                    }
+            @Override
+            void assertThreadLocalCleaned() {
+                assertNull(LocalWorkspace.get());
+            }
 
-                    @Override
-                    void assertThreadLocalApplied() {
-                        assertSame(ws, LocalWorkspace.get());
-                    }
-                });
+            @Override
+            void assertThreadLocalApplied() {
+                assertSame(ws, LocalWorkspace.get());
+            }
+        });
     }
 }

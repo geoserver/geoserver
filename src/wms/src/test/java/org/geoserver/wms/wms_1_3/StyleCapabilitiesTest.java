@@ -30,8 +30,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
 
     private static final String LAYER_NAME_WITH_STYLE_TITLE = "states_with_style_title";
     private static final String LAYER_NAME_WITHOUT_STYLE_TITLE = "states_without_style_title";
-    private static final String LAYER_NAME_WITHOUT_STYLE_DESCRIPTION =
-            "states_without_style_description";
+    private static final String LAYER_NAME_WITHOUT_STYLE_DESCRIPTION = "states_without_style_description";
 
     private static final String STYLE_NAME_WITH_TITLE = "style_with_style_title";
     private static final String STYLE_NAME_WITHOUT_TITLE = "style_without_style_title";
@@ -40,13 +39,9 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
     private static final QName LAYER_WITH_SYTLE_TITLE =
             new QName(MockData.DEFAULT_URI, LAYER_NAME_WITH_STYLE_TITLE, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_WITHOUT_STYLE_TITLE =
-            new QName(
-                    MockData.DEFAULT_URI, LAYER_NAME_WITHOUT_STYLE_TITLE, MockData.DEFAULT_PREFIX);
+            new QName(MockData.DEFAULT_URI, LAYER_NAME_WITHOUT_STYLE_TITLE, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_WITHOUT_STYLE_DESCRIPTION =
-            new QName(
-                    MockData.DEFAULT_URI,
-                    LAYER_NAME_WITHOUT_STYLE_DESCRIPTION,
-                    MockData.DEFAULT_PREFIX);
+            new QName(MockData.DEFAULT_URI, LAYER_NAME_WITHOUT_STYLE_DESCRIPTION, MockData.DEFAULT_PREFIX);
 
     private static final String BASE = "src/test/resources/geoserver";
 
@@ -68,38 +63,25 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         // add layers
         testData.addStyle(STYLE_NAME_WITH_TITLE, "styleWithTitle.sld", getClass(), catalog);
         testData.addStyle(STYLE_NAME_WITHOUT_TITLE, "styleWithoutTitle.sld", getClass(), catalog);
-        testData.addStyle(
-                STYLE_NAME_WITHOUT_DESCRIPTION, "styleWithoutDescription.sld", getClass(), catalog);
+        testData.addStyle(STYLE_NAME_WITHOUT_DESCRIPTION, "styleWithoutDescription.sld", getClass(), catalog);
 
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITH_TITLE);
 
         testData.addVectorLayer(
-                LAYER_WITH_SYTLE_TITLE,
-                properties,
-                "states.properties",
-                CapabilitiesTest.class,
-                catalog);
+                LAYER_WITH_SYTLE_TITLE, properties, "states.properties", CapabilitiesTest.class, catalog);
 
         properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITHOUT_TITLE);
 
         testData.addVectorLayer(
-                LAYER_WITHOUT_STYLE_TITLE,
-                properties,
-                "states.properties",
-                CapabilitiesTest.class,
-                catalog);
+                LAYER_WITHOUT_STYLE_TITLE, properties, "states.properties", CapabilitiesTest.class, catalog);
 
         properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, STYLE_NAME_WITHOUT_DESCRIPTION);
 
         testData.addVectorLayer(
-                LAYER_WITHOUT_STYLE_DESCRIPTION,
-                properties,
-                "states.properties",
-                CapabilitiesTest.class,
-                catalog);
+                LAYER_WITHOUT_STYLE_DESCRIPTION, properties, "states.properties", CapabilitiesTest.class, catalog);
 
         // force the style without description to be null, by default it is not null if not set
         // https://github.com/geotools/geotools/blob/bdcdaeca35f0cb1c465f2e11dd1b04bb7fff30df/modules/library/main/src/main/java/org/geotools/styling/StyleImpl.java#L45
@@ -129,9 +111,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         // print(dom);
         // check we have the userStyle title
         assertXpathEvaluatesTo(
-                "Population in the United States",
-                getLayerStyleTitleXPath(LAYER_NAME_WITH_STYLE_TITLE),
-                dom);
+                "Population in the United States", getLayerStyleTitleXPath(LAYER_NAME_WITH_STYLE_TITLE), dom);
     }
 
     @Test
@@ -139,10 +119,7 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
         // check we have the style name
-        assertXpathEvaluatesTo(
-                STYLE_NAME_WITHOUT_TITLE,
-                getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_TITLE),
-                dom);
+        assertXpathEvaluatesTo(STYLE_NAME_WITHOUT_TITLE, getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_TITLE), dom);
     }
 
     @Test
@@ -151,16 +128,10 @@ public class StyleCapabilitiesTest extends WMSTestSupport {
         // print(dom);
         // check we have the style name
         assertXpathEvaluatesTo(
-                STYLE_NAME_WITHOUT_DESCRIPTION,
-                getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_DESCRIPTION),
-                dom);
+                STYLE_NAME_WITHOUT_DESCRIPTION, getLayerStyleTitleXPath(LAYER_NAME_WITHOUT_STYLE_DESCRIPTION), dom);
     }
 
     private String getLayerStyleTitleXPath(String layerName) {
-        return "//wms:Layer[wms:Name='"
-                + MockData.DEFAULT_PREFIX
-                + ":"
-                + layerName
-                + "']/wms:Style/wms:Title";
+        return "//wms:Layer[wms:Name='" + MockData.DEFAULT_PREFIX + ":" + layerName + "']/wms:Style/wms:Title";
     }
 }

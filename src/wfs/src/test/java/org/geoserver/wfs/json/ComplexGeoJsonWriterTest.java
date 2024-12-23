@@ -38,24 +38,22 @@ import org.junit.Test;
 
 public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
 
-    private static final ComplexType MINENAMETYPE_TYPE =
-            new FeatureTypeImpl(
-                    /* name: */ FakeTypes.Mine.NAME_MineNameType,
-                    /* properties: */ FakeTypes.Mine.MINENAMETYPE_SCHEMA,
-                    /* identified: */ null,
-                    /* isAbstract: */ false,
-                    /* restrictions: */ Collections.emptyList(),
-                    /* superType: */ FakeTypes.ANYTYPE_TYPE,
-                    /* description: */ null);
+    private static final ComplexType MINENAMETYPE_TYPE = new FeatureTypeImpl(
+            /* name: */ FakeTypes.Mine.NAME_MineNameType,
+            /* properties: */ FakeTypes.Mine.MINENAMETYPE_SCHEMA,
+            /* identified: */ null,
+            /* isAbstract: */ false,
+            /* restrictions: */ Collections.emptyList(),
+            /* superType: */ FakeTypes.ANYTYPE_TYPE,
+            /* description: */ null);
 
-    private static final AttributeDescriptor MINENAME_DESCRIPTOR =
-            new AttributeDescriptorImpl(
-                    /* type: */ MINENAMETYPE_TYPE,
-                    /* name: */ FakeTypes.Mine.NAME_MineName,
-                    /* min: */ 1,
-                    /* max: */ 1,
-                    /* isNillable: */ false,
-                    /* defaultValue: */ null);
+    private static final AttributeDescriptor MINENAME_DESCRIPTOR = new AttributeDescriptorImpl(
+            /* type: */ MINENAMETYPE_TYPE,
+            /* name: */ FakeTypes.Mine.NAME_MineName,
+            /* min: */ 1,
+            /* max: */ 1,
+            /* isNillable: */ false,
+            /* defaultValue: */ null);
 
     /*
      * Tests Null safety when attribute parameter is null in checkIfFeatureIsLinked util method.
@@ -63,8 +61,7 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
     @Test
     public void testCheckIfFeatureIsLinkedNullSafeAttr() {
         Property property = generateTestComplexAttribute();
-        boolean checkIfFeatureIsLinked =
-                ComplexGeoJsonWriter.checkIfFeatureIsLinked(property, null);
+        boolean checkIfFeatureIsLinked = ComplexGeoJsonWriter.checkIfFeatureIsLinked(property, null);
         assertFalse(checkIfFeatureIsLinked);
     }
 
@@ -127,42 +124,41 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
 
             @Override
             public Collection<Property> getProperties(String name) {
-                Property prop =
-                        new Property() {
+                Property prop = new Property() {
 
-                            @Override
-                            public void setValue(Object newValue) {}
+                    @Override
+                    public void setValue(Object newValue) {}
 
-                            @Override
-                            public boolean isNillable() {
-                                return false;
-                            }
+                    @Override
+                    public boolean isNillable() {
+                        return false;
+                    }
 
-                            @Override
-                            public Object getValue() {
-                                return null;
-                            }
+                    @Override
+                    public Object getValue() {
+                        return null;
+                    }
 
-                            @Override
-                            public Map<Object, Object> getUserData() {
-                                return null;
-                            }
+                    @Override
+                    public Map<Object, Object> getUserData() {
+                        return null;
+                    }
 
-                            @Override
-                            public PropertyType getType() {
-                                return null;
-                            }
+                    @Override
+                    public PropertyType getType() {
+                        return null;
+                    }
 
-                            @Override
-                            public Name getName() {
-                                return null;
-                            }
+                    @Override
+                    public Name getName() {
+                        return null;
+                    }
 
-                            @Override
-                            public PropertyDescriptor getDescriptor() {
-                                return null;
-                            }
-                        };
+                    @Override
+                    public PropertyDescriptor getDescriptor() {
+                        return null;
+                    }
+                };
                 ArrayList<Property> list = new ArrayList<>();
                 list.add(prop);
                 return list;
@@ -203,23 +199,22 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
         // test behaviour of the ComplexGeoJsonWriter with a
         // ComplexGeoJsonWriterOptions object asking for the econding
         // of nested features as complex properties
-        ComplexGeoJsonWriterOptions options =
-                new ComplexGeoJsonWriterOptions() {
-                    @Override
-                    public boolean canHandle(List<FeatureCollection> features) {
-                        return true;
-                    }
+        ComplexGeoJsonWriterOptions options = new ComplexGeoJsonWriterOptions() {
+            @Override
+            public boolean canHandle(List<FeatureCollection> features) {
+                return true;
+            }
 
-                    @Override
-                    public boolean encodeComplexAttributeType() {
-                        return false;
-                    }
+            @Override
+            public boolean encodeComplexAttributeType() {
+                return false;
+            }
 
-                    @Override
-                    public boolean encodeNestedFeatureAsProperty(ComplexType complexType) {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean encodeNestedFeatureAsProperty(ComplexType complexType) {
+                return true;
+            }
+        };
         Feature f = buildComplexFeature();
         StringWriter w = new StringWriter();
         GeoJSONBuilder jWriter = new GeoJSONBuilder(w);
@@ -237,8 +232,7 @@ public class ComplexGeoJsonWriterTest extends GeoServerSystemTestSupport {
     /** used to expose a public encodeFeature method for testing purposes * */
     class TestComplexGeoJsonWriter extends ComplexGeoJsonWriter {
 
-        public TestComplexGeoJsonWriter(
-                GeoJSONBuilder jsonWriter, ComplexGeoJsonWriterOptions settings) {
+        public TestComplexGeoJsonWriter(GeoJSONBuilder jsonWriter, ComplexGeoJsonWriterOptions settings) {
             super(jsonWriter, settings);
         }
 

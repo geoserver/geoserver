@@ -88,8 +88,7 @@ public class GeoServerInitStartupListenerTest {
         assertNoSunJPEG2000(registry, ImageWriterSpi.class);
     }
 
-    private <T extends ImageReaderWriterSpi> void assertNoSunJPEG2000(
-            IIORegistry registry, Class<T> category) {
+    private <T extends ImageReaderWriterSpi> void assertNoSunJPEG2000(IIORegistry registry, Class<T> category) {
         Iterator<T> it = registry.getServiceProviders(category, false);
         while (it.hasNext()) {
             T spi = it.next();

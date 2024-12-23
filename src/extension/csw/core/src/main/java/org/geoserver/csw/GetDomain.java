@@ -43,9 +43,8 @@ public class GetDomain {
 
         try {
             for (RecordDescriptor rd : store.getRecordDescriptors()) {
-                for (Name prop :
-                        store.getCapabilities()
-                                .getDomainQueriables(rd.getFeatureDescriptor().getName())) {
+                for (Name prop : store.getCapabilities()
+                        .getDomainQueriables(rd.getFeatureDescriptor().getName())) {
                     attributeTypeMap.put(prop, rd.getFeatureDescriptor().getName());
                     Enumeration declaredPrefixes = rd.getNamespaceSupport().getDeclaredPrefixes();
                     while (declaredPrefixes.hasMoreElements()) {
@@ -56,8 +55,7 @@ public class GetDomain {
                 }
             }
         } catch (IOException e) {
-            throw new ServiceException(
-                    e, "Failed to retrieve the domain values", ServiceException.NO_APPLICABLE_CODE);
+            throw new ServiceException(e, "Failed to retrieve the domain values", ServiceException.NO_APPLICABLE_CODE);
         }
     }
 
@@ -65,7 +63,8 @@ public class GetDomain {
     public CloseableIterator<String> run(GetDomainType request) {
         try {
             List<String> result = new ArrayList<>();
-            if (request.getParameterName() != null && !request.getParameterName().isEmpty()) {
+            if (request.getParameterName() != null
+                    && !request.getParameterName().isEmpty()) {
                 String parameterName = request.getParameterName();
                 if (parameterName.indexOf(".") > 0) {
                     final String operation = parameterName.split("\\.")[0];
@@ -108,8 +107,7 @@ public class GetDomain {
 
             return new CloseableIteratorAdapter<>(result.iterator());
         } catch (Exception e) {
-            throw new ServiceException(
-                    e, "Failed to retrieve the domain values", ServiceException.NO_APPLICABLE_CODE);
+            throw new ServiceException(e, "Failed to retrieve the domain values", ServiceException.NO_APPLICABLE_CODE);
         }
     }
 }

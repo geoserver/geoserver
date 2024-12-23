@@ -58,8 +58,7 @@ public class RangeSubsetKvpParserTest {
 
     @Test
     public void testMixed() throws Exception {
-        RangeSubsetType rs =
-                (RangeSubsetType) parser.parse("band01,band03:band05,band10,band19:band21");
+        RangeSubsetType rs = (RangeSubsetType) parser.parse("band01,band03:band05,band10,band19:band21");
         EList<RangeItemType> items = rs.getRangeItems();
         assertEquals(4, items.size());
         RangeItemType i1 = items.get(0);

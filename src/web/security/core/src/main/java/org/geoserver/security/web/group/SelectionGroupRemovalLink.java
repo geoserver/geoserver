@@ -63,94 +63,81 @@ public class SelectionGroupRemovalLink extends AjaxLink<Object> {
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(
                 target,
-                delegate =
-                        new GeoServerDialog.DialogDelegate() {
+                delegate = new GeoServerDialog.DialogDelegate() {
+                    @Override
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        Model<Boolean> model = new Model<>(SelectionGroupRemovalLink.this.disassociateRoles);
+                        return removePanel = new ConfirmRemovalGroupPanel(id, model, selection) {
                             @Override
-                            protected Component getContents(String id) {
-                                // show a confirmation panel for all the objects we have to remove
-                                Model<Boolean> model =
-                                        new Model<>(
-                                                SelectionGroupRemovalLink.this.disassociateRoles);
-                                return removePanel =
-                                        new ConfirmRemovalGroupPanel(id, model, selection) {
-                                            @Override
-                                            protected IModel<String> canRemove(
-                                                    GeoServerUserGroup group) {
-                                                return SelectionGroupRemovalLink.this.canRemove(
-                                                        group);
-                                            }
-                                        };
+                            protected IModel<String> canRemove(GeoServerUserGroup group) {
+                                return SelectionGroupRemovalLink.this.canRemove(group);
                             }
+                        };
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
 
-                                GeoServerUserGroupStore ugStore = null;
+                        GeoServerUserGroupStore ugStore = null;
+                        try {
+                            GeoServerUserGroupService ugService = GeoServerApplication.get()
+                                    .getSecurityManager()
+                                    .loadUserGroupService(userGroupsServiceName);
+                            ugStore = new UserGroupStoreValidationWrapper(ugService.createStore());
+                            for (GeoServerUserGroup group : removePanel.getRoots()) {
+                                ugStore.removeGroup(group);
+                            }
+                            ugStore.store();
+                        } catch (IOException ex) {
+                            try {
+                                if (ugStore != null) ugStore.load();
+                            } catch (IOException ex2) {
+                            }
+                            throw new RuntimeException(ex);
+                        }
+
+                        GeoServerRoleStore gaStore = null;
+                        if (disassociateRoles) {
+                            try {
+                                gaStore = GeoServerApplication.get()
+                                        .getSecurityManager()
+                                        .getActiveRoleService()
+                                        .createStore();
+                                gaStore = new RoleStoreValidationWrapper(gaStore);
+                                for (GeoServerUserGroup group : removePanel.getRoots()) {
+                                    List<GeoServerRole> list = new ArrayList<>();
+                                    list.addAll(gaStore.getRolesForGroup(group.getGroupname()));
+                                    for (GeoServerRole role : list)
+                                        gaStore.disAssociateRoleFromGroup(role, group.getGroupname());
+                                }
+                                gaStore.store();
+                            } catch (IOException ex) {
                                 try {
-                                    GeoServerUserGroupService ugService =
-                                            GeoServerApplication.get()
-                                                    .getSecurityManager()
-                                                    .loadUserGroupService(userGroupsServiceName);
-                                    ugStore =
-                                            new UserGroupStoreValidationWrapper(
-                                                    ugService.createStore());
-                                    for (GeoServerUserGroup group : removePanel.getRoots()) {
-                                        ugStore.removeGroup(group);
-                                    }
-                                    ugStore.store();
-                                } catch (IOException ex) {
-                                    try {
-                                        if (ugStore != null) ugStore.load();
-                                    } catch (IOException ex2) {
-                                    }
-                                    throw new RuntimeException(ex);
+                                    if (gaStore != null) gaStore.load();
+                                } catch (IOException ex2) {
                                 }
-
-                                GeoServerRoleStore gaStore = null;
-                                if (disassociateRoles) {
-                                    try {
-                                        gaStore =
-                                                GeoServerApplication.get()
-                                                        .getSecurityManager()
-                                                        .getActiveRoleService()
-                                                        .createStore();
-                                        gaStore = new RoleStoreValidationWrapper(gaStore);
-                                        for (GeoServerUserGroup group : removePanel.getRoots()) {
-                                            List<GeoServerRole> list = new ArrayList<>();
-                                            list.addAll(
-                                                    gaStore.getRolesForGroup(group.getGroupname()));
-                                            for (GeoServerRole role : list)
-                                                gaStore.disAssociateRoleFromGroup(
-                                                        role, group.getGroupname());
-                                        }
-                                        gaStore.store();
-                                    } catch (IOException ex) {
-                                        try {
-                                            if (gaStore != null) gaStore.load();
-                                        } catch (IOException ex2) {
-                                        }
-                                        throw new RuntimeException(ex);
-                                    }
-                                }
-
-                                // the deletion will have changed what we see in the page
-                                // so better clear out the selection
-                                groups.clearSelection();
-                                return true;
+                                throw new RuntimeException(ex);
                             }
+                        }
 
-                            @Override
-                            public void onClose(AjaxRequestTarget target) {
-                                // if the selection has been cleared out it's sign a deletion
-                                // occurred, so refresh the table
-                                if (groups.getSelection().isEmpty()) {
-                                    setEnabled(false);
-                                    target.add(SelectionGroupRemovalLink.this);
-                                    target.add(groups);
-                                }
-                            }
-                        });
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        groups.clearSelection();
+                        return true;
+                    }
+
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (groups.getSelection().isEmpty()) {
+                            setEnabled(false);
+                            target.add(SelectionGroupRemovalLink.this);
+                            target.add(groups);
+                        }
+                    }
+                });
     }
 
     protected StringResourceModel canRemove(GeoServerUserGroup group) {

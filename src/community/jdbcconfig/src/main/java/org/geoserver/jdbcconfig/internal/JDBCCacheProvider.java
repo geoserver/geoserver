@@ -11,10 +11,10 @@ import java.util.concurrent.TimeUnit;
 import org.geoserver.util.CacheProvider;
 
 /**
- * This class implements the {@link CacheProvider} interface and can be used for configuring a new
- * {@link Cache} object with two Java parameters called maxCachedEntries and evictionTime. The first
- * parameters indicates the maximum entries that the cache could contain (by default 25000) while
- * the second one indicates the eviction time for each entry in minutes(default 20).
+ * This class implements the {@link CacheProvider} interface and can be used for configuring a new {@link Cache} object
+ * with two Java parameters called maxCachedEntries and evictionTime. The first parameters indicates the maximum entries
+ * that the cache could contain (by default 25000) while the second one indicates the eviction time for each entry in
+ * minutes(default 20).
  *
  * @author Nicola Lagomarsini geosolutions
  */
@@ -31,8 +31,7 @@ public class JDBCCacheProvider implements CacheProvider {
     public static final String DEFAULT_TIME_KEY = "evictionTime";
 
     /** Maximum number of cache entries */
-    public final int maxEntries =
-            Integer.parseInt(System.getProperty(DEFAULT_SIZE_KEY, DEFAULT_MAX_ENTRIES + ""));
+    public final int maxEntries = Integer.parseInt(System.getProperty(DEFAULT_SIZE_KEY, DEFAULT_MAX_ENTRIES + ""));
 
     /** Expiration time in minutes for each entry */
     public final long expirationMinutes =
@@ -41,13 +40,12 @@ public class JDBCCacheProvider implements CacheProvider {
     @Override
     public <K extends Serializable, V extends Serializable> Cache<K, V> getCache(String cacheName) {
         // Cache creation
-        Cache<K, V> cache =
-                CacheBuilder.newBuilder()
-                        .softValues()
-                        .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
-                        .expireAfterAccess(expirationMinutes, TimeUnit.MINUTES)
-                        .maximumSize(maxEntries)
-                        .build();
+        Cache<K, V> cache = CacheBuilder.newBuilder()
+                .softValues()
+                .concurrencyLevel(DEFAULT_CONCURRENCY_LEVEL)
+                .expireAfterAccess(expirationMinutes, TimeUnit.MINUTES)
+                .maximumSize(maxEntries)
+                .build();
 
         return cache;
     }

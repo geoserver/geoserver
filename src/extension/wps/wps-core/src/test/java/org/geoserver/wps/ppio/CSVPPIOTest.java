@@ -67,8 +67,7 @@ public class CSVPPIOTest extends WPSTestSupport {
     /** Test method for {@link org.geoserver.wps.ppio.WFSPPIO#decode(java.io.InputStream)}. */
     @Test
     public void testDecodeInputStream() throws Exception {
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
 
         assertEquals("Wrong number of states", 51, states.size());
         assertEquals("Wrong number of columns", 9, states.getSchema().getAttributeCount());
@@ -83,8 +82,7 @@ public class CSVPPIOTest extends WPSTestSupport {
     @Test
     public void testEncodeOutputStream() throws Exception {
 
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new CSVPPIO(resourceManager).decode(is);
 
         assertEquals("Wrong number of states", 51, states.size());
 

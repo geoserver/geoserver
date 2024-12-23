@@ -33,8 +33,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.ParserAdapter;
 
 /**
- * A base {@code FILTER} parameter parser that expects a subclass to provide the actual {@link
- * Parser} configuration for the expected OGC Filter Encoding spec version.
+ * A base {@code FILTER} parameter parser that expects a subclass to provide the actual {@link Parser} configuration for
+ * the expected OGC Filter Encoding spec version.
  *
  * @author Justin Deoliveira
  * @author Gabriel Roldan
@@ -49,8 +49,8 @@ public abstract class FilterKvpParser extends KvpParser {
     }
 
     /**
-     * Subclasses shall implement to provide the parse() method the appropriate parser Configuration
-     * for the filter spec version they specialize on.
+     * Subclasses shall implement to provide the parse() method the appropriate parser Configuration for the filter spec
+     * version they specialize on.
      *
      * @return The Configuration for the appropriate Filter spec version.
      */
@@ -101,8 +101,8 @@ public abstract class FilterKvpParser extends KvpParser {
     /**
      * Reads the Filter XML request into a geotools Feature object.
      *
-     * <p>This uses the "old" filter parser and is around to maintain some backwards compatability
-     * with cases in which the new parser chokes on a filter that hte old one could handle.
+     * <p>This uses the "old" filter parser and is around to maintain some backwards compatability with cases in which
+     * the new parser chokes on a filter that hte old one could handle.
      *
      * @param rawRequest The plain POST text from the client.
      * @return The geotools filter constructed from rawRequest.
@@ -129,16 +129,11 @@ public abstract class FilterKvpParser extends KvpParser {
             adapter.parse(requestSource);
             LOGGER.fine("just parsed: " + requestSource);
         } catch (SAXException e) {
-            throw new ServiceException(
-                    e,
-                    "XML getFeature request SAX parsing error",
-                    XmlRequestReader.class.getName());
+            throw new ServiceException(e, "XML getFeature request SAX parsing error", XmlRequestReader.class.getName());
         } catch (IOException e) {
-            throw new ServiceException(
-                    e, "XML get feature request input error", XmlRequestReader.class.getName());
+            throw new ServiceException(e, "XML get feature request input error", XmlRequestReader.class.getName());
         } catch (ParserConfigurationException e) {
-            throw new ServiceException(
-                    e, "Some sort of issue creating parser", XmlRequestReader.class.getName());
+            throw new ServiceException(e, "Some sort of issue creating parser", XmlRequestReader.class.getName());
         }
 
         LOGGER.fine("passing filter: " + contentHandler.getFilter());

@@ -34,10 +34,9 @@ public class StyleEditPage extends AbstractStylePage {
         String name = parameters.get(NAME).toString();
         String workspace = parameters.get(WORKSPACE).toOptionalString();
 
-        StyleInfo si =
-                workspace != null
-                        ? getCatalog().getStyleByName(workspace, name)
-                        : getCatalog().getStyleByName(name);
+        StyleInfo si = workspace != null
+                ? getCatalog().getStyleByName(workspace, name)
+                : getCatalog().getStyleByName(name);
 
         if (si == null) {
             error(new ParamResourceModel("StyleEditPage.notFound", this, name).getString());
@@ -56,22 +55,19 @@ public class StyleEditPage extends AbstractStylePage {
 
                 editor.add(AttributeModifier.append("class", "disabled"));
                 get("validate").add(AttributeModifier.append("class", "hidden"));
-                add(
-                        new Behavior() {
+                add(new Behavior() {
 
-                            private static final long serialVersionUID = -4336130086161028141L;
+                    private static final long serialVersionUID = -4336130086161028141L;
 
-                            @Override
-                            public void renderHead(Component component, IHeaderResponse response) {
-                                super.renderHead(component, response);
-                                response.render(
-                                        OnLoadHeaderItem.forScript(
-                                                "document.getElementById('mainFormSubmit').style.display = 'none';"));
-                                response.render(
-                                        OnLoadHeaderItem.forScript(
-                                                "document.getElementById('uploadFormSubmit').style.display = 'none';"));
-                            }
-                        });
+                    @Override
+                    public void renderHead(Component component, IHeaderResponse response) {
+                        super.renderHead(component, response);
+                        response.render(OnLoadHeaderItem.forScript(
+                                "document.getElementById('mainFormSubmit').style.display = 'none';"));
+                        response.render(OnLoadHeaderItem.forScript(
+                                "document.getElementById('uploadFormSubmit').style.display = 'none';"));
+                    }
+                });
                 info(new StringResourceModel("globalStyleReadOnly", this, null).getString());
             }
         }
@@ -87,8 +83,7 @@ public class StyleEditPage extends AbstractStylePage {
         String styleName = "";
         if (style != null) {
             styleName =
-                    (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":")
-                            + style.getName();
+                    (style.getWorkspace() == null ? "" : style.getWorkspace().getName() + ":") + style.getName();
         }
 
         return new ParamResourceModel("title", this, styleName).getString();
@@ -117,9 +112,7 @@ public class StyleEditPage extends AbstractStylePage {
             }
             // ask the catalog to write the style
             try {
-                getCatalog()
-                        .getResourcePool()
-                        .writeStyle(stylePath, new ByteArrayInputStream(rawStyle.getBytes()));
+                getCatalog().getResourcePool().writeStyle(stylePath, new ByteArrayInputStream(rawStyle.getBytes()));
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }

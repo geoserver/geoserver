@@ -16,10 +16,7 @@ import org.geotools.geopkg.GeoPackage;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.sqlite.SQLiteConfig;
 
-/**
- * Base class for GeoPackage based PPIOs, subclasses provide specialized behavior to store rasters
- * and vectors
- */
+/** Base class for GeoPackage based PPIOs, subclasses provide specialized behavior to store rasters and vectors */
 abstract class GeopkgPPIO extends ComplexPPIO {
     /** Registered GeoPackage MIME type */
     public static final String MIME_TYPE = "application/geopackage+sqlite3";

@@ -27,8 +27,7 @@ import org.geoserver.web.wicket.GeoServerTablePanel;
 import org.geoserver.web.wicket.ParamResourceModel;
 
 /**
- * The ImportTemplatePanel allows the user to link the metadata to values configured in the metadata
- * template.
+ * The ImportTemplatePanel allows the user to link the metadata to values configured in the metadata template.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -69,9 +68,8 @@ public abstract class ImportTemplatePanel extends Panel {
         remove.setOutputMarkupPlaceholderTag(true);
         remove.setEnabled(false);
         add(remove);
-        add(
-                new FeedbackPanel("linkTemplateFeedback", new ContainerFeedbackMessageFilter(this))
-                        .setOutputMarkupId(true));
+        add(new FeedbackPanel("linkTemplateFeedback", new ContainerFeedbackMessageFilter(this))
+                .setOutputMarkupId(true));
 
         // the panel
         templatesPanel = createTemplateTable(remove);
@@ -103,8 +101,7 @@ public abstract class ImportTemplatePanel extends Panel {
         IModel<MetadataTemplate> model = new Model<>();
         List<MetadataTemplate> unlinked = linkedTemplatesDataProvider.getUnlinkedItems();
         DropDownChoice<MetadataTemplate> dropDownChoice =
-                new DropDownChoice<>(
-                        "metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
+                new DropDownChoice<>("metadataTemplate", model, unlinked, new ChoiceRenderer<>("name"));
         return dropDownChoice;
     }
 
@@ -113,8 +110,7 @@ public abstract class ImportTemplatePanel extends Panel {
         return (DropDownChoice<MetadataTemplate>) get("metadataTemplate");
     }
 
-    private AjaxSubmitLink createImportAction(
-            final DropDownChoice<MetadataTemplate> dropDown, GeoServerDialog dialog) {
+    private AjaxSubmitLink createImportAction(final DropDownChoice<MetadataTemplate> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
 
@@ -123,38 +119,29 @@ public abstract class ImportTemplatePanel extends Panel {
 
                 boolean valid = true;
                 if (dropDown.getModelObject() == null) {
-                    error(
-                            new ParamResourceModel("errorSelectTemplate", ImportTemplatePanel.this)
-                                    .getString());
+                    error(new ParamResourceModel("errorSelectTemplate", ImportTemplatePanel.this).getString());
                     valid = false;
                 }
                 if (valid) {
-                    dialog.setTitle(
-                            new ParamResourceModel(
-                                    "confirmImportDialog.title", ImportTemplatePanel.this));
-                    dialog.showOkCancel(
-                            target,
-                            new GeoServerDialog.DialogDelegate() {
+                    dialog.setTitle(new ParamResourceModel("confirmImportDialog.title", ImportTemplatePanel.this));
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                                private static final long serialVersionUID = -5552087037163833563L;
+                        private static final long serialVersionUID = -5552087037163833563L;
 
-                                @Override
-                                protected Component getContents(String id) {
-                                    ParamResourceModel resource =
-                                            new ParamResourceModel(
-                                                    "confirmImportDialog.content",
-                                                    ImportTemplatePanel.this);
-                                    return new MultiLineLabel(id, resource.getString());
-                                }
+                        @Override
+                        protected Component getContents(String id) {
+                            ParamResourceModel resource =
+                                    new ParamResourceModel("confirmImportDialog.content", ImportTemplatePanel.this);
+                            return new MultiLineLabel(id, resource.getString());
+                        }
 
-                                @Override
-                                protected boolean onSubmit(
-                                        AjaxRequestTarget target, Component contents) {
-                                    linkTemplate(target, dropDown.getModelObject());
-                                    handleUpdate(target);
-                                    return true;
-                                }
-                            });
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            linkTemplate(target, dropDown.getModelObject());
+                            handleUpdate(target);
+                            return true;
+                        }
+                    });
                 }
                 target.add(getFeedbackPanel());
                 target.add(templatesPanel);
@@ -237,8 +224,7 @@ public abstract class ImportTemplatePanel extends Panel {
 
     protected abstract void handleUpdate(AjaxRequestTarget target);
 
-    private void updateTableState(
-            AjaxRequestTarget target, ImportTemplateDataProvider dataProvider) {
+    private void updateTableState(AjaxRequestTarget target, ImportTemplateDataProvider dataProvider) {
         boolean isEmpty = dataProvider.getItems().isEmpty();
         templatesPanel.setVisible(!isEmpty);
         remove.setVisible(!isEmpty);

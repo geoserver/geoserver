@@ -11,8 +11,8 @@ import java.util.Objects;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcTableMetadata;
 
 /**
- * Class representing metadata for a constraint type primarykey in a JDBC DataStore. A primary key
- * can be composed by more than one column.
+ * Class representing metadata for a constraint type primarykey in a JDBC DataStore. A primary key can be composed by
+ * more than one column.
  *
  * @author Jose Macchi - Geosolutions
  */
@@ -20,8 +20,7 @@ public class JdbcPrimaryKeyConstraintMetadata extends JdbcTableConstraintMetadat
     private final List<String> columnNames;
     private final Map<String, Integer> columnOrderMap;
 
-    public JdbcPrimaryKeyConstraintMetadata(
-            JdbcTableMetadata table, String constraintName, List<String> columnNames) {
+    public JdbcPrimaryKeyConstraintMetadata(JdbcTableMetadata table, String constraintName, List<String> columnNames) {
         super(table, constraintName);
         this.columnNames = columnNames;
         this.columnOrderMap = new HashMap<>();

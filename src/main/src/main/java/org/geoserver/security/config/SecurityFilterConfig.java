@@ -21,8 +21,8 @@ public abstract class SecurityFilterConfig extends BaseSecurityNamedServiceConfi
     /**
      * Determines if the filter provides an {@link AuthenticationEntryPoint}.
      *
-     * <p>If <code>true</code>, the corresponding {@link GeoServerSecurityFilter} class must return
-     * non-null from the method {@link GeoServerSecurityFilter#getAuthenticationEntryPoint()}.
+     * <p>If <code>true</code>, the corresponding {@link GeoServerSecurityFilter} class must return non-null from the
+     * method {@link GeoServerSecurityFilter#getAuthenticationEntryPoint()}.
      *
      * @return true if the corresponding filter provides an {@link AuthenticationEntryPoint} object.
      */

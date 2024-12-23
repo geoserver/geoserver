@@ -10,15 +10,14 @@ import org.geotools.api.feature.type.Name;
 import org.geotools.api.filter.expression.PropertyName;
 
 /**
- * A mapping of CSW queryables to properties of the metadata record schema. Provides functionality
- * for translating properties and adapting queries.
+ * A mapping of CSW queryables to properties of the metadata record schema. Provides functionality for translating
+ * properties and adapting queries.
  */
 public interface QueryablesMapping {
 
     /**
-     * Allow the descriptor to adjust the query to the internal representation of records. For
-     * example, in the case of SimpleLiteral we have a complex type with simple content, something
-     * that we cannot readily represent in GeoTools
+     * Allow the descriptor to adjust the query to the internal representation of records. For example, in the case of
+     * SimpleLiteral we have a complex type with simple content, something that we cannot readily represent in GeoTools
      *
      * <p>Must provide a copy, not change the original query.
      */
@@ -32,8 +31,7 @@ public interface QueryablesMapping {
     String getBoundingBoxPropertyName();
 
     /**
-     * Translate a property from a queryable name to a propertyname, possibly converting to an
-     * x-path
+     * Translate a property from a queryable name to a propertyname, possibly converting to an x-path
      *
      * @return the property name
      */

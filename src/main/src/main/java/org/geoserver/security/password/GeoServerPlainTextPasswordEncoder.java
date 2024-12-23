@@ -21,8 +21,7 @@ public class GeoServerPlainTextPasswordEncoder extends AbstractGeoserverPassword
         return new PasswordEncoder() {
 
             @Override
-            public boolean matches(CharSequence encPass, String rawPass)
-                    throws DataAccessException {
+            public boolean matches(CharSequence encPass, String rawPass) throws DataAccessException {
                 return Objects.equals(encPass.toString(), encode(rawPass));
             }
 

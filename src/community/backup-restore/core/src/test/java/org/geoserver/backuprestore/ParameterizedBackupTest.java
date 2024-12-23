@@ -34,19 +34,12 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
     @Test
     public void testParameterizePasswordsInBackup() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
-                        Backup.PARAM_PARAMETERIZE_PASSWDS));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
 
         File parameterizedBackup = File.createTempFile("parameterizedBackup", ".zip");
         BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(
-                        Files.asResource(parameterizedBackup), true, null, null, null, hints);
+                backupFacade.runBackupAsync(Files.asResource(parameterizedBackup), true, null, null, null, hints);
 
         // Wait a bit
         Thread.sleep(100);
@@ -56,9 +49,7 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || !backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || !backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -67,8 +58,7 @@ public class ParameterizedBackupTest extends BackupRestoreTestSupport {
                     || backupExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                 for (Throwable exception : backupExecution.getAllFailureExceptions()) {
-                    LOGGER.log(
-                            Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
+                    LOGGER.log(Level.WARNING, "ERROR: " + exception.getLocalizedMessage(), exception);
                 }
                 break;
             }

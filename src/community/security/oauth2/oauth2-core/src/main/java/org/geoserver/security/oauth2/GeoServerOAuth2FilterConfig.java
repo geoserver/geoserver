@@ -52,8 +52,8 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
     protected String logoutEndpoint;
 
     /**
-     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn
-     * on in normal operation!
+     * Add extra logging. NOTE: this might spill confidential information to the log - do not turn on in normal
+     * operation!
      */
     boolean allowUnSecureLogging = false;
 
@@ -186,13 +186,9 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         return enableRedirectAuthenticationEntryPoint;
     }
 
-    /**
-     * @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to
-     *     set
-     */
+    /** @param enableRedirectAuthenticationEntryPoint the enableRedirectAuthenticationEntryPoint to set */
     @Override
-    public void setEnableRedirectAuthenticationEntryPoint(
-            Boolean enableRedirectAuthenticationEntryPoint) {
+    public void setEnableRedirectAuthenticationEntryPoint(Boolean enableRedirectAuthenticationEntryPoint) {
         this.enableRedirectAuthenticationEntryPoint = enableRedirectAuthenticationEntryPoint;
     }
 
@@ -202,9 +198,7 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
             @Override
             public void commence(
-                    HttpServletRequest request,
-                    HttpServletResponse response,
-                    AuthenticationException authException)
+                    HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
                     throws IOException, ServletException {
                 final StringBuilder loginUri = buildAuthorizationUrl();
 
@@ -275,13 +269,11 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
 
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        GeoServerOAuth2FilterConfig target =
-                (GeoServerOAuth2FilterConfig) SerializationUtils.clone(this);
+        GeoServerOAuth2FilterConfig target = (GeoServerOAuth2FilterConfig) SerializationUtils.clone(this);
 
         if (target != null) {
             // Resolve GeoServer Environment placeholders
-            final GeoServerEnvironment gsEnvironment =
-                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
             if (allowEnvParametrization) {
                 parametrizedConfiguration(target, gsEnvironment);
             }
@@ -289,16 +281,12 @@ public class GeoServerOAuth2FilterConfig extends PreAuthenticatedUserNameFilterC
         return target;
     }
 
-    protected void parametrizedConfiguration(
-            GeoServerOAuth2FilterConfig target, GeoServerEnvironment gsEnvironment) {
+    protected void parametrizedConfiguration(GeoServerOAuth2FilterConfig target, GeoServerEnvironment gsEnvironment) {
         target.setAccessTokenUri(resolveValueFromEnv(gsEnvironment, target.getAccessTokenUri()));
-        target.setUserAuthorizationUri(
-                resolveValueFromEnv(gsEnvironment, target.getUserAuthorizationUri()));
+        target.setUserAuthorizationUri(resolveValueFromEnv(gsEnvironment, target.getUserAuthorizationUri()));
         target.setRedirectUri(resolveValueFromEnv(gsEnvironment, target.getRedirectUri()));
-        target.setCheckTokenEndpointUrl(
-                resolveValueFromEnv(gsEnvironment, target.getCheckTokenEndpointUrl()));
-        target.setIntrospectionEndpointUrl(
-                resolveValueFromEnv(gsEnvironment, target.getIntrospectionEndpointUrl()));
+        target.setCheckTokenEndpointUrl(resolveValueFromEnv(gsEnvironment, target.getCheckTokenEndpointUrl()));
+        target.setIntrospectionEndpointUrl(resolveValueFromEnv(gsEnvironment, target.getIntrospectionEndpointUrl()));
         target.setLogoutUri(resolveValueFromEnv(gsEnvironment, target.getLogoutUri()));
         target.setScopes(resolveValueFromEnv(gsEnvironment, target.getScopes()));
         target.setCliendId(resolveValueFromEnv(gsEnvironment, target.getCliendId()));

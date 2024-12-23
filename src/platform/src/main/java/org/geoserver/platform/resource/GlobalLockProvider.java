@@ -8,11 +8,11 @@ package org.geoserver.platform.resource;
 import org.geoserver.platform.resource.Resource.Lock;
 
 /**
- * A lock provider that delegates the work to another {@link LockProvider} instance, which needs to
- * be configured by calling {@link #setDelegate(LockProvider)}.
+ * A lock provider that delegates the work to another {@link LockProvider} instance, which needs to be configured by
+ * calling {@link #setDelegate(LockProvider)}.
  *
- * <p>GeoServer is configured with a single globalLockProvider for use by the application. This
- * instance is configured with an appropriate bean instance as configured by the user.
+ * <p>GeoServer is configured with a single globalLockProvider for use by the application. This instance is configured
+ * with an appropriate bean instance as configured by the user.
  *
  * @author Andrea Aime - GeoSolutions
  * @author Jody Garnett (Boundless)

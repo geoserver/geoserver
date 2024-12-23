@@ -35,8 +35,7 @@ public class RolesRestController implements SequentialExecutionController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response)
-            throws IOException {
+    public void somethingNotFound(IllegalArgumentException exception, HttpServletResponse response) throws IOException {
         response.sendError(404, exception.getMessage());
     }
 
@@ -64,44 +63,38 @@ public class RolesRestController implements SequentialExecutionController {
     @PostMapping(
             value = "/role/{role}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseStatus(HttpStatus.CREATED) void insert(@PathVariable("role") String roleName)
-            throws IOException {
+    public @ResponseStatus(HttpStatus.CREATED) void insert(@PathVariable("role") String roleName) throws IOException {
         insert(securityManager.getActiveRoleService(), roleName);
     }
 
     @DeleteMapping(
             value = "/role/{role}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("role") String roleName)
-            throws IOException {
+    public @ResponseStatus(HttpStatus.OK) void delete(@PathVariable("role") String roleName) throws IOException {
         delete(securityManager.getActiveRoleService(), roleName);
     }
 
     @PostMapping(value = "/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void associateUser(
-            @PathVariable("role") String roleName, @PathVariable("user") String userName)
-            throws IOException {
+            @PathVariable("role") String roleName, @PathVariable("user") String userName) throws IOException {
         associateUser(securityManager.getActiveRoleService(), roleName, userName);
     }
 
     @DeleteMapping(value = "/role/{role}/user/{user}")
     public @ResponseStatus(HttpStatus.OK) void disassociateUser(
-            @PathVariable("role") String roleName, @PathVariable("user") String userName)
-            throws IOException {
+            @PathVariable("role") String roleName, @PathVariable("user") String userName) throws IOException {
         disassociateUser(securityManager.getActiveRoleService(), roleName, userName);
     }
 
     @PostMapping(value = "/role/{role}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void associateGroup(
-            @PathVariable("role") String roleName, @PathVariable("group") String groupName)
-            throws IOException {
+            @PathVariable("role") String roleName, @PathVariable("group") String groupName) throws IOException {
         associateToGroup(securityManager.getActiveRoleService(), roleName, groupName);
     }
 
     @DeleteMapping(value = "/role/{role}/group/{group}")
     public @ResponseStatus(HttpStatus.OK) void disassociateGroup(
-            @PathVariable("role") String roleName, @PathVariable("group") String groupName)
-            throws IOException {
+            @PathVariable("role") String roleName, @PathVariable("group") String groupName) throws IOException {
         disassociateToGroup(securityManager.getActiveRoleService(), roleName, groupName);
     }
 
@@ -116,8 +109,7 @@ public class RolesRestController implements SequentialExecutionController {
             value = "/service/{serviceName}/user/{user}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getUser(
-            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName)
-            throws IOException {
+            @PathVariable("serviceName") String serviceName, @PathVariable("user") String userName) throws IOException {
         return getUser(getService(serviceName), userName);
     }
 
@@ -125,23 +117,20 @@ public class RolesRestController implements SequentialExecutionController {
             value = "/service/{serviceName}/group/{group}",
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     protected JaxbRoleList getGroup(
-            @PathVariable("serviceName") String serviceName,
-            @PathVariable("group") String groupName)
+            @PathVariable("serviceName") String serviceName, @PathVariable("group") String groupName)
             throws IOException {
         return getGroup(getService(serviceName), groupName);
     }
 
     @PostMapping(value = "/service/{serviceName}/role/{role}")
     public @ResponseStatus(HttpStatus.CREATED) void insert(
-            @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName)
-            throws IOException {
+            @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName) throws IOException {
         insert(getService(serviceName), roleName);
     }
 
     @DeleteMapping(value = "/service/{serviceName}/role/{role}")
     public @ResponseStatus(HttpStatus.OK) void delete(
-            @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName)
-            throws IOException {
+            @PathVariable("serviceName") String serviceName, @PathVariable("role") String roleName) throws IOException {
         delete(getService(serviceName), roleName);
     }
 
@@ -181,8 +170,7 @@ public class RolesRestController implements SequentialExecutionController {
         disassociateToGroup(getService(serviceName), roleName, groupName);
     }
 
-    protected void associateToGroup(
-            GeoServerRoleService roleService, String roleName, String groupName)
+    protected void associateToGroup(GeoServerRoleService roleService, String roleName, String groupName)
             throws IOException {
         GeoServerRoleStore store = getStore(roleService);
         try {
@@ -192,8 +180,7 @@ public class RolesRestController implements SequentialExecutionController {
         }
     }
 
-    protected void disassociateToGroup(
-            GeoServerRoleService roleService, String roleName, String groupName)
+    protected void disassociateToGroup(GeoServerRoleService roleService, String roleName, String groupName)
             throws IOException {
         GeoServerRoleStore store = getStore(roleService);
         try {
@@ -203,13 +190,11 @@ public class RolesRestController implements SequentialExecutionController {
         }
     }
 
-    protected JaxbRoleList getUser(GeoServerRoleService roleService, String userName)
-            throws IOException {
+    protected JaxbRoleList getUser(GeoServerRoleService roleService, String userName) throws IOException {
         return JaxbRoleList.fromGS(roleService.getRolesForUser(userName));
     }
 
-    protected JaxbRoleList getGroup(GeoServerRoleService roleService, String groupName)
-            throws IOException {
+    protected JaxbRoleList getGroup(GeoServerRoleService roleService, String groupName) throws IOException {
         return JaxbRoleList.fromGS(roleService.getRolesForGroup(groupName));
     }
 
@@ -245,8 +230,8 @@ public class RolesRestController implements SequentialExecutionController {
         }
     }
 
-    protected void disassociateUser(
-            GeoServerRoleService roleService, String roleName, String userName) throws IOException {
+    protected void disassociateUser(GeoServerRoleService roleService, String roleName, String userName)
+            throws IOException {
         GeoServerRoleStore store = getStore(roleService);
         try {
             store.disAssociateRoleFromUser(getRole(store, roleName), userName);
@@ -266,14 +251,12 @@ public class RolesRestController implements SequentialExecutionController {
     protected GeoServerRoleService getService(String serviceName) throws IOException {
         GeoServerRoleService roleService = securityManager.loadRoleService(serviceName);
         if (roleService == null) {
-            throw new IllegalArgumentException(
-                    "Provided roleservice does not exist: " + serviceName);
+            throw new IllegalArgumentException("Provided roleservice does not exist: " + serviceName);
         }
         return roleService;
     }
 
-    protected GeoServerRole getRole(GeoServerRoleService service, String roleName)
-            throws IOException {
+    protected GeoServerRole getRole(GeoServerRoleService service, String roleName) throws IOException {
         GeoServerRole role = service.getRoleByName(roleName);
         if (role == null) {
             throw new IllegalArgumentException("Provided role does not exist: " + roleName);

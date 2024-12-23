@@ -35,8 +35,8 @@ import org.geotools.util.logging.Logging;
 import org.springframework.web.context.ServletContextAware;
 
 /**
- * Local file storage. All actions are relative to the rootFolder. If the data directory is
- * configured the root folder is placed in the data directory.
+ * Local file storage. All actions are relative to the rootFolder. If the data directory is configured the root folder
+ * is placed in the data directory.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */
@@ -102,8 +102,7 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
         FileUtils.copyInputStreamToFile(content, targetFile);
 
         if (doPrepare && prepareScript != null) {
-            Process p =
-                    Runtime.getRuntime().exec(prepareScript + " " + targetFile.getAbsolutePath());
+            Process p = Runtime.getRuntime().exec(prepareScript + " " + targetFile.getAbsolutePath());
             LOGGER.info(new String(IOUtils.toByteArray(p.getInputStream())));
             LOGGER.warning(new String(IOUtils.toByteArray(p.getErrorStream())));
             try {
@@ -152,13 +151,11 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
         ArrayList<String> paths = new ArrayList<>();
         if (folders != null) {
             for (String folder : folders) {
-                paths.add(
-                        Paths.get(rootfolder)
-                                .relativize(Paths.get(file.toString(), folder))
-                                .toString());
-                paths.addAll(
-                        listFolders(
-                                rootfolder, new File(Paths.get(file.toString(), folder).toUri())));
+                paths.add(Paths.get(rootfolder)
+                        .relativize(Paths.get(file.toString(), folder))
+                        .toString());
+                paths.addAll(listFolders(
+                        rootfolder, new File(Paths.get(file.toString(), folder).toUri())));
             }
         }
         return paths;
@@ -172,32 +169,21 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
 
         Path parent = getAbsolutePath(filePath).getParent();
         String[] fileNames =
-                parent.toFile()
-                        .list(
-                                new WildcardFileFilter(
-                                        filePath.replace(FileService.PLACEHOLDER_VERSION, "*")));
+                parent.toFile().list(new WildcardFileFilter(filePath.replace(FileService.PLACEHOLDER_VERSION, "*")));
 
         SortedSet<Integer> set = new TreeSet<Integer>();
         Pattern pattern =
-                Pattern.compile(
-                        Pattern.quote(filePath)
-                                .replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
+                Pattern.compile(Pattern.quote(filePath).replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
         for (String fileName : fileNames) {
             Matcher matcher = pattern.matcher(fileName);
             if (matcher.matches()) {
                 try {
                     set.add(Integer.parseInt(matcher.group(1)));
                 } catch (NumberFormatException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "could not parse version in versioned file " + fileName,
-                            e);
+                    LOGGER.log(Level.WARNING, "could not parse version in versioned file " + fileName, e);
                 }
             } else {
-                LOGGER.log(
-                        Level.WARNING,
-                        "this shouldn't happen: couldn't find version in versioned file "
-                                + fileName);
+                LOGGER.log(Level.WARNING, "this shouldn't happen: couldn't find version in versioned file " + fileName);
             }
         }
         int last = set.isEmpty() ? 0 : set.last();
@@ -219,8 +205,7 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
 
     private static URI toURI(Path path) {
         try {
-            return new URI(
-                    "file:" + URLEncoder.encode(path.toString(), "UTF-8").replaceAll("%2F", "/"));
+            return new URI("file:" + URLEncoder.encode(path.toString(), "UTF-8").replaceAll("%2F", "/"));
         } catch (UnsupportedEncodingException | URISyntaxException e) {
             throw new IllegalStateException(e);
         }
@@ -228,8 +213,7 @@ public class FileServiceImpl extends SecuredImpl implements FileService, Servlet
 
     private Path getAbsolutePath(String file) {
         if (rootFolder == null) {
-            throw new IllegalStateException(
-                    "No rootFolder is not configured in this file service.");
+            throw new IllegalStateException("No rootFolder is not configured in this file service.");
         }
         return rootFolder.resolve(Paths.get(file));
     }

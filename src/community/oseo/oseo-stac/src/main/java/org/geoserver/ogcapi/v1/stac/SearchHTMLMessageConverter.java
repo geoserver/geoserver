@@ -14,8 +14,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SearchHTMLMessageConverter extends AbstractItemsHTMLMessageConverter<SearchResponse> {
 
-    public SearchHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public SearchHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(SearchResponse.class, templateSupport, geoServer);
     }
 

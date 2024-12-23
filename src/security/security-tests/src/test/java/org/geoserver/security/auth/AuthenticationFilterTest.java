@@ -130,12 +130,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -147,16 +143,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
+                "Authorization", "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -181,21 +172,15 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "Authorization",
-                "Basic " + Base64.encodeBytes((testUserName + ":wrongpass").getBytes()));
+        request.addHeader("Authorization", "Basic " + Base64.encodeBytes((testUserName + ":wrongpass").getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -204,9 +189,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "Authorization",
-                "Basic " + Base64.encodeBytes(("unknwon:" + testPassword).getBytes()));
+        request.addHeader("Authorization", "Basic " + Base64.encodeBytes(("unknwon:" + testPassword).getBytes()));
         request.setMethod("GET");
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
@@ -214,12 +197,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -230,27 +209,19 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + Base64.encodeBytes(
-                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                        .getBytes()));
+                "Basic " + Base64.encodeBytes((GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword()).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -267,21 +238,15 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + Base64.encodeBytes(
-                                (GeoServerUser.ROOT_USERNAME + ":geoserver1").getBytes()));
+                "Basic " + Base64.encodeBytes((GeoServerUser.ROOT_USERNAME + ":geoserver1").getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -294,20 +259,15 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
+                "Authorization", "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Basic"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -328,8 +288,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     @Test
     public void testCredentialsFromHeader() throws Exception {
 
-        CredentialsFromRequestHeaderFilterConfig config =
-                new CredentialsFromRequestHeaderFilterConfig();
+        CredentialsFromRequestHeaderFilterConfig config = new CredentialsFromRequestHeaderFilterConfig();
         config.setClassName(GeoServerCredentialsFromRequestHeaderFilter.class.getName());
         config.setUserNameHeaderName("X-Credentials");
         config.setPasswordHeaderName("X-Credentials");
@@ -350,12 +309,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -364,17 +319,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.addHeader(
-                "X-Credentials", "private-user=" + testUserName + "&private-pw=" + testPassword);
+        request.addHeader("X-Credentials", "private-user=" + testUserName + "&private-pw=" + testPassword);
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -390,16 +340,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "X-Credentials", "private-user=" + testUserName + "&private-pw=wrongpass");
+        request.addHeader("X-Credentials", "private-user=" + testUserName + "&private-pw=wrongpass");
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -411,12 +356,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addHeader("X-Credentials", "private-user=wronguser&private-pw=" + testPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -427,16 +368,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
         String masterPassword = URLEncoder.encode(getMasterPassword(), StandardCharsets.UTF_8);
         request.addHeader(
-                "X-Credentials",
-                "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=" + masterPassword);
+                "X-Credentials", "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=" + masterPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -451,18 +387,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "X-Credentials",
-                "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=geoserver1");
+        request.addHeader("X-Credentials", "private-user=" + GeoServerUser.ROOT_USERNAME + "&private-pw=geoserver1");
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -473,18 +403,13 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setMethod("GET");
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.addHeader(
-                "X-Credentials", "private-user=" + testUserName + "&private-pw=" + testPassword);
+        request.addHeader("X-Credentials", "private-user=" + testUserName + "&private-pw=" + testPassword);
 
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -528,12 +453,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         Authentication auth;
@@ -557,12 +478,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             getProxy().doFilter(request, response, chain);
 
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            ctx =
-                    (SecurityContext)
-                            request.getSession(true)
-                                    .getAttribute(
-                                            HttpSessionSecurityContextRepository
-                                                    .SPRING_SECURITY_CONTEXT_KEY);
+            ctx = (SecurityContext) request.getSession(true)
+                    .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
             assertNotNull(ctx);
             auth = ctx.getAuthentication();
             assertNotNull(auth);
@@ -581,12 +498,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -609,12 +522,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         getProxy().doFilter(request, response, chain);
 
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -639,8 +548,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     @Test
     public void testRequestHeaderProxy() throws Exception {
 
-        RequestHeaderAuthenticationFilterConfig config =
-                new RequestHeaderAuthenticationFilterConfig();
+        RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
         config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
         config.setName(testFilterName4);
         config.setRoleServiceName("rs1");
@@ -665,12 +573,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -687,12 +591,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             }
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            ctx =
-                    (SecurityContext)
-                            request.getSession(true)
-                                    .getAttribute(
-                                            HttpSessionSecurityContextRepository
-                                                    .SPRING_SECURITY_CONTEXT_KEY);
+            ctx = (SecurityContext) request.getSession(true)
+                    .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
             assertNotNull(ctx);
             Authentication auth = ctx.getAuthentication();
             assertNotNull(auth);
@@ -716,12 +616,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             request.addHeader("principal", "unknwon");
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            ctx =
-                    (SecurityContext)
-                            request.getSession(true)
-                                    .getAttribute(
-                                            HttpSessionSecurityContextRepository
-                                                    .SPRING_SECURITY_CONTEXT_KEY);
+            ctx = (SecurityContext) request.getSession(true)
+                    .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
             assertNotNull(ctx);
             Authentication auth = ctx.getAuthentication();
             assertNotNull(auth);
@@ -741,12 +637,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -790,12 +682,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNotNull(tmp);
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -805,17 +693,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        String headerValue =
-                clientDigestString(tmp, testUserName, testPassword, request.getMethod());
+        String headerValue = clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -839,12 +722,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -862,12 +741,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -878,31 +753,23 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
-        headerValue =
-                clientDigestString(
-                        tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
+        headerValue = clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         // checkForAuthenticatedRole(auth);
-        assertEquals(
-                GeoServerUser.ROOT_USERNAME, ((UserDetails) auth.getPrincipal()).getUsername());
+        assertEquals(GeoServerUser.ROOT_USERNAME, ((UserDetails) auth.getPrincipal()).getUsername());
         assertEquals(1, auth.getAuthorities().size());
         assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
 
@@ -912,9 +779,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        headerValue =
-                clientDigestString(
-                        tmp, GeoServerUser.ROOT_USERNAME, "geoserver1", request.getMethod());
+        headerValue = clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, "geoserver1", request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
@@ -922,12 +787,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -946,12 +807,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         updateUser("ug1", testUserName, true);
@@ -977,8 +834,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         config.setName(testFilterName5);
 
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(
-                pattern, testFilterName5, GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
+        prepareFilterChain(pattern, testFilterName5, GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
 
         modifyChain(pattern, false, true, null);
 
@@ -1003,16 +859,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
+        request.addHeader("Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1029,12 +880,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1051,16 +898,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.setCookies(cookie);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.addHeader(
-                "Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
+        request.addHeader("Authorization", "Basic " + Base64.encodeBytes(("abc@xyz.com:abc").getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1076,27 +918,19 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + Base64.encodeBytes(
-                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                        .getBytes()));
+                "Basic " + Base64.encodeBytes((GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword()).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1126,8 +960,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     @Test
     public void testFormLogin() throws Exception {
 
-        UsernamePasswordAuthenticationFilterConfig config =
-                new UsernamePasswordAuthenticationFilterConfig();
+        UsernamePasswordAuthenticationFilterConfig config = new UsernamePasswordAuthenticationFilterConfig();
         config.setClassName(GeoServerUserNamePasswordAuthenticationFilter.class.getName());
         config.setUsernameParameterName("username");
         config.setPasswordParameterName("password");
@@ -1143,8 +976,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         modifyChain(pattern, false, true, null);
 
-        prepareFilterChain(
-                ConstantFilterChain.class, "/j_spring_security_check_foo/", testFilterName6);
+        prepareFilterChain(ConstantFilterChain.class, "/j_spring_security_check_foo/", testFilterName6);
         modifyChain("/j_spring_security_check_foo/", false, true, null);
 
         //        prepareFilterChain(LogoutFilterChain.class,"/j_spring_security_logout_foo",
@@ -1163,12 +995,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         String tmp = response.getHeader("Location");
         assertTrue(tmp.endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FORM));
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1182,16 +1010,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), testPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1203,10 +1025,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         // Test logout
 
-        GeoServerLogoutFilter logoutFilter =
-                (GeoServerLogoutFilter)
-                        getSecurityManager()
-                                .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        GeoServerLogoutFilter logoutFilter = (GeoServerLogoutFilter)
+                getSecurityManager().loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         request = createRequest("/j_spring_security_logout_foo");
         request.setMethod("GET");
         HttpSession session = request.getSession(true);
@@ -1232,16 +1052,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), "wrongpass");
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
 
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1254,16 +1069,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), testPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
 
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1276,16 +1086,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), getMasterPassword());
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
@@ -1303,15 +1107,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), "geoserver1");
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1325,15 +1124,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), testPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FAILURE));
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1354,8 +1148,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     @Test
     public void testFormLoginWithRememberMe() throws Exception {
 
-        UsernamePasswordAuthenticationFilterConfig config =
-                new UsernamePasswordAuthenticationFilterConfig();
+        UsernamePasswordAuthenticationFilterConfig config = new UsernamePasswordAuthenticationFilterConfig();
         config.setClassName(GeoServerUserNamePasswordAuthenticationFilter.class.getName());
         config.setUsernameParameterName("username");
         config.setPasswordParameterName("password");
@@ -1389,12 +1182,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         String tmp = response.getHeader("Location");
         assertTrue(tmp.endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_FORM));
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1408,15 +1197,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), testPassword);
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
         HttpSession session = request.getSession(true);
-        ctx =
-                (SecurityContext)
-                        session.getAttribute(
-                                HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext) session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1430,10 +1214,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNotNull(cookie.getValue());
 
         // check logout
-        GeoServerLogoutFilter logoutFilter =
-                (GeoServerLogoutFilter)
-                        getSecurityManager()
-                                .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        GeoServerLogoutFilter logoutFilter = (GeoServerLogoutFilter)
+                getSecurityManager().loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         request = createRequest("/j_spring_security_logout_foo");
         request.setMethod("GET");
         session = request.getSession(true);
@@ -1459,10 +1241,9 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
@@ -1471,16 +1252,10 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         request.addParameter(config.getPasswordParameterName(), getMasterPassword());
         getProxy().doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
-        assertTrue(
-                response.getHeader("Location")
-                        .endsWith(
-                                GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        assertTrue(response.getHeader("Location")
+                .endsWith(GeoServerUserNamePasswordAuthenticationFilter.URL_LOGIN_SUCCCESS));
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1510,8 +1285,7 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
     @Test
     public void testX509Auth() throws Exception {
 
-        X509CertificateAuthenticationFilterConfig config =
-                new X509CertificateAuthenticationFilterConfig();
+        X509CertificateAuthenticationFilterConfig config = new X509CertificateAuthenticationFilterConfig();
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
@@ -1534,12 +1308,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1560,12 +1330,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             setCertifacteForUser(testUserName, request);
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            ctx =
-                    (SecurityContext)
-                            request.getSession(true)
-                                    .getAttribute(
-                                            HttpSessionSecurityContextRepository
-                                                    .SPRING_SECURITY_CONTEXT_KEY);
+            ctx = (SecurityContext) request.getSession(true)
+                    .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
             assertNotNull(ctx);
             Authentication auth = ctx.getAuthentication();
             assertNotNull(auth);
@@ -1590,12 +1356,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
             setCertifacteForUser("unknown", request);
             getProxy().doFilter(request, response, chain);
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-            ctx =
-                    (SecurityContext)
-                            request.getSession(true)
-                                    .getAttribute(
-                                            HttpSessionSecurityContextRepository
-                                                    .SPRING_SECURITY_CONTEXT_KEY);
+            ctx = (SecurityContext) request.getSession(true)
+                    .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
             assertNotNull(ctx);
             Authentication auth = ctx.getAuthentication();
             assertNotNull(auth);
@@ -1615,12 +1377,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         setCertifacteForUser(testUserName, request);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_FORBIDDEN, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1672,12 +1430,8 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         assertNotNull(tmp);
         assert (tmp.contains(GeoServerSecurityManager.REALM));
         assert (tmp.contains("Digest"));
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
 
@@ -1687,17 +1441,12 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        String headerValue =
-                clientDigestString(tmp, testUserName, testPassword, request.getMethod());
+        String headerValue = clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1714,16 +1463,11 @@ public class AuthenticationFilterTest extends AbstractAuthenticationProviderTest
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
+                "Authorization", "Basic " + Base64.encodeBytes((testUserName + ":" + testPassword).getBytes()));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);

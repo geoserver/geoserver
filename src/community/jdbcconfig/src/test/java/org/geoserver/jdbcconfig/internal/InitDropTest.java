@@ -36,24 +36,23 @@ public class InitDropTest {
     public void assertScript(String script) throws IOException {
         Logger logger = Logger.getAnonymousLogger();
         logger.setLevel(Level.WARNING);
-        logger.addHandler(
-                new Handler() {
+        logger.addHandler(new Handler() {
 
-                    {
-                        setLevel(Level.WARNING);
-                    }
+            {
+                setLevel(Level.WARNING);
+            }
 
-                    @Override
-                    public void close() throws SecurityException {}
+            @Override
+            public void close() throws SecurityException {}
 
-                    @Override
-                    public void flush() {}
+            @Override
+            public void flush() {}
 
-                    @Override
-                    public void publish(LogRecord lr) {
-                        Assert.fail(lr.getMessage());
-                    }
-                });
+            @Override
+            public void publish(LogRecord lr) {
+                Assert.fail(lr.getMessage());
+            }
+        });
         try {
             logger.warning("testing123");
             Assert.fail("test assumption failure");

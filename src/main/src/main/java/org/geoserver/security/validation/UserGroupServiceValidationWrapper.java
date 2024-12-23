@@ -33,14 +33,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * GeoserverUserGroupService valService = new UserGroupServiceValidationWrapper(service);
  * valService.getUsers()
  *
- * </code> Since the {@link GeoServerUserGroupService} interface does not allow to throw {@link
- * UserGroupServiceException} objects directly, these objects a wrapped into an IOException. Use
+ * </code> Since the {@link GeoServerUserGroupService} interface does not allow to throw
+ * {@link UserGroupServiceException} objects directly, these objects a wrapped into an IOException. Use
  * {@link IOException#getCause()} to get the proper exception.
  *
  * @author christian
  */
-public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
-        implements GeoServerUserGroupService {
+public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator implements GeoServerUserGroupService {
 
     protected GeoServerUserGroupService service;
 
@@ -64,8 +63,7 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
 
     protected void checkExistingUserName(String userName) throws IOException {
         checkUserName(userName);
-        if (service.getUserByUsername(userName) == null)
-            throw createSecurityException(USER_NOT_FOUND_$1, userName);
+        if (service.getUserByUsername(userName) == null) throw createSecurityException(USER_NOT_FOUND_$1, userName);
     }
 
     protected void checkExistingGroupName(String groupName) throws IOException {
@@ -124,8 +122,7 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         return service.loadUserByUsername(username);
     }
 
@@ -150,14 +147,12 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         return service.createUserObject(username, password, isEnabled);
     }
 
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         return service.createGroupObject(groupname, isEnabled);
     }
 
@@ -229,14 +224,12 @@ public class UserGroupServiceValidationWrapper extends AbstractSecurityValidator
     }
 
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
         return service.getUsersHavingPropertyValue(propname, propvalue);
     }
 
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
         return service.getUserCountHavingPropertyValue(propname, propvalue);
     }
 

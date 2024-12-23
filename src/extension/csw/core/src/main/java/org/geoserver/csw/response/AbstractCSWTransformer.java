@@ -45,11 +45,7 @@ public abstract class AbstractCSWTransformer extends TransformerBase {
         protected void addAttribute(AttributesImpl attributes, String name, Object value) {
             if (value != null) {
                 attributes.addAttribute(
-                        "",
-                        name,
-                        name,
-                        "",
-                        value instanceof String ? (String) value : String.valueOf(value));
+                        "", name, name, "", value instanceof String ? (String) value : String.valueOf(value));
             }
         }
 

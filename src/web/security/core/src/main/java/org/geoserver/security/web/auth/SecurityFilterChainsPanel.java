@@ -61,11 +61,8 @@ public class SecurityFilterChainsPanel extends Panel {
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page
                         // TODO, switch between ServiceLoginFilter/HtmlLogin
-                        SecurityFilterChainPage newPage =
-                                new SecurityVariableFilterChainPage(
-                                        new ServiceLoginFilterChain(),
-                                        SecurityFilterChainsPanel.this.secMgrConfig,
-                                        true);
+                        SecurityFilterChainPage newPage = new SecurityVariableFilterChainPage(
+                                new ServiceLoginFilterChain(), SecurityFilterChainsPanel.this.secMgrConfig, true);
                         newPage.setReturnPage(getPage());
                         setResponsePage(newPage);
                     }
@@ -76,11 +73,8 @@ public class SecurityFilterChainsPanel extends Panel {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         // create a new config class and instantiate the page
-                        SecurityFilterChainPage newPage =
-                                new SecurityVariableFilterChainPage(
-                                        new HtmlLoginFilterChain(),
-                                        SecurityFilterChainsPanel.this.secMgrConfig,
-                                        true);
+                        SecurityFilterChainPage newPage = new SecurityVariableFilterChainPage(
+                                new HtmlLoginFilterChain(), SecurityFilterChainsPanel.this.secMgrConfig, true);
                         newPage.setReturnPage(getPage());
                         setResponsePage(newPage);
                     }
@@ -88,19 +82,18 @@ public class SecurityFilterChainsPanel extends Panel {
 
         SecurityFilterChainProvider dataProvider = new SecurityFilterChainProvider(secMgrConfig);
         add(
-                tablePanel =
-                        new SecurityFilterChainTablePanel("table", dataProvider) {
-                            private static final long serialVersionUID = 1L;
+                tablePanel = new SecurityFilterChainTablePanel("table", dataProvider) {
+                    private static final long serialVersionUID = 1L;
 
-                            //            @Override
-                            //            protected void onSelectionUpdate(AjaxRequestTarget target)
-                            // {
-                            //                if (isAdmin) {
-                            //
-                            // target.add(removeLink.setEnabled(!getSelection().isEmpty()));
-                            //                }
-                            //            }
-                        });
+                    //            @Override
+                    //            protected void onSelectionUpdate(AjaxRequestTarget target)
+                    // {
+                    //                if (isAdmin) {
+                    //
+                    // target.add(removeLink.setEnabled(!getSelection().isEmpty()));
+                    //                }
+                    //            }
+                });
         tablePanel.setOutputMarkupId(true);
         tablePanel.setFilterable(false);
         tablePanel.setSortable(false);
@@ -126,10 +119,9 @@ public class SecurityFilterChainsPanel extends Panel {
         Serializable msg = null;
         if (e instanceof SecurityConfigException) {
             SecurityConfigException sce = (SecurityConfigException) e;
-            msg =
-                    new StringResourceModel("security." + sce.getId())
-                            .setParameters(sce.getArgs())
-                            .getObject();
+            msg = new StringResourceModel("security." + sce.getId())
+                    .setParameters(sce.getArgs())
+                    .getObject();
         } else {
             msg = e;
         }
@@ -144,9 +136,7 @@ public class SecurityFilterChainsPanel extends Panel {
         }
 
         Component createEditLink(
-                String id,
-                final IModel<RequestFilterChain> model,
-                final Property<RequestFilterChain> property) {
+                String id, final IModel<RequestFilterChain> model, final Property<RequestFilterChain> property) {
             @SuppressWarnings("unchecked")
             IModel<String> cast = (IModel<String>) property.getModel(model);
             return new SimpleAjaxLink<>(id, cast) {
@@ -156,23 +146,18 @@ public class SecurityFilterChainsPanel extends Panel {
                 @Override
                 protected void onClick(AjaxRequestTarget target) {
 
-                    RequestFilterChain chain =
-                            SecurityFilterChainsPanel.this
-                                    .secMgrConfig
-                                    .getFilterChain()
-                                    .getRequestChainByName(chainName);
+                    RequestFilterChain chain = SecurityFilterChainsPanel.this
+                            .secMgrConfig
+                            .getFilterChain()
+                            .getRequestChainByName(chainName);
 
                     SecurityFilterChainPage editPage = null;
                     if (chain instanceof VariableFilterChain)
-                        editPage =
-                                new SecurityVariableFilterChainPage(
-                                        ((VariableFilterChain) chain),
-                                        SecurityFilterChainsPanel.this.secMgrConfig,
-                                        false);
+                        editPage = new SecurityVariableFilterChainPage(
+                                ((VariableFilterChain) chain), SecurityFilterChainsPanel.this.secMgrConfig, false);
                     else
                         editPage =
-                                new SecurityFilterChainPage(
-                                        chain, SecurityFilterChainsPanel.this.secMgrConfig, false);
+                                new SecurityFilterChainPage(chain, SecurityFilterChainsPanel.this.secMgrConfig, false);
 
                     editPage.setReturnPage(getPage());
                     setResponsePage(editPage);
@@ -182,9 +167,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
         @Override
         protected Component getComponentForProperty(
-                String id,
-                IModel<RequestFilterChain> itemModel,
-                Property<RequestFilterChain> property) {
+                String id, IModel<RequestFilterChain> itemModel, Property<RequestFilterChain> property) {
 
             if (property == NAME) {
                 return createEditLink(id, itemModel, property);
@@ -201,8 +184,7 @@ public class SecurityFilterChainsPanel extends Panel {
             if (Boolean.TRUE.equals(property.getModel(itemModel).getObject()))
                 return new Icon(id, CatalogIconFactory.ENABLED_ICON);
 
-            if (Boolean.FALSE.equals(property.getModel(itemModel).getObject()))
-                return new Label(id, "");
+            if (Boolean.FALSE.equals(property.getModel(itemModel).getObject())) return new Label(id, "");
 
             return new Label(id, property.getModel(itemModel));
         }
@@ -213,9 +195,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
         if (chain.canBeRemoved() == false) {
             ImageAjaxLink blankLink =
-                    new ImageAjaxLink(
-                            id,
-                            new PackageResourceReference(getClass(), "../img/icons/blank.png")) {
+                    new ImageAjaxLink(id, new PackageResourceReference(getClass(), "../img/icons/blank.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {}
                     };
@@ -225,20 +205,14 @@ public class SecurityFilterChainsPanel extends Panel {
         }
 
         ImageAjaxLink link =
-                new ImageAjaxLink(
-                        id,
-                        new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
+                new ImageAjaxLink(id, new PackageResourceReference(getClass(), "../img/icons/silk/delete.png")) {
                     @Override
                     protected void onClick(AjaxRequestTarget target) {
                         secMgrConfig.getFilterChain().getRequestChains().remove(chain);
                         target.add(tablePanel);
                     }
                 };
-        link.getImage()
-                .add(
-                        new AttributeModifier(
-                                "alt",
-                                new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
+        link.getImage().add(new AttributeModifier("alt", new ParamResourceModel("LayerGroupEditPage.th.remove", link)));
         return link;
     }
 
@@ -263,9 +237,7 @@ public class SecurityFilterChainsPanel extends Panel {
 
             upLink =
                     new ImageAjaxLink(
-                            "up",
-                            new PackageResourceReference(
-                                    getClass(), "../img/icons/silk/arrow_up.png")) {
+                            "up", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_up.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
                             int index = getChains().indexOf(PositionPanel.this.theChain);
@@ -287,27 +259,19 @@ public class SecurityFilterChainsPanel extends Panel {
                         }
                     };
             upLink.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel(
-                                            "SecurityFilterChainsPanel.th.up", upLink)));
+                    .add(new AttributeModifier(
+                            "alt", new ParamResourceModel("SecurityFilterChainsPanel.th.up", upLink)));
             upLink.setOutputMarkupId(true);
             add(upLink);
 
             downLink =
                     new ImageAjaxLink(
-                            "down",
-                            new PackageResourceReference(
-                                    getClass(), "../img/icons/silk/arrow_down.png")) {
+                            "down", new PackageResourceReference(getClass(), "../img/icons/silk/arrow_down.png")) {
                         @Override
                         protected void onClick(AjaxRequestTarget target) {
                             int index = getChains().indexOf(PositionPanel.this.theChain);
                             getChains().remove(index);
-                            getChains()
-                                    .add(
-                                            Math.min(getChains().size(), index + 1),
-                                            PositionPanel.this.theChain);
+                            getChains().add(Math.min(getChains().size(), index + 1), PositionPanel.this.theChain);
                             target.add(tablePanel);
                             target.add(this);
                             target.add(downLink);
@@ -324,11 +288,8 @@ public class SecurityFilterChainsPanel extends Panel {
                         }
                     };
             downLink.getImage()
-                    .add(
-                            new AttributeModifier(
-                                    "alt",
-                                    new ParamResourceModel(
-                                            "SecurityFilterChainsPanel.th.down", downLink)));
+                    .add(new AttributeModifier(
+                            "alt", new ParamResourceModel("SecurityFilterChainsPanel.th.down", downLink)));
             downLink.setOutputMarkupId(true);
             add(downLink);
         }

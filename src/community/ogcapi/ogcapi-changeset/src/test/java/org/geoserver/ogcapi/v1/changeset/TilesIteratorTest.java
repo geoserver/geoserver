@@ -58,8 +58,7 @@ public class TilesIteratorTest {
 
     @Test
     public void iterateTwoLevelSubset00Wgs84() {
-        GridSubset subset =
-                GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(-10, -10, 10, 10), 0, 1);
+        GridSubset subset = GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(-10, -10, 10, 10), 0, 1);
         TileIterator iterator = new TileIterator(Arrays.asList(subset), 0, 1);
         assertIterator(
                 iterator,
@@ -75,8 +74,7 @@ public class TilesIteratorTest {
 
     @Test
     public void iterateTwoLevelSubset00Wgs84DuplicateGridset() {
-        GridSubset subset1 =
-                GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(-10, -10, 10, 10), 0, 1);
+        GridSubset subset1 = GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(-10, -10, 10, 10), 0, 1);
         GridSubset subset2 = new GridSubset(subset1);
         TileIterator iterator = new TileIterator(Arrays.asList(subset1, subset2), 0, 1);
         assertIterator(
@@ -116,15 +114,10 @@ public class TilesIteratorTest {
         // --------
         // Grid is roughly divided in squares of 5 million meters, but just roughly,
         // so we need to offset them a bit in order to avoid catching extra tiles
-        GridSubset subset1 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR,
-                        new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000),
-                        0,
-                        3);
-        GridSubset subset2 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR, new BoundingBox(5_100_000, -9_900_000, 15_000_000, 0), 0, 3);
+        GridSubset subset1 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000), 0, 3);
+        GridSubset subset2 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(5_100_000, -9_900_000, 15_000_000, 0), 0, 3);
         TileIterator iterator = new TileIterator(Arrays.asList(subset1, subset2), 0, 3);
         assertIterator(
                 iterator,
@@ -174,18 +167,10 @@ public class TilesIteratorTest {
         // --------
         // Grid is roughly divided in squares of 5 million meters, but just roughly,
         // so we need to offset them a bit in order to avoid catching extra tiles
-        GridSubset subset1 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR,
-                        new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000),
-                        0,
-                        3);
-        GridSubset subset2 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR,
-                        new BoundingBox(-5_000_000, 5_100_000, 5_000_000, 14_900_000),
-                        0,
-                        3);
+        GridSubset subset1 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000), 0, 3);
+        GridSubset subset2 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(-5_000_000, 5_100_000, 5_000_000, 14_900_000), 0, 3);
         TileIterator iterator = new TileIterator(Arrays.asList(subset1, subset2), 0, 3);
         assertIterator(
                 iterator,
@@ -237,15 +222,10 @@ public class TilesIteratorTest {
         // --------
         // Grid is roughly divided in squares of 5 million meters, but just roughly,
         // so we need to offset them a bit in order to avoid catching extra tiles
-        GridSubset subset1 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR,
-                        new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000),
-                        0,
-                        3);
-        GridSubset subset2 =
-                GridSubsetFactory.createGridSubSet(
-                        WEB_MERCATOR, new BoundingBox(-5_000_000, -10_000_000, 5_000_000, 0), 0, 3);
+        GridSubset subset1 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(-9_900_000, -14_900_000, 0, -5_100_000), 0, 3);
+        GridSubset subset2 = GridSubsetFactory.createGridSubSet(
+                WEB_MERCATOR, new BoundingBox(-5_000_000, -10_000_000, 5_000_000, 0), 0, 3);
         TileIterator iterator = new TileIterator(Arrays.asList(subset1, subset2), 0, 3);
         assertIterator(
                 iterator,
@@ -271,9 +251,7 @@ public class TilesIteratorTest {
     @Test
     public void iterateOneLevelSouthEastCornerWgs84() {
         // y = 0 is the south-est row
-        GridSubset subset =
-                GridSubsetFactory.createGridSubSet(
-                        WGS84, new BoundingBox(170, -90, 180, -80), 0, 3);
+        GridSubset subset = GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(170, -90, 180, -80), 0, 3);
         TileIterator iterator = new TileIterator(Arrays.asList(subset), 2, 3);
         assertIterator(
                 iterator,
@@ -286,8 +264,7 @@ public class TilesIteratorTest {
     @Test
     public void iterateOneLevelNorthEastCornerWgs84() {
         // y = 0 is the south-est row, north pole is at the highest y value instead
-        GridSubset subset =
-                GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(170, 80, 180, 90), 0, 3);
+        GridSubset subset = GridSubsetFactory.createGridSubSet(WGS84, new BoundingBox(170, 80, 180, 90), 0, 3);
         TileIterator iterator = new TileIterator(Arrays.asList(subset), 2, 3);
         assertIterator(
                 iterator,
@@ -301,22 +278,15 @@ public class TilesIteratorTest {
         if (positions != null) {
             for (long[] position : positions) {
                 assertTrue(
-                        "Was expecting "
-                                + Arrays.toString(position)
-                                + " but found no more elements",
+                        "Was expecting " + Arrays.toString(position) + " but found no more elements",
                         iterator.hasNext());
                 long[] next = iterator.next();
                 assertArrayEquals(
-                        "Was expecting "
-                                + Arrays.toString(position)
-                                + " but found "
-                                + Arrays.toString(next),
+                        "Was expecting " + Arrays.toString(position) + " but found " + Arrays.toString(next),
                         position,
                         next);
             }
         }
-        assertFalse(
-                "Shoud have reached the end but iterator still has more positions",
-                iterator.hasNext());
+        assertFalse("Shoud have reached the end but iterator still has more positions", iterator.hasNext());
     }
 }

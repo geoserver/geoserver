@@ -43,17 +43,13 @@ public class WFSReprojectionTest extends WFSTestSupport {
     @Test
     public void testGetFeatureGet() throws Exception {
 
-        Document dom1 =
-                getAsDOM(
-                        "wfs?request=getfeature&service=wfs&version=1.0.0&typename="
-                                + SystemTestData.POLYGONS.getLocalPart());
+        Document dom1 = getAsDOM(
+                "wfs?request=getfeature&service=wfs&version=1.0.0&typename=" + SystemTestData.POLYGONS.getLocalPart());
         print(dom1);
-        Document dom2 =
-                getAsDOM(
-                        "wfs?request=getfeature&service=wfs&version=1.0.0&typename="
-                                + SystemTestData.POLYGONS.getLocalPart()
-                                + "&srsName="
-                                + TARGET_CRS_CODE);
+        Document dom2 = getAsDOM("wfs?request=getfeature&service=wfs&version=1.0.0&typename="
+                + SystemTestData.POLYGONS.getLocalPart()
+                + "&srsName="
+                + TARGET_CRS_CODE);
         print(dom2);
 
         runTest(dom1, dom2);
@@ -61,44 +57,42 @@ public class WFSReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testGetFeaturePost() throws Exception {
-        String xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query typeName=\""
-                        + SystemTestData.POLYGONS.getPrefix()
-                        + ":"
-                        + SystemTestData.POLYGONS.getLocalPart()
-                        + "\"> "
-                        + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query typeName=\""
+                + SystemTestData.POLYGONS.getPrefix()
+                + ":"
+                + SystemTestData.POLYGONS.getLocalPart()
+                + "\"> "
+                + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document dom1 = postAsDOM("wfs", xml);
         //        print(dom1);
 
-        xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query srsName=\""
-                        + TARGET_CRS_CODE
-                        + "\" typeName=\""
-                        + SystemTestData.POLYGONS.getPrefix()
-                        + ":"
-                        + SystemTestData.POLYGONS.getLocalPart()
-                        + "\"> "
-                        + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        xml = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query srsName=\""
+                + TARGET_CRS_CODE
+                + "\" typeName=\""
+                + SystemTestData.POLYGONS.getPrefix()
+                + ":"
+                + SystemTestData.POLYGONS.getLocalPart()
+                + "\"> "
+                + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
         Document dom2 = postAsDOM("wfs", xml);
         //        print(dom2);
 
@@ -114,19 +108,16 @@ public class WFSReprojectionTest extends WFSTestSupport {
 
         try {
             String q =
-                    "wfs?request=getfeature&service=wfs&version=1.1&typeName="
-                            + SystemTestData.POLYGONS.getLocalPart();
+                    "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM(q);
             // print(dom);
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope");
-            String lc =
-                    getFirstElementByTagName(envelope, "gml:lowerCorner")
-                            .getFirstChild()
-                            .getNodeValue();
-            String uc =
-                    getFirstElementByTagName(envelope, "gml:upperCorner")
-                            .getFirstChild()
-                            .getNodeValue();
+            String lc = getFirstElementByTagName(envelope, "gml:lowerCorner")
+                    .getFirstChild()
+                    .getNodeValue();
+            String uc = getFirstElementByTagName(envelope, "gml:upperCorner")
+                    .getFirstChild()
+                    .getNodeValue();
             double[] c = {
                 Double.parseDouble(lc.split(" ")[0]),
                 Double.parseDouble(lc.split(" ")[1]),
@@ -150,9 +141,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             assertEquals(
                     1,
                     dom.getElementsByTagName(
-                                    SystemTestData.POLYGONS.getPrefix()
-                                            + ":"
-                                            + SystemTestData.POLYGONS.getLocalPart())
+                                    SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                             .getLength());
         } finally {
             wfs.setFeatureBounding(oldFeatureBounding);
@@ -169,19 +158,16 @@ public class WFSReprojectionTest extends WFSTestSupport {
 
         try {
             String q =
-                    "wfs?request=getfeature&service=wfs&version=1.1&typeName="
-                            + SystemTestData.POLYGONS.getLocalPart();
+                    "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM(q);
             //        print(dom);
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope");
-            String lc =
-                    getFirstElementByTagName(envelope, "gml:lowerCorner")
-                            .getFirstChild()
-                            .getNodeValue();
-            String uc =
-                    getFirstElementByTagName(envelope, "gml:upperCorner")
-                            .getFirstChild()
-                            .getNodeValue();
+            String lc = getFirstElementByTagName(envelope, "gml:lowerCorner")
+                    .getFirstChild()
+                    .getNodeValue();
+            String uc = getFirstElementByTagName(envelope, "gml:upperCorner")
+                    .getFirstChild()
+                    .getNodeValue();
             double[] c = {
                 Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
                 Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
@@ -195,9 +181,7 @@ public class WFSReprojectionTest extends WFSTestSupport {
             assertEquals(
                     1,
                     dom.getElementsByTagName(
-                                    SystemTestData.POLYGONS.getPrefix()
-                                            + ":"
-                                            + SystemTestData.POLYGONS.getLocalPart())
+                                    SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                             .getLength());
         } finally {
             wfs.setFeatureBounding(oldFeatureBounding);
@@ -214,18 +198,15 @@ public class WFSReprojectionTest extends WFSTestSupport {
 
         try {
             String q =
-                    "wfs?request=getfeature&service=wfs&version=1.1&typeName="
-                            + SystemTestData.POLYGONS.getLocalPart();
+                    "wfs?request=getfeature&service=wfs&version=1.1&typeName=" + SystemTestData.POLYGONS.getLocalPart();
             Document dom = getAsDOM(q);
             Element envelope = getFirstElementByTagName(dom, "gml:Envelope");
-            String lc =
-                    getFirstElementByTagName(envelope, "gml:lowerCorner")
-                            .getFirstChild()
-                            .getNodeValue();
-            String uc =
-                    getFirstElementByTagName(envelope, "gml:upperCorner")
-                            .getFirstChild()
-                            .getNodeValue();
+            String lc = getFirstElementByTagName(envelope, "gml:lowerCorner")
+                    .getFirstChild()
+                    .getNodeValue();
+            String uc = getFirstElementByTagName(envelope, "gml:upperCorner")
+                    .getFirstChild()
+                    .getNodeValue();
             double[] c = {
                 Double.parseDouble(lc.split(" ")[0]), Double.parseDouble(lc.split(" ")[1]),
                 Double.parseDouble(uc.split(" ")[0]), Double.parseDouble(uc.split(" ")[1])
@@ -233,53 +214,50 @@ public class WFSReprojectionTest extends WFSTestSupport {
             double[] cr = new double[4];
             tx.transform(c, 0, cr, 0, 2);
 
-            String xml =
-                    "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\""
-                            + " xmlns:"
-                            + SystemTestData.POLYGONS.getPrefix()
-                            + "=\""
-                            + SystemTestData.POLYGONS.getNamespaceURI()
-                            + "\""
-                            + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                            + " xmlns:gml=\"http://www.opengis.net/gml\" "
-                            + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                            + "> "
-                            + "<wfs:Query typeName=\""
-                            + SystemTestData.POLYGONS.getPrefix()
-                            + ":"
-                            + SystemTestData.POLYGONS.getLocalPart()
-                            + "\">"
-                            + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
-                            + "<ogc:Filter>"
-                            + "<ogc:BBOX>"
-                            + "<ogc:PropertyName>polygonProperty</ogc:PropertyName>"
-                            + "<gml:Envelope srsName=\""
-                            + TARGET_CRS_CODE
-                            + "\">"
-                            + "<gml:lowerCorner>"
-                            + cr[0]
-                            + " "
-                            + cr[1]
-                            + "</gml:lowerCorner>"
-                            + "<gml:upperCorner>"
-                            + cr[2]
-                            + " "
-                            + cr[3]
-                            + "</gml:upperCorner>"
-                            + "</gml:Envelope>"
-                            + "</ogc:BBOX>"
-                            + "</ogc:Filter>"
-                            + "</wfs:Query> "
-                            + "</wfs:GetFeature>";
+            String xml = "<wfs:GetFeature service=\"WFS\" version=\"1.1.0\""
+                    + " xmlns:"
+                    + SystemTestData.POLYGONS.getPrefix()
+                    + "=\""
+                    + SystemTestData.POLYGONS.getNamespaceURI()
+                    + "\""
+                    + " xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                    + " xmlns:gml=\"http://www.opengis.net/gml\" "
+                    + " xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                    + "> "
+                    + "<wfs:Query typeName=\""
+                    + SystemTestData.POLYGONS.getPrefix()
+                    + ":"
+                    + SystemTestData.POLYGONS.getLocalPart()
+                    + "\">"
+                    + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
+                    + "<ogc:Filter>"
+                    + "<ogc:BBOX>"
+                    + "<ogc:PropertyName>polygonProperty</ogc:PropertyName>"
+                    + "<gml:Envelope srsName=\""
+                    + TARGET_CRS_CODE
+                    + "\">"
+                    + "<gml:lowerCorner>"
+                    + cr[0]
+                    + " "
+                    + cr[1]
+                    + "</gml:lowerCorner>"
+                    + "<gml:upperCorner>"
+                    + cr[2]
+                    + " "
+                    + cr[3]
+                    + "</gml:upperCorner>"
+                    + "</gml:Envelope>"
+                    + "</ogc:BBOX>"
+                    + "</ogc:Filter>"
+                    + "</wfs:Query> "
+                    + "</wfs:GetFeature>";
 
             dom = postAsDOM("wfs", xml);
 
             assertEquals(
                     1,
                     dom.getElementsByTagName(
-                                    SystemTestData.POLYGONS.getPrefix()
-                                            + ":"
-                                            + SystemTestData.POLYGONS.getLocalPart())
+                                    SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                             .getLength());
         } finally {
             wfs.setFeatureBounding(oldFeatureBounding);
@@ -319,42 +297,39 @@ public class WFSReprojectionTest extends WFSTestSupport {
 
     @Test
     public void testFilterReprojection() throws Exception {
-        String xml =
-                "<wfs:GetFeature "
-                        + "service='WFS' "
-                        + "version='1.0.0' "
-                        + "xmlns:cdf='http://www.opengis.net/cite/data' "
-                        + "xmlns:ogc='http://www.opengis.net/ogc' "
-                        + "xmlns:wfs='http://www.opengis.net/wfs' "
-                        + "> "
-                        + "<wfs:Query typeName='"
-                        + SystemTestData.POLYGONS.getPrefix()
-                        + ":"
-                        + SystemTestData.POLYGONS.getLocalPart()
-                        + "' "
-                        + " srsName='"
-                        + TARGET_CRS_CODE
-                        + "'> "
-                        + "> "
-                        + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
-                        + "<ogc:Filter>"
-                        + "<ogc:Intersects>"
-                        + "<ogc:PropertyName>polygonProperty</ogc:PropertyName>"
-                        + "<gml:Point xmlns:gml='http://www.opengis.net/gml'>"
-                        + "<gml:coordinates decimal='.' cs=',' ts=' '>-1.035246176730227E7,504135.14926478104</gml:coordinates>"
-                        + "</gml:Point>"
-                        + "</ogc:Intersects>"
-                        + "</ogc:Filter>"
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service='WFS' "
+                + "version='1.0.0' "
+                + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                + "xmlns:ogc='http://www.opengis.net/ogc' "
+                + "xmlns:wfs='http://www.opengis.net/wfs' "
+                + "> "
+                + "<wfs:Query typeName='"
+                + SystemTestData.POLYGONS.getPrefix()
+                + ":"
+                + SystemTestData.POLYGONS.getLocalPart()
+                + "' "
+                + " srsName='"
+                + TARGET_CRS_CODE
+                + "'> "
+                + "> "
+                + "<wfs:PropertyName>cgf:polygonProperty</wfs:PropertyName> "
+                + "<ogc:Filter>"
+                + "<ogc:Intersects>"
+                + "<ogc:PropertyName>polygonProperty</ogc:PropertyName>"
+                + "<gml:Point xmlns:gml='http://www.opengis.net/gml'>"
+                + "<gml:coordinates decimal='.' cs=',' ts=' '>-1.035246176730227E7,504135.14926478104</gml:coordinates>"
+                + "</gml:Point>"
+                + "</ogc:Intersects>"
+                + "</ogc:Filter>"
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document dom = postAsDOM("wfs", xml);
         assertEquals(
                 1,
                 dom.getElementsByTagName(
-                                SystemTestData.POLYGONS.getPrefix()
-                                        + ":"
-                                        + SystemTestData.POLYGONS.getLocalPart())
+                                SystemTestData.POLYGONS.getPrefix() + ":" + SystemTestData.POLYGONS.getLocalPart())
                         .getLength());
     }
 }

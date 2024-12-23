@@ -18,8 +18,7 @@ import org.geoserver.platform.resource.ResourceNotification.Kind;
 import org.junit.Test;
 
 /** @author Niels Charlier */
-public class SimpleResourceNotificationDispatcherTest
-        extends AbstractResourceNotificationDispatcherTest {
+public class SimpleResourceNotificationDispatcherTest extends AbstractResourceNotificationDispatcherTest {
 
     @Override
     protected ResourceNotificationDispatcher initWatcher() {
@@ -46,9 +45,7 @@ public class SimpleResourceNotificationDispatcherTest
         for (Event event : events) {
             String path = event.getPath();
             assertEquals(
-                    path.equals("DirB") || path.equals("DirB/FileA2")
-                            ? Kind.ENTRY_MODIFY
-                            : Kind.ENTRY_CREATE,
+                    path.equals("DirB") || path.equals("DirB/FileA2") ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE,
                     event.getKind());
             assertTrue(set.remove(path));
         }
@@ -60,8 +57,7 @@ public class SimpleResourceNotificationDispatcherTest
     public void testDeleteEvents() {
         Resource res = store.get("DirA");
 
-        List<Event> events =
-                SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);
 
         assertEquals(6, events.size());
 
@@ -85,8 +81,7 @@ public class SimpleResourceNotificationDispatcherTest
     public void testCreateEvents() {
         Resource res = store.get("DirD/DirE/DirF/FileQ");
 
-        List<Event> events =
-                SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);
 
         assertEquals(4, events.size());
 
@@ -112,13 +107,12 @@ public class SimpleResourceNotificationDispatcherTest
 
         dispatch.addListener("DirB", notify -> dirEvent.set(notify));
 
-        dispatch.changed(
-                new ResourceNotification(
-                        "DirB/DirNew/FileNew",
-                        Kind.ENTRY_CREATE,
-                        System.currentTimeMillis(),
-                        SimpleResourceNotificationDispatcher.createEvents(
-                                store.get("DirB/DirNew/FileNew"), Kind.ENTRY_CREATE)));
+        dispatch.changed(new ResourceNotification(
+                "DirB/DirNew/FileNew",
+                Kind.ENTRY_CREATE,
+                System.currentTimeMillis(),
+                SimpleResourceNotificationDispatcher.createEvents(
+                        store.get("DirB/DirNew/FileNew"), Kind.ENTRY_CREATE)));
 
         assertNotNull(dirEvent.get());
         assertEquals(Kind.ENTRY_MODIFY, dirEvent.get().getKind());

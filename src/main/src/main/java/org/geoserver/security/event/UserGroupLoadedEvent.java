@@ -12,8 +12,8 @@ import org.geoserver.security.GeoServerUserGroupService;
 /**
  * Event fired after loading user/groups from the backend store into memory
  *
- * <p>This event is intended for stateful services of type {@link GeoServerUserGroupService}. If the
- * backend is changed externally and a reload occurs, listeners should be notified.
+ * <p>This event is intended for stateful services of type {@link GeoServerUserGroupService}. If the backend is changed
+ * externally and a reload occurs, listeners should be notified.
  *
  * @author christian
  */

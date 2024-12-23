@@ -76,12 +76,7 @@ public class Label {
         this.where = where;
     }
 
-    public Label(
-            String labelExpression,
-            boolean useCodedValues,
-            TextSymbol symbol,
-            int minScale,
-            int maxScale) {
+    public Label(String labelExpression, boolean useCodedValues, TextSymbol symbol, int minScale, int maxScale) {
         super();
         this.labelExpression = labelExpression;
         this.useCodedValues = useCodedValues;

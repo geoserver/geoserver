@@ -46,8 +46,7 @@ public class TestAccessLimitsSerialization {
 
     @Test
     public void testSerializeWorkspaceAccessLimits() throws Exception {
-        WorkspaceAccessLimits limits =
-                new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
+        WorkspaceAccessLimits limits = new WorkspaceAccessLimits(CatalogMode.HIDE, true, true, true);
 
         testObjectSerialization(limits);
     }
@@ -84,8 +83,7 @@ public class TestAccessLimitsSerialization {
     public void testVectorAccessLimits() throws Exception {
         List<PropertyName> properties = new ArrayList<>();
         properties.add(ff.property("test"));
-        VectorAccessLimits limits =
-                new VectorAccessLimits(CatalogMode.MIXED, properties, filter, properties, filter);
+        VectorAccessLimits limits = new VectorAccessLimits(CatalogMode.MIXED, properties, filter, properties, filter);
 
         testObjectSerialization(limits);
     }
@@ -104,8 +102,7 @@ public class TestAccessLimitsSerialization {
                 ObjectOutputStream oos = new ObjectOutputStream(bos)) {
             oos.writeObject(object);
 
-            try (ObjectInputStream ois =
-                    new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
+            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(bos.toByteArray()))) {
                 Object clone = ois.readObject();
                 Assert.assertNotSame(object, clone);
                 Assert.assertEquals(object, clone);

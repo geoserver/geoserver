@@ -51,21 +51,20 @@ import org.geotools.renderer.lite.LabelCache;
 import org.geotools.renderer.lite.StreamingRenderer;
 
 /**
- * A {@link GetMapOutputFormat} that produces {@link RenderedImageMap} instances to be encoded in
- * the constructor supplied MIME-Type.
+ * A {@link GetMapOutputFormat} that produces {@link RenderedImageMap} instances to be encoded in the constructor
+ * supplied MIME-Type.
  *
- * <p>Instances of this class are expected to be declared in the application context supplying the
- * prescribed MIME-Type to create maps for, and the list of output format names to be declared in
- * the GetCapabilities document. Note that the prescribed MIME-Type (the MIME Type the produced
- * images are to be encoded as and that is to be set in the response HTTP Content-Type header) may
- * differ from what's declared in the capabilities document, hence the separation of concerns and
- * the two different arguments in the constructor (for example, a declared output format of {@code
- * image/geotiff8} may indicate to create an indexed geotiff image with 8-bit pixel depth, but the
- * resulting MIME-Type be {@code image/tiff}.
+ * <p>Instances of this class are expected to be declared in the application context supplying the prescribed MIME-Type
+ * to create maps for, and the list of output format names to be declared in the GetCapabilities document. Note that the
+ * prescribed MIME-Type (the MIME Type the produced images are to be encoded as and that is to be set in the response
+ * HTTP Content-Type header) may differ from what's declared in the capabilities document, hence the separation of
+ * concerns and the two different arguments in the constructor (for example, a declared output format of
+ * {@code image/geotiff8} may indicate to create an indexed geotiff image with 8-bit pixel depth, but the resulting
+ * MIME-Type be {@code image/tiff}.
  *
- * <p>Whether or not the output format instance permits images with transparency and/or indexed
- * 8-bit color model is described by the {@link #isTransparencySupported() transparencySupported}
- * and {@link #isPaletteSupported() paletteSupported} properties respectively.
+ * <p>Whether or not the output format instance permits images with transparency and/or indexed 8-bit color model is
+ * described by the {@link #isTransparencySupported() transparencySupported} and {@link #isPaletteSupported()
+ * paletteSupported} properties respectively.
  *
  * @author Chris Holmes, TOPP
  * @author Simone Giannecchini, GeoSolutions
@@ -98,14 +97,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
     public static final String MAP_WRAPPING_FORMAT_OPTION = "mapWrapping";
     public static final String ADV_PROJECTION_HANDLING_FORMAT_OPTION = "advancedProjectionHandling";
-    private static final String ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION =
-            "advancedProjectionHandlingDensification";
-    private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION =
-            "disableDatelineWrappingHeuristic";
+    private static final String ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION = "advancedProjectionHandlingDensification";
+    private static final String DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION = "disableDatelineWrappingHeuristic";
 
     /**
-     * Decorations Only option, which allows to get an empty request map output, but keeps visible
-     * associated decorations
+     * Decorations Only option, which allows to get an empty request map output, but keeps visible associated
+     * decorations
      */
     public static final String DECORATIONS_ONLY_FORMAT_OPTION = "decorationsOnly";
 
@@ -145,19 +142,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         this(DEFAULT_MAP_FORMAT, wms);
     }
 
-    /**
-     * @param mime the mime type to be written down as an HTTP header when a map of this format is
-     *     generated
-     */
+    /** @param mime the mime type to be written down as an HTTP header when a map of this format is generated */
     public RenderedImageMapOutputFormat(String mime, WMS wms) {
         this(mime, new String[] {mime}, wms);
     }
 
     /**
      * @param mime the actual MIME Type resulting for the image created using this output format
-     * @param outputFormats the list of output format names to declare in the GetCapabilities
-     *     document, does not need to match {@code mime} (e.g., an output format of {@code
-     *     image/geotiff8} may result in a map returned with MIME Type {@code image/tiff})
+     * @param outputFormats the list of output format names to declare in the GetCapabilities document, does not need to
+     *     match {@code mime} (e.g., an output format of {@code image/geotiff8} may result in a map returned with MIME
+     *     Type {@code image/tiff})
      */
     public RenderedImageMapOutputFormat(String mime, String[] outputFormats, WMS wms) {
         super(mime, outputFormats);
@@ -209,10 +203,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
      *
      * @param tiled Indicates whether metatiling is activated for this map producer.
      */
-    public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled)
-            throws ServiceException {
-        Rectangle paintArea =
-                new Rectangle(0, 0, mapContent.getMapWidth(), mapContent.getMapHeight());
+    public RenderedImageMap produceMap(final WMSMapContent mapContent, final boolean tiled) throws ServiceException {
+        Rectangle paintArea = new Rectangle(0, 0, mapContent.getMapWidth(), mapContent.getMapHeight());
 
         if (LOGGER.isLoggable(Level.FINE)) {
             LOGGER.fine("setting up " + paintArea.width + "x" + paintArea.height + " image");
@@ -223,8 +215,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // check if vendoroption decorationsonly is true, so we will generate an empty map with only
         // decorations applied
-        String decorationsOnly =
-                (String) request.getFormatOptions().get(DECORATIONS_ONLY_FORMAT_OPTION);
+        String decorationsOnly = (String) request.getFormatOptions().get(DECORATIONS_ONLY_FORMAT_OPTION);
         boolean emptyMap = false;
         if (decorationsOnly != null && decorationsOnly.toLowerCase().equals("true")) {
             emptyMap = true;
@@ -254,8 +245,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // if so, throw a service exception
         long maxMemory = wms.getMaxRequestMemory() * KB;
         // ... base image memory
-        long memory =
-                getDrawingSurfaceMemoryUse(paintArea.width, paintArea.height, palette, transparent);
+        long memory = getDrawingSurfaceMemoryUse(paintArea.width, paintArea.height, palette, transparent);
         // .. use a fake streaming renderer to evaluate the extra back buffers used when rendering
         // multiple featureTypeStyles against the same layer
         StreamingRenderer testRenderer = buildRenderer();
@@ -291,14 +281,12 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 && (layout == null || layout.isEmpty())) {
             try {
                 Interpolation interpolation = null;
-                if (request.getInterpolations() != null && !request.getInterpolations().isEmpty()) {
+                if (request.getInterpolations() != null
+                        && !request.getInterpolations().isEmpty()) {
                     interpolation = request.getInterpolations().get(0);
                 }
 
-                image =
-                        new DirectRasterRenderer(
-                                        wms, mapContent, 0, interpolation, transparencySupported)
-                                .render();
+                image = new DirectRasterRenderer(wms, mapContent, 0, interpolation, transparencySupported).render();
             } catch (Exception e) {
                 throw new ServiceException("Error rendering coverage on the fast path", e);
             }
@@ -306,7 +294,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             if (image != null) {
                 image = new RenderedImageTimeDecorator(image);
                 // setting the layer triggers layerStartEvent
-                ((RenderedImageTimeDecorator) image).setLayer(mapContent.layers().get(0));
+                ((RenderedImageTimeDecorator) image)
+                        .setLayer(mapContent.layers().get(0));
                 return buildMap(mapContent, image);
             }
         }
@@ -315,8 +304,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // is enabled, since apparently the Crop operation inside the meta-tiler
         // generates striped images in that case (see GEOS-
         boolean useAlpha = transparent || MetatileMapOutputFormat.isRequestTiled(request, this);
-        final RenderedImage preparedImage =
-                prepareImage(paintArea.width, paintArea.height, palette, useAlpha);
+        final RenderedImage preparedImage = prepareImage(paintArea.width, paintArea.height, palette, useAlpha);
         final Map<RenderingHints.Key, Object> hintsMap = new HashMap<>();
 
         final Graphics2D graphic = getGraphics(transparent, bgColor, preparedImage, hintsMap);
@@ -331,42 +319,30 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
             }
         } else if (AA_TEXT.equals(antialias)) {
             hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
-            hintsMap.put(
-                    RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            hintsMap.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         } else {
             if (antialias != null && !AA_FULL.equals(antialias)) {
-                LOGGER.warning(
-                        "Unrecognized antialias setting '"
-                                + antialias
-                                + "', valid values are "
-                                + AA_SETTINGS);
+                LOGGER.warning("Unrecognized antialias setting '" + antialias + "', valid values are " + AA_SETTINGS);
             }
             hintsMap.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         }
 
         // these two hints improve text layout in diagonal labels and reduce artifacts
         // in line rendering (without hampering performance)
-        hintsMap.put(
-                RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+        hintsMap.put(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         hintsMap.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         // turn off/on interpolation rendering hint
         if (wms != null) {
             if (WMSInterpolation.Nearest.equals(wms.getInterpolation())) {
                 hintsMap.put(JAI.KEY_INTERPOLATION, NN_INTERPOLATION);
-                hintsMap.put(
-                        RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
             } else if (WMSInterpolation.Bilinear.equals(wms.getInterpolation())) {
                 hintsMap.put(JAI.KEY_INTERPOLATION, BIL_INTERPOLATION);
-                hintsMap.put(
-                        RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+                hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             } else if (WMSInterpolation.Bicubic.equals(wms.getInterpolation())) {
                 hintsMap.put(JAI.KEY_INTERPOLATION, BIC_INTERPOLATION);
-                hintsMap.put(
-                        RenderingHints.KEY_INTERPOLATION,
-                        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                hintsMap.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             }
         }
 
@@ -386,17 +362,13 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         rendererParams.put("optimizedDataLoadingEnabled", Boolean.TRUE);
         rendererParams.put("renderingBuffer", Integer.valueOf(mapContent.getBuffer()));
         rendererParams.put("maxFiltersToSendToDatastore", DefaultWebMapService.getMaxFilterRules());
-        rendererParams.put(
-                StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY,
-                mapContent.getRendererScaleMethod());
+        rendererParams.put(StreamingRenderer.SCALE_COMPUTATION_METHOD_KEY, mapContent.getRendererScaleMethod());
         if (AA_NONE.equals(antialias)) {
-            rendererParams.put(
-                    StreamingRenderer.TEXT_RENDERING_KEY, StreamingRenderer.TEXT_RENDERING_STRING);
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY, StreamingRenderer.TEXT_RENDERING_STRING);
         } else {
             // used to be TEXT_RENDERING_ADAPTIVE always, but since java 7 calling drawGlyphVector
             // just generates very ugly results
-            rendererParams.put(
-                    StreamingRenderer.TEXT_RENDERING_KEY, StreamingRenderer.TEXT_RENDERING_OUTLINE);
+            rendererParams.put(StreamingRenderer.TEXT_RENDERING_KEY, StreamingRenderer.TEXT_RENDERING_OUTLINE);
         }
         if (DefaultWebMapService.isLineWidthOptimizationEnabled()) {
             rendererParams.put(StreamingRenderer.LINE_WIDTH_OPTIMIZATION_KEY, true);
@@ -405,24 +377,20 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
         // turn on advanced projection handling
         if (wms.isAdvancedProjectionHandlingEnabled()) {
             rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_HANDLING_KEY, true);
-            if (request.getFormatOptions().get(ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION)
-                    != null) {
+            if (request.getFormatOptions().get(ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION) != null) {
                 rendererParams.put(
                         StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY,
-                        getFormatOptionAsBoolean(
-                                request, ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION));
+                        getFormatOptionAsBoolean(request, ADV_PROJECTION_DENSIFICATION_FORMAT_OPTION));
             } else if (wms.isAdvancedProjectionDensificationEnabled()) {
                 rendererParams.put(StreamingRenderer.ADVANCED_PROJECTION_DENSIFICATION_KEY, true);
             }
             if (wms.isContinuousMapWrappingEnabled()) {
                 rendererParams.put(StreamingRenderer.CONTINUOUS_MAP_WRAPPING, true);
             }
-            if (request.getFormatOptions().get(DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION)
-                    != null) {
+            if (request.getFormatOptions().get(DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION) != null) {
                 rendererParams.put(
                         StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY,
-                        !getFormatOptionAsBoolean(
-                                request, DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION));
+                        !getFormatOptionAsBoolean(request, DISABLE_DATELINE_WRAPPING_HEURISTIC_FORMAT_OPTION));
             } else if (wms.isDateLineWrappingHeuristicDisabled()) {
                 rendererParams.put(StreamingRenderer.DATELINE_WRAPPING_HEURISTIC_KEY, false);
             }
@@ -439,7 +407,8 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // see if the user specified a dpi
         if (request.getFormatOptions().get("dpi") != null) {
-            rendererParams.put(StreamingRenderer.DPI_KEY, (request.getFormatOptions().get("dpi")));
+            rendererParams.put(
+                    StreamingRenderer.DPI_KEY, (request.getFormatOptions().get("dpi")));
         }
 
         if (labelCache != null) {
@@ -478,15 +447,15 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
             Interpolation interpolationToSet = null;
             // check interpolations vendor parameter first
-            if (request.getInterpolations() != null && request.getInterpolations().size() > i) {
+            if (request.getInterpolations() != null
+                    && request.getInterpolations().size() > i) {
                 interpolationToSet = request.getInterpolations().get(i);
             }
             // if vendor param not set, check by layer interpolation configuration
             if (interpolationToSet == null) {
                 LayerInfo layerInfo = request.getLayers().get(i).getLayerInfo();
 
-                LayerInfo.WMSInterpolation byLayerInterpolation =
-                        getConfiguredLayerInterpolation(layerInfo);
+                LayerInfo.WMSInterpolation byLayerInterpolation = getConfiguredLayerInterpolation(layerInfo);
                 if (byLayerInterpolation != null) {
                     interpolationToSet = toInterpolationObject(byLayerInterpolation);
                 }
@@ -494,8 +463,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
             if (interpolationToSet != null) {
                 Layer layer = mapContent.layers().get(i);
-                layer.getUserData()
-                        .put(StreamingRenderer.BYLAYER_INTERPOLATION, interpolationToSet);
+                layer.getUserData().put(StreamingRenderer.BYLAYER_INTERPOLATION, interpolationToSet);
             }
         }
 
@@ -513,8 +481,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         // Add a render listener that ignores well known rendering exceptions and reports back non
         // ignorable ones
-        final RenderExceptionStrategy nonIgnorableExceptionListener =
-                new RenderExceptionStrategy(renderer);
+        final RenderExceptionStrategy nonIgnorableExceptionListener = new RenderExceptionStrategy(renderer);
         renderer.addRenderListener(nonIgnorableExceptionListener);
         RenderTimeStatistics statistics = null;
         if (!request.getRequest().equalsIgnoreCase("GETFEATUREINFO")) {
@@ -525,28 +492,22 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
         int maxRenderingTime = wms.getMaxRenderingTime(request);
         ServiceException serviceException = null;
-        boolean saveMap =
-                (request.getRawKvp() != null
-                        && WMSServiceExceptionHandler.isPartialMapExceptionType(
-                                request.getRawKvp().get("EXCEPTIONS")));
-        RenderingTimeoutEnforcer timeout =
-                new RenderingTimeoutEnforcer(maxRenderingTime, renderer, graphic, saveMap) {
+        boolean saveMap = (request.getRawKvp() != null
+                && WMSServiceExceptionHandler.isPartialMapExceptionType(
+                        request.getRawKvp().get("EXCEPTIONS")));
+        RenderingTimeoutEnforcer timeout = new RenderingTimeoutEnforcer(maxRenderingTime, renderer, graphic, saveMap) {
 
-                    /** Save the map before disposing of the graphics */
-                    @Override
-                    public void saveMap() {
-                        this.map = optimizeAndBuildMap(palette, preparedImage, mapContent);
-                    }
-                };
+            /** Save the map before disposing of the graphics */
+            @Override
+            public void saveMap() {
+                this.map = optimizeAndBuildMap(palette, preparedImage, mapContent);
+            }
+        };
         timeout.start();
         try {
             // finally render the image;
             if (!emptyMap) {
-                renderer.paint(
-                        graphic,
-                        paintArea,
-                        mapContent.getRenderingArea(),
-                        mapContent.getRenderingTransform());
+                renderer.paint(graphic, paintArea, mapContent.getRenderingArea(), mapContent.getRenderingTransform());
             } else {
                 LOGGER.fine("we only want to get the layout, if it's not null");
             }
@@ -556,8 +517,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
                 try {
                     layout.paint(graphic, paintArea, mapContent);
                 } catch (Exception e) {
-                    throw new ServiceException(
-                            "Problem occurred while trying to watermark data", e);
+                    throw new ServiceException("Problem occurred while trying to watermark data", e);
                 }
             }
             timeout.stop();
@@ -566,34 +526,30 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
 
             // check if too many errors occurred
             if (errorChecker.exceedsMaxErrors()) {
-                serviceException =
-                        new ServiceException(
-                                "More than "
-                                        + maxErrors
-                                        + " rendering errors occurred, bailing out. Layers: "
-                                        + buildMapLayerNameList(mapContent),
-                                errorChecker.getLastException(),
-                                "internalError");
+                serviceException = new ServiceException(
+                        "More than "
+                                + maxErrors
+                                + " rendering errors occurred, bailing out. Layers: "
+                                + buildMapLayerNameList(mapContent),
+                        errorChecker.getLastException(),
+                        "internalError");
             }
             // check if the request did timeout
             if (timeout.isTimedOut()) {
-                serviceException =
-                        new ServiceException(
-                                "This request used more time than allowed and has been forcefully stopped. "
-                                        + "Max rendering time is "
-                                        + (maxRenderingTime / 1000.0)
-                                        + "s. Layers: "
-                                        + buildMapLayerNameList(mapContent));
+                serviceException = new ServiceException(
+                        "This request used more time than allowed and has been forcefully stopped. "
+                                + "Max rendering time is "
+                                + (maxRenderingTime / 1000.0)
+                                + "s. Layers: "
+                                + buildMapLayerNameList(mapContent));
             }
             // check if a non ignorable error occurred
             if (nonIgnorableExceptionListener.exceptionOccurred()) {
                 Exception renderError = nonIgnorableExceptionListener.getException();
-                serviceException =
-                        new ServiceException(
-                                "Rendering process failed. Layers: "
-                                        + buildMapLayerNameList(mapContent),
-                                renderError,
-                                "internalError");
+                serviceException = new ServiceException(
+                        "Rendering process failed. Layers: " + buildMapLayerNameList(mapContent),
+                        renderError,
+                        "internalError");
             }
 
             // If there were no exceptions, return the map
@@ -624,21 +580,18 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     /** Helper method to build a comma separated list of layer names in the map. * */
     private String buildMapLayerNameList(WMSMapContent mapContent) {
         List<MapLayerInfo> layers = mapContent.getRequest().getLayers();
-        return layers == null
-                ? ""
-                : layers.stream().map(MapLayerInfo::getName).collect(Collectors.joining(", "));
+        return layers == null ? "" : layers.stream().map(MapLayerInfo::getName).collect(Collectors.joining(", "));
     }
 
     /**
-     * Creates a {@link StreamingRenderer} instance (subclasses can provide their own specialized
-     * subclasses of {@link StreamingRenderer}
+     * Creates a {@link StreamingRenderer} instance (subclasses can provide their own specialized subclasses of
+     * {@link StreamingRenderer}
      */
     protected StreamingRenderer buildRenderer() {
         return new StreamingRenderer();
     }
 
-    public static boolean getFormatOptionAsBoolean(
-            final GetMapRequest request, final String formatOptionKey) {
+    public static boolean getFormatOptionAsBoolean(final GetMapRequest request, final String formatOptionKey) {
         if (request.getFormatOptions().get(formatOptionKey) != null) {
             String formatOptionValue = (String) request.getFormatOptions().get(formatOptionKey);
             return (!"false".equalsIgnoreCase(formatOptionValue));
@@ -680,22 +633,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * Sets up a {@link BufferedImage#TYPE_4BYTE_ABGR} if the paletteInverter is not provided, or a
-     * indexed image otherwise. Subclasses may override this method should they need a special kind
-     * of image
+     * Sets up a {@link BufferedImage#TYPE_4BYTE_ABGR} if the paletteInverter is not provided, or a indexed image
+     * otherwise. Subclasses may override this method should they need a special kind of image
      */
-    protected RenderedImage prepareImage(
-            int width, int height, IndexColorModel palette, boolean transparent) {
+    protected RenderedImage prepareImage(int width, int height, IndexColorModel palette, boolean transparent) {
         return ImageUtils.createImage(
-                width,
-                height,
-                isPaletteSupported() ? palette : null,
-                transparent && isTransparencySupported());
+                width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 
     /**
-     * Returns true if the format supports image transparency, false otherwise (defaults to {@code
-     * true})
+     * Returns true if the format supports image transparency, false otherwise (defaults to {@code true})
      *
      * @return true if the format supports image transparency, false otherwise
      */
@@ -708,8 +655,7 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * Returns true if the format supports palette encoding, false otherwise (defaults to {@code
-     * true}).
+     * Returns true if the format supports palette encoding, false otherwise (defaults to {@code true}).
      *
      * @return true if the format supports palette encoding, false otherwise
      */
@@ -722,22 +668,16 @@ public class RenderedImageMapOutputFormat extends AbstractMapOutputFormat {
     }
 
     /**
-     * When you override {@link #prepareImage(int, int, IndexColorModel, boolean)} remember to
-     * override this one as well
+     * When you override {@link #prepareImage(int, int, IndexColorModel, boolean)} remember to override this one as well
      */
-    protected long getDrawingSurfaceMemoryUse(
-            int width, int height, IndexColorModel palette, boolean transparent) {
+    protected long getDrawingSurfaceMemoryUse(int width, int height, IndexColorModel palette, boolean transparent) {
         return ImageUtils.getDrawingSurfaceMemoryUse(
-                width,
-                height,
-                isPaletteSupported() ? palette : null,
-                transparent && isTransparencySupported());
+                width, height, isPaletteSupported() ? palette : null, transparent && isTransparencySupported());
     }
 
     /**
-     * This takes an image with an indexed color model that uses less than 256 colors and has a 8bit
-     * sample model, and transforms it to one that has the optimal sample model (for example, 1bit
-     * if the palette only has 2 colors)
+     * This takes an image with an indexed color model that uses less than 256 colors and has a 8bit sample model, and
+     * transforms it to one that has the optimal sample model (for example, 1bit if the palette only has 2 colors)
      */
     private static RenderedImage optimizeSampleModel(RenderedImage source) {
         int w = source.getWidth();

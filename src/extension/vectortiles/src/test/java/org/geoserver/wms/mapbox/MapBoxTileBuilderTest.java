@@ -109,8 +109,7 @@ public class MapBoxTileBuilderTest {
 
         MapBoxTileBuilder tileBuilder = builderFact.newBuilder(screenSize, mapArea);
 
-        Geometry line =
-                geom("LINESTRING(-100 -100,300 300)"); // box is 0 to 256, so this is outside the
+        Geometry line = geom("LINESTRING(-100 -100,300 300)"); // box is 0 to 256, so this is outside the
         // box
 
         Map<String, Object> lineProps = ImmutableMap.of("name", "line1");
@@ -139,10 +138,8 @@ public class MapBoxTileBuilderTest {
         Map<String, Object> lineProps1 = ImmutableMap.of("name", "line1");
         Map<String, Object> lineProps2 = ImmutableMap.of("name", "line2");
 
-        tileBuilder.addFeature(
-                "Lines", "Lines.1", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
-        tileBuilder.addFeature(
-                "Lines", "Lines.27", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
+        tileBuilder.addFeature("Lines", "Lines.1", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
+        tileBuilder.addFeature("Lines", "Lines.27", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
 
         RawMap map = tileBuilder.build(mock(WMSMapContent.class));
 
@@ -160,10 +157,8 @@ public class MapBoxTileBuilderTest {
         Map<String, Object> lineProps1 = ImmutableMap.of("name", "line1");
         Map<String, Object> lineProps2 = ImmutableMap.of("name", "line2");
 
-        tileBuilder.addFeature(
-                "Lines", "an_id", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
-        tileBuilder.addFeature(
-                "Lines", "another_id", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
+        tileBuilder.addFeature("Lines", "an_id", "unused", geom("LINESTRING(10 10, 20 20)"), lineProps1);
+        tileBuilder.addFeature("Lines", "another_id", "unused", geom("LINESTRING(50 50, 50 30)"), lineProps2);
 
         RawMap map = tileBuilder.build(mock(WMSMapContent.class));
 

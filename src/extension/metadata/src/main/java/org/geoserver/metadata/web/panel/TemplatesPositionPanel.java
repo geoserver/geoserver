@@ -31,9 +31,7 @@ public class TemplatesPositionPanel extends Panel {
         super(id, model);
         ImageAjaxLink<Object> upLink =
                 new ImageAjaxLink<>(
-                        "up",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
+                        "up", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png")) {
                     private static final long serialVersionUID = -4165434301439054175L;
 
                     @Override
@@ -41,9 +39,10 @@ public class TemplatesPositionPanel extends Panel {
                         int index = templates.getObject().indexOf(model.getObject());
                         tracker.switchTemplates(
                                 model.getObject(), templates.getObject().get(index - 1));
-                        templates.getObject().add(index - 1, templates.getObject().remove(index));
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        templates
+                                .getObject()
+                                .add(index - 1, templates.getObject().remove(index));
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         tablePanel.clearSelection();
                         target.add(tablePanel);
                     }
@@ -63,8 +62,7 @@ public class TemplatesPositionPanel extends Panel {
         ImageAjaxLink<Object> downLink =
                 new ImageAjaxLink<>(
                         "down",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
+                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png")) {
                     private static final long serialVersionUID = -8005026702401617344L;
 
                     @Override
@@ -72,10 +70,11 @@ public class TemplatesPositionPanel extends Panel {
                         int index = templates.getObject().indexOf(model.getObject());
                         tracker.switchTemplates(
                                 model.getObject(), templates.getObject().get(index + 1));
-                        templates.getObject().add(index + 1, templates.getObject().remove(index));
+                        templates
+                                .getObject()
+                                .add(index + 1, templates.getObject().remove(index));
 
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
+                        ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
                         tablePanel.clearSelection();
                         target.add(tablePanel);
                     }

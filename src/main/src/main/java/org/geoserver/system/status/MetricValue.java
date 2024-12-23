@@ -9,8 +9,8 @@ import java.time.LocalTime;
 import org.geotools.util.Converters;
 
 /**
- * Stores values and configuration of system information metrics This object is serialized by
- * MonitorRest to provide XML, JSON and HTML view of data
+ * Stores values and configuration of system information metrics This object is serialized by MonitorRest to provide
+ * XML, JSON and HTML view of data
  *
  * @author sandr
  */
@@ -110,9 +110,7 @@ public class MetricValue implements Serializable {
         if (value instanceof Double || value instanceof Float) {
             final Number numberValue = (Number) value;
             return String.format(
-                    "%.2f %s",
-                    value instanceof Double ? numberValue.doubleValue() : numberValue.floatValue(),
-                    unit);
+                    "%.2f %s", value instanceof Double ? numberValue.doubleValue() : numberValue.floatValue(), unit);
         }
         if (unit != null && unit.equalsIgnoreCase("bytes")) {
             long bytes = Converters.convert(value, Long.class);
@@ -132,10 +130,7 @@ public class MetricValue implements Serializable {
         this.identifier = identifier;
     }
 
-    /**
-     * Based on this article:
-     * http://programming.guide/java/formatting-byte-size-to-human-readable-format.html
-     */
+    /** Based on this article: http://programming.guide/java/formatting-byte-size-to-human-readable-format.html */
     private static String humanReadableByteCount(long bytes) {
         // df -h and du -h use 1024 by default, system monitoring use MB
         int unit = 1024;

@@ -79,8 +79,7 @@ public class WFSPPIO extends XMLPPIO {
                         "Decoding the following WFS response did not result in an object of type FeatureCollectionType: \n"
                                 + new String(streamBytes));
             }
-            throw new IllegalArgumentException(
-                    "Decoded WFS result is not a feature collection, got a: " + result);
+            throw new IllegalArgumentException("Decoded WFS result is not a feature collection, got a: " + result);
         }
     }
 
@@ -96,13 +95,11 @@ public class WFSPPIO extends XMLPPIO {
         SimpleFeatureCollection fc;
         // cast and handle the axis flipping
         if (input instanceof net.opengis.wfs.FeatureCollectionType) {
-            net.opengis.wfs.FeatureCollectionType fct =
-                    (net.opengis.wfs.FeatureCollectionType) input;
+            net.opengis.wfs.FeatureCollectionType fct = (net.opengis.wfs.FeatureCollectionType) input;
             fc = (SimpleFeatureCollection) fct.getFeature().get(0);
         } else {
             // WFS 2.0.0
-            net.opengis.wfs20.FeatureCollectionType fct =
-                    (net.opengis.wfs20.FeatureCollectionType) input;
+            net.opengis.wfs20.FeatureCollectionType fct = (net.opengis.wfs20.FeatureCollectionType) input;
             fc = (SimpleFeatureCollection) fct.getMember().get(0);
         }
         // Axis flipping issue, we should determine if the collection needs flipping
@@ -133,11 +130,10 @@ public class WFSPPIO extends XMLPPIO {
     }
 
     /**
-     * Parsing GML we often end up with empty attributes that will break shapefiles and common
-     * processing algorithms because they introduce bounding boxes (boundedBy) or hijack the default
-     * geometry property (location). We sanitize the collection in this method by removing them. It
-     * is not the best approach, but works in most cases, whilst not doing it would break the code
-     * in most cases. Would be better to find a more general approach...
+     * Parsing GML we often end up with empty attributes that will break shapefiles and common processing algorithms
+     * because they introduce bounding boxes (boundedBy) or hijack the default geometry property (location). We sanitize
+     * the collection in this method by removing them. It is not the best approach, but works in most cases, whilst not
+     * doing it would break the code in most cases. Would be better to find a more general approach...
      */
     private SimpleFeatureCollection eliminateFeatureBounds(SimpleFeatureCollection fc) {
         final SimpleFeatureType original = fc.getSchema();
@@ -231,9 +227,7 @@ public class WFSPPIO extends XMLPPIO {
         }
     }
 
-    /**
-     * A WFS 1.0 PPIO using alternate MIME type without a ";" that creates troubles in KVP parsing
-     */
+    /** A WFS 1.0 PPIO using alternate MIME type without a ";" that creates troubles in KVP parsing */
     public static class WFS10Alternate extends WFSPPIO {
 
         public WFS10Alternate() {
@@ -254,9 +248,7 @@ public class WFSPPIO extends XMLPPIO {
         }
     }
 
-    /**
-     * A WFS 1.1 PPIO using alternate MIME type without a ";" that creates troubles in KVP parsing
-     */
+    /** A WFS 1.1 PPIO using alternate MIME type without a ";" that creates troubles in KVP parsing */
     public static class WFS11Alternate extends WFSPPIO {
 
         public WFS11Alternate() {

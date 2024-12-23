@@ -160,8 +160,7 @@ public class MapMLHTMLOutput {
                     .append("let customProjectionDefinition = `\n")
                     .append(buildDefinition(projType.getTiledCRS(), 10))
                     .append("let map = document.querySelector(\"mapml-viewer\");\n")
-                    .append(
-                            "let cProjection = map.defineCustomProjection(customProjectionDefinition);\n")
+                    .append("let cProjection = map.defineCustomProjection(customProjectionDefinition);\n")
                     .append("map.projection = cProjection;\n")
                     .append("</script>");
         }
@@ -173,8 +172,7 @@ public class MapMLHTMLOutput {
         String name = params.getName();
         Point origin = params.getOrigin();
         String indent = " ".repeat(indentChars);
-        String originString =
-                String.format(Locale.ENGLISH, "[%.8f, %.8f]", origin.getX(), origin.getY());
+        String originString = String.format(Locale.ENGLISH, "[%.8f, %.8f]", origin.getX(), origin.getY());
 
         double[] resolutions = params.getResolutions();
         StringBuilder resolutionsString = new StringBuilder("[");
@@ -187,58 +185,54 @@ public class MapMLHTMLOutput {
         resolutionsString.append("]");
 
         Bounds bounds = params.getBounds();
-        String boundsString =
-                String.format(
-                        Locale.ENGLISH,
-                        "[[%.8f, %.8f], [%.8f, %.8f]]",
-                        bounds.getMin().getX(),
-                        bounds.getMin().getY(),
-                        bounds.getMax().getX(),
-                        bounds.getMax().getY());
+        String boundsString = String.format(
+                Locale.ENGLISH,
+                "[[%.8f, %.8f], [%.8f, %.8f]]",
+                bounds.getMin().getX(),
+                bounds.getMin().getY(),
+                bounds.getMax().getX(),
+                bounds.getMax().getY());
 
         CoordinateReferenceSystem crs = tiledCRS.getCRS();
         PROJFormatter formatter = new PROJFormatter();
         String projString = formatter.toPROJ((PROJFormattable) crs);
-        StringBuilder sb =
-                new StringBuilder("{\n")
-                        .append("\"projection\": \"")
-                        .append(name)
-                        .append("\",\n")
-                        .append(indent)
-                        .append("\"origin\": ")
-                        .append(originString)
-                        .append(",\n")
-                        .append(indent)
-                        .append("\"resolutions\": ")
-                        .append(resolutionsString)
-                        .append(",\n")
-                        .append(indent)
-                        .append("\"bounds\": ")
-                        .append(boundsString)
-                        .append(",\n")
-                        .append(indent)
-                        .append("\"tilesize\": ")
-                        .append(tileSize)
-                        .append(",\n")
-                        .append(indent)
-                        .append("\"proj4string\" : \"")
-                        .append(projString)
-                        .append("\"\n")
-                        .append("}`;\n");
+        StringBuilder sb = new StringBuilder("{\n")
+                .append("\"projection\": \"")
+                .append(name)
+                .append("\",\n")
+                .append(indent)
+                .append("\"origin\": ")
+                .append(originString)
+                .append(",\n")
+                .append(indent)
+                .append("\"resolutions\": ")
+                .append(resolutionsString)
+                .append(",\n")
+                .append(indent)
+                .append("\"bounds\": ")
+                .append(boundsString)
+                .append(",\n")
+                .append(indent)
+                .append("\"tilesize\": ")
+                .append(tileSize)
+                .append(",\n")
+                .append(indent)
+                .append("\"proj4string\" : \"")
+                .append(projString)
+                .append("\"\n")
+                .append("}`;\n");
         return sb.toString();
     }
 
     private String buildViewerPath(HttpServletRequest request) {
         String base = ResponseUtils.baseURL(request);
-        return ResponseUtils.buildURL(
-                base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
+        return ResponseUtils.buildURL(base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
     }
 
     private int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {
         TiledCRS tcrs = projType.getTiledCRS();
         boolean flipAxis =
-                CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem())
-                        .equals(CRS.AxisOrder.NORTH_EAST);
+                CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem()).equals(CRS.AxisOrder.NORTH_EAST);
         double minX = flipAxis ? projectedBbox.getMinY() : projectedBbox.getMinX();
         double maxX = flipAxis ? projectedBbox.getMaxY() : projectedBbox.getMaxX();
         double minY = flipAxis ? projectedBbox.getMinX() : projectedBbox.getMinY();
@@ -247,9 +241,7 @@ public class MapMLHTMLOutput {
         // allowing for the data to be displayed at a certain size (WxH) in pixels,
         // figure out the zoom level at which the projected bounds fits into that,
         // in both dimensions
-        zoom =
-                tcrs.fitProjectedBoundsToDisplay(
-                        pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
+        zoom = tcrs.fitProjectedBoundsToDisplay(pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
         return zoom;
     }
 }

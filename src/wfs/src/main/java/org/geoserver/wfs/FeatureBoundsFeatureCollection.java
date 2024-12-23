@@ -23,10 +23,9 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A feature collection wrapping a base collection, returning features that do conform to the
- * specified type (which has have a subset of the attributes in the original schema), and that do
- * use the wrapped features to compute their bounds (so that the SimpleFeature bounds can be
- * computed even if the visible attributes do not include geometries)
+ * A feature collection wrapping a base collection, returning features that do conform to the specified type (which has
+ * have a subset of the attributes in the original schema), and that do use the wrapped features to compute their bounds
+ * (so that the SimpleFeature bounds can be computed even if the visible attributes do not include geometries)
  *
  * @author Andrea Aime - TOPP
  */
@@ -39,8 +38,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
      * @param wrapped the wrapped feature collection
      * @param targetSchema the target schema
      */
-    public FeatureBoundsFeatureCollection(
-            final SimpleFeatureCollection wrapped, final SimpleFeatureType targetSchema) {
+    public FeatureBoundsFeatureCollection(final SimpleFeatureCollection wrapped, final SimpleFeatureType targetSchema) {
         super(targetSchema);
         this.wrapped = wrapped;
     }
@@ -97,8 +95,8 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
     }
 
     /**
-     * Wraps a SimpleFeature shaving off all attributes not included in the original type, but
-     * delegates bounds computation to the original feature.
+     * Wraps a SimpleFeature shaving off all attributes not included in the original type, but delegates bounds
+     * computation to the original feature.
      *
      * @author Andrea Aime - TOPP
      */
@@ -139,8 +137,7 @@ class FeatureBoundsFeatureCollection extends AbstractFeatureCollection {
         }
 
         public Object[] getAttributes(Object[] attributes) {
-            Object[] retval =
-                    attributes != null ? attributes : new Object[type.getAttributeCount()];
+            Object[] retval = attributes != null ? attributes : new Object[type.getAttributeCount()];
             for (int i = 0; i < retval.length; i++) {
                 retval[i] = delegate.getAttribute(type.getDescriptor(i).getName());
             }

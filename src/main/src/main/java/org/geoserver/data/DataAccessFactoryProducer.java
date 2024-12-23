@@ -11,8 +11,7 @@ import org.geotools.api.data.DataAccessFactory;
 /**
  * Provider of data access factories.
  *
- * <p>This extension point allows for the addition of data access factories outside of the geotools
- * spi framework.
+ * <p>This extension point allows for the addition of data access factories outside of the geotools spi framework.
  *
  * @author Justin Deoliveira, OpenGeo
  */

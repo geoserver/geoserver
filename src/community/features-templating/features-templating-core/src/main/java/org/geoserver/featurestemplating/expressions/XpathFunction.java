@@ -13,10 +13,7 @@ import org.xml.sax.helpers.NamespaceSupport;
 public class XpathFunction extends FunctionExpressionImpl implements PropertyName {
 
     public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "xpath",
-                    parameter("result", Object.class),
-                    parameter("property", String.class));
+            new FunctionNameImpl("xpath", parameter("result", Object.class), parameter("property", String.class));
 
     protected String propertyName;
 
@@ -34,8 +31,7 @@ public class XpathFunction extends FunctionExpressionImpl implements PropertyNam
     @Override
     public Object evaluate(Object object) {
         String strXpath = (String) getParameters().get(0).evaluate(object);
-        AttributeExpressionImpl attributeExpression =
-                new AttributeExpressionImpl(strXpath, namespaceSupport);
+        AttributeExpressionImpl attributeExpression = new AttributeExpressionImpl(strXpath, namespaceSupport);
         return attributeExpression.evaluate(object);
     }
 

@@ -51,21 +51,20 @@ import org.geotools.coverage.grid.io.CoverageReadingTransformation;
 import org.geotools.feature.FeatureTypes;
 
 /**
- * Extracts the active raster symbolizers, as long as there are some, and only raster symbolizers
- * are available, without rendering transformations in place. In the case of mixed symbolizers it
- * will return null TODO: extend this class so that it handles the case of other symbolizers applied
- * after a raster symbolizer one (e.g., to draw a rectangle around a coverage)
+ * Extracts the active raster symbolizers, as long as there are some, and only raster symbolizers are available, without
+ * rendering transformations in place. In the case of mixed symbolizers it will return null TODO: extend this class so
+ * that it handles the case of other symbolizers applied after a raster symbolizer one (e.g., to draw a rectangle around
+ * a coverage)
  *
  * @author Andrea Aime
  */
 public class RasterSymbolizerVisitor implements StyleVisitor {
 
     /**
-     * Boolean value allowing to control whether rendering transformations should be evaluated when
-     * performing WMS GetFeatureInfo requests. This option applies only to transformations with a
-     * raster source (i.e., raster-to-raster and raster-to-vector). The default value can be
-     * configured by administrators in the global and workspace-specific WMS service settings
-     * (transformations will be evaluated by default) and this SLD vendor option can be used to
+     * Boolean value allowing to control whether rendering transformations should be evaluated when performing WMS
+     * GetFeatureInfo requests. This option applies only to transformations with a raster source (i.e., raster-to-raster
+     * and raster-to-vector). The default value can be configured by administrators in the global and workspace-specific
+     * WMS service settings (transformations will be evaluated by default) and this SLD vendor option can be used to
      * override the service setting for a specific FeatureTypeStyle element within the SLD document.
      */
     public static final String TRANSFORM_FEATURE_INFO = "transformFeatureInfo";
@@ -90,8 +89,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
         this(scaleDenominator, featureType, null);
     }
 
-    public RasterSymbolizerVisitor(
-            double scaleDenominator, FeatureType featureType, Boolean transformFeatureInfo) {
+    public RasterSymbolizerVisitor(double scaleDenominator, FeatureType featureType, Boolean transformFeatureInfo) {
         this.scaleDenominator = scaleDenominator;
         this.featureType = featureType;
         this.transformFeatureInfo = transformFeatureInfo;
@@ -105,8 +103,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
     }
 
     public List<RasterSymbolizer> getRasterSymbolizers() {
-        if (otherSymbolizers || !otherRenderingTransformations.isEmpty())
-            return Collections.emptyList();
+        if (otherSymbolizers || !otherRenderingTransformations.isEmpty()) return Collections.emptyList();
         else return symbolizers;
     }
 
@@ -157,8 +154,7 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     @Override
     public void visit(Rule rule) {
-        if (rule.getMinScaleDenominator() < scaleDenominator
-                && rule.getMaxScaleDenominator() > scaleDenominator) {
+        if (rule.getMinScaleDenominator() < scaleDenominator && rule.getMaxScaleDenominator() > scaleDenominator) {
             for (Symbolizer s : rule.symbolizers()) s.accept(this);
         }
     }
@@ -201,8 +197,8 @@ public class RasterSymbolizerVisitor implements StyleVisitor {
 
     private boolean activeRules(FeatureTypeStyle fts) {
         for (Rule rule : fts.rules()) {
-            if (rule.getMinScaleDenominator() < scaleDenominator
-                    && rule.getMaxScaleDenominator() > scaleDenominator) return true;
+            if (rule.getMinScaleDenominator() < scaleDenominator && rule.getMaxScaleDenominator() > scaleDenominator)
+                return true;
         }
 
         return false;

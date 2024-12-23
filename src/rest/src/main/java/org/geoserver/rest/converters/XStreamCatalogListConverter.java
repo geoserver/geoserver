@@ -27,12 +27,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 
-/**
- * Converter to handle the serialization of lists of catalog resources, which need some special
- * handling
- */
-public abstract class XStreamCatalogListConverter
-        extends XStreamMessageConverter<RestListWrapper<?>> {
+/** Converter to handle the serialization of lists of catalog resources, which need some special handling */
+public abstract class XStreamCatalogListConverter extends XStreamMessageConverter<RestListWrapper<?>> {
 
     public XStreamCatalogListConverter(MediaType... supportedMediaTypes) {
         super(supportedMediaTypes);
@@ -52,12 +48,10 @@ public abstract class XStreamCatalogListConverter
     }
 
     @Override
-    public RestListWrapper<?> readInternal(
-            Class<? extends RestListWrapper<?>> clazz, HttpInputMessage inputMessage)
+    public RestListWrapper<?> readInternal(Class<? extends RestListWrapper<?>> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
-                getClass().getName() + " does not support deserialization of catalog lists",
-                inputMessage);
+                getClass().getName() + " does not support deserialization of catalog lists", inputMessage);
     }
 
     //
@@ -80,71 +74,61 @@ public abstract class XStreamCatalogListConverter
         final String name = getItemName(xp, clazz);
         xstream.alias(name, clazz);
 
-        xstream.registerConverter(
-                new CollectionConverter(xstream.getMapper()) {
-                    @Override
-                    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                        return Collection.class.isAssignableFrom(type);
-                    }
+        xstream.registerConverter(new CollectionConverter(xstream.getMapper()) {
+            @Override
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                return Collection.class.isAssignableFrom(type);
+            }
 
-                    @Override
-                    protected void writeCompleteItem(
-                            Object item,
-                            MarshallingContext context,
-                            HierarchicalStreamWriter writer) {
+            @Override
+            protected void writeCompleteItem(Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
 
-                        writer.startNode(name);
-                        context.convertAnother(item);
-                        writer.endNode();
-                    }
-                });
-        xstream.registerConverter(
-                new Converter() {
-                    @Override
-                    public boolean canConvert(Class type) {
-                        return clazz.isAssignableFrom(type);
-                    }
+                writer.startNode(name);
+                context.convertAnother(item);
+                writer.endNode();
+            }
+        });
+        xstream.registerConverter(new Converter() {
+            @Override
+            public boolean canConvert(Class type) {
+                return clazz.isAssignableFrom(type);
+            }
 
-                    @Override
-                    public void marshal(
-                            Object source,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
+            @Override
+            public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
 
-                        String ref;
-                        // Special case for layer list, to handle the non-workspace-specific
-                        // endpoint for layers
-                        if (clazz.equals(LayerInfo.class)
-                                && OwsUtils.getter(clazz, "prefixedName", String.class) != null
-                                && RequestInfo.get() != null
-                                && !RequestInfo.get().getPagePath().contains("/workspaces/")) {
+                String ref;
+                // Special case for layer list, to handle the non-workspace-specific
+                // endpoint for layers
+                if (clazz.equals(LayerInfo.class)
+                        && OwsUtils.getter(clazz, "prefixedName", String.class) != null
+                        && RequestInfo.get() != null
+                        && !RequestInfo.get().getPagePath().contains("/workspaces/")) {
 
-                            ref = (String) OwsUtils.get(source, "prefixedName");
-                        } else if (OwsUtils.getter(clazz, "name", String.class) != null) {
-                            ref = (String) OwsUtils.get(source, "name");
-                        } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
-                            ref = (String) OwsUtils.get(source, "id");
-                        } else if (OwsUtils.getter(clazz, "id", Long.class) != null) {
-                            // For some reason Importer objects have Long ids so this catches that
-                            // case
-                            ref = OwsUtils.get(source, "id").toString();
-                        } else {
-                            throw new RuntimeException(
-                                    "Could not determine identifier for: " + clazz.getName());
-                        }
-                        writer.startNode(wrapper.getItemAttributeName());
-                        writer.setValue(ref);
-                        writer.endNode();
+                    ref = (String) OwsUtils.get(source, "prefixedName");
+                } else if (OwsUtils.getter(clazz, "name", String.class) != null) {
+                    ref = (String) OwsUtils.get(source, "name");
+                } else if (OwsUtils.getter(clazz, "id", String.class) != null) {
+                    ref = (String) OwsUtils.get(source, "id");
+                } else if (OwsUtils.getter(clazz, "id", Long.class) != null) {
+                    // For some reason Importer objects have Long ids so this catches that
+                    // case
+                    ref = OwsUtils.get(source, "id").toString();
+                } else {
+                    throw new RuntimeException("Could not determine identifier for: " + clazz.getName());
+                }
+                writer.startNode(wrapper.getItemAttributeName());
+                writer.setValue(ref);
+                writer.endNode();
 
-                        encodeLink(encode(ref), writer);
-                    }
+                encodeLink(encode(ref), writer);
+            }
 
-                    @Override
-                    public Object unmarshal(
-                            HierarchicalStreamReader reader, UnmarshallingContext context) {
-                        return null;
-                    }
-                });
+            @Override
+            public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
+                return null;
+            }
+        });
     }
 
     /**
@@ -152,8 +136,7 @@ public abstract class XStreamCatalogListConverter
      *
      * <p>The default works with list, subclasses may override for instance to work with a Set.
      */
-    protected void aliasCollection(
-            Object data, XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
+    protected void aliasCollection(Object data, XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
         XStreamPersister xp = xpf.createXMLPersister();
         wrapper.configurePersister(xp, this);
         final String alias = getItemName(xp, clazz);
@@ -216,9 +199,8 @@ public abstract class XStreamCatalogListConverter
         }
 
         /**
-         * Calls {@link #writeSingleElementCollection} for single-element collections, to ensure
-         * backwards compatibility with Jettison 1.0 output, and {@code super.writeInternal()}
-         * otherwise
+         * Calls {@link #writeSingleElementCollection} for single-element collections, to ensure backwards compatibility
+         * with Jettison 1.0 output, and {@code super.writeInternal()} otherwise
          */
         @Override
         public void writeInternal(RestListWrapper<?> wrapper, HttpOutputMessage outputMessage)
@@ -253,14 +235,12 @@ public abstract class XStreamCatalogListConverter
             // needed for Jettison 1.4.1
             Configuration configuration = new Configuration();
             configuration.setRootElementArrayWrapper(false);
-            return new SecureXStream(
-                    new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
+            return new SecureXStream(new JettisonMappedXmlDriver(configuration, useSerializeAsArray));
         }
 
         /**
-         * Special treatment for single-element collections in {@link
-         * RestListWrapper#getCollection()} to ensure encoding matches Jettison 1.0.1 (prior to
-         * XStream 1.4.18 / Jettison 1.4.1 upgrade).
+         * Special treatment for single-element collections in {@link RestListWrapper#getCollection()} to ensure
+         * encoding matches Jettison 1.0.1 (prior to XStream 1.4.18 / Jettison 1.4.1 upgrade).
          *
          * <p>Expected output being like:
          *
@@ -288,8 +268,8 @@ public abstract class XStreamCatalogListConverter
          *
          * instead.
          */
-        private void writeSingleElementCollection(
-                RestListWrapper<?> wrapper, HttpOutputMessage outputMessage) throws IOException {
+        private void writeSingleElementCollection(RestListWrapper<?> wrapper, HttpOutputMessage outputMessage)
+                throws IOException {
 
             final boolean useSerializeAsArray = true;
             XStream xstream = this.createXStreamInstance(useSerializeAsArray);
@@ -323,31 +303,27 @@ public abstract class XStreamCatalogListConverter
         }
 
         /**
-         * Uses a {@link CollectionConverter} for single-element collection JSON encoding without
-         * calling {@code writer.start/endNode(name)}, but a single call to {@link
-         * CollectionConverter#writeBareItem writeBareItem()}, since the element name is handled by
-         * the encoding of {@link ListRoot}.
+         * Uses a {@link CollectionConverter} for single-element collection JSON encoding without calling
+         * {@code writer.start/endNode(name)}, but a single call to {@link CollectionConverter#writeBareItem
+         * writeBareItem()}, since the element name is handled by the encoding of {@link ListRoot}.
          */
         protected void configureSingleElementCollectionXStream(
                 XStream xstream, Class<?> clazz, RestListWrapper<?> wrapper) {
 
             super.configureXStream(xstream, clazz, wrapper);
-            xstream.registerConverter(
-                    new CollectionConverter(xstream.getMapper()) {
-                        @Override
-                        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
-                            return Collection.class.isAssignableFrom(type);
-                        }
+            xstream.registerConverter(new CollectionConverter(xstream.getMapper()) {
+                @Override
+                public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
+                    return Collection.class.isAssignableFrom(type);
+                }
 
-                        @Override
-                        protected void writeCompleteItem(
-                                Object item,
-                                MarshallingContext context,
-                                HierarchicalStreamWriter writer) {
+                @Override
+                protected void writeCompleteItem(
+                        Object item, MarshallingContext context, HierarchicalStreamWriter writer) {
 
-                            super.writeBareItem(item, context, writer);
-                        }
-                    });
+                    super.writeBareItem(item, context, writer);
+                }
+            });
         }
     }
 }

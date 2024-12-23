@@ -39,12 +39,11 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Reads items from multiple resources sequentially - resource list is given by {@link
- * #setResources(Resource[])}, the actual reading is delegated to {@link
- * #setDelegate(ResourceAwareItemReaderItemStream)}.
+ * Reads items from multiple resources sequentially - resource list is given by {@link #setResources(Resource[])}, the
+ * actual reading is delegated to {@link #setDelegate(ResourceAwareItemReaderItemStream)}.
  *
- * <p>Input resources are ordered using {@link #setComparator(Comparator)} to make sure resource
- * ordering is preserved between job runs in restart scenario.
+ * <p>Input resources are ordered using {@link #setComparator(Comparator)} to make sure resource ordering is preserved
+ * between job runs in restart scenario.
  *
  * <p>Code based on original {@link MultiResourceItemReader} by Robert Kasanicky and Lucas Ward.
  *
@@ -81,8 +80,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * In strict mode the reader will throw an exception on {@link
-     * #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
+     * In strict mode the reader will throw an exception on
+     * {@link #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
      *
      * @param strict false by default
      */
@@ -90,15 +89,14 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         this.strict = strict;
     }
 
-    private Comparator<Resource> comparator =
-            new Comparator<Resource>() {
+    private Comparator<Resource> comparator = new Comparator<Resource>() {
 
-                /** Compares resource filenames. */
-                @Override
-                public int compare(Resource r1, Resource r2) {
-                    return r1.getFilename().compareTo(r2.getFilename());
-                }
-            };
+        /** Compares resource filenames. */
+        @Override
+        public int compare(Resource r1, Resource r2) {
+            return r1.getFilename().compareTo(r2.getFilename());
+        }
+    };
 
     /** Reads the next item, jumping to next resource if necessary. */
     @Override
@@ -120,8 +118,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Use the delegate to read the next item, jump to next resource if current one is exhausted.
-     * Items are appended to the buffer.
+     * Use the delegate to read the next item, jump to next resource if current one is exhausted. Items are appended to
+     * the buffer.
      *
      * @return next item from input
      */
@@ -155,10 +153,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
         return item;
     }
 
-    /**
-     * Close the {@link #setDelegate(ResourceAwareItemReaderItemStream)} reader and reset instance
-     * variable values.
-     */
+    /** Close the {@link #setDelegate(ResourceAwareItemReaderItemStream)} reader and reset instance variable values. */
     @Override
     public void close() throws ItemStreamException {
         super.close();
@@ -171,8 +166,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Figure out which resource to start with in case of restart, open the delegate and restore
-     * delegate's position in the resource.
+     * Figure out which resource to start with in case of restart, open the delegate and restore delegate's position in
+     * the resource.
      */
     @Override
     public void open(ExecutionContext executionContext) throws ItemStreamException {
@@ -185,8 +180,7 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
                 throw new IllegalStateException(
                         "No resources to read. Set strict=false if this is not an error condition.");
             } else {
-                logger.warning(
-                        "No resources to read. Set strict=true if this should be an error condition.");
+                logger.warning("No resources to read. Set strict=true if this should be an error condition.");
                 noInput = true;
                 return;
             }
@@ -225,8 +219,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * Set the boolean indicating whether or not state should be saved in the provided {@link
-     * ExecutionContext} during the {@link ItemStream} call to update.
+     * Set the boolean indicating whether or not state should be saved in the provided {@link ExecutionContext} during
+     * the {@link ItemStream} call to update.
      */
     @Override
     public void setSaveState(boolean saveState) {
@@ -234,8 +228,8 @@ public class CatalogMultiResourceItemReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * @param comparator used to order the injected resources, by default compares {@link
-     *     Resource#getFilename()} values.
+     * @param comparator used to order the injected resources, by default compares {@link Resource#getFilename()}
+     *     values.
      */
     public void setComparator(Comparator<Resource> comparator) {
         this.comparator = comparator;

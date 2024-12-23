@@ -37,8 +37,8 @@ public interface TreeNode<T> extends Serializable {
     public T getObject();
 
     /**
-     * Provide a model for whether node is expanded or not. Must contain the same value for each
-     * instance representing the same node.
+     * Provide a model for whether node is expanded or not. Must contain the same value for each instance representing
+     * the same node.
      *
      * @return expanded model, null if the node is a leaf.
      */

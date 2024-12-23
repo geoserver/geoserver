@@ -50,7 +50,8 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         // assign the new role to the method
         form = tester.newFormTester("form");
         tester.assertRenderedPage(NewServiceAccessRulePage.class);
-        form.setValue("roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName("ROLE_NEW").getAuthority());
 
         // reopen new role dialog again to ensure that the current state is not lost
         form.submit("roles:addRole");
@@ -93,21 +94,20 @@ public class NewServiceAccessRulePageTest extends AbstractSecurityWicketTestSupp
         tester.executeAjaxEvent("form:service", "change");
 
         List<String> wfsOperations = (List<String>) page.methodChoice.getChoices();
-        List<String> expectedWfsOperations =
-                Arrays.asList(
-                        "*",
-                        "GetCapabilities",
-                        "DescribeFeatureType",
-                        "GetFeature",
-                        "LockFeature",
-                        "Transaction",
-                        "GetGmlObject",
-                        "DropStoredQuery",
-                        "CreateStoredQuery",
-                        "GetFeatureWithLock",
-                        "DescribeStoredQueries",
-                        "GetPropertyValue",
-                        "ListStoredQueries");
+        List<String> expectedWfsOperations = Arrays.asList(
+                "*",
+                "GetCapabilities",
+                "DescribeFeatureType",
+                "GetFeature",
+                "LockFeature",
+                "Transaction",
+                "GetGmlObject",
+                "DropStoredQuery",
+                "CreateStoredQuery",
+                "GetFeatureWithLock",
+                "DescribeStoredQueries",
+                "GetPropertyValue",
+                "ListStoredQueries");
 
         assertEquals(expectedWfsOperations.size(), wfsOperations.size());
         assertTrue(wfsOperations.containsAll(expectedWfsOperations));

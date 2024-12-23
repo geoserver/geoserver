@@ -11,8 +11,8 @@ import org.geoserver.csw.records.RecordDescriptor;
 import org.geotools.api.feature.type.Name;
 
 /**
- * A map from record name to {@link RecordDescriptor} that includes some name matching leniency, if
- * name searched for is not namespace qualified, then a match on the local part is attempted too
+ * A map from record name to {@link RecordDescriptor} that includes some name matching leniency, if name searched for is
+ * not namespace qualified, then a match on the local part is attempted too
  */
 public class RecordDescriptorsMap extends LinkedHashMap<Name, RecordDescriptor> {
     private static final long serialVersionUID = 335115347101959746L;

@@ -17,12 +17,8 @@ public class MongoComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterOpt
     public boolean canHandle(List<FeatureCollection> features) {
         boolean result = false;
         if (features != null && !features.isEmpty())
-            result =
-                    features.stream()
-                            .allMatch(
-                                    f ->
-                                            f.getSchema() != null
-                                                    && f.getSchema() instanceof DynamicFeatureType);
+            result = features.stream()
+                    .allMatch(f -> f.getSchema() != null && f.getSchema() instanceof DynamicFeatureType);
         return result;
     }
 

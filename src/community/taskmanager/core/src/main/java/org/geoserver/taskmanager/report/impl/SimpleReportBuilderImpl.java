@@ -28,18 +28,16 @@ public class SimpleReportBuilderImpl implements ReportBuilder {
         for (Run run : batchRun.getRuns()) {
             BatchElement element = run.getBatchElement();
             Task task = element.getTask();
-            reportContent.append(
-                    task.getFullName()
-                            + ", started "
-                            + run.getStart()
-                            + ", ended "
-                            + run.getEnd()
-                            + ", status is "
-                            + run.getStatus()
-                            + "\n");
+            reportContent.append(task.getFullName()
+                    + ", started "
+                    + run.getStart()
+                    + ", ended "
+                    + run.getEnd()
+                    + ", status is "
+                    + run.getStatus()
+                    + "\n");
             if (run.getMessage() != null) {
-                reportContent.append(
-                        "\tmessage: " + run.getMessage() + " (check logs for more details) \n");
+                reportContent.append("\tmessage: " + run.getMessage() + " (check logs for more details) \n");
             }
         }
 

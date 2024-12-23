@@ -10,8 +10,7 @@ import org.geoserver.smartdataloader.metadata.ConstraintMetadata;
 import org.geoserver.smartdataloader.metadata.jdbc.JdbcTableMetadata;
 
 /**
- * Super class representing metadata for constraints related to tables (Entities) in a JDBC
- * DataStore.
+ * Super class representing metadata for constraints related to tables (Entities) in a JDBC DataStore.
  *
  * @author Jose Macchi - Geosolutions
  */

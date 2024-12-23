@@ -207,9 +207,7 @@ public class GdalTransformTest extends ImporterTestSupport {
             assertEquals(1, sm.getNumBands());
             assertEquals(DataBuffer.TYPE_BYTE, sm.getDataType());
             assertEquals(0, reader.getDatasetLayout().getNumInternalOverviews());
-            assertEquals(
-                    Integer.valueOf(4326),
-                    CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));
+            assertEquals(Integer.valueOf(4326), CRS.lookupEpsgCode(reader.getCoordinateReferenceSystem(), false));
         } finally {
             if (reader != null) {
                 reader.dispose();

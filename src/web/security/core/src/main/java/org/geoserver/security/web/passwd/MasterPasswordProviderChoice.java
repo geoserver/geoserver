@@ -22,18 +22,11 @@ import org.geoserver.web.GeoServerApplication;
 public class MasterPasswordProviderChoice extends DropDownChoice<String> {
 
     public MasterPasswordProviderChoice(String id) {
-        super(
-                id,
-                new MasterPasswordProviderNamesModel(),
-                new MasterPasswordProviderChoiceRenderer());
+        super(id, new MasterPasswordProviderNamesModel(), new MasterPasswordProviderChoiceRenderer());
     }
 
     public MasterPasswordProviderChoice(String id, IModel<String> model) {
-        super(
-                id,
-                model,
-                new MasterPasswordProviderNamesModel(),
-                new MasterPasswordProviderChoiceRenderer());
+        super(id, model, new MasterPasswordProviderNamesModel(), new MasterPasswordProviderChoiceRenderer());
     }
 
     static class MasterPasswordProviderNamesModel implements IModel<List<String>> {
@@ -42,11 +35,8 @@ public class MasterPasswordProviderChoice extends DropDownChoice<String> {
 
         MasterPasswordProviderNamesModel() {
             try {
-                providerNames =
-                        new ArrayList<>(
-                                GeoServerApplication.get()
-                                        .getSecurityManager()
-                                        .listMasterPasswordProviders());
+                providerNames = new ArrayList<>(
+                        GeoServerApplication.get().getSecurityManager().listMasterPasswordProviders());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

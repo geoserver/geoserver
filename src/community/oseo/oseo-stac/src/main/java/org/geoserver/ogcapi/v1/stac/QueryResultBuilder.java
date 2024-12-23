@@ -53,8 +53,8 @@ import org.geotools.util.DateRange;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A builder for a QueryResult object. It provides methods to set the various fields that can be
- * used to query a source and return the appropriate {@link QueryResult};
+ * A builder for a QueryResult object. It provides methods to set the various fields that can be used to query a source
+ * and return the appropriate {@link QueryResult};
  */
 class QueryResultBuilder {
 
@@ -144,8 +144,7 @@ class QueryResultBuilder {
      * @throws FactoryException
      */
     QueryResultBuilder bbox(String bbox) throws FactoryException {
-        if (bbox != null)
-            this.bboxFilter = APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84);
+        if (bbox != null) this.bboxFilter = APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84);
         return this;
     }
 
@@ -157,8 +156,7 @@ class QueryResultBuilder {
      * @throws FactoryException
      */
     QueryResultBuilder bbox(double[] bbox) throws FactoryException {
-        if (bbox != null)
-            this.bboxFilter = APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84);
+        if (bbox != null) this.bboxFilter = APIBBoxParser.toFilter(bbox, DefaultGeographicCRS.WGS84);
         return this;
     }
 
@@ -240,8 +238,8 @@ class QueryResultBuilder {
     }
 
     /**
-     * Set a flag to tell the builder if the field param was specified or not. This is necessary
-     * since the behaviour changes according to the emptyness of the parameter or its absence.
+     * Set a flag to tell the builder if the field param was specified or not. This is necessary since the behaviour
+     * changes according to the emptyness of the parameter or its absence.
      *
      * @param hasFieldParam true if has, false otherwise.
      * @return the builder.
@@ -263,8 +261,8 @@ class QueryResultBuilder {
     }
 
     /**
-     * Set the supportsFieldsSelection flag. Currently only GET methods search and items and
-     * endpoints for the geo+json are supporting it.
+     * Set the supportsFieldsSelection flag. Currently only GET methods search and items and endpoints for the geo+json
+     * are supporting it.
      *
      * @param supportsFieldsSelection true if supports, false otherwise.
      * @return the builder.
@@ -322,8 +320,7 @@ class QueryResultBuilder {
             }
             q.setPropertyNames(props);
         } else {
-            List<PropertyName> queryProps =
-                    getProductProperties(accessProvider.getOpenSearchAccess());
+            List<PropertyName> queryProps = getProductProperties(accessProvider.getOpenSearchAccess());
             q.setProperties(queryProps);
         }
         QueryResult result = queryItems(source, q);
@@ -334,9 +331,7 @@ class QueryResultBuilder {
     }
 
     private void populateTemplateMapAndProperties(
-            Map<String, RootBuilder> builderMap,
-            Set<String> properties,
-            FeatureSource<FeatureType, Feature> source)
+            Map<String, RootBuilder> builderMap, Set<String> properties, FeatureSource<FeatureType, Feature> source)
             throws IOException {
         RootBuilder rootBuilder;
         String key = DEF_TEMPLATE;
@@ -349,8 +344,7 @@ class QueryResultBuilder {
         if (rootBuilder != null) {
             if (hasFieldParam) {
                 PropertySelectionVisitor selectionVisitor =
-                        new PropertySelectionVisitor(
-                                new STACPropertySelection(fields), source.getSchema());
+                        new PropertySelectionVisitor(new STACPropertySelection(fields), source.getSchema());
                 rootBuilder = (RootBuilder) rootBuilder.accept(selectionVisitor, null);
                 Set<String> props = selectionVisitor.getQueryProperties();
                 props.add("parentIdentifier");
@@ -381,8 +375,7 @@ class QueryResultBuilder {
         return geoServer.getService(OSEOInfo.class);
     }
 
-    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q)
-            throws IOException {
+    private QueryResult queryItems(FeatureSource<FeatureType, Feature> source, Query q) throws IOException {
         // get the items
         FeatureCollection<FeatureType, Feature> items = source.getFeatures(q);
 
@@ -409,8 +402,7 @@ class QueryResultBuilder {
 
         if (timeSpec instanceof Date) {
             // range containment
-            return FF.between(
-                    FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
+            return FF.between(FF.literal(timeSpec), FF.property("timeStart"), FF.property("timeEnd"));
         } else if (timeSpec instanceof DateRange) {
             // range overlap filter
             DateRange dateRange = (DateRange) timeSpec;
@@ -424,8 +416,7 @@ class QueryResultBuilder {
         }
     }
 
-    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby)
-            throws IOException {
+    private SortBy[] mapSortProperties(List<String> collectionIds, SortBy[] sortby) throws IOException {
         // nothing to map, easy way out
         if (sortby == null) return null;
 
@@ -441,25 +432,16 @@ class QueryResultBuilder {
             // sortables are generic
             collectionId = collectionIds.get(0);
         }
-        mapper =
-                STACSortablesMapper.getSortablesMapper(
-                        collectionId,
-                        templates,
-                        sampleFeatures,
-                        collectionsCache,
-                        itemsSchema,
-                        geoServer);
+        mapper = STACSortablesMapper.getSortablesMapper(
+                collectionId, templates, sampleFeatures, collectionsCache, itemsSchema, geoServer);
 
         return mapper.map(sortby);
     }
 
     private void addCollectionsFilter(
-            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection)
-            throws IOException {
+            FilterMerger filters, List<String> collectionIds, boolean excludeDisabledCollection) throws IOException {
         List<String> disabledIds =
-                excludeDisabledCollection
-                        ? getDisabledCollections(collectionIds)
-                        : Collections.emptyList();
+                excludeDisabledCollection ? getDisabledCollections(collectionIds) : Collections.emptyList();
 
         if (collectionIds != null && !collectionIds.isEmpty()) {
             collectionIds.removeAll(disabledIds);
@@ -477,10 +459,9 @@ class QueryResultBuilder {
             List<Filter> filters = new ArrayList<>();
             filters.add(filter);
 
-            filters.addAll(
-                    collectionIds.stream()
-                            .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
-                            .collect(Collectors.toList()));
+            filters.addAll(collectionIds.stream()
+                    .map(cid -> FF.equals(FF.property(EO_IDENTIFIER), FF.literal(cid)))
+                    .collect(Collectors.toList()));
             filter = FF.and(filters);
         }
         q.setFilter(filter);
@@ -496,20 +477,15 @@ class QueryResultBuilder {
         return FF.equals(FF.property(OpenSearchAccess.ENABLED), FF.literal(true));
     }
 
-    Filter parseFilter(List<String> collectionIds, String filter, String filterLang)
-            throws IOException {
+    Filter parseFilter(List<String> collectionIds, String filter, String filterLang) throws IOException {
         Filter parsed = filterParser.parse(filter, filterLang);
         return new TemplatePropertyMapper(
-                        templates,
-                        sampleFeatures,
-                        collectionsCache,
-                        geoServer.getService(OSEOInfo.class))
+                        templates, sampleFeatures, collectionsCache, geoServer.getService(OSEOInfo.class))
                 .mapProperties(collectionIds, parsed);
     }
 
     /**
-     * Map a complexPath to a List of separate property names suitable to be consumend by the
-     * OpenSearch Join mechanism.
+     * Map a complexPath to a List of separate property names suitable to be consumend by the OpenSearch Join mechanism.
      *
      * @param complexPath the complex path.
      * @return the List of property names suitable to be added to the Query properties.

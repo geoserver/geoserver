@@ -36,8 +36,8 @@ import org.junit.Test;
 
 public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
 
-    protected abstract void expectationTestDisableLayer(
-            LayerInfo info, String layerName, String layerId) throws Exception;
+    protected abstract void expectationTestDisableLayer(LayerInfo info, String layerName, String layerId)
+            throws Exception;
 
     HzSynchronizer sync;
 
@@ -61,8 +61,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             sync.start();
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
+            ConfigChangeEvent evt = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -74,8 +73,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestStoreDelete(
-            DataStoreInfo info, String StoreName, String storeId, Class<? extends StoreInfo> clazz)
-            throws Exception;
+            DataStoreInfo info, String StoreName, String storeId, Class<? extends StoreInfo> clazz) throws Exception;
 
     @Test
     public void testStoreDelete() throws Exception {
@@ -101,8 +99,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(storeId, storeName, DataStoreInfoImpl.class, Type.REMOVE);
+            ConfigChangeEvent evt = new ConfigChangeEvent(storeId, storeName, DataStoreInfoImpl.class, Type.REMOVE);
             evt.setWorkspaceId(storeWorkspace);
 
             // Mock a message coming in from the cluster
@@ -114,8 +111,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestFTDelete(
-            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz)
-            throws Exception;
+            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz) throws Exception;
 
     @SuppressWarnings("unchecked")
     @Test
@@ -138,10 +134,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             expect(info.getId()).andStubReturn(ftId);
             expect(info.getStore()).andStubReturn(dsInfo);
 
-            expect(
-                            catalog.getStore(
-                                    EasyMock.eq(dsId),
-                                    (Class<DataStoreInfo>) EasyMock.anyObject(Class.class)))
+            expect(catalog.getStore(EasyMock.eq(dsId), (Class<DataStoreInfo>) EasyMock.anyObject(Class.class)))
                     .andStubReturn(dsInfo);
             ;
 
@@ -151,8 +144,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(ftId, ftName, FeatureTypeInfoImpl.class, Type.REMOVE);
+            ConfigChangeEvent evt = new ConfigChangeEvent(ftId, ftName, FeatureTypeInfoImpl.class, Type.REMOVE);
             evt.setStoreId(dsId);
 
             // Mock a message coming in from the cluster
@@ -163,8 +155,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(info, dsInfo);
     }
 
-    protected abstract void expectationTestContactChange(GeoServerInfo info, String storeId)
-            throws Exception;
+    protected abstract void expectationTestContactChange(GeoServerInfo info, String storeId) throws Exception;
 
     @Test
     public void testContactChange() throws Exception {
@@ -184,9 +175,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(
-                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evt = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -197,8 +186,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestMultipleChange(
-            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId)
-            throws Exception;
+            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId) throws Exception;
 
     @Test
     public void testMultipleChange() throws Exception {
@@ -223,11 +211,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(
-                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
-            ConfigChangeEvent evtLayer =
-                    new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
+            ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -248,8 +233,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(gsInfo, layerInfo);
     }
 
-    protected abstract void expectationTestTwoAddressChangeNoPause(
-            GeoServerInfo gsInfo, String globalId) throws Exception;
+    protected abstract void expectationTestTwoAddressChangeNoPause(GeoServerInfo gsInfo, String globalId)
+            throws Exception;
 
     @Test
     public void testTwoAddressChangeNoPause() throws Exception {
@@ -267,9 +252,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(
-                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -281,8 +264,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(gsInfo);
     }
 
-    protected abstract void expectationTestTwoAddressChangeWithPause(
-            GeoServerInfo gsInfo, String globalId) throws Exception;
+    protected abstract void expectationTestTwoAddressChangeWithPause(GeoServerInfo gsInfo, String globalId)
+            throws Exception;
 
     @Test
     public void testTwoAddressChangeWithPause() throws Exception {
@@ -300,9 +283,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evtGs =
-                    new ConfigChangeEvent(
-                            globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evtGs = new ConfigChangeEvent(globalId, null, GeoServerInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -317,8 +298,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(gsInfo);
     }
 
-    protected abstract void expectationTestTwoLayerChangeNoPause(
-            LayerInfo layerInfo, String layerId) throws Exception;
+    protected abstract void expectationTestTwoLayerChangeNoPause(LayerInfo layerInfo, String layerId) throws Exception;
 
     @Test
     public void testTwoLayerChangeNoPause() throws Exception {
@@ -339,8 +319,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evtLayer =
-                    new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
+            ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -352,8 +331,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(layerInfo);
     }
 
-    protected abstract void expectationTestTwoLayerChangeWithPause(
-            LayerInfo layerInfo, String layerId) throws Exception;
+    protected abstract void expectationTestTwoLayerChangeWithPause(LayerInfo layerInfo, String layerId)
+            throws Exception;
 
     @Test
     public void testTwoLayerChangeWithPause() throws Exception {
@@ -374,8 +353,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evtLayer =
-                    new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
+            ConfigChangeEvent evtLayer = new ConfigChangeEvent(layerId, layerName, LayerInfoImpl.class, Type.MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -407,8 +385,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
             ConfigChangeEvent evt =
-                    new ConfigChangeEvent(
-                            workspaceId, workspaceName, WorkspaceInfoImpl.class, Type.ADD);
+                    new ConfigChangeEvent(workspaceId, workspaceName, WorkspaceInfoImpl.class, Type.ADD);
 
             // Mock a message coming in from the cluster
 
@@ -418,8 +395,8 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(info);
     }
 
-    protected abstract void expectationTestWorkspaceAdd(
-            WorkspaceInfo info, String workspaceName, String workspaceId) throws Exception;
+    protected abstract void expectationTestWorkspaceAdd(WorkspaceInfo info, String workspaceName, String workspaceId)
+            throws Exception;
 
     protected void mockMessage(ConfigChangeEvent evt) {
         evt.setSource(remoteAddress);
@@ -455,9 +432,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(
-                            settingsId, null, SettingsInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, SettingsInfoImpl.class, Type.POST_MODIFY);
             evt.setWorkspaceId(workspaceId);
 
             // Mock a message coming in from the cluster
@@ -469,8 +444,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
     }
 
     protected abstract void expectationTestChangeSettings(
-            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId)
-            throws Exception;
+            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception;
 
     @Test
     public void testChangeLogging() throws Exception {
@@ -490,9 +464,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(
-                            settingsId, null, LoggingInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evt = new ConfigChangeEvent(settingsId, null, LoggingInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -502,8 +474,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(info);
     }
 
-    protected abstract void expectationTestChangeLogging(LoggingInfo info, String loggingId)
-            throws Exception;
+    protected abstract void expectationTestChangeLogging(LoggingInfo info, String loggingId) throws Exception;
 
     @Test
     public void testChangeService() throws Exception {
@@ -525,8 +496,7 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
 
-            ConfigChangeEvent evt =
-                    new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.POST_MODIFY);
+            ConfigChangeEvent evt = new ConfigChangeEvent(serviceId, null, WMSInfoImpl.class, Type.POST_MODIFY);
 
             // Mock a message coming in from the cluster
 
@@ -536,6 +506,5 @@ public abstract class HzSynchronizerRecvTest extends HzSynchronizerTest {
         verify(info);
     }
 
-    protected abstract void expectationTestChangeService(ServiceInfo info, String serviceId)
-            throws Exception;
+    protected abstract void expectationTestChangeService(ServiceInfo info, String serviceId) throws Exception;
 }

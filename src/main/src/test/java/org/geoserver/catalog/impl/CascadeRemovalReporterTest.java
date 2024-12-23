@@ -33,8 +33,7 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
     public void setNativeBox(Catalog catalog, String name) throws Exception {
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(name);
         fti.setNativeBoundingBox(fti.getFeatureSource(null, null).getBounds());
-        fti.setLatLonBoundingBox(
-                new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
+        fti.setLatLonBoundingBox(new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
         catalog.save(fti);
     }
 
@@ -61,12 +60,10 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
                 visitor.getObjects(ResourceInfo.class, ModificationType.DELETE).get(0));
 
         // the groups have been marked to update?
-        assertTrue(
-                visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)
-                        .contains(catalog.getLayerGroupByName(LAKES_GROUP)));
-        assertTrue(
-                visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)
-                        .contains(catalog.getLayerGroupByName(NEST_GROUP)));
+        assertTrue(visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)
+                .contains(catalog.getLayerGroupByName(LAKES_GROUP)));
+        assertTrue(visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)
+                .contains(catalog.getLayerGroupByName(NEST_GROUP)));
     }
 
     @Test
@@ -85,12 +82,13 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
 
         visitor.visit((DataStoreInfo) store);
 
-        assertEquals(store, visitor.getObjects(StoreInfo.class, ModificationType.DELETE).get(0));
+        assertEquals(
+                store,
+                visitor.getObjects(StoreInfo.class, ModificationType.DELETE).get(0));
         List<LayerInfo> layers = visitor.getObjects(LayerInfo.class, ModificationType.DELETE);
         assertTrue(layers.contains(bl));
         assertTrue(layers.contains(ll));
-        List<ResourceInfo> resources =
-                visitor.getObjects(ResourceInfo.class, ModificationType.DELETE);
+        List<ResourceInfo> resources = visitor.getObjects(ResourceInfo.class, ModificationType.DELETE);
         assertTrue(resources.contains(br));
         assertTrue(resources.contains(lr));
     }
@@ -123,16 +121,11 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
 
         ws.accept(visitor);
 
-        assertTrue(
-                stores.containsAll(visitor.getObjects(StoreInfo.class, ModificationType.DELETE)));
-        assertTrue(
-                styles.containsAll(visitor.getObjects(StyleInfo.class, ModificationType.DELETE)));
-        assertTrue(
-                layerGroups.containsAll(
-                        visitor.getObjects(LayerGroupInfo.class, ModificationType.DELETE)));
-        assertTrue(
-                changedLayerGroups.containsAll(
-                        visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)));
+        assertTrue(stores.containsAll(visitor.getObjects(StoreInfo.class, ModificationType.DELETE)));
+        assertTrue(styles.containsAll(visitor.getObjects(StyleInfo.class, ModificationType.DELETE)));
+        assertTrue(layerGroups.containsAll(visitor.getObjects(LayerGroupInfo.class, ModificationType.DELETE)));
+        assertTrue(changedLayerGroups.containsAll(
+                visitor.getObjects(LayerGroupInfo.class, ModificationType.GROUP_CHANGED)));
     }
 
     private int countStores(LayerGroupInfo lg, List<StoreInfo> stores) {
@@ -165,11 +158,16 @@ public class CascadeRemovalReporterTest extends CascadeVisitorAbstractTest {
         visitor.visit(style);
 
         // test style reset
-        assertEquals(style, visitor.getObjects(StyleInfo.class, ModificationType.DELETE).get(0));
         assertEquals(
-                lakes, visitor.getObjects(LayerInfo.class, ModificationType.STYLE_RESET).get(0));
+                style,
+                visitor.getObjects(StyleInfo.class, ModificationType.DELETE).get(0));
+        assertEquals(
+                lakes,
+                visitor.getObjects(LayerInfo.class, ModificationType.STYLE_RESET)
+                        .get(0));
         assertEquals(
                 buildings,
-                visitor.getObjects(LayerInfo.class, ModificationType.EXTRA_STYLE_REMOVED).get(0));
+                visitor.getObjects(LayerInfo.class, ModificationType.EXTRA_STYLE_REMOVED)
+                        .get(0));
     }
 }

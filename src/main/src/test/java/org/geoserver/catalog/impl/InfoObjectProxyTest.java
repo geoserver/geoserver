@@ -20,10 +20,7 @@ public class InfoObjectProxyTest {
         BeanImpl bean = new BeanImpl();
         ModificationProxy handler = new ModificationProxy(bean);
 
-        Bean proxy =
-                (Bean)
-                        Proxy.newProxyInstance(
-                                Bean.class.getClassLoader(), new Class[] {Bean.class}, handler);
+        Bean proxy = (Bean) Proxy.newProxyInstance(Bean.class.getClassLoader(), new Class[] {Bean.class}, handler);
 
         bean.setFoo("one");
         bean.setBar(1);

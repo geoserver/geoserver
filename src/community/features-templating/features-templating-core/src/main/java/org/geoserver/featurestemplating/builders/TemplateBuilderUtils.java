@@ -10,8 +10,8 @@ import org.geoserver.featurestemplating.builders.impl.CompositeBuilder;
 public class TemplateBuilderUtils {
 
     /**
-     * Check if the key of the builder is selectable. By selectable it is meant a key that is not
-     * out of the scope of a feature properties.
+     * Check if the key of the builder is selectable. By selectable it is meant a key that is not out of the scope of a
+     * feature properties.
      *
      * @param builder the builder whose key needs to be checked.
      * @return true if the key is selectable false otherwise.

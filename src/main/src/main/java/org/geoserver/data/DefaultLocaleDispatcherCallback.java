@@ -18,8 +18,7 @@ import org.geoserver.util.GeoServerDefaultLocale;
  *
  * @param <T> the specific {@link ServiceInfo} implementation
  */
-public abstract class DefaultLocaleDispatcherCallback<T extends ServiceInfo>
-        extends AbstractDispatcherCallback {
+public abstract class DefaultLocaleDispatcherCallback<T extends ServiceInfo> extends AbstractDispatcherCallback {
 
     protected GeoServer geoServer;
 

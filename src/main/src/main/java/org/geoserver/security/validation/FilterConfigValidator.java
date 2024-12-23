@@ -44,28 +44,24 @@ public class FilterConfigValidator extends SecurityConfigValidator {
     }
 
     @Override
-    public void validateAddFilter(SecurityNamedServiceConfig config)
-            throws SecurityConfigException {
+    public void validateAddFilter(SecurityNamedServiceConfig config) throws SecurityConfigException {
         super.validateAddFilter(config);
         validateFilterConfig(config);
     }
 
     @Override
-    public void validateModifiedFilter(
-            SecurityNamedServiceConfig config, SecurityNamedServiceConfig oldConfig)
+    public void validateModifiedFilter(SecurityNamedServiceConfig config, SecurityNamedServiceConfig oldConfig)
             throws SecurityConfigException {
         super.validateModifiedFilter(config, oldConfig);
         validateFilterConfig(config);
     }
 
     @Override
-    public void validateRemoveFilter(SecurityNamedServiceConfig config)
-            throws SecurityConfigException {
+    public void validateRemoveFilter(SecurityNamedServiceConfig config) throws SecurityConfigException {
         super.validateRemoveFilter(config);
     }
 
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
 
         if (config instanceof BasicAuthenticationFilterConfig)
             validateFilterConfig((BasicAuthenticationFilterConfig) config);
@@ -101,8 +97,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             throw createFilterException(FilterConfigException.USER_GROUP_SERVICE_NEEDED);
         try {
             if (manager.listUserGroupServices().contains(ugServiceName) == false)
-                throw createFilterException(
-                        FilterConfigException.UNKNOWN_USER_GROUP_SERVICE, ugServiceName);
+                throw createFilterException(FilterConfigException.UNKNOWN_USER_GROUP_SERVICE, ugServiceName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -112,8 +107,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         if (isNotEmpty(roleServiceName) == false) return; // the active role service should be used
         try {
             if (manager.listRoleServices().contains(roleServiceName) == false)
-                throw createFilterException(
-                        FilterConfigException.UNKNOWN_ROLE_SERVICE, roleServiceName);
+                throw createFilterException(FilterConfigException.UNKNOWN_ROLE_SERVICE, roleServiceName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -123,28 +117,23 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         // Nothing to validate at the moment
     }
 
-    public void validateFilterConfig(BasicAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(BasicAuthenticationFilterConfig config) throws FilterConfigException {
         // Nothing to validate at the moment
     }
 
-    public void validateFilterConfig(SecurityContextPersistenceFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityContextPersistenceFilterConfig config) throws FilterConfigException {
         // Nothing to validate at the moment
     }
 
-    public void validateFilterConfig(RememberMeAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(RememberMeAuthenticationFilterConfig config) throws FilterConfigException {
         // Nothing to validate at the moment
     }
 
-    public void validateFilterConfig(AnonymousAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(AnonymousAuthenticationFilterConfig config) throws FilterConfigException {
         // Nothing to validate at the moment
     }
 
-    public void validateFilterConfig(SecurityInterceptorFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityInterceptorFilterConfig config) throws FilterConfigException {
 
         if (isNotEmpty(config.getSecurityMetadataSource()) == false)
             throw createFilterException(FilterConfigException.SECURITY_METADATA_SOURCE_NEEDED);
@@ -152,16 +141,13 @@ public class FilterConfigValidator extends SecurityConfigValidator {
             lookupBean(config.getSecurityMetadataSource());
         } catch (NoSuchBeanDefinitionException ex) {
             throw createFilterException(
-                    FilterConfigException.UNKNOWN_SECURITY_METADATA_SOURCE,
-                    config.getSecurityMetadataSource());
+                    FilterConfigException.UNKNOWN_SECURITY_METADATA_SOURCE, config.getSecurityMetadataSource());
         }
     }
 
-    public void validateFilterConfig(DigestAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(DigestAuthenticationFilterConfig config) throws FilterConfigException {
         checkExistingUGService(config.getUserGroupServiceName());
-        if (config.getNonceValiditySeconds() < 0)
-            throw createFilterException(FilterConfigException.INVALID_SECONDS);
+        if (config.getNonceValiditySeconds() < 0) throw createFilterException(FilterConfigException.INVALID_SECONDS);
     }
 
     public void validateFilterConfig(RoleFilterConfig config) throws FilterConfigException {
@@ -173,19 +159,16 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                 lookupBean(config.getRoleConverterName());
             } catch (NoSuchBeanDefinitionException ex) {
                 throw createFilterException(
-                        FilterConfigException.UNKNOWN_ROLE_CONVERTER,
-                        config.getRoleConverterName());
+                        FilterConfigException.UNKNOWN_ROLE_CONVERTER, config.getRoleConverterName());
             }
         }
     }
 
-    public void validateFilterConfig(X509CertificateAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(X509CertificateAuthenticationFilterConfig config) throws FilterConfigException {
         validateFilterConfig((J2eeAuthenticationBaseFilterConfig) config);
     }
 
-    public void validateFilterConfig(UsernamePasswordAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(UsernamePasswordAuthenticationFilterConfig config) throws FilterConfigException {
         if (isNotEmpty(config.getUsernameParameterName()) == false) {
             throw createFilterException(FilterConfigException.USER_PARAMETER_NAME_NEEDED);
         }
@@ -194,8 +177,7 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
     }
 
-    public void validateFilterConfig(J2eeAuthenticationBaseFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(J2eeAuthenticationBaseFilterConfig config) throws FilterConfigException {
         validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config);
 
         if (config.getRoleSource().equals(J2eeAuthenticationBaseFilterConfig.J2EERoleSource.J2EE)) {
@@ -203,36 +185,27 @@ public class FilterConfigValidator extends SecurityConfigValidator {
         }
     }
 
-    public void validateFilterConfig(RequestHeaderAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(RequestHeaderAuthenticationFilterConfig config) throws FilterConfigException {
 
         if (isNotEmpty(config.getPrincipalHeaderAttribute()) == false)
             throw createFilterException(FilterConfigException.PRINCIPAL_HEADER_ATTRIBUTE_NEEDED);
         validateFilterConfig((PreAuthenticatedUserNameFilterConfig) config);
     }
 
-    public void validateFilterConfig(PreAuthenticatedUserNameFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(PreAuthenticatedUserNameFilterConfig config) throws FilterConfigException {
 
-        if (config.getRoleSource() == null)
-            throw createFilterException(FilterConfigException.ROLE_SOURCE_NEEDED);
+        if (config.getRoleSource() == null) throw createFilterException(FilterConfigException.ROLE_SOURCE_NEEDED);
 
         if (config.getRoleSource()
-                .equals(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .RoleService))
+                .equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.RoleService))
             checkExistingRoleService(config.getRoleServiceName());
 
         if (config.getRoleSource()
-                .equals(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .UserGroupService))
+                .equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.UserGroupService))
             checkExistingUGService(config.getUserGroupServiceName());
 
         if (config.getRoleSource()
-                .equals(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .Header)) {
+                .equals(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header)) {
             if (isNotEmpty(config.getRolesHeaderAttribute()) == false)
                 throw createFilterException(FilterConfigException.ROLES_HEADER_ATTRIBUTE_NEEDED);
             if (isNotEmpty(config.getRoleConverterName())) {
@@ -240,20 +213,17 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                     lookupBean(config.getRoleConverterName());
                 } catch (NoSuchBeanDefinitionException ex) {
                     throw createFilterException(
-                            FilterConfigException.UNKNOWN_ROLE_CONVERTER,
-                            config.getRoleConverterName());
+                            FilterConfigException.UNKNOWN_ROLE_CONVERTER, config.getRoleConverterName());
                 }
             }
         }
     }
 
-    public void validateFilterConfig(J2eeAuthenticationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(J2eeAuthenticationFilterConfig config) throws FilterConfigException {
         validateFilterConfig((J2eeAuthenticationBaseFilterConfig) config);
     }
 
-    public void validateFilterConfig(ExceptionTranslationFilterConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(ExceptionTranslationFilterConfig config) throws FilterConfigException {
 
         if (isNotEmpty(config.getAuthenticationFilterName())) {
             try {
@@ -261,18 +231,15 @@ public class FilterConfigValidator extends SecurityConfigValidator {
                         manager.loadFilterConfig(config.getAuthenticationFilterName(), true);
                 if (filterConfig == null)
                     throw createFilterException(
-                            FilterConfigException.INVALID_ENTRY_POINT,
-                            config.getAuthenticationFilterName());
+                            FilterConfigException.INVALID_ENTRY_POINT, config.getAuthenticationFilterName());
 
                 boolean valid = false;
                 if (filterConfig instanceof SecurityFilterConfig) {
-                    if (((SecurityFilterConfig) filterConfig).providesAuthenticationEntryPoint())
-                        valid = true;
+                    if (((SecurityFilterConfig) filterConfig).providesAuthenticationEntryPoint()) valid = true;
                 }
                 if (!valid) {
                     throw createFilterException(
-                            FilterConfigException.NO_AUTH_ENTRY_POINT,
-                            config.getAuthenticationFilterName());
+                            FilterConfigException.NO_AUTH_ENTRY_POINT, config.getAuthenticationFilterName());
                 }
             } catch (IOException ex) {
                 throw new RuntimeException(ex);

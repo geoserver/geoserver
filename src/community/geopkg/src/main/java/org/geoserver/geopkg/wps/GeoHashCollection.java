@@ -106,8 +106,7 @@ class GeoHashCollection extends DecoratingSimpleFeatureCollection {
                 fb.set(geoHashFieldName, hash);
                 return fb.buildFeature(next.getID());
             } catch (TransformException e) {
-                throw new RuntimeException(
-                        "Failed to transform geometry during geoHash calculation");
+                throw new RuntimeException("Failed to transform geometry during geoHash calculation");
             }
         }
     }

@@ -45,11 +45,8 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
     @Before
     public void onInitCachedReader() {
-        configurer =
-                (GeoFencePropertyPlaceholderConfigurer)
-                        applicationContext.getBean("geofence-configurer");
-        configurer.setLocation(
-                new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
+        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-cache-config.properties")));
 
         realReader = applicationContext.getBean("remoteReaderService", RuleReaderService.class);
 
@@ -62,9 +59,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
         config.setCustomTicker(ticker);
 
         if (configManager == null) {
-            configManager =
-                    (GeoFenceConfigurationManager)
-                            applicationContext.getBean("geofenceConfigurationManager");
+            configManager = (GeoFenceConfigurationManager) applicationContext.getBean("geofenceConfigurationManager");
         }
         assertNotNull(configManager);
         configManager.setCacheConfiguration(config);
@@ -79,8 +74,7 @@ public class CacheReaderTest extends GeofenceBaseTest {
 
         cacheManager.setRuleServiceLoaderFactory(new RuleCacheLoaderFactory(realReader));
         cacheManager.setContainerAccessCacheLoaderFactory(
-                new ContainerAccessCacheLoaderFactory(
-                        new DefaultContainerAccessResolver(cachedRuleReader)));
+                new ContainerAccessCacheLoaderFactory(new DefaultContainerAccessResolver(cachedRuleReader)));
         cacheManager.init();
     }
 

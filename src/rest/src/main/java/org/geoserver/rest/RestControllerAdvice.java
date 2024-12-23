@@ -37,25 +37,23 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
  *
  * <p>A note on the exception handling here:
  *
- * <p>The manual exception handling, using the response output stream directly and the
- * response/request directly is very much NOT RECOMMENDED. Prefer to use ResponseEntity objects to
- * return proper errors.
+ * <p>The manual exception handling, using the response output stream directly and the response/request directly is very
+ * much NOT RECOMMENDED. Prefer to use ResponseEntity objects to return proper errors.
  *
  * <p>BUT
  *
  * <p>GeoServer test cases do two silly things:
  *
- * <p>- Make requests without any accepts and then look for an exact string in the response. Without
- * the accepts header spring has no idea what the response should be, so it tries to pick the first
- * default based on the producible media types. This is, frequently, HTML
+ * <p>- Make requests without any accepts and then look for an exact string in the response. Without the accepts header
+ * spring has no idea what the response should be, so it tries to pick the first default based on the producible media
+ * types. This is, frequently, HTML
  */
 @ControllerAdvice
 public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
     static final Logger LOGGER = Logging.getLogger(RestControllerAdvice.class);
 
-    private void notifyExceptionToCallbacks(
-            WebRequest webRequest, HttpServletResponse response, Exception ex) {
+    private void notifyExceptionToCallbacks(WebRequest webRequest, HttpServletResponse response, Exception ex) {
         if (!(webRequest instanceof ServletWebRequest)) {
             return;
         }
@@ -63,10 +61,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
         notifyExceptionToCallbacks(request, response, ex);
     }
 
-    private void notifyExceptionToCallbacks(
-            HttpServletRequest request, HttpServletResponse response, Exception ex) {
-        List<DispatcherCallback> callbacks =
-                GeoServerExtensions.extensions(DispatcherCallback.class);
+    private void notifyExceptionToCallbacks(HttpServletRequest request, HttpServletResponse response, Exception ex) {
+        List<DispatcherCallback> callbacks = GeoServerExtensions.extensions(DispatcherCallback.class);
         for (DispatcherCallback callback : callbacks) {
             callback.exception(request, response, ex);
         }
@@ -74,10 +70,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public void handleResourceNotFound(
-            ResourceNotFoundException e,
-            HttpServletResponse response,
-            WebRequest request,
-            OutputStream os)
+            ResourceNotFoundException e, HttpServletResponse response, WebRequest request, OutputStream os)
             throws IOException {
         notifyExceptionToCallbacks(request, response, e);
 
@@ -95,8 +88,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(RestException.class)
-    public void handleRestException(
-            RestException e, HttpServletResponse response, WebRequest request, OutputStream os)
+    public void handleRestException(RestException e, HttpServletResponse response, WebRequest request, OutputStream os)
             throws IOException {
         String message = message(e);
         LOGGER.log(Level.SEVERE, message, e);
@@ -114,8 +106,7 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public void handleGeneralException(
-            Exception e, HttpServletRequest request, HttpServletResponse response, OutputStream os)
-            throws Exception {
+            Exception e, HttpServletRequest request, HttpServletResponse response, OutputStream os) throws Exception {
         // if there is a OGC request active, the exception was not meant for this dispatcher,
         // nor it was if it's a security exception, in this case let servlet filters handle it
         // instead
@@ -152,8 +143,8 @@ public class RestControllerAdvice extends ResponseEntityExceptionHandler {
     }
 
     /**
-     * Checks if the {@link RESTUtils#QUIET_ON_NOT_FOUND_KEY} is set in the {@link
-     * GeoServerInfo#getSettings() global settings} metadata map.
+     * Checks if the {@link RESTUtils#QUIET_ON_NOT_FOUND_KEY} is set in the {@link GeoServerInfo#getSettings() global
+     * settings} metadata map.
      *
      * @return {@code false} if not configured, the configured value otherwise.
      */

@@ -22,20 +22,17 @@ public class XMPPCannotExecuteMessage extends XMPPOutputMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String serviceJID = (message != null ? message.getFrom() : packet.getFrom());
         final String pID = signalArgs.get("id");
         final String msg = signalArgs.get("message");
         final String execId = signalArgs.get("exec_id");
 
-        if (pID != null
-                && pID.equalsIgnoreCase("master")
-                && msg != null
-                && msg.equals(this.topic)) {
+        if (pID != null && pID.equalsIgnoreCase("master") && msg != null && msg.equals(this.topic)) {
             if (xmppClient.getExecutingRequests().containsKey(execId)) {
-                RemoteRequestDescriptor request = xmppClient.getExecutingRequests().get(execId);
+                RemoteRequestDescriptor request =
+                        xmppClient.getExecutingRequests().get(execId);
                 if (request != null && request.getMetadata().get("serviceJID").equals(serviceJID)) {
                     // Cleanup the executing request
                     xmppClient.getExecutingRequests().remove(execId);

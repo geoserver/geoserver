@@ -51,11 +51,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @ControllerAdvice
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/br/",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class BackupController extends AbstractBackupRestoreController {
 
     @Autowired
@@ -66,11 +62,7 @@ public class BackupController extends AbstractBackupRestoreController {
 
     @GetMapping(
             path = "backup{.+}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper backupGet(@RequestParam(name = "format", required = false) String format) {
 
         Object lookup = lookupBackupExecutionsContext(null, true, false);
@@ -79,8 +71,7 @@ public class BackupController extends AbstractBackupRestoreController {
             if (lookup instanceof BackupExecutionAdapter) {
                 return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
             } else {
-                return wrapList(
-                        (List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
+                return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
             }
         }
 
@@ -107,7 +98,9 @@ public class BackupController extends AbstractBackupRestoreController {
                 if (backupId.endsWith(".zip")) {
                     try {
                         // get your file as InputStream
-                        File file = ((BackupExecutionAdapter) lookup).getArchiveFile().file();
+                        File file = ((BackupExecutionAdapter) lookup)
+                                .getArchiveFile()
+                                .file();
                         InputStream is = new FileInputStream(file);
                         // copy it to response's OutputStream
                         org.apache.commons.io.IOUtils.copy(is, response.getOutputStream());
@@ -117,12 +110,10 @@ public class BackupController extends AbstractBackupRestoreController {
                         throw new RuntimeException("IOError writing file to output stream");
                     }
                 } else {
-                    return wrapObject(
-                            (BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
+                    return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
                 }
             } else {
-                return wrapList(
-                        (List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
+                return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
             }
         }
 
@@ -131,14 +122,9 @@ public class BackupController extends AbstractBackupRestoreController {
 
     @DeleteMapping(
             path = "backup/{backupId:.+}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE})
     public RestWrapper backupDelete(
-            @RequestParam(name = "format", required = false) String format,
-            @PathVariable String backupId)
+            @RequestParam(name = "format", required = false) String format, @PathVariable String backupId)
             throws IOException {
 
         final String executionId = getExecutionIdFilter(backupId);
@@ -153,8 +139,7 @@ public class BackupController extends AbstractBackupRestoreController {
                 }
                 return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
             } else {
-                return wrapList(
-                        (List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
+                return wrapList((List<BackupExecutionAdapter>) lookup, BackupExecutionAdapter.class);
             }
         }
 
@@ -180,8 +165,7 @@ public class BackupController extends AbstractBackupRestoreController {
         BackupExecutionAdapter execution = null;
 
         if (backup.getId() != null) {
-            Object lookup =
-                    lookupBackupExecutionsContext(String.valueOf(backup.getId()), false, false);
+            Object lookup = lookupBackupExecutionsContext(String.valueOf(backup.getId()), false, false);
             if (lookup != null) {
                 // Backup instance already exists... trying to restart it.
                 try {
@@ -189,13 +173,10 @@ public class BackupController extends AbstractBackupRestoreController {
 
                     LOGGER.log(Level.INFO, "Backup restarted: " + backup.getArchiveFile());
 
-                    return wrapObject(
-                            (BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
+                    return wrapObject((BackupExecutionAdapter) lookup, BackupExecutionAdapter.class);
                 } catch (Exception e) {
 
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Could not restart the backup: " + backup.getArchiveFile());
+                    LOGGER.log(Level.WARNING, "Could not restart the backup: " + backup.getArchiveFile());
 
                     throw new IOException(e);
                 }
@@ -203,15 +184,14 @@ public class BackupController extends AbstractBackupRestoreController {
         } else {
             // Start a new execution asynchronously. You will need to query for the status in order
             // to follow the progress.
-            execution =
-                    getBackupFacade()
-                            .runBackupAsync(
-                                    backup.getArchiveFile(),
-                                    backup.isOverwrite(),
-                                    backup.getWsFilter(),
-                                    backup.getSiFilter(),
-                                    backup.getLiFilter(),
-                                    asParams(backup.getOptions()));
+            execution = getBackupFacade()
+                    .runBackupAsync(
+                            backup.getArchiveFile(),
+                            backup.isOverwrite(),
+                            backup.getWsFilter(),
+                            backup.getSiFilter(),
+                            backup.getLiFilter(),
+                            asParams(backup.getOptions()));
 
             LOGGER.log(Level.INFO, "Backup file generated: " + backup.getArchiveFile());
 
@@ -225,16 +205,13 @@ public class BackupController extends AbstractBackupRestoreController {
      * From {@link RestBaseController}
      *
      * <p>... * Any extending classes which override {@link #configurePersister(XStreamPersister,
-     * XStreamMessageConverter)}, and require this configuration for reading objects from incoming
-     * requests must also be annotated with {@link
-     * org.springframework.web.bind.annotation.ControllerAdvice} and override the {@link
-     * #supports(MethodParameter, Type, Class)} method...
+     * XStreamMessageConverter)}, and require this configuration for reading objects from incoming requests must also be
+     * annotated with {@link org.springframework.web.bind.annotation.ControllerAdvice} and override the
+     * {@link #supports(MethodParameter, Type, Class)} method...
      */
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return BackupExecutionAdapter.class.isAssignableFrom(methodParameter.getParameterType());
     }
 

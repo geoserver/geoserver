@@ -8,8 +8,7 @@ package org.geoserver.monitor;
 import java.io.Serializable;
 
 /**
- * A resource (layer) object, referenced from {@link RequestData#getResources()} monitored per
- * request.
+ * A resource (layer) object, referenced from {@link RequestData#getResources()} monitored per request.
  *
  * @author Andrea Aime, OpenGeo
  * @author Justin Deoliveira, OpenGeo

@@ -7,8 +7,8 @@ package org.geoserver.taskmanager.report;
 import org.apache.commons.lang3.ArrayUtils;
 
 /**
- * A report service sends a report to a particular destination. One can add an unlimited amount of
- * report services which will all be used.
+ * A report service sends a report to a particular destination. One can add an unlimited amount of report services which
+ * will all be used.
  *
  * @author Niels Charlier
  */

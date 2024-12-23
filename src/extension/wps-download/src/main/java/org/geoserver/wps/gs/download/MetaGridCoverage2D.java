@@ -9,10 +9,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.geotools.api.feature.type.FeatureType;
 import org.geotools.coverage.grid.GridCoverage2D;
 
-/**
- * A grid coverage wrapper that allows to carry around a user map like {@link
- * FeatureType#getUserData()} does
- */
+/** A grid coverage wrapper that allows to carry around a user map like {@link FeatureType#getUserData()} does */
 public class MetaGridCoverage2D extends GridCoverage2D {
 
     Map<Object, Object> userData = new HashedMap<>();

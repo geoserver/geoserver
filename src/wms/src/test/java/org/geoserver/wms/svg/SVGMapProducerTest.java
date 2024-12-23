@@ -30,44 +30,38 @@ import org.locationtech.jts.geom.Polygon;
 
 public class SVGMapProducerTest extends WMSTestSupport {
 
-    private static String EXPECTED_DOC =
-            "<?xml version=\"1.0\" standalone=\"no\"?>"
-                    + "<svg xmlns=\"http://www.w3.org/2000/svg\""
-                    + "    xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-                    + "    stroke=\"green\""
-                    + "    fill=\"none\""
-                    + "    stroke-width=\"0.1%\""
-                    + "    stroke-linecap=\"round\""
-                    + "    stroke-linejoin=\"round\""
-                    + "    width=\"300\""
-                    + "    height=\"300\""
-                    + "    viewBox=\"-250.0 -250.0 500.0 500.0\""
-                    + "    preserveAspectRatio=\"xMidYMid meet\">"
-                    + "  <g id=\"LAYER\" class=\"STYLE\">"
-                    + "    <use x=\"10\" y=\"-10\" xlink:href=\"#point\"/>"
-                    + "    <path d=\"M50 -50l50 -50 \"/>"
-                    + "    <path d=\"M0 0l0 -200 200 0 0 200 -200 0 Z\"/>"
-                    + "  </g>"
-                    + "</svg>";
+    private static String EXPECTED_DOC = "<?xml version=\"1.0\" standalone=\"no\"?>"
+            + "<svg xmlns=\"http://www.w3.org/2000/svg\""
+            + "    xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+            + "    stroke=\"green\""
+            + "    fill=\"none\""
+            + "    stroke-width=\"0.1%\""
+            + "    stroke-linecap=\"round\""
+            + "    stroke-linejoin=\"round\""
+            + "    width=\"300\""
+            + "    height=\"300\""
+            + "    viewBox=\"-250.0 -250.0 500.0 500.0\""
+            + "    preserveAspectRatio=\"xMidYMid meet\">"
+            + "  <g id=\"LAYER\" class=\"STYLE\">"
+            + "    <use x=\"10\" y=\"-10\" xlink:href=\"#point\"/>"
+            + "    <path d=\"M50 -50l50 -50 \"/>"
+            + "    <path d=\"M0 0l0 -200 200 0 0 200 -200 0 Z\"/>"
+            + "  </g>"
+            + "</svg>";
 
-    private void doTestSVGMapProducer(String layer, String style, String expectedDoc)
-            throws Exception {
+    private void doTestSVGMapProducer(String layer, String style, String expectedDoc) throws Exception {
         GeometryFactory gf = new GeometryFactory();
         Point point = gf.createPoint(new Coordinate(10, 10));
-        LineString line =
-                gf.createLineString(
-                        new Coordinate[] {new Coordinate(50, 50), new Coordinate(100, 100)});
-        Polygon polygon =
-                gf.createPolygon(
-                        gf.createLinearRing(
-                                new Coordinate[] {
-                                    new Coordinate(0, 0),
-                                    new Coordinate(0, 200),
-                                    new Coordinate(200, 200),
-                                    new Coordinate(200, 0),
-                                    new Coordinate(0, 0)
-                                }),
-                        null);
+        LineString line = gf.createLineString(new Coordinate[] {new Coordinate(50, 50), new Coordinate(100, 100)});
+        Polygon polygon = gf.createPolygon(
+                gf.createLinearRing(new Coordinate[] {
+                    new Coordinate(0, 0),
+                    new Coordinate(0, 200),
+                    new Coordinate(200, 200),
+                    new Coordinate(200, 0),
+                    new Coordinate(0, 0)
+                }),
+                null);
 
         SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
         ftb.setName(layer);
@@ -120,8 +114,7 @@ public class SVGMapProducerTest extends WMSTestSupport {
         String escapedLayer = "layer&quot;&lt;&gt;";
         String unescapedStyle = "style\"<>";
         String escapedStyle = "style&quot;&lt;&gt;";
-        String expectedDoc =
-                EXPECTED_DOC.replace("LAYER", escapedLayer).replace("STYLE", escapedStyle);
+        String expectedDoc = EXPECTED_DOC.replace("LAYER", escapedLayer).replace("STYLE", escapedStyle);
         doTestSVGMapProducer(unescapedLayer, unescapedStyle, expectedDoc);
     }
 }

@@ -10,11 +10,10 @@ import java.io.Serializable;
 /**
  * Base class for all AccessLimits declared by a {@link ResourceAccessManager}.
  *
- * <p>AccessLimits are used to limit the access to a resource (workspace, layer, style, catalog *
- * resource). While the hierarchy of access limits has well known classes matching the associated
- * resource, a ResourceAccessManager can also create subclasses of them, thus, if any customization
- * to access limits is needed, one can clone the {@link AccessLimits} object and change its
- * settings. For this purpose, AccessLimits implements {@link Cloneable}.
+ * <p>AccessLimits are used to limit the access to a resource (workspace, layer, style, catalog * resource). While the
+ * hierarchy of access limits has well known classes matching the associated resource, a ResourceAccessManager can also
+ * create subclasses of them, thus, if any customization to access limits is needed, one can clone the
+ * {@link AccessLimits} object and change its settings. For this purpose, AccessLimits implements {@link Cloneable}.
  *
  * @author Andrea Aime - GeoSolutions
  */

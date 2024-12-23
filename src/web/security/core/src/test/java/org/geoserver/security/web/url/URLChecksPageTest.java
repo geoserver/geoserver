@@ -74,16 +74,10 @@ public class URLChecksPageTest extends GeoServerWicketTestSupport {
     public void testRenderOneRule() throws Exception {
         startWithOneRule();
 
-        tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:0:component:link:label",
-                TEST_RULE.getName());
-        tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:1:component",
-                TEST_RULE.getDescription());
-        tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:2:component", TEST_RULE.getRegex());
-        tester.assertComponent(
-                "table:listContainer:items:1:itemProperties:3:component", Icon.class);
+        tester.assertLabel("table:listContainer:items:1:itemProperties:0:component:link:label", TEST_RULE.getName());
+        tester.assertLabel("table:listContainer:items:1:itemProperties:1:component", TEST_RULE.getDescription());
+        tester.assertLabel("table:listContainer:items:1:itemProperties:2:component", TEST_RULE.getRegex());
+        tester.assertComponent("table:listContainer:items:1:itemProperties:3:component", Icon.class);
     }
 
     @Test
@@ -91,10 +85,8 @@ public class URLChecksPageTest extends GeoServerWicketTestSupport {
         startWithOneRule();
 
         // select the rule
-        CheckBox selection =
-                (CheckBox)
-                        tester.getComponentFromLastRenderedPage(
-                                "table:listContainer:items:1:selectItemContainer:selectItem");
+        CheckBox selection = (CheckBox)
+                tester.getComponentFromLastRenderedPage("table:listContainer:items:1:selectItemContainer:selectItem");
         selection.setModelObject(true);
 
         // click remove link

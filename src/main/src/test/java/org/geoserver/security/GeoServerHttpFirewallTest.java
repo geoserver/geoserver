@@ -101,9 +101,7 @@ public class GeoServerHttpFirewallTest {
         setProperty(strict);
         MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
         if (exceptionExpected) {
-            assertThrows(
-                    RequestRejectedException.class,
-                    () -> this.firewall.getFirewalledRequest(request));
+            assertThrows(RequestRejectedException.class, () -> this.firewall.getFirewalledRequest(request));
         } else {
             assertNotNull(this.firewall.getFirewalledRequest(request));
         }

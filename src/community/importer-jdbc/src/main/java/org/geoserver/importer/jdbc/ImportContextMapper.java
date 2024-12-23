@@ -74,8 +74,7 @@ class ImportContextMapper {
             return null;
         }
         if (!id.startsWith(CTX_FEATURE_TYPE.getTypeName() + ".")) {
-            throw new IllegalArgumentException(
-                    "Was expecting a feature type " + CTX_FEATURE_TYPE.getTypeName());
+            throw new IllegalArgumentException("Was expecting a feature type " + CTX_FEATURE_TYPE.getTypeName());
         }
         return Long.parseLong(id.substring(CTX_FEATURE_TYPE.getTypeName().length() + 1));
     }

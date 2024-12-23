@@ -40,12 +40,11 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
     public GeoJsonWMSBuilder(Rectangle mapSize, ReferencedEnvelope mapArea) {
 
         final int memotyBufferThreshold = 8096;
-        out =
-                DeferredFileOutputStream.builder()
-                        .setThreshold(memotyBufferThreshold)
-                        .setPrefix("geojson")
-                        .setSuffix(".geojson")
-                        .get();
+        out = DeferredFileOutputStream.builder()
+                .setThreshold(memotyBufferThreshold)
+                .setPrefix("geojson")
+                .setSuffix(".geojson")
+                .get();
         writer = new OutputStreamWriter(out, Charsets.UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
         jsonWriter.object(); // start root object
@@ -73,11 +72,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
 
     @Override
     public void addFeature(
-            String layerName,
-            String featureId,
-            String geometryName,
-            Geometry aGeom,
-            Map<String, Object> properties) {
+            String layerName, String featureId, String geometryName, Geometry aGeom, Map<String, Object> properties) {
 
         if (precisionReducerFilter != null) {
             aGeom.apply(precisionReducerFilter);

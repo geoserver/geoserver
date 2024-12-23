@@ -19,11 +19,9 @@ import org.geotools.renderer.i18n.ErrorKeys;
 /** @author Daniele Romagnoli, GeoSolutions */
 public class BaseCoverageAlgebraProcess {
 
-    static final String MISMATCHING_ENVELOPE_MESSAGE =
-            "coverageA and coverageB should share the same Envelope";
+    static final String MISMATCHING_ENVELOPE_MESSAGE = "coverageA and coverageB should share the same Envelope";
 
-    static final String MISMATCHING_GRID_MESSAGE =
-            "coverageA and coverageB should have the same gridRange";
+    static final String MISMATCHING_GRID_MESSAGE = "coverageA and coverageB should have the same gridRange";
 
     static final String MISMATCHING_CRS_MESSAGE =
             "coverageA and coverageB should share the same CoordinateReferenceSystem";
@@ -34,11 +32,8 @@ public class BaseCoverageAlgebraProcess {
             throws ProcessException {
         if (coverageA == null || coverageB == null) {
             String coveragesNull =
-                    coverageA == null
-                            ? (coverageB == null ? "coverageA and coverageB" : "coverageA")
-                            : "coverageB";
-            throw new ProcessException(
-                    MessageFormat.format(ErrorKeys.NULL_ARGUMENT_$1, coveragesNull));
+                    coverageA == null ? (coverageB == null ? "coverageA and coverageB" : "coverageA") : "coverageB";
+            throw new ProcessException(MessageFormat.format(ErrorKeys.NULL_ARGUMENT_$1, coveragesNull));
         }
 
         //
@@ -52,8 +47,7 @@ public class BaseCoverageAlgebraProcess {
                 mathTransform = CRS.findMathTransform(crsA, crsB);
             } catch (FactoryException e) {
                 throw new ProcessException(
-                        "Exceptions occurred while looking for a mathTransform between the 2 coverage's CRSs",
-                        e);
+                        "Exceptions occurred while looking for a mathTransform between the 2 coverage's CRSs", e);
             }
             if (mathTransform != null && !mathTransform.isIdentity()) {
                 throw new ProcessException(MISMATCHING_CRS_MESSAGE);
@@ -71,8 +65,7 @@ public class BaseCoverageAlgebraProcess {
 
         GridEnvelope gridRangeA = coverageA.getGridGeometry().getGridRange();
         GridEnvelope gridRangeB = coverageA.getGridGeometry().getGridRange();
-        if (gridRangeA.getSpan(0) != gridRangeB.getSpan(0)
-                || gridRangeA.getSpan(1) != gridRangeB.getSpan(1)) {
+        if (gridRangeA.getSpan(0) != gridRangeB.getSpan(0) || gridRangeA.getSpan(1) != gridRangeB.getSpan(1)) {
             throw new ProcessException(MISMATCHING_GRID_MESSAGE);
         }
     }

@@ -37,25 +37,20 @@ public class SecuredSimpleFeatureCollectionTest {
                 "secureDataFactory", new DefaultSecureDataFactory(), SecuredObjectFactory.class);
         this.lastVisitor = null;
         SimpleFeatureType originalSchema =
-                DataUtilities.createType(
-                        "BasicPolygons", "the_geom:MultiPolygon:srid=4326,ID:String,value:int");
-        collection =
-                new ListFeatureCollection(originalSchema) {
-                    @Override
-                    public void accepts(FeatureVisitor visitor, ProgressListener progress)
-                            throws IOException {
-                        lastVisitor = visitor;
-                    }
-                };
+                DataUtilities.createType("BasicPolygons", "the_geom:MultiPolygon:srid=4326,ID:String,value:int");
+        collection = new ListFeatureCollection(originalSchema) {
+            @Override
+            public void accepts(FeatureVisitor visitor, ProgressListener progress) throws IOException {
+                lastVisitor = visitor;
+            }
+        };
     }
 
     @Test
     public void testMaxVisitorDelegation() throws SchemaException, IOException {
         MaxVisitor visitor =
                 new MaxVisitor(CommonFactoryFinder.getFilterFactory().property("value"));
-        WrapperPolicy policy =
-                WrapperPolicy.hide(
-                        new VectorAccessLimits(CatalogMode.HIDE, null, null, null, null));
+        WrapperPolicy policy = WrapperPolicy.hide(new VectorAccessLimits(CatalogMode.HIDE, null, null, null, null));
         assertOptimalVisit(visitor, policy);
     }
 
@@ -65,11 +60,8 @@ public class SecuredSimpleFeatureCollectionTest {
                 new MaxVisitor(CommonFactoryFinder.getFilterFactory().property("value"));
         PropertyName geom = CommonFactoryFinder.getFilterFactory().property("the_geom");
         WrapperPolicy policy =
-                WrapperPolicy.hide(
-                        new VectorAccessLimits(
-                                CatalogMode.HIDE, Arrays.asList(geom), null, null, null));
-        SecuredSimpleFeatureCollection secured =
-                new SecuredSimpleFeatureCollection(collection, policy);
+                WrapperPolicy.hide(new VectorAccessLimits(CatalogMode.HIDE, Arrays.asList(geom), null, null, null));
+        SecuredSimpleFeatureCollection secured = new SecuredSimpleFeatureCollection(collection, policy);
         secured.accepts(visitor, null);
         assertNull(lastVisitor);
     }
@@ -77,16 +69,12 @@ public class SecuredSimpleFeatureCollectionTest {
     @Test
     public void testCountVisitorDelegation() throws SchemaException, IOException {
         FeatureVisitor visitor = new CountVisitor();
-        WrapperPolicy policy =
-                WrapperPolicy.hide(
-                        new VectorAccessLimits(CatalogMode.HIDE, null, null, null, null));
+        WrapperPolicy policy = WrapperPolicy.hide(new VectorAccessLimits(CatalogMode.HIDE, null, null, null, null));
         assertOptimalVisit(visitor, policy);
     }
 
-    private void assertOptimalVisit(FeatureVisitor visitor, WrapperPolicy policy)
-            throws IOException {
-        SecuredSimpleFeatureCollection secured =
-                new SecuredSimpleFeatureCollection(collection, policy);
+    private void assertOptimalVisit(FeatureVisitor visitor, WrapperPolicy policy) throws IOException {
+        SecuredSimpleFeatureCollection secured = new SecuredSimpleFeatureCollection(collection, policy);
         secured.accepts(visitor, null);
         assertSame(lastVisitor, visitor);
     }

@@ -50,8 +50,7 @@ public class CatalogIconFactory implements Serializable {
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/geosilk/map.png");
 
     public static final PackageResourceReference MAP_STORE_ICON =
-            new PackageResourceReference(
-                    GeoServerBasePage.class, "img/icons/geosilk/server_map.png");
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/geosilk/server_map.png");
 
     public static final PackageResourceReference POINT_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/bullet_blue.png");
@@ -60,8 +59,7 @@ public class CatalogIconFactory implements Serializable {
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/line_blue.png");
 
     public static final PackageResourceReference POLYGON_ICON =
-            new PackageResourceReference(
-                    GeoServerBasePage.class, "img/icons/silk/shape_square_blue.png");
+            new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/shape_square_blue.png");
 
     public static final PackageResourceReference GEOMETRY_ICON =
             new PackageResourceReference(GeoServerBasePage.class, "img/icons/geosilk/vector.png");
@@ -97,8 +95,8 @@ public class CatalogIconFactory implements Serializable {
     }
 
     /**
-     * Returns the appropriate icon for the specified layer. This one distinguishes the geometry
-     * type inside vector layers.
+     * Returns the appropriate icon for the specified layer. This one distinguishes the geometry type inside vector
+     * layers.
      */
     public PackageResourceReference getSpecificLayerIcon(LayerInfo info) {
         if (info.getType() == PublishedType.RASTER) {
@@ -133,11 +131,9 @@ public class CatalogIconFactory implements Serializable {
     public PackageResourceReference getVectorIcon(Class<?> geom) {
         if (Point.class.isAssignableFrom(geom) || MultiPoint.class.isAssignableFrom(geom)) {
             return POINT_ICON;
-        } else if (LineString.class.isAssignableFrom(geom)
-                || MultiLineString.class.isAssignableFrom(geom)) {
+        } else if (LineString.class.isAssignableFrom(geom) || MultiLineString.class.isAssignableFrom(geom)) {
             return LINE_ICON;
-        } else if (Polygon.class.isAssignableFrom(geom)
-                || MultiPolygon.class.isAssignableFrom(geom)) {
+        } else if (Polygon.class.isAssignableFrom(geom) || MultiPolygon.class.isAssignableFrom(geom)) {
             return POLYGON_ICON;
         } else {
             return GEOMETRY_ICON;
@@ -159,10 +155,7 @@ public class CatalogIconFactory implements Serializable {
             try {
                 dataStoreFactory = resourcePool.getDataStoreFactory((DataStoreInfo) storeInfo);
             } catch (IOException e) {
-                LOGGER.log(
-                        Level.INFO,
-                        "factory class for storeInfo " + storeInfo.getName() + " not found",
-                        e);
+                LOGGER.log(Level.INFO, "factory class for storeInfo " + storeInfo.getName() + " not found", e);
             }
 
             if (dataStoreFactory != null) {
@@ -170,8 +163,7 @@ public class CatalogIconFactory implements Serializable {
             }
 
         } else if (storeInfo instanceof CoverageStoreInfo) {
-            AbstractGridFormat format =
-                    resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
+            AbstractGridFormat format = resourcePool.getGridCoverageFormat((CoverageStoreInfo) storeInfo);
             if (format != null) {
                 return getStoreIcon(format.getClass());
             }
@@ -183,27 +175,22 @@ public class CatalogIconFactory implements Serializable {
             throw new IllegalStateException(storeInfo.getClass().getName());
         }
 
-        LOGGER.info(
-                "Could not determine icon for StoreInfo "
-                        + storeInfo.getName()
-                        + ". Using 'unknown' icon.");
+        LOGGER.info("Could not determine icon for StoreInfo " + storeInfo.getName() + ". Using 'unknown' icon.");
         return UNKNOWN_ICON;
     }
 
     /**
      * Returns the appropriate icon given a data access or coverage factory class.
      *
-     * <p>The lookup is performed by first searching for a registered {@link DataStorePanelInfo} for
-     * the given store factory class, if not found, the icon for the {@link DataStorePanelInfo}
-     * registered with the id {@code defaultVector} or {@code defaultRaster}, as appropriate will be
-     * used.
+     * <p>The lookup is performed by first searching for a registered {@link DataStorePanelInfo} for the given store
+     * factory class, if not found, the icon for the {@link DataStorePanelInfo} registered with the id
+     * {@code defaultVector} or {@code defaultRaster}, as appropriate will be used.
      *
      * @param factoryClass either a {@link DataAccessFactory} or a {@link Format} class
      */
     public PackageResourceReference getStoreIcon(Class<?> factoryClass) {
         // look for the associated panel info if there is one
-        final List<DataStorePanelInfo> infos =
-                GeoServerApplication.get().getBeansOfType(DataStorePanelInfo.class);
+        final List<DataStorePanelInfo> infos = GeoServerApplication.get().getBeansOfType(DataStorePanelInfo.class);
 
         for (DataStorePanelInfo panelInfo : infos) {
             if (factoryClass.equals(panelInfo.getFactoryClass())) {
@@ -215,43 +202,33 @@ public class CatalogIconFactory implements Serializable {
             // search for the declared default vector store icon
             for (DataStorePanelInfo panelInfo : infos) {
                 if ("defaultVector".equals(panelInfo.getId())) {
-                    return new PackageResourceReference(
-                            panelInfo.getIconBase(), panelInfo.getIcon());
+                    return new PackageResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
                 }
             }
 
             // fall back on generic vector icon otherwise
-            return new PackageResourceReference(
-                    GeoServerApplication.class, "img/icons/geosilk/database_vector.png");
+            return new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/database_vector.png");
 
         } else if (Format.class.isAssignableFrom(factoryClass)) {
             // search for the declared default coverage store icon
             for (DataStorePanelInfo panelInfo : infos) {
                 if ("defaultRaster".equals(panelInfo.getId())) {
-                    return new PackageResourceReference(
-                            panelInfo.getIconBase(), panelInfo.getIcon());
+                    return new PackageResourceReference(panelInfo.getIconBase(), panelInfo.getIcon());
                 }
             }
 
             // fall back on generic raster icon otherwise
-            return new PackageResourceReference(
-                    GeoServerApplication.class, "img/icons/geosilk/page_white_raster.png");
+            return new PackageResourceReference(GeoServerApplication.class, "img/icons/geosilk/page_white_raster.png");
         }
         throw new IllegalArgumentException("Unrecognized store format class: " + factoryClass);
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate an enabled/properly configured
-     * resource
-     */
+    /** Returns a reference to a general purpose icon to indicate an enabled/properly configured resource */
     public PackageResourceReference getEnabledIcon() {
         return ENABLED_ICON;
     }
 
-    /**
-     * Returns a reference to a general purpose icon to indicate a
-     * disabled/missconfigured/unreachable resource
-     */
+    /** Returns a reference to a general purpose icon to indicate a disabled/missconfigured/unreachable resource */
     public PackageResourceReference getDisabledIcon() {
         return DISABLED_ICON;
     }

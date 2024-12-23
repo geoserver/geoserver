@@ -31,8 +31,8 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
     }
 
     /**
-     * @throws ServiceException if no layers has been requested, or one of the requested layers does
-     *     not exists on this server instance, or the version parameter was not provided.
+     * @throws ServiceException if no layers has been requested, or one of the requested layers does not exists on this
+     *     server instance, or the version parameter was not provided.
      * @see org.geoserver.ows.KvpRequestReader#read(java.lang.Object, java.util.Map, java.util.Map)
      */
     @SuppressWarnings("unchecked")
@@ -46,8 +46,7 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
         if (null == version) {
             String code = "NoVersionInfo";
             String simpleName = getClass().getSimpleName();
-            throw new ServiceException(
-                    "Version parameter not provided for DescribeLayer operation", code, simpleName);
+            throw new ServiceException("Version parameter not provided for DescribeLayer operation", code, simpleName);
         }
 
         if (!wms.getVersion().equals(version)) {
@@ -60,12 +59,13 @@ public class DescribeLayerKvpRequestReader extends KvpRequestReader {
                     getClass().getSimpleName());
         }
 
-        List<MapLayerInfo> layers =
-                new MapLayerInfoKvpParser("LAYERS", wms).parse((String) rawKvp.get("LAYERS"));
+        List<MapLayerInfo> layers = new MapLayerInfoKvpParser("LAYERS", wms).parse((String) rawKvp.get("LAYERS"));
         request.setLayers(layers);
         if (layers == null || layers.isEmpty()) {
             throw new ServiceException(
-                    "No LAYERS have been requested", "NoLayerRequested", getClass().getName());
+                    "No LAYERS have been requested",
+                    "NoLayerRequested",
+                    getClass().getName());
         }
         return request;
     }

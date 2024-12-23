@@ -55,8 +55,7 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     /** Add the users */
@@ -85,15 +84,11 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         Catalog catalog = getCatalog();
         CoverageInfo world = catalog.getCoverageByName(getLayerId(MockData.WORLD));
-        world.getParameters()
-                .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
+        world.getParameters().put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
         catalog.save(world);
 
         // limits for mr cite_noworld: can't access the world layer
-        tam.putLimits(
-                "cite_noworld",
-                world,
-                new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
+        tam.putLimits("cite_noworld", world, new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
 
         // limits for mr cite_noworld: can't access the world layer
         tam.putLimits(
@@ -103,14 +98,8 @@ public class ResourceAccessManagerWCSTest extends AbstractGetCoverageTest {
 
         // limits the area to north america
         MultiPolygon rasterFilter =
-                (MultiPolygon)
-                        new WKTReader()
-                                .read(
-                                        "MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
-        tam.putLimits(
-                "cite_usa",
-                world,
-                new CoverageAccessLimits(CatalogMode.HIDE, null, rasterFilter, null));
+                (MultiPolygon) new WKTReader().read("MULTIPOLYGON(((-120 30, -120 60, -60 60, -60 30, -120 30)))");
+        tam.putLimits("cite_usa", world, new CoverageAccessLimits(CatalogMode.HIDE, null, rasterFilter, null));
     }
 
     Map<String, Object> getWorld() {

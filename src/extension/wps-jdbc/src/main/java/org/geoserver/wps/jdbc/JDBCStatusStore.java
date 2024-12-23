@@ -127,8 +127,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
 
     public JDBCStatusStore(DataStore store) {
         if (store == null) {
-            throw new RuntimeException(
-                    "Attempted to create a JDBCStatusStore with a null datastore");
+            throw new RuntimeException("Attempted to create a JDBCStatusStore with a null datastore");
         }
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.add(PROCESS_ID, String.class);
@@ -170,8 +169,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
         }
     }
 
-    private List<Definition> buildDefinitions(
-            SimpleFeatureType actual, SimpleFeatureType expected) {
+    private List<Definition> buildDefinitions(SimpleFeatureType actual, SimpleFeatureType expected) {
         List<Definition> definitions = new ArrayList<>();
         boolean mappingRequired = false;
         if (!actual.getTypeName().equals(expected.getTypeName())) {
@@ -231,8 +229,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
             SimpleFeatureStore store = getStatusFeatureStore();
             store.setTransaction(transaction);
             SimpleFeature feature = statusToFeature(status);
-            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection =
-                    DataUtilities.collection(feature);
+            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection = DataUtilities.collection(feature);
             // if the feature exists delete it
             Filter filter = ECQL.toFilter(PROCESS_ID + " = '" + status.getExecutionId() + "'");
             store.removeFeatures(filter);
@@ -397,10 +394,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
         try {
             e.encode(request, WPS.Execute, out);
         } catch (IOException ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem encountered encoding WPS Request, moving on without it",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem encountered encoding WPS Request, moving on without it", ex);
         }
 
         return out.toByteArray();
@@ -468,11 +462,10 @@ public class JDBCStatusStore implements ProcessStatusStore {
         Exception exc = new Exception(message);
         // see if we can rebuild the exception
         try {
-            Constructor<?> con =
-                    this.getClass()
-                            .getClassLoader()
-                            .loadClass((String) attrs.get(EXCEPTION_CLASS))
-                            .getConstructor(String.class);
+            Constructor<?> con = this.getClass()
+                    .getClassLoader()
+                    .loadClass((String) attrs.get(EXCEPTION_CLASS))
+                    .getConstructor(String.class);
             exc = (Exception) con.newInstance(message);
 
         } catch (InstantiationException
@@ -495,8 +488,7 @@ public class JDBCStatusStore implements ProcessStatusStore {
             String fileName = parts[1];
             String methodName = parts[2];
             int lineNumber = Integer.parseInt(parts[3]);
-            StackTraceElement t =
-                    new StackTraceElement(declaringClass, methodName, fileName, lineNumber);
+            StackTraceElement t = new StackTraceElement(declaringClass, methodName, fileName, lineNumber);
 
             trace.add(t);
         }

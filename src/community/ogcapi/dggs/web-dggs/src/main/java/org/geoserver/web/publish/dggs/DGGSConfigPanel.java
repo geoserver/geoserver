@@ -71,10 +71,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
     }
 
     @Override
-    /**
-     * Check the min/max values are consistent, need the panel to included in the hierarchy to find
-     * the /form
-     */
+    /** Check the min/max values are consistent, need the panel to included in the hierarchy to find the /form */
     protected void onInitialize() {
         super.onInitialize();
 
@@ -112,8 +109,7 @@ public class DGGSConfigPanel extends PublishedConfigurationPanel<LayerInfo> {
 
             if (minValue != null && maxValue != null && minValue > maxValue) {
                 ValidationError error = new ValidationError();
-                error.setMessage(
-                        new ParamResourceModel("minMaxError", DGGSConfigPanel.this).getObject());
+                error.setMessage(new ParamResourceModel("minMaxError", DGGSConfigPanel.this).getObject());
                 minField.error(error);
             }
         }

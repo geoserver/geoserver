@@ -31,8 +31,7 @@ public class DynamicColorMapProcess implements RasterProcess {
     @DescribeResult(name = "result", description = "output raster")
     public GridCoverage2D execute(
             @DescribeParameter(name = "data", description = "Input raster") GridCoverage2D coverage,
-            @DescribeParameter(name = "colorRamp", description = "The name of the color ramp.")
-                    ColorMap colorMap,
+            @DescribeParameter(name = "colorRamp", description = "The name of the color ramp.") ColorMap colorMap,
             @DescribeParameter(
                             name = "opacity",
                             description = "The opacity level, between 0 and 1.",
@@ -45,8 +44,7 @@ public class DynamicColorMapProcess implements RasterProcess {
 
         final RasterSymbolizer rsb_1 = buildRasterSymbolizer(colorMap, opacity);
 
-        RasterSymbolizerHelper rsh =
-                new RasterSymbolizerHelper(coverage, GeoTools.getDefaultHints());
+        RasterSymbolizerHelper rsh = new RasterSymbolizerHelper(coverage, GeoTools.getDefaultHints());
         rsh.visit(rsb_1);
         return (GridCoverage2D) rsh.getOutput();
     }

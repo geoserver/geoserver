@@ -24,8 +24,7 @@ public class GetPropertyValueKvpRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         GetPropertyValueType gpv = (GetPropertyValueType) super.read(request, kvp, rawKvp);
 
         // parse a GetFeature and copy the query

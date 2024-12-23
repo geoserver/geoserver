@@ -8,8 +8,8 @@ package org.geoserver.sldservice.utils.classifier.impl;
 import java.awt.Color;
 
 /**
- * Jet Color Ramp Implementation. A color ramp starting from BLUE and ending with RED, having YELLOW
- * as intermediate color.
+ * Jet Color Ramp Implementation. A color ramp starting from BLUE and ending with RED, having YELLOW as intermediate
+ * color.
  *
  * @author Daniele Romagnoli, GeoSolutions SAS
  */

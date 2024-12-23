@@ -48,16 +48,12 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     List<String> crs;
     String storageCrs;
 
-    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs)
-            throws IOException {
+    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs) throws IOException {
         this(geoServer, featureType, crs, null);
     }
 
     public CollectionDocument(
-            GeoServer geoServer,
-            FeatureTypeInfo featureType,
-            List<String> crs,
-            List<String> serviceCRS)
+            GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs, List<String> serviceCRS)
             throws IOException {
         super(featureType);
         // basic info
@@ -90,38 +86,32 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         }
 
         // links
-        Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> formats = APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         for (MediaType format : formats) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/features/v1/collections/" + collectionId + "/items",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            Link.REL_ITEMS,
-                            format.toString(),
-                            collectionId + " items as " + format.toString(),
-                            "items"));
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/features/v1/collections/" + collectionId + "/items",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            addLink(new Link(
+                    apiUrl,
+                    Link.REL_ITEMS,
+                    format.toString(),
+                    collectionId + " items as " + format.toString(),
+                    "items"));
         }
         addSelfLinks("ogc/features/v1/collections/" + id);
 
         // describedBy as GML schema
         if (isOWSAvailable(geoServer, "WFS")) {
-            Map<String, String> kvp =
-                    Map.ofEntries(
-                            Map.entry("service", "WFS"),
-                            Map.entry("version", "2.0"),
-                            Map.entry("request", "DescribeFeatureType"),
-                            Map.entry("typenames", featureType.prefixedName()));
-            String describedByHref =
-                    ResponseUtils.buildURL(baseUrl, "wfs", kvp, URLMangler.URLType.SERVICE);
-            Link describedBy =
-                    new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+            Map<String, String> kvp = Map.ofEntries(
+                    Map.entry("service", "WFS"),
+                    Map.entry("version", "2.0"),
+                    Map.entry("request", "DescribeFeatureType"),
+                    Map.entry("typenames", featureType.prefixedName()));
+            String describedByHref = ResponseUtils.buildURL(baseUrl, "wfs", kvp, URLMangler.URLType.SERVICE);
+            Link describedBy = new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
             addLink(describedBy);
         }
 
@@ -138,16 +128,15 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             Map<String, String> kvp = new HashMap<>();
             kvp.put("LAYERS", featureType.prefixedName());
             kvp.put("FORMAT", "application/openlayers");
-            this.mapPreviewURL =
-                    ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
+            this.mapPreviewURL = ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
         }
     }
 
     /**
      * @param bbox a FeatureType's WGS84 bounds with east-north axis order
      * @param numDecimals precision to round coordinates to
-     * @return an envelope rounded to the specified number of decimaps and expanded as necessary to
-     *     the west-east and south-north directions. Zero width and height are preserved.
+     * @return an envelope rounded to the specified number of decimaps and expanded as necessary to the west-east and
+     *     south-north directions. Zero width and height are preserved.
      */
     private ReferencedEnvelope roundLonLatBbox(ReferencedEnvelope bbox, int numDecimals) {
         // if(true)return bbox;
@@ -174,8 +163,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         return bd.doubleValue();
     }
 
-    private boolean crsListContains(
-            String storageCrs, List<String> collectionCRSs, List<String> serviceCRSs) {
+    private boolean crsListContains(String storageCrs, List<String> collectionCRSs, List<String> serviceCRSs) {
         // is it referring to the whole server CRS list?
         if (collectionCRSs.contains("#/crs")) {
             if (serviceCRSs != null && serviceCRSs.contains(storageCrs)) return true;
@@ -184,8 +172,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     }
 
     private static boolean isOWSAvailable(GeoServer geoServer, String serviceId) {
-        return geoServer.getServices().stream()
-                .anyMatch(s -> serviceId.equalsIgnoreCase(s.getName()) && s.isEnabled());
+        return geoServer.getServices().stream().anyMatch(s -> serviceId.equalsIgnoreCase(s.getName()) && s.isEnabled());
     }
 
     private String lookupStorageCrs() {

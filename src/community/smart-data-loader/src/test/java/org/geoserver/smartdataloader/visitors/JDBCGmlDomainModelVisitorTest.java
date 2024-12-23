@@ -38,9 +38,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
         GmlSchemaVisitor dmv = new GmlSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE);
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(
-                        "meteo-observations-gml.xsd")) {
+        try (InputStream is = JDBCGmlDomainModelVisitorTest.class.getResourceAsStream("meteo-observations-gml.xsd")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -64,8 +62,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
         GmlSchemaVisitor dmv = new GmlSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE);
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCGmlDomainModelVisitorTest.class.getResourceAsStream("meteo-stations-gml.xsd")) {
+        try (InputStream is = JDBCGmlDomainModelVisitorTest.class.getResourceAsStream("meteo-stations-gml.xsd")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -88,9 +85,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
         GmlSchemaVisitor dmv = new GmlSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE);
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(
-                        "meteo-parameters-gml.xsd")) {
+        try (InputStream is = JDBCGmlDomainModelVisitorTest.class.getResourceAsStream("meteo-parameters-gml.xsd")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);
@@ -114,9 +109,7 @@ public abstract class JDBCGmlDomainModelVisitorTest extends AbstractJDBCSmartDat
         GmlSchemaVisitor dmv = new GmlSchemaVisitor(NAMESPACE_PREFIX, TARGET_NAMESPACE);
         dm.accept(dmv);
 
-        try (InputStream is =
-                JDBCGmlDomainModelVisitorTest.class.getResourceAsStream(
-                        "meteo-maintainers-gml.xsd")) {
+        try (InputStream is = JDBCGmlDomainModelVisitorTest.class.getResourceAsStream("meteo-maintainers-gml.xsd")) {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document control = dBuilder.parse(is);

@@ -166,17 +166,13 @@ public class RuleFilterBuilder {
             }
 
             if (LOGGER.isLoggable(Level.FINE)) {
-                String authList =
-                        user.getAuthorities().stream()
-                                .map(a -> a.getAuthority())
-                                .collect(Collectors.joining(",", "[", "]"));
+                String authList = user.getAuthorities().stream()
+                        .map(a -> a.getAuthority())
+                        .collect(Collectors.joining(",", "[", "]"));
                 LOGGER.log(
-                        Level.FINE,
-                        "Authorizations found for user {0}: {1}",
-                        new Object[] {user.getName(), authList});
+                        Level.FINE, "Authorizations found for user {0}: {1}", new Object[] {user.getName(), authList});
 
-                String allowedAuth =
-                        config.getRoles().stream().collect(Collectors.joining(",", "[", "]"));
+                String allowedAuth = config.getRoles().stream().collect(Collectors.joining(",", "[", "]"));
                 LOGGER.log(Level.FINE, "Authorizations allowed: {0}", new Object[] {allowedAuth});
             }
         }
@@ -198,11 +194,10 @@ public class RuleFilterBuilder {
 
     public List<String> getFilteredRoles() {
         boolean getAllRoles = config.getRoles().contains("*");
-        Set<String> excluded =
-                config.getRoles().stream()
-                        .filter(r -> r.startsWith("-"))
-                        .map(r -> r.substring(1))
-                        .collect(Collectors.toSet());
+        Set<String> excluded = config.getRoles().stream()
+                .filter(r -> r.startsWith("-"))
+                .map(r -> r.substring(1))
+                .collect(Collectors.toSet());
 
         return getFilteredRoles(getAllRoles, excluded);
     }

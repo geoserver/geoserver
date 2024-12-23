@@ -55,8 +55,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
     }
 
     protected void configureAuthentication() {
-        config.setUser(
-                "uid=admin,ou=People,dc=example,dc=com"); // ("uid=admin,ou=People,dc=example,dc=com");
+        config.setUser("uid=admin,ou=People,dc=example,dc=com"); // ("uid=admin,ou=People,dc=example,dc=com");
         config.setPassword("admin");
         config.setBindBeforeGroupSearch(true);
     }
@@ -82,8 +81,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
         assertEquals("test_admin", service.getAdminRole().toString());
     }
 
-    protected void checkUserNamesForRole(String roleName, int expected, boolean userFilter)
-            throws IOException {
+    protected void checkUserNamesForRole(String roleName, int expected, boolean userFilter) throws IOException {
         createRoleService(userFilter, null, null);
 
         SortedSet<String> userNames = service.getUserNamesForRole(new GeoServerRole(roleName));
@@ -327,8 +325,7 @@ public class LDAPRoleServiceTest extends LDAPBaseTest {
             config.setMaxGroupSearchLevel(5);
             service = new LDAPRoleService();
             service.initializeFromConfig(config);
-            SortedSet<String> userNames =
-                    service.getUserNamesForRole(service.getRoleByName("ROLE_EXTRA"));
+            SortedSet<String> userNames = service.getUserNamesForRole(service.getRoleByName("ROLE_EXTRA"));
             assertNotNull(userNames);
             assertEquals(2, userNames.size());
             // check parent role ROLE_EXTRA

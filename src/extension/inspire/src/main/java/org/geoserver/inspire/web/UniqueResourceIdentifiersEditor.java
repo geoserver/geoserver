@@ -43,8 +43,7 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
     private AjaxButton button;
 
     /** @param identifiersModel Must return a {@link ResourceInfo} */
-    public UniqueResourceIdentifiersEditor(
-            String id, final IModel<UniqueResourceIdentifiers> identifiersModel) {
+    public UniqueResourceIdentifiersEditor(String id, final IModel<UniqueResourceIdentifiers> identifiersModel) {
         super(id, identifiersModel);
 
         if (identifiersModel.getObject() == null) {
@@ -60,90 +59,58 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
                 new UniqueResourceIdentifiersProvider(identifiersModel.getObject());
 
         // the link list
-        identifiers =
-                new GeoServerTablePanel<>("identifiers", provider, false) {
+        identifiers = new GeoServerTablePanel<>("identifiers", provider, false) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<UniqueResourceIdentifier> itemModel,
-                            Property<UniqueResourceIdentifier> property) {
-                        String name = property.getName();
-                        if ("code".equals(name)) {
-                            Fragment codeFragment =
-                                    new Fragment(
-                                            id,
-                                            "txtFragment",
-                                            UniqueResourceIdentifiersEditor.this);
-                            FormComponentFeedbackBorder codeBorder =
-                                    new FormComponentFeedbackBorder("border");
-                            codeFragment.add(codeBorder);
-                            TextField<String> code =
-                                    new TextField<>("txt", new PropertyModel<>(itemModel, "code"));
-                            code.setLabel(
-                                    new ParamResourceModel(
-                                            "th.code", UniqueResourceIdentifiersEditor.this));
-                            code.setRequired(true);
-                            codeBorder.add(code);
-                            return codeFragment;
-                        } else if ("namespace".equals(name)) {
-                            Fragment nsFragment =
-                                    new Fragment(
-                                            id,
-                                            "txtFragment",
-                                            UniqueResourceIdentifiersEditor.this);
-                            FormComponentFeedbackBorder namespaceBorder =
-                                    new FormComponentFeedbackBorder("border");
-                            nsFragment.add(namespaceBorder);
-                            TextField<String> namespace =
-                                    new TextField<>(
-                                            "txt", new PropertyModel<>(itemModel, "namespace"));
-                            namespace.setLabel(
-                                    new ParamResourceModel(
-                                            "th.namespace", UniqueResourceIdentifiersEditor.this));
-                            namespace.add(new URIValidator());
-                            namespaceBorder.add(namespace);
-                            return nsFragment;
-                        } else if ("metadataURL".equals(name)) {
-                            Fragment urlFragment =
-                                    new Fragment(
-                                            id,
-                                            "txtFragment",
-                                            UniqueResourceIdentifiersEditor.this);
-                            FormComponentFeedbackBorder namespaceBorder =
-                                    new FormComponentFeedbackBorder("border");
-                            urlFragment.add(namespaceBorder);
-                            TextField<String> url =
-                                    new TextField<>(
-                                            "txt", new PropertyModel<>(itemModel, "metadataURL"));
-                            url.add(new URIValidator());
-                            namespaceBorder.add(url);
-                            return urlFragment;
-                        } else if ("remove".equals(name)) {
-                            Fragment removeFragment =
-                                    new Fragment(
-                                            id,
-                                            "removeFragment",
-                                            UniqueResourceIdentifiersEditor.this);
-                            GeoServerAjaxFormLink removeLink =
-                                    new GeoServerAjaxFormLink("remove") {
+            @Override
+            protected Component getComponentForProperty(
+                    String id,
+                    IModel<UniqueResourceIdentifier> itemModel,
+                    Property<UniqueResourceIdentifier> property) {
+                String name = property.getName();
+                if ("code".equals(name)) {
+                    Fragment codeFragment = new Fragment(id, "txtFragment", UniqueResourceIdentifiersEditor.this);
+                    FormComponentFeedbackBorder codeBorder = new FormComponentFeedbackBorder("border");
+                    codeFragment.add(codeBorder);
+                    TextField<String> code = new TextField<>("txt", new PropertyModel<>(itemModel, "code"));
+                    code.setLabel(new ParamResourceModel("th.code", UniqueResourceIdentifiersEditor.this));
+                    code.setRequired(true);
+                    codeBorder.add(code);
+                    return codeFragment;
+                } else if ("namespace".equals(name)) {
+                    Fragment nsFragment = new Fragment(id, "txtFragment", UniqueResourceIdentifiersEditor.this);
+                    FormComponentFeedbackBorder namespaceBorder = new FormComponentFeedbackBorder("border");
+                    nsFragment.add(namespaceBorder);
+                    TextField<String> namespace = new TextField<>("txt", new PropertyModel<>(itemModel, "namespace"));
+                    namespace.setLabel(new ParamResourceModel("th.namespace", UniqueResourceIdentifiersEditor.this));
+                    namespace.add(new URIValidator());
+                    namespaceBorder.add(namespace);
+                    return nsFragment;
+                } else if ("metadataURL".equals(name)) {
+                    Fragment urlFragment = new Fragment(id, "txtFragment", UniqueResourceIdentifiersEditor.this);
+                    FormComponentFeedbackBorder namespaceBorder = new FormComponentFeedbackBorder("border");
+                    urlFragment.add(namespaceBorder);
+                    TextField<String> url = new TextField<>("txt", new PropertyModel<>(itemModel, "metadataURL"));
+                    url.add(new URIValidator());
+                    namespaceBorder.add(url);
+                    return urlFragment;
+                } else if ("remove".equals(name)) {
+                    Fragment removeFragment = new Fragment(id, "removeFragment", UniqueResourceIdentifiersEditor.this);
+                    GeoServerAjaxFormLink removeLink = new GeoServerAjaxFormLink("remove") {
 
-                                        @Override
-                                        protected void onClick(
-                                                AjaxRequestTarget target, Form form) {
-                                            UniqueResourceIdentifiers identifiers =
-                                                    provider.getItems();
-                                            UniqueResourceIdentifier sdi = itemModel.getObject();
-                                            identifiers.remove(sdi);
-                                            target.add(container);
-                                        }
-                                    };
-                            removeFragment.add(removeLink);
-                            return removeFragment;
+                        @Override
+                        protected void onClick(AjaxRequestTarget target, Form form) {
+                            UniqueResourceIdentifiers identifiers = provider.getItems();
+                            UniqueResourceIdentifier sdi = itemModel.getObject();
+                            identifiers.remove(sdi);
+                            target.add(container);
                         }
-                        return null;
-                    }
-                };
+                    };
+                    removeFragment.add(removeLink);
+                    return removeFragment;
+                }
+                return null;
+            }
+        };
         identifiers.setItemReuseStrategy(ReuseIfModelsEqualStrategy.getInstance());
         identifiers.setPageable(false);
         identifiers.setSortable(false);
@@ -151,52 +118,44 @@ public class UniqueResourceIdentifiersEditor extends FormComponentPanel<UniqueRe
         container.add(identifiers);
 
         // add new link button
-        button =
-                new AjaxButton("addIdentifier") {
+        button = new AjaxButton("addIdentifier") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        UniqueResourceIdentifiersProvider provider =
-                                (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
-                        provider.getItems().add(new UniqueResourceIdentifier());
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                UniqueResourceIdentifiersProvider provider =
+                        (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
+                provider.getItems().add(new UniqueResourceIdentifier());
 
-                        target.add(container);
-                    }
+                target.add(container);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        // the form validator triggered, but we don't want the msg to display
-                        Session.get()
-                                .getFeedbackMessages()
-                                .clear(); // formally cleanupFeedbackMessages()
-                        Session.get().dirty();
-                        onSubmit(target);
-                    }
-                };
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                // the form validator triggered, but we don't want the msg to display
+                Session.get().getFeedbackMessages().clear(); // formally cleanupFeedbackMessages()
+                Session.get().dirty();
+                onSubmit(target);
+            }
+        };
         add(button);
 
         // grab a seat... the way I'm adding this validator in onBeforeRender will be hard
         // to stomach... however, could not find other way to add a validation to an editabl table,
         // grrr
-        add(
-                (IValidator<UniqueResourceIdentifiers>)
-                        validatable -> {
-                            UniqueResourceIdentifiers identifiers = provider.getItems();
-                            if (identifiers.isEmpty()) {
-                                ValidationError error = new ValidationError();
-                                String message =
-                                        new ParamResourceModel("noSpatialDatasetIdentifiers", this)
-                                                .getString();
-                                error.setMessage(message);
-                                validatable.error(error);
-                            }
-                        });
+        add((IValidator<UniqueResourceIdentifiers>) validatable -> {
+            UniqueResourceIdentifiers identifiers = provider.getItems();
+            if (identifiers.isEmpty()) {
+                ValidationError error = new ValidationError();
+                String message = new ParamResourceModel("noSpatialDatasetIdentifiers", this).getString();
+                error.setMessage(message);
+                validatable.error(error);
+            }
+        });
     }
 
     @Override
     public void convertInput() {
-        UniqueResourceIdentifiersProvider provider =
-                (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
+        UniqueResourceIdentifiersProvider provider = (UniqueResourceIdentifiersProvider) identifiers.getDataProvider();
         setConvertedInput(provider.getItems());
     }
 }

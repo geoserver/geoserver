@@ -22,8 +22,7 @@ public class CatalogComparatorFactory {
     /** Builds a composite comparator matching the specified sortBy array */
     public static Comparator<Info> buildComparator(SortBy... sortBy) {
         if (sortBy.length == 0) {
-            throw new IllegalArgumentException(
-                    "No way to build comparators out of an empty comparator set");
+            throw new IllegalArgumentException("No way to build comparators out of an empty comparator set");
         }
 
         if (sortBy.length == 1) {
@@ -50,8 +49,7 @@ public class CatalogComparatorFactory {
         } else if (sortBy == SortBy.REVERSE_ORDER) {
             return new InfoComparator(false);
         } else {
-            return new PropertyComparator<>(
-                    sortBy.getPropertyName(), sortBy.getSortOrder() == SortOrder.ASCENDING);
+            return new PropertyComparator<>(sortBy.getPropertyName(), sortBy.getSortOrder() == SortOrder.ASCENDING);
         }
     }
 }

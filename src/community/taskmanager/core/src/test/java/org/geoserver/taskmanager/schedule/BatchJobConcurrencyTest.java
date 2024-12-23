@@ -40,17 +40,23 @@ public class BatchJobConcurrencyTest extends AbstractTaskManagerTest {
 
     private static final String ATT_DELAY1 = "delay1";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private TestTaskTypeImpl testTaskType;
+    @Autowired
+    private TestTaskTypeImpl testTaskType;
 
     private Configuration config;
 
@@ -68,16 +74,14 @@ public class BatchJobConcurrencyTest extends AbstractTaskManagerTest {
         task1.setName("task1");
         task1.setType(TestTaskTypeImpl.NAME);
         util.setTaskParameterToAttribute(task1, TestTaskTypeImpl.PARAM_DELAY, ATT_DELAY1);
-        util.setTaskParameterToAttribute(
-                task1, TestTaskTypeImpl.PARAM_DELAY_COMMIT, ATT_DELAY1_COMMIT);
+        util.setTaskParameterToAttribute(task1, TestTaskTypeImpl.PARAM_DELAY_COMMIT, ATT_DELAY1_COMMIT);
         util.addTaskToConfiguration(config, task1);
 
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(TestTaskTypeImpl.NAME);
         util.setTaskParameterToAttribute(task2, TestTaskTypeImpl.PARAM_DELAY, ATT_DELAY2);
-        util.setTaskParameterToAttribute(
-                task1, TestTaskTypeImpl.PARAM_DELAY_COMMIT, ATT_DELAY2_COMMIT);
+        util.setTaskParameterToAttribute(task1, TestTaskTypeImpl.PARAM_DELAY_COMMIT, ATT_DELAY2_COMMIT);
         util.addTaskToConfiguration(config, task2);
 
         config = dao.save(config);
@@ -113,11 +117,15 @@ public class BatchJobConcurrencyTest extends AbstractTaskManagerTest {
         util.setConfigurationAttribute(config, ATT_DELAY2_COMMIT, "0");
 
         // start both tasks simultaneously
-        Trigger trigger1 =
-                TriggerBuilder.newTrigger().forJob(batch1.getId().toString()).startNow().build();
+        Trigger trigger1 = TriggerBuilder.newTrigger()
+                .forJob(batch1.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger1);
-        Trigger trigger2 =
-                TriggerBuilder.newTrigger().forJob(batch2.getId().toString()).startNow().build();
+        Trigger trigger2 = TriggerBuilder.newTrigger()
+                .forJob(batch2.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger2);
 
         // wait until task 2 in batch 1 has started
@@ -144,11 +152,15 @@ public class BatchJobConcurrencyTest extends AbstractTaskManagerTest {
         util.setConfigurationAttribute(config, ATT_DELAY2_COMMIT, "5000");
 
         // start both tasks simultaneously
-        Trigger trigger1 =
-                TriggerBuilder.newTrigger().forJob(batch1.getId().toString()).startNow().build();
+        Trigger trigger1 = TriggerBuilder.newTrigger()
+                .forJob(batch1.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger1);
-        Trigger trigger2 =
-                TriggerBuilder.newTrigger().forJob(batch2.getId().toString()).startNow().build();
+        Trigger trigger2 = TriggerBuilder.newTrigger()
+                .forJob(batch2.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger2);
 
         // wait until task 2 in batch 1 has started committing

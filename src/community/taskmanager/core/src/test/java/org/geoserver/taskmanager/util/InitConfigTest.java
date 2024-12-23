@@ -28,15 +28,20 @@ public class InitConfigTest extends AbstractTaskManagerTest {
 
     private static final String ATT_DUMMY3 = "dummy3";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private InitConfigUtil initUtil;
+    @Autowired
+    private InitConfigUtil initUtil;
 
     private Configuration config;
 

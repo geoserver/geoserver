@@ -30,8 +30,8 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.logging.Logging;
 
 /**
- * Handles the persistence of addition resources when changes happen to the catalog, such as rename,
- * remove and change of workspace.
+ * Handles the persistence of addition resources when changes happen to the catalog, such as rename, remove and change
+ * of workspace.
  */
 public class GeoServerResourcePersister implements CatalogListener {
 
@@ -66,10 +66,10 @@ public class GeoServerResourcePersister implements CatalogListener {
             if (source instanceof StyleInfo) {
                 int i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
-                    WorkspaceInfo oldWorkspace = (WorkspaceInfo) event.getOldValues().get(i);
-                    WorkspaceInfo newWorkspace =
-                            ResolvingProxy.resolve(
-                                    catalog, (WorkspaceInfo) event.getNewValues().get(i));
+                    WorkspaceInfo oldWorkspace =
+                            (WorkspaceInfo) event.getOldValues().get(i);
+                    WorkspaceInfo newWorkspace = ResolvingProxy.resolve(
+                            catalog, (WorkspaceInfo) event.getNewValues().get(i));
                     Resource oldDir = dd.getStyles(oldWorkspace);
                     Resource newDir = dd.getStyles(newWorkspace);
                     URI oldDirURI = new URI(oldDir.path());
@@ -80,7 +80,8 @@ public class GeoServerResourcePersister implements CatalogListener {
                         if (old.getType() != Type.UNDEFINED) {
                             URI oldURI = new URI(old.path());
                             final URI relative = oldDirURI.relativize(oldURI);
-                            final Resource target = newDir.get(relative.getPath()).parent();
+                            final Resource target =
+                                    newDir.get(relative.getPath()).parent();
                             copyResToDir(old, target);
                         }
                     }

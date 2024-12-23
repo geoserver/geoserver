@@ -65,95 +65,83 @@ public class SelectionUserRemovalLink extends AjaxLink<Object> {
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(
                 target,
-                delegate =
-                        new GeoServerDialog.DialogDelegate() {
+                delegate = new GeoServerDialog.DialogDelegate() {
+                    @Override
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        Model<Boolean> model = new Model<>(SelectionUserRemovalLink.this.disassociateRoles);
+                        return removePanel = new ConfirmRemovalUserPanel(id, model, selection) {
                             @Override
-                            protected Component getContents(String id) {
-                                // show a confirmation panel for all the objects we have to remove
-                                Model<Boolean> model =
-                                        new Model<>(
-                                                SelectionUserRemovalLink.this.disassociateRoles);
-                                return removePanel =
-                                        new ConfirmRemovalUserPanel(id, model, selection) {
-                                            @Override
-                                            protected IModel<String> canRemove(GeoServerUser user) {
-                                                return SelectionUserRemovalLink.this.canRemove(
-                                                        user);
-                                            }
-                                        };
+                            protected IModel<String> canRemove(GeoServerUser user) {
+                                return SelectionUserRemovalLink.this.canRemove(user);
                             }
+                        };
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                // cascade delete the whole selection
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        // cascade delete the whole selection
 
-                                GeoServerUserGroupStore ugStore = null;
+                        GeoServerUserGroupStore ugStore = null;
+                        try {
+                            GeoServerUserGroupService ugService = GeoServerApplication.get()
+                                    .getSecurityManager()
+                                    .loadUserGroupService(userGroupsServiceName);
+                            ugStore = new UserGroupStoreValidationWrapper(ugService.createStore());
+                            for (GeoServerUser user : removePanel.getRoots()) {
+                                ugStore.removeUser(user);
+                            }
+                            ugStore.store();
+                        } catch (IOException ex) {
+                            try {
+                                if (ugStore != null) ugStore.load();
+                            } catch (IOException ex2) {
+                            }
+                            throw new RuntimeException(ex);
+                        }
+
+                        GeoServerRoleStore gaStore = null;
+                        if (disassociateRoles) {
+                            try {
+                                gaStore = GeoServerApplication.get()
+                                        .getSecurityManager()
+                                        .getActiveRoleService()
+                                        .createStore();
+                                gaStore = new RoleStoreValidationWrapper(gaStore);
+
+                                for (GeoServerUser user : removePanel.getRoots()) {
+                                    List<GeoServerRole> list = new ArrayList<>();
+                                    list.addAll(gaStore.getRolesForUser(user.getUsername()));
+                                    for (GeoServerRole role : list)
+                                        gaStore.disAssociateRoleFromUser(role, user.getUsername());
+                                }
+                                gaStore.store();
+                            } catch (IOException ex) {
                                 try {
-                                    GeoServerUserGroupService ugService =
-                                            GeoServerApplication.get()
-                                                    .getSecurityManager()
-                                                    .loadUserGroupService(userGroupsServiceName);
-                                    ugStore =
-                                            new UserGroupStoreValidationWrapper(
-                                                    ugService.createStore());
-                                    for (GeoServerUser user : removePanel.getRoots()) {
-                                        ugStore.removeUser(user);
-                                    }
-                                    ugStore.store();
-                                } catch (IOException ex) {
-                                    try {
-                                        if (ugStore != null) ugStore.load();
-                                    } catch (IOException ex2) {
-                                    }
-                                    throw new RuntimeException(ex);
+                                    if (gaStore != null) gaStore.load();
+                                } catch (IOException ex2) {
                                 }
-
-                                GeoServerRoleStore gaStore = null;
-                                if (disassociateRoles) {
-                                    try {
-                                        gaStore =
-                                                GeoServerApplication.get()
-                                                        .getSecurityManager()
-                                                        .getActiveRoleService()
-                                                        .createStore();
-                                        gaStore = new RoleStoreValidationWrapper(gaStore);
-
-                                        for (GeoServerUser user : removePanel.getRoots()) {
-                                            List<GeoServerRole> list = new ArrayList<>();
-                                            list.addAll(
-                                                    gaStore.getRolesForUser(user.getUsername()));
-                                            for (GeoServerRole role : list)
-                                                gaStore.disAssociateRoleFromUser(
-                                                        role, user.getUsername());
-                                        }
-                                        gaStore.store();
-                                    } catch (IOException ex) {
-                                        try {
-                                            if (gaStore != null) gaStore.load();
-                                        } catch (IOException ex2) {
-                                        }
-                                        throw new RuntimeException(ex);
-                                    }
-                                }
-
-                                // the deletion will have changed what we see in the page
-                                // so better clear out the selection
-                                users.clearSelection();
-                                return true;
+                                throw new RuntimeException(ex);
                             }
+                        }
 
-                            @Override
-                            public void onClose(AjaxRequestTarget target) {
-                                // if the selection has been cleared out it's sign a deletion
-                                // occurred, so refresh the table
-                                if (users.getSelection().isEmpty()) {
-                                    setEnabled(false);
-                                    target.add(SelectionUserRemovalLink.this);
-                                    target.add(users);
-                                }
-                            }
-                        });
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        users.clearSelection();
+                        return true;
+                    }
+
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (users.getSelection().isEmpty()) {
+                            setEnabled(false);
+                            target.add(SelectionUserRemovalLink.this);
+                            target.add(users);
+                        }
+                    }
+                });
     }
 
     protected StringResourceModel canRemove(GeoServerUser user) {

@@ -34,8 +34,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         super.onSetUp(testData);
 
         WorkspaceInfo cite = getCatalog().getWorkspaceByName("cite");
-        testData.addStyle(
-                cite, "simplePoint", "simplePoint.sld", StylePageTest.class, getCatalog());
+        testData.addStyle(cite, "simplePoint", "simplePoint.sld", StylePageTest.class, getCatalog());
     }
 
     @Before
@@ -59,8 +58,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         // Get the StyleProvider
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         Catalog catalog = getCatalog();
         assertEquals(dv.size(), catalog.getStyles().size());
         IDataProvider dataProvider = dv.getDataProvider();
@@ -84,8 +82,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         StyleInfo actual = provider.iterator(0, 1).next();
         try (CloseableIterator<StyleInfo> list =
-                catalog.list(
-                        StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true))) {
+                catalog.list(StyleInfo.class, Filter.INCLUDE, 0, 1, Predicates.sortBy("name", true))) {
             assertTrue(list.hasNext());
             StyleInfo expected = list.next();
 
@@ -121,8 +118,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
 
         // Get the StyleProvider
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         Catalog catalog = getCatalog();
         assertEquals(dv.size(), catalog.getStyles().size());
@@ -144,8 +140,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         Catalog catalog = getCatalog();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         assertEquals(dv.size(), catalog.getStyles().size());
         // apply filter by only viewing style with name polygon
@@ -189,8 +184,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         Catalog catalog = getCatalog();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
 
         assertEquals(dv.size(), catalog.getStyles().size());
         // apply filter by only viewing style with name polygon
@@ -210,8 +204,7 @@ public class StylePageTest extends GeoServerWicketTestSupport {
         Catalog catalog = getCatalog();
         tester.startPage(StylePage.class);
         tester.assertRenderedPage(StylePage.class);
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(dv.size(), catalog.getStyles().size());
         // apply filter by only viewing style with name polygon
         FormTester ft = tester.newFormTester("table:filterForm");

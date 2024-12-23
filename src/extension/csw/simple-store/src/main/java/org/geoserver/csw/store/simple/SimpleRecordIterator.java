@@ -28,8 +28,7 @@ import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Parser;
 
 /**
- * Builds features scanning xml files in the specified folder, and parsing them as CSW Record
- * objects
+ * Builds features scanning xml files in the specified folder, and parsing them as CSW Record objects
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -68,10 +67,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
                     record = null;
                 }
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to parse the contents of " + file.path() + " as a CSW Record",
-                        e);
+                LOGGER.log(Level.INFO, "Failed to parse the contents of " + file.path() + " as a CSW Record", e);
             }
         }
 
@@ -98,8 +94,7 @@ class SimpleRecordIterator implements Iterator<Feature> {
             String scheme = sl.getScheme() == null ? null : sl.getScheme().toString();
             String name = sl.getName();
             if (value != null && sl.getName() != null) {
-                builder.addElementWithScheme(
-                        PropertyPath.fromDotPath(name), scheme, value.toString());
+                builder.addElementWithScheme(PropertyPath.fromDotPath(name), scheme, value.toString());
                 if ("identifier".equals(name)) {
                     id = value.toString();
                 }
@@ -117,13 +112,12 @@ class SimpleRecordIterator implements Iterator<Feature> {
                         LOGGER.log(Level.INFO, "Failed to parse original record bbox");
                     }
                 }
-                ReferencedEnvelope re =
-                        new ReferencedEnvelope(
-                                (Double) bbox.getLowerCorner().get(0),
-                                (Double) bbox.getUpperCorner().get(0),
-                                (Double) bbox.getLowerCorner().get(1),
-                                (Double) bbox.getUpperCorner().get(1),
-                                crs);
+                ReferencedEnvelope re = new ReferencedEnvelope(
+                        (Double) bbox.getLowerCorner().get(0),
+                        (Double) bbox.getUpperCorner().get(0),
+                        (Double) bbox.getLowerCorner().get(1),
+                        (Double) bbox.getUpperCorner().get(1),
+                        crs);
                 builder.addBoundingBox(re);
             }
         }

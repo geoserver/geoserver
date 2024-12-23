@@ -36,14 +36,9 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
 
     static final Logger LOGGER = Logging.getLogger(HTMLMapMessageConverter.class);
 
-    /**
-     * Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request
-     */
-    private static final Set<String> IGNORED_PARAMETERS =
-            new HashSet<>(
-                    Arrays.asList(
-                            "REQUEST", "TILED", "BBOX", "SERVICE", "VERSION", "FORMAT", "WIDTH",
-                            "HEIGHT", "SRS"));
+    /** Set of parameters that we can ignore, since they are not part of the OpenLayers WMS request */
+    private static final Set<String> IGNORED_PARAMETERS = new HashSet<>(
+            Arrays.asList("REQUEST", "TILED", "BBOX", "SERVICE", "VERSION", "FORMAT", "WIDTH", "HEIGHT", "SRS"));
 
     public HTMLMapMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(HTMLMap.class, WMSInfo.class, templateSupport, geoServer);
@@ -69,16 +64,14 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
                     new OutputStreamWriter(outputMessage.getBody(), defaultCharset),
                     defaultCharset);
         } else {
-            LOGGER.warning(
-                    "Either the default character set, output message or body was null, so the "
-                            + "htmlmap.ftl template could not be processed.");
+            LOGGER.warning("Either the default character set, output message or body was null, so the "
+                    + "htmlmap.ftl template could not be processed.");
         }
     }
 
     /**
-     * OL does support only a limited number of unit types, we have to try and return one of those,
-     * otherwise the scale won't be shown. From the OL guide: possible values are "degrees" (or
-     * "dd"), "m", "ft", "km", "mi", "inches".
+     * OL does support only a limited number of unit types, we have to try and return one of those, otherwise the scale
+     * won't be shown. From the OL guide: possible values are "degrees" (or "dd"), "m", "ft", "km", "mi", "inches".
      */
     protected String getUnits(WMSMapContent mapContent) {
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
@@ -127,9 +120,8 @@ public class HTMLMapMessageConverter extends AbstractServiceHTMLMessageConverter
     }
 
     /**
-     * Returns a list of maps with the name and value of each parameter that we have to forward to
-     * OpenLayers. Forwarded parameters are all the provided ones, besides a short set contained in
-     * {@link #IGNORED_PARAMETERS}.
+     * Returns a list of maps with the name and value of each parameter that we have to forward to OpenLayers. Forwarded
+     * parameters are all the provided ones, besides a short set contained in {@link #IGNORED_PARAMETERS}.
      */
     private List<Map<String, String>> getLayerParameter(Map<String, String> rawKvp) {
         List<Map<String, String>> result = new ArrayList<>(rawKvp.size());

@@ -48,10 +48,9 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
  * </code>
  * </pre>
  *
- * For performance reasons the template lookups will be cached, so it's advised to use the same
- * FeatureTemplate object in a loop that encodes various features, but not to cache it for a long
- * time (static reference). Moreover, FeatureTemplate is not thread safe, so instantiate one for
- * each thread.
+ * For performance reasons the template lookups will be cached, so it's advised to use the same FeatureTemplate object
+ * in a loop that encodes various features, but not to cache it for a long time (static reference). Moreover,
+ * FeatureTemplate is not thread safe, so instantiate one for each thread.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  * @author Andrea Aime, TOPP
@@ -93,8 +92,8 @@ public class FeatureTemplate {
     Map<TemplateKey, Template> templateCache = new HashMap<>();
 
     /**
-     * Cached writer used for plain conversion from Feature to String. Improves performance
-     * significantly compared to an OutputStreamWriter over a ByteOutputStream.
+     * Cached writer used for plain conversion from Feature to String. Improves performance significantly compared to an
+     * OutputStreamWriter over a ByteOutputStream.
      */
     CharArrayWriter caw = new CharArrayWriter();
 
@@ -218,36 +217,32 @@ public class FeatureTemplate {
     /**
      * Executes a template for the feature writing the results to a writer.
      *
-     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt>
-     * parameters. The <tt>lookup</tt> is used to specify the class from which <tt>template</tt>
-     * shoould be loaded relative to in teh case where the user has not specified an override in the
-     * data directory.
+     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt> parameters. The
+     * <tt>lookup</tt> is used to specify the class from which <tt>template</tt> shoould be loaded relative to in teh
+     * case where the user has not specified an override in the data directory.
      *
      * @param feature The feature to execute the template against.
      * @param writer The writer for output.
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public void template(SimpleFeature feature, Writer writer, String template, Class<?> lookup)
-            throws IOException {
+    public void template(SimpleFeature feature, Writer writer, String template, Class<?> lookup) throws IOException {
         execute(feature, feature.getFeatureType(), writer, template, lookup);
     }
 
     /**
      * Executes a template for the feature writing the results to an output stream.
      *
-     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt>
-     * parameters. The <tt>lookup</tt> is used to specify the class from which <tt>template</tt>
-     * shoould be loaded relative to in teh case where the user has not specified an override in the
-     * data directory.
+     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt> parameters. The
+     * <tt>lookup</tt> is used to specify the class from which <tt>template</tt> shoould be loaded relative to in teh
+     * case where the user has not specified an override in the data directory.
      *
      * @param feature The feature to execute the template against.
      * @param output The output.
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public void template(
-            SimpleFeature feature, OutputStream output, String template, Class<?> lookup)
+    public void template(SimpleFeature feature, OutputStream output, String template, Class<?> lookup)
             throws IOException {
         template(feature, new OutputStreamWriter(output), template, lookup);
     }
@@ -255,17 +250,15 @@ public class FeatureTemplate {
     /**
      * Executes a template for the feature returning the result as a string.
      *
-     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt>
-     * parameters. The <tt>lookup</tt> is used to specify the class from which <tt>template</tt>
-     * shoould be loaded relative to in teh case where the user has not specified an override in the
-     * data directory.
+     * <p>The template to execute is secified via the <tt>template</tt>, and <tt>lookup</tt> parameters. The
+     * <tt>lookup</tt> is used to specify the class from which <tt>template</tt> shoould be loaded relative to in teh
+     * case where the user has not specified an override in the data directory.
      *
      * @param feature The feature to execute the template against.
      * @param template The template name.
      * @param lookup The class to lookup the template relative to.
      */
-    public String template(SimpleFeature feature, String template, Class<?> lookup)
-            throws IOException {
+    public String template(SimpleFeature feature, String template, Class<?> lookup) throws IOException {
         caw.reset();
         template(feature, caw, template, lookup);
         return caw.toString();
@@ -275,12 +268,7 @@ public class FeatureTemplate {
      * Internal helper method to exceute the template against feature or
      * feature collection.
      */
-    private void execute(
-            Object feature,
-            SimpleFeatureType featureType,
-            Writer writer,
-            String template,
-            Class<?> lookup)
+    private void execute(Object feature, SimpleFeatureType featureType, Writer writer, String template, Class<?> lookup)
             throws IOException {
 
         Template t = lookupTemplate(featureType, template, lookup);
@@ -294,8 +282,8 @@ public class FeatureTemplate {
     }
 
     /**
-     * Returns the template for the specified feature type. Looking up templates is pretty
-     * expensive, so we cache templates by feture type and template.
+     * Returns the template for the specified feature type. Looking up templates is pretty expensive, so we cache
+     * templates by feture type and template.
      */
     private Template lookupTemplate(SimpleFeatureType featureType, String template, Class<?> lookup)
             throws IOException {
@@ -306,10 +294,8 @@ public class FeatureTemplate {
         if (t != null) return t;
 
         // otherwise, build a loader and do the lookup
-        GeoServerTemplateLoader templateLoader =
-                new GeoServerTemplateLoader(
-                        lookup != null ? lookup : getClass(),
-                        GeoServerExtensions.bean(GeoServerResourceLoader.class));
+        GeoServerTemplateLoader templateLoader = new GeoServerTemplateLoader(
+                lookup != null ? lookup : getClass(), GeoServerExtensions.bean(GeoServerResourceLoader.class));
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         templateLoader.setFeatureType(catalog.getFeatureTypeByName(featureType.getName()));
 
@@ -324,10 +310,7 @@ public class FeatureTemplate {
 
     /** Returns true if the required template is empty or has its default content */
     public boolean isTemplateEmpty(
-            SimpleFeatureType featureType,
-            String template,
-            Class<FeatureTemplate> lookup,
-            String defaultContent)
+            SimpleFeatureType featureType, String template, Class<FeatureTemplate> lookup, String defaultContent)
             throws IOException {
         Template t = lookupTemplate(featureType, template, lookup);
         if (t == null) {
@@ -338,8 +321,7 @@ public class FeatureTemplate {
         t.dump(sw);
         // an empty template canonical form is "0\n".. weird!
         String templateText = sw.toString();
-        return "".equals(templateText)
-                || (defaultContent != null && defaultContent.equals(templateText));
+        return "".equals(templateText) || (defaultContent != null && defaultContent.equals(templateText));
     }
 
     private static class TemplateKey {

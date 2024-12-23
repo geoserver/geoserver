@@ -134,8 +134,7 @@ public class SampleDataAccessMockData extends SystemTestData {
                 Map.of(DATASTORE_NAME, SampleDataAccessData.NAMESPACE_PREFIX),
                 Collections.emptySet());
         writer.coverageStores(new HashMap<>(), new HashMap<>(), Collections.emptySet());
-        writer.namespaces(
-                Map.of(SampleDataAccessData.NAMESPACE_PREFIX, SampleDataAccessData.NAMESPACE_URI));
+        writer.namespaces(Map.of(SampleDataAccessData.NAMESPACE_PREFIX, SampleDataAccessData.NAMESPACE_URI));
 
         writer.styles(Collections.<String, String>emptyMap());
         writer.write(new File(data, "catalog.xml"));
@@ -175,8 +174,7 @@ public class SampleDataAccessMockData extends SystemTestData {
         try (FileWriter writer = new FileWriter(info)) {
             writer.write("<featureType datastore=\"" + datastore + "\">");
             writer.write("<name>" + type + "</name>");
-            if (params.get(KEY_ALIAS) != null)
-                writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
+            if (params.get(KEY_ALIAS) != null) writer.write("<alias>" + params.get(KEY_ALIAS) + "</alias>");
             writer.write("<SRS>" + params.get(KEY_SRS_NUMBER) + "</SRS>");
             // this mock type may have wrong SRS compared to the actual one in the property files...
             // let's configure SRS handling not to alter the original one, and have 4326 used only
@@ -188,29 +186,27 @@ public class SampleDataAccessMockData extends SystemTestData {
             writer.write("<keywords>" + type + "</keywords>");
             Envelope llEnvelope = (Envelope) params.get(KEY_LL_ENVELOPE);
             if (llEnvelope == null) llEnvelope = DEFAULT_ENVELOPE;
-            writer.write(
-                    "<latLonBoundingBox dynamic=\"false\" minx=\""
-                            + llEnvelope.getMinX()
-                            + "\" miny=\""
-                            + llEnvelope.getMinY()
-                            + "\" maxx=\""
-                            + llEnvelope.getMaxX()
-                            + "\" maxy=\""
-                            + llEnvelope.getMaxY()
-                            + "\"/>");
+            writer.write("<latLonBoundingBox dynamic=\"false\" minx=\""
+                    + llEnvelope.getMinX()
+                    + "\" miny=\""
+                    + llEnvelope.getMinY()
+                    + "\" maxx=\""
+                    + llEnvelope.getMaxX()
+                    + "\" maxy=\""
+                    + llEnvelope.getMaxY()
+                    + "\"/>");
 
             Envelope nativeEnvelope = (Envelope) params.get(KEY_NATIVE_ENVELOPE);
             if (nativeEnvelope != null)
-                writer.write(
-                        "<nativeBBox dynamic=\"false\" minx=\""
-                                + nativeEnvelope.getMinX()
-                                + "\" miny=\""
-                                + nativeEnvelope.getMinY()
-                                + "\" maxx=\""
-                                + nativeEnvelope.getMaxX()
-                                + "\" maxy=\""
-                                + nativeEnvelope.getMaxY()
-                                + "\"/>");
+                writer.write("<nativeBBox dynamic=\"false\" minx=\""
+                        + nativeEnvelope.getMinX()
+                        + "\" miny=\""
+                        + nativeEnvelope.getMinY()
+                        + "\" maxx=\""
+                        + nativeEnvelope.getMaxX()
+                        + "\" maxy=\""
+                        + nativeEnvelope.getMaxY()
+                        + "\"/>");
 
             String style = (String) params.get(KEY_STYLE);
             if (style == null) style = "Default";

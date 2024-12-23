@@ -49,36 +49,31 @@ public class GenerateDomainPanel extends Panel {
     public void onInitialize() {
         super.onInitialize();
 
-        DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                DomainGenerator.getDataAccess(fti);
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = DomainGenerator.getDataAccess(fti);
 
-        DropDownChoice<Boolean> methodChoice =
-                new DropDownChoice<>(
-                        "method",
-                        new PropertyModel<>(getDefaultModel(), "method"),
-                        Lists.newArrayList(false, true),
-                        new IChoiceRenderer<>() {
-                            private static final long serialVersionUID = 1966992066973104491L;
+        DropDownChoice<Boolean> methodChoice = new DropDownChoice<>(
+                "method",
+                new PropertyModel<>(getDefaultModel(), "method"),
+                Lists.newArrayList(false, true),
+                new IChoiceRenderer<>() {
+                    private static final long serialVersionUID = 1966992066973104491L;
 
-                            @Override
-                            public Object getDisplayValue(Boolean object) {
-                                return new StringResourceModel(
-                                                "RepeatableComplexAttributesTablePanel.method."
-                                                        + object)
-                                        .getString();
-                            }
+                    @Override
+                    public Object getDisplayValue(Boolean object) {
+                        return new StringResourceModel("RepeatableComplexAttributesTablePanel.method." + object)
+                                .getString();
+                    }
 
-                            @Override
-                            public String getIdValue(Boolean object, int index) {
-                                return object.toString();
-                            }
+                    @Override
+                    public String getIdValue(Boolean object, int index) {
+                        return object.toString();
+                    }
 
-                            @Override
-                            public Boolean getObject(
-                                    String id, IModel<? extends List<? extends Boolean>> choices) {
-                                return Boolean.valueOf(id);
-                            }
-                        });
+                    @Override
+                    public Boolean getObject(String id, IModel<? extends List<? extends Boolean>> choices) {
+                        return Boolean.valueOf(id);
+                    }
+                });
         methodChoice.setDefaultModelObject(false);
         add(methodChoice);
 
@@ -93,59 +88,52 @@ public class GenerateDomainPanel extends Panel {
         methodChoice.setEnabled(!names.isEmpty());
 
         DropDownChoice<Name> tableNameChoice =
-                new DropDownChoice<>(
-                        "tableName", new PropertyModel<>(getDefaultModel(), "tableName"), names);
+                new DropDownChoice<>("tableName", new PropertyModel<>(getDefaultModel(), "tableName"), names);
         add(tableNameChoice.setNullValid(false).setEnabled(false).setOutputMarkupId(true));
 
         DropDownChoice<Name> valueAttributeNameChoice = new DropDownChoice<>("valueAttributeName");
-        valueAttributeNameChoice.setModel(
-                new PropertyModel<>(getDefaultModel(), "valueAttributeName"));
+        valueAttributeNameChoice.setModel(new PropertyModel<>(getDefaultModel(), "valueAttributeName"));
         add(valueAttributeNameChoice.setNullValid(false).setEnabled(false).setOutputMarkupId(true));
 
         DropDownChoice<Name> defAttributeNameChoice = new DropDownChoice<>("defAttributeName");
         defAttributeNameChoice.setModel(new PropertyModel<>(getDefaultModel(), "defAttributeName"));
         add(defAttributeNameChoice.setNullValid(false).setEnabled(false).setOutputMarkupId(true));
 
-        methodChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 6321014584689914438L;
+        methodChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            private static final long serialVersionUID = 6321014584689914438L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        tableNameChoice.setEnabled(methodChoice.getModelObject());
-                        valueAttributeNameChoice.setEnabled(methodChoice.getModelObject());
-                        defAttributeNameChoice.setEnabled(methodChoice.getModelObject());
-                        tableNameChoice.setRequired(methodChoice.getModelObject());
-                        valueAttributeNameChoice.setRequired(methodChoice.getModelObject());
-                        defAttributeNameChoice.setRequired(methodChoice.getModelObject());
-                        target.add(tableNameChoice);
-                        target.add(valueAttributeNameChoice);
-                        target.add(defAttributeNameChoice);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                tableNameChoice.setEnabled(methodChoice.getModelObject());
+                valueAttributeNameChoice.setEnabled(methodChoice.getModelObject());
+                defAttributeNameChoice.setEnabled(methodChoice.getModelObject());
+                tableNameChoice.setRequired(methodChoice.getModelObject());
+                valueAttributeNameChoice.setRequired(methodChoice.getModelObject());
+                defAttributeNameChoice.setRequired(methodChoice.getModelObject());
+                target.add(tableNameChoice);
+                target.add(valueAttributeNameChoice);
+                target.add(defAttributeNameChoice);
+            }
+        });
 
-        tableNameChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    private static final long serialVersionUID = 6321014584689914438L;
+        tableNameChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            private static final long serialVersionUID = 6321014584689914438L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        List<Name> attributes = getAttributeNames(tableNameChoice.getModelObject());
-                        defAttributeNameChoice.setChoices(attributes);
-                        valueAttributeNameChoice.setChoices(attributes);
-                        target.add(valueAttributeNameChoice);
-                        target.add(defAttributeNameChoice);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                List<Name> attributes = getAttributeNames(tableNameChoice.getModelObject());
+                defAttributeNameChoice.setChoices(attributes);
+                valueAttributeNameChoice.setChoices(attributes);
+                target.add(valueAttributeNameChoice);
+                target.add(defAttributeNameChoice);
+            }
+        });
 
-        add(
-                new FeedbackPanel("generateFeedback", new ContainerFeedbackMessageFilter(this))
-                        .setOutputMarkupId(true));
+        add(new FeedbackPanel("generateFeedback", new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
     }
 
     private List<Name> getAttributeNames(Name tableName) {
-        DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                DomainGenerator.getDataAccess(fti);
+        DataAccess<? extends FeatureType, ? extends Feature> dataAccess = DomainGenerator.getDataAccess(fti);
         List<Name> attributeNames = new ArrayList<>();
         if (dataAccess != null) {
             try {

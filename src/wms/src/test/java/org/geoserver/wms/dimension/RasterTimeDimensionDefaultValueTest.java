@@ -52,8 +52,7 @@ import org.junit.Test;
  */
 public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSupport {
 
-    static final QName WATTEMP_FUTURE =
-            new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
+    static final QName WATTEMP_FUTURE = new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
 
     WMS wms;
 
@@ -127,10 +126,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         // check "now" it's in the same minute... should work for even the slowest build server
         assertDateEquals(curr, (java.util.Date) d.getMaxValue(), MILLIS_IN_MINUTE);
         // the beginning
-        assertDateEquals(
-                new Date(curr.getTime() - 30l * MILLIS_IN_DAY),
-                (java.util.Date) d.getMinValue(),
-                60000);
+        assertDateEquals(new Date(curr.getTime() - 30l * MILLIS_IN_DAY), (java.util.Date) d.getMinValue(), 60000);
     }
 
     @Test
@@ -214,8 +210,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     }
 
     public static void prepareFutureCoverageData(
-            QName coverageName, GeoServerDataDirectory dataDirectory, Catalog catalog)
-            throws IOException {
+            QName coverageName, GeoServerDataDirectory dataDirectory, Catalog catalog) throws IOException {
         SimpleDateFormat tsFormatter = new SimpleDateFormat("yyyyMMdd");
 
         // Prepare the target dates for the dummy coverages to be created
@@ -240,10 +235,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         // Copy watertemp.zip test coverage resource in the data dir under a different name:
         GeoServerResourceLoader loader = catalog.getResourceLoader();
-        File targetDir =
-                loader.createDirectory(
-                        dataDirectory.root(),
-                        coverageName.getPrefix() + File.separator + coverageName.getLocalPart());
+        File targetDir = loader.createDirectory(
+                dataDirectory.root(), coverageName.getPrefix() + File.separator + coverageName.getLocalPart());
         File target = new File(targetDir, coverageName.getLocalPart() + ".zip");
         loader.copyFromClassPath("org/geoserver/wms/dimension/watertemp.zip", target);
 
@@ -262,28 +255,19 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         if (tiffnames != null) {
             if (tiffnames.length > 0) {
                 input = new File(targetDir, tiffnames[0]);
-                output =
-                        new File(
-                                targetDir,
-                                "DUMMY_watertemp_000_"
-                                        + tsFormatter.format(new Date(justPast))
-                                        + "T0000000_12.tiff");
+                output = new File(
+                        targetDir,
+                        "DUMMY_watertemp_000_" + tsFormatter.format(new Date(justPast)) + "T0000000_12.tiff");
                 FileUtils.copyFile(input, output);
 
-                output =
-                        new File(
-                                targetDir,
-                                "DUMMY_watertemp_000_"
-                                        + tsFormatter.format(new Date(oneMonthInFuture))
-                                        + "T0000000_12.tiff");
+                output = new File(
+                        targetDir,
+                        "DUMMY_watertemp_000_" + tsFormatter.format(new Date(oneMonthInFuture)) + "T0000000_12.tiff");
                 FileUtils.copyFile(input, output);
 
-                output =
-                        new File(
-                                targetDir,
-                                "DUMMY_watertemp_000_"
-                                        + tsFormatter.format(new Date(oneYearInFuture))
-                                        + "T0000000_12.tiff");
+                output = new File(
+                        targetDir,
+                        "DUMMY_watertemp_000_" + tsFormatter.format(new Date(oneYearInFuture)) + "T0000000_12.tiff");
                 FileUtils.copyFile(input, output);
             }
         }
@@ -295,8 +279,8 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
      * be copied to the data directory before registering the new layer. This method skips the copy and extract and assumes that the coverage data is
      * already in contained in the data directory.
      */
-    private static void addRasterLayerFromDataDir(
-            QName qName, GeoServerDataDirectory dataDirectory, Catalog catalog) throws IOException {
+    private static void addRasterLayerFromDataDir(QName qName, GeoServerDataDirectory dataDirectory, Catalog catalog)
+            throws IOException {
         String prefix = qName.getPrefix();
         String name = qName.getLocalPart();
 
@@ -305,11 +289,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         if (!file.exists()) {
             throw new IllegalArgumentException(
-                    "There is no file with name '"
-                            + prefix
-                            + File.separator
-                            + name
-                            + "' in the data directory");
+                    "There is no file with name '" + prefix + File.separator + name + "' in the data directory");
         }
 
         // load the format/reader
@@ -322,10 +302,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
             reader = format.getReader(file);
             if (reader == null) {
                 throw new RuntimeException(
-                        "No reader for "
-                                + file.getCanonicalPath()
-                                + " with format "
-                                + format.getName());
+                        "No reader for " + file.getCanonicalPath() + " with format " + format.getName());
             }
 
             // configure workspace if it doesn't already exist
@@ -363,9 +340,7 @@ public class RasterTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
                 if (format instanceof ImageMosaicFormat) {
                     // make sure we work in immediate mode
                     coverage.getParameters()
-                            .put(
-                                    AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(),
-                                    Boolean.FALSE);
+                            .put(AbstractGridFormat.USE_JAI_IMAGEREAD.getName().getCode(), Boolean.FALSE);
                 }
             } catch (Exception e) {
                 throw new IOException(e);

@@ -87,15 +87,10 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "GetCapabilities",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        CSWXmlReader reader = new CSWXmlReader(
+                "GetCapabilities", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
         GetCapabilitiesType caps =
-                (GetCapabilitiesType)
-                        reader.read(null, getResourceAsReader("GetCapabilities.xml"), null);
+                (GetCapabilitiesType) reader.read(null, getResourceAsReader("GetCapabilities.xml"), null);
         assertReturnedCapabilitiesComplete(caps);
     }
 
@@ -105,12 +100,11 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         String capRequest = getResourceAsString("GetCapabilities.xml");
         capRequest = capRequest.replace("ows:Sections", "ows:foo");
         try {
-            CSWXmlReader reader =
-                    new CSWXmlReader(
-                            "GetCapabilities",
-                            "2.0.2",
-                            new CSWConfiguration(),
-                            EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+            CSWXmlReader reader = new CSWXmlReader(
+                    "GetCapabilities",
+                    "2.0.2",
+                    new CSWConfiguration(),
+                    EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
             reader.read(null, new StringReader(capRequest), null);
             fail("the parsing should have failed, the document is invalid");
         } catch (ServiceException e) {
@@ -136,9 +130,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -174,9 +168,9 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -216,10 +210,8 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
     @Test
     public void testSections() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
+        Document dom = getAsDOM(BASEPATH
+                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
         checkValidationErrors(dom);
 
@@ -237,7 +229,8 @@ public class GetCapabilitiesTest extends CSWSimpleTestSupport {
 
         assertEquals(
                 0,
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 

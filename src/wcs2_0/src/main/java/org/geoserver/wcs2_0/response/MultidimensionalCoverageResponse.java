@@ -5,8 +5,7 @@
 package org.geoserver.wcs2_0.response;
 
 /**
- * Marker interface to be implemented by {@link
- * org.geoserver.wcs.responses.CoverageResponseDelegate} implementations supporting Multidimensional
- * format
+ * Marker interface to be implemented by {@link org.geoserver.wcs.responses.CoverageResponseDelegate} implementations
+ * supporting Multidimensional format
  */
 public interface MultidimensionalCoverageResponse {}

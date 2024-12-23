@@ -16,8 +16,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 /**
- * Just a simple servlet request decorator that allows for changing request parameters. Used for
- * manually invoking the dispatcher in order to forward requests.
+ * Just a simple servlet request decorator that allows for changing request parameters. Used for manually invoking the
+ * dispatcher in order to forward requests.
  */
 public class MutableRequestProxy extends HttpServletRequestWrapper {
 

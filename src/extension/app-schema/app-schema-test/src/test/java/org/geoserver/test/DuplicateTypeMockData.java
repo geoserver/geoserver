@@ -7,8 +7,7 @@
 package org.geoserver.test;
 
 /**
- * Mock data for {@link DuplicateTypeTest}, which tests two WFS feature types (XSD elements) with
- * the same XSD type.
+ * Mock data for {@link DuplicateTypeTest}, which tests two WFS feature types (XSD elements) with the same XSD type.
  *
  * @author Ben Caradoc-Davies, CSIRO Earth Science and Resource Engineering
  */
@@ -18,10 +17,7 @@ public class DuplicateTypeMockData extends AbstractAppSchemaMockData {
     public void addContent() {
         // these two types are the same as for FeatureChainingWfsTest
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeaturePropertyfile.xml",
-                "MappedFeaturePropertyfile.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeaturePropertyfile.xml", "MappedFeaturePropertyfile.properties");
         addFeatureType(
                 GSML_PREFIX,
                 "GeologicUnit",

@@ -57,8 +57,8 @@ import org.locationtech.jts.geom.Polygon;
  *   <li>Does not have a "geometry" attribute, the adds it
  * </ul>
  *
- * The zoneId is interpreted as a DGGS zone identifier, and common spatial queries and DGGS query
- * functions translated into tests against the zone identifiers.
+ * The zoneId is interpreted as a DGGS zone identifier, and common spatial queries and DGGS query functions translated
+ * into tests against the zone identifiers.
  */
 public class ClickHouseDGGSDataStore implements DGGSStore {
 
@@ -91,30 +91,28 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
     @Override
     public List<Name> getNames() throws IOException {
         return delegate.getNames().stream()
-                .filter(
-                        n -> {
-                            try {
-                                return isDGGSSchema(delegate.getSchema(n));
-                            } catch (IOException e) {
-                                LOGGER.log(Level.WARNING, "Failed to grab schema for " + n, e);
-                                return false;
-                            }
-                        })
+                .filter(n -> {
+                    try {
+                        return isDGGSSchema(delegate.getSchema(n));
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING, "Failed to grab schema for " + n, e);
+                        return false;
+                    }
+                })
                 .collect(Collectors.toList());
     }
 
     @Override
     public String[] getTypeNames() throws IOException {
         return Arrays.stream(delegate.getTypeNames())
-                .filter(
-                        t -> {
-                            try {
-                                return isDGGSSchema(delegate.getSchema(t));
-                            } catch (IOException e) {
-                                LOGGER.log(Level.WARNING, "Failed to grab schema for " + t, e);
-                                return false;
-                            }
-                        })
+                .filter(t -> {
+                    try {
+                        return isDGGSSchema(delegate.getSchema(t));
+                    } catch (IOException e) {
+                        LOGGER.log(Level.WARNING, "Failed to grab schema for " + t, e);
+                        return false;
+                    }
+                })
                 .toArray(n -> new String[n]);
     }
 
@@ -124,18 +122,16 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
                 && schema.getDescriptor(GEOMETRY) == null;
     }
 
-    private boolean checkAttribute(
-            SimpleFeatureType schema, String name, Class<?>... expectedBindings) {
+    private boolean checkAttribute(SimpleFeatureType schema, String name, Class<?>... expectedBindings) {
         return Optional.ofNullable(schema.getDescriptor(name))
-                .filter(
-                        ad -> {
-                            for (Class<?> binding : expectedBindings) {
-                                if (binding.isAssignableFrom(ad.getType().getBinding())) {
-                                    return true;
-                                }
-                            }
-                            return false;
-                        })
+                .filter(ad -> {
+                    for (Class<?> binding : expectedBindings) {
+                        if (binding.isAssignableFrom(ad.getType().getBinding())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                })
                 .isPresent();
     }
 
@@ -164,14 +160,12 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
 
     @Override
     public DGGSFeatureSource getFeatureSource(String typeName) throws IOException {
-        return new ClickHouseDGGSFeatureSource(
-                this, delegate.getFeatureSource(typeName), getSchema(typeName));
+        return new ClickHouseDGGSFeatureSource(this, delegate.getFeatureSource(typeName), getSchema(typeName));
     }
 
     @Override
     public DGGSFeatureSource getFeatureSource(Name typeName) throws IOException {
-        return new ClickHouseDGGSFeatureSource(
-                this, delegate.getFeatureSource(typeName), getSchema(typeName));
+        return new ClickHouseDGGSFeatureSource(this, delegate.getFeatureSource(typeName), getSchema(typeName));
     }
 
     @Override
@@ -190,8 +184,8 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
     }
 
     @Override
-    public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(
-            Query query, Transaction transaction) throws IOException {
+    public FeatureReader<SimpleFeatureType, SimpleFeature> getFeatureReader(Query query, Transaction transaction)
+            throws IOException {
         // just delegating to the FeatureSource machinery
         DGGSFeatureSource source = getFeatureSource(query.getTypeName());
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
@@ -203,8 +197,7 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
             }
 
             @Override
-            public SimpleFeature next()
-                    throws IOException, IllegalArgumentException, NoSuchElementException {
+            public SimpleFeature next() throws IOException, IllegalArgumentException, NoSuchElementException {
                 return features.next();
             }
 
@@ -245,8 +238,8 @@ public class ClickHouseDGGSDataStore implements DGGSStore {
     }
 
     @Override
-    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
-            String typeName, Transaction transaction) throws IOException {
+    public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(String typeName, Transaction transaction)
+            throws IOException {
         throw new UnsupportedOperationException();
     }
 

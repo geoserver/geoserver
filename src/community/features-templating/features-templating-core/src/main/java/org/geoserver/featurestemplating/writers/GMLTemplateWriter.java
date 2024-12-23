@@ -58,8 +58,7 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
             for (String k : nsKeys) {
                 streamWriter.writeNamespace(k, namespaces.get(k));
             }
-            if (schemaLocations != null)
-                streamWriter.writeAttribute("xsi:schemaLocation", schemaLocations);
+            if (schemaLocations != null) streamWriter.writeAttribute("xsi:schemaLocation", schemaLocations);
         } catch (XMLStreamException e) {
             throw new IOException(e);
         }
@@ -92,8 +91,7 @@ public class GMLTemplateWriter extends XMLTemplateWriter {
     @Override
     public void writeCollectionCounts(BigInteger featureCount) throws IOException {
         String stringValue;
-        if (featureCount != null && featureCount.longValue() >= 0)
-            stringValue = String.valueOf(featureCount);
+        if (featureCount != null && featureCount.longValue() >= 0) stringValue = String.valueOf(featureCount);
         else stringValue = "unknown";
         try {
             versionManager.writeNumberMatched(stringValue);

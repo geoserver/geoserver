@@ -33,10 +33,7 @@ public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCusto
     }
 
     public VectorCustomDimensionEditor(
-            String id,
-            IModel<VectorCustomDimensionEntry> model,
-            ResourceInfo resource,
-            Class<?> type) {
+            String id, IModel<VectorCustomDimensionEntry> model, ResourceInfo resource, Class<?> type) {
         super(id, model, resource, type);
     }
 
@@ -49,18 +46,16 @@ public class VectorCustomDimensionEditor extends DimensionEditorBase<VectorCusto
         add(nameInput);
 
         // ajax button for removing
-        final AjaxSubmitLink removeButton =
-                new AjaxSubmitLink("removeButton") {
-                    @Override
-                    protected void onAfterSubmit(AjaxRequestTarget target) {
-                        super.onAfterSubmit(target);
-                        send(
-                                getWebPage(),
-                                Broadcast.BREADTH,
-                                new RemoveEvent(
-                                        target, VectorCustomDimensionEditor.this.getModelObject()));
-                    }
-                };
+        final AjaxSubmitLink removeButton = new AjaxSubmitLink("removeButton") {
+            @Override
+            protected void onAfterSubmit(AjaxRequestTarget target) {
+                super.onAfterSubmit(target);
+                send(
+                        getWebPage(),
+                        Broadcast.BREADTH,
+                        new RemoveEvent(target, VectorCustomDimensionEditor.this.getModelObject()));
+            }
+        };
         removeButton.setDefaultFormProcessing(false);
         add(removeButton);
     }

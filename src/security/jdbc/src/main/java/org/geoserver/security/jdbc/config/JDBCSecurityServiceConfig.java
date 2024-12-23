@@ -9,8 +9,8 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 
 /**
- * Extension of {@link SecurityNamedServiceConfig} in which the underlying config is stored in a
- * database accessible via JDBC.
+ * Extension of {@link SecurityNamedServiceConfig} in which the underlying config is stored in a database accessible via
+ * JDBC.
  *
  * @author christian
  */
@@ -51,10 +51,7 @@ public abstract class JDBCSecurityServiceConfig extends BaseSecurityNamedService
         return jndi;
     }
 
-    /**
-     * Set flag controlling whether to connect through JNDI or through creation of a direct
-     * connection.
-     */
+    /** Set flag controlling whether to connect through JNDI or through creation of a direct connection. */
     public void setJndi(boolean jndi) {
         this.jndi = jndi;
     }

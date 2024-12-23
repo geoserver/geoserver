@@ -23,8 +23,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class NotificationTransactionListener extends NotificationListener
-        implements INotificationTransactionListener {
+public class NotificationTransactionListener extends NotificationListener implements INotificationTransactionListener {
 
     protected static final String INSERTED = "inserted";
 
@@ -48,13 +47,12 @@ public class NotificationTransactionListener extends NotificationListener
 
     @Override
     public TransactionRequest beforeTransaction(TransactionRequest request) throws WFSException {
-        layersChangesResume =
-                new ThreadLocal<Map<String, Map<String, Object>>>() {
-                    @Override
-                    protected Map<String, Map<String, Object>> initialValue() {
-                        return new HashMap<String, Map<String, Object>>();
-                    }
-                };
+        layersChangesResume = new ThreadLocal<Map<String, Map<String, Object>>>() {
+            @Override
+            protected Map<String, Map<String, Object>> initialValue() {
+                return new HashMap<String, Map<String, Object>>();
+            }
+        };
         return request;
     }
 
@@ -62,8 +60,7 @@ public class NotificationTransactionListener extends NotificationListener
     public void beforeCommit(TransactionRequest request) throws WFSException {}
 
     @Override
-    public void afterTransaction(
-            TransactionRequest request, TransactionResponse result, boolean committed) {
+    public void afterTransaction(TransactionRequest request, TransactionResponse result, boolean committed) {
         if (committed) {
             String handle = request.getHandle();
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -72,8 +69,7 @@ public class NotificationTransactionListener extends NotificationListener
             for (String layer : lcrs.keySet()) {
                 Map<String, Object> prop = lcrs.get(layer);
                 Object ft = prop.remove(TYPE);
-                Notification n =
-                        new NotificationImpl(Notification.Type.Data, handle, null, ft, prop, user);
+                Notification n = new NotificationImpl(Notification.Type.Data, handle, null, ft, prop, user);
                 notify(n);
             }
         }
@@ -101,18 +97,15 @@ public class NotificationTransactionListener extends NotificationListener
             map.put(featureTypeName, properties);
         }
         if (eventType == TransactionEventType.POST_INSERT) {
-            Integer inserted =
-                    properties.get(INSERTED) != null ? (Integer) properties.get(INSERTED) : 0;
+            Integer inserted = properties.get(INSERTED) != null ? (Integer) properties.get(INSERTED) : 0;
             properties.put(INSERTED, inserted + affectedFeatures);
         }
         if (eventType == TransactionEventType.POST_UPDATE) {
-            Integer inserted =
-                    properties.get(UPDATED) != null ? (Integer) properties.get(UPDATED) : 0;
+            Integer inserted = properties.get(UPDATED) != null ? (Integer) properties.get(UPDATED) : 0;
             properties.put(UPDATED, inserted + affectedFeatures);
         }
         if (eventType == TransactionEventType.PRE_DELETE) {
-            Integer inserted =
-                    properties.get(DELETED) != null ? (Integer) properties.get(DELETED) : 0;
+            Integer inserted = properties.get(DELETED) != null ? (Integer) properties.get(DELETED) : 0;
             properties.put(DELETED, inserted + affectedFeatures);
         }
         if (properties.get(BOUNDS) != null) {

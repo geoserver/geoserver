@@ -108,14 +108,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
             FeatureTypeInfo ft)
             throws IOException {
         setUpTemplate(
-                cqlRuleCondition,
-                null,
-                outputFormat,
-                templateFileName,
-                templateName,
-                templateExtension,
-                workspace,
-                ft);
+                cqlRuleCondition, null, outputFormat, templateFileName, templateName, templateExtension, workspace, ft);
     }
 
     protected void setUpTemplate(
@@ -128,8 +121,7 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
             String workspace,
             FeatureTypeInfo ft)
             throws IOException {
-        String rawTemplate =
-                IOUtils.toString(getClass().getResourceAsStream(templateFileName), Charsets.UTF_8);
+        String rawTemplate = IOUtils.toString(getClass().getResourceAsStream(templateFileName), Charsets.UTF_8);
         TemplateInfo info = new TemplateInfo();
         info.setExtension(templateExtension);
         info.setTemplateName(templateName);
@@ -169,16 +161,15 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
             // check an ${../xpath} expression to be equal to the one
             // acquired previously
             assertEquals(geologicUnitDescr, previousContextEl);
-            JSONArray compositionPart =
-                    (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
+            JSONArray compositionPart = (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
             assertTrue(compositionPart.size() > 0);
             for (int j = 0; j < compositionPart.size(); j++) {
                 JSONObject role = compositionPart.getJSONObject(j).getJSONObject("gsml:role");
                 assertNotNull(role);
-                JSONObject proportion =
-                        compositionPart.getJSONObject(j).getJSONObject("proportion");
+                JSONObject proportion = compositionPart.getJSONObject(j).getJSONObject("proportion");
                 assertNotNull(proportion);
-                JSONArray lithology = (JSONArray) compositionPart.getJSONObject(j).get("lithology");
+                JSONArray lithology =
+                        (JSONArray) compositionPart.getJSONObject(j).get("lithology");
                 assertTrue(lithology.size() > 0);
             }
         }
@@ -209,103 +200,71 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         assertNotNull(properties.getString("gsml:GeologicUnit_gsml:geologicUnitType"));
         if (id.equals("mf1")) {
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_vocabulary"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_vocabulary"));
         } else if (id.equals("mf2") || id.equals("mf3")) {
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_value"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_value"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_gsml:role_@codeSpace"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_name"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_vocabulary"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_@dataType"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_value"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_proportion_CGI_TermValue_value"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_name"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_1_gsml:compositionPart_lithology_vocabulary"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_value"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_gsml:role_@codeSpace"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_@dataType"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_proportion_CGI_TermValue_value"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_name"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_vocabulary"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_name"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_2_gsml:compositionPart_lithology_vocabulary"));
         } else if (id.equals("mf4")) {
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_@codeSpace"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_1"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_@dataType"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_2"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_@dataType"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_3"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_vocabulary"));
             assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_proportion_CGI_TermValue_value"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_1"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_2"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_name_3"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_1_vocabulary"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_name"));
-            assertNotNull(
-                    properties.getString(
-                            "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_vocabulary"));
+                    properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_name"));
+            assertNotNull(properties.getString(
+                    "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_2_vocabulary"));
         }
     }
 
@@ -322,16 +281,15 @@ public abstract class TemplateComplexTestSupport extends AbstractAppSchemaTestSu
         JSONArray composition = geologicUnit.getJSONArray("gsml:composition");
         assertTrue(composition.size() > 0);
         for (int i = 0; i < composition.size(); i++) {
-            JSONArray compositionPart =
-                    (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
+            JSONArray compositionPart = (JSONArray) ((JSONObject) composition.get(i)).get("gsml:compositionPart");
             assertTrue(compositionPart.size() > 0);
             for (int j = 0; j < compositionPart.size(); j++) {
                 JSONObject role = compositionPart.getJSONObject(j).getJSONObject("gsml:role");
                 assertNotNull(role);
-                JSONObject proportion =
-                        compositionPart.getJSONObject(j).getJSONObject("proportion");
+                JSONObject proportion = compositionPart.getJSONObject(j).getJSONObject("proportion");
                 assertNotNull(proportion);
-                JSONArray lithology = (JSONArray) compositionPart.getJSONObject(j).get("lithology");
+                JSONArray lithology =
+                        (JSONArray) compositionPart.getJSONObject(j).get("lithology");
                 assertTrue(lithology.size() > 0);
             }
         }

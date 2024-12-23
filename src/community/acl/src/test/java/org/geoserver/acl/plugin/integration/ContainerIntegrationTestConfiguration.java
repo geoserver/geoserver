@@ -13,9 +13,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertyResolver;
 
 /**
- * Loaded from {@literal applicationContext-test.xml}, contributes {@link Environment} and {@link
- * PropertyResolver}, for some reason {@link GeoServerTestApplicationContext} from {@link
- * GeoServerSystemTestSupport} does not.
+ * Loaded from {@literal applicationContext-test.xml}, contributes {@link Environment} and {@link PropertyResolver}, for
+ * some reason {@link GeoServerTestApplicationContext} from {@link GeoServerSystemTestSupport} does not.
  */
 @Configuration
 public class ContainerIntegrationTestConfiguration {

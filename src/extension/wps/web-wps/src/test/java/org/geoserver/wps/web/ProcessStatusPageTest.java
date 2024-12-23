@@ -74,23 +74,17 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         List<ExecutionStatus> executions = getItems();
         assertEquals(1, executions.size());
         ExecutionStatus status = executions.get(0);
-        DateFormat df =
-                new SimpleDateFormat(
-                        "E, d MMM yyyy HH:mm:ss.SSS 'GMT'", tester.getSession().getLocale());
+        DateFormat df = new SimpleDateFormat(
+                "E, d MMM yyyy HH:mm:ss.SSS 'GMT'", tester.getSession().getLocale());
         df.setTimeZone(TimeZone.getTimeZone("GMT"));
         tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:7:component",
-                df.format(status.getExpirationDate()));
+                "table:listContainer:items:1:itemProperties:7:component", df.format(status.getExpirationDate()));
         tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:8:component",
-                df.format(status.getEstimatedCompletion()));
-        tester.assertLabel(
-                "table:listContainer:items:1:itemProperties:9:component",
-                df.format(status.getNextPoll()));
+                "table:listContainer:items:1:itemProperties:8:component", df.format(status.getEstimatedCompletion()));
+        tester.assertLabel("table:listContainer:items:1:itemProperties:9:component", df.format(status.getNextPoll()));
 
         // select the process and delete it
-        GeoServerTablePanel<?> table =
-                (GeoServerTablePanel<?>) tester.getComponentFromLastRenderedPage("table");
+        GeoServerTablePanel<?> table = (GeoServerTablePanel<?>) tester.getComponentFromLastRenderedPage("table");
         table.selectIndex(0);
         tester.getComponentFromLastRenderedPage("headerPanel:dismissSelected").setEnabled(true);
         tester.clickLink("headerPanel:dismissSelected");
@@ -99,13 +93,12 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
         // this makes the dialog actually close
         tester.getComponentFromLastRenderedPage("dialog:dialog:modal")
                 .getBehaviors()
-                .forEach(
-                        b -> {
-                            final String name = b.getClass().getSimpleName();
-                            if (name.contains("WindowClosedBehavior")) {
-                                tester.executeBehavior((AbstractAjaxBehavior) b);
-                            }
-                        });
+                .forEach(b -> {
+                    final String name = b.getClass().getSimpleName();
+                    if (name.contains("WindowClosedBehavior")) {
+                        tester.executeBehavior((AbstractAjaxBehavior) b);
+                    }
+                });
 
         // check the table is refreshed and process is dismissing
         tester.assertComponentOnAjaxResponse("table");
@@ -117,8 +110,7 @@ public class ProcessStatusPageTest extends WPSPagesTestSupport {
     }
 
     protected List<ExecutionStatus> getItems() {
-        ProcessStatusTracker tracker =
-                GeoServerApplication.get().getBeanOfType(ProcessStatusTracker.class);
+        ProcessStatusTracker tracker = GeoServerApplication.get().getBeanOfType(ProcessStatusTracker.class);
         return tracker.getStore().list(Query.ALL);
     }
 }

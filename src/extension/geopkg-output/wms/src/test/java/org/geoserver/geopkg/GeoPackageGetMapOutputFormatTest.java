@@ -65,9 +65,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
     @Test
     public void testTileEntries() throws Exception {
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent
-                .getRequest()
-                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
 
         WebMap map = format.produceMap(mapContent);
         try (GeoPackage geopkg = createGeoPackage(map)) {
@@ -104,12 +102,12 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
             assertTrue(geopkg.features().isEmpty());
             assertEquals(1, geopkg.tiles().size());
 
-            Tile topLeftTile = geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
+            Tile topLeftTile =
+                    geopkg.reader(geopkg.tiles().get(0), 1, 1, 0, 0, 0, 0).next();
 
             BufferedImage tileImg = ImageIO.read(new ByteArrayInputStream(topLeftTile.getData()));
 
-            ImageAssert.assertEquals(
-                    URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
+            ImageAssert.assertEquals(URLs.urlToFile(getClass().getResource("toplefttile.png")), tileImg, 250);
         }
     }
 
@@ -122,9 +120,7 @@ public class GeoPackageGetMapOutputFormatTest extends WMSTestSupport {
 
         // a set of zooms so large, it can only go in timeout
         WMSMapContent mapContent = createMapContent(WORLD, LAKES);
-        mapContent
-                .getRequest()
-                .setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
+        mapContent.getRequest().setBbox(new Envelope(-0.17578125, -0.087890625, 0.17578125, 0.087890625));
         mapContent.getRequest().getFormatOptions().put("min_zoom", "10");
         mapContent.getRequest().getFormatOptions().put("max_zoom", "30");
 

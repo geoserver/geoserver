@@ -68,8 +68,7 @@ public class KeycloakLoginButtonTest extends GeoServerWicketTestSupport {
                 html.contains(
                         "<form class=\"d-inline-block\" method=\"post\" action=\"http://localhost/context/web?j_spring_keycloak_login=true\">"));
         // the img is there as well
-        assertTrue(
-                html.contains(
-                        "<img src=\"./wicket/resource/org.geoserver.web.security.keycloak.KeycloakAuthFilterPanel/keycloak"));
+        assertTrue(html.contains(
+                "<img src=\"./wicket/resource/org.geoserver.web.security.keycloak.KeycloakAuthFilterPanel/keycloak"));
     }
 }

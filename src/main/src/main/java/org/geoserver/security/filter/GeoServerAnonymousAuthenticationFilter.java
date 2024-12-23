@@ -38,16 +38,15 @@ public class GeoServerAnonymousAuthenticationFilter extends GeoServerSecurityFil
         super.initializeFromConfig(config);
     }
 
-    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>
-            authenticationDetailsSource = new WebAuthenticationDetailsSource();
+    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource =
+            new WebAuthenticationDetailsSource();
 
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
             throws IOException, ServletException {
 
         if (SecurityContextHolder.getContext().getAuthentication() == null) {
-            SecurityContextHolder.getContext()
-                    .setAuthentication(createAuthentication((HttpServletRequest) req));
+            SecurityContextHolder.getContext().setAuthentication(createAuthentication((HttpServletRequest) req));
         }
 
         chain.doFilter(req, res);
@@ -64,8 +63,7 @@ public class GeoServerAnonymousAuthenticationFilter extends GeoServerSecurityFil
     }
 
     public void setAuthenticationDetailsSource(
-            AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>
-                    authenticationDetailsSource) {
+            AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource) {
         Assert.notNull(authenticationDetailsSource, "AuthenticationDetailsSource required");
         this.authenticationDetailsSource = authenticationDetailsSource;
     }

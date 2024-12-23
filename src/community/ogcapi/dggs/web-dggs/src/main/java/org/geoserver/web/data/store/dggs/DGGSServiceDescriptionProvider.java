@@ -10,8 +10,7 @@ import org.geoserver.ogcapi.v1.dggs.DGGSService;
 import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
 /** Provide description of DGGS services for welcome page. */
-public class DGGSServiceDescriptionProvider
-        extends OgcApiServiceDescriptionProvider<DGGSInfo, DGGSService> {
+public class DGGSServiceDescriptionProvider extends OgcApiServiceDescriptionProvider<DGGSInfo, DGGSService> {
 
     public DGGSServiceDescriptionProvider(GeoServer gs) {
         super(gs, "DGGS", "DGGS", "DGGS");

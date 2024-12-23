@@ -83,8 +83,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Override
@@ -116,10 +115,9 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         sfMosaicCI.setNativeBoundingBox(CiteTestData.DEFAULT_LATLON_ENVELOPE);
         getCatalog().save(sfMosaicCI);
 
-        GeoServerUserGroupStore ugStore =
-                getSecurityManager()
-                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
-                        .createStore();
+        GeoServerUserGroupStore ugStore = getSecurityManager()
+                .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                .createStore();
 
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_mosaic2", "cite", true));
@@ -129,7 +127,8 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         ugStore.addUser(ugStore.createUserObject("cite_nogroup", "cite", true));
         ugStore.store();
 
-        GeoServerRoleStore roleStore = getSecurityManager().getActiveRoleService().createStore();
+        GeoServerRoleStore roleStore =
+                getSecurityManager().getActiveRoleService().createStore();
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
@@ -149,41 +148,27 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         CoverageInfo coverage2 = catalog.getCoverageByName("sf:Mosaic2");
 
         // set permissions on layer coverage
-        tam.putLimits(
-                "cite_mosaic2", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+        tam.putLimits("cite_mosaic2", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
         tam.putLimits("cite", coverage, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
 
         // set permissions on layer coverage2
-        tam.putLimits(
-                "cite", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE));
-        tam.putLimits(
-                "cite_mosaic2",
-                coverage2,
-                new DataAccessLimits(CatalogMode.CHALLENGE, Filter.INCLUDE));
+        tam.putLimits("cite", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.EXCLUDE));
+        tam.putLimits("cite_mosaic2", coverage2, new DataAccessLimits(CatalogMode.CHALLENGE, Filter.INCLUDE));
 
         // layer disable
         tam.putLimits(
-                "cite_nomosaic",
-                coverage,
-                new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
+                "cite_nomosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, null));
 
         // image cropping setup
         WKTReader wkt = new WKTReader();
-        MultiPolygon cropper =
-                (MultiPolygon)
-                        wkt.read("MULTIPOLYGON(((140 -50, 150 -50, 150 -30, 140 -30, 140 -50)))");
+        MultiPolygon cropper = (MultiPolygon) wkt.read("MULTIPOLYGON(((140 -50, 150 -50, 150 -30, 140 -30, 140 -50)))");
         tam.putLimits(
-                "cite_cropmosaic",
-                coverage,
-                new CoverageAccessLimits(CatalogMode.HIDE, Filter.INCLUDE, cropper, null));
+                "cite_cropmosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, Filter.INCLUDE, cropper, null));
 
         // filter setup
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         Filter filter = ff.contains(ff.property("geometry"), ff.literal(cropper));
-        tam.putLimits(
-                "cite_filtermosaic",
-                coverage,
-                new CoverageAccessLimits(CatalogMode.HIDE, filter, null, null));
+        tam.putLimits("cite_filtermosaic", coverage, new CoverageAccessLimits(CatalogMode.HIDE, filter, null, null));
 
         // System.out.println(coverage.boundingBox());
     }
@@ -209,18 +194,16 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         response = getAsServletResponse(path);
         assertEquals(NOT_FOUND_ERROR_TYPE, response.getContentType());
         String str = string(getBinaryInputStream(response));
-        assertTrue(
-                str.contains("org.geotools.ows.ServiceException: Could not find layer sf:mosaic"));
+        assertTrue(str.contains("org.geotools.ows.ServiceException: Could not find layer sf:mosaic"));
     }
 
     @Test
     public void testPermissionMosaicTileWmts() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) ->
-                        String.format(
-                                "gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0"
-                                        + "&REQUEST=GetTile&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:0&TILECOL=0&TILEROW=0",
-                                layer),
+                (layer) -> String.format(
+                        "gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0"
+                                + "&REQUEST=GetTile&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:0&TILECOL=0&TILEROW=0",
+                        layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -231,8 +214,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
             @Override
             public boolean matches(Object item) {
                 try {
-                    return matcher.matches(
-                            string(getBinaryInputStream((MockHttpServletResponse) item)));
+                    return matcher.matches(string(getBinaryInputStream((MockHttpServletResponse) item)));
                 } catch (Exception e) {
                     return false;
                 }
@@ -247,8 +229,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
             public void describeMismatch(Object item, Description description) {
                 description.appendText("body was: \n");
                 try {
-                    description.appendValue(
-                            string(getBinaryInputStream((MockHttpServletResponse) item)));
+                    description.appendValue(string(getBinaryInputStream((MockHttpServletResponse) item)));
                 } catch (Exception e) {
                     description.appendText("\tcould not read body ").appendValue(e.getMessage());
                 }
@@ -256,8 +237,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         };
     }
 
-    Matcher<MockHttpServletResponse> addBodyOnFail(
-            Matcher<? extends MockHttpServletResponse> matcher) {
+    Matcher<MockHttpServletResponse> addBodyOnFail(Matcher<? extends MockHttpServletResponse> matcher) {
         return new org.hamcrest.BaseMatcher<>() {
 
             @Override
@@ -289,8 +269,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
 
     enum TestGridset {
         GlobalCRS84Geometric("EPSG:4326", new long[] {7489, 1245, 12}, new long[] {4096, 2048, 12}),
-        GoogleMapsCompatible(
-                "EPSG:900913", new long[] {7489, 3237, 13}, new long[] {4096, 4096, 13});
+        GoogleMapsCompatible("EPSG:900913", new long[] {7489, 3237, 13}, new long[] {4096, 4096, 13});
 
         public final String name;
         public final long[] tileInBounds;
@@ -304,8 +283,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     }
 
     protected void doPermissionCropTileTest(
-            BiFunction<String, long[], String> pathForLayer, String failFormat, TestGridset grid)
-            throws Exception {
+            BiFunction<String, long[], String> pathForLayer, String failFormat, TestGridset grid) throws Exception {
         final String tileFormat = "image/png";
         //      final String pathInBounds = pathForLayer.apply("sf:mosaic", new
         // long[]{4073,4118,13});
@@ -321,10 +299,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         MockHttpServletResponse response = getAsServletResponse(pathOutOfBounds);
         assertThat(
                 response,
-                addBodyOnFail(
-                        hasProperty(
-                                "contentType",
-                                equalTo(tileFormat)))); // If this was unsuccessful the test is
+                addBodyOnFail(hasProperty("contentType", equalTo(tileFormat)))); // If this was unsuccessful the test is
         // invalid
 
         setRequestAuth("cite_cropmosaic", "cite");
@@ -343,8 +318,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     }
 
     protected void doPermissionMosaicTileTest(
-            Function<String, String> pathForLayer, String secFailFormat, String otherFailFormat)
-            throws Exception {
+            Function<String, String> pathForLayer, String secFailFormat, String otherFailFormat) throws Exception {
         final String tileFormat = "image/png";
 
         final String path = pathForLayer.apply("sf:mosaic");
@@ -384,18 +358,13 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         assertEquals(otherFailFormat, response.getContentType());
 
         // mode hide
-        assertThat(
-                string(getBinaryInputStream(response)),
-                containsString("Could not find layer sf:mosaic"));
+        assertThat(string(getBinaryInputStream(response)), containsString("Could not find layer sf:mosaic"));
     }
 
     @Test
     public void testPermissionMosaicTileGmaps() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) ->
-                        String.format(
-                                "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=0&X=0&Y=0",
-                                layer),
+                (layer) -> String.format("gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=0&X=0&Y=0", layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -403,10 +372,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileMGmaps() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) ->
-                        String.format(
-                                "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=17&X=0&Y=0",
-                                layer),
+                (layer) -> String.format("gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=17&X=0&Y=0", layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -414,8 +380,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicTileTms() throws Exception {
         doPermissionMosaicTileTest(
-                (layer) ->
-                        String.format("gwc/service/tms/1.0.0/%s@EPSG:900913@png/0/0/0.png", layer),
+                (layer) -> String.format("gwc/service/tms/1.0.0/%s@EPSG:900913@png/0/0/0.png", layer),
                 SECURITY_ERROR_TYPE,
                 NOT_FOUND_ERROR_TYPE);
     }
@@ -431,10 +396,8 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileTms() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) ->
-                        String.format(
-                                "gwc/service/tms/1.0.0/%s@EPSG:900913@png/%d/%d/%d.png",
-                                layer, index[2], index[0], index[1]),
+                (layer, index) -> String.format(
+                        "gwc/service/tms/1.0.0/%s@EPSG:900913@png/%d/%d/%d.png", layer, index[2], index[0], index[1]),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -464,11 +427,10 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         //
         // getCatalog().getLayerByName("sf:mosaic").getResource().getLatLonBoundingBox());
         doPermissionCropTileTest(
-                (layer, index) ->
-                        String.format(
-                                "gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0"
-                                        + "&REQUEST=GetTile&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:%d&TILECOL=%d&TILEROW=%d",
-                                layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
+                (layer, index) -> String.format(
+                        "gwc/service/wmts?LAYER=%s&FORMAT=image/png&SERVICE=WMTS&VERSION=1.0.0"
+                                + "&REQUEST=GetTile&TILEMATRIXSET=EPSG:900913&TILEMATRIX=EPSG:900913:%d&TILECOL=%d&TILEROW=%d",
+                        layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -476,10 +438,9 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileGmaps() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) ->
-                        String.format(
-                                "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
-                                layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
+                (layer, index) -> String.format(
+                        "gwc/service/gmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
+                        layer, index[2], index[0], (1 << index[2]) - index[1] - 1),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -487,10 +448,9 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionCropTileMGmaps() throws Exception {
         doPermissionCropTileTest(
-                (layer, index) ->
-                        String.format(
-                                "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
-                                layer, 17 - index[2], index[0], (1 << index[2]) - index[1] - 1),
+                (layer, index) -> String.format(
+                        "gwc/service/mgmaps?LAYERS=%s&FORMAT=image/png&ZOOM=%d&X=%d&Y=%d",
+                        layer, 17 - index[2], index[0], (1 << index[2]) - index[1] - 1),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
@@ -499,9 +459,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     public void testPermissionCropTileKml() throws Exception {
         doPermissionCropTileTest(
                 (layer, index) ->
-                        String.format(
-                                "gwc/service/kml/%s/x%dy%dz%d.png",
-                                layer, index[0], index[1], index[2]),
+                        String.format("gwc/service/kml/%s/x%dy%dz%d.png", layer, index[0], index[1], index[2]),
                 SECURITY_ERROR_TYPE,
                 TestGridset.GlobalCRS84Geometric);
     }
@@ -523,15 +481,14 @@ public class GWCDataSecurityTest extends WMSTestSupport {
                             VEConverter.convert(quadKey),
                             equalTo(index)); // Check that the test key is correct. Failure means
                     // the test is broken
-                    return String.format(
-                            "gwc/service/ve?layers=%s&format=image/png&quadKey=%s", layer, quadKey);
+                    return String.format("gwc/service/ve?layers=%s&format=image/png&quadKey=%s", layer, quadKey);
                 },
                 SECURITY_ERROR_TYPE,
                 TestGridset.GoogleMapsCompatible);
     }
 
-    protected void doPermissionKmlOverlay(
-            Function<String, String> pathForLayer, String overlayFormat) throws Exception {
+    protected void doPermissionKmlOverlay(Function<String, String> pathForLayer, String overlayFormat)
+            throws Exception {
         final String failFormat = "text/html";
 
         final String path = pathForLayer.apply("sf:mosaic");
@@ -564,15 +521,13 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     @Test
     public void testPermissionMosaicKmlRasterSuperOverlay() throws Exception {
         doPermissionKmlOverlay(
-                (layer) -> String.format("gwc/service/kml/%s.png.kmz", layer),
-                "application/vnd.google-earth.kmz");
+                (layer) -> String.format("gwc/service/kml/%s.png.kmz", layer), "application/vnd.google-earth.kmz");
     }
 
     @Test
     public void testPermissionMosaicKmlVectorSuperOverlay() throws Exception {
         doPermissionKmlOverlay(
-                (layer) -> String.format("gwc/service/kml/%s.kml.kmz", layer),
-                "application/vnd.google-earth.kmz");
+                (layer) -> String.format("gwc/service/kml/%s.kml.kmz", layer), "application/vnd.google-earth.kmz");
     }
 
     @Test
@@ -588,18 +543,16 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         // this should fail
         setRequestAuth("cite_cropmosaic", "cite");
 
-        path =
-                "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
+        path = "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
         response = getAsServletResponse(path);
         assertEquals(SECURITY_ERROR_TYPE, response.getContentType());
         String str = string(getBinaryInputStream(response));
         assertTrue(str.contains("Not Authorized"));
 
         // but this should be fine
-        path =
-                "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=143.4375,-42.1875,146.25,-39.375&WIDTH=256&HEIGHT=256&transparent=false";
+        path = "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=143.4375,-42.1875,146.25,-39.375&WIDTH=256&HEIGHT=256&transparent=false";
         response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
     }
@@ -617,18 +570,16 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         // this should fail
         setRequestAuth("cite_filtermosaic", "cite");
 
-        path =
-                "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
+        path = "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
         response = getAsServletResponse(path);
         assertEquals(SECURITY_ERROR_TYPE, response.getContentType());
         String str = string(getBinaryInputStream(response));
         assertThat(str, containsString("Not Authorized"));
 
         // but this should be fine
-        path =
-                "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=143.4375,-42.1875,146.25,-39.375&WIDTH=256&HEIGHT=256&transparent=false";
+        path = "gwc/service/wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=143.4375,-42.1875,146.25,-39.375&WIDTH=256&HEIGHT=256&transparent=false";
         response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
     }
@@ -637,11 +588,10 @@ public class GWCDataSecurityTest extends WMSTestSupport {
     public void testLayerGroup() throws Exception {
         // no auth, it should work
         setRequestAuth(null, null);
-        String path =
-                "gwc/service/wms?bgcolor=0x000000&LAYERS="
-                        + NATURE_GROUP
-                        + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
+        String path = "gwc/service/wms?bgcolor=0x000000&LAYERS="
+                + NATURE_GROUP
+                + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false";
         MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
 
@@ -650,8 +600,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
         LayerInfo lakes = getCatalog().getLayerByName(getLayerId(MockData.LAKES));
         // LayerInfo forests = getCatalog().getLayerByName(getLayerId(MockData.FORESTS));
-        tam.putLimits(
-                "cite_nogroup", lakes, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
+        tam.putLimits("cite_nogroup", lakes, new DataAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE));
         tam.putLimits("cite", lakes, new DataAccessLimits(CatalogMode.HIDE, Filter.INCLUDE));
         //        tam.putLimits("cite_nogroup", forests, new DataAccessLimits(CatalogMode.HIDE,
         // Filter.EXCLUDE));
@@ -663,9 +612,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         response = getAsServletResponse(path);
         assertEquals(NOT_FOUND_ERROR_TYPE, response.getContentType());
         String str = string(getBinaryInputStream(response));
-        assertTrue(
-                str.contains(
-                        "org.geotools.ows.ServiceException: Could not find layer " + NATURE_GROUP));
+        assertTrue(str.contains("org.geotools.ows.ServiceException: Could not find layer " + NATURE_GROUP));
 
         // but this can access it all
         setRequestAuth("cite", "cite");
@@ -689,12 +636,11 @@ public class GWCDataSecurityTest extends WMSTestSupport {
 
         // no auth, it should work
         setRequestAuth(null, null);
-        String path =
-                ws.getName()
-                        + "/wms?bgcolor=0x000000&LAYERS="
-                        + workspacedLayerGroup.prefixedName()
-                        + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false&tiled=true";
+        String path = ws.getName()
+                + "/wms?bgcolor=0x000000&LAYERS="
+                + workspacedLayerGroup.prefixedName()
+                + "&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,-90,180,90&WIDTH=256&HEIGHT=256&transparent=false&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
     }

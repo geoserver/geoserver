@@ -11,10 +11,7 @@ import org.geoserver.web.CatalogIconFactory;
 import org.geowebcache.layer.TileLayer;
 import org.geowebcache.mbtiles.layer.MBTilesLayer;
 
-/**
- * The {@link GWCTileLayerIconCustomizer} implementation for MBTilesLayer (that can be both raster
- * or vector)
- */
+/** The {@link GWCTileLayerIconCustomizer} implementation for MBTilesLayer (that can be both raster or vector) */
 public class MBTilesLayerIconCustomizer implements GWCTileLayerIconCustomizer {
 
     @Override

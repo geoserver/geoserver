@@ -47,15 +47,13 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         csv.writeCSVfile(object, csvFields, monitor, zout);
 
         if (object instanceof Query) {
-            monitor.query(
-                    (Query) object,
-                    (data, aggregates) -> {
-                        try {
-                            writeBodyAndError(data, zout, body, error, true);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
+            monitor.query((Query) object, (data, aggregates) -> {
+                try {
+                    writeBodyAndError(data, zout, body, error, true);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         } else if (object instanceof List) {
             for (RequestData data : (List<RequestData>) object) {
                 writeBodyAndError(data, zout, body, error, true);
@@ -68,8 +66,7 @@ public class ZIPMonitorConverter extends BaseMonitorConverter {
         zout.close();
     }
 
-    void writeBodyAndError(
-            RequestData data, ZipOutputStream zout, boolean body, boolean error, boolean postfix)
+    void writeBodyAndError(RequestData data, ZipOutputStream zout, boolean body, boolean error, boolean postfix)
             throws IOException {
 
         long id = data.getId();

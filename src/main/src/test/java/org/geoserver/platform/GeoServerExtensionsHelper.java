@@ -41,8 +41,8 @@ import org.springframework.context.ApplicationContext;
 public class GeoServerExtensionsHelper {
 
     /**
-     * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)}
-     * and enable additional consistency checks for missing extensions.
+     * Flag to identify use of spring context via {@link #setApplicationContext(ApplicationContext)} and enable
+     * additional consistency checks for missing extensions.
      */
     public static void setIsSpringContext(boolean isSpring) {
         GeoServerExtensions.isSpringContext = isSpring;
@@ -68,8 +68,8 @@ public class GeoServerExtensionsHelper {
     }
 
     /**
-     * Directly register singleton for use with {@link GeoServerExtensions#bean(String)} (and {@link
-     * GeoServerExtensions#bean(Class)}).
+     * Directly register singleton for use with {@link GeoServerExtensions#bean(String)} (and
+     * {@link GeoServerExtensions#bean(Class)}).
      *
      * <p>If GeoServerExtensions has been configured with a context
      *
@@ -81,8 +81,7 @@ public class GeoServerExtensionsHelper {
             if (GeoServerExtensions.context.containsBean(name)) {
                 Object conflict = GeoServerExtensions.context.getBean(name);
                 if (bean != conflict) {
-                    GeoServerExtensions.LOGGER.fine(
-                            "ApplicationContext override " + name + ": " + conflict);
+                    GeoServerExtensions.LOGGER.fine("ApplicationContext override " + name + ": " + conflict);
                 }
             }
         } else {
@@ -176,9 +175,7 @@ public class GeoServerExtensionsHelper {
             GeoServerExtensionsHelper.singleton(name, bean, declaredClasses);
         }
 
-        /**
-         * Directly register property for use with {@link GeoServerExtensions#getProperty(String)}.
-         */
+        /** Directly register property for use with {@link GeoServerExtensions#getProperty(String)}. */
         public void property(String propertyName, String property) {
             if (!active) throw new IllegalStateException();
             GeoServerExtensionsHelper.property(propertyName, property);

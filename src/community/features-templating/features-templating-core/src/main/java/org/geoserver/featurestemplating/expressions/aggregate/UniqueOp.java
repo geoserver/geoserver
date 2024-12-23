@@ -19,10 +19,7 @@ class UniqueOp extends AggregationOp {
 
     @Override
     protected Object aggregateInternal(List<Object> values) {
-        Set<Object> set =
-                values.stream()
-                        .map(o -> unpack(o))
-                        .collect(Collectors.toCollection(LinkedHashSet::new));
+        Set<Object> set = values.stream().map(o -> unpack(o)).collect(Collectors.toCollection(LinkedHashSet::new));
         return new LinkedList<>(set);
     }
 }

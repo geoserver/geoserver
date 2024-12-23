@@ -26,9 +26,7 @@ public class SLDWithInlineFeatureTest extends GeoServerSystemTestSupport {
     @Test
     public void testSLDWithInlineFeatureWMS() throws Exception {
         try (BufferedReader reader =
-                new BufferedReader(
-                        new InputStreamReader(
-                                getClass().getResourceAsStream("SLDWithInlineFeature.xml")))) {
+                new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("SLDWithInlineFeature.xml")))) {
             String line;
             StringBuilder builder = new StringBuilder();
 
@@ -39,9 +37,7 @@ public class SLDWithInlineFeatureTest extends GeoServerSystemTestSupport {
             assertStatusCodeForPost(200, "wms", builder.toString(), "text/xml");
 
             // this is the test; an exception will be thrown if no image was rendered
-            BufferedImage image =
-                    ImageIO.read(
-                            getBinaryInputStream(postAsServletResponse("wms", builder.toString())));
+            BufferedImage image = ImageIO.read(getBinaryInputStream(postAsServletResponse("wms", builder.toString())));
 
             assertNotNull(image);
         }
@@ -53,9 +49,7 @@ public class SLDWithInlineFeatureTest extends GeoServerSystemTestSupport {
     // needs to be addressed!
     public void testGetMapPostEntityExpansion() throws Exception {
         String body =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("GetMapExternalEntity.xml"),
-                        StandardCharsets.UTF_8);
+                IOUtils.toString(getClass().getResourceAsStream("GetMapExternalEntity.xml"), StandardCharsets.UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wms", body);
         // should fail with an error message pointing at entity resolution
         assertEquals("application/vnd.ogc.se_xml", response.getContentType());

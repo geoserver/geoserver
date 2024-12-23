@@ -11,8 +11,8 @@ import org.eclipse.emf.ecore.EObject;
 import org.geoserver.wfs.WFSInfo;
 
 /**
- * Parses a kvp of the form "acceptFormats=format1,format2,...,formatN" into an instance of {@link
- * net.opengis.ows.v1_0_0.AcceptFormatsType}.
+ * Parses a kvp of the form "acceptFormats=format1,format2,...,formatN" into an instance of
+ * {@link net.opengis.ows.v1_0_0.AcceptFormatsType}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

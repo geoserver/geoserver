@@ -22,10 +22,9 @@ public class NetCDFOutStatusTest {
                 new ClassPathXmlApplicationContext("applicationContextStatus.xml")) {
             assertNotNull(context);
 
-            Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-netcdf-out"))
-                            .findFirst();
+            Optional<ModuleStatus> status = GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
+                    .filter(s -> s.getModule().equalsIgnoreCase("gs-netcdf-out"))
+                    .findFirst();
             assertTrue(status.isPresent());
         }
     }

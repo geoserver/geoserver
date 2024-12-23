@@ -42,8 +42,7 @@ import org.w3c.dom.Document;
 
 public class CustomDimensionsTest extends WMSDimensionsTestSupport {
 
-    private static final QName WATTEMP =
-            new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
+    private static final QName WATTEMP = new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
 
     private static final String CAPABILITIES_REQUEST = "wms?request=getCapabilities&version=1.1.1";
     private static final String BBOX = "0,40,15,45";
@@ -58,13 +57,7 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
         testData.addStyle(styleName, "../temperature.sld", getClass(), getCatalog());
         Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
-        testData.addRasterLayer(
-                WATTEMP,
-                "custwatertemp.zip",
-                null,
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
+        testData.addRasterLayer(WATTEMP, "custwatertemp.zip", null, propertyMap, SystemTestData.class, getCatalog());
 
         GeoServerInfo global = getGeoServer().getGlobal();
         global.getSettings().setProxyBaseUrl("src/test/resources/geoserver");
@@ -111,8 +104,7 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
     }
 
     @Test
@@ -130,14 +122,12 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
     }
 
     @Test
     public void testCapabilitiesUnits() throws Exception {
-        setupRasterDimension(
-                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         Document dom = dom(get(CAPABILITIES_REQUEST), false);
         // print(dom);
 
@@ -149,55 +139,49 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
         // check we have the extent
         assertXpathEvaluatesTo(CUSTOM_DIMENSION_NAME, "//Layer/Extent/@name", dom);
         assertXpathEvaluatesTo("CustomDimValueA", "//Layer/Extent/@default", dom);
-        assertXpathEvaluatesTo(
-                "CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
+        assertXpathEvaluatesTo("CustomDimValueA,CustomDimValueB,CustomDimValueC", "//Layer/Extent", dom);
     }
 
     @Test
     public void testGetMap() throws Exception {
         ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
 
-        setupRasterDimension(
-                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
         setExceptionsOnInvalidDimension(false);
 
         // check that we get no data when requesting an incorrect value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&VALIDATESCHEMA=true"
-                                + "&DIM_"
-                                + CUSTOM_DIMENSION_NAME
-                                + "=bad_dimension_value");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&VALIDATESCHEMA=true"
+                + "&DIM_"
+                + CUSTOM_DIMENSION_NAME
+                + "=bad_dimension_value");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertTrue(isEmpty(image));
 
         // check that we get data when requesting a correct value for custom dimension
-        response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles=raster"
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/tiff"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&VALIDATESCHEMA=true"
-                                + "&DIM_"
-                                + CUSTOM_DIMENSION_NAME
-                                + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
+        response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles=raster"
+                + "&layers="
+                + LAYERS
+                + "&Format=image/tiff"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&VALIDATESCHEMA=true"
+                + "&DIM_"
+                + CUSTOM_DIMENSION_NAME
+                + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
         image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
         assertTrue("sample model bands", 3 <= image.getSampleModel().getNumBands());
@@ -213,60 +197,53 @@ public class CustomDimensionsTest extends WMSDimensionsTestSupport {
             ImageIOExt.allowNativeCodec("tif", ImageReaderSpi.class, false);
 
             // check that we get data when requesting a correct value for custom dimension
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wms?bbox="
-                                    + BBOX
-                                    + "&styles=raster"
-                                    + "&layers="
-                                    + LAYERS
-                                    + "&Format=image/tiff"
-                                    + "&request=GetMap"
-                                    + "&width=550"
-                                    + "&height=250"
-                                    + "&srs=EPSG:4326"
-                                    + "&VALIDATESCHEMA=true"
-                                    + "&DIM_"
-                                    + CUSTOM_DIMENSION_NAME
-                                    + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
+            MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                    + BBOX
+                    + "&styles=raster"
+                    + "&layers="
+                    + LAYERS
+                    + "&Format=image/tiff"
+                    + "&request=GetMap"
+                    + "&width=550"
+                    + "&height=250"
+                    + "&srs=EPSG:4326"
+                    + "&VALIDATESCHEMA=true"
+                    + "&DIM_"
+                    + CUSTOM_DIMENSION_NAME
+                    + "=CustomDimValueB,CustomDimValueC,CustomDimValueA");
             assertEquals("text/xml", getBaseMimeType(response.getContentType()));
             Document dom = dom(response, true);
             // print(dom);
-            String text =
-                    checkLegacyException(
-                            dom,
-                            org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE,
-                            "DIM_" + CUSTOM_DIMENSION_NAME);
+            String text = checkLegacyException(
+                    dom,
+                    org.geoserver.platform.ServiceException.INVALID_PARAMETER_VALUE,
+                    "DIM_" + CUSTOM_DIMENSION_NAME);
             assertThat(text, containsString("More than 2 dimension values"));
         } finally {
-            wms.setMaxRequestedDimensionValues(
-                    DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
+            wms.setMaxRequestedDimensionValues(DimensionInfo.DEFAULT_MAX_REQUESTED_DIMENSION_VALUES);
             gs.save(wms);
         }
     }
 
     @Test
     public void testGetMapCaseInsesitiveKey() throws Exception {
-        setupRasterDimension(
-                CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
+        setupRasterDimension(CUSTOM_DIMENSION_NAME, DimensionPresentation.LIST, "nano meters", "nm");
 
         // check that we get data when requesting a correct value for custom dimension
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox="
-                                + BBOX
-                                + "&styles="
-                                + "&layers="
-                                + LAYERS
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326"
-                                + "&VALIDATESCHEMA=true"
-                                + "&DIM_"
-                                + CUSTOM_DIMENSION_NAME.toLowerCase()
-                                + "=CustomDimValueB");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox="
+                + BBOX
+                + "&styles="
+                + "&layers="
+                + LAYERS
+                + "&Format=image/png"
+                + "&request=GetMap"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326"
+                + "&VALIDATESCHEMA=true"
+                + "&DIM_"
+                + CUSTOM_DIMENSION_NAME.toLowerCase()
+                + "=CustomDimValueB");
         BufferedImage image = ImageIO.read(getBinaryInputStream(response));
         assertFalse(isEmpty(image));
     }

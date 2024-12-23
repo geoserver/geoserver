@@ -24,47 +24,42 @@ import org.junit.Test;
 
 /** @author christian */
 public class FileTest {
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     int gaCounter = 0, ugCounter = 0;
 
-    GeoServerRoleService gaService =
-            new AbstractRoleService() {
+    GeoServerRoleService gaService = new AbstractRoleService() {
 
-                @Override
-                public String getName() {
-                    return "TestGAService";
-                }
+        @Override
+        public String getName() {
+            return "TestGAService";
+        }
 
-                @Override
-                protected void deserialize() throws IOException {
-                    gaCounter++;
-                }
+        @Override
+        protected void deserialize() throws IOException {
+            gaCounter++;
+        }
 
-                @Override
-                public void initializeFromConfig(SecurityNamedServiceConfig config)
-                        throws IOException {
-                    super.initializeFromConfig(config);
-                }
-            };
+        @Override
+        public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
+            super.initializeFromConfig(config);
+        }
+    };
 
-    GeoServerUserGroupService ugService =
-            new AbstractUserGroupService() {
+    GeoServerUserGroupService ugService = new AbstractUserGroupService() {
 
-                @Override
-                public String getName() {
-                    return "TestUGService";
-                }
+        @Override
+        public String getName() {
+            return "TestUGService";
+        }
 
-                @Override
-                protected void deserialize() throws IOException {
-                    ugCounter++;
-                }
+        @Override
+        protected void deserialize() throws IOException {
+            ugCounter++;
+        }
 
-                @Override
-                public void initializeFromConfig(SecurityNamedServiceConfig config)
-                        throws IOException {}
-            };
+        @Override
+        public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {}
+    };
 
     @Test
     public void testFileWatcher() throws Exception {
@@ -80,8 +75,7 @@ public class FileTest {
 
             gaWatcher.start();
 
-            UserGroupFileWatcher ugWatcher =
-                    new UserGroupFileWatcher(Files.asResource(ugFile), ugService);
+            UserGroupFileWatcher ugWatcher = new UserGroupFileWatcher(Files.asResource(ugFile), ugService);
             assertEquals(1, ugCounter);
             ugWatcher.start();
 

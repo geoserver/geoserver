@@ -49,9 +49,7 @@ public class GeoServerTablePanelTest {
                 tester.getComponentFromLastRenderedPage(firstLabelPath).getDefaultModelObject());
 
         // check we actually rendered 10 rows
-        DataView dv =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
         assertEquals(DEFAULT_ITEMS_PER_PAGE, dv.size());
     }
 
@@ -122,9 +120,7 @@ public class GeoServerTablePanelTest {
         // verify the initial state
         tester.assertComponent("form:panel", IntegerTable.class);
 
-        DataView dv =
-                (DataView)
-                        tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("form:panel:listContainer:items");
         assertEquals(25, dv.size());
 
         String filterLabelPath = "form:panel:filterForm:navigatorTop:filterMatch";
@@ -161,8 +157,7 @@ public class GeoServerTablePanelTest {
         }
 
         @Override
-        protected Component getComponentForProperty(
-                String id, IModel<Integer> itemModel, Property<Integer> property) {
+        protected Component getComponentForProperty(String id, IModel<Integer> itemModel, Property<Integer> property) {
             if (property == IntegerProvider.IDX) {
                 return new Label(id, itemModel);
             }
@@ -187,38 +182,37 @@ public class GeoServerTablePanelTest {
 
     static class IntegerProvider extends GeoServerDataProvider<Integer> {
 
-        static final Property<Integer> IDX =
-                new Property<>() {
-                    @Override
-                    public String getName() {
-                        return "idx";
-                    }
+        static final Property<Integer> IDX = new Property<>() {
+            @Override
+            public String getName() {
+                return "idx";
+            }
 
-                    @Override
-                    public Object getPropertyValue(Integer item) {
-                        return item;
-                    }
+            @Override
+            public Object getPropertyValue(Integer item) {
+                return item;
+            }
 
-                    @Override
-                    public IModel<?> getModel(IModel<Integer> itemModel) {
-                        return null;
-                    }
+            @Override
+            public IModel<?> getModel(IModel<Integer> itemModel) {
+                return null;
+            }
 
-                    @Override
-                    public Comparator<Integer> getComparator() {
-                        return null;
-                    }
+            @Override
+            public Comparator<Integer> getComparator() {
+                return null;
+            }
 
-                    @Override
-                    public boolean isVisible() {
-                        return true;
-                    }
+            @Override
+            public boolean isVisible() {
+                return true;
+            }
 
-                    @Override
-                    public boolean isSearchable() {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean isSearchable() {
+                return true;
+            }
+        };
 
         @Override
         protected List<Integer> getItems() {
@@ -230,8 +224,7 @@ public class GeoServerTablePanelTest {
         }
 
         @Override
-        protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<Integer>>
-                getProperties() {
+        protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<Integer>> getProperties() {
             return Collections.singletonList(IDX);
         }
     }

@@ -41,8 +41,7 @@ public class SymbolSchemaTest extends JsonSchemaTest {
         int[] outlineColor = {152, 230, 0, 255};
         Outline outline = new Outline(outlineColor, 1);
         SimpleMarkerSymbol sms =
-                new SimpleMarkerSymbol(
-                        SimpleMarkerSymbolEnum.esriSMSSquare, color, 8, 0, 0, 0, outline);
+                new SimpleMarkerSymbol(SimpleMarkerSymbolEnum.esriSMSSquare, color, 8, 0, 0, 0, outline);
         String json = getJson(sms);
         assertTrue(validateJSON(json, "gsr/1.0/sms.json"));
     }
@@ -67,47 +66,36 @@ public class SymbolSchemaTest extends JsonSchemaTest {
 
     @Test
     public void testPictureMarkerSymbolJsonSchema() throws Exception {
-        File img =
-                new File(
-                        System.getProperty("user.dir")
-                                + "/src/test/resources/images/hospital10.png");
+        File img = new File(System.getProperty("user.dir") + "/src/test/resources/images/hospital10.png");
         BufferedImage bufferedImage = ImageIO.read(img);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", outputStream);
         byte[] rawData = outputStream.toByteArray();
         int[] color = {255, 255, 255, 0};
-        BufferedInputStream bis =
-                new BufferedInputStream(new FileInputStream(img.getAbsolutePath()));
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(img.getAbsolutePath()));
         String mimeType = URLConnection.guessContentTypeFromStream(bis);
         URL url = img.toURI().toURL();
         PictureMarkerSymbol pms =
-                new PictureMarkerSymbol(
-                        rawData, url.toString(), mimeType, color, 19.5, 19.5, 0, 0, 0);
+                new PictureMarkerSymbol(rawData, url.toString(), mimeType, color, 19.5, 19.5, 0, 0, 0);
         String json = getJson(pms);
         assertTrue(validateJSON(json, "gsr/1.0/pms.json"));
     }
 
     @Test
     public void testPictureFillSymbolJsonSchema() throws Exception {
-        File img =
-                new File(
-                        System.getProperty("user.dir")
-                                + "/src/test/resources/images/hospital10.png");
+        File img = new File(System.getProperty("user.dir") + "/src/test/resources/images/hospital10.png");
         BufferedImage bufferedImage = ImageIO.read(img);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, "png", outputStream);
         byte[] rawData = outputStream.toByteArray();
         int[] color = {255, 255, 255, 0};
-        BufferedInputStream bis =
-                new BufferedInputStream(new FileInputStream(img.getAbsolutePath()));
+        BufferedInputStream bis = new BufferedInputStream(new FileInputStream(img.getAbsolutePath()));
         String mimeType = URLConnection.guessContentTypeFromStream(bis);
         URL url = img.toURI().toURL();
         int[] outlineColor = {110, 110, 110, 255};
-        SimpleLineSymbol outline =
-                new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, outlineColor, 1);
+        SimpleLineSymbol outline = new SimpleLineSymbol(SimpleLineSymbolEnum.SOLID, outlineColor, 1);
         PictureFillSymbol pfs =
-                new PictureFillSymbol(
-                        rawData, url.toString(), mimeType, color, 63, 63, 0, 0, 0, outline, 1, 1);
+                new PictureFillSymbol(rawData, url.toString(), mimeType, color, 63, 63, 0, 0, 0, outline, 1, 1);
         String json = getJson(pfs);
         assertTrue(validateJSON(json, "gsr/1.0/pfs.json"));
     }
@@ -117,25 +105,18 @@ public class SymbolSchemaTest extends JsonSchemaTest {
         int[] color = {78, 78, 78, 255};
         int[] backgroundColor = null;
         int[] borderLineColor = null;
-        Font font =
-                new Font(
-                        "Arial",
-                        12,
-                        FontStyleEnum.NORMAL,
-                        FontWeightEnum.BOLD,
-                        FontDecorationEnum.NONE);
-        TextSymbol textSymbol =
-                new TextSymbol(
-                        0,
-                        0,
-                        0,
-                        color,
-                        backgroundColor,
-                        borderLineColor,
-                        VerticalAlignmentEnum.BOTTOM,
-                        HorizontalAlignmentEnum.LEFT,
-                        false,
-                        font);
+        Font font = new Font("Arial", 12, FontStyleEnum.NORMAL, FontWeightEnum.BOLD, FontDecorationEnum.NONE);
+        TextSymbol textSymbol = new TextSymbol(
+                0,
+                0,
+                0,
+                color,
+                backgroundColor,
+                borderLineColor,
+                VerticalAlignmentEnum.BOTTOM,
+                HorizontalAlignmentEnum.LEFT,
+                false,
+                font);
         String json = getJson(textSymbol);
         assertTrue(validateJSON(json, "gsr/1.0/ts.json"));
     }

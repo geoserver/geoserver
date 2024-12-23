@@ -65,25 +65,21 @@ public class JMSSettingsHandler extends JMSConfigurationHandler<JMSSettingsModif
         // let's extract some useful information from the event
         WorkspaceInfo workspace = event.getSource().getWorkspace();
         // settings are global or specific to a certain workspace
-        SettingsInfo settingsInfo =
-                workspace == null ? geoServer.getSettings() : geoServer.getSettings(workspace);
+        SettingsInfo settingsInfo = workspace == null ? geoServer.getSettings() : geoServer.getSettings(workspace);
         // if not settings were found this means that a user just deleted this workspace
         // or deleted this workspace settings on this GeoServer instance or that a previously
         // synchronization problem happened
         if (settingsInfo == null) {
             throw new IllegalArgumentException(
-                    String.format(
-                            "No settings for workspace '%s' found on this instance.",
-                            workspace.getName()));
+                    String.format("No settings for workspace '%s' found on this instance.", workspace.getName()));
         }
         // well let's update our settings updating only the modified properties
         try {
             BeanUtils.smartUpdate(settingsInfo, event.getPropertyNames(), event.getNewValues());
         } catch (Exception exception) {
-            String message =
-                    workspace == null
-                            ? "Error updating GeoServer global settings."
-                            : "Error updating workspace '%s' settings.";
+            String message = workspace == null
+                    ? "Error updating GeoServer global settings."
+                    : "Error updating workspace '%s' settings.";
             throw new RuntimeException(String.format(message, workspace), exception);
         }
         // save the updated settings

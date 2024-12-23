@@ -9,11 +9,10 @@ import org.geoserver.taskmanager.data.LatestBatchRun;
 import org.hibernate.annotations.Subselect;
 
 @Entity
-@Subselect(
-        "select max(lbr_batchrun.id) as batchRun, lbr_batchrun.batch as batch"
-                + " from RunImpl lbr_run"
-                + " inner join BatchRunImpl lbr_batchrun on(lbr_run.batchRun = lbr_batchrun.id)"
-                + " group by lbr_batchrun.batch")
+@Subselect("select max(lbr_batchrun.id) as batchRun, lbr_batchrun.batch as batch"
+        + " from RunImpl lbr_run"
+        + " inner join BatchRunImpl lbr_batchrun on(lbr_run.batchRun = lbr_batchrun.id)"
+        + " group by lbr_batchrun.batch")
 public class LatestBatchRunImpl implements LatestBatchRun {
 
     @Id

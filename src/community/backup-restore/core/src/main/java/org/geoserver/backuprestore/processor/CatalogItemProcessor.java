@@ -77,11 +77,9 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             OwsUtils.resolveCollections(item);
         }
 
-        LOGGER.info(
-                () ->
-                        String.format(
-                                "Processing resource: %s - Progress: [%s]",
-                                item, getCurrentJobExecution().getProgress()));
+        LOGGER.info(() -> String.format(
+                "Processing resource: %s - Progress: [%s]",
+                item, getCurrentJobExecution().getProgress()));
 
         if (item instanceof WorkspaceInfo) return process((WorkspaceInfo) item);
         if (item instanceof CoverageStoreInfo) return process((CoverageStoreInfo) item);
@@ -281,11 +279,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 }
             }
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + layer
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + layer
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             logValidationExceptions(result, e);
             return null;
         }
@@ -308,8 +305,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 storeClz = CoverageStoreInfo.class;
             }
 
-            ResourceInfo source =
-                    backupFacade.getCatalog().getResourceByName(resource.getName(), clz);
+            ResourceInfo source = backupFacade.getCatalog().getResourceByName(resource.getName(), clz);
             if (source != null && source.getStore() != null) {
                 StoreInfo store = catalog.getStoreByName(source.getStore().getName(), storeClz);
                 if (store == null) {
@@ -340,8 +336,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
 
         if (ws == null && filterIsValid()) {
             Catalog catalog = getCatalog();
-            CoverageStoreInfo source =
-                    backupFacade.getCatalog().getCoverageStoreByName(store.getName());
+            CoverageStoreInfo source = backupFacade.getCatalog().getCoverageStoreByName(store.getName());
             if (source != null && source.getWorkspace() != null) {
                 ws = catalog.getWorkspaceByName(source.getWorkspace().getName());
                 if (ws == null) {
@@ -386,8 +381,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     /**
-     * Being sure the associated {@link NamespaceInfo} exists and is available on the GeoServer
-     * Catalog.
+     * Being sure the associated {@link NamespaceInfo} exists and is available on the GeoServer Catalog.
      *
      * @param {@link WorkspaceInfo} resource
      * @return boolean indicating whether the resource is valid or not.
@@ -406,11 +400,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 logValidationResult(result, resource);
             }
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + resource
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             logValidationExceptions(result, e);
             return false;
         }
@@ -419,11 +412,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     /**
-     * Being sure the associated {@link WorkspaceInfo} exists and is available on the GeoServer
-     * Catalog.
+     * Being sure the associated {@link WorkspaceInfo} exists and is available on the GeoServer Catalog.
      *
-     * <p>Also if a default {@link DataStoreInfo} has not been defined for the current {@link
-     * WorkspaceInfo}, set this one as default.
+     * <p>Also if a default {@link DataStoreInfo} has not been defined for the current {@link WorkspaceInfo}, set this
+     * one as default.
      *
      * @param {@link DataStoreInfo} resource
      * @return boolean indicating whether the resource is valid or not.
@@ -443,11 +435,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 logValidationResult(result, resource);
             }
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + resource
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             logValidationExceptions(result, e);
             return false;
         }
@@ -472,11 +463,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 logValidationResult(result, resource);
             }
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + resource
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             logValidationExceptions(result, e);
             return false;
         }
@@ -487,14 +477,12 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
     }
 
     /**
-     * Being sure the associated {@link WorkspaceInfo} exists and is available on the GeoServer
-     * Catalog.
+     * Being sure the associated {@link WorkspaceInfo} exists and is available on the GeoServer Catalog.
      *
      * @param {@link CoverageStoreInfo} resource
      * @return boolean indicating whether the resource is valid or not.
      */
-    private boolean validateCoverageStore(CoverageStoreInfo resource, boolean isNew)
-            throws Exception {
+    private boolean validateCoverageStore(CoverageStoreInfo resource, boolean isNew) throws Exception {
         final WorkspaceInfo ws =
                 this.getCatalog().getWorkspaceByName(resource.getWorkspace().getName());
         if (ws == null) {
@@ -509,11 +497,10 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 logValidationResult(result, resource);
             }
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + resource
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             return logValidationExceptions(result, e);
         }
 
@@ -538,10 +525,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return logValidationExceptions((T) resource, null);
             }
 
-            final Class storeClazz =
-                    (store instanceof DataStoreInfo
-                            ? DataStoreInfo.class
-                            : CoverageStoreInfo.class);
+            final Class storeClazz = (store instanceof DataStoreInfo ? DataStoreInfo.class : CoverageStoreInfo.class);
             final StoreInfo ds = this.getCatalog().getStoreByName(store.getName(), storeClazz);
 
             if (ds != null) {
@@ -550,38 +534,32 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
                 return logValidationExceptions((T) resource, null);
             }
 
-            ResourceInfo existing =
-                    getCatalog().getResourceByStore(store, resource.getName(), ResourceInfo.class);
+            ResourceInfo existing = getCatalog().getResourceByStore(store, resource.getName(), ResourceInfo.class);
             if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg =
-                        "Resource named '"
-                                + resource.getName()
-                                + "' already exists in store: '"
-                                + store.getName()
-                                + "'";
+                final String msg = "Resource named '"
+                        + resource.getName()
+                        + "' already exists in store: '"
+                        + store.getName()
+                        + "'";
                 return logValidationExceptions((T) resource, new RuntimeException(msg));
             }
 
-            existing =
-                    getCatalog()
-                            .getResourceByName(namespace, resource.getName(), ResourceInfo.class);
+            existing = getCatalog().getResourceByName(namespace, resource.getName(), ResourceInfo.class);
             if (existing != null && !existing.getId().equals(resource.getId())) {
-                final String msg =
-                        "Resource named '"
-                                + resource.getName()
-                                + "' already exists in namespace: '"
-                                + namespace.getPrefix()
-                                + "'";
+                final String msg = "Resource named '"
+                        + resource.getName()
+                        + "' already exists in namespace: '"
+                        + namespace.getPrefix()
+                        + "'";
                 return logValidationExceptions((T) resource, new RuntimeException(msg));
             }
 
             return true;
         } catch (Exception e) {
-            LOGGER.warning(
-                    "Could not validate the resource "
-                            + resource
-                            + " due to the following issue: "
-                            + e.getLocalizedMessage());
+            LOGGER.warning("Could not validate the resource "
+                    + resource
+                    + " due to the following issue: "
+                    + e.getLocalizedMessage());
             return logValidationExceptions((T) resource, e);
         }
     }
@@ -614,10 +592,7 @@ public class CatalogItemProcessor<T> extends BackupRestoreItem<T> implements Ite
             return;
         }
         for (RuntimeException ex : result.getErrors()) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Exception during validation for resource info: " + resourceInfo,
-                    ex);
+            LOGGER.log(Level.SEVERE, "Exception during validation for resource info: " + resourceInfo, ex);
         }
     }
 }

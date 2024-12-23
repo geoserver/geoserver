@@ -22,8 +22,7 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.security.AccessMode;
 import org.geoserver.security.CatalogMode;
 
-public class DataAccesRuleDAOConcurrencyTest
-        extends AbstractAccesRuleDAOConcurrencyTest<DataAccessRuleDAO> {
+public class DataAccesRuleDAOConcurrencyTest extends AbstractAccesRuleDAOConcurrencyTest<DataAccessRuleDAO> {
 
     @Override
     protected DataAccessRuleDAO buildDAO() throws Exception {
@@ -55,8 +54,7 @@ public class DataAccesRuleDAOConcurrencyTest
         // read access, loads all (the concurrent modification exception normally happens here)
         dao.getRules();
         // add rule
-        DataAccessRule rule =
-                new DataAccessRule(ws, layer, AccessMode.READ, "R_READ", "R_WRITE", customRole);
+        DataAccessRule rule = new DataAccessRule(ws, layer, AccessMode.READ, "R_READ", "R_WRITE", customRole);
 
         // simulate REST/GUI locks, writes cannot happen concurrently
         synchronized (dao) {

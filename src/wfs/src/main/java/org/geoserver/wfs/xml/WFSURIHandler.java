@@ -41,10 +41,7 @@ import org.geoserver.wfs.xml.v1_1_0.XmlSchemaEncoder;
 import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Parser;
 
-/**
- * URI handler that handles reflective references back to the server to avoid processing them in a
- * separate request.
- */
+/** URI handler that handles reflective references back to the server to avoid processing them in a separate request. */
 public class WFSURIHandler extends URIHandlerImpl {
 
     static final Logger LOGGER = Logging.getLogger(WFSURIHandler.class);
@@ -93,8 +90,7 @@ public class WFSURIHandler extends URIHandlerImpl {
     private static void initLog() {
         // Log hostnames being treated as reflexive
         if (LOGGER.isLoggable(Level.INFO)) {
-            StringBuilder builder =
-                    new StringBuilder("Identified addresses and hostnames for local interfaces: ");
+            StringBuilder builder = new StringBuilder("Identified addresses and hostnames for local interfaces: ");
             boolean first = true;
             for (InetAddress add : ADDRESSES) {
                 if (!first) {
@@ -119,9 +115,7 @@ public class WFSURIHandler extends URIHandlerImpl {
     private static void initAliases() {
         assert ADDITIONAL_HOSTNAMES.isEmpty();
         // User configurable hostnames
-        String additional =
-                GeoServerExtensions.getProperty(
-                        WFSURIHandler.class.getName() + ".additionalHostnames");
+        String additional = GeoServerExtensions.getProperty(WFSURIHandler.class.getName() + ".additionalHostnames");
         if (additional == null) {
             additional = "localhost";
         }
@@ -196,20 +190,15 @@ public class WFSURIHandler extends URIHandlerImpl {
             }
         }
         if (ADDITIONAL_HOSTNAMES.contains(uri.host())) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Hostname {0} is in known aliases for self",
-                    new Object[] {uri.host()});
+            LOGGER.log(Level.FINE, "Hostname {0} is in known aliases for self", new Object[] {uri.host()});
             return true;
         }
         // check the network interfaces to see if the host matches
         for (InetAddress add : ADDRESSES) {
-            if (uri.host().equals(add.getHostAddress())
-                    || uri.host().equalsIgnoreCase(add.getHostName())) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Hostname {0} identifies local network interface {1} {2}",
-                        new Object[] {uri.host(), add.getHostAddress(), add.getHostName()});
+            if (uri.host().equals(add.getHostAddress()) || uri.host().equalsIgnoreCase(add.getHostName())) {
+                LOGGER.log(Level.FINE, "Hostname {0} identifies local network interface {1} {2}", new Object[] {
+                    uri.host(), add.getHostAddress(), add.getHostName()
+                });
                 return true;
             }
         }
@@ -238,9 +227,7 @@ public class WFSURIHandler extends URIHandlerImpl {
                     dftReqReader = new DescribeFeatureTypeKvpRequestReader(catalog);
                     break;
                 default:
-                    dftReqReader =
-                            new org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader(
-                                    catalog);
+                    dftReqReader = new org.geoserver.wfs.kvp.v2_0.DescribeFeatureTypeKvpRequestReader(catalog);
             }
 
             // parse the key value pairs
@@ -249,8 +236,7 @@ public class WFSURIHandler extends URIHandlerImpl {
 
             // create/read the request object
             DescribeFeatureTypeRequest request =
-                    DescribeFeatureTypeRequest.adapt(
-                            dftReqReader.read(dftReqReader.createRequest(), parsed, kv));
+                    DescribeFeatureTypeRequest.adapt(dftReqReader.read(dftReqReader.createRequest(), parsed, kv));
 
             // set the base url
             // TODO: should this be run through the url mangler? not sure since the uri should
@@ -258,8 +244,7 @@ public class WFSURIHandler extends URIHandlerImpl {
             request.setBaseUrl(uri.scheme() + "://" + uri.host() + ":" + uri.port() + uri.path());
 
             // dispatch the dft operation
-            DescribeFeatureType dft =
-                    new DescribeFeatureType(geoServer.getService(WFSInfo.class), catalog);
+            DescribeFeatureType dft = new DescribeFeatureType(geoServer.getService(WFSInfo.class), catalog);
             FeatureTypeInfo[] featureTypes = dft.run(request);
 
             // generate the response
@@ -278,11 +263,9 @@ public class WFSURIHandler extends URIHandlerImpl {
 
             // build a "dummy" operation descriptor and call the encoder
             Operation op =
-                    new Operation(
-                            "DescribeFeatureType",
-                            new Service("WFS", null, null, null),
-                            null,
-                            new Object[] {request.getAdaptee()});
+                    new Operation("DescribeFeatureType", new Service("WFS", null, null, null), null, new Object[] {
+                        request.getAdaptee()
+                    });
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             schemaEncoder.write(featureTypes, bout, op);
 

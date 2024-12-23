@@ -16,7 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class S3FileServiceRegistryTest extends AbstractTaskManagerTest {
 
-    @Autowired public LookupService<FileService> fileServiceRegistry;
+    @Autowired
+    public LookupService<FileService> fileServiceRegistry;
 
     @Test
     public void testFileRegistry() {

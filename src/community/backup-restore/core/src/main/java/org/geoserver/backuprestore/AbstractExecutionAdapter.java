@@ -20,11 +20,11 @@ import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.StepExecution;
 
 /**
- * Base Class for {@link JobExecution} wrappers. Those will be used to share objects, I/O parameters
- * and GeoServer B/R specific variables and the batch contexts.
+ * Base Class for {@link JobExecution} wrappers. Those will be used to share objects, I/O parameters and GeoServer B/R
+ * specific variables and the batch contexts.
  *
- * <p>{@link ConcurrentHashMap}s are populated from the {@link Backup} facade in order to allow
- * external classes to follow jobs executions and retrieve configuration, parameters and statuses.
+ * <p>{@link ConcurrentHashMap}s are populated from the {@link Backup} facade in order to allow external classes to
+ * follow jobs executions and retrieve configuration, parameters and statuses.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -133,8 +133,8 @@ public abstract class AbstractExecutionAdapter {
     }
 
     /**
-     * Test if this {@link JobExecution} indicates that it is running. It should be noted that this
-     * does not necessarily mean that it has been persisted as such yet.
+     * Test if this {@link JobExecution} indicates that it is running. It should be noted that this does not necessarily
+     * mean that it has been persisted as such yet.
      *
      * @return true if the end time is null
      */
@@ -154,8 +154,7 @@ public abstract class AbstractExecutionAdapter {
     /**
      * Return all failure causing exceptions for this JobExecution, including step executions.
      *
-     * @return List&lt;Throwable&gt; containing all exceptions causing failure for this
-     *     JobExecution.
+     * @return List&lt;Throwable&gt; containing all exceptions causing failure for this JobExecution.
      */
     public List<Throwable> getAllFailureExceptions() {
         return delegate.getAllFailureExceptions();

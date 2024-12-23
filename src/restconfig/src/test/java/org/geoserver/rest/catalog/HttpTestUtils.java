@@ -58,8 +58,7 @@ public class HttpTestUtils {
         };
     }
 
-    public static Matcher<HttpServletResponse> hasHeader(
-            String name, Matcher<String> valueMatcher) {
+    public static Matcher<HttpServletResponse> hasHeader(String name, Matcher<String> valueMatcher) {
         return new BaseMatcher<>() {
 
             @Override
@@ -98,8 +97,7 @@ public class HttpTestUtils {
         };
     }
 
-    public static InputStream istream(MockHttpServletResponse response)
-            throws UnsupportedEncodingException {
+    public static InputStream istream(MockHttpServletResponse response) throws UnsupportedEncodingException {
         return new ByteArrayInputStream(response.getContentAsString().getBytes());
     }
 }

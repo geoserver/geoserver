@@ -76,8 +76,7 @@ public class MonitorServletRequestTest {
     @Test
     public void testInputStreamMaxSizeZero() throws Exception {
         byte[] data = data();
-        DelegatingServletInputStream mock =
-                new DelegatingServletInputStream(new ByteArrayInputStream(data));
+        DelegatingServletInputStream mock = new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
         try (MonitorInputStream in = new MonitorInputStream(mock, 0)) {
             byte[] read = read(in);
@@ -95,8 +94,7 @@ public class MonitorServletRequestTest {
     @Test
     public void testInputStream() throws Exception {
         byte[] data = data();
-        DelegatingServletInputStream mock =
-                new DelegatingServletInputStream(new ByteArrayInputStream(data));
+        DelegatingServletInputStream mock = new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
         try (MonitorInputStream in = new MonitorInputStream(mock, 1024)) {
             byte[] read = read(in);
@@ -158,8 +156,7 @@ public class MonitorServletRequestTest {
     @Test
     public void testNPEIsNotThrownWithBufferSizeUnbounded() throws Exception {
         byte[] data = data();
-        DelegatingServletInputStream mock =
-                new DelegatingServletInputStream(new ByteArrayInputStream(data));
+        DelegatingServletInputStream mock = new DelegatingServletInputStream(new ByteArrayInputStream(data));
 
         try (MonitorInputStream in = new MonitorInputStream(mock, -1)) {
             byte[] read = read(in);

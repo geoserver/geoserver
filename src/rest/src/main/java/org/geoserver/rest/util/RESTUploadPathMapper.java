@@ -11,22 +11,17 @@ import java.util.Map;
 /** Plugin interface used to transform the position of files during rest uploads */
 public interface RESTUploadPathMapper {
     /**
-     * Remaps the position of a store path. The implementor is free to append, modify or replace the
-     * store root directory, REST upload will append workspace/store to it
+     * Remaps the position of a store path. The implementor is free to append, modify or replace the store root
+     * directory, REST upload will append workspace/store to it
      */
-    void mapStorePath(
-            StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
+    void mapStorePath(StringBuilder rootDir, String workspace, String store, Map<String, String> storeParams)
             throws IOException;
 
     /**
-     * Remaps the position of a file inside a store (e.g., a image being harvested into a mosaic.
-     * The implementor is free to alter the item path.
+     * Remaps the position of a file inside a store (e.g., a image being harvested into a mosaic. The implementor is
+     * free to alter the item path.
      */
     void mapItemPath(
-            String workspace,
-            String store,
-            Map<String, String> storeParams,
-            StringBuilder itemPath,
-            String itemName)
+            String workspace, String store, Map<String, String> storeParams, StringBuilder itemPath, String itemName)
             throws IOException;
 }

@@ -19,8 +19,7 @@ public class TemplateRuleServiceTest extends GeoServerSystemTestSupport {
     @Test
     public void testMultipleSave() {
         Catalog catalog = getCatalog();
-        FeatureTypeInfo typeInfo =
-                catalog.getFeatureTypeByName(MockData.CDF_PREFIX, MockData.FIFTEEN.getLocalPart());
+        FeatureTypeInfo typeInfo = catalog.getFeatureTypeByName(MockData.CDF_PREFIX, MockData.FIFTEEN.getLocalPart());
         TemplateRuleService ruleService = new TemplateRuleService(typeInfo);
         TemplateRule rule = new TemplateRule();
         rule.setOutputFormat(SupportedFormat.HTML);
@@ -32,8 +31,7 @@ public class TemplateRuleServiceTest extends GeoServerSystemTestSupport {
         ruleService.saveRule(rule2);
         Set<TemplateRule> rules = ruleService.getRules();
         assertEquals(2, rules.size());
-        assertTrue(
-                rules.stream().anyMatch(r -> r.getOutputFormat().equals(SupportedFormat.GEOJSON)));
+        assertTrue(rules.stream().anyMatch(r -> r.getOutputFormat().equals(SupportedFormat.GEOJSON)));
         assertTrue(rules.stream().anyMatch(r -> r.getOutputFormat().equals(SupportedFormat.HTML)));
     }
 }

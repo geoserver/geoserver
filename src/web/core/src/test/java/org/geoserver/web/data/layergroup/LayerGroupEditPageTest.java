@@ -52,8 +52,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
     @Test
     public void testComputeBounds() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         // print(page, true, false);
 
@@ -79,8 +78,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
     @Test
     public void testComputeBoundsFromCRS() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "lakes"));
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
@@ -88,18 +86,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         form.setValue("tabs:panel:bounds:crsContainer:crs:srs", "EPSG:4326");
         tester.clickLink("publishedinfo:tabs:panel:generateBoundsFromCRS", true);
         tester.assertComponentOnAjaxResponse("publishedinfo:tabs:panel:bounds");
-        Component ajaxComponent =
-                tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:bounds");
+        Component ajaxComponent = tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:bounds");
         assert (ajaxComponent instanceof EnvelopePanel);
         EnvelopePanel envPanel = (EnvelopePanel) ajaxComponent;
-        assertEquals(
-                ((DecimalTextField) envPanel.get("minX")).getModelObject(), Double.valueOf(-180.0));
-        assertEquals(
-                ((DecimalTextField) envPanel.get("minY")).getModelObject(), Double.valueOf(-90.0));
-        assertEquals(
-                ((DecimalTextField) envPanel.get("maxX")).getModelObject(), Double.valueOf(180.0));
-        assertEquals(
-                ((DecimalTextField) envPanel.get("maxY")).getModelObject(), Double.valueOf(90.0));
+        assertEquals(((DecimalTextField) envPanel.get("minX")).getModelObject(), Double.valueOf(-180.0));
+        assertEquals(((DecimalTextField) envPanel.get("minY")).getModelObject(), Double.valueOf(-90.0));
+        assertEquals(((DecimalTextField) envPanel.get("maxX")).getModelObject(), Double.valueOf(180.0));
+        assertEquals(((DecimalTextField) envPanel.get("maxY")).getModelObject(), Double.valueOf(90.0));
     }
 
     @Before
@@ -119,8 +112,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // should not work, no name provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
-        tester.assertErrorMessages(
-                new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
+        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'Bounds' is required."});
     }
 
     @Test
@@ -138,9 +130,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         form.submit("save");
 
         // should not work, duplicate provided, so we remain
@@ -167,20 +157,17 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         form.submit("save");
 
         // should not work, duplicate provided, so we remain
         // in the same page
         tester.assertRenderedPage(LayerGroupEditPage.class);
         assertEquals(1, tester.getMessages(FeedbackMessage.ERROR).size());
-        assertTrue(
-                tester.getMessages(FeedbackMessage.ERROR)
-                        .get(0)
-                        .toString()
-                        .endsWith("Layer group named 'lakes' already exists"));
+        assertTrue(tester.getMessages(FeedbackMessage.ERROR)
+                .get(0)
+                .toString()
+                .endsWith("Layer group named 'lakes' already exists"));
     }
 
     @Test
@@ -214,9 +201,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>)
-                        page.lgEntryPanel.get(
-                                "popup:modal:overlay:dialog:content:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:overlay:dialog:content:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -242,9 +227,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                 DataView.class);
         // Get the DataView containing the Style Group List
         DataView<?> dataView =
-                (DataView<?>)
-                        page.lgEntryPanel.get(
-                                "popup:modal:overlay:dialog:content:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:overlay:dialog:content:content:listContainer:items");
         // Ensure that the Row count is equal to the style in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -256,9 +239,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
     @Test
     public void testLayerLinkWithWorkspace() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(
-                        new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        LayerGroupEditPage page = new LayerGroupEditPage(
+                new PageParameters().add("workspace", "cite").add("group", "bridges"));
         // Create the new page
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -271,18 +253,15 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>)
-                        page.lgEntryPanel.get(
-                                "popup:modal:overlay:dialog:content:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:overlay:dialog:content:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
         FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-        final Filter filter =
-                ff.equal(
-                        ff.property("resource.store.workspace.id"),
-                        ff.literal(catalog.getWorkspaceByName("cite").getId()),
-                        true);
+        final Filter filter = ff.equal(
+                ff.property("resource.store.workspace.id"),
+                ff.literal(catalog.getWorkspaceByName("cite").getId()),
+                true);
 
         int layerCount = catalog.count(LayerInfo.class, filter);
         int rowCount = (int) dataView.getRowCount();
@@ -292,9 +271,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
     @Test
     public void testLayerGroupLinkWithWorkspace() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(
-                        new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        LayerGroupEditPage page = new LayerGroupEditPage(
+                new PageParameters().add("workspace", "cite").add("group", "bridges"));
         // Create the new page
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -308,9 +286,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
                 DataView.class);
         // Get the DataView containing the Layer List
         DataView<?> dataView =
-                (DataView<?>)
-                        page.lgEntryPanel.get(
-                                "popup:modal:overlay:dialog:content:content:listContainer:items");
+                (DataView<?>) page.lgEntryPanel.get("popup:modal:overlay:dialog:content:content:listContainer:items");
         // Ensure that the Row count is equal to the Layers in the Catalog
         Catalog catalog = getGeoServerApplication().getCatalog();
 
@@ -361,9 +337,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // add layer group entries
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         // add layer group mandatory parameters
         FormTester form = tester.newFormTester("publishedinfo");
         form.setValue("tabs:panel:name", "keywords-layer-group");
@@ -393,23 +367,19 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         assertThat(keywords, notNullValue());
         assertThat(keywords.size(), is(2));
         // check that the first keyword is present
-        assertElementExist(
-                keywords,
-                (keyword) -> {
-                    assertThat(keyword, notNullValue());
-                    return Objects.equals(keyword.getValue(), "keyword1")
-                            && Objects.equals(keyword.getLanguage(), "en")
-                            && Objects.equals(keyword.getVocabulary(), "vocab1");
-                });
+        assertElementExist(keywords, (keyword) -> {
+            assertThat(keyword, notNullValue());
+            return Objects.equals(keyword.getValue(), "keyword1")
+                    && Objects.equals(keyword.getLanguage(), "en")
+                    && Objects.equals(keyword.getVocabulary(), "vocab1");
+        });
         // check that the second keyword is present
-        assertElementExist(
-                keywords,
-                (keyword) -> {
-                    assertThat(keyword, notNullValue());
-                    return Objects.equals(keyword.getValue(), "keyword2")
-                            && Objects.equals(keyword.getLanguage(), "pt")
-                            && Objects.equals(keyword.getVocabulary(), "vocab2");
-                });
+        assertElementExist(keywords, (keyword) -> {
+            assertThat(keyword, notNullValue());
+            return Objects.equals(keyword.getValue(), "keyword2")
+                    && Objects.equals(keyword.getLanguage(), "pt")
+                    && Objects.equals(keyword.getVocabulary(), "vocab2");
+        });
     }
 
     @Test
@@ -423,9 +393,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // add layer group entries
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         // add layer group mandatory parameters
         FormTester form = tester.newFormTester("publishedinfo");
         form.setValue("tabs:panel:name", "httpcaches-layer-group");
@@ -439,10 +407,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         form = tester.newFormTester("publishedinfo");
 
-        tester.assertComponent(
-                "publishedinfo:tabs:panel:theList:1:content:cacheAgeMax", TextField.class);
-        tester.assertComponent(
-                "publishedinfo:tabs:panel:theList:1:content:cachingEnabled", CheckBox.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cacheAgeMax", TextField.class);
+        tester.assertComponent("publishedinfo:tabs:panel:theList:1:content:cachingEnabled", CheckBox.class);
 
         form.setValue("tabs:panel:theList:1:content:cachingEnabled", "on");
         form.setValue("tabs:panel:theList:1:content:cacheAgeMax", "1234");
@@ -455,16 +421,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // get the create layer group from the catalog
         LayerGroupInfo layerGroup = getCatalog().getLayerGroupByName("httpcaches-layer-group");
         assertThat(layerGroup, notNullValue());
-        assertEquals(
-                Integer.valueOf(1234),
-                layerGroup.getMetadata().get(FeatureTypeInfo.CACHE_AGE_MAX, Integer.class));
+        assertEquals(Integer.valueOf(1234), layerGroup.getMetadata().get(FeatureTypeInfo.CACHE_AGE_MAX, Integer.class));
         assertTrue(layerGroup.getMetadata().get(FeatureTypeInfo.CACHING_ENABLED, Boolean.class));
     }
 
     @Test
     public void testStyleGroup() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(new PageParameters().add("group", "styleGroup"));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "styleGroup"));
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
 
@@ -493,15 +456,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         String groupName = "many-lakes";
         buildManyLakes(groupName);
 
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(new PageParameters().add("group", groupName));
+        LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", groupName));
         tester.startPage(page);
         // print(tester.getLastRenderedPage(), true, true, true);
 
         // check we have all the expected components showing up
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "publishedinfo:tabs:panel:layers:layers:listContainer:items:50");
+        Component component = tester.getComponentFromLastRenderedPage(
+                "publishedinfo:tabs:panel:layers:layers:listContainer:items:50");
         assertNotNull(component);
     }
 
@@ -520,9 +481,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
     @Test
     public void testApply() {
-        LayerGroupEditPage page =
-                new LayerGroupEditPage(
-                        new PageParameters().add("workspace", "cite").add("group", "bridges"));
+        LayerGroupEditPage page = new LayerGroupEditPage(
+                new PageParameters().add("workspace", "cite").add("group", "bridges"));
         // Create the new page
         tester.startPage(page);
         tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -553,36 +513,29 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // check that keywords editor panel was rendered
         tester.assertComponent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle",
-                InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle", InternationalStringPanel.class);
         tester.assertComponent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract",
-                InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract", InternationalStringPanel.class);
 
         // add layer group entries
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         // add layer group mandatory parameters
         FormTester form = tester.newFormTester("publishedinfo");
 
         // enable i18n for title
         form.setValue("tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         form.select(
                 "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew", "click");
         form.select(
                 "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:2:itemProperties:0:component:border:border_body:select",
                 20);
@@ -596,11 +549,9 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // enable i18n for abstract
         form.setValue("tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew", "click");
         form.select(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
@@ -632,53 +583,43 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         tester.assertRenderedPage(LayerGroupEditPage.class);
         // check that keywords editor panel was rendered
         tester.assertComponent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle",
-                InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle", InternationalStringPanel.class);
         tester.assertComponent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract",
-                InternationalStringPanel.class);
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract", InternationalStringPanel.class);
 
         // add layer group entries
         page.lgEntryPanel
                 .getEntries()
-                .add(
-                        new LayerGroupEntry(
-                                getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
+                .add(new LayerGroupEntry(getCatalog().getLayerByName(getLayerId(MockData.LAKES)), null));
         // add layer group mandatory parameters
         FormTester form = tester.newFormTester("publishedinfo");
 
         // enable i18n for title
         form.setValue("tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox",
-                "change");
+                "publishedinfo:tabs:panel:titleAndAbstract:titleLabel:titleLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         form.select(
                 "tabs:panel:titleAndAbstract:internationalTitle:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
 
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalTitle:container:addNew", "click");
 
         // enable i18n for abstract
         form.setValue("tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", true);
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox",
-                "change");
+                "publishedinfo:tabs:panel:titleAndAbstract:abstractLabel:abstractLabel_i18nCheckbox", "change");
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew", "click");
         form.select(
                 "tabs:panel:titleAndAbstract:internationalAbstract:container:tablePanel:listContainer:items:1:itemProperties:0:component:border:border_body:select",
                 10);
 
         tester.executeAjaxEvent(
-                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew",
-                "click");
+                "publishedinfo:tabs:panel:titleAndAbstract:internationalAbstract:container:addNew", "click");
 
         form = tester.newFormTester("publishedinfo");
 
@@ -717,9 +658,8 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         // test layerGroup Style UI.
         LayerGroupInfo groupInfo = null;
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(
-                            new PageParameters().add("workspace", "cite").add("group", "bridges"));
+            LayerGroupEditPage page = new LayerGroupEditPage(
+                    new PageParameters().add("workspace", "cite").add("group", "bridges"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -769,8 +709,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
 
         LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStyles");
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -849,8 +788,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         getCatalog().save(groupInfo);
 
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles-2"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "testLgStyles-2"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -875,10 +813,9 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
             // forces the model of the default style checkbox to be set to false
             // to avoid that the recreation of the FormTester loose the already set value.
             // this seems to happens in Linux and MacOs
-            CheckBox checkBox =
-                    (CheckBox)
-                            tester.getComponentFromLastRenderedPage(
-                                    "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:3:itemProperties:4:component:checkbox");
+            CheckBox checkBox = (CheckBox)
+                    tester.getComponentFromLastRenderedPage(
+                            "publishedinfo:tabs:panel:layerGroupStyles:listContainer:styleList:0:layerGroupStylePanel:layerGroupEntryPanel:layers:listContainer:items:3:itemProperties:4:component:checkbox");
             checkBox.setModelObject(false);
             ft = tester.newFormTester("publishedinfo");
             ft.submit("save");
@@ -914,8 +851,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         groupInfo.getLayerGroupStyles().add(groupStyle);
         getCatalog().save(groupInfo);
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
@@ -955,16 +891,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         buildLayerGroup("testLgStylesCopyDef", LayerGroupInfo.Mode.SINGLE);
         LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesCopyDef");
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(
-                            new PageParameters().add("group", "testLgStylesCopyDef"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "testLgStylesCopyDef"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
             FormTester ft = tester.newFormTester("publishedinfo");
             ft.select("tabs:panel:layerGroupStyles:availableStyles", 0);
-            tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
             tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
             ft = tester.newFormTester("publishedinfo");
             ft.setValue(
@@ -999,15 +932,13 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         groupInfo.getLayerGroupStyles().add(groupStyle);
         getCatalog().save(groupInfo);
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "nestedLayerGroup"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
             FormTester ft = tester.newFormTester("publishedinfo");
             ft.select("tabs:panel:layerGroupStyles:availableStyles", 1);
-            tester.executeAjaxEvent(
-                    "publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
+            tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:availableStyles", "change");
             tester.executeAjaxEvent("publishedinfo:tabs:panel:layerGroupStyles:copy", "click");
             ft = tester.newFormTester("publishedinfo");
             ft.setValue(
@@ -1038,15 +969,12 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         buildLayerGroup("testLgStylesNamed", LayerGroupInfo.Mode.NAMED);
         LayerGroupInfo groupInfo = getCatalog().getLayerGroupByName("testLgStylesNamed");
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(new PageParameters().add("group", groupInfo.getName()));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", groupInfo.getName()));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);
 
-            assertNull(
-                    tester.getComponentFromLastRenderedPage(
-                            "publishedinfo:tabs:panel:layerGroupStyles"));
+            assertNull(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:layerGroupStyles"));
 
             FormTester ft = tester.newFormTester("publishedinfo");
             // select mode single
@@ -1054,9 +982,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
             tester.executeAjaxEvent("publishedinfo:tabs:panel:mode", "change");
 
             // now visible
-            assertNotNull(
-                    tester.getComponentFromLastRenderedPage(
-                            "publishedinfo:tabs:panel:layerGroupStyles"));
+            assertNotNull(tester.getComponentFromLastRenderedPage("publishedinfo:tabs:panel:layerGroupStyles"));
 
         } finally {
             if (groupInfo != null) {
@@ -1094,9 +1020,7 @@ public class LayerGroupEditPageTest extends LayerGroupBaseTest {
         groupInfo.getLayerGroupStyles().add(groupStyle);
         getCatalog().save(groupInfo);
         try {
-            LayerGroupEditPage page =
-                    new LayerGroupEditPage(
-                            new PageParameters().add("group", "testLgStylesEditing"));
+            LayerGroupEditPage page = new LayerGroupEditPage(new PageParameters().add("group", "testLgStylesEditing"));
             // Create the new page
             tester.startPage(page);
             tester.assertRenderedPage(LayerGroupEditPage.class);

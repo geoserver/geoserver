@@ -11,8 +11,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 /** Configuration panel extension for {@link GeoServerOAuthAuthenticationFilter}. */
 public class OpenIdConnectAuthProviderPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                OpenIdConnectFilterConfig, OpenIdConnectAuthProviderPanel> {
+        extends AuthenticationFilterPanelInfo<OpenIdConnectFilterConfig, OpenIdConnectAuthProviderPanel> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = -3891569684560944819L;

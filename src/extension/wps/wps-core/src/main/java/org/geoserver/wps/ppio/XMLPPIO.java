@@ -34,8 +34,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
     }
 
     /** Constructor explicitly specifying mime type. */
-    protected XMLPPIO(
-            Class<?> externalType, Class<?> internalType, String mimeType, QName element) {
+    protected XMLPPIO(Class<?> externalType, Class<?> internalType, String mimeType, QName element) {
         super(externalType, internalType, mimeType);
         if (element == null) {
             throw new NullPointerException("element must not be null");
@@ -61,8 +60,7 @@ public abstract class XMLPPIO extends ComplexPPIO {
     public void encode(Object value, OutputStream os) throws Exception {
         // create the document serializer
         TransformerHandler serializer =
-                ((SAXTransformerFactory) SAXTransformerFactory.newInstance())
-                        .newTransformerHandler();
+                ((SAXTransformerFactory) SAXTransformerFactory.newInstance()).newTransformerHandler();
         serializer.setResult(new StreamResult(os));
 
         // cascade on the other encode method

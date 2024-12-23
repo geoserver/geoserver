@@ -28,8 +28,7 @@ public class XStreamXMLMessageConverter extends XStreamMessageConverter<Object> 
     @Override
     protected boolean supports(Class<?> clazz) {
         // we can only read RestWrapper, not RestListWrapper
-        return !RestWrapper.class.isAssignableFrom(clazz)
-                || !RestListWrapper.class.isAssignableFrom(clazz);
+        return !RestWrapper.class.isAssignableFrom(clazz) || !RestListWrapper.class.isAssignableFrom(clazz);
     }
 
     @Override

@@ -24,10 +24,7 @@ public class TextParamPanel<T> extends Panel implements ParamPanel<T> {
 
     private TextField<T> textField;
 
-    /**
-     * @param validators any extra validator that should be added to the input field, or {@code
-     *     null}
-     */
+    /** @param validators any extra validator that should be added to the input field, or {@code null} */
     @SafeVarargs
     public TextParamPanel(
             final String id,

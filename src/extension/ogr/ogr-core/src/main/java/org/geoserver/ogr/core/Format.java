@@ -10,8 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Parameters defining an output format generated using an external tool from either a GML or a
- * shapefile or a GeoTIFF dump.
+ * Parameters defining an output format generated using an external tool from either a GML or a shapefile or a GeoTIFF
+ * dump.
  *
  * @author Andrea Aime - OpenGeo
  * @author Stefano Costa - GeoSolutions
@@ -32,10 +32,7 @@ public class Format {
     /** The type of format, used to instantiate the correct converter */
     private OutputType type;
 
-    /**
-     * If the output is a single file that can be streamed back. In that case we also need to know
-     * the mime type
-     */
+    /** If the output is a single file that can be streamed back. In that case we also need to know the mime type */
     private boolean singleFile;
 
     /** The mime type of the single file output */
@@ -77,14 +74,7 @@ public class Format {
             boolean singleFile,
             String mimeType,
             String... options) {
-        this(
-                toolFormat,
-                formatName,
-                fileExtension,
-                singleFile,
-                mimeType,
-                OutputType.BINARY,
-                options);
+        this(toolFormat, formatName, fileExtension, singleFile, mimeType, OutputType.BINARY, options);
     }
 
     /** @return the toolFormat */

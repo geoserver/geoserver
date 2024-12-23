@@ -14,8 +14,7 @@ import org.locationtech.jts.geom.Geometry;
 /** Returns the minimum X value of the given geometry */
 public class MinXFunction extends FunctionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("minx", Double.class, parameter("geometry", Geometry.class));
+    public static FunctionName NAME = new FunctionNameImpl("minx", Double.class, parameter("geometry", Geometry.class));
 
     public MinXFunction() {
         this.functionName = NAME;

@@ -26,9 +26,7 @@ public class SecurityProcessFilter implements ProcessFilter, ExtensionPriority {
         if (manager == null) {
             manager = GeoServerExtensions.bean(ProcessAccessManager.class);
             if (manager == null) {
-                manager =
-                        new DefaultProcessAccessManager(
-                                GeoServerExtensions.bean(WpsAccessRuleDAO.class));
+                manager = new DefaultProcessAccessManager(GeoServerExtensions.bean(WpsAccessRuleDAO.class));
             }
         }
         return new SecurityProcessFactory(pf, this);

@@ -28,31 +28,29 @@ public abstract class LayerGroupListPanel extends GeoServerTablePanel<LayerGroup
     static Property<LayerGroupInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
     public LayerGroupListPanel(String id, WorkspaceInfo workspace) {
-        super(
-                id,
-                new GeoServerDataProvider<>() {
+        super(id, new GeoServerDataProvider<>() {
 
-                    private static final long serialVersionUID = 6471805356307807737L;
+            private static final long serialVersionUID = 6471805356307807737L;
 
-                    @Override
-                    protected List<LayerGroupInfo> getItems() {
-                        if (workspace == null) {
-                            return getCatalog().getLayerGroups();
-                        } else {
-                            return getCatalog().getLayerGroupsByWorkspace(workspace);
-                        }
-                    }
+            @Override
+            protected List<LayerGroupInfo> getItems() {
+                if (workspace == null) {
+                    return getCatalog().getLayerGroups();
+                } else {
+                    return getCatalog().getLayerGroupsByWorkspace(workspace);
+                }
+            }
 
-                    @Override
-                    protected List<Property<LayerGroupInfo>> getProperties() {
-                        return Arrays.asList(NAME, WORKSPACE);
-                    }
+            @Override
+            protected List<Property<LayerGroupInfo>> getProperties() {
+                return Arrays.asList(NAME, WORKSPACE);
+            }
 
-                    @Override
-                    public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
-                        return new LayerGroupDetachableModel(object);
-                    }
-                });
+            @Override
+            public IModel<LayerGroupInfo> newModel(LayerGroupInfo object) {
+                return new LayerGroupDetachableModel(object);
+            }
+        });
         getTopPager().setVisible(false);
     }
 

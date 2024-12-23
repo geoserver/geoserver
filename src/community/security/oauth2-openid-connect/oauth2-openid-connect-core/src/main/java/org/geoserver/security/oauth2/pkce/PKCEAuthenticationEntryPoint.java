@@ -42,9 +42,7 @@ public class PKCEAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
     public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException)
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
 
         final StringBuilder loginUri = config.buildAuthorizationUrl();
@@ -56,8 +54,7 @@ public class PKCEAuthenticationEntryPoint implements AuthenticationEntryPoint {
                     new Base64StringKeyGenerator(Base64.getUrlEncoder().withoutPadding(), 96);
             String codeVerifier = secureKeyGenerator.generateKey();
             HttpSession session = request.getSession();
-            if (config.isAllowUnSecureLogging())
-                LOGGER.fine("Generate code_verifier: " + codeVerifier);
+            if (config.isAllowUnSecureLogging()) LOGGER.fine("Generate code_verifier: " + codeVerifier);
             if (session != null) {
                 session.setAttribute(OIDC_CODE_VERIFIER, codeVerifier);
             }

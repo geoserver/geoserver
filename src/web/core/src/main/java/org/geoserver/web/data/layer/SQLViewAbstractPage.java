@@ -104,30 +104,25 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
     private boolean escapeSql = true;
 
-    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES =
-            Arrays.asList(
-                    Geometry.class,
-                    GeometryCollection.class,
-                    Point.class,
-                    MultiPoint.class,
-                    LineString.class,
-                    MultiLineString.class,
-                    Polygon.class,
-                    MultiPolygon.class);
+    private static final List<Class<? extends Geometry>> GEOMETRY_TYPES = Arrays.asList(
+            Geometry.class,
+            GeometryCollection.class,
+            Point.class,
+            MultiPoint.class,
+            LineString.class,
+            MultiLineString.class,
+            Polygon.class,
+            MultiPolygon.class);
 
     public SQLViewAbstractPage(PageParameters params) throws IOException {
-        this(
-                params.get(WORKSPACE).toOptionalString(),
-                params.get(DATASTORE).toString(),
-                null,
-                null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(DATASTORE).toString(), null, null);
     }
 
-    public SQLViewAbstractPage(
-            String workspaceName, String storeName, String typeName, VirtualTable virtualTable)
+    public SQLViewAbstractPage(String workspaceName, String storeName, String typeName, VirtualTable virtualTable)
             throws IOException {
-        storeId =
-                getCatalog().getStoreByName(workspaceName, storeName, DataStoreInfo.class).getId();
+        storeId = getCatalog()
+                .getStoreByName(workspaceName, storeName, DataStoreInfo.class)
+                .getId();
 
         // build the form and the text area
         Form<SQLViewAbstractPage> form = new Form<>("form", new CompoundPropertyModel<>(this));
@@ -149,8 +144,7 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
             // grab the virtual table
             DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
-            FeatureTypeInfo fti =
-                    getCatalog().getResourceByStore(store, typeName, FeatureTypeInfo.class);
+            FeatureTypeInfo fti = getCatalog().getResourceByStore(store, typeName, FeatureTypeInfo.class);
             // the type can be still not saved
             if (fti != null) {
                 typeInfoId = fti.getId();
@@ -184,64 +178,56 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         }
 
         // the links to refresh, add and remove a parameter
-        form.add(
-                new GeoServerAjaxFormLink("guessParams") {
+        form.add(new GeoServerAjaxFormLink("guessParams") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        sqlEditor.processInput();
-                        parameters.processInputs();
-                        if (sql != null && !sql.trim().isEmpty()) {
-                            paramProvider.refreshFromSql(sql);
-                            parameters.setPageable(false);
-                            target.add(parameters);
-                        }
-                    }
-                });
-        form.add(
-                new GeoServerAjaxFormLink("addNewParam") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                sqlEditor.processInput();
+                parameters.processInputs();
+                if (sql != null && !sql.trim().isEmpty()) {
+                    paramProvider.refreshFromSql(sql);
+                    parameters.setPageable(false);
+                    target.add(parameters);
+                }
+            }
+        });
+        form.add(new GeoServerAjaxFormLink("addNewParam") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        paramProvider.addParameter();
-                        target.add(parameters);
-                    }
-                });
-        form.add(
-                new GeoServerAjaxFormLink("removeParam") {
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                paramProvider.addParameter();
+                target.add(parameters);
+            }
+        });
+        form.add(new GeoServerAjaxFormLink("removeParam") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        paramProvider.removeAll(parameters.getSelection());
-                        parameters.clearSelection();
-                        target.add(parameters);
-                    }
-                });
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                paramProvider.removeAll(parameters.getSelection());
+                parameters.clearSelection();
+                target.add(parameters);
+            }
+        });
 
         // the parameters table
-        parameters =
-                new GeoServerTablePanel<>("parameters", paramProvider, true) {
+        parameters = new GeoServerTablePanel<>("parameters", paramProvider, true) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id, IModel<Parameter> itemModel, Property<Parameter> property) {
-                        Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
-                        @SuppressWarnings("unchecked")
-                        TextField<String> text =
-                                new TextField<>(
-                                        "text", (IModel<String>) property.getModel(itemModel));
-                        text.setLabel(
-                                new ParamResourceModel(
-                                        "th." + property.getName(), SQLViewAbstractPage.this));
-                        if (property == SQLViewParamProvider.NAME) {
-                            text.setRequired(true);
-                        } else if (property == SQLViewParamProvider.REGEXP) {
-                            text.add(new RegexpValidator());
-                        }
-                        f.add(text);
-                        return f;
-                    }
-                };
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<Parameter> itemModel, Property<Parameter> property) {
+                Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
+                @SuppressWarnings("unchecked")
+                TextField<String> text = new TextField<>("text", (IModel<String>) property.getModel(itemModel));
+                text.setLabel(new ParamResourceModel("th." + property.getName(), SQLViewAbstractPage.this));
+                if (property == SQLViewParamProvider.NAME) {
+                    text.setRequired(true);
+                } else if (property == SQLViewParamProvider.REGEXP) {
+                    text.add(new RegexpValidator());
+                }
+                f.add(text);
+                return f;
+            }
+        };
         parameters.setFilterVisible(false);
         parameters.setSortable(false);
         parameters.setPageable(false);
@@ -250,48 +236,38 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
 
         // the "refresh attributes" link
         form.add(refreshLink());
-        form.add(
-                guessCheckbox =
-                        new CheckBox(
-                                "guessGeometrySrid",
-                                new PropertyModel<>(this, "guessGeometrySrid")));
+        form.add(guessCheckbox = new CheckBox("guessGeometrySrid", new PropertyModel<>(this, "guessGeometrySrid")));
         form.add(new CheckBox("escapeSql"));
 
         // the editable attribute table
-        attributes =
-                new GeoServerTablePanel<>("attributes", attProvider) {
+        attributes = new GeoServerTablePanel<>("attributes", attProvider) {
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id,
-                            IModel<SQLViewAttribute> itemModel,
-                            Property<SQLViewAttribute> property) {
-                        SQLViewAttribute att = itemModel.getObject();
-                        boolean isGeometry =
-                                att.getType() != null
-                                        && Geometry.class.isAssignableFrom(att.getType());
-                        if (property == SQLViewAttributeProvider.PK) {
-                            // editor for pk status
-                            Fragment f = new Fragment(id, "checkbox", SQLViewAbstractPage.this);
-                            f.add(new CheckBox("identifier", new PropertyModel<>(itemModel, "pk")));
-                            return f;
-                        } else if (property == SQLViewAttributeProvider.TYPE && isGeometry) {
-                            Fragment f = new Fragment(id, "geometry", SQLViewAbstractPage.this);
-                            f.add(
-                                    new DropDownChoice<>(
-                                            "geometry",
-                                            new PropertyModel<>(itemModel, "type"),
-                                            GEOMETRY_TYPES,
-                                            new GeometryTypeRenderer()));
-                            return f;
-                        } else if (property == SQLViewAttributeProvider.SRID && isGeometry) {
-                            Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
-                            f.add(new TextField<>("text", new PropertyModel<>(itemModel, "srid")));
-                            return f;
-                        }
-                        return null;
-                    }
-                };
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<SQLViewAttribute> itemModel, Property<SQLViewAttribute> property) {
+                SQLViewAttribute att = itemModel.getObject();
+                boolean isGeometry = att.getType() != null && Geometry.class.isAssignableFrom(att.getType());
+                if (property == SQLViewAttributeProvider.PK) {
+                    // editor for pk status
+                    Fragment f = new Fragment(id, "checkbox", SQLViewAbstractPage.this);
+                    f.add(new CheckBox("identifier", new PropertyModel<>(itemModel, "pk")));
+                    return f;
+                } else if (property == SQLViewAttributeProvider.TYPE && isGeometry) {
+                    Fragment f = new Fragment(id, "geometry", SQLViewAbstractPage.this);
+                    f.add(new DropDownChoice<>(
+                            "geometry",
+                            new PropertyModel<>(itemModel, "type"),
+                            GEOMETRY_TYPES,
+                            new GeometryTypeRenderer()));
+                    return f;
+                } else if (property == SQLViewAttributeProvider.SRID && isGeometry) {
+                    Fragment f = new Fragment(id, "text", SQLViewAbstractPage.this);
+                    f.add(new TextField<>("text", new PropertyModel<>(itemModel, "srid")));
+                    return f;
+                }
+                return null;
+            }
+        };
         // just a plain table, no filters, no paging,
         attributes.setFilterVisible(false);
         attributes.setSortable(false);
@@ -316,14 +292,13 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
                     }
                 }.setVisible(!newView));
 
-        form.add(
-                new Link<Void>("cancel") {
+        form.add(new Link<Void>("cancel") {
 
-                    @Override
-                    public void onClick() {
-                        onCancel();
-                    }
-                });
+            @Override
+            public void onClick() {
+                onCancel();
+            }
+        });
 
         form.add(new Label("notice", new StringResourceModel("ok.notice")).setVisible(!newView));
     }
@@ -355,8 +330,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Checks the view definition works as expected and returns the feature type guessed solely by
-     * looking at the sql and the first row of its output
+     * Checks the view definition works as expected and returns the feature type guessed solely by looking at the sql
+     * and the first row of its output
      */
     protected SimpleFeatureType testViewDefinition(boolean guessGeometrySrid) throws IOException {
         // check out if the view can be used
@@ -401,11 +376,11 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Checks the view definition works as expected and returns the feature type guessed solely by
-     * looking at the sql and the first row of its output
+     * Checks the view definition works as expected and returns the feature type guessed solely by looking at the sql
+     * and the first row of its output
      */
-    protected SimpleFeatureType testViewDefinition(
-            VirtualTable virtualTable, boolean guessGeometrySrid) throws IOException {
+    protected SimpleFeatureType testViewDefinition(VirtualTable virtualTable, boolean guessGeometrySrid)
+            throws IOException {
         // check out if the view can be used
         JDBCDataStore ds = (JDBCDataStore) getCatalog().getDataStore(storeId).getDataStore(null);
         String vtName = null;
@@ -429,12 +404,9 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
         }
     }
 
-    /**
-     * Grabs the feature type from the store, but takes a peek at figuring out the geometry type and
-     * srids
-     */
-    SimpleFeatureType guessFeatureType(
-            JDBCDataStore store, String vtName, boolean guessGeometrySrid) throws IOException {
+    /** Grabs the feature type from the store, but takes a peek at figuring out the geometry type and srids */
+    SimpleFeatureType guessFeatureType(JDBCDataStore store, String vtName, boolean guessGeometrySrid)
+            throws IOException {
         SimpleFeatureType base = store.getSchema(vtName);
         List<String> geometries = new ArrayList<>();
         for (AttributeDescriptor ad : base.getAttributeDescriptors()) {
@@ -507,8 +479,8 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from
-     * the db is in the cause. This method extracts the first not null message in the cause chain
+     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from the db is in the
+     * cause. This method extracts the first not null message in the cause chain
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;
@@ -576,20 +548,16 @@ public abstract class SQLViewAbstractPage extends GeoServerSecuredPage {
             String vtName = validatable.getValue();
 
             final DataStoreInfo store = getCatalog().getStore(storeId, DataStoreInfo.class);
-            List<FeatureTypeInfo> ftis =
-                    getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
+            List<FeatureTypeInfo> ftis = getCatalog().getResourcesByStore(store, FeatureTypeInfo.class);
             for (FeatureTypeInfo curr : ftis) {
-                VirtualTable currvt =
-                        curr.getMetadata()
-                                .get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
+                VirtualTable currvt = curr.getMetadata().get(FeatureTypeInfo.JDBC_VIRTUAL_TABLE, VirtualTable.class);
                 if (currvt != null) {
                     if (typeInfoId == null || !typeInfoId.equals(curr.getId())) {
                         if (currvt.getName().equals(vtName)) {
-                            IValidationError err =
-                                    new ValidationError("duplicateSqlViewName")
-                                            .addKey("duplicateSqlViewName")
-                                            .setVariable("name", vtName)
-                                            .setVariable("typeName", curr.getName());
+                            IValidationError err = new ValidationError("duplicateSqlViewName")
+                                    .addKey("duplicateSqlViewName")
+                                    .setVariable("name", vtName)
+                                    .setVariable("typeName", curr.getName());
                             validatable.error(err);
                             return;
                         }

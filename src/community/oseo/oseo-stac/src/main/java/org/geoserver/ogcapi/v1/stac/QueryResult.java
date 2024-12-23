@@ -12,8 +12,7 @@ public class QueryResult extends AbstractQueryResult {
 
     private final Query query;
 
-    public QueryResult(
-            Query query, FeatureCollection items, BigInteger numberMatched, int returned) {
+    public QueryResult(Query query, FeatureCollection items, BigInteger numberMatched, int returned) {
         super(items, numberMatched, returned);
         this.query = query;
     }

@@ -57,14 +57,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class WPSExecutionManager
-        implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
+public class WPSExecutionManager implements ApplicationContextAware, ApplicationListener<ApplicationEvent> {
 
     private static final Logger LOGGER = Logging.getLogger(WPSExecutionManager.class);
 
     /**
-     * The thread pool that will run the threads doing input decoding/process launch/output decoding
-     * for asynchronous processes
+     * The thread pool that will run the threads doing input decoding/process launch/output decoding for asynchronous
+     * processes
      */
     private ExecutorService executors = Executors.newCachedThreadPool();
 
@@ -90,8 +89,8 @@ public class WPSExecutionManager
     private boolean remoteInputDisabled;
 
     /**
-     * The status tracker, that will be periodically informed about processes still running, even if
-     * they are not issuing events to the process listener
+     * The status tracker, that will be periodically informed about processes still running, even if they are not
+     * issuing events to the process listener
      */
     private ProcessStatusTracker statusTracker;
 
@@ -108,9 +107,7 @@ public class WPSExecutionManager
     private GeoServer geoServer;
 
     public WPSExecutionManager(
-            GeoServer geoServer,
-            WPSResourceManager resourceManager,
-            ProcessStatusTracker statusTracker) {
+            GeoServer geoServer, WPSResourceManager resourceManager, ProcessStatusTracker statusTracker) {
         this.resourceManager = resourceManager;
         this.statusTracker = statusTracker;
         this.geoServer = geoServer;
@@ -120,18 +117,14 @@ public class WPSExecutionManager
         return resourceManager;
     }
 
-    /**
-     * This call should only be used by process chaining to avoid deadlocking due to execution
-     * threads starvation
-     */
+    /** This call should only be used by process chaining to avoid deadlocking due to execution threads starvation */
     Map<String, Object> submitChained(ExecuteRequest request, ProgressListener listener) {
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(true);
 
         ChainedProcessListenerNotifier chainNotifier =
-                new ChainedProcessListenerNotifier(
-                        executionId, processName.toString(), true, chainListeners);
+                new ChainedProcessListenerNotifier(executionId, processName.toString(), true, chainListeners);
         chainNotifier.fireStarted();
 
         LazyInputMap inputs = request.getProcessInputs(this);
@@ -141,13 +134,10 @@ public class WPSExecutionManager
         float inputPercentage = inputsLongSteps * longStepPercentage;
         float executionPercentage = 100 - inputPercentage;
         inputs.setListener(new SubProgressListener(listener, inputPercentage));
-        ProgressListener executionListener =
-                new SubProgressListener(listener, inputPercentage, executionPercentage);
+        ProgressListener executionListener = new SubProgressListener(listener, inputPercentage, executionPercentage);
 
         try {
-            Map<String, Object> ret =
-                    processManager.submitChained(
-                            executionId, processName, inputs, executionListener);
+            Map<String, Object> ret = processManager.submitChained(executionId, processName, inputs, executionListener);
             chainNotifier.fireCompleted();
             return ret;
         } catch (ProcessDismissedException e) {
@@ -160,22 +150,19 @@ public class WPSExecutionManager
     }
 
     /**
-     * Process submission, not blocking. Returns an id that can be used to get the process status
-     * and result later.
+     * Process submission, not blocking. Returns an id that can be used to get the process status and result later.
      *
      * @param request The request to be executed
      * @return The execution response
      */
-    public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous)
-            throws ProcessException {
+    public ExecuteResponseType submit(final ExecuteRequest request, boolean synchronous) throws ProcessException {
 
         Name processName = request.getProcessName();
         ProcessManager processManager = getProcessManager(processName);
         String executionId = resourceManager.getExecutionId(synchronous);
         LazyInputMap inputs = request.getProcessInputs(this);
         request.validateOutputs(inputs);
-        ExecutionStatus status =
-                new ExecutionStatus(processName, executionId, request.isAsynchronous());
+        ExecutionStatus status = new ExecutionStatus(processName, executionId, request.isAsynchronous());
         status.setRequest(request.getRequest());
         long maxExecutionTime = getMaxExecutionTime(synchronous);
         long maxTotalTime = getMaxTotalTime(synchronous);
@@ -203,17 +190,16 @@ public class WPSExecutionManager
         calendar.setTime(new Date());
         calendar.add(Calendar.SECOND, nextPollTimeDelta);
         status.setNextPoll(new Date());
-        Executor executor =
-                new Executor(
-                        request,
-                        processManager,
-                        processName,
-                        inputs,
-                        synchronous,
-                        status,
-                        resourceManager,
-                        maxExecutionTime,
-                        maxTotalTime);
+        Executor executor = new Executor(
+                request,
+                processManager,
+                processName,
+                inputs,
+                synchronous,
+                status,
+                resourceManager,
+                maxExecutionTime,
+                maxTotalTime);
 
         ExecuteResponseType response;
         if (synchronous) {
@@ -221,19 +207,14 @@ public class WPSExecutionManager
         } else {
             LOGGER.log(
                     Level.INFO,
-                    "Submitting new asynch process "
-                            + processName.getURI()
-                            + " with execution id "
-                            + executionId);
+                    "Submitting new asynch process " + processName.getURI() + " with execution id " + executionId);
             // building the response while the process is still "queued", will result in
             // ProcessAccepted in the response
             try {
                 resourceManager.storeRequestObject(request.getRequest(), executionId);
             } catch (IOException e) {
                 throw new WPSException(
-                        "Failed to store original WPS request, which "
-                                + "will be needed to encode the output",
-                        e);
+                        "Failed to store original WPS request, which " + "will be needed to encode the output", e);
             }
             ExecuteResponseBuilder builder =
                     new ExecuteResponseBuilder(request.getRequest(), applicationContext, status);
@@ -281,8 +262,7 @@ public class WPSExecutionManager
             }
         }
 
-        throw new WPSException(
-                "Could not find a ProcessManager able to run this process: " + processName);
+        throw new WPSException("Could not find a ProcessManager able to run this process: " + processName);
     }
 
     /** Returns the HTTP connection timeout for remote resource fetching */
@@ -306,8 +286,8 @@ public class WPSExecutionManager
     }
 
     /**
-     * Sets the heartbeat delay for the processes that are running (to make sure we tell the rest of
-     * the cluster the process is actually still running, even if it does not update its status)
+     * Sets the heartbeat delay for the processes that are running (to make sure we tell the rest of the cluster the
+     * process is actually still running, even if it does not update its status)
      */
     public void setHeartbeatDelay(int heartbeatDelay) {
         if (heartbeatDelay != this.heartbeatDelay) {
@@ -391,20 +371,16 @@ public class WPSExecutionManager
 
             // preparing the listener that will report
             notifier = new ProcessListenerNotifier(status, request, inputs, listeners);
-            chainNotifier =
-                    new ChainedProcessListenerNotifier(
-                            status.getExecutionId(), processName.toString(), false, chainListeners);
+            chainNotifier = new ChainedProcessListenerNotifier(
+                    status.getExecutionId(), processName.toString(), false, chainListeners);
             chainNotifier.fireStarted();
         }
 
         boolean hasComplexOutputs() {
-            ProcessFactory pf =
-                    GeoServerProcessors.createProcessFactory(request.getProcessName(), false);
-            Map<String, Parameter<?>> resultInfo =
-                    pf.getResultInfo(request.getProcessName(), inputs);
+            ProcessFactory pf = GeoServerProcessors.createProcessFactory(request.getProcessName(), false);
+            Map<String, Parameter<?>> resultInfo = pf.getResultInfo(request.getProcessName(), inputs);
             for (Parameter<?> param : resultInfo.values()) {
-                List<ProcessParameterIO> ppios =
-                        ProcessParameterIO.findAll(param, applicationContext);
+                List<ProcessParameterIO> ppios = ProcessParameterIO.findAll(param, applicationContext);
                 for (ProcessParameterIO ppio : ppios) {
                     if (ppio instanceof ComplexPPIO) {
                         return true;
@@ -477,8 +453,7 @@ public class WPSExecutionManager
                 outputs = processManager.getOutput(status.getExecutionId(), -1);
                 if (status.getPhase() == ProcessState.RUNNING) {
                     notifier.fireProgress(
-                            inputPercentage + executionPercentage,
-                            "Execution completed, preparing to write response");
+                            inputPercentage + executionPercentage, "Execution completed, preparing to write response");
                 }
                 chainNotifier.fireCompleted();
             } catch (ProcessDismissedException e) {
@@ -505,15 +480,11 @@ public class WPSExecutionManager
                         completedStatus.setPhase(ProcessState.FAILED);
                     }
                     ExecuteResponseBuilder builder =
-                            new ExecuteResponseBuilder(
-                                    status.getRequest(), applicationContext, completedStatus);
+                            new ExecuteResponseBuilder(status.getRequest(), applicationContext, completedStatus);
                     builder.setOutputs(outputs);
 
                     ProgressListener outputListener =
-                            new SubProgressListener(
-                                    listener,
-                                    inputPercentage + executionPercentage,
-                                    outputPercentage);
+                            new SubProgressListener(listener, inputPercentage + executionPercentage, outputPercentage);
                     result = builder.build(outputListener);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Failed writing out the results", e);
@@ -530,14 +501,11 @@ public class WPSExecutionManager
                         try {
                             // write out the final response to a file that will be kept there
                             // for GetExecutionStatus requests
-                            Resource output =
-                                    resourceManager.getStoredResponse(status.getExecutionId());
+                            Resource output = resourceManager.getStoredResponse(status.getExecutionId());
                             try {
                                 if (status.getPhase() == ProcessState.RUNNING) {
                                     notifier.fireProgress(
-                                            inputPercentage
-                                                    + executionPercentage
-                                                    + outputPercentage / 2,
+                                            inputPercentage + executionPercentage + outputPercentage / 2,
                                             "Writing out response");
                                 }
                                 writeOutResponse(result, output);
@@ -546,12 +514,10 @@ public class WPSExecutionManager
                             } catch (Exception e) {
                                 // maybe it was an exception during output encoding, try to write
                                 // out the error if possible
-                                LOGGER.log(
-                                        Level.SEVERE, "Request failed during output encoding", e);
+                                LOGGER.log(Level.SEVERE, "Request failed during output encoding", e);
                                 status.setException(e);
                                 ExecuteResponseBuilder builder =
-                                        new ExecuteResponseBuilder(
-                                                status.getRequest(), applicationContext, status);
+                                        new ExecuteResponseBuilder(status.getRequest(), applicationContext, status);
                                 builder.setOutputs(null);
                                 result = builder.build();
                                 writeOutResponse(result, output);
@@ -578,11 +544,8 @@ public class WPSExecutionManager
 
         void writeOutResponse(ExecuteResponseType response, Resource output) throws IOException {
             try (OutputStream os = output.out()) {
-                XmlObjectEncodingResponse encoder =
-                        new XmlObjectEncodingResponse(
-                                ExecuteResponseType.class,
-                                "ExecuteResponse",
-                                WPSConfiguration.class);
+                XmlObjectEncodingResponse encoder = new XmlObjectEncodingResponse(
+                        ExecuteResponseType.class, "ExecuteResponse", WPSConfiguration.class);
 
                 encoder.write(response, os, null);
                 LOGGER.log(Level.FINE, "Asynch process final response written to " + output.path());
@@ -591,9 +554,8 @@ public class WPSExecutionManager
     }
 
     /**
-     * Touches the running processes, making sure we don't end up cleaning their resources by
-     * mistake while they are still running (this is required for processes that are not reporting
-     * progress)
+     * Touches the running processes, making sure we don't end up cleaning their resources by mistake while they are
+     * still running (this is required for processes that are not reporting progress)
      *
      * @author Andrea Aime - GeoSolutions
      */

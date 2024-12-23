@@ -42,27 +42,24 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
 
         form.add(new EncryptionPanel("encryption"));
         form.add(new HelpLink("encryptionHelp").setDialog(dialog));
-        form.add(
-                new SubmitLink("save", form) {
-                    @Override
-                    public void onSubmit() {
-                        SecurityManagerConfig config =
-                                (SecurityManagerConfig) getForm().getModelObject();
-                        try {
-                            getSecurityManager().saveSecurityConfig(config);
-                            doReturn();
-                        } catch (Exception e) {
-                            error(e);
-                        }
-                    }
-                });
-        form.add(
-                new AjaxLink<>("cancel") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+        form.add(new SubmitLink("save", form) {
+            @Override
+            public void onSubmit() {
+                SecurityManagerConfig config = (SecurityManagerConfig) getForm().getModelObject();
+                try {
+                    getSecurityManager().saveSecurityConfig(config);
+                    doReturn();
+                } catch (Exception e) {
+                    error(e);
+                }
+            }
+        });
+        form.add(new AjaxLink<>("cancel") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     class EncryptionPanel extends FormComponentPanel<String> {
@@ -73,30 +70,18 @@ public class SecuritySettingsPage extends AbstractSecurityPage {
             GeoServerSecurityManager secMgr = getSecurityManager();
             if (secMgr.isStrongEncryptionAvailable()) {
 
-                add(
-                        new Label(
-                                        "strongEncryptionMsg",
-                                        new StringResourceModel("strongEncryption", this, null))
-                                .add(
-                                        new AttributeAppender(
-                                                "class", new Model<>("info-link"), " ")));
+                add(new Label("strongEncryptionMsg", new StringResourceModel("strongEncryption", this, null))
+                        .add(new AttributeAppender("class", new Model<>("info-link"), " ")));
             } else {
-                add(
-                        new Label(
-                                        "strongEncryptionMsg",
-                                        new StringResourceModel("noStrongEncryption", this, null))
-                                .add(
-                                        new AttributeAppender(
-                                                "class", new Model<>("warning-link"), " ")));
+                add(new Label("strongEncryptionMsg", new StringResourceModel("noStrongEncryption", this, null))
+                        .add(new AttributeAppender("class", new Model<>("warning-link"), " ")));
             }
 
             add(new CheckBox("encryptingUrlParams"));
 
             // load only reversible encoders
-            add(
-                    new PasswordEncoderChoice(
-                            "configPasswordEncrypterName",
-                            getSecurityManager().loadPasswordEncoders(null, true, null)));
+            add(new PasswordEncoderChoice(
+                    "configPasswordEncrypterName", getSecurityManager().loadPasswordEncoders(null, true, null)));
         }
     }
 }

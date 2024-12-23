@@ -33,10 +33,8 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         }
 
         // get the store
-        InternalCatalogStore store =
-                applicationContext.getBean(
-                        InternalCatalogStore
-                                .class); // new InternalCatalogStore(this.getGeoServer());
+        InternalCatalogStore store = applicationContext.getBean(
+                InternalCatalogStore.class); // new InternalCatalogStore(this.getGeoServer());
         assertNotNull(store);
 
         // test if we have default mapping
@@ -47,36 +45,30 @@ public class InternalCatalogStoreTest extends CSWTestSupport {
         assertEquals(1, store.getMappings("Record").size());
         CatalogStoreMapping mapping = store.getMappings("Record").get(0);
         assertTrue(mapping.elements(PropertyPath.fromDotPath("format.value")).isEmpty());
-        assertFalse(
-                store.getMappings("Record")
-                        .get(0)
-                        .elements(PropertyPath.fromDotPath("identifier.value"))
-                        .isEmpty());
+        assertFalse(store.getMappings("Record")
+                .get(0)
+                .elements(PropertyPath.fromDotPath("identifier.value"))
+                .isEmpty());
 
-        assertTrue(
-                store.getMappings("Record")
-                        .get(0)
-                        .elements(PropertyPath.fromDotPath("format.value"))
-                        .isEmpty());
+        assertTrue(store.getMappings("Record")
+                .get(0)
+                .elements(PropertyPath.fromDotPath("format.value"))
+                .isEmpty());
         // On Linux and older versions of JDK last modification resolution is one second,
         // and we need the watcher to see the file as changed. Account for slow build servers too.
         PropertyFileWatcher watcher = store.watchers.get("Record").iterator().next();
-        Awaitility.await()
-                .atMost(5, TimeUnit.SECONDS)
-                .until(
-                        () -> {
-                            try (PrintWriter out = new PrintWriter(new FileWriter(record, true))) {
-                                out.println("\nformat.value='img/jpeg'");
-                            }
-                            return watcher.isStale();
-                        });
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).until(() -> {
+            try (PrintWriter out = new PrintWriter(new FileWriter(record, true))) {
+                out.println("\nformat.value='img/jpeg'");
+            }
+            return watcher.isStale();
+        });
 
         mapping = store.getMappings("Record").get(0);
         // mapping should be automatically reloaded now
         assertEquals(
                 "img/jpeg",
-                store.getMappings("Record").get(0)
-                        .elements(PropertyPath.fromDotPath("format.value")).stream()
+                store.getMappings("Record").get(0).elements(PropertyPath.fromDotPath("format.value")).stream()
                         .findFirst()
                         .get()
                         .getContent()

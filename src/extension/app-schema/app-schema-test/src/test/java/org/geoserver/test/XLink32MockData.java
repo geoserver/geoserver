@@ -28,16 +28,8 @@ public class XLink32MockData extends AbstractAppSchemaMockData {
         putNamespace(GSML_PREFIX, "urn:cgi:xmlns:CGI:GeoSciML-Core:3.0.0");
 
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeatureXlink32.xml",
-                "MappedFeaturePropertyfile.properties");
-        addFeatureType(
-                GSML_PREFIX, "GeologicUnit", "GeologicUnitXLink32.xml", "GeologicUnit.properties");
-        addFeatureType(
-                GSML_PREFIX,
-                "CompositionPart",
-                "CompositionPartXLink32.xml",
-                "CompositionPart.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeatureXlink32.xml", "MappedFeaturePropertyfile.properties");
+        addFeatureType(GSML_PREFIX, "GeologicUnit", "GeologicUnitXLink32.xml", "GeologicUnit.properties");
+        addFeatureType(GSML_PREFIX, "CompositionPart", "CompositionPartXLink32.xml", "CompositionPart.properties");
     }
 }

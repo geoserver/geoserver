@@ -22,7 +22,8 @@ import org.jivesoftware.smack.packet.Packet;
 public class XMPPErrorMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     @Override
     public boolean canHandle(Map<String, String> signalArgs) {
@@ -32,8 +33,7 @@ public class XMPPErrorMessage implements XMPPMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         Map<String, Object> metadata = new HashMap<String, Object>();
         metadata.put("serviceJID", packet.getFrom());

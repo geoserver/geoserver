@@ -30,8 +30,8 @@ import org.geoserver.web.demo.PlainCodePage;
 import org.geoserver.web.wicket.GSModalWindow;
 
 /**
- * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side
- * effect also showing what capabilities and describe process would provide).
+ * Small embedded WPS client enabling users to visually build a WPS Execute request (and as a side effect also showing
+ * what capabilities and describe process would provide).
  *
  * <p>Parameters:
  *
@@ -83,78 +83,73 @@ public class WPSRequestBuilder extends GeoServerBasePage {
         final GSModalWindow xmlWindow = new GSModalWindow("xmlWindow");
         add(xmlWindow);
 
-        form.add(
-                new AjaxSubmitLink("setXml") {
+        form.add(new AjaxSubmitLink("setXml") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        try {
-                            var xmlText = getRequestXML();
-                            xml.setModelObject(xmlText);
-                            target.add(xml);
-                        } catch (Exception e) {
-                            error(e.getMessage());
-                            addFeedbackPanels(target);
-                        }
-                        target.appendJavaScript("executeWPS()");
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    var xmlText = getRequestXML();
+                    xml.setModelObject(xmlText);
+                    target.add(xml);
+                } catch (Exception e) {
+                    error(e.getMessage());
+                    addFeedbackPanels(target);
+                }
+                target.appendJavaScript("executeWPS()");
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+        });
 
-        form.add(
-                new AjaxSubmitLink("execute") {
+        form.add(new AjaxSubmitLink("execute") {
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        HttpServletRequest http = GeoServerApplication.get().servletRequest();
+            @SuppressWarnings("unchecked")
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                HttpServletRequest http = GeoServerApplication.get().servletRequest();
 
-                        String url =
-                                ResponseUtils.buildURL(
-                                        ResponseUtils.baseURL(http),
-                                        "ows",
-                                        Collections.singletonMap("strict", "true"),
-                                        URLType.SERVICE);
-                        var xml = getRequestXML();
+                String url = ResponseUtils.buildURL(
+                        ResponseUtils.baseURL(http),
+                        "ows",
+                        Collections.singletonMap("strict", "true"),
+                        URLType.SERVICE);
+                var xml = getRequestXML();
 
-                        PageParameters parameters = new PageParameters();
-                        parameters.add("url", url);
-                        parameters.add("xml", xml);
+                PageParameters parameters = new PageParameters();
+                parameters.add("url", url);
+                parameters.add("xml", xml);
 
-                        getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
-                    }
+                getRequestCycle().setResponsePage(DemoRequestsPage.class, parameters);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        super.onError(target);
-                        target.add(builder.getFeedbackPanel());
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(builder.getFeedbackPanel());
+            }
+        });
 
-        form.add(
-                new AjaxSubmitLink("executeXML") {
+        form.add(new AjaxSubmitLink("executeXML") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        try {
-                            xmlWindow.setContent(
-                                    new PlainCodePage(xmlWindow.getContentId(), getRequestXML()));
-                            xmlWindow.show(target);
-                        } catch (Exception e) {
-                            error(e.getMessage());
-                            addFeedbackPanels(target);
-                        }
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                try {
+                    xmlWindow.setContent(new PlainCodePage(xmlWindow.getContentId(), getRequestXML()));
+                    xmlWindow.show(target);
+                } catch (Exception e) {
+                    error(e.getMessage());
+                    addFeedbackPanels(target);
+                }
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        addFeedbackPanels(target);
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                addFeedbackPanels(target);
+            }
+        });
     }
 
     String getRequestXML() {
@@ -176,9 +171,7 @@ public class WPSRequestBuilder extends GeoServerBasePage {
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
-        response.render(
-                JavaScriptContentHeaderItem.forScript(
-                        DemoRequestsPage.demoRequestsJavascript, null));
+        response.render(JavaScriptContentHeaderItem.forScript(DemoRequestsPage.demoRequestsJavascript, null));
         response.render(CssHeaderItem.forCSS("#xml {display: none;}", "wpsRequestBuilderCSS"));
     }
 

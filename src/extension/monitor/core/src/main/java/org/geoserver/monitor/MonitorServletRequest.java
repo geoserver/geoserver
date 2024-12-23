@@ -178,8 +178,7 @@ public class MonitorServletRequest extends HttpServletRequestWrapper {
         }
 
         boolean bufferIsFull() {
-            return maxSize == 0
-                    || (buffer.size() >= maxSize && maxSize > 0 && maxSize != BODY_SIZE_UNBOUNDED);
+            return maxSize == 0 || (buffer.size() >= maxSize && maxSize > 0 && maxSize != BODY_SIZE_UNBOUNDED);
         }
 
         public byte[] getData() {

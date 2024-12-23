@@ -27,11 +27,14 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class TaskManagerDataTest extends AbstractTaskManagerTest {
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil util;
+    @Autowired
+    private TaskManagerDataUtil util;
 
     private Configuration config;
 
@@ -65,9 +68,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
 
     @Test
     public void testBatchElement() {
-        assertEquals(
-                Collections.singletonList(config.getTasks().get("task")),
-                dao.getTasksAvailableForBatch(batch));
+        assertEquals(Collections.singletonList(config.getTasks().get("task")), dao.getTasksAvailableForBatch(batch));
 
         Task task = config.getTasks().get("task");
         BatchElement el = util.addBatchElement(batch, task);
@@ -81,9 +82,7 @@ public class TaskManagerDataTest extends AbstractTaskManagerTest {
         dao.remove(el);
         batch = dao.init(batch);
         assertTrue(batch.getElements().isEmpty());
-        assertEquals(
-                Collections.singletonList(config.getTasks().get("task")),
-                dao.getTasksAvailableForBatch(batch));
+        assertEquals(Collections.singletonList(config.getTasks().get("task")), dao.getTasksAvailableForBatch(batch));
 
         BatchElement el2 = util.addBatchElement(batch, task);
         assertEquals(el.getId(), el2.getId());

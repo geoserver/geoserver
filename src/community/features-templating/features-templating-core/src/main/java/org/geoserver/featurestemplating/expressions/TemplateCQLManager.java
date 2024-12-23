@@ -25,11 +25,10 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Helper class that mainly allows the extraction of CQL and Xpath expressions out of a plain text
- * string using special separators. Moreover, since JsonLd templates can declare an xpath('some
- * xpath') function that has no real FunctionExpression implementation, this class provides methods
- * to extracts the xpath from the function as a literal, to substitute it after cql encoding
- * happened with an AttributeExpression.
+ * Helper class that mainly allows the extraction of CQL and Xpath expressions out of a plain text string using special
+ * separators. Moreover, since JsonLd templates can declare an xpath('some xpath') function that has no real
+ * FunctionExpression implementation, this class provides methods to extracts the xpath from the function as a literal,
+ * to substitute it after cql encoding happened with an AttributeExpression.
  */
 public class TemplateCQLManager {
 
@@ -82,14 +81,12 @@ public class TemplateCQLManager {
         // takes xpath fun from cql
         String strPropertyNameFun = extractPropertyNameFunction(this.strCql);
         String propertyWithSlash = replaceDotSeparatorWithSlashInFunction(strPropertyNameFun);
-        if (containsAPropertyNameFunction(propertyWithSlash))
-            this.contextPos = determineContextPos(propertyWithSlash);
+        if (containsAPropertyNameFunction(propertyWithSlash)) this.contextPos = determineContextPos(propertyWithSlash);
         // takes the literal argument of xpathFun
         String literalXpath = removeBackDots(propertyWithSlash);
 
         // clean the function to obtain a cql expression without xpath() syntax
-        Expression cql =
-                extractCqlExpressions(cleanCQL(this.strCql, strPropertyNameFun, literalXpath));
+        Expression cql = extractCqlExpressions(cleanCQL(this.strCql, strPropertyNameFun, literalXpath));
         TemplatingExpressionVisitor visitor = new TemplatingExpressionVisitor();
         cql.accept(visitor, null);
         return cql;
@@ -104,8 +101,7 @@ public class TemplateCQLManager {
     public Filter getFilterFromString() throws CQLException {
         String propertyNameFun = extractPropertyNameFunction(this.strCql);
         String propertyWithSlash = replaceDotSeparatorWithSlashInFunction(propertyNameFun);
-        if (containsAPropertyNameFunction(propertyWithSlash))
-            contextPos = determineContextPos(propertyWithSlash);
+        if (containsAPropertyNameFunction(propertyWithSlash)) contextPos = determineContextPos(propertyWithSlash);
         String literalPn = removeBackDots(propertyWithSlash);
         String cleanedCql = cleanCQL(this.strCql, propertyNameFun, literalPn);
         Filter templateFilter = XCQL.toFilter(cleanedCql);
@@ -119,18 +115,16 @@ public class TemplateCQLManager {
      * @return
      */
     private Object setPropertyNameToCQL(Object cql, String xpath) {
-        DuplicatingFilterVisitor filterVisitor =
-                new DuplicatingFilterVisitor() {
-                    @Override
-                    public Object visit(Literal expression, Object extraData) {
-                        if (expression.getValue() instanceof String) {
-                            String strVal = (String) expression.getValue();
-                            if (strVal.endsWith(xpath))
-                                return new AttributeExpressionImpl(xpath, namespaces);
-                        }
-                        return super.visit(expression, extraData);
-                    }
-                };
+        DuplicatingFilterVisitor filterVisitor = new DuplicatingFilterVisitor() {
+            @Override
+            public Object visit(Literal expression, Object extraData) {
+                if (expression.getValue() instanceof String) {
+                    String strVal = (String) expression.getValue();
+                    if (strVal.endsWith(xpath)) return new AttributeExpressionImpl(xpath, namespaces);
+                }
+                return super.visit(expression, extraData);
+            }
+        };
         Object result;
         if (cql instanceof Expression) {
             result = ((Expression) cql).accept(filterVisitor, null);
@@ -149,8 +143,7 @@ public class TemplateCQLManager {
             final char next = isLast ? 0 : property.charAt(i + 1);
 
             if (curr == '\\') {
-                if (isLast)
-                    throw new IllegalArgumentException("Unescaped \\ at position " + (i + 1));
+                if (isLast) throw new IllegalArgumentException("Unescaped \\ at position " + (i + 1));
 
                 if (next == '\\') sb.append('\\');
                 else if (next == '$') sb.append('$');
@@ -160,22 +153,18 @@ public class TemplateCQLManager {
                 // skip the next character
                 i++;
             } else if (curr == '$') {
-                if (isLast || next != '{')
-                    throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
+                if (isLast || next != '{') throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
                 if (inXpath)
-                    throw new IllegalArgumentException(
-                            "Already found a ${ sequence before the one at " + (i + 1));
+                    throw new IllegalArgumentException("Already found a ${ sequence before the one at " + (i + 1));
 
                 inXpath = true;
                 i++;
             } else if (curr == '}') {
                 if (!inXpath)
-                    throw new IllegalArgumentException(
-                            "Already found a ${ sequence before the one at " + (i + 1));
+                    throw new IllegalArgumentException("Already found a ${ sequence before the one at " + (i + 1));
 
                 if (sb.length() == 0)
-                    throw new IllegalArgumentException(
-                            "Invalid empty cql expression ${} at " + (i - 1));
+                    throw new IllegalArgumentException("Invalid empty cql expression ${} at " + (i - 1));
 
             } else {
                 sb.append(curr);
@@ -185,9 +174,9 @@ public class TemplateCQLManager {
     }
 
     /**
-     * Parses the original string and returns an array or parsed expressions, in particular, the
-     * result of parsing each embedded cql expression and string literals in between the cql
-     * expressions, in the order they appear in the original string
+     * Parses the original string and returns an array or parsed expressions, in particular, the result of parsing each
+     * embedded cql expression and string literals in between the cql expressions, in the order they appear in the
+     * original string
      */
     private List<Expression> splitCqlExpressions(String expression) {
         boolean inCqlExpression = false;
@@ -200,8 +189,7 @@ public class TemplateCQLManager {
             final char prev = i > 0 ? expression.charAt(i - 1) : ' ';
 
             if (curr == '\\') {
-                if (isLast)
-                    throw new IllegalArgumentException("Unescaped \\ at position " + (i + 1));
+                if (isLast) throw new IllegalArgumentException("Unescaped \\ at position " + (i + 1));
 
                 if (next == '\\') sb.append('\\');
                 else if (next == '$') sb.append('$');
@@ -211,11 +199,9 @@ public class TemplateCQLManager {
                 // skip the next character
                 i++;
             } else if (curr == '$' && prev != '$') {
-                if (isLast || next != '$')
-                    throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
+                if (isLast || next != '$') throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
                 if (inCqlExpression)
-                    throw new IllegalArgumentException(
-                            "Already found a ${ sequence before the one at " + (i + 1));
+                    throw new IllegalArgumentException("Already found a ${ sequence before the one at " + (i + 1));
 
                 // if we extracted a literal in between two expressions, add it to the result
                 if (sb.length() > 0) {
@@ -225,11 +211,9 @@ public class TemplateCQLManager {
                 // mark the beginning and skip the next character
                 i++;
             } else if (curr == '$' && prev == '$') {
-                if (isLast || next != '{')
-                    throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
+                if (isLast || next != '{') throw new IllegalArgumentException("Unescaped $ at position " + (i + 1));
                 if (inCqlExpression)
-                    throw new IllegalArgumentException(
-                            "Already found a ${ sequence before the one at " + (i + 1));
+                    throw new IllegalArgumentException("Already found a ${ sequence before the one at " + (i + 1));
 
                 // if we extracted a literal in between two expressions, add it to the result
                 if (sb.length() > 0) {
@@ -246,8 +230,7 @@ public class TemplateCQLManager {
                         "Already found a ${ sequence before the one at " + (i + 1));*/
 
                 if (sb.length() == 0)
-                    throw new IllegalArgumentException(
-                            "Invalid empty cql expression ${} at " + (i - 1));
+                    throw new IllegalArgumentException("Invalid empty cql expression ${} at " + (i - 1));
 
                 try {
                     Expression parsed = ECQL.toExpression(sb.toString());
@@ -276,8 +259,7 @@ public class TemplateCQLManager {
     /** Given an expression list will create an expression concatenating them. */
     private Expression catenateExpressions(List<Expression> expressions) {
         if (expressions == null || expressions.size() == 0)
-            throw new IllegalArgumentException(
-                    "You should provide at least one expression in the list");
+            throw new IllegalArgumentException("You should provide at least one expression in the list");
 
         if (expressions.size() == 1) {
             return expressions.get(0);
@@ -287,17 +269,14 @@ public class TemplateCQLManager {
     }
 
     /**
-     * Builds a CQL expression equivalent to the specified string, see class javadocs for rules on
-     * how to build the expression in string form
+     * Builds a CQL expression equivalent to the specified string, see class javadocs for rules on how to build the
+     * expression in string form
      */
     private Expression extractCqlExpressions(String expression) {
         return catenateExpressions(splitCqlExpressions(expression));
     }
 
-    /**
-     * Clean a CQL from the xpath function syntax to make the xpath suitable to be encoded as a
-     * PropertyName
-     */
+    /** Clean a CQL from the xpath function syntax to make the xpath suitable to be encoded as a PropertyName */
     private String cleanCQL(String cql, String toReplace, String replacement) {
         if (containsAPropertyNameFunction(cql))
             cql = cql.replace(toReplace, replacement).replaceAll("\\.\\./", "");
@@ -330,8 +309,8 @@ public class TemplateCQLManager {
     }
 
     /**
-     * Determines how many times is needed to walk up {@link TemplateBuilderContext} in order to
-     * execute xpath, and cleans it from ../ notation.
+     * Determines how many times is needed to walk up {@link TemplateBuilderContext} in order to execute xpath, and
+     * cleans it from ../ notation.
      */
     public static int determineContextPos(String xpath) {
         int contextPos = 0;
@@ -346,10 +325,7 @@ public class TemplateCQLManager {
         return contextPos;
     }
 
-    /**
-     * Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql
-     * compiler.
-     */
+    /** Wrap attribute selector syntax in a xpath with quotation marks to make it suitable by cql compiler. */
     public static String quoteXpathAttribute(String xpath) {
         int atIndex = xpath.indexOf("@");
         int quotedAtIndex = xpath.indexOf("\"@\"");
@@ -366,8 +342,7 @@ public class TemplateCQLManager {
                     break;
                 }
             }
-            return xpath.replaceAll(
-                    xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
+            return xpath.replaceAll(xpathAttribute.toString(), "\"" + xpathAttribute.toString() + "\"");
         }
         return xpath;
     }
@@ -404,8 +379,7 @@ public class TemplateCQLManager {
                 && propertyName.indexOf(".") != -1
                 && propertyName.indexOf("/") == -1) {
             propertyName = propertyName.replaceAll(" ", "");
-            int startPath =
-                    propertyName.indexOf(PROPERTY_FUN_START) + (PROPERTY_FUN_START + "'").length();
+            int startPath = propertyName.indexOf(PROPERTY_FUN_START) + (PROPERTY_FUN_START + "'").length();
             int endPath = propertyName.lastIndexOf("')");
             String content = propertyName.substring(startPath, endPath);
             String replaced = replaceDotSeparatorWithSlash(content);

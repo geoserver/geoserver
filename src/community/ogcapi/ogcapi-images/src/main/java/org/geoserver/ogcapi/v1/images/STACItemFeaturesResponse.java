@@ -77,18 +77,12 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     /** Returns the image id, or null if it's missing or the request is not a images API one */
     private String getImageId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .map(
-                        att ->
-                                (String)
-                                        att.getAttribute(
-                                                ImagesService.IMAGE_ID,
-                                                RequestAttributes.SCOPE_REQUEST))
+                .map(att -> (String) att.getAttribute(ImagesService.IMAGE_ID, RequestAttributes.SCOPE_REQUEST))
                 .orElse(null);
     }
 
     /** Writes a single feature using the facilities provided by the base class */
-    private void writeSingleItem(
-            FeatureCollectionResponse value, OutputStream output, Operation operation)
+    private void writeSingleItem(FeatureCollectionResponse value, OutputStream output, Operation operation)
             throws IOException {
         OutputStreamWriter osw =
                 new OutputStreamWriter(output, gs.getGlobal().getSettings().getCharset());
@@ -102,8 +96,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writeExtraFeatureProperties(
-            Feature feature, Operation operation, GeoJSONBuilder jw) {
+    protected void writeExtraFeatureProperties(Feature feature, Operation operation, GeoJSONBuilder jw) {
         jw.key("stac_version").value("0.8.0");
         jw.key("collection").value(getParentCollectionId());
         writeAssets(feature, jw);
@@ -140,8 +133,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         }
     }
 
-    private String getFileDownloadURL(String collectionId, String imageId, File file)
-            throws IOException {
+    private String getFileDownloadURL(String collectionId, String imageId, File file) throws IOException {
         String fileNameHash = assetHasher.hashFile(file);
         return ResponseUtils.buildURL(
                 APIRequestInfo.get().getBaseURL(),
@@ -156,21 +148,16 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writePagingLinks(
-            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
+    protected void writePagingLinks(FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw) {
         // we have more than just paging links here
         writeLinks(response, operation, jw, null);
     }
 
     private void writeLinks(
-            FeatureCollectionResponse response,
-            Operation operation,
-            GeoJSONBuilder jw,
-            String featureId) {
+            FeatureCollectionResponse response, Operation operation, GeoJSONBuilder jw, String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         String baseUrl = requestInfo.getBaseURL();
-        String basePath =
-                "ogc/images/v1/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
+        String basePath = "ogc/images/v1/collections/" + ResponseUtils.urlEncode(getParentCollectionId());
         jw.key("links");
         jw.array();
         // paging links (only for collections)
@@ -186,33 +173,28 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
             try (FeatureIterator fi = fc.features()) {
                 while (fi.hasNext()) {
                     Feature next = fi.next();
-                    String href =
-                            ResponseUtils.buildURL(
-                                    baseUrl,
-                                    basePath
-                                            + "/images/"
-                                            + ResponseUtils.urlEncode(next.getIdentifier().getID()),
-                                    Collections.singletonMap("f", MIME),
-                                    URLMangler.URLType.SERVICE);
+                    String href = ResponseUtils.buildURL(
+                            baseUrl,
+                            basePath
+                                    + "/images/"
+                                    + ResponseUtils.urlEncode(
+                                            next.getIdentifier().getID()),
+                            Collections.singletonMap("f", MIME),
+                            URLMangler.URLType.SERVICE);
                     String linkType = Link.REL_ITEM;
                     writeLink(jw, null, MIME, linkType, href);
                 }
             }
         }
         // alternate/self links
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(ImagesResponse.class, true);
         for (MediaType format : formats) {
             String path = basePath + "/images";
             if (featureId != null) {
                 path += "/" + ResponseUtils.urlEncode(featureId);
             }
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    baseUrl, path, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
             if (format.toString().equals(MIME)) {
@@ -224,14 +206,12 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
         // backpointer to the collection, if it was a single feature request, or for the collection
         // only
         if (featureId == null || getImageId() != null) {
-            for (MediaType format :
-                    requestInfo.getProducibleMediaTypes(ImagesCollectionsDocument.class, true)) {
-                String href =
-                        ResponseUtils.buildURL(
-                                baseUrl,
-                                basePath,
-                                Collections.singletonMap("f", format.toString()),
-                                URLMangler.URLType.SERVICE);
+            for (MediaType format : requestInfo.getProducibleMediaTypes(ImagesCollectionsDocument.class, true)) {
+                String href = ResponseUtils.buildURL(
+                        baseUrl,
+                        basePath,
+                        Collections.singletonMap("f", format.toString()),
+                        URLMangler.URLType.SERVICE);
                 String linkType = Link.REL_COLLECTION;
                 String linkTitle = "The collection description as " + format;
                 writeLink(jw, linkTitle, format.toString(), linkType, href);
@@ -243,18 +223,13 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     private String getParentCollectionId() {
         return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-                .map(
-                        a ->
-                                a.getAttribute(
-                                        ImagesService.COLLECTION_ID,
-                                        RequestAttributes.SCOPE_REQUEST))
+                .map(a -> a.getAttribute(ImagesService.COLLECTION_ID, RequestAttributes.SCOPE_REQUEST))
                 .map(String::valueOf)
                 .orElse(null);
     }
 
     @Override
-    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs)
-            throws IOException {
+    protected void writeCollectionCRS(GeoJSONBuilder jsonWriter, CoordinateReferenceSystem crs) throws IOException {
         // write the CRS block only if needed
         if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, crs)) {
             super.writeCollectionCRS(jsonWriter, crs);
@@ -262,8 +237,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
     }
 
     @Override
-    protected void writeCollectionCounts(
-            BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
+    protected void writeCollectionCounts(BigInteger featureCount, long numberReturned, GeoJSONBuilder jsonWriter) {
         // counts
         if (featureCount != null) {
             jsonWriter.key("numberMatched").value(featureCount);
@@ -273,18 +247,15 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     @Override
     protected void writeCollectionBounds(
-            boolean featureBounding,
-            GeoJSONBuilder jsonWriter,
-            List<FeatureCollection> resultsList,
-            boolean hasGeom) {
+            boolean featureBounding, GeoJSONBuilder jsonWriter, List<FeatureCollection> resultsList, boolean hasGeom) {
         // not needed in STAC
     }
 
     /**
      * {@inheritDoc}
      *
-     * @return {@code null}, making {@link WFSGetFeatureOutputFormat#getCapabilitiesElementNames()}
-     *     not contributing a result format on the GetCapabilities document for this output format.
+     * @return {@code null}, making {@link WFSGetFeatureOutputFormat#getCapabilitiesElementNames()} not contributing a
+     *     result format on the GetCapabilities document for this output format.
      */
     @Override
     public String getCapabilitiesElementName() {
@@ -293,8 +264,7 @@ public class STACItemFeaturesResponse extends GeoJSONGetFeatureResponse {
 
     @Override
     public boolean canHandle(Operation operation) {
-        if ("GetImages".equalsIgnoreCase(operation.getId())
-                || "GetImage".equalsIgnoreCase(operation.getId())) {
+        if ("GetImages".equalsIgnoreCase(operation.getId()) || "GetImage".equalsIgnoreCase(operation.getId())) {
             // call subclass hook
             return canHandleInternal(operation);
         }

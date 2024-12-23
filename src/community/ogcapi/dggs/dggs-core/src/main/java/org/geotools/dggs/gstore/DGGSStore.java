@@ -21,8 +21,8 @@ import org.geotools.api.data.DataStore;
 import org.geotools.api.feature.type.AttributeDescriptor;
 
 /**
- * Interface for stores implementing DGGS access. Each feature type returned by a DGGSStore must
- * have at a minimum a {@link #ZONE_ID} and a {@link #RESOLUTION} field
+ * Interface for stores implementing DGGS access. Each feature type returned by a DGGSStore must have at a minimum a
+ * {@link #ZONE_ID} and a {@link #RESOLUTION} field
  */
 public interface DGGSStore extends DataStore {
 
@@ -37,10 +37,9 @@ public interface DGGSStore extends DataStore {
     public static final String ZONE_ID = "zoneId";
 
     /**
-     * Marks attributes that are well known properties of a DGGS, that a DGGS aware client would not
-     * need to know about. Added in the {@link AttributeDescriptor#getUserData()}, with a value of
-     * {@link Boolean#TRUE}. Examples of such properties are the geometry and resolution of the
-     * zone, which are both implied by the zone id itself.
+     * Marks attributes that are well known properties of a DGGS, that a DGGS aware client would not need to know about.
+     * Added in the {@link AttributeDescriptor#getUserData()}, with a value of {@link Boolean#TRUE}. Examples of such
+     * properties are the geometry and resolution of the zone, which are both implied by the zone id itself.
      */
     public static final String DGGS_INTRINSIC = "dggsInstrisic";
 

@@ -89,7 +89,8 @@ public class TimeKvpParserTest {
         c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
 
-        DateRange hour = (DateRange) timeParser.parse("2000-04-04T12Z").iterator().next();
+        DateRange hour =
+                (DateRange) timeParser.parse("2000-04-04T12Z").iterator().next();
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
@@ -130,7 +131,8 @@ public class TimeKvpParserTest {
         c.setTimeZone(TimeParser.UTC_TZ);
         c.clear();
 
-        Date instant = (Date) timeParser.parse("2000-04-04T12:00:00.000Z").iterator().next();
+        Date instant =
+                (Date) timeParser.parse("2000-04-04T12:00:00.000Z").iterator().next();
         c.set(Calendar.YEAR, 2000);
         c.set(Calendar.MONTH, 3); // 0-indexed
         c.set(Calendar.DAY_OF_MONTH, 4);
@@ -305,9 +307,7 @@ public class TimeKvpParserTest {
     @SuppressWarnings("unchecked")
     public void testMixedValues() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        List l =
-                new ArrayList(
-                        (Collection) timeKvpParser.parse(CONTINUOUS_PERIOD + ",2007-02-01T12Z"));
+        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD + ",2007-02-01T12Z"));
         // Verify that the list contains at least one element.
         Assert.assertFalse(l.isEmpty());
         Assert.assertTrue(l.get(0) instanceof DateRange);
@@ -317,23 +317,16 @@ public class TimeKvpParserTest {
         end.setTime(end.getTime() - 1);
         Assert.assertEquals(end, range.getMaxValue());
 
-        assertRange(
-                (DateRange) l.get(1),
-                format.parse("2007-02-01T12Z"),
-                format.parse("2007-02-01T13Z"));
+        assertRange((DateRange) l.get(1), format.parse("2007-02-01T12Z"), format.parse("2007-02-01T13Z"));
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testInclusions() throws ParseException {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        List l =
-                new ArrayList(
-                        (Collection)
-                                timeKvpParser.parse(
-                                        CONTINUOUS_PERIOD
-                                                + ",2007-01-29T12Z,"
-                                                + "2007-01-12T12Z,2007-01-17T12Z,2007-01-01T12Z/2007-01-15T12Z"));
+        List l = new ArrayList((Collection) timeKvpParser.parse(CONTINUOUS_PERIOD
+                + ",2007-01-29T12Z,"
+                + "2007-01-12T12Z,2007-01-17T12Z,2007-01-01T12Z/2007-01-15T12Z"));
         // Verify that the list contains at least one element.
         Assert.assertFalse(l.isEmpty());
         Assert.assertEquals(1, l.size());
@@ -346,35 +339,16 @@ public class TimeKvpParserTest {
     @SuppressWarnings("unchecked")
     public void testOrderedValues() throws Exception {
         TimeKvpParser timeKvpParser = new TimeKvpParser("TIME");
-        List l =
-                new ArrayList(
-                        (Collection)
-                                timeKvpParser.parse(
-                                        "2007-01-29T12Z,2007-01-12T12Z,"
-                                                + "2007-01-17T12Z,2007-01-01T12Z,2007-01-05T12Z"));
+        List l = new ArrayList((Collection)
+                timeKvpParser.parse("2007-01-29T12Z,2007-01-12T12Z," + "2007-01-17T12Z,2007-01-01T12Z,2007-01-05T12Z"));
         // Verify that the list contains at least one element.
         Assert.assertFalse(l.isEmpty());
         Assert.assertEquals(5, l.size());
-        assertRange(
-                (DateRange) l.get(0),
-                format.parse("2007-01-01T12Z"),
-                format.parse("2007-01-01T13Z"));
-        assertRange(
-                (DateRange) l.get(1),
-                format.parse("2007-01-05T12Z"),
-                format.parse("2007-01-05T13Z"));
-        assertRange(
-                (DateRange) l.get(2),
-                format.parse("2007-01-12T12Z"),
-                format.parse("2007-01-12T13Z"));
-        assertRange(
-                (DateRange) l.get(3),
-                format.parse("2007-01-17T12Z"),
-                format.parse("2007-01-17T13Z"));
-        assertRange(
-                (DateRange) l.get(4),
-                format.parse("2007-01-29T12Z"),
-                format.parse("2007-01-29T13Z"));
+        assertRange((DateRange) l.get(0), format.parse("2007-01-01T12Z"), format.parse("2007-01-01T13Z"));
+        assertRange((DateRange) l.get(1), format.parse("2007-01-05T12Z"), format.parse("2007-01-05T13Z"));
+        assertRange((DateRange) l.get(2), format.parse("2007-01-12T12Z"), format.parse("2007-01-12T13Z"));
+        assertRange((DateRange) l.get(3), format.parse("2007-01-17T12Z"), format.parse("2007-01-17T13Z"));
+        assertRange((DateRange) l.get(4), format.parse("2007-01-29T12Z"), format.parse("2007-01-29T13Z"));
     }
 
     @Test
@@ -411,10 +385,8 @@ public class TimeKvpParserTest {
 
     private static void assertInstant(Date expected, Object object) {
         if (object instanceof DateRange) {
-            Assert.assertEquals(
-                    object + " Should start at", expected, ((DateRange) object).getMinValue());
-            Assert.assertEquals(
-                    object + " Should end at", expected, ((DateRange) object).getMaxValue());
+            Assert.assertEquals(object + " Should start at", expected, ((DateRange) object).getMinValue());
+            Assert.assertEquals(object + " Should end at", expected, ((DateRange) object).getMaxValue());
         } else if (object instanceof Date) {
             Assert.assertEquals(expected, object);
         } else {
@@ -437,13 +409,11 @@ public class TimeKvpParserTest {
 
     public static void assertRangeStarts(DateRange range, Date expectedStart) {
         if (range.getMinValue() == null) Assert.fail("Expected valid start date in range " + range);
-        Assert.assertEquals(
-                "Range " + range + " should have start", expectedStart, range.getMinValue());
+        Assert.assertEquals("Range " + range + " should have start", expectedStart, range.getMinValue());
     }
 
     public static void assertRangeEnds(DateRange range, Date expectedEnd) {
         if (range.getMaxValue() == null) Assert.fail("Expected valid end date in range " + range);
-        Assert.assertEquals(
-                "Range " + range + " should have end", expectedEnd, range.getMaxValue());
+        Assert.assertEquals("Range " + range + " should have end", expectedEnd, range.getMaxValue());
     }
 }

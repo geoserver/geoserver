@@ -37,18 +37,14 @@ class GetDomainValuesTransformer extends TransformerBase {
         @Override
         public void encode(Object object) throws IllegalArgumentException {
             if (!(object instanceof Domains)) {
-                throw new IllegalArgumentException(
-                        "Expected domains info but instead got: "
-                                + object.getClass().getCanonicalName());
+                throw new IllegalArgumentException("Expected domains info but instead got: "
+                        + object.getClass().getCanonicalName());
             }
             Domains domains = (Domains) object;
-            Attributes nameSpaces =
-                    createAttributes(
-                            new String[] {
-                                "xmlns",
-                                        "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
-                                "xmlns:ows", "http://www.opengis.net/ows/1.1"
-                            });
+            Attributes nameSpaces = createAttributes(new String[] {
+                "xmlns", "http://demo.geo-solutions.it/share/wmts-multidim/wmts_multi_dimensional.xsd",
+                "xmlns:ows", "http://www.opengis.net/ows/1.1"
+            });
             start("DomainValues", nameSpaces);
             Dimension dimension = domains.getDimensions().get(0);
             element("ows:Identifier", dimension.getDimensionName());
@@ -58,10 +54,9 @@ class GetDomainValuesTransformer extends TransformerBase {
                 element("FromValue", domains.getFromValue());
             }
             Query query = new Query(null, domains.getFilter());
-            List<String> values =
-                    dimension.getPagedDomainValuesAsStrings(
-                                    query, domains.getMaxReturnedValues(), domains.getSortOrder())
-                            .second;
+            List<String> values = dimension.getPagedDomainValuesAsStrings(
+                            query, domains.getMaxReturnedValues(), domains.getSortOrder())
+                    .second;
             element("Domain", values.stream().collect(Collectors.joining(",")));
             element("Size", String.valueOf(values.size()));
 

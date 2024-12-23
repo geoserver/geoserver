@@ -163,16 +163,12 @@ public class LegacyFeatureTypeInfoReader {
         if (legendURL != null) {
             Map<String, Object> map = new HashMap<>();
             map.put("width", Integer.parseInt(ReaderUtils.getAttribute(legendURL, "width", true)));
-            map.put(
-                    "height",
-                    Integer.parseInt(ReaderUtils.getAttribute(legendURL, "height", true)));
+            map.put("height", Integer.parseInt(ReaderUtils.getAttribute(legendURL, "height", true)));
             map.put("format", ReaderUtils.getChildText(legendURL, "Format", true));
             map.put(
                     "onlineResource",
                     ReaderUtils.getAttribute(
-                            ReaderUtils.getChildElement(legendURL, "OnlineResource", true),
-                            "xlink:href",
-                            true));
+                            ReaderUtils.getChildElement(legendURL, "OnlineResource", true), "xlink:href", true));
             return map;
         }
 
@@ -232,8 +228,7 @@ public class LegacyFeatureTypeInfoReader {
     }
 
     public int regionateFeatureLimit() {
-        Element regionateFeatureLimit =
-                ReaderUtils.getChildElement(featureType, "regionateFeatureLimit");
+        Element regionateFeatureLimit = ReaderUtils.getChildElement(featureType, "regionateFeatureLimit");
         try {
             return Integer.valueOf(regionateFeatureLimit.getAttribute("value"));
         } catch (Exception e) {

@@ -55,8 +55,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
         double[] lower = ordinates(bbox.getLowerCorner());
         double[] upper = ordinates(bbox.getUpperCorner());
 
-        if (ReferencedEnvelope.class.isAssignableFrom(getType())
-                || BoundingBox.class.isAssignableFrom(getType())) {
+        if (ReferencedEnvelope.class.isAssignableFrom(getType()) || BoundingBox.class.isAssignableFrom(getType())) {
             return new ReferencedEnvelope(lower[0], upper[0], lower[1], upper[1], crs);
         } else if (Envelope.class.isAssignableFrom(getType())) {
             return new Envelope(lower[0], upper[0], lower[1], upper[1]);
@@ -65,10 +64,9 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
             ge.setCoordinateReferenceSystem(crs);
             return ge;
         } else {
-            throw new WPSException(
-                    "Failed to convert from OWS 1.1 Bounding box type "
-                            + "to the internal representation: "
-                            + getType());
+            throw new WPSException("Failed to convert from OWS 1.1 Bounding box type "
+                    + "to the internal representation: "
+                    + getType());
         }
     }
 
@@ -113,8 +111,7 @@ public class BoundingBoxPPIO extends ProcessParameterIO {
             bbox.setLowerCorner(doubleArrayToList(env.getLowerCorner().getCoordinate()));
             bbox.setUpperCorner(doubleArrayToList(env.getUpperCorner().getCoordinate()));
         } else {
-            throw new WPSException(
-                    "Failed to convert from " + object + " to an OWS 1.1 Bounding box type");
+            throw new WPSException("Failed to convert from " + object + " to an OWS 1.1 Bounding box type");
         }
 
         // handle the EPSG code

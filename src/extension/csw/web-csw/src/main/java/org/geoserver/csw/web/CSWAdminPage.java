@@ -48,27 +48,18 @@ public class CSWAdminPage extends BaseServiceAdminPage<CSWInfo> {
             metadata.setObject(new MetadataMap());
         }
 
-        DirectDownloadSettings settings =
-                DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
+        DirectDownloadSettings settings = DirectDownloadSettings.getSettingsFromMetadata(metadata.getObject(), null);
         if (settings == null) {
-            metadata.getObject()
-                    .put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
+            metadata.getObject().put(DirectDownloadSettings.DIRECTDOWNLOAD_KEY, new DirectDownloadSettings());
         }
 
-        IModel<DirectDownloadSettings> directDownloadModel =
-                new MetadataMapModel<>(
-                        metadata,
-                        DirectDownloadSettings.DIRECTDOWNLOAD_KEY,
-                        DirectDownloadSettings.class);
+        IModel<DirectDownloadSettings> directDownloadModel = new MetadataMapModel<>(
+                metadata, DirectDownloadSettings.DIRECTDOWNLOAD_KEY, DirectDownloadSettings.class);
 
-        form.add(
-                new CheckBox(
-                        "directDownloadEnabled",
-                        new PropertyModel<>(directDownloadModel, "directDownloadEnabled")));
+        form.add(new CheckBox(
+                "directDownloadEnabled", new PropertyModel<>(directDownloadModel, "directDownloadEnabled")));
         TextField<Integer> maxDownloadSize =
-                new TextField<>(
-                        "maxDownloadSize",
-                        new PropertyModel<>(directDownloadModel, "maxDownloadSize"));
+                new TextField<>("maxDownloadSize", new PropertyModel<>(directDownloadModel, "maxDownloadSize"));
         maxDownloadSize.add(RangeValidator.minimum(0L));
         form.add(maxDownloadSize);
     }

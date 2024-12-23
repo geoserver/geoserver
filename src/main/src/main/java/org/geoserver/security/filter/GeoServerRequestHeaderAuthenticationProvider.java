@@ -20,10 +20,7 @@ public class GeoServerRequestHeaderAuthenticationProvider extends AbstractFilter
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream()
-                .alias(
-                        "requestHeaderAuthentication",
-                        RequestHeaderAuthenticationFilterConfig.class);
+        xp.getXStream().alias("requestHeaderAuthentication", RequestHeaderAuthenticationFilterConfig.class);
     }
 
     @Override

@@ -44,8 +44,7 @@ public class HTTPURLsListTextArea extends TextArea<List<String>> {
     private static class URLsListConverter implements IConverter<List<String>> {
         private static final long serialVersionUID = 1083795866666107798L;
 
-        static final Pattern NEW_LINE_SEPARATED =
-                Pattern.compile("\\s*\\r?\\n\\s*", Pattern.MULTILINE);
+        static final Pattern NEW_LINE_SEPARATED = Pattern.compile("\\s*\\r?\\n\\s*", Pattern.MULTILINE);
 
         @Override
         public String convertToString(List<String> urlsList, Locale locale) {
@@ -76,10 +75,9 @@ public class HTTPURLsListTextArea extends TextArea<List<String>> {
             List<String> invalid =
                     urlsList.stream().filter(url -> !isValid(url)).collect(Collectors.toList());
             if (!invalid.isEmpty()) {
-                IValidationError err =
-                        new ValidationError()
-                                .addKey("HTTPURLsListTextArea.invalidURL")
-                                .setVariable("url", invalid.toString());
+                IValidationError err = new ValidationError()
+                        .addKey("HTTPURLsListTextArea.invalidURL")
+                        .setVariable("url", invalid.toString());
                 validatable.error(err);
             }
         }

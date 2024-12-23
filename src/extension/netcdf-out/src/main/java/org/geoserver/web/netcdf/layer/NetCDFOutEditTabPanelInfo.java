@@ -27,8 +27,7 @@ public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
     }
 
     @Override
-    public IModel<CoverageInfo> createOwnModel(
-            IModel<? extends LayerInfo> layerModel, boolean isNew) {
+    public IModel<CoverageInfo> createOwnModel(IModel<? extends LayerInfo> layerModel, boolean isNew) {
         CoverageInfo info = (CoverageInfo) layerModel.getObject().getResource();
         // Check if the MetadataMap already contains the NetCDF Settings
         MetadataMap map = info.getMetadata();
@@ -41,8 +40,7 @@ public class NetCDFOutEditTabPanelInfo extends LayerEditTabPanelInfo {
             GeoServer gs = GeoServerExtensions.bean(GeoServer.class);
             MetadataMap globalMap = gs.getGlobal().getSettings().getMetadata();
             NetCDFSettingsContainer globalContainer =
-                    globalMap.get(
-                            NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
+                    globalMap.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
             // If not present, create a new container
             if (globalContainer == null) {
                 globalContainer = new NetCDFSettingsContainer();

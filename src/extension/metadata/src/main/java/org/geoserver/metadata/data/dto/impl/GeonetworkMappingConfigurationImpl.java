@@ -15,8 +15,8 @@ import org.geoserver.metadata.data.dto.NamespaceConfiguration;
 /**
  * Toplevel Object that matches yaml structure.
  *
- * <p>This part or the yaml contains the configuration that matches fields in the xml (Xpath
- * expressions) to the field configuration of the geoserver metadata GUI.
+ * <p>This part or the yaml contains the configuration that matches fields in the xml (Xpath expressions) to the field
+ * configuration of the geoserver metadata GUI.
  *
  * <p>example of the yaml file: metadata-mapping.yaml
  *

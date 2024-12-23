@@ -34,10 +34,7 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
     String roleServiceName;
 
     public SelectionRoleRemovalLink(
-            String roleServiceName,
-            String id,
-            GeoServerTablePanel<GeoServerRole> roles,
-            GeoServerDialog dialog) {
+            String roleServiceName, String id, GeoServerTablePanel<GeoServerRole> roles, GeoServerDialog dialog) {
         super(id);
         this.roles = roles;
         this.dialog = dialog;
@@ -55,84 +52,73 @@ public class SelectionRoleRemovalLink extends AjaxLink<Object> {
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(
                 target,
-                delegate =
-                        new GeoServerDialog.DialogDelegate() {
+                delegate = new GeoServerDialog.DialogDelegate() {
+                    private static final long serialVersionUID = 1L;
+
+                    @Override
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        return removePanel = new ConfirmRemovalRolePanel(id, selection) {
                             private static final long serialVersionUID = 1L;
 
                             @Override
-                            protected Component getContents(String id) {
-                                // show a confirmation panel for all the objects we have to remove
-                                return removePanel =
-                                        new ConfirmRemovalRolePanel(id, selection) {
-                                            private static final long serialVersionUID = 1L;
-
-                                            @Override
-                                            protected IModel<String> canRemove(GeoServerRole role) {
-                                                return SelectionRoleRemovalLink.this.canRemove(
-                                                        role);
-                                            }
-                                        };
+                            protected IModel<String> canRemove(GeoServerRole role) {
+                                return SelectionRoleRemovalLink.this.canRemove(role);
                             }
+                        };
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                // cascade delete the whole selection
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        // cascade delete the whole selection
 
-                                GeoServerRoleStore gaStore = null;
-                                try {
-                                    GeoServerRoleService gaService =
-                                            GeoServerApplication.get()
-                                                    .getSecurityManager()
-                                                    .loadRoleService(roleServiceName);
-                                    gaStore =
-                                            new RoleStoreValidationWrapper(gaService.createStore());
-                                    for (GeoServerRole role : removePanel.getRoots()) {
-                                        gaStore.removeRole(role);
-                                    }
-                                    gaStore.store();
-                                } catch (IOException ex) {
-                                    try {
-                                        if (gaStore != null) gaStore.load();
-                                    } catch (IOException ex2) {
-                                    }
-                                    throw new RuntimeException(ex);
-                                }
-                                // the deletion will have changed what we see in the page
-                                // so better clear out the selection
-                                roles.clearSelection();
-                                return true;
+                        GeoServerRoleStore gaStore = null;
+                        try {
+                            GeoServerRoleService gaService = GeoServerApplication.get()
+                                    .getSecurityManager()
+                                    .loadRoleService(roleServiceName);
+                            gaStore = new RoleStoreValidationWrapper(gaService.createStore());
+                            for (GeoServerRole role : removePanel.getRoots()) {
+                                gaStore.removeRole(role);
                             }
-
-                            @Override
-                            public void onClose(AjaxRequestTarget target) {
-                                // if the selection has been cleared out it's sign a deletion
-                                // occurred, so refresh the table
-                                if (roles.getSelection().isEmpty()) {
-                                    setEnabled(false);
-                                    target.add(SelectionRoleRemovalLink.this);
-                                    target.add(roles);
-                                }
+                            gaStore.store();
+                        } catch (IOException ex) {
+                            try {
+                                if (gaStore != null) gaStore.load();
+                            } catch (IOException ex2) {
                             }
-                        });
+                            throw new RuntimeException(ex);
+                        }
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        roles.clearSelection();
+                        return true;
+                    }
+
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (roles.getSelection().isEmpty()) {
+                            setEnabled(false);
+                            target.add(SelectionRoleRemovalLink.this);
+                            target.add(roles);
+                        }
+                    }
+                });
     }
 
     protected IModel<String> canRemove(GeoServerRole role) {
 
         GeoServerRoleService gaService = null;
         try {
-            gaService =
-                    GeoServerApplication.get()
-                            .getSecurityManager()
-                            .loadRoleService(roleServiceName);
-            boolean isActive =
-                    GeoServerApplication.get()
-                            .getSecurityManager()
-                            .getActiveRoleService()
-                            .getName()
-                            .equals(roleServiceName);
-            RoleServiceValidationWrapper valService =
-                    new RoleServiceValidationWrapper(gaService, isActive);
+            gaService = GeoServerApplication.get().getSecurityManager().loadRoleService(roleServiceName);
+            boolean isActive = GeoServerApplication.get()
+                    .getSecurityManager()
+                    .getActiveRoleService()
+                    .getName()
+                    .equals(roleServiceName);
+            RoleServiceValidationWrapper valService = new RoleServiceValidationWrapper(gaService, isActive);
             valService.checkRoleIsMapped(role);
             valService.checkRoleIsUsed(role);
         } catch (IOException e) {

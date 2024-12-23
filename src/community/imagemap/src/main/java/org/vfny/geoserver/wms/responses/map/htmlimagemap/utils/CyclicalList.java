@@ -5,8 +5,8 @@
  */
 package org.vfny.geoserver.wms.responses.map.htmlimagemap.utils;
 /**
- * Cyclical implementation of ArrayList: when a not available index is used, then index is wrapped
- * until it falls in tre available index range.
+ * Cyclical implementation of ArrayList: when a not available index is used, then index is wrapped until it falls in tre
+ * available index range.
  *
  * @author m.bartolomeoli
  */

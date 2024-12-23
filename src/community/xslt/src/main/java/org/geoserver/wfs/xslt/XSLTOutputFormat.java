@@ -88,9 +88,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         // check the format matches, the Dispatcher just does a case insensitive match,
         // but WFS is supposed to be case sensitive and so is the XSLT code
         Request request = Dispatcher.REQUEST.get();
-        if (request != null
-                && (request.getOutputFormat() == null
-                        || !formats.containsKey(request.getOutputFormat()))) {
+        if (request != null && (request.getOutputFormat() == null || !formats.containsKey(request.getOutputFormat()))) {
             LOGGER.log(Level.FINE, "Formats are: " + formats);
             return false;
         } else {
@@ -142,8 +140,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
             // concatenate all feature types requested
 
             StringBuilder sb = new StringBuilder();
-            if (request.getFormatOptions() != null
-                    && request.getFormatOptions().containsKey("FILENAME")) {
+            if (request.getFormatOptions() != null && request.getFormatOptions().containsKey("FILENAME")) {
                 sb.append((String) request.getFormatOptions().get("FILENAME"));
             } else {
                 for (FeatureCollection fc : featureCollections.getFeatures()) {
@@ -176,10 +173,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    protected void write(
-            final FeatureCollectionResponse featureCollection,
-            OutputStream output,
-            Operation operation)
+    protected void write(final FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException, ServiceException {
         // get the transformation we need
         TransformInfo info = locateTransformation(featureCollection, operation);
@@ -201,12 +195,11 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         // lookup the operation we are going to use
         final Response sourceResponse = findSourceResponse(sourceOperation, info);
         if (sourceResponse == null) {
-            throw new WFSException(
-                    "Could not locate a response that can generate the desired source format '"
-                            + info.getSourceFormat()
-                            + "' for transformation '"
-                            + info.getName()
-                            + "'");
+            throw new WFSException("Could not locate a response that can generate the desired source format '"
+                    + info.getSourceFormat()
+                    + "' for transformation '"
+                    + info.getName()
+                    + "'");
         }
 
         // prepare the stream connections, so that we can do the transformation on the fly
@@ -214,13 +207,11 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
                 PipedOutputStream pos = new PipedOutputStream(pis)) {
 
             // submit the source output format execution, tracking exceptions
-            Future<Void> future =
-                    executor.submit(
-                            () -> {
-                                sourceResponse.write(featureCollection, pos, sourceOperation);
-                                pos.close(); // or the piped input stream will never finish
-                                return null;
-                            });
+            Future<Void> future = executor.submit(() -> {
+                sourceResponse.write(featureCollection, pos, sourceOperation);
+                pos.close(); // or the piped input stream will never finish
+                return null;
+            });
 
             // run the transformation
             TransformerException transformerException = null;
@@ -235,12 +226,10 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
                 future.get();
             } catch (Exception e) {
                 throw new WFSException(
-                        "Failed to run the output format generating the source for the XSTL transformation",
-                        e);
+                        "Failed to run the output format generating the source for the XSTL transformation", e);
             }
             if (transformerException != null) {
-                throw new WFSException(
-                        "Failed to run the XSTL transformation", transformerException);
+                throw new WFSException("Failed to run the XSTL transformation", transformerException);
             }
         }
     }
@@ -250,23 +239,17 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
             EObject originalParam = (EObject) operation.getParameters()[0];
             EObject copy = EcoreUtil.copy(originalParam);
             BeanUtils.setProperty(copy, "outputFormat", info.getSourceFormat());
-            final Operation sourceOperation =
-                    new Operation(
-                            operation.getId(),
-                            operation.getService(),
-                            operation.getMethod(),
-                            new Object[] {copy});
+            final Operation sourceOperation = new Operation(
+                    operation.getId(), operation.getService(), operation.getMethod(), new Object[] {copy});
             return sourceOperation;
         } catch (Exception e) {
-            throw new WFSException(
-                    "Failed to create the source operation for XSLT, this is unexpected", e);
+            throw new WFSException("Failed to create the source operation for XSLT, this is unexpected", e);
         }
     }
 
     private Response findSourceResponse(Operation sourceOperation, TransformInfo info) {
         for (Response r : responses) {
-            if (r.getOutputFormats().contains(info.getSourceFormat())
-                    && r.canHandle(sourceOperation)) {
+            if (r.getOutputFormats().contains(info.getSourceFormat()) && r.canHandle(sourceOperation)) {
                 return r;
             }
         }
@@ -274,8 +257,8 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         return null;
     }
 
-    private TransformInfo locateTransformation(
-            FeatureCollectionResponse collections, Operation operation) throws IOException {
+    private TransformInfo locateTransformation(FeatureCollectionResponse collections, Operation operation)
+            throws IOException {
         GetFeatureRequest req = GetFeatureRequest.adapt(operation.getParameters()[0]);
         String outputFormat = req.getOutputFormat();
 
@@ -326,8 +309,7 @@ public class XSLTOutputFormat extends WFSGetFeatureOutputFormat
         return result;
     }
 
-    private TransformInfo filterByOutputFormat(
-            String outputFormat, List<TransformInfo> transforms) {
+    private TransformInfo filterByOutputFormat(String outputFormat, List<TransformInfo> transforms) {
         for (TransformInfo tx : transforms) {
             if (outputFormat.equals(tx.getOutputFormat())) {
                 return tx;

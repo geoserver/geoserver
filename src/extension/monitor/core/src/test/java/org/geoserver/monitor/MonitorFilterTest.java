@@ -53,21 +53,17 @@ public class MonitorFilterTest {
 
         filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
 
-        chain =
-                new MockFilterChain(
-                        new HttpServlet() {
-                            @Override
-                            public void service(ServletRequest req, ServletResponse res)
-                                    throws ServletException, IOException {
-                                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
-                                res.getOutputStream().write(new byte[0]);
-                            }
-                        });
+        chain = new MockFilterChain(new HttpServlet() {
+            @Override
+            public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                res.getOutputStream().write(new byte[0]);
+            }
+        });
 
         filter.monitor.config.props.put(
                 "maxBodySize",
-                Integer.toString(
-                        MAX_BODY_SIZE)); // Ensure the configured property is correct for the tests
+                Integer.toString(MAX_BODY_SIZE)); // Ensure the configured property is correct for the tests
     }
 
     @After
@@ -88,16 +84,13 @@ public class MonitorFilterTest {
 
     @Test
     public void testWithBody() throws Exception {
-        chain =
-                new MockFilterChain(
-                        new HttpServlet() {
-                            @Override
-                            public void service(ServletRequest req, ServletResponse res)
-                                    throws ServletException, IOException {
-                                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
-                                res.getOutputStream().write("hello".getBytes());
-                            }
-                        });
+        chain = new MockFilterChain(new HttpServlet() {
+            @Override
+            public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                res.getOutputStream().write("hello".getBytes());
+            }
+        });
 
         HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", "baz", null);
         filter.doFilter(req, response(), chain);
@@ -115,16 +108,13 @@ public class MonitorFilterTest {
 
     @Test
     public void testWithLongBody() throws Exception {
-        chain =
-                new MockFilterChain(
-                        new HttpServlet() {
-                            @Override
-                            public void service(ServletRequest req, ServletResponse res)
-                                    throws ServletException, IOException {
-                                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
-                                res.getOutputStream().write("hello".getBytes());
-                            }
-                        });
+        chain = new MockFilterChain(new HttpServlet() {
+            @Override
+            public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+                req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                res.getOutputStream().write("hello".getBytes());
+            }
+        });
 
         StringBuilder b = new StringBuilder();
 
@@ -142,11 +132,8 @@ public class MonitorFilterTest {
 
         RequestData data = dao.getLast();
 
-        assertEquals(
-                wanted_body, new String(data.getBody())); // Should be trimmed to the maximum length
-        assertEquals(
-                LONG_BODY_SIZE,
-                data.getBodyContentLength()); // Should be the full length, not the trimmed one
+        assertEquals(wanted_body, new String(data.getBody())); // Should be trimmed to the maximum length
+        assertEquals(LONG_BODY_SIZE, data.getBodyContentLength()); // Should be the full length, not the trimmed one
     }
 
     @Test
@@ -155,23 +142,19 @@ public class MonitorFilterTest {
 
         filter.monitor.config.props.put(
                 "maxBodySize",
-                Integer.toString(
-                        UNBOUNDED_BODY_SIZE)); // Ensure the configured property is correct for the
+                Integer.toString(UNBOUNDED_BODY_SIZE)); // Ensure the configured property is correct for the
         // tests
 
-        chain =
-                new MockFilterChain(
-                        new HttpServlet() {
-                            @Override
-                            @SuppressWarnings("PMD.EmptyControlStatement")
-                            public void service(ServletRequest req, ServletResponse res)
-                                    throws ServletException, IOException {
-                                while (req.getInputStream().read() != -1)
-                                    ; // "read" the stream until the end.
-                                req.getInputStream().read();
-                                res.getOutputStream().write("hello".getBytes());
-                            }
-                        });
+        chain = new MockFilterChain(new HttpServlet() {
+            @Override
+            @SuppressWarnings("PMD.EmptyControlStatement")
+            public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+                while (req.getInputStream().read() != -1)
+                    ; // "read" the stream until the end.
+                req.getInputStream().read();
+                res.getOutputStream().write("hello".getBytes());
+            }
+        });
 
         StringBuilder b = new StringBuilder();
 
@@ -187,17 +170,14 @@ public class MonitorFilterTest {
 
         RequestData data = dao.getLast();
 
+        assertEquals(wanted_body, new String(data.getBody())); // Should be trimmed to the maximum length
         assertEquals(
-                wanted_body, new String(data.getBody())); // Should be trimmed to the maximum length
-        assertEquals(
-                UNBOUNDED_BODY_SIZE,
-                data.getBodyContentLength()); // Should be the full length, not the trimmed one
+                UNBOUNDED_BODY_SIZE, data.getBodyContentLength()); // Should be the full length, not the trimmed one
     }
 
     @Test
     public void testReferer() throws Exception {
-        HttpServletRequest req =
-                request("GET", "/foo/bar", "12.34.56.78", null, "http://testhost/testpath");
+        HttpServletRequest req = request("GET", "/foo/bar", "12.34.56.78", null, "http://testhost/testpath");
         filter.doFilter(req, response(), chain);
 
         RequestData data = dao.getLast();
@@ -264,13 +244,11 @@ public class MonitorFilterTest {
 
         MockHttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
         MockHttpServletResponse response = response();
-        RenderTimeStatistics statistics =
-                (RenderTimeStatistics) req.getAttribute(RenderTimeStatistics.ID);
+        RenderTimeStatistics statistics = (RenderTimeStatistics) req.getAttribute(RenderTimeStatistics.ID);
         filter.doFilter(req, response, chain);
         RequestData data = this.dao.getLast();
         String layerNamesList = statistics.getLayerNames().toString();
-        assertEquals(
-                data.getResourcesList(), layerNamesList.substring(1, layerNamesList.length() - 1));
+        assertEquals(data.getResourcesList(), layerNamesList.substring(1, layerNamesList.length() - 1));
         assertNotEquals(
                 data.getResourcesProcessingTimeList()
                         .indexOf(statistics.getRenderingTime(0).toString()),
@@ -288,16 +266,13 @@ public class MonitorFilterTest {
             // step 2 : verify DND lookup is disabled when run with ignore option
             filter = new MonitorFilter(new Monitor(dao), new MonitorRequestFilter());
             filter.monitor.config.props.put("ignorePostProcessors", "reverseDNS");
-            chain =
-                    new MockFilterChain(
-                            new HttpServlet() {
-                                @Override
-                                public void service(ServletRequest req, ServletResponse res)
-                                        throws ServletException, IOException {
-                                    req.getInputStream().read(new byte[LONG_BODY_SIZE]);
-                                    res.getOutputStream().write(new byte[0]);
-                                }
-                            });
+            chain = new MockFilterChain(new HttpServlet() {
+                @Override
+                public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+                    req.getInputStream().read(new byte[LONG_BODY_SIZE]);
+                    res.getOutputStream().write(new byte[0]);
+                }
+            });
 
             principal = new User("username", "", Collections.emptyList());
             data = testRemoteUser(principal);
@@ -324,10 +299,9 @@ public class MonitorFilterTest {
             Authentication authentication = new TestingAuthenticationToken(principal, null);
             SecurityContextHolder.getContext().setAuthentication(authentication);
             final CompletableFuture<Authentication> authFuture = new CompletableFuture<>();
-            filter.setExecutionAudit(
-                    (data, auth) -> {
-                        authFuture.complete(auth);
-                    });
+            filter.setExecutionAudit((data, auth) -> {
+                authFuture.complete(auth);
+            });
             HttpServletRequest req = request("POST", "/bar/foo", "78.56.34.12", null, null);
             filter.doFilter(req, response(), chain);
 
@@ -341,8 +315,7 @@ public class MonitorFilterTest {
         }
     }
 
-    MockHttpServletRequest request(
-            String method, String path, String remoteAddr, String body, String referer)
+    MockHttpServletRequest request(String method, String path, String remoteAddr, String body, String referer)
             throws UnsupportedEncodingException {
         MockHttpServletRequest req = new MockHttpServletRequest();
         req.setMethod(method);
@@ -350,8 +323,7 @@ public class MonitorFilterTest {
         req.setServletPath(path.substring(0, path.indexOf('/', 1)));
         req.setPathInfo(path.substring(path.indexOf('/', 1)));
         req.setRemoteAddr(remoteAddr);
-        if (body == null)
-            body = ""; // MockHttpServletRequest#getInputStream doesn't like null bodies
+        if (body == null) body = ""; // MockHttpServletRequest#getInputStream doesn't like null bodies
         // and throws NullPointerException. It should probably do something useful like return an
         // empty stream or throw
         // IOException.

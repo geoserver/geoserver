@@ -27,9 +27,8 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetLegendGraphicAll() throws Exception {
-        try (InputStream is =
-                getBinary(
-                        "wms?request=GetLegendGraphic&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+        try (InputStream is = getBinary(
+                "wms?request=GetLegendGraphic&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
 
             BufferedImage imageBuffer = ImageIO.read(is);
             // ImageIO.write(imageBuffer, "PNG", new File("/tmp/image.png"));
@@ -42,9 +41,8 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetLegendGraphicBlueRule() throws Exception {
-        try (InputStream is =
-                getBinary(
-                        "wms?request=GetLegendGraphic&rule=xrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+        try (InputStream is = getBinary(
+                "wms?request=GetLegendGraphic&rule=xrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
 
             BufferedImage imageBuffer = ImageIO.read(is);
             assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
@@ -54,9 +52,8 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetLegendGraphicRedRule() throws Exception {
-        try (InputStream is =
-                getBinary(
-                        "wms?request=GetLegendGraphic&rule=yrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+        try (InputStream is = getBinary(
+                "wms?request=GetLegendGraphic&rule=yrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
             BufferedImage imageBuffer = ImageIO.read(is);
             assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
             assertPixel(imageBuffer, 10, 10, new Color(255, 0, 0));
@@ -65,9 +62,8 @@ public class WmsGetLegendGraphicTest extends AbstractAppSchemaTestSupport {
 
     @Test
     public void testGetLegendGraphicGreenRule() throws Exception {
-        try (InputStream is =
-                getBinary(
-                        "wms?request=GetLegendGraphic&rule=zrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
+        try (InputStream is = getBinary(
+                "wms?request=GetLegendGraphic&rule=zrule&SRS=EPSG:4326&layer=gsml:MappedFeature&style=outcropcharacter&X=0&Y=0&width=20&height=20&FORMAT=image/png")) {
             BufferedImage imageBuffer = ImageIO.read(is);
             assertNotBlank("app-schema test getmap outcrop character", imageBuffer, Color.WHITE);
             assertPixel(imageBuffer, 10, 10, new Color(0, 255, 0));

@@ -20,8 +20,7 @@ public class GeoServerRememberMeAuthenticationProvider extends AbstractFilterPro
     @Override
     public void configure(XStreamPersister xp) {
         super.configure(xp);
-        xp.getXStream()
-                .alias("rememberMeAuthentication", RememberMeAuthenticationFilterConfig.class);
+        xp.getXStream().alias("rememberMeAuthentication", RememberMeAuthenticationFilterConfig.class);
     }
 
     @Override

@@ -56,9 +56,7 @@ public enum JSONType {
 
     public static final String jsonp = "text/javascript";
 
-    /**
-     * The key of the property to enable the JSonp responses This property is set default to false.
-     */
+    /** The key of the property to enable the JSonp responses This property is set default to false. */
     public static final String ENABLE_JSONP_KEY = "ENABLE_JSONP";
 
     private static boolean jsonpEnabled = isJsonpPropertyEnabled();
@@ -86,10 +84,7 @@ public enum JSONType {
 
     private static ReadWriteLock lock = new ReentrantReadWriteLock(true);
 
-    /**
-     * @return The boolean returned represents the value of the jsonp toggle (if true jsonp is
-     *     enabled)
-     */
+    /** @return The boolean returned represents the value of the jsonp toggle (if true jsonp is enabled) */
     public static boolean isJsonpEnabled() {
         lock.readLock().lock();
         try {
@@ -119,8 +114,8 @@ public enum JSONType {
     /**
      * Parses the ENABLE_JSONP value as a boolean.
      *
-     * @return The boolean returned represents the value true if the string argument of the
-     *     ENABLE_JSONP property is not null and is equal, ignoring case, to the string "true".
+     * @return The boolean returned represents the value true if the string argument of the ENABLE_JSONP property is not
+     *     null and is equal, ignoring case, to the string "true".
      */
     private static boolean isJsonpPropertyEnabled() {
         String jsonp = GeoServerExtensions.getProperty(ENABLE_JSONP_KEY);
@@ -131,8 +126,7 @@ public enum JSONType {
      * Check if the passed MimeType is a valid json
      *
      * @param type the MimeType string representation to check
-     * @return true if type is equalsIgnoreCase to {@link JSONType#json} or to {@link
-     *     JSONType#simple_json}
+     * @return true if type is equalsIgnoreCase to {@link JSONType#json} or to {@link JSONType#simple_json}
      */
     public static boolean isJsonMimeType(String type) {
         return JSONType.json.equalsIgnoreCase(type) || JSONType.simple_json.equalsIgnoreCase(type);
@@ -181,12 +175,10 @@ public enum JSONType {
     }
 
     /**
-     * Can be used when {@link #jsonp} format is specified to resolve the callback parameter into
-     * the FORMAT_OPTIONS map
+     * Can be used when {@link #jsonp} format is specified to resolve the callback parameter into the FORMAT_OPTIONS map
      *
      * @param kvp the kay value pair map of the request
-     * @return The string name of the callback function or the default {@link #CALLBACK_FUNCTION} if
-     *     not found.
+     * @return The string name of the callback function or the default {@link #CALLBACK_FUNCTION} if not found.
      */
     public static String getCallbackFunction(Map kvp) {
         if (!(kvp.get("FORMAT_OPTIONS") instanceof Map)) {
@@ -204,15 +196,13 @@ public enum JSONType {
     }
 
     /**
-     * Can be used when {@link #json} format is specified to resolve the id_policy parameter from
-     * FORMAT_OPTIONS map
+     * Can be used when {@link #json} format is specified to resolve the id_policy parameter from FORMAT_OPTIONS map
      *
-     * <p>GeoJSON does not require use of an id for each feature, this format option can be used to
-     * surpress the use of id (or nominate an specifc attribtue to use).
+     * <p>GeoJSON does not require use of an id for each feature, this format option can be used to surpress the use of
+     * id (or nominate an specifc attribtue to use).
      *
      * @param kvp request key value pair map possibly including format options
-     * @return null to use generated feature id, empty string to surpress id generation, or
-     *     attribute to use
+     * @return null to use generated feature id, empty string to surpress id generation, or attribute to use
      */
     public static String getIdPolicy(Map kvp) {
         if (!(kvp.get("FORMAT_OPTIONS") instanceof Map)) {
@@ -261,8 +251,7 @@ public enum JSONType {
             if (isJsonp) {
                 // jsonp
                 response.setContentType(JSONType.jsonp);
-                JSONType.writeJsonpException(
-                        exception, request, response.getOutputStream(), charset, verbose);
+                JSONType.writeJsonpException(exception, request, response.getOutputStream(), charset, verbose);
             } else {
                 // json
                 @SuppressWarnings("PMD.CloseResource") // wrapper, actual stream managed outside
@@ -281,17 +270,12 @@ public enum JSONType {
                 }
             }
         } catch (Exception e) {
-            if (LOGGER != null && LOGGER.isLoggable(Level.SEVERE))
-                LOGGER.severe(e.getLocalizedMessage());
+            if (LOGGER != null && LOGGER.isLoggable(Level.SEVERE)) LOGGER.severe(e.getLocalizedMessage());
         }
     }
 
     private static void writeJsonpException(
-            ServiceException exception,
-            Request request,
-            OutputStream out,
-            String charset,
-            boolean verbose)
+            ServiceException exception, Request request, OutputStream out, String charset, boolean verbose)
             throws IOException {
 
         OutputStreamWriter outWriter = new OutputStreamWriter(out, charset);
@@ -310,10 +294,7 @@ public enum JSONType {
     }
 
     private static void writeJsonException(
-            ServiceException exception,
-            Request request,
-            OutputStreamWriter outWriter,
-            boolean verbose)
+            ServiceException exception, Request request, OutputStreamWriter outWriter, boolean verbose)
             throws IOException {
         try {
             JSONBuilder json = new JSONBuilder(outWriter);
@@ -344,8 +325,7 @@ public enum JSONType {
             }
             json.endObject().endArray().endObject();
         } catch (JSONException jsonException) {
-            ServiceException serviceException =
-                    new ServiceException("Error: " + jsonException.getMessage());
+            ServiceException serviceException = new ServiceException("Error: " + jsonException.getMessage());
             serviceException.initCause(jsonException);
             throw serviceException;
         }

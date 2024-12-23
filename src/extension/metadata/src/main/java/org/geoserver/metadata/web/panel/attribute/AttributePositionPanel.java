@@ -37,73 +37,60 @@ public class AttributePositionPanel extends Panel {
             List<Integer> derivedAtts,
             GeoServerTablePanel<?> tablePanel) {
         super(id, mapModel);
-        AjaxSubmitLink upLink =
-                new AjaxSubmitLink("up") {
-                    private static final long serialVersionUID = -4165434301439054175L;
+        AjaxSubmitLink upLink = new AjaxSubmitLink("up") {
+            private static final long serialVersionUID = -4165434301439054175L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        moveUpOrDown(mapModel, attConfig, index, -1, tablePanel);
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
-                        tablePanel.clearSelection();
-                        target.add(tablePanel);
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                moveUpOrDown(mapModel, attConfig, index, -1, tablePanel);
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
+                tablePanel.clearSelection();
+                target.add(tablePanel);
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        if (index == 0
-                                || derivedAtts != null
-                                        && (derivedAtts.contains(index)
-                                                || derivedAtts.contains(index - 1))) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
-        upLink.add(
-                new Image(
-                                "upImage",
-                                new PackageResourceReference(
-                                        GeoServerBasePage.class, "img/icons/silk/arrow_up.png"))
-                        .add(new AttributeModifier("alt", new ParamResourceModel("up", this))));
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                if (index == 0
+                        || derivedAtts != null && (derivedAtts.contains(index) || derivedAtts.contains(index - 1))) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
+        upLink.add(new Image(
+                        "upImage", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_up.png"))
+                .add(new AttributeModifier("alt", new ParamResourceModel("up", this))));
         add(upLink);
 
-        AjaxSubmitLink downLink =
-                new AjaxSubmitLink("down") {
-                    private static final long serialVersionUID = -8005026702401617344L;
+        AjaxSubmitLink downLink = new AjaxSubmitLink("down") {
+            private static final long serialVersionUID = -8005026702401617344L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        moveUpOrDown(mapModel, attConfig, index, 1, tablePanel);
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                moveUpOrDown(mapModel, attConfig, index, 1, tablePanel);
 
-                        ((MarkupContainer) tablePanel.get("listContainer").get("items"))
-                                .removeAll();
-                        tablePanel.clearSelection();
-                        target.add(tablePanel);
-                    }
+                ((MarkupContainer) tablePanel.get("listContainer").get("items")).removeAll();
+                tablePanel.clearSelection();
+                target.add(tablePanel);
+            }
 
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        if (index == mapModel.getObject().size(attConfig.getKey()) - 1
-                                || derivedAtts != null
-                                        && (derivedAtts.contains(index)
-                                                || derivedAtts.contains(index + 1))) {
-                            tag.put("class", "visibility-hidden");
-                        } else {
-                            tag.put("class", "visibility-visible");
-                        }
-                    }
-                };
-        downLink.add(
-                new Image(
-                                "downImage",
-                                new PackageResourceReference(
-                                        GeoServerBasePage.class, "img/icons/silk/arrow_down.png"))
-                        .add(new AttributeModifier("alt", new ParamResourceModel("down", this))));
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                if (index == mapModel.getObject().size(attConfig.getKey()) - 1
+                        || derivedAtts != null && (derivedAtts.contains(index) || derivedAtts.contains(index + 1))) {
+                    tag.put("class", "visibility-hidden");
+                } else {
+                    tag.put("class", "visibility-visible");
+                }
+            }
+        };
+        downLink.add(new Image(
+                        "downImage",
+                        new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/arrow_down.png"))
+                .add(new AttributeModifier("alt", new ParamResourceModel("down", this))));
         add(downLink);
     }
 
@@ -116,12 +103,9 @@ public class AttributePositionPanel extends Panel {
 
         if (attConfig.getFieldType() == FieldTypeEnum.COMPLEX) {
             ComplexMetadataService service =
-                    GeoServerApplication.get()
-                            .getApplicationContext()
-                            .getBean(ComplexMetadataService.class);
+                    GeoServerApplication.get().getApplicationContext().getBean(ComplexMetadataService.class);
 
-            ComplexMetadataMap other =
-                    mapModel.getObject().subMap(attConfig.getKey(), index + diff);
+            ComplexMetadataMap other = mapModel.getObject().subMap(attConfig.getKey(), index + diff);
             ComplexMetadataMap current = mapModel.getObject().subMap(attConfig.getKey(), index);
 
             ComplexMetadataMap old = current.clone();

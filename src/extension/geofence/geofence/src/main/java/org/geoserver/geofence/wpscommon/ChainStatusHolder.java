@@ -42,13 +42,12 @@ public class ChainStatusHolder {
         }
         String last = chain.pollLast();
         if (!procName.equals(last)) {
-            LOGGER.severe(
-                    "Returning from ["
-                            + procName
-                            + "], but last called process was ["
-                            + last
-                            + "] for execution ID "
-                            + execId);
+            LOGGER.severe("Returning from ["
+                    + procName
+                    + "], but last called process was ["
+                    + last
+                    + "] for execution ID "
+                    + execId);
             return false;
             //                throw new IllegalStateException(
             //                        "Returning from ["

@@ -43,8 +43,7 @@ import org.junit.Test;
  */
 public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSupport {
 
-    static final QName TIME_WITH_START_END =
-            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
 
     static final QName TIME_ELEVATION_TRUNCATED =
             new QName(MockData.SF_URI, "TimeElevationTruncated", MockData.SF_PREFIX);
@@ -83,8 +82,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         // Use default DimensionInfo setup, should return the "current" time:
         setupFeatureTimeDimension(null);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
@@ -99,15 +97,13 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
+        assertEquals("Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
 
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the closest one", d.getTime(), todayMidnight.getTime());
+        assertEquals("Default time should be the closest one", d.getTime(), todayMidnight.getTime());
     }
 
     @Test
@@ -120,8 +116,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         defaultValueSetting.setReferenceValue(DimensionDefaultValueSetting.TIME_CURRENT);
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
@@ -136,15 +131,13 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
+        assertEquals("Default time should be the closest one", d.getTime(), dayAfterTomorrow.getTime());
 
         Date todayMidnight = addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the closest one", d.getTime(), todayMidnight.getTime());
+        assertEquals("Default time should be the closest one", d.getTime(), todayMidnight.getTime());
     }
 
     @Test
@@ -157,8 +150,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         Date smallest = Date.valueOf("2012-02-11");
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
@@ -193,8 +185,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
@@ -209,15 +200,13 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
+        assertEquals("Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
 
         addFeatureWithTimeTodayMidnight(fid++);
 
         d = (java.util.Date) wms.getDefaultTime(timeWithStartEnd);
         assertNotNull("Default time is null", d);
-        assertEquals(
-                "Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
+        assertEquals("Default time should be the biggest one", d.getTime(), oneYearFromNow.getTime());
     }
 
     @Test
@@ -234,8 +223,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
@@ -267,8 +255,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         defaultValueSetting.setReferenceValue("P1M/PRESENT");
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         // the default should be the range we requested
         java.util.Date curr = new java.util.Date();
@@ -277,10 +264,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
         // check "now" it's in the same minute... should work for even the slowest build server
         assertDateEquals(curr, (java.util.Date) d.getMaxValue(), MILLIS_IN_MINUTE);
         // the beginning
-        assertDateEquals(
-                new Date(curr.getTime() - 30l * MILLIS_IN_DAY),
-                (java.util.Date) d.getMinValue(),
-                60000);
+        assertDateEquals(new Date(curr.getTime() - 30l * MILLIS_IN_DAY), (java.util.Date) d.getMinValue(), 60000);
     }
 
     @Test
@@ -298,8 +282,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         setupFeatureTimeDimension(defaultValueSetting);
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
         Date twoDaysAgo = addFeatureWithTimeTwoDaysAgo(fid++);
         this.addFeature(fid++, twoDaysAgo, Double.valueOf(0d));
@@ -335,18 +318,16 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
 
         setupFeatureTimeDimensionOnTruncated(defaultValueSetting);
 
-        BufferedImage image =
-                getAsImage(
-                        MockData.SF_PREFIX
-                                + "/wms??service=WMS&version=1.1.0&request=GetMap&layers=sf:TimeElevationTruncated"
-                                + "&bbox=-180,-90,180,90&width=768&height=330&srs=EPSG:4326&format=image/png",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                MockData.SF_PREFIX
+                        + "/wms??service=WMS&version=1.1.0&request=GetMap&layers=sf:TimeElevationTruncated"
+                        + "&bbox=-180,-90,180,90&width=768&height=330&srs=EPSG:4326&format=image/png",
+                "image/png");
         assertNotNull(image);
     }
 
     protected void setupFeatureTimeDimension(DimensionDefaultValueSetting defaultValue) {
-        FeatureTypeInfo info =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setAttribute("startTime");
@@ -357,8 +338,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     }
 
     protected void setupFeatureTimeDimensionOnTruncated(DimensionDefaultValueSetting defaultValue) {
-        FeatureTypeInfo info =
-                getCatalog().getFeatureTypeByName(TIME_ELEVATION_TRUNCATED.getLocalPart());
+        FeatureTypeInfo info = getCatalog().getFeatureTypeByName(TIME_ELEVATION_TRUNCATED.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
         di.setAttribute("time");
@@ -371,8 +351,7 @@ public class VectorTimeDimensionDefaultValueTest extends WMSDimensionsTestSuppor
     }
 
     protected void addFeature(int id, Date time, Double elevation) throws IOException {
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         SimpleFeatureStore fs = (SimpleFeatureStore) timeWithStartEnd.getFeatureSource(null, null);
         SimpleFeatureType type = (SimpleFeatureType) timeWithStartEnd.getFeatureType();
         MemoryFeatureCollection coll = new MemoryFeatureCollection(type);

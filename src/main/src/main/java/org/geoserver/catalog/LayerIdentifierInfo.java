@@ -11,8 +11,8 @@ import org.geoserver.catalog.impl.LayerIdentifier;
 /**
  * Support interface for the publication of layer Indentifier elements in WMS capabilities.
  *
- * <p>ID numbers or labels defined by a particular Authority. For example, the Global Change Master
- * Directory (gcmd.gsfc.nasa.gov) defines a DIF_ID label for every dataset.
+ * <p>ID numbers or labels defined by a particular Authority. For example, the Global Change Master Directory
+ * (gcmd.gsfc.nasa.gov) defines a DIF_ID label for every dataset.
  *
  * @author groldan
  * @see LayerIdentifier

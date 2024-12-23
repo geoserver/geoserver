@@ -44,8 +44,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
      *
      * @author Andrea Aime - GeoSolutions
      */
-    private static class ArrayCache
-            extends ConcurrentHashMap<Long, ConcurrentLinkedQueue<SoftReference<?>>> {
+    private static class ArrayCache extends ConcurrentHashMap<Long, ConcurrentLinkedQueue<SoftReference<?>>> {
         private static final long serialVersionUID = -6905685668738379653L;
 
         static final Logger LOGGER = Logging.getLogger(ConcurrentTileFactory.class);
@@ -73,10 +72,9 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
             }
 
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.log(
-                        Level.FINER,
-                        "Recycling tile miss on type:{1}, banks: {2}, arrayLength: {3}",
-                        new Object[] {arrayType, numBanks, arrayLength});
+                LOGGER.log(Level.FINER, "Recycling tile miss on type:{1}, banks: {2}, arrayLength: {3}", new Object[] {
+                    arrayType, numBanks, arrayLength
+                });
             }
             return null;
         }
@@ -90,10 +88,9 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
 
             Long key = getKey(db.getDataType(), db.getNumBanks(), db.getSize());
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.log(
-                        Level.FINER,
-                        "Recycling tile hit on type:{1}, banks: {2}, arrayLength: {3}",
-                        new Object[] {db.getDataType(), db.getNumBanks(), db.getSize()});
+                LOGGER.log(Level.FINER, "Recycling tile hit on type:{1}, banks: {2}, arrayLength: {3}", new Object[] {
+                    db.getDataType(), db.getNumBanks(), db.getSize()
+                });
             }
 
             ConcurrentLinkedQueue<SoftReference<?>> arrays = get(key);
@@ -169,9 +166,8 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
             MultiPixelPackedSampleModel mppsm = (MultiPixelPackedSampleModel) sampleModel;
             numBanks = 1;
             int dataTypeSize = DataBuffer.getDataTypeSize(type);
-            size =
-                    mppsm.getScanlineStride() * mppsm.getHeight()
-                            + (mppsm.getDataBitOffset() + dataTypeSize - 1) / dataTypeSize;
+            size = mppsm.getScanlineStride() * mppsm.getHeight()
+                    + (mppsm.getDataBitOffset() + dataTypeSize - 1) / dataTypeSize;
         } else if (sampleModel instanceof SinglePixelPackedSampleModel) {
             SinglePixelPackedSampleModel sppsm = (SinglePixelPackedSampleModel) sampleModel;
             numBanks = 1;
@@ -253,8 +249,7 @@ public class ConcurrentTileFactory implements TileFactory, TileRecycler {
     static long getBufferSizeCSM(ComponentSampleModel csm) {
         int[] bandOffsets = csm.getBandOffsets();
         int maxBandOff = bandOffsets[0];
-        for (int i = 1; i < bandOffsets.length; i++)
-            maxBandOff = Math.max(maxBandOff, bandOffsets[i]);
+        for (int i = 1; i < bandOffsets.length; i++) maxBandOff = Math.max(maxBandOff, bandOffsets[i]);
 
         long size = 0;
         if (maxBandOff >= 0) size += maxBandOff + 1;

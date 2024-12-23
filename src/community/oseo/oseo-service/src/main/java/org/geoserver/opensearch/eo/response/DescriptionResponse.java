@@ -35,13 +35,11 @@ public class DescriptionResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         OSEODescription description = (OSEODescription) value;
 
         try {
-            DescriptionTransformer transformer =
-                    new DescriptionTransformer(gs.getService(OSEOInfo.class));
+            DescriptionTransformer transformer = new DescriptionTransformer(gs.getService(OSEOInfo.class));
             transformer.setIndentation(2);
             transformer.transform(description, output);
         } catch (TransformerException e) {

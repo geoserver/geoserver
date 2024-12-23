@@ -11,8 +11,8 @@ import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Expands the paths referring to SimpleLiteral instances so that they contain the dc:value ending,
- * and moves the filter against the bbox to the internal geometry
+ * Expands the paths referring to SimpleLiteral instances so that they contain the dc:value ending, and moves the filter
+ * against the bbox to the internal geometry
  *
  * @author Andrea Aime - GeoSolutions
  */

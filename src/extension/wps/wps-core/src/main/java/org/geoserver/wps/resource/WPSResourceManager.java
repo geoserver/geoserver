@@ -58,27 +58,22 @@ import org.springframework.context.event.ContextStoppedEvent;
 import org.xml.sax.SAXException;
 
 /**
- * A WPS process has to deal with various temporary resources during the execution, be streamed and
- * stored inputs, Sextante temporary files, temporary feature types and so on.
+ * A WPS process has to deal with various temporary resources during the execution, be streamed and stored inputs,
+ * Sextante temporary files, temporary feature types and so on.
  *
- * <p>This class manages the lifecycle of these resources, register them here to have their
- * lifecycle properly managed
+ * <p>This class manages the lifecycle of these resources, register them here to have their lifecycle properly managed
  *
- * <p>The design is still very rough, I'm making this up as I go. The class will require
- * modifications to handle asynch process computations as well as resources with a timeout
+ * <p>The design is still very rough, I'm making this up as I go. The class will require modifications to handle asynch
+ * process computations as well as resources with a timeout
  *
  * @author Andrea Aime - GeoSolutions
- *     <p>TODO: we need to have the process statuses to avoid deleting stuff that is being worked on
- *     by another machine
+ *     <p>TODO: we need to have the process statuses to avoid deleting stuff that is being worked on by another machine
  */
 public class WPSResourceManager extends ProcessListenerAdapter
-        implements DispatcherCallback,
-                ApplicationListener<ApplicationEvent>,
-                ApplicationContextAware {
+        implements DispatcherCallback, ApplicationListener<ApplicationEvent>, ApplicationContextAware {
     private static final Logger LOGGER = Logging.getLogger(WPSResourceManager.class);
 
-    static final int COPY_BUFFER_SIZE =
-            Integer.getInteger("org.geoserver.wps.copy.buffer.size", 16386);
+    static final int COPY_BUFFER_SIZE = Integer.getInteger("org.geoserver.wps.copy.buffer.size", 16386);
 
     public static int getCopyBufferSize() {
         return COPY_BUFFER_SIZE;
@@ -126,8 +121,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * Create a new unique id for the process. All resources linked to the process should use this
-     * token to register themselves against the manager
+     * Create a new unique id for the process. All resources linked to the process should use this token to register
+     * themselves against the manager
      */
     public String getExecutionId(Boolean synch) {
         String id = executionId.get();
@@ -143,9 +138,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * ProcessManagers should call this method every time they are running the process in a thread
-     * other than the request thread, and that is not a child of it either (typical case is running
-     * in a thread pool)
+     * ProcessManagers should call this method every time they are running the process in a thread other than the
+     * request thread, and that is not a child of it either (typical case is running in a thread pool)
      */
     void setCurrentExecutionId(String executionId) {
         ExecutionResources resources = resourceCache.get(executionId);
@@ -200,13 +194,10 @@ public class WPSResourceManager extends ProcessListenerAdapter
     /**
      * Returns the url to fetch a output resource using the GetExecutionResult call
      *
-     * @param executionId - optional, if you don't have it the resource manager will use its thread
-     *     local version
-     * @param baseUrl - optional, if you don't have it the resource manager will pick one from
-     *     Dispatcher.REQUEST
+     * @param executionId - optional, if you don't have it the resource manager will use its thread local version
+     * @param baseUrl - optional, if you don't have it the resource manager will pick one from Dispatcher.REQUEST
      */
-    public String getOutputResourceUrl(
-            String executionId, String name, String baseUrl, String mimeType) {
+    public String getOutputResourceUrl(String executionId, String name, String baseUrl, String mimeType) {
         // create the link
         Map<String, String> kvp = new LinkedHashMap<>();
         kvp.put("service", "WPS");
@@ -233,17 +224,14 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * Returns a resource that will be used to store some temporary file for processing sake, and
-     * will mark it for deletion when the process ends
+     * Returns a resource that will be used to store some temporary file for processing sake, and will mark it for
+     * deletion when the process ends
      */
     public Resource getTemporaryResource(String extension) throws IOException {
 
         String executionId = getExecutionId((Boolean) null);
-        Resource resource =
-                artifactsStore.getArtifact(
-                        executionId,
-                        ArtifactType.Temporary,
-                        UUID.randomUUID().toString() + extension);
+        Resource resource = artifactsStore.getArtifact(
+                executionId, ArtifactType.Temporary, UUID.randomUUID().toString() + extension);
         addResource(new WPSResourceResource(resource));
         return resource;
     }
@@ -254,8 +242,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * Gets the stored request file for the specified execution id. It will be available only if the
-     * process is executing asynchronously
+     * Gets the stored request file for the specified execution id. It will be available only if the process is
+     * executing asynchronously
      */
     public Resource getStoredRequest(String executionId) {
         return artifactsStore.getArtifact(executionId, ArtifactType.Request, null);
@@ -278,9 +266,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * Gets the output file if writing output outside of the WPS resource storage is enabled and the
-     * requested file is within the allowed output directory. Also attempts to create the parent
-     * directories for valid output files.
+     * Gets the output file if writing output outside of the WPS resource storage is enabled and the requested file is
+     * within the allowed output directory. Also attempts to create the parent directories for valid output files.
      */
     public File getExternalOutputFile(String outPath, String outFile) throws IOException {
         if (outputDirectory == null) {
@@ -301,8 +288,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
             File parent = file.getParentFile();
             if (!parent.exists() && !parent.mkdirs()) {
                 LOGGER.severe("Unable to create directory: " + parent);
-                throw new WPSException(
-                        "Output file parent directory does not exist and cannot be created");
+                throw new WPSException("Output file parent directory does not exist and cannot be created");
             }
             return file;
         }
@@ -310,10 +296,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
         throw new WPSException("Output file is not in the allowed directory");
     }
 
-    /**
-     * Sets the directory that processes are allowed to write their output to outside of the WPS
-     * resource storage.
-     */
+    /** Sets the directory that processes are allowed to write their output to outside of the WPS resource storage. */
     public void setExternalOutputDirectory(String directory) {
         File file = null;
         if (directory != null && !directory.trim().isEmpty()) {
@@ -380,9 +363,8 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     /**
-     * Cleans up all the resources associated to a certain id. It is called automatically when the
-     * request ends for synchronous processes, for asynch ones it will be triggered by the process
-     * completion
+     * Cleans up all the resources associated to a certain id. It is called automatically when the request ends for
+     * synchronous processes, for asynch ones it will be triggered by the process completion
      */
     public void cleanProcess(String id, boolean cancelled) {
         // delete all resources associated with the process
@@ -391,10 +373,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
             try {
                 resource.delete();
             } catch (Throwable t) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Failed to clean up the WPS resource " + resource.getName(),
-                        t);
+                LOGGER.log(Level.WARNING, "Failed to clean up the WPS resource " + resource.getName(), t);
             }
         }
 
@@ -424,8 +403,7 @@ public class WPSResourceManager extends ProcessListenerAdapter
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         return null;
     }
 

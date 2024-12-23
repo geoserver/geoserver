@@ -79,8 +79,7 @@ public class ImportBaseController extends RestBaseController {
             }
             if (!optional) {
                 throw new RestException(
-                        "No such task: " + taskNumber + " for import: " + context.getId(),
-                        HttpStatus.NOT_FOUND);
+                        "No such task: " + taskNumber + " for import: " + context.getId(), HttpStatus.NOT_FOUND);
             }
         }
         return task;
@@ -90,8 +89,7 @@ public class ImportBaseController extends RestBaseController {
         return transform(importId, taskId, transformId, false);
     }
 
-    ImportTransform transform(
-            Long importId, Integer taskId, Integer transformId, boolean optional) {
+    ImportTransform transform(Long importId, Integer taskId, Integer transformId, boolean optional) {
         ImportTask task = task(importId, taskId);
 
         return transform(task, transformId, optional);
@@ -105,10 +103,7 @@ public class ImportBaseController extends RestBaseController {
             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 LOGGER.log(
                         Level.FINER,
-                        "No transform with  id "
-                                + transformId
-                                + ". Exception message is "
-                                + e.getMessage(),
+                        "No transform with  id " + transformId + ". Exception message is " + e.getMessage(),
                         e);
             }
         }

@@ -34,15 +34,15 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
     public void setObject(T object) {
         super.setObject(object);
         if (object != null) {
-            workspace =
-                    new WorkspaceModel(
-                            resourceFilePanel, object.getResource().getStore().getWorkspace());
+            workspace = new WorkspaceModel(
+                    resourceFilePanel, object.getResource().getStore().getWorkspace());
             store = new StoreModel(resourceFilePanel, object.getResource().getStore());
             name = object.getName();
         } else {
             name = null;
         }
-    };
+    }
+    ;
 
     @Override
     protected T load() {
@@ -57,11 +57,8 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
                 && resourceFilePanel.getLayers() != null
                 && !resourceFilePanel.getLayers().isEmpty()
                 && store.getObject() != null
-                && resourceFilePanel
-                        .getLayers()
-                        .containsKey(((StoreInfo) store.getObject()).getName())) {
-            for (LayerInfo ly :
-                    resourceFilePanel.getLayers().get(((StoreInfo) store.getObject()).getName())) {
+                && resourceFilePanel.getLayers().containsKey(((StoreInfo) store.getObject()).getName())) {
+            for (LayerInfo ly : resourceFilePanel.getLayers().get(((StoreInfo) store.getObject()).getName())) {
                 if (ly.getName().equals(name)) {
                     return (T) ly;
                 }
@@ -70,10 +67,7 @@ public class LayerModel<T extends LayerInfo> extends LoadableDetachableModel<T> 
 
         LayerInfo li = GeoServerApplication.get().getCatalog().getLayerByName(name);
         if (li != null && li.getResource() != null && li.getResource().getStore() != null) {
-            if (li.getResource()
-                    .getStore()
-                    .getName()
-                    .equals(((StoreInfo) store.getObject()).getName())) {
+            if (li.getResource().getStore().getName().equals(((StoreInfo) store.getObject()).getName())) {
                 return (T) li;
             }
         }

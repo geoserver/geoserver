@@ -114,8 +114,7 @@ public class CatalogItemWriter<T> extends CatalogWriter<T> {
 
     private void write(ResourceInfo resourceInfo) {
         if (getCatalog().getResourceByName(resourceInfo.getName(), FeatureTypeInfo.class) == null
-                && getCatalog().getResourceByName(resourceInfo.getName(), CoverageInfo.class)
-                        == null) {
+                && getCatalog().getResourceByName(resourceInfo.getName(), CoverageInfo.class) == null) {
             Class<? extends ResourceInfo> clz = null;
             if (resourceInfo instanceof FeatureTypeInfo) {
                 clz = FeatureTypeInfo.class;

@@ -16,8 +16,6 @@ class SubsetsParser {
     SubsetKvpParser parser = new SubsetKvpParser(":");
 
     List<DimensionSubsetType> parse(String spec) {
-        return KvpUtils.readFlat(spec).stream()
-                .map(s -> parser.parse(s))
-                .collect(Collectors.toList());
+        return KvpUtils.readFlat(spec).stream().map(s -> parser.parse(s)).collect(Collectors.toList());
     }
 }

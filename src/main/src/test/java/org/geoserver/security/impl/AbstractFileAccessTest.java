@@ -37,8 +37,7 @@ public class AbstractFileAccessTest extends GeoServerSystemTestSupport {
 
     @Before
     public void lookupFileAccessManager() {
-        fileAccessManager =
-                GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        fileAccessManager = GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
     }
 
     @Before
@@ -57,8 +56,7 @@ public class AbstractFileAccessTest extends GeoServerSystemTestSupport {
         System.clearProperty(GEOSERVER_DATA_SANDBOX);
 
         // force reloading definitions
-        DefaultFileAccessManager fam =
-                GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
+        DefaultFileAccessManager fam = GeoServerExtensions.bean(DefaultFileAccessManager.class, applicationContext);
         fam.reload();
     }
 

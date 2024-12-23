@@ -67,14 +67,13 @@ import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * Tets the functioning of the abstract legend producer for raster formats, which relies on
- * Geotools' StyledShapePainter.
+ * Tets the functioning of the abstract legend producer for raster formats, which relies on Geotools'
+ * StyledShapePainter.
  *
  * @author Gabriel Roldan
  * @version $Id$
  */
-public class BufferedImageLegendGraphicOutputFormatTest
-        extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
+public class BufferedImageLegendGraphicOutputFormatTest extends BaseLegendTest<BufferedImageLegendGraphicBuilder> {
     @Before
     public void setLegendProducer() throws Exception {
         this.legendProducer = new BufferedImageLegendGraphicBuilder();
@@ -82,29 +81,23 @@ public class BufferedImageLegendGraphicOutputFormatTest
         service = new GetLegendGraphic(getWMS());
     }
     /**
-     * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
-     * has more than one rule, and one of them is requested by the RULE parameter.
+     * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle has more than one
+     * rule, and one of them is requested by the RULE parameter.
      */
     @org.junit.Test
     public void testUserSpecifiedRule() throws Exception {
         // load a style with 3 rules
-        Style multipleRulesStyle =
-                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+        Style multipleRulesStyle = getCatalog()
+                .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                .getStyle();
         assertNotNull(multipleRulesStyle);
 
         Rule rule = multipleRulesStyle.featureTypeStyles().get(0).rules().get(0);
-        LOGGER.info(
-                "testing single rule "
-                        + rule.getName()
-                        + " from style "
-                        + multipleRulesStyle.getName());
+        LOGGER.info("testing single rule " + rule.getName() + " from style " + multipleRulesStyle.getName());
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(multipleRulesStyle);
         req.setRule(rule.getName());
@@ -122,18 +115,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertNotBlank("testUserSpecifiedRule", image, LegendUtils.DEFAULT_BG_COLOR);
 
         // was created only one rule?
-        String errMsg =
-                "expected just one legend of height "
-                        + HEIGHT_HINT
-                        + ", for the rule "
-                        + rule.getName();
+        String errMsg = "expected just one legend of height " + HEIGHT_HINT + ", for the rule " + rule.getName();
         int resultLegendCount = image.getHeight() / HEIGHT_HINT;
         assertEquals(errMsg, 1, resultLegendCount);
     }
 
     /**
-     * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle
-     * has more than one rule, and one of them is requested by the RULE parameter.
+     * Tests that a legend is produced for the explicitly specified rule, when the FeatureTypeStyle has more than one
+     * rule, and one of them is requested by the RULE parameter.
      */
     @org.junit.Test
     public void testRainfall() throws Exception {
@@ -148,8 +137,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(multipleRulesStyle);
             req.setLegendOptions(new HashMap<>());
@@ -179,8 +167,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Tests that the legend graphic is still produced when the request's strict parameter is set to
-     * false and a layer is not specified
+     * Tests that the legend graphic is still produced when the request's strict parameter is set to false and a layer
+     * is not specified
      */
     @org.junit.Test
     public void testNoLayerProvidedAndNonStrictRequest() throws Exception {
@@ -217,13 +205,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         int titleHeight = getTitleHeight(req);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
-        req.setStyle(getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        req.setStyle(getCatalog()
+                .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                .getStyle());
 
         // force antialiasing
         // note - Mac M1 (ARM mode) does not allow non-antialiased text drawing, so we force to "on"
@@ -240,8 +227,9 @@ public class BufferedImageLegendGraphicOutputFormatTest
         int height = image.getHeight();
 
         LegendRequest legend = new LegendRequest(ftInfo.getFeatureType());
-        legend.setStyle(
-                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        legend.setStyle(getCatalog()
+                .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                .getStyle());
         req.getLegends().add(legend);
 
         this.legendProducer.buildLegendGraphic(req);
@@ -275,8 +263,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Looks through the image and counts the number of pixels that are approximately the given
-     * color. This must be greater than minNumber.
+     * Looks through the image and counts the number of pixels that are approximately the given color. This must be
+     * greater than minNumber.
      *
      * @param image image to look through
      * @param color test color
@@ -303,14 +291,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
                 it.getPixel(c, r, components);
 
                 // the pixel we are looking at is grey (i.e. [100,100,100])
-                boolean isGrey =
-                        (components[0] == components[1]) && (components[1] == components[2]);
+                boolean isGrey = (components[0] == components[1]) && (components[1] == components[2]);
                 if (onlyGrey && !isGrey) continue;
 
-                int diff =
-                        Math.abs(testRed - components[0])
-                                + Math.abs(testGreen - components[1])
-                                + Math.abs(testBlue - components[2]);
+                int diff = Math.abs(testRed - components[0])
+                        + Math.abs(testGreen - components[1])
+                        + Math.abs(testBlue - components[2]);
                 if (diff <= tolerance) numberPixelsMatched++;
             }
         }
@@ -327,10 +313,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
         options.put("forceTitles", "off");
         req.setLegendOptions(options);
 
-        FeatureTypeInfo ftInfo =
-                cat.getFeatureTypeByName(
-                        MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                        MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = cat.getFeatureTypeByName(
+                MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
 
         req.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
@@ -344,7 +328,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
         int height = image.getHeight();
 
         LegendRequest legend = new LegendRequest(ftInfo.getFeatureType());
-        legend.setStyle(cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
+        legend.setStyle(
+                cat.getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle());
         req.getLegends().add(legend);
 
         this.legendProducer.buildLegendGraphic(req);
@@ -371,31 +356,27 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertPixel(image, 10, 110, new Color(224, 64, 0));
     }
 
-    /**
-     * Tests that the legend graphic is produced for multiple layers with different style for each
-     * layer.
-     */
+    /** Tests that the legend graphic is produced for multiple layers with different style for each layer. */
     @org.junit.Test
     public void testMultipleLayersWithDifferentStyles() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers = new ArrayList<>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
         layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-        Style style1 =
-                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+        Style style1 = getCatalog()
+                .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                .getStyle();
         req.getLegends().get(0).setStyle(style1);
 
-        Style style2 = getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
+        Style style2 =
+                getCatalog().getStyleByName(MockData.LAKES.getLocalPart()).getStyle();
         req.getLegends().get(1).setStyle(style2);
 
         this.legendProducer.buildLegendGraphic(req);
@@ -413,21 +394,15 @@ public class BufferedImageLegendGraphicOutputFormatTest
         assertPixel(image, 10, 70 + titleHeight * 2, new Color(64, 64, 192));
     }
 
-    /**
-     * Tests that the legend graphic is produced for multiple layers with vector and coverage
-     * layers.
-     */
+    /** Tests that the legend graphic is produced for multiple layers with vector and coverage layers. */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndCoverage() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         int titleHeight = getTitleHeight(req);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers = new ArrayList<>();
         layers.add(ftInfo.getFeatureType());
 
@@ -436,14 +411,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
             layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-            Style style1 =
-                    getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            Style style1 = getCatalog()
+                    .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                    .getStyle();
             req.getLegends().get(0).setStyle(style1);
 
             Style style2 = getCatalog().getStyleByName("rainfall").getStyle();
@@ -474,8 +449,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Tests that the legend graphic is produced for multiple layers with vector and coverage
-     * layers, when coverage is not visible at current scale.
+     * Tests that the legend graphic is produced for multiple layers with vector and coverage layers, when coverage is
+     * not visible at current scale.
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleCoverage() throws Exception {
@@ -483,11 +458,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setScale(1000);
         int titleHeight = getTitleHeight(req);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers = new ArrayList<>();
         layers.add(ftInfo.getFeatureType());
 
@@ -496,14 +468,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             layers.add(feature.getSchema());
 
             layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
-            Style style1 =
-                    getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart()).getStyle();
+            Style style1 = getCatalog()
+                    .getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart())
+                    .getStyle();
             req.getLegends().get(0).setStyle(style1);
             req.getLegends().get(1).setStyle(readSLD("InvisibleRaster.sld"));
 
@@ -532,8 +504,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Tests that the legend graphic is produced for multiple layers, one of which cannot be seen at
-     * the current scale
+     * Tests that the legend graphic is produced for multiple layers, one of which cannot be seen at the current scale
      */
     @org.junit.Test
     public void testMultipleLayersWithVectorAndInvisibleVector() throws Exception {
@@ -541,19 +512,15 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setScale(1000);
         int titleHeight = getTitleHeight(req);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.ROAD_SEGMENTS.getNamespaceURI(),
-                                MockData.ROAD_SEGMENTS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.ROAD_SEGMENTS.getNamespaceURI(), MockData.ROAD_SEGMENTS.getLocalPart());
         List<FeatureType> layers = new ArrayList<>();
         layers.add(ftInfo.getFeatureType());
         layers.add(ftInfo.getFeatureType());
         layers.forEach(ft -> req.getLegends().add(new LegendRequest(ft)));
 
         List<Style> styles = new ArrayList<>();
-        final StyleInfo roadStyle =
-                getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        final StyleInfo roadStyle = getCatalog().getStyleByName(MockData.ROAD_SEGMENTS.getLocalPart());
         styles.add(roadStyle.getStyle());
         styles.add(readSLD("InvisibleLine.sld"));
 
@@ -591,27 +558,12 @@ public class BufferedImageLegendGraphicOutputFormatTest
         CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
         builder.setCRS(crs);
 
-        AttributeType at =
-                new AttributeTypeImpl(
-                        new NameImpl("ID"),
-                        String.class,
-                        false,
-                        false,
-                        Collections.emptyList(),
-                        null,
-                        null);
+        AttributeType at = new AttributeTypeImpl(
+                new NameImpl("ID"), String.class, false, false, Collections.emptyList(), null, null);
         builder.add(new AttributeDescriptorImpl(at, new NameImpl("ID"), 0, 1, false, null));
 
-        GeometryType gt =
-                new GeometryTypeImpl(
-                        new NameImpl("GEOMETRY"),
-                        Geometry.class,
-                        crs,
-                        false,
-                        false,
-                        Collections.emptyList(),
-                        null,
-                        null);
+        GeometryType gt = new GeometryTypeImpl(
+                new NameImpl("GEOMETRY"), Geometry.class, crs, false, false, Collections.emptyList(), null, null);
 
         builder.add(new GeometryDescriptorImpl(gt, new NameImpl("GEOMETRY"), 0, 1, false, null));
 
@@ -643,10 +595,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("BigSymbol.sld"));
@@ -663,26 +612,22 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Tests that symbols are not bigger than the requested icon size, also if an expression is used
-     * for the symbol Size.
+     * Tests that symbols are not bigger than the requested icon size, also if an expression is used for the symbol
+     * Size.
      */
     @org.junit.Test
     public void testSymbolContainedInIconUsingExpression() throws Exception {
         GetLegendGraphicRequest req = new GetLegendGraphicRequest();
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("SymbolExpression.sld"));
 
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
-        assertNotBlank(
-                "testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
+        assertNotBlank("testSymbolContainedInIconUsingExpression", image, LegendUtils.DEFAULT_BG_COLOR);
 
         // background at borders
         assertPixel(image, 1, 20, new Color(255, 255, 255));
@@ -698,10 +643,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbols.sld"));
@@ -739,18 +681,14 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsThickBorder.sld"));
 
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
 
-        assertNotBlank(
-                "testProportionalSymbolSizeThickBorder", image, LegendUtils.DEFAULT_BG_COLOR);
+        assertNotBlank("testProportionalSymbolSizeThickBorder", image, LegendUtils.DEFAULT_BG_COLOR);
 
         // biggest symbol, thick border
         assertPixel(image, 1, 1, new Color(255, 255, 255)); // outside
@@ -769,10 +707,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsLine.sld"));
@@ -798,10 +733,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsUOM.sld"));
@@ -834,8 +766,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Tests that symbols relative sizes are proportional also if using uoms in some Symbolizer and
-     * not using them in others.
+     * Tests that symbols relative sizes are proportional also if using uoms in some Symbolizer and not using them in
+     * others.
      */
     @org.junit.Test
     public void testProportionalSymbolSizePartialUOM() throws Exception {
@@ -844,10 +776,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setScale(RendererUtilities.calculatePixelsPerMeterRatio(10, Collections.emptyMap()));
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ProportionalSymbolsPartialUOM.sld"));
@@ -873,10 +802,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         Map<String, String> options = new HashMap<>();
         options.put("minSymbolSize", "10");
@@ -910,10 +836,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setLegendOptions(options);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("Internationalized.sld"));
@@ -937,8 +860,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Test that the legend is not the same if there is a rendering transformation that converts the
-     * rendered layer from raster to vector
+     * Test that the legend is not the same if there is a rendering transformation that converts the rendered layer from
+     * raster to vector
      */
     @org.junit.Test
     public void testRenderingTransformationRasterVector() throws Exception {
@@ -946,17 +869,13 @@ public class BufferedImageLegendGraphicOutputFormatTest
         Style transformStyle = readSLD("RenderingTransformRasterVector.sld");
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        CoverageInfo cInfo =
-                getCatalog()
-                        .getCoverageByName(
-                                MockData.TASMANIA_DEM.getNamespaceURI(),
-                                MockData.TASMANIA_DEM.getLocalPart());
+        CoverageInfo cInfo = getCatalog()
+                .getCoverageByName(MockData.TASMANIA_DEM.getNamespaceURI(), MockData.TASMANIA_DEM.getLocalPart());
         assertNotNull(cInfo);
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(transformStyle);
             req.setLegendOptions(new HashMap<>());
@@ -987,8 +906,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Test that the legend is not the same if there is a rendering transformation that converts the
-     * rendered layer from raster to vector
+     * Test that the legend is not the same if there is a rendering transformation that converts the rendered layer from
+     * raster to vector
      */
     @org.junit.Test
     public void testColorMapWithCql() throws Exception {
@@ -1028,8 +947,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
             req.setLegendOptions(new HashMap<>());
@@ -1048,8 +966,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
             // "-49 - -20 mm"
             String fixedLabel = entries[2].getLabel();
-            entries[2].setLabel(
-                    "${Concatenate('-', '4', '9', ' ', '-', ' ', '-', '2', '0', ' ', 'm', 'm')}");
+            entries[2].setLabel("${Concatenate('-', '4', '9', ' ', '-', ' ', '-', '2', '0', ' ', 'm', 'm')}");
             assertEquals(fixedLabel, LegendUtils.getLabel(entries[2]));
 
             image = this.legendProducer.buildLegendGraphic(req);
@@ -1072,8 +989,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
     }
 
     /**
-     * Test that the legend is not the same if there is a rendering transformation that converts the
-     * rendered layer from vector to raster
+     * Test that the legend is not the same if there is a rendering transformation that converts the rendered layer from
+     * vector to raster
      */
     @org.junit.Test
     public void testRenderingTransformationVectorRaster() throws Exception {
@@ -1081,11 +998,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
         Style transformStyle = readSLD("RenderingTransformVectorRaster.sld");
 
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.NAMED_PLACES.getNamespaceURI(),
-                                MockData.NAMED_PLACES.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.NAMED_PLACES.getNamespaceURI(), MockData.NAMED_PLACES.getLocalPart());
         assertNotNull(ftInfo);
 
         req.setLayer(ftInfo.getFeatureType());
@@ -1152,9 +1066,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         GetLegendGraphicRequest req = new GetLegendGraphicRequest(null);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.POINTS.getNamespaceURI(), MockData.POINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.POINTS.getNamespaceURI(), MockData.POINTS.getLocalPart());
         req.setLayer(ftInfo.getFeatureType());
         Style externalGraphicStyle = readSLD("ExternalGraphicDemo.sld");
         req.setStyle(externalGraphicStyle);
@@ -1209,8 +1121,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
 
         GridCoverage coverage = cInfo.getGridCoverage(null, null);
         try {
-            SimpleFeatureCollection feature =
-                    FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
+            SimpleFeatureCollection feature = FeatureUtilities.wrapGridCoverage((GridCoverage2D) coverage);
             req.setLayer(feature.getSchema());
             req.setStyle(style);
             Map<String, String> legendOptions = new HashMap<>();
@@ -1308,10 +1219,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setHeight(20);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ThickBorder.sld"));
@@ -1339,10 +1247,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setHeight(20);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("ThickBorder.sld"));
@@ -1370,10 +1275,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setHeight(25);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("largeCircle.sld"));
@@ -1405,10 +1307,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setHeight(20);
 
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(readSLD("line.sld"));
@@ -1432,10 +1331,7 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setWidth(20);
         req.setHeight(20);
         FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOINTS.getNamespaceURI(),
-                                MockData.MPOINTS.getLocalPart());
+                getCatalog().getFeatureTypeByName(MockData.MPOINTS.getNamespaceURI(), MockData.MPOINTS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         Style sldStype = readSLD("line.sld");
@@ -1473,11 +1369,8 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setWidth(20);
         req.setHeight(20);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOLYGONS.getNamespaceURI(),
-                                MockData.MPOLYGONS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOLYGONS.getNamespaceURI(), MockData.MPOLYGONS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
         req.setStyle(getCatalog().getStyleByName("styleWithLegendSelection").getStyle());
@@ -1495,15 +1388,13 @@ public class BufferedImageLegendGraphicOutputFormatTest
         req.setWidth(20);
         req.setHeight(20);
 
-        FeatureTypeInfo ftInfo =
-                getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.MPOLYGONS.getNamespaceURI(),
-                                MockData.MPOLYGONS.getLocalPart());
+        FeatureTypeInfo ftInfo = getCatalog()
+                .getFeatureTypeByName(MockData.MPOLYGONS.getNamespaceURI(), MockData.MPOLYGONS.getLocalPart());
 
         req.setLayer(ftInfo.getFeatureType());
-        req.setStyle(
-                getCatalog().getStyleByName("styleWithLegendSelectionOnSymbolizer").getStyle());
+        req.setStyle(getCatalog()
+                .getStyleByName("styleWithLegendSelectionOnSymbolizer")
+                .getStyle());
 
         BufferedImage image = this.legendProducer.buildLegendGraphic(req);
         URL result = getClass().getResource("./results/renderingSelectionOnSymbolizer.png");

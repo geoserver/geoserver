@@ -34,8 +34,7 @@ import org.w3c.dom.NodeList;
 
 public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
-    private static final String WCS_1_1_1_GETCAPREQUEST =
-            "wcs?request=GetCapabilities&service=WCS&version=1.1.1";
+    private static final String WCS_1_1_1_GETCAPREQUEST = "wcs?request=GetCapabilities&service=WCS&version=1.1.1";
     private static final String WCS_2_0_0_GETCAPREQUEST =
             "wcs?request=GetCapabilities&service=WCS&acceptVersions=2.0.0";
 
@@ -98,11 +97,8 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
         final UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
         ids.add(new UniqueResourceIdentifier("one", "http://www.geoserver.org/one"));
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "two",
-                        "http://www.geoserver.org/two",
-                        "http://metadata.geoserver.org/id?two"));
+        ids.add(new UniqueResourceIdentifier(
+                "two", "http://www.geoserver.org/two", "http://metadata.geoserver.org/id?two"));
 
         assertInspireDownloadSpatialDataSetIdentifierResponse(extendedCaps, ids);
     }
@@ -124,10 +120,7 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         final Document dom = getAsDOM(WCS_2_0_0_GETCAPREQUEST);
 
         NodeList nodeList = dom.getElementsByTagNameNS(DLS_NAMESPACE, "ExtendedCapabilities");
-        assertEquals(
-                "Number of INSPIRE ExtendedCapabilities elements after settings reload",
-                1,
-                nodeList.getLength());
+        assertEquals("Number of INSPIRE ExtendedCapabilities elements after settings reload", 1, nodeList.getLength());
     }
 
     // No INSPIRE ExtendedCapabilities should be returned in a WCS 1.1.1 response
@@ -287,14 +280,9 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         NodeList nodeList = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "MetadataUrl");
         assertEquals("Number of MediaType elements", 1, nodeList.getLength());
         Element mdUrl = (Element) nodeList.item(0);
-        assertInspireMetadataUrlResponse(
-                mdUrl, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
+        assertInspireMetadataUrlResponse(mdUrl, "http://foo.com?bar=baz", "application/vnd.iso.19139+xml");
 
-        serviceInfo
-                .getMetadata()
-                .put(
-                        SERVICE_METADATA_TYPE.key,
-                        "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+        serviceInfo.getMetadata().put(SERVICE_METADATA_TYPE.key, "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
         getGeoServer().save(serviceInfo);
 
         dom = getAsDOM(WCS_2_0_0_GETCAPREQUEST);
@@ -303,9 +291,7 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         assertEquals("Number of MediaType elements", 1, nodeList.getLength());
         mdUrl = (Element) nodeList.item(0);
         assertInspireMetadataUrlResponse(
-                mdUrl,
-                "http://foo.com?bar=baz",
-                "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
+                mdUrl, "http://foo.com?bar=baz", "application/vnd.ogc.csw.GetRecordByIdResponse_xml");
     }
 
     @Test
@@ -363,9 +349,8 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(WCS_2_0_0_GETCAPREQUEST);
 
-        final Element suppLangs =
-                (Element)
-                        dom.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages").item(0);
+        final Element suppLangs = (Element) dom.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         NodeList nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
@@ -389,21 +374,19 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
         getGeoServer().save(serviceInfo);
         final Document dom = getAsDOM(WCS_2_0_0_GETCAPREQUEST + "&LANGUAGE=unsupported");
 
-        final Element suppLangs =
-                (Element)
-                        dom.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages").item(0);
+        final Element suppLangs = (Element) dom.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguages")
+                .item(0);
 
         NodeList nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "DefaultLanguage");
         assertEquals("Number of DefaultLanguage elements", 1, nodeList.getLength());
         nodeList = suppLangs.getElementsByTagNameNS(COMMON_NAMESPACE, "SupportedLanguage");
         assertEquals("Number of Supported Languages", 2, nodeList.getLength());
 
-        final String responseLanguage =
-                dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
-                        .item(0)
-                        .getFirstChild()
-                        .getFirstChild()
-                        .getNodeValue();
+        final String responseLanguage = dom.getElementsByTagNameNS(COMMON_NAMESPACE, "ResponseLanguage")
+                .item(0)
+                .getFirstChild()
+                .getFirstChild()
+                .getNodeValue();
         assertEquals("Unsupported LANGUAGE returns the Default one", "fre", responseLanguage);
     }
 }

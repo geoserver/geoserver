@@ -28,10 +28,7 @@ import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.filter.AttributeExpressionImpl;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 
-/**
- * This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a
- * guideline.
- */
+/** This visitor search for a Filter in {@link TemplateBuilder} tree using the path provided as a guideline. */
 public class TemplatePathVisitor extends DuplicatingFilterVisitor {
 
     protected int currentEl;
@@ -56,13 +53,11 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             Object newExpression = mapPropertyThroughBuilder(propertyName, builder);
             if (newExpression != null) return newExpression;
         }
-        return getFactory(extraData)
-                .property(expression.getPropertyName(), expression.getNamespaceContext());
+        return getFactory(extraData).property(expression.getPropertyName(), expression.getNamespaceContext());
     }
 
     /**
-     * Back maps a given property through the template, to find out if it originates via an
-     * expression.
+     * Back maps a given property through the template, to find out if it originates via an expression.
      *
      * @param propertyName
      * @param builder
@@ -90,8 +85,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             }
         } catch (Throwable ex) {
             throw new RuntimeException(
-                    "Unable to evaluate template path against the template. Cause: "
-                            + ex.getMessage());
+                    "Unable to evaluate template path against the template. Cause: " + ex.getMessage());
         }
         return null;
     }
@@ -106,10 +100,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return (Filter) expression.accept(completerVisitor, null);
     }
 
-    /**
-     * Find the corresponding function to which the template path is pointing, by iterating over
-     * builder's tree
-     */
+    /** Find the corresponding function to which the template path is pointing, by iterating over builder's tree */
     public Expression findFunction(TemplateBuilder builder, List<String> pathElements) {
         int lastElI = pathElements.size() - 1;
         String lastEl = pathElements.get(lastElI);
@@ -168,10 +159,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
         return 0;
     }
 
-    /**
-     * Find the corresponding function to which the template path is pointing, by iterating over
-     * builder's tree
-     */
+    /** Find the corresponding function to which the template path is pointing, by iterating over builder's tree */
     private TemplateBuilder findBuilder(TemplateBuilder parent, List<String> pathElements) {
         List<TemplateBuilder> children = parent.getChildren();
         int length = pathElements.size();
@@ -240,23 +228,16 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
     }
 
     private boolean matchBuilder(
-            TemplateBuilder current,
-            String key,
-            List<String> pathElements,
-            TemplateBuilder parent) {
+            TemplateBuilder current, String key, List<String> pathElements, TemplateBuilder parent) {
         boolean result = keyMatched(current, key, pathElements);
         if (!result) {
             if (parent instanceof RootBuilder) result = true;
-            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput())
-                result = true;
+            else if (parent instanceof SourceBuilder && !((SourceBuilder) parent).hasOwnOutput()) result = true;
         }
         return result;
     }
 
-    /**
-     * A visitor that completes the property name extracted for backwards mapping, using the sources
-     * if present.
-     */
+    /** A visitor that completes the property name extracted for backwards mapping, using the sources if present. */
     private class PropertyNameCompleterVisitor extends DuplicatingFilterVisitor {
         @Override
         public Object visit(PropertyName filter, Object extraData) {
@@ -272,10 +253,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
             return filter;
         }
 
-        /**
-         * Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex
-         * Features only
-         */
+        /** Add to the xpath, xpath parts taken from the $source attribute. This is done for Complex Features only */
         private String completeXPath(String xpath) {
             if (!currentSource.isEmpty() && !isSimple) {
                 Stack<String> sourceParts = new Stack<>();
@@ -292,8 +270,7 @@ public class TemplatePathVisitor extends DuplicatingFilterVisitor {
          * @return true if extradata is true, false otherwise.
          */
         private boolean canCompleteXpath(Object extradata) {
-            return extradata == null
-                    || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
+            return extradata == null || (extradata instanceof Boolean && ((Boolean) extradata).booleanValue());
         }
 
         private String completeXpath(Stack<String> source, String xpath) {

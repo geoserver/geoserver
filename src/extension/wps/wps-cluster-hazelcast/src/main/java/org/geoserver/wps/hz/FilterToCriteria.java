@@ -87,12 +87,10 @@ public class FilterToCriteria implements FilterVisitor {
         boolean inverted;
 
         public PropertyComparable(BinaryComparisonOperator op) {
-            if (op.getExpression1() instanceof PropertyName
-                    && op.getExpression2() instanceof Literal) {
+            if (op.getExpression1() instanceof PropertyName && op.getExpression2() instanceof Literal) {
                 property = getPropertyName(op.getExpression1());
                 literal = (Comparable) ((Literal) op.getExpression2()).getValue();
-            } else if (op.getExpression2() instanceof PropertyName
-                    && op.getExpression1() instanceof Literal) {
+            } else if (op.getExpression2() instanceof PropertyName && op.getExpression1() instanceof Literal) {
                 property = getPropertyName(op.getExpression2());
                 literal = (Comparable) ((Literal) op.getExpression1()).getValue();
                 inverted = true;
@@ -104,12 +102,10 @@ public class FilterToCriteria implements FilterVisitor {
         }
 
         public PropertyComparable(BinaryTemporalOperator op) {
-            if (op.getExpression1() instanceof PropertyName
-                    && op.getExpression2() instanceof Literal) {
+            if (op.getExpression1() instanceof PropertyName && op.getExpression2() instanceof Literal) {
                 property = ((PropertyName) op.getExpression1()).getPropertyName();
                 literal = (Comparable) ((Literal) op.getExpression2()).getValue();
-            } else if (op.getExpression2() instanceof PropertyName
-                    && op.getExpression1() instanceof Literal) {
+            } else if (op.getExpression2() instanceof PropertyName && op.getExpression1() instanceof Literal) {
                 property = ((PropertyName) op.getExpression2()).getPropertyName();
                 literal = (Comparable) ((Literal) op.getExpression1()).getValue();
                 inverted = true;
@@ -179,8 +175,7 @@ public class FilterToCriteria implements FilterVisitor {
 
     private String getPropertyName(Expression expression) {
         if (!(expression instanceof PropertyName)) {
-            throw new IllegalArgumentException(
-                    "Was expecting a property name, but found: " + expression);
+            throw new IllegalArgumentException("Was expecting a property name, but found: " + expression);
         }
         String propertyName = ((PropertyName) expression).getPropertyName();
         if ("processName".equals(propertyName)) {

@@ -35,33 +35,27 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
     @Before
     public void setUp() {
         configuration = new WCSConfiguration();
-        reader =
-                new WcsXmlReader(
-                        "GetCoverage",
-                        "1.0.0",
-                        configuration,
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        reader = new WcsXmlReader(
+                "GetCoverage", "1.0.0", configuration, EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
     }
 
     @Test
     public void testInvalid() throws Exception {
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                        + //
-                        "<GetCoverage service=\"WCS\" version=\"1.0.0\""
-                        + "  xmlns=\"http://www.opengis.net/wcs\" "
-                        + "  xmlns:nurc=\"http://www.nurc.nato.int\""
-                        + "  xmlns:ogc=\"http://www.opengis.net/ogc\""
-                        + "  xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
-                        + " <sourceCoverage>nurc:Pk50095</sourceCoverage>"
-                        + "</GetCoverage>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+                + //
+                "<GetCoverage service=\"WCS\" version=\"1.0.0\""
+                + "  xmlns=\"http://www.opengis.net/wcs\" "
+                + "  xmlns:nurc=\"http://www.nurc.nato.int\""
+                + "  xmlns:ogc=\"http://www.opengis.net/ogc\""
+                + "  xmlns:gml=\"http://www.opengis.net/gml\" "
+                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
+                + " <sourceCoverage>nurc:Pk50095</sourceCoverage>"
+                + "</GetCoverage>";
 
         try {
             @SuppressWarnings("unused")
-            GetCoverageType cov =
-                    (GetCoverageType) reader.read(null, new StringReader(request), null);
+            GetCoverageType cov = (GetCoverageType) reader.read(null, new StringReader(request), null);
             fail("This request is not valid!!!");
         } catch (WcsException e) {
             // ok, we do expect a validation exception in fact
@@ -74,70 +68,69 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
     @Test
     public void testBasic() throws Exception {
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                        + //
-                        "<GetCoverage service=\"WCS\" version=\"1.0.0\""
-                        + //
-                        "  xmlns=\"http://www.opengis.net/wcs\" "
-                        + //
-                        "  xmlns:nurc=\"http://www.nurc.nato.int\""
-                        + //
-                        "  xmlns:ogc=\"http://www.opengis.net/ogc\""
-                        + //
-                        "  xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + //
-                        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + //
-                        "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
-                        + //
-                        "  <sourceCoverage>nurc:Pk50095</sourceCoverage>"
-                        + //
-                        "    <domainSubset>"
-                        + //
-                        "      <spatialSubset>"
-                        + //
-                        "        <gml:Envelope srsName=\"EPSG:32633\">"
-                        + //
-                        "          <gml:pos>347649.93086859107 5176214.082539256</gml:pos>"
-                        + //
-                        "          <gml:pos>370725.976428591 5196961.352859256</gml:pos>"
-                        + //
-                        "        </gml:Envelope>"
-                        + //
-                        "        <gml:Grid dimension=\"2\" srsName=\"EPSG:4326\">"
-                        + //
-                        "          <gml:limits>"
-                        + //
-                        "            <gml:GridEnvelope>"
-                        + //
-                        "              <gml:low>0 0</gml:low>"
-                        + //
-                        "              <gml:high>545 490</gml:high>"
-                        + //
-                        "            </gml:GridEnvelope>"
-                        + //
-                        "          </gml:limits>"
-                        + //
-                        "          <gml:axisName>Lon</gml:axisName>"
-                        + //
-                        "          <gml:axisName>Lat</gml:axisName>"
-                        + //
-                        "        </gml:Grid>"
-                        + //
-                        "      </spatialSubset>"
-                        + //
-                        "    </domainSubset>"
-                        + //
-                        "    <output>"
-                        + //
-                        "      <crs>EPSG:4326</crs>"
-                        + //
-                        "      <format>TIFF</format>"
-                        + //
-                        "    </output>"
-                        + //
-                        "</GetCoverage>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+                + //
+                "<GetCoverage service=\"WCS\" version=\"1.0.0\""
+                + //
+                "  xmlns=\"http://www.opengis.net/wcs\" "
+                + //
+                "  xmlns:nurc=\"http://www.nurc.nato.int\""
+                + //
+                "  xmlns:ogc=\"http://www.opengis.net/ogc\""
+                + //
+                "  xmlns:gml=\"http://www.opengis.net/gml\" "
+                + //
+                "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + //
+                "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
+                + //
+                "  <sourceCoverage>nurc:Pk50095</sourceCoverage>"
+                + //
+                "    <domainSubset>"
+                + //
+                "      <spatialSubset>"
+                + //
+                "        <gml:Envelope srsName=\"EPSG:32633\">"
+                + //
+                "          <gml:pos>347649.93086859107 5176214.082539256</gml:pos>"
+                + //
+                "          <gml:pos>370725.976428591 5196961.352859256</gml:pos>"
+                + //
+                "        </gml:Envelope>"
+                + //
+                "        <gml:Grid dimension=\"2\" srsName=\"EPSG:4326\">"
+                + //
+                "          <gml:limits>"
+                + //
+                "            <gml:GridEnvelope>"
+                + //
+                "              <gml:low>0 0</gml:low>"
+                + //
+                "              <gml:high>545 490</gml:high>"
+                + //
+                "            </gml:GridEnvelope>"
+                + //
+                "          </gml:limits>"
+                + //
+                "          <gml:axisName>Lon</gml:axisName>"
+                + //
+                "          <gml:axisName>Lat</gml:axisName>"
+                + //
+                "        </gml:Grid>"
+                + //
+                "      </spatialSubset>"
+                + //
+                "    </domainSubset>"
+                + //
+                "    <output>"
+                + //
+                "      <crs>EPSG:4326</crs>"
+                + //
+                "      <format>TIFF</format>"
+                + //
+                "    </output>"
+                + //
+                "</GetCoverage>";
 
         // smoke test, we only try out a very basic request
         GetCoverageType gc = (GetCoverageType) reader.read(null, new StringReader(request), null);
@@ -145,11 +138,9 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
         assertEquals("1.0.0", gc.getVersion());
         assertEquals("nurc:Pk50095", gc.getSourceCoverage());
 
-        GeneralBounds envelope =
-                ((GeneralBounds) gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
-        assertEquals(
-                "EPSG:32633",
-                ResourcePool.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
+        GeneralBounds envelope = ((GeneralBounds)
+                gc.getDomainSubset().getSpatialSubset().getEnvelope().get(0));
+        assertEquals("EPSG:32633", ResourcePool.lookupIdentifier(envelope.getCoordinateReferenceSystem(), true));
         assertEquals(347649.93086859107, envelope.getLowerCorner().getOrdinate(0), 0);
         assertEquals(5176214.082539256, envelope.getLowerCorner().getOrdinate(1), 0);
         assertEquals(370725.976428591, envelope.getUpperCorner().getOrdinate(0), 0);
@@ -162,93 +153,93 @@ public class GetCoverageXmlParserTest extends WCSTestSupport {
 
     @Test
     public void testRangeSubsetKeys() throws Exception {
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                        + //
-                        "<GetCoverage service=\"WCS\" version=\"1.0.0\""
-                        + //
-                        "  xmlns=\"http://www.opengis.net/wcs\" "
-                        + //
-                        "  xmlns:nurc=\"http://www.nurc.nato.int\""
-                        + //
-                        "  xmlns:ogc=\"http://www.opengis.net/ogc\""
-                        + //
-                        "  xmlns:gml=\"http://www.opengis.net/gml\" "
-                        + //
-                        "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-                        + //
-                        "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
-                        + //
-                        "  <sourceCoverage>nurc:Pk50095</sourceCoverage>"
-                        + //
-                        "    <domainSubset>"
-                        + //
-                        "      <spatialSubset>"
-                        + //
-                        "        <gml:Envelope srsName=\"EPSG:32633\">"
-                        + //
-                        "          <gml:pos>347649.93086859107 5176214.082539256</gml:pos>"
-                        + //
-                        "          <gml:pos>370725.976428591 5196961.352859256</gml:pos>"
-                        + //
-                        "        </gml:Envelope>"
-                        + //
-                        "        <gml:Grid dimension=\"2\" srsName=\"EPSG:4326\">"
-                        + //
-                        "          <gml:limits>"
-                        + //
-                        "            <gml:GridEnvelope>"
-                        + //
-                        "              <gml:low>0 0</gml:low>"
-                        + //
-                        "              <gml:high>545 490</gml:high>"
-                        + //
-                        "            </gml:GridEnvelope>"
-                        + //
-                        "          </gml:limits>"
-                        + //
-                        "          <gml:axisName>Column</gml:axisName>"
-                        + //
-                        "          <gml:axisName>Row</gml:axisName>"
-                        + //
-                        "        </gml:Grid>"
-                        + //
-                        "      </spatialSubset>"
-                        + //
-                        "    </domainSubset>"
-                        + //
-                        "    <rangeSubset>"
-                        + //
-                        "       <axisSubset name=\"Band\">"
-                        + //
-                        "          <interval atomic=\"false\">"
-                        + //
-                        "               <min>1</min>"
-                        + //
-                        "               <max>3</max>"
-                        + //
-                        "               <res>1</res>"
-                        + //
-                        "          </interval>"
-                        + //
-                        "       </axisSubset>"
-                        + //
-                        "    </rangeSubset>"
-                        + //
-                        "    <output>"
-                        + //
-                        "      <crs>EPSG:4326</crs>"
-                        + //
-                        "      <format>TIFF</format>"
-                        + //
-                        "    </output>"
-                        + //
-                        "</GetCoverage>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+                + //
+                "<GetCoverage service=\"WCS\" version=\"1.0.0\""
+                + //
+                "  xmlns=\"http://www.opengis.net/wcs\" "
+                + //
+                "  xmlns:nurc=\"http://www.nurc.nato.int\""
+                + //
+                "  xmlns:ogc=\"http://www.opengis.net/ogc\""
+                + //
+                "  xmlns:gml=\"http://www.opengis.net/gml\" "
+                + //
+                "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+                + //
+                "  xsi:schemaLocation=\"http://www.opengis.net/wcs schemas/wcs/1.0.0/getCoverage.xsd\">"
+                + //
+                "  <sourceCoverage>nurc:Pk50095</sourceCoverage>"
+                + //
+                "    <domainSubset>"
+                + //
+                "      <spatialSubset>"
+                + //
+                "        <gml:Envelope srsName=\"EPSG:32633\">"
+                + //
+                "          <gml:pos>347649.93086859107 5176214.082539256</gml:pos>"
+                + //
+                "          <gml:pos>370725.976428591 5196961.352859256</gml:pos>"
+                + //
+                "        </gml:Envelope>"
+                + //
+                "        <gml:Grid dimension=\"2\" srsName=\"EPSG:4326\">"
+                + //
+                "          <gml:limits>"
+                + //
+                "            <gml:GridEnvelope>"
+                + //
+                "              <gml:low>0 0</gml:low>"
+                + //
+                "              <gml:high>545 490</gml:high>"
+                + //
+                "            </gml:GridEnvelope>"
+                + //
+                "          </gml:limits>"
+                + //
+                "          <gml:axisName>Column</gml:axisName>"
+                + //
+                "          <gml:axisName>Row</gml:axisName>"
+                + //
+                "        </gml:Grid>"
+                + //
+                "      </spatialSubset>"
+                + //
+                "    </domainSubset>"
+                + //
+                "    <rangeSubset>"
+                + //
+                "       <axisSubset name=\"Band\">"
+                + //
+                "          <interval atomic=\"false\">"
+                + //
+                "               <min>1</min>"
+                + //
+                "               <max>3</max>"
+                + //
+                "               <res>1</res>"
+                + //
+                "          </interval>"
+                + //
+                "       </axisSubset>"
+                + //
+                "    </rangeSubset>"
+                + //
+                "    <output>"
+                + //
+                "      <crs>EPSG:4326</crs>"
+                + //
+                "      <format>TIFF</format>"
+                + //
+                "    </output>"
+                + //
+                "</GetCoverage>";
 
         GetCoverageType gc = (GetCoverageType) reader.read(null, new StringReader(request), null);
         assertEquals(1, gc.getRangeSubset().getAxisSubset().size());
 
-        GridType grid = (GridType) gc.getDomainSubset().getSpatialSubset().getGrid().get(0);
+        GridType grid =
+                (GridType) gc.getDomainSubset().getSpatialSubset().getGrid().get(0);
         assertEquals(grid.getSrsName(), "EPSG:4326");
         assertEquals(grid.getAxisName().get(0), "Column");
         assertEquals(grid.getAxisName().get(1), "Row");

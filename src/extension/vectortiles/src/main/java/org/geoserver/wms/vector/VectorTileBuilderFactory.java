@@ -11,8 +11,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 public interface VectorTileBuilderFactory {
 
     /**
-     * A set of identifiers for the format produced by builders from this factory. May include MIME
-     * type or file extension.
+     * A set of identifiers for the format produced by builders from this factory. May include MIME type or file
+     * extension.
      */
     Set<String> getOutputFormats();
 
@@ -28,10 +28,9 @@ public interface VectorTileBuilderFactory {
     VectorTileBuilder newBuilder(Rectangle screenSize, ReferencedEnvelope mapArea);
 
     /**
-     * Whether tiles from this builder should be "oversampled", that is, "rendered" at a higher
-     * resolution than the tile resolution. The motivation for this is Mapbox vector tiles, which
-     * are rendered in screen space per tile and have inconsistent behavior while zooming at lower
-     * resolutions.
+     * Whether tiles from this builder should be "oversampled", that is, "rendered" at a higher resolution than the tile
+     * resolution. The motivation for this is Mapbox vector tiles, which are rendered in screen space per tile and have
+     * inconsistent behavior while zooming at lower resolutions.
      *
      * @return whether this builder requires oversampling. defaults to false.
      */

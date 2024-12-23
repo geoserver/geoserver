@@ -27,17 +27,17 @@ public class DataAccessLimits extends AccessLimits {
     private static final long serialVersionUID = 2594922992934373705L;
 
     /**
-     * Used for vector reading, for raster if there is a read param taking an OGC filter, and in WMS
-     * if the remote server supports CQL filters and on feature info requests. For workspaces it
-     * will be just INCLUDE or EXCLUDE to allow or deny access to the workspace
+     * Used for vector reading, for raster if there is a read param taking an OGC filter, and in WMS if the remote
+     * server supports CQL filters and on feature info requests. For workspaces it will be just INCLUDE or EXCLUDE to
+     * allow or deny access to the workspace
      */
     transient Filter readFilter;
 
     /**
      * Builds a generic DataAccessLimits
      *
-     * @param readFilter This filter will be merged with the request read filters to limit the
-     *     features/tiles that can be actually read
+     * @param readFilter This filter will be merged with the request read filters to limit the features/tiles that can
+     *     be actually read
      */
     public DataAccessLimits(CatalogMode mode, Filter readFilter) {
         super(mode);
@@ -45,8 +45,7 @@ public class DataAccessLimits extends AccessLimits {
     }
 
     /**
-     * This filter will be merged with the request read filters to limit the features/tiles that can
-     * be actually read
+     * This filter will be merged with the request read filters to limit the features/tiles that can be actually read
      */
     public Filter getReadFilter() {
         return readFilter;
@@ -77,10 +76,7 @@ public class DataAccessLimits extends AccessLimits {
         writeFilter(readFilter, out);
     }
 
-    /**
-     * Writes the non Serializable Filter object to the ObjectOutputStream via a OGC Filter XML
-     * encoding conversion
-     */
+    /** Writes the non Serializable Filter object to the ObjectOutputStream via a OGC Filter XML encoding conversion */
     protected void writeFilter(Filter filter, ObjectOutputStream out) throws IOException {
         if (filter != null) {
             if (filter != Filter.INCLUDE && filter != Filter.EXCLUDE) {
@@ -98,8 +94,8 @@ public class DataAccessLimits extends AccessLimits {
     }
 
     /**
-     * Reads from the object input stream a string representing a filter in OGC XML encoding and
-     * parses it back to a Filter object
+     * Reads from the object input stream a string representing a filter in OGC XML encoding and parses it back to a
+     * Filter object
      */
     protected Filter readFilter(ObjectInputStream in) throws IOException, ClassNotFoundException {
         final Object serializedReadFilter = in.readObject();
@@ -107,8 +103,7 @@ public class DataAccessLimits extends AccessLimits {
             if (serializedReadFilter != Filter.INCLUDE && serializedReadFilter != Filter.EXCLUDE) {
                 try {
                     Parser p = new Parser(CONFIGURATION);
-                    return (Filter)
-                            p.parse(new ByteArrayInputStream((byte[]) serializedReadFilter));
+                    return (Filter) p.parse(new ByteArrayInputStream((byte[]) serializedReadFilter));
                 } catch (Exception e) {
                     throw (IOException) new IOException("Failed to parse filter").initCause(e);
                 }

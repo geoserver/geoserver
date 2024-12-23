@@ -181,8 +181,7 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
     }
 
     @Override
-    public void setGetFeatureOutputTypeCheckingEnabled(
-            boolean getFeatureOutputTypeCheckingEnabled) {
+    public void setGetFeatureOutputTypeCheckingEnabled(boolean getFeatureOutputTypeCheckingEnabled) {
         this.getFeatureOutputTypeCheckingEnabled = getFeatureOutputTypeCheckingEnabled;
     }
 
@@ -210,15 +209,9 @@ public class WFSInfoImpl extends ServiceInfoImpl implements WFSInfo {
         result = prime * result + ((serviceLevel == null) ? 0 : serviceLevel.hashCode());
         result = prime * result + ((srs == null) ? 0 : srs.hashCode());
         result = prime * result + (allowGlobalQueries == null ? 0 : allowGlobalQueries.hashCode());
-        result =
-                prime * result
-                        + (simpleConversionEnabled == null
-                                ? 0
-                                : simpleConversionEnabled.hashCode());
+        result = prime * result + (simpleConversionEnabled == null ? 0 : simpleConversionEnabled.hashCode());
         result = prime * result + (getFeatureOutputTypeCheckingEnabled ? 1231 : 1237);
-        result =
-                prime * result
-                        + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
+        result = prime * result + ((getFeatureOutputTypes == null) ? 0 : getFeatureOutputTypes.hashCode());
         result = prime * result + ((csvDateFormat == null) ? 0 : csvDateFormat.hashCode());
         return result;
     }

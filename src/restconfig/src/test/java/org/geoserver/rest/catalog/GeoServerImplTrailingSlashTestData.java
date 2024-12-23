@@ -9,8 +9,8 @@ import org.geoserver.config.impl.GeoServerInfoImpl;
 import org.geoserver.data.test.SystemTestData;
 
 /**
- * Test data for GeoServerImpl trailing slash match, necessary to set the system property before
- * dispatcher is initialized
+ * Test data for GeoServerImpl trailing slash match, necessary to set the system property before dispatcher is
+ * initialized
  */
 public class GeoServerImplTrailingSlashTestData extends SystemTestData {
 

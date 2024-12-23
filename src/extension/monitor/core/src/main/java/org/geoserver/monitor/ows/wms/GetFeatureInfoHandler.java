@@ -58,8 +58,7 @@ public class GetFeatureInfoHandler extends RequestObjectHandler {
         Coordinate coord = org.geoserver.wms.WMS.pixelToWorld(x, y, mapBbox, width, height);
 
         try {
-            return new ReferencedEnvelope(new Envelope(coord), crs)
-                    .toBounds(monitorConfig.getBboxCrs());
+            return new ReferencedEnvelope(new Envelope(coord), crs).toBounds(monitorConfig.getBboxCrs());
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);
             return null;

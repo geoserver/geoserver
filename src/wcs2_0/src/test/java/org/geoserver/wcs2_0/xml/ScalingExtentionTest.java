@@ -35,12 +35,10 @@ public class ScalingExtentionTest extends WCSTestSupport {
     public void setup() throws Exception {
         // check we can read it as a TIFF and it is similare to the origina one
 
-        sourceCoverage =
-                (GridCoverage2D)
-                        this.getCatalog()
-                                .getCoverageByName("BlueMarble")
-                                .getGridCoverageReader(null, null)
-                                .read(null);
+        sourceCoverage = (GridCoverage2D) this.getCatalog()
+                .getCoverageByName("BlueMarble")
+                .getGridCoverageReader(null, null)
+                .read(null);
 
         // enable verbose exceptions to get better debugging info
         GeoServer gs = getGeoServer();
@@ -74,9 +72,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1260, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -106,9 +102,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(0));
         assertEquals(1000, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -131,9 +125,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(200, reader.getOriginalGridRange().getSpan(0));
         assertEquals(300, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);
@@ -157,9 +149,7 @@ public class ScalingExtentionTest extends WCSTestSupport {
 
         // check the tiff structure is the one requested
         final GeoTiffReader reader = new GeoTiffReader(file);
-        assertTrue(
-                CRS.equalsIgnoreMetadata(
-                        reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
+        assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), CRS.decode("EPSG:4326", true)));
         assertEquals(900, reader.getOriginalGridRange().getSpan(0));
         assertEquals(900, reader.getOriginalGridRange().getSpan(1));
         final GridCoverage2D coverage = reader.read(null);

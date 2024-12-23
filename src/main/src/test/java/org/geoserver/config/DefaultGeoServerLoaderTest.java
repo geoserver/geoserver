@@ -51,8 +51,7 @@ public class DefaultGeoServerLoaderTest {
 
     static final class HelloServiceXStreamLoader extends XStreamServiceLoader<HelloServiceInfo> {
 
-        public HelloServiceXStreamLoader(
-                GeoServerResourceLoader resourceLoader, String filenameBase) {
+        public HelloServiceXStreamLoader(GeoServerResourceLoader resourceLoader, String filenameBase) {
             super(resourceLoader, filenameBase);
         }
 
@@ -70,18 +69,16 @@ public class DefaultGeoServerLoaderTest {
     @Before
     public void setUp() {
         URL url = DefaultGeoServerLoaderTest.class.getResource("/data_dir/nested_layer_groups");
-        GeoServerResourceLoader resourceLoader =
-                new GeoServerResourceLoader(URLs.urlToFile(url)) {
-                    @Override
-                    public File createFile(File parentFile, String location) throws IOException {
-                        if ("hello.xml".equals(location)) {
-                            helloServiceSaved = true;
-                        }
-                        return super.createFile(parentFile, location);
-                    }
-                };
-        GeoServerExtensionsHelper.singleton(
-                "resourceLoader", resourceLoader, GeoServerResourceLoader.class);
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(URLs.urlToFile(url)) {
+            @Override
+            public File createFile(File parentFile, String location) throws IOException {
+                if ("hello.xml".equals(location)) {
+                    helloServiceSaved = true;
+                }
+                return super.createFile(parentFile, location);
+            }
+        };
+        GeoServerExtensionsHelper.singleton("resourceLoader", resourceLoader, GeoServerResourceLoader.class);
 
         loader = new DefaultGeoServerLoader(resourceLoader);
         catalog = new CatalogImpl();
@@ -90,8 +87,7 @@ public class DefaultGeoServerLoaderTest {
         XStreamPersisterFactory xpf = new XStreamPersisterFactory();
         xp = xpf.createXMLPersister();
 
-        XStreamServiceLoader<HelloServiceInfo> helloLoader =
-                new HelloServiceXStreamLoader(resourceLoader, "hello");
+        XStreamServiceLoader<HelloServiceInfo> helloLoader = new HelloServiceXStreamLoader(resourceLoader, "hello");
         GeoServerExtensionsHelper.singleton("helloLoader", helloLoader, XStreamServiceLoader.class);
     }
 

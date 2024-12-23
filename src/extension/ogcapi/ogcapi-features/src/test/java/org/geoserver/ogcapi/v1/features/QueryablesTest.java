@@ -25,8 +25,7 @@ public class QueryablesTest extends FeaturesTestSupport {
 
     @Test
     public void testDefaultFormat() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse(roadSegmentQueryables(), 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse(roadSegmentQueryables(), 200);
         assertEquals("application/schema+json", response.getContentType());
 
         checkRoadSegmentsQueryables(response);
@@ -35,8 +34,7 @@ public class QueryablesTest extends FeaturesTestSupport {
     @Test
     public void testFullFormatParameter() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        roadSegmentQueryables() + "?f=application/schema%2Bjson", 200);
+                getAsMockHttpServletResponse(roadSegmentQueryables() + "?f=application/schema%2Bjson", 200);
         assertEquals("application/schema+json", response.getContentType());
 
         checkRoadSegmentsQueryables(response);
@@ -57,8 +55,7 @@ public class QueryablesTest extends FeaturesTestSupport {
         checkRoadSegmentsQueryables(response);
     }
 
-    private void checkRoadSegmentsQueryables(MockHttpServletResponse response)
-            throws UnsupportedEncodingException {
+    private void checkRoadSegmentsQueryables(MockHttpServletResponse response) throws UnsupportedEncodingException {
         DocumentContext json = getAsJSONPath(response);
         assertEquals("geometry-multilinestring", json.read("properties.the_geom.format"));
         assertEquals("string", json.read("properties.FID.type"));
@@ -75,12 +72,10 @@ public class QueryablesTest extends FeaturesTestSupport {
         assertEquals(Integer.valueOf(3), json.read("$..links.length()", Integer.class));
         DocumentContext selfLink = readSingleContext(json, "links[?(@.rel=='self')]");
         assertEquals("application/schema+json", selfLink.read("type"));
-        DocumentContext htmlLink =
-                readSingleContext(json, "links[?(@.rel=='alternate' && @.type=='text/html')]");
+        DocumentContext htmlLink = readSingleContext(json, "links[?(@.rel=='alternate' && @.type=='text/html')]");
         assertThat(htmlLink.read("href"), Matchers.endsWith("queryables?f=text%2Fhtml"));
         DocumentContext yamlLink =
-                readSingleContext(
-                        json, "links[?(@.rel=='alternate' && @.type=='application/yaml')]");
+                readSingleContext(json, "links[?(@.rel=='alternate' && @.type=='application/yaml')]");
         assertThat(yamlLink.read("href"), Matchers.endsWith("queryables?f=application%2Fyaml"));
     }
 
@@ -88,16 +83,16 @@ public class QueryablesTest extends FeaturesTestSupport {
     public void testQueryablesHTML() throws Exception {
         String roadSegments = MockData.ROAD_SEGMENTS.getLocalPart();
         org.jsoup.nodes.Document document =
-                getAsJSoup(
-                        "cite/ogc/features/v1/collections/" + roadSegments + "/queryables?f=html");
-        assertEquals("the_geom: MultiLineString", document.select("#queryables li:eq(0)").text());
+                getAsJSoup("cite/ogc/features/v1/collections/" + roadSegments + "/queryables?f=html");
+        assertEquals(
+                "the_geom: MultiLineString",
+                document.select("#queryables li:eq(0)").text());
     }
 
     @Test
     public void queryablesSchema() throws Exception {
         MockHttpServletResponse response =
-                getAsMockHttpServletResponse(
-                        roadSegmentQueryables() + "?f=application/schema%2Bjson", 200);
+                getAsMockHttpServletResponse(roadSegmentQueryables() + "?f=application/schema%2Bjson", 200);
 
         // check the response can be read as a valid JSON schema (will fail with an exception if
         // not)

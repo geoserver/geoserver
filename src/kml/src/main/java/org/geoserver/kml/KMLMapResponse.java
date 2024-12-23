@@ -49,8 +49,7 @@ public class KMLMapResponse extends AbstractMapResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         KMLMap kmlMap = (KMLMap) value;
         try {
             KmlEncodingContext context = kmlMap.getKmlEncodingContext();
@@ -65,8 +64,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         }
     }
 
-    private void encodeAsKmz(
-            Kml kml, KmlEncodingContext context, Operation operation, OutputStream output)
+    private void encodeAsKmz(Kml kml, KmlEncodingContext context, Operation operation, OutputStream output)
             throws IOException {
         // wrap the output stream in a zipped one
         ZipOutputStream zip = new ZipOutputStream(output);
@@ -77,8 +75,7 @@ public class KMLMapResponse extends AbstractMapResponse {
         encoder.encode(kml, zip, context);
 
         // prepare for the ground overlays
-        final RenderedImageMapOutputFormat pngProducer =
-                new RenderedImageMapOutputFormat("image/png", wms);
+        final RenderedImageMapOutputFormat pngProducer = new RenderedImageMapOutputFormat("image/png", wms);
         final PNGMapResponse pngEncoder = new PNGMapResponse(wms);
         ZipEntry images = new ZipEntry("images/");
         zip.putNextEntry(images);

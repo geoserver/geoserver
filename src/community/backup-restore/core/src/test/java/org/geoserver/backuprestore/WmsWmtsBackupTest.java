@@ -33,17 +33,13 @@ public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
     public void testWmsWmtsBackup() throws IOException, InterruptedException {
         // Given
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         File backupFile = File.createTempFile("testRunSpringBatchBackupWms", ".zip");
 
         // When
         BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(
-                        Files.asResource(backupFile), true, null, null, null, hints);
+                backupFacade.runBackupAsync(Files.asResource(backupFile), true, null, null, null, hints);
         waitForExecution(backupExecution);
 
         // Then
@@ -70,13 +66,10 @@ public class WmsWmtsBackupTest extends BackupRestoreTestSupport {
         }
     }
 
-    private void waitForExecution(BackupExecutionAdapter backupExecution)
-            throws InterruptedException {
+    private void waitForExecution(BackupExecutionAdapter backupExecution) throws InterruptedException {
         Thread.sleep(100);
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 

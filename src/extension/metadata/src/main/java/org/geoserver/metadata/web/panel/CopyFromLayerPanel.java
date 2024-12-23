@@ -49,19 +49,16 @@ public abstract class CopyFromLayerPanel extends Panel {
         dropDown.setNullValid(true);
         add(dropDown);
 
-        add(
-                new FeedbackPanel("copyFeedback", new ContainerFeedbackMessageFilter(this))
-                        .setOutputMarkupId(true));
+        add(new FeedbackPanel("copyFeedback", new ContainerFeedbackMessageFilter(this)).setOutputMarkupId(true));
 
         add(createCopyAction(dropDown, dialog));
     }
 
     private DropDownChoice<String> createDropDown() {
-        Catalog catalog =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(GeoServer.class)
-                        .getCatalog();
+        Catalog catalog = GeoServerApplication.get()
+                .getApplicationContext()
+                .getBean(GeoServer.class)
+                .getCatalog();
         SortedSet<String> layers = new TreeSet<>();
         for (ResourceInfo res : catalog.getResources(ResourceInfo.class)) {
             if (!res.getId().equals(resourceId)) {
@@ -71,8 +68,7 @@ public abstract class CopyFromLayerPanel extends Panel {
         return new DropDownChoice<>("layer", new Model<>(""), new ArrayList<>(layers));
     }
 
-    private AjaxSubmitLink createCopyAction(
-            final DropDownChoice<String> dropDown, GeoServerDialog dialog) {
+    private AjaxSubmitLink createCopyAction(final DropDownChoice<String> dropDown, GeoServerDialog dialog) {
         return new AjaxSubmitLink("link") {
             private static final long serialVersionUID = -8718015688839770852L;
 
@@ -80,53 +76,41 @@ public abstract class CopyFromLayerPanel extends Panel {
             protected void onSubmit(AjaxRequestTarget target) {
                 ResourceInfo res;
                 if (dropDown.getModelObject() == null || "".equals(dropDown.getModelObject())) {
-                    error(
-                            new ParamResourceModel("errorSelectLayer", CopyFromLayerPanel.this)
-                                    .getString());
+                    error(new ParamResourceModel("errorSelectLayer", CopyFromLayerPanel.this).getString());
                     target.add(getFeedbackPanel());
                     return;
                 } else {
-                    Catalog catalog =
-                            GeoServerApplication.get()
-                                    .getApplicationContext()
-                                    .getBean(GeoServer.class)
-                                    .getCatalog();
+                    Catalog catalog = GeoServerApplication.get()
+                            .getApplicationContext()
+                            .getBean(GeoServer.class)
+                            .getCatalog();
                     res = catalog.getResourceByName(dropDown.getModelObject(), ResourceInfo.class);
                     Serializable map = res.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                     if (map == null) {
-                        error(
-                                new ParamResourceModel(
-                                                "errorNoMetadataInLayer", CopyFromLayerPanel.this)
-                                        .getString());
+                        error(new ParamResourceModel("errorNoMetadataInLayer", CopyFromLayerPanel.this).getString());
                         target.add(getFeedbackPanel());
                         return;
                     }
                 }
 
-                dialog.setTitle(
-                        new ParamResourceModel("confirmCopyDialog.title", CopyFromLayerPanel.this));
-                dialog.showOkCancel(
-                        target,
-                        new GeoServerDialog.DialogDelegate() {
+                dialog.setTitle(new ParamResourceModel("confirmCopyDialog.title", CopyFromLayerPanel.this));
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                            private static final long serialVersionUID = -5552087037163833563L;
+                    private static final long serialVersionUID = -5552087037163833563L;
 
-                            @Override
-                            protected Component getContents(String id) {
-                                ParamResourceModel resource =
-                                        new ParamResourceModel(
-                                                "confirmCopyDialog.content",
-                                                CopyFromLayerPanel.this);
-                                return new MultiLineLabel(id, resource.getString());
-                            }
+                    @Override
+                    protected Component getContents(String id) {
+                        ParamResourceModel resource =
+                                new ParamResourceModel("confirmCopyDialog.content", CopyFromLayerPanel.this);
+                        return new MultiLineLabel(id, resource.getString());
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                handleCopy(res, target);
-                                return true;
-                            }
-                        });
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        handleCopy(res, target);
+                        return true;
+                    }
+                });
             }
 
             @Override

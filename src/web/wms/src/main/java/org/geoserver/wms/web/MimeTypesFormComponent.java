@@ -40,54 +40,41 @@ public class MimeTypesFormComponent extends FormComponentPanel<String> {
             final boolean isMimeTypeCheckingEnabled) {
         super(id, new Model<>());
 
+        add(new AjaxCheckBox("mimeTypeCheckingEnabled", new Model<>(isMimeTypeCheckingEnabled)) {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                // palette.setEnabled(getModelObject());
+                toggleVisibility(getModelObject());
+                target.add(palette);
+            }
+        });
+
         add(
-                new AjaxCheckBox(
-                        "mimeTypeCheckingEnabled", new Model<>(isMimeTypeCheckingEnabled)) {
+                palette = new Palette<>("palette", model, choicesModel, new SimpleChoiceRenderer<>(), 10, false) {
+                    private static final long serialVersionUID = 1L;
+
                     @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        // palette.setEnabled(getModelObject());
-                        toggleVisibility(getModelObject());
-                        target.add(palette);
+                    protected Recorder<String> newRecorderComponent() {
+                        Recorder<String> rec = super.newRecorderComponent();
+
+                        // add any behaviors that need to be added
+                        rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
+                        toAdd.clear();
+                        return rec;
+                    }
+
+                    // Override otherwise the header is not i18n'ized
+                    @Override
+                    public Component newSelectedHeader(final String componentId) {
+                        return new Label(componentId, new ResourceModel(getSelectedHeaderPropertyKey()));
+                    }
+
+                    // Override otherwise the header is not i18n'ized
+                    @Override
+                    public Component newAvailableHeader(final String componentId) {
+                        return new Label(componentId, new ResourceModel(getAvaliableHeaderPropertyKey()));
                     }
                 });
-
-        add(
-                palette =
-                        new Palette<>(
-                                "palette",
-                                model,
-                                choicesModel,
-                                new SimpleChoiceRenderer<>(),
-                                10,
-                                false) {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            protected Recorder<String> newRecorderComponent() {
-                                Recorder<String> rec = super.newRecorderComponent();
-
-                                // add any behaviors that need to be added
-                                rec.add(toAdd.toArray(new Behavior[toAdd.size()]));
-                                toAdd.clear();
-                                return rec;
-                            }
-
-                            // Override otherwise the header is not i18n'ized
-                            @Override
-                            public Component newSelectedHeader(final String componentId) {
-                                return new Label(
-                                        componentId,
-                                        new ResourceModel(getSelectedHeaderPropertyKey()));
-                            }
-
-                            // Override otherwise the header is not i18n'ized
-                            @Override
-                            public Component newAvailableHeader(final String componentId) {
-                                return new Label(
-                                        componentId,
-                                        new ResourceModel(getAvaliableHeaderPropertyKey()));
-                            }
-                        });
         palette.add(new DefaultTheme());
         palette.setOutputMarkupPlaceholderTag(true);
         // palette.setEnabled(isMimeTypeCheckingEnabled);
@@ -109,16 +96,12 @@ public class MimeTypesFormComponent extends FormComponentPanel<String> {
         return (Boolean) get("mimeTypeCheckingEnabled").getDefaultModelObject();
     }
 
-    /**
-     * @return the default key, subclasses may override, if "Selected" is not illustrative enough
-     */
+    /** @return the default key, subclasses may override, if "Selected" is not illustrative enough */
     protected String getSelectedHeaderPropertyKey() {
         return "MimeTypesFormComponent.selectedHeader";
     }
 
-    /**
-     * @return the default key, subclasses may override, if "Available" is not illustrative enough
-     */
+    /** @return the default key, subclasses may override, if "Available" is not illustrative enough */
     protected String getAvaliableHeaderPropertyKey() {
         return "MimeTypesFormComponent.availableHeader";
     }
@@ -146,6 +129,7 @@ public class MimeTypesFormComponent extends FormComponentPanel<String> {
     @Override
     public void updateModel() {
         super.updateModel();
-        if (palette.getRecorderComponent() != null) palette.getRecorderComponent().updateModel();
+        if (palette.getRecorderComponent() != null)
+            palette.getRecorderComponent().updateModel();
     }
 }

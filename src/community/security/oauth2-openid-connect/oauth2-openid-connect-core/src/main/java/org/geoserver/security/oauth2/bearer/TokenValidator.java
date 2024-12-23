@@ -8,8 +8,8 @@ import java.util.Map;
 import org.geoserver.security.oauth2.OpenIdConnectFilterConfig;
 
 /**
- * Bearer tokens should be checked to make sure they are applicable to this application (to prevent
- * token reuse from another application)
+ * Bearer tokens should be checked to make sure they are applicable to this application (to prevent token reuse from
+ * another application)
  */
 public interface TokenValidator {
 
@@ -18,6 +18,5 @@ public interface TokenValidator {
      * @param userInfoClaims - map of claims from the oidc "userInfo" endpoint
      * @throws Exception - if there is a problem, throw an exception.
      */
-    void verifyToken(OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims)
-            throws Exception;
+    void verifyToken(OpenIdConnectFilterConfig config, Map accessTokenClaims, Map userInfoClaims) throws Exception;
 }

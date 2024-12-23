@@ -22,15 +22,11 @@ public interface ImagingInfo {
     /**
      * @return Returns the imageFormats.
      * @uml.property name="imageFormats"
-     * @uml.associationEnd multiplicity="(0 -1)"
-     *     inverse="imagingInfo:org.geoserver.config.ImageFormatInfo"
+     * @uml.associationEnd multiplicity="(0 -1)" inverse="imagingInfo:org.geoserver.config.ImageFormatInfo"
      */
     Collection<ImageFormatInfo> getImageFormats();
 
-    /**
-     * Returns the image format corresponding to the specified mime type, or <code>null</code> if it
-     * does exist.
-     */
+    /** Returns the image format corresponding to the specified mime type, or <code>null</code> if it does exist. */
     ImageFormatInfo getImageFormatByMimeType(String mimeType);
 
     /** @uml.property name="allowInterpolation" */

@@ -91,8 +91,7 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
     }
 
     public OpenSearchAccess getOpenSearchAccess() throws IOException {
-        OpenSearchAccessProvider provider =
-                GeoServerExtensions.bean(OpenSearchAccessProvider.class);
+        OpenSearchAccessProvider provider = GeoServerExtensions.bean(OpenSearchAccessProvider.class);
         return provider.getOpenSearchAccess();
     }
 
@@ -107,11 +106,10 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
         // read it
         FeatureSource<FeatureType, Feature> source = osAccess.getCollectionSource();
         Query q = new Query();
-        q.setFilter(
-                FF.equal(
-                        FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
-                        FF.literal("SENTINEL2"),
-                        false));
+        q.setFilter(FF.equal(
+                FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
+                FF.literal("SENTINEL2"),
+                false));
         FeatureCollection<FeatureType, Feature> features = source.getFeatures(q);
 
         // get the collection and check it
@@ -125,16 +123,10 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
         assertEquals("gs", getAttribute(layerValue, "workspace"));
         assertEquals("sentinel2", getAttribute(layerValue, "layer"));
         assertEquals(Boolean.TRUE, getAttribute(layerValue, "separateBands"));
-        assertThat(
-                getAttribute(layerValue, "bands"),
-                equalTo(
-                        new String[] {
-                            "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10",
-                            "B11", "B12"
-                        }));
-        assertThat(
-                getAttribute(layerValue, "browseBands"),
-                equalTo(new String[] {"B04", "B03", "B02"}));
+        assertThat(getAttribute(layerValue, "bands"), equalTo(new String[] {
+            "B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B09", "B10", "B11", "B12"
+        }));
+        assertThat(getAttribute(layerValue, "browseBands"), equalTo(new String[] {"B04", "B03", "B02"}));
         assertEquals(Boolean.TRUE, getAttribute(layerValue, "heterogeneousCRS"));
         assertEquals("EPSG:4326", getAttribute(layerValue, "mosaicCRS"));
 
@@ -155,9 +147,8 @@ public class JDBCOpenSearchAccessIntegrationTest extends GeoServerSystemTestSupp
         Feature services = (Feature) layerValue.getProperty("services");
         Feature wms = (Feature) services.getProperty("wms");
         assertEquals(true, getAttribute(wms, "enabled"));
-        List<String> formats =
-                ((List<Attribute>) getAttribute(wms, "formats"))
-                        .stream().map(a -> (String) a.getValue()).collect(Collectors.toList());
+        List<String> formats = ((List<Attribute>) getAttribute(wms, "formats"))
+                .stream().map(a -> (String) a.getValue()).collect(Collectors.toList());
         assertThat(formats, Matchers.hasItems("image/png", "image/jpeg"));
     }
 }

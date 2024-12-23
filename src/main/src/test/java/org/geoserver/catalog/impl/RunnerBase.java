@@ -68,8 +68,7 @@ public abstract class RunnerBase implements Runnable {
         }
     }
 
-    public static void checkForRunnerExceptions(List<? extends RunnerBase> runners)
-            throws Exception {
+    public static void checkForRunnerExceptions(List<? extends RunnerBase> runners) throws Exception {
         for (RunnerBase runner : runners) {
             checkForRunnerException(runner);
         }

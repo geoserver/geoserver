@@ -8,9 +8,8 @@ package org.vfny.geoserver.wms.responses.map.htmlimagemap.holes;
 import org.locationtech.jts.geom.Coordinate;
 
 /**
- * Indexed coordinate. It allows to bind a coordinate to its position in a containing geometry
- * (through an index in the geometry points). It has two properties: - Position: coordinate - Index:
- * position in the geometry
+ * Indexed coordinate. It allows to bind a coordinate to its position in a containing geometry (through an index in the
+ * geometry points). It has two properties: - Position: coordinate - Index: position in the geometry
  *
  * @author m.bartolomeoli
  */

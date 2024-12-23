@@ -27,13 +27,12 @@ public class CRSPanelTestPage extends WebPage {
         Form form = new Form<>("form");
         add(form);
 
-        form.add(
-                new CRSPanel("crs", new CRSModel(null)) {
-                    @Override
-                    protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
-                        assertEquals(expectedSRS, srs);
-                    }
-                });
+        form.add(new CRSPanel("crs", new CRSModel(null)) {
+            @Override
+            protected void onSRSUpdated(String srs, AjaxRequestTarget target) {
+                assertEquals(expectedSRS, srs);
+            }
+        });
     }
 
     public CRSPanelTestPage(Object o) {

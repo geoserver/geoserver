@@ -83,7 +83,8 @@ public class LayerGroupEntry implements Serializable {
             setStyle(((LayerInfo) getLayer()).getDefaultStyle());
         } else if (getLayer() instanceof LayerGroupInfo) {
             List<LayerGroupStyle> styleList = ((LayerGroupInfo) getLayer()).getLayerGroupStyles();
-            if (styleList != null && !styleList.isEmpty()) setStyle(styleList.get(0).getName());
+            if (styleList != null && !styleList.isEmpty())
+                setStyle(styleList.get(0).getName());
         }
     }
 

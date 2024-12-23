@@ -70,8 +70,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
     @Test
     public void testConfigPlainTextEncoder() {
         GeoServerPasswordEncoder encoder = getPlainTextPasswordEncoder();
-        GeoServerMultiplexingPasswordEncoder encoder2 =
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
+        GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
 
         assertEquals(PasswordEncodingType.PLAIN, encoder.getEncodingType());
         assertEquals("plain:" + testPassword, encoder.encodePassword(testPassword, null));
@@ -121,8 +120,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
     @Test
     public void testDigestEncoder() {
         GeoServerPasswordEncoder encoder = getDigestPasswordEncoder();
-        GeoServerMultiplexingPasswordEncoder encoder2 =
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
+        GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
 
         assertEquals(PasswordEncodingType.DIGEST, encoder.getEncodingType());
         assertTrue(encoder.encodePassword(testPassword, null).startsWith("digest1:"));
@@ -169,17 +167,11 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
         }
 
         // Test if encoding does not change between versions
-        assertTrue(
-                encoder.isPasswordValid(
-                        "digest1:CTBPxdfHvqy0K0M6uoYlb3+fPFrfMhpTm7+ey5rL/1xGI4s6g8n/OrkXdcyqzJ3D",
-                        testPassword,
-                        null));
+        assertTrue(encoder.isPasswordValid(
+                "digest1:CTBPxdfHvqy0K0M6uoYlb3+fPFrfMhpTm7+ey5rL/1xGI4s6g8n/OrkXdcyqzJ3D", testPassword, null));
 
-        assertTrue(
-                encoder2.isPasswordValid(
-                        "digest1:CTBPxdfHvqy0K0M6uoYlb3+fPFrfMhpTm7+ey5rL/1xGI4s6g8n/OrkXdcyqzJ3D",
-                        testPassword,
-                        null));
+        assertTrue(encoder2.isPasswordValid(
+                "digest1:CTBPxdfHvqy0K0M6uoYlb3+fPFrfMhpTm7+ey5rL/1xGI4s6g8n/OrkXdcyqzJ3D", testPassword, null));
     }
 
     //    @Test public void testDigestEncoderBytes() {
@@ -230,8 +222,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
         } catch (UnsupportedOperationException ex) {
         }
 
-        GeoServerMultiplexingPasswordEncoder encoder2 =
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
+        GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
         assertFalse(encoder2.isPasswordValid(encodedPassword, "blabla", null));
         assertFalse(encoder2.isPasswordValid(encodedPassword, "blabla".toCharArray(), null));
         assertFalse(encoder2.isPasswordValid(encodedPassword, "", null));
@@ -261,18 +252,14 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
         // TODO runs from eclpise, but not from mnv clean install
         // assertTrue("masterpw".equals(MasterPasswordProviderImpl.get().getMasterPassword()));
 
-        GeoServerMultiplexingPasswordEncoder encoder2 =
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
+        GeoServerMultiplexingPasswordEncoder encoder2 = new GeoServerMultiplexingPasswordEncoder(getSecurityManager());
 
         for (GeoServerPasswordEncoder encoder : getConfigPBEEncoders()) {
             encoder.initialize(getSecurityManager());
             assertEquals(PasswordEncodingType.ENCRYPT, encoder.getEncodingType());
 
-            assertTrue(
-                    encoder.encodePassword(testPassword, null)
-                            .startsWith(
-                                    encoder.getPrefix()
-                                            + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
+            assertTrue(encoder.encodePassword(testPassword, null)
+                    .startsWith(encoder.getPrefix() + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
 
             String enc = encoder.encodePassword(testPassword, null);
             String enc2 = encoder.encodePassword(testPasswordArray, null);
@@ -329,8 +316,7 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
     @Test
     public void testUserGroupServiceEncoder() throws Exception {
 
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         // getPBEPasswordEncoder();
 
@@ -354,26 +340,17 @@ public class GeoserverPasswordEncoderTest extends GeoServerMockTestSupport {
             encoder.initializeFor(service);
 
             assertEquals(PasswordEncodingType.ENCRYPT, encoder.getEncodingType());
-            assertEquals(
-                    encoder.getKeyAliasInKeyStore(),
-                    keyStoreProvider.aliasForGroupService(service.getName()));
+            assertEquals(encoder.getKeyAliasInKeyStore(), keyStoreProvider.aliasForGroupService(service.getName()));
 
             GeoServerPBEPasswordEncoder encoder2 =
-                    (GeoServerPBEPasswordEncoder)
-                            getSecurityManager().loadPasswordEncoder(encoder.getName());
+                    (GeoServerPBEPasswordEncoder) getSecurityManager().loadPasswordEncoder(encoder.getName());
             encoder2.initializeFor(service);
 
             assertNotSame(encoder, encoder2);
             String enc = encoder.encodePassword(password, null);
-            assertTrue(
-                    enc.startsWith(
-                            encoder.getPrefix()
-                                    + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
+            assertTrue(enc.startsWith(encoder.getPrefix() + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
             String encFromArray = encoder.encodePassword(passwordArray, null);
-            assertTrue(
-                    encFromArray.startsWith(
-                            encoder.getPrefix()
-                                    + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
+            assertTrue(encFromArray.startsWith(encoder.getPrefix() + AbstractGeoserverPasswordEncoder.PREFIX_DELIMTER));
 
             assertNotEquals(enc, password);
             assertThat(encFromArray.toCharArray(), not(equalTo(passwordArray)));

@@ -22,27 +22,25 @@ import org.geowebcache.filter.parameters.RegexParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public class RegexParameterFilterSubform
-        extends AbstractParameterFilterSubform<RegexParameterFilter> {
+public class RegexParameterFilterSubform extends AbstractParameterFilterSubform<RegexParameterFilter> {
 
-    private static final IValidator<String> REGEXP_VALIDATOR =
-            new IValidator<>() {
+    private static final IValidator<String> REGEXP_VALIDATOR = new IValidator<>() {
 
-                private static final long serialVersionUID = 3753607592277740081L;
+        private static final long serialVersionUID = 3753607592277740081L;
 
-                @Override
-                public void validate(IValidatable<String> validatable) {
-                    final String regex = validatable.getValue();
-                    try {
-                        Pattern.compile(regex);
-                    } catch (PatternSyntaxException ex) {
-                        ValidationError error = new ValidationError();
-                        error.setMessage("Invalid Regular expression");
-                        error.addKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
-                        validatable.error(error);
-                    }
-                }
-            };
+        @Override
+        public void validate(IValidatable<String> validatable) {
+            final String regex = validatable.getValue();
+            try {
+                Pattern.compile(regex);
+            } catch (PatternSyntaxException ex) {
+                ValidationError error = new ValidationError();
+                error.setMessage("Invalid Regular expression");
+                error.addKey(getClass().getSimpleName() + "." + "invalidRegularExpression");
+                validatable.error(error);
+            }
+        }
+    };
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;
@@ -50,12 +48,10 @@ public class RegexParameterFilterSubform
     public RegexParameterFilterSubform(String id, IModel<RegexParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue =
-                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
-        final TextField<String> regex =
-                new TextField<>("regex", new PropertyModel<>(model, "regex"));
+        final TextField<String> regex = new TextField<>("regex", new PropertyModel<>(model, "regex"));
 
         regex.add(REGEXP_VALIDATOR);
 

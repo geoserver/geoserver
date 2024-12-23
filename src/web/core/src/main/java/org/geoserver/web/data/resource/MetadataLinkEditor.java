@@ -42,11 +42,9 @@ import org.geoserver.web.GeoServerApplication;
 public class MetadataLinkEditor extends Panel {
     private static final long serialVersionUID = -5721941745847988670L;
     /**
-     * Can't depend on the wms module here, but beware links of type ISO19115:2003 won't show up in
-     * WMS 1.1.1 GetCaps
+     * Can't depend on the wms module here, but beware links of type ISO19115:2003 won't show up in WMS 1.1.1 GetCaps
      */
-    private static final List<String> LINK_TYPES =
-            Arrays.asList("ISO19115:2003", "FGDC", "TC211", "19139", "other");
+    private static final List<String> LINK_TYPES = Arrays.asList("ISO19115:2003", "FGDC", "TC211", "19139", "other");
 
     private final ListView<MetadataLinkInfo> links;
     private final Label noMetadata;
@@ -59,8 +57,8 @@ public class MetadataLinkEditor extends Panel {
     }
 
     /**
-     * @param resourceModel Must return object that has a "metadataLinks" property (such as a {@link
-     *     ResourceInfo} or {@link LayerGroupInfo})
+     * @param resourceModel Must return object that has a "metadataLinks" property (such as a {@link ResourceInfo} or
+     *     {@link LayerGroupInfo})
      */
     public MetadataLinkEditor(String id, final IModel<?> resourceModel) {
         super(id, resourceModel);
@@ -76,70 +74,56 @@ public class MetadataLinkEditor extends Panel {
         table = new WebMarkupContainer("table");
         table.setOutputMarkupId(true);
         container.add(table);
-        links =
-                new ListView<>("links", metadataLinksModel) {
+        links = new ListView<>("links", metadataLinksModel) {
 
-                    private static final long serialVersionUID = -3241009112151911288L;
+            private static final long serialVersionUID = -3241009112151911288L;
+
+            @Override
+            protected void populateItem(ListItem<MetadataLinkInfo> item) {
+
+                // odd/even style
+                item.add(AttributeModifier.replace("class", item.getIndex() % 2 == 0 ? "even" : "odd"));
+
+                // link info
+                TextField<String> metadataType =
+                        new TextField<>("type", new PropertyModel<>(item.getModel(), "metadataType"));
+                final RepeatingView commonKeys = new RepeatingView("commonTypes");
+                item.add(commonKeys);
+                for (String key : LINK_TYPES) {
+                    commonKeys.add(new Label(commonKeys.newChildId(), key));
+                }
+                metadataType.setRequired(true);
+                item.add(metadataType);
+
+                TextField<String> about = new TextField<>("about", new PropertyModel<>(item.getModel(), "about"));
+                item.add(about);
+
+                FormComponentFeedbackBorder urlBorder = new FormComponentFeedbackBorder("urlBorder");
+                item.add(urlBorder);
+                TextField<String> format = new TextField<>("format", new PropertyModel<>(item.getModel(), "type"));
+                format.setRequired(true);
+                item.add(format);
+                TextField<String> url =
+                        new TextField<>("metadataLinkURL", new PropertyModel<>(item.getModel(), "content"));
+                url.add(new UrlValidator());
+                url.setRequired(true);
+                urlBorder.add(url);
+
+                // remove link
+                AjaxLink<MetadataLinkInfo> link = new AjaxLink<>("removeLink", item.getModel()) {
+
+                    private static final long serialVersionUID = -6204300287066695521L;
 
                     @Override
-                    protected void populateItem(ListItem<MetadataLinkInfo> item) {
-
-                        // odd/even style
-                        item.add(
-                                AttributeModifier.replace(
-                                        "class", item.getIndex() % 2 == 0 ? "even" : "odd"));
-
-                        // link info
-                        TextField<String> metadataType =
-                                new TextField<>(
-                                        "type",
-                                        new PropertyModel<>(item.getModel(), "metadataType"));
-                        final RepeatingView commonKeys = new RepeatingView("commonTypes");
-                        item.add(commonKeys);
-                        for (String key : LINK_TYPES) {
-                            commonKeys.add(new Label(commonKeys.newChildId(), key));
-                        }
-                        metadataType.setRequired(true);
-                        item.add(metadataType);
-
-                        TextField<String> about =
-                                new TextField<>(
-                                        "about", new PropertyModel<>(item.getModel(), "about"));
-                        item.add(about);
-
-                        FormComponentFeedbackBorder urlBorder =
-                                new FormComponentFeedbackBorder("urlBorder");
-                        item.add(urlBorder);
-                        TextField<String> format =
-                                new TextField<>(
-                                        "format", new PropertyModel<>(item.getModel(), "type"));
-                        format.setRequired(true);
-                        item.add(format);
-                        TextField<String> url =
-                                new TextField<>(
-                                        "metadataLinkURL",
-                                        new PropertyModel<>(item.getModel(), "content"));
-                        url.add(new UrlValidator());
-                        url.setRequired(true);
-                        urlBorder.add(url);
-
-                        // remove link
-                        AjaxLink<MetadataLinkInfo> link =
-                                new AjaxLink<>("removeLink", item.getModel()) {
-
-                                    private static final long serialVersionUID =
-                                            -6204300287066695521L;
-
-                                    @Override
-                                    public void onClick(AjaxRequestTarget target) {
-                                        metadataLinksModel.getObject().remove(getModelObject());
-                                        updateLinksVisibility();
-                                        target.add(container);
-                                    }
-                                };
-                        item.add(link);
+                    public void onClick(AjaxRequestTarget target) {
+                        metadataLinksModel.getObject().remove(getModelObject());
+                        updateLinksVisibility();
+                        target.add(container);
                     }
                 };
+                item.add(link);
+            }
+        };
         // this is necessary to avoid loosing item contents on edit/validation checks
         links.setReuseItems(true);
         table.add(links);
@@ -150,21 +134,20 @@ public class MetadataLinkEditor extends Panel {
         updateLinksVisibility();
 
         // add new link button
-        AjaxButton button =
-                new AjaxButton("addlink") {
-                    private static final long serialVersionUID = -695617463194724617L;
+        AjaxButton button = new AjaxButton("addlink") {
+            private static final long serialVersionUID = -695617463194724617L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        MetadataLinkInfo link = getCatalog().getFactory().createMetadataLink();
-                        link.setMetadataType(LINK_TYPES.get(0));
-                        link.setType("text/plain");
-                        metadataLinksModel.getObject().add(link);
-                        updateLinksVisibility();
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                MetadataLinkInfo link = getCatalog().getFactory().createMetadataLink();
+                link.setMetadataType(LINK_TYPES.get(0));
+                link.setType("text/plain");
+                metadataLinksModel.getObject().add(link);
+                updateLinksVisibility();
 
-                        target.add(container);
-                    }
-                };
+                target.add(container);
+            }
+        };
         add(button);
     }
 
@@ -184,10 +167,9 @@ public class MetadataLinkEditor extends Panel {
                 try {
                     MetadataLinkInfoImpl.validate(url);
                 } catch (IllegalArgumentException ex) {
-                    IValidationError err =
-                            new ValidationError("invalidURL")
-                                    .addKey("invalidURL")
-                                    .setVariable("url", url);
+                    IValidationError err = new ValidationError("invalidURL")
+                            .addKey("invalidURL")
+                            .setVariable("url", url);
                     validatable.error(err);
                 }
             }

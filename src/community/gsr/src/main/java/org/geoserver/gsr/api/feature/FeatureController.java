@@ -37,9 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 /** Controller for the Feature Service feature list endpoint */
 @RestController
-@RequestMapping(
-        path = "/gsr/services/{workspaceName}/FeatureServer",
-        produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(path = "/gsr/services/{workspaceName}/FeatureServer", produces = MediaType.APPLICATION_JSON_VALUE)
 public class FeatureController extends AbstractGSRController {
 
     @Autowired
@@ -50,9 +48,7 @@ public class FeatureController extends AbstractGSRController {
     @GetMapping(path = "/{layerId}/{featureId}", name = "MapServerGetLegend")
     @HTMLResponseBody(templateName = "featureitem.ftl", fileName = "featureitem.html")
     public FeatureWrapper getFeature(
-            @PathVariable String workspaceName,
-            @PathVariable Integer layerId,
-            @PathVariable String featureId)
+            @PathVariable String workspaceName, @PathVariable Integer layerId, @PathVariable String featureId)
             throws IOException, FactoryException {
         LayerOrTable l = LayerDAO.find(catalog, workspaceName, layerId);
 
@@ -67,56 +63,28 @@ public class FeatureController extends AbstractGSRController {
                     "No table or layer in workspace \"" + workspaceName + "\" for id " + layerId);
         }
 
-        Filter idFilter =
-                FILTERS.id(
-                        FILTERS.featureId(
-                                featureType.getFeatureType().getName().getLocalPart()
-                                        + "."
-                                        + featureId));
+        Filter idFilter = FILTERS.id(
+                FILTERS.featureId(featureType.getFeatureType().getName().getLocalPart() + "." + featureId));
 
         FeatureSource<?, ?> source = featureType.getFeatureSource(null, null);
         FeatureCollection<?, ?> featureColl = source.getFeatures(idFilter);
-        org.geotools.api.feature.Feature[] featureArr =
-                featureColl.toArray(new org.geotools.api.feature.Feature[0]);
+        org.geotools.api.feature.Feature[] featureArr = featureColl.toArray(new org.geotools.api.feature.Feature[0]);
         if (featureArr.length == 0) {
-            throw new NoSuchElementException(
-                    "No feature in layer or table " + layerId + " with id " + featureId);
+            throw new NoSuchElementException("No feature in layer or table " + layerId + " with id " + featureId);
         }
-        SpatialReference spatialReference =
-                SpatialReferences.fromCRS(
-                        featureArr[0]
-                                .getDefaultGeometryProperty()
-                                .getDescriptor()
-                                .getCoordinateReferenceSystem());
-        FeatureWrapper feature =
-                new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
+        SpatialReference spatialReference = SpatialReferences.fromCRS(
+                featureArr[0].getDefaultGeometryProperty().getDescriptor().getCoordinateReferenceSystem());
+        FeatureWrapper feature = new FeatureWrapper(FeatureEncoder.feature(featureArr[0], true, spatialReference));
         feature.getPath()
-                .addAll(
-                        Arrays.asList(
-                                new Link(workspaceName, workspaceName),
-                                new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
-                                new Link(
-                                        workspaceName + "/" + "FeatureServer/" + layerId,
-                                        l.getName()),
-                                new Link(
-                                        workspaceName
-                                                + "/"
-                                                + "FeatureServer/"
-                                                + layerId
-                                                + "/"
-                                                + featureId,
-                                        featureId)));
+                .addAll(Arrays.asList(
+                        new Link(workspaceName, workspaceName),
+                        new Link(workspaceName + "/" + "FeatureServer", "FeatureServer"),
+                        new Link(workspaceName + "/" + "FeatureServer/" + layerId, l.getName()),
+                        new Link(workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId, featureId)));
         feature.getInterfaces()
-                .add(
-                        new Link(
-                                workspaceName
-                                        + "/"
-                                        + "FeatureServer/"
-                                        + layerId
-                                        + "/"
-                                        + featureId
-                                        + "?f=json&pretty=true",
-                                "REST"));
+                .add(new Link(
+                        workspaceName + "/" + "FeatureServer/" + layerId + "/" + featureId + "?f=json&pretty=true",
+                        "REST"));
         return feature;
     }
 }

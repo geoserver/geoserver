@@ -32,8 +32,7 @@ class RetypingIterator<F extends Feature> implements Iterator<F>, Closeable {
 
     ComplexFeatureBuilder builder;
 
-    public RetypingIterator(
-            FeatureIterator<F> delegate, FeatureType schema, List<PropertyName> properties) {
+    public RetypingIterator(FeatureIterator<F> delegate, FeatureType schema, List<PropertyName> properties) {
         this.delegate = delegate;
         this.builder = new ComplexFeatureBuilder(schema);
         this.names = buildNames(properties);
@@ -44,10 +43,9 @@ class RetypingIterator<F extends Feature> implements Iterator<F>, Closeable {
         for (PropertyName pn : properties) {
             String fullName = pn.getPropertyName();
             if (fullName.indexOf('@') != -1 || fullName.indexOf('/') != -1) {
-                throw new IllegalArgumentException(
-                        "Invalid property "
-                                + fullName
-                                + ", this code can only handle properties with the 'name' or 'prefix:name' structure");
+                throw new IllegalArgumentException("Invalid property "
+                        + fullName
+                        + ", this code can only handle properties with the 'name' or 'prefix:name' structure");
             }
 
             // try to split in prefix and name if possible

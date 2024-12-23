@@ -54,12 +54,10 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
 
     protected boolean isNew;
 
-    public SecurityFilterChainPage(
-            RequestFilterChain chain, SecurityManagerConfig secMgrConfig, boolean isNew) {
+    public SecurityFilterChainPage(RequestFilterChain chain, SecurityManagerConfig secMgrConfig, boolean isNew) {
 
         RequestFilterChainWrapper wrapper = new RequestFilterChainWrapper(chain);
-        Form<RequestFilterChainWrapper> theForm =
-                new Form<>("form", new CompoundPropertyModel<>(wrapper));
+        Form<RequestFilterChainWrapper> theForm = new Form<>("form", new CompoundPropertyModel<>(wrapper));
 
         initialize(chain, secMgrConfig, isNew, theForm, wrapper);
     }
@@ -86,10 +84,7 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
         boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole();
         setEnabled(isAdmin);
 
-        form.add(
-                new Label(
-                        "message",
-                        isAdmin ? new Model<>() : new StringResourceModel("notAdmin", this, null)));
+        form.add(new Label("message", isAdmin ? new Model<>() : new StringResourceModel("notAdmin", this, null)));
         if (!isAdmin) {
             form.get("message").add(new AttributeAppender("class", new Model<>("info-link"), " "));
         }
@@ -101,32 +96,27 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
         form.add(new CheckBox("disabled"));
         form.add(new CheckBox("allowSessionCreation"));
         form.add(new CheckBox("requireSSL"));
-        form.add(
-                new CheckBox("matchHTTPMethod")
-                        .add(
-                                new OnChangeAjaxBehavior() {
-                                    @Override
-                                    protected void onUpdate(AjaxRequestTarget target) {
-                                        for (CheckBox cb : methodList) {
-                                            cb.setEnabled(chainWrapper.isMatchHTTPMethod());
-                                            target.add(cb);
-                                        }
-                                    }
-                                }));
+        form.add(new CheckBox("matchHTTPMethod").add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                for (CheckBox cb : methodList) {
+                    cb.setEnabled(chainWrapper.isMatchHTTPMethod());
+                    target.add(cb);
+                }
+            }
+        }));
 
         List<String> filterNames = new ArrayList<>();
         try {
             filterNames.addAll(getSecurityManager().listFilters(GeoServerRoleFilter.class));
-            for (GeoServerRoleFilter filter :
-                    GeoServerExtensions.extensions(GeoServerRoleFilter.class)) {
+            for (GeoServerRoleFilter filter : GeoServerExtensions.extensions(GeoServerRoleFilter.class)) {
                 filterNames.add(filter.getName());
             }
-            form.add(
-                    new DropDownChoice<>(
-                                    "roleFilterName",
-                                    new PropertyModel<>(chainWrapper.getChain(), "roleFilterName"),
-                                    filterNames)
-                            .setNullValid(true));
+            form.add(new DropDownChoice<>(
+                            "roleFilterName",
+                            new PropertyModel<>(chainWrapper.getChain(), "roleFilterName"),
+                            filterNames)
+                    .setNullValid(true));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -149,27 +139,24 @@ public class SecurityFilterChainPage extends AbstractSecurityPage {
         form.add(new HelpLink("chainConfigHelp").setDialog(dialog));
         form.add(new HelpLink("chainConfigMethodHelp").setDialog(dialog));
 
-        form.add(
-                new SubmitLink("close", form) {
-                    @Override
-                    public void onSubmit() {
-                        handleSubmit(getForm());
-                    }
-                });
-        form.add(
-                new Link<>("cancel") {
-                    @Override
-                    public void onClick() {
-                        doReturn();
-                    }
-                });
+        form.add(new SubmitLink("close", form) {
+            @Override
+            public void onSubmit() {
+                handleSubmit(getForm());
+            }
+        });
+        form.add(new Link<>("cancel") {
+            @Override
+            public void onClick() {
+                doReturn();
+            }
+        });
     }
 
     protected void handleSubmit(Form<?> form) {
         RequestFilterChain chain = chainWrapper.getChain();
         try {
-            new SecurityConfigValidator(getSecurityManager())
-                    .validateRequestFilterChain(chainWrapper.getChain());
+            new SecurityConfigValidator(getSecurityManager()).validateRequestFilterChain(chainWrapper.getChain());
             if (isNew) secMgrConfig.getFilterChain().getRequestChains().add(chain);
             // getSecurityManager().saveSecurityConfig(secMgrConfig);
             doReturn();

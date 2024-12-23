@@ -20,27 +20,17 @@ import org.w3c.dom.Document;
 /** Test support for GML 3.1 and GML 3.2 Stations data use case */
 public abstract class StationsAppSchemaTestSupport extends AbstractAppSchemaTestSupport {
 
-    protected final Map<String, String> GML31_PARAMETERS =
-            Collections.unmodifiableMap(
-                    Stream.of(
-                                    new SimpleEntry<>("GML_PREFIX", "gml31"),
-                                    new SimpleEntry<>(
-                                            "GML_NAMESPACE", "http://www.opengis.net/gml"),
-                                    new SimpleEntry<>(
-                                            "GML_LOCATION",
-                                            "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"))
-                            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+    protected final Map<String, String> GML31_PARAMETERS = Collections.unmodifiableMap(Stream.of(
+                    new SimpleEntry<>("GML_PREFIX", "gml31"),
+                    new SimpleEntry<>("GML_NAMESPACE", "http://www.opengis.net/gml"),
+                    new SimpleEntry<>("GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd"))
+            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
-    protected final Map<String, String> GML32_PARAMETERS =
-            Collections.unmodifiableMap(
-                    Stream.of(
-                                    new SimpleEntry<>("GML_PREFIX", "gml32"),
-                                    new SimpleEntry<>(
-                                            "GML_NAMESPACE", "http://www.opengis.net/gml/3.2"),
-                                    new SimpleEntry<>(
-                                            "GML_LOCATION",
-                                            "http://schemas.opengis.net/gml/3.2.1/gml.xsd"))
-                            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
+    protected final Map<String, String> GML32_PARAMETERS = Collections.unmodifiableMap(Stream.of(
+                    new SimpleEntry<>("GML_PREFIX", "gml32"),
+                    new SimpleEntry<>("GML_NAMESPACE", "http://www.opengis.net/gml/3.2"),
+                    new SimpleEntry<>("GML_LOCATION", "http://schemas.opengis.net/gml/3.2.1/gml.xsd"))
+            .collect(Collectors.toMap((e) -> e.getKey(), (e) -> e.getValue())));
 
     // xpath engines used to check WFS responses
     protected XpathEngine WFS11_XPATH_ENGINE;
@@ -49,21 +39,19 @@ public abstract class StationsAppSchemaTestSupport extends AbstractAppSchemaTest
     @Before
     public void beforeTest() {
         // instantiate WFS 1.1 xpath engine
-        WFS11_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs",
-                        "gml",
-                        "http://www.opengis.net/gml");
+        WFS11_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "wfs",
+                "http://www.opengis.net/wfs",
+                "gml",
+                "http://www.opengis.net/gml");
         // instantiate WFS 2.0 xpath engine
-        WFS20_XPATH_ENGINE =
-                StationsMockData.buildXpathEngine(
-                        getTestData().getNamespaces(),
-                        "wfs",
-                        "http://www.opengis.net/wfs/2.0",
-                        "gml",
-                        "http://www.opengis.net/gml/3.2");
+        WFS20_XPATH_ENGINE = StationsMockData.buildXpathEngine(
+                getTestData().getNamespaces(),
+                "wfs",
+                "http://www.opengis.net/wfs/2.0",
+                "gml",
+                "http://www.opengis.net/gml/3.2");
     }
 
     @Override
@@ -79,15 +67,12 @@ public abstract class StationsAppSchemaTestSupport extends AbstractAppSchemaTest
     }
 
     /**
-     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to
-     * the expected number,
+     * Helper method that evaluates a xpath and checks if the number of nodes found correspond to the expected number,
      */
-    protected void checkCount(
-            XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
+    protected void checkCount(XpathEngine xpathEngine, Document document, int expectedCount, String xpath) {
         try {
             // evaluate the xpath and compare the number of nodes found
-            assertThat(
-                    xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
+            assertThat(xpathEngine.getMatchingNodes(xpath, document).getLength(), is(expectedCount));
         } catch (Exception exception) {
             throw new RuntimeException("Error evaluating xpath: " + xpath, exception);
         }

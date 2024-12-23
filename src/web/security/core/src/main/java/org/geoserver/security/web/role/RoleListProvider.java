@@ -33,8 +33,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         this.roleServiceName = roleServiceName;
     }
 
-    public static final Property<GeoServerRole> ROLENAME =
-            new BeanProperty<>("rolename", "authority");
+    public static final Property<GeoServerRole> ROLENAME = new BeanProperty<>("rolename", "authority");
 
     public static final String ParentPropertyName = "parentrolename";
 
@@ -49,11 +48,10 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         public Object getPropertyValue(GeoServerRole item) {
             GeoServerRole parent = null;
             try {
-                parent =
-                        GeoServerApplication.get()
-                                .getSecurityManager()
-                                .loadRoleService(roleServiceName)
-                                .getParentRole(item);
+                parent = GeoServerApplication.get()
+                        .getSecurityManager()
+                        .loadRoleService(roleServiceName)
+                        .getParentRole(item);
             } catch (IOException e) {
                 // TODO is this correct
                 throw new RuntimeException(e);
@@ -83,40 +81,39 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         }
     }
 
-    public static final Property<GeoServerRole> HASROLEPARAMS =
-            new Property<>() {
+    public static final Property<GeoServerRole> HASROLEPARAMS = new Property<>() {
 
-                @Override
-                public String getName() {
-                    return "hasroleparams";
-                }
+        @Override
+        public String getName() {
+            return "hasroleparams";
+        }
 
-                @Override
-                public Object getPropertyValue(GeoServerRole item) {
-                    if (item.getProperties().isEmpty()) return Boolean.FALSE;
-                    else return Boolean.TRUE;
-                }
+        @Override
+        public Object getPropertyValue(GeoServerRole item) {
+            if (item.getProperties().isEmpty()) return Boolean.FALSE;
+            else return Boolean.TRUE;
+        }
 
-                @Override
-                public IModel getModel(IModel<GeoServerRole> itemModel) {
-                    return new Model<>((Boolean) getPropertyValue(itemModel.getObject()));
-                }
+        @Override
+        public IModel getModel(IModel<GeoServerRole> itemModel) {
+            return new Model<>((Boolean) getPropertyValue(itemModel.getObject()));
+        }
 
-                @Override
-                public Comparator<GeoServerRole> getComparator() {
-                    return new PropertyComparator<>(this);
-                }
+        @Override
+        public Comparator<GeoServerRole> getComparator() {
+            return new PropertyComparator<>(this);
+        }
 
-                @Override
-                public boolean isVisible() {
-                    return true;
-                }
+        @Override
+        public boolean isVisible() {
+            return true;
+        }
 
-                @Override
-                public boolean isSearchable() {
-                    return true;
-                }
-            };
+        @Override
+        public boolean isSearchable() {
+            return true;
+        }
+    };
 
     @Override
     protected List<GeoServerRole> getItems() {
@@ -124,10 +121,7 @@ public class RoleListProvider extends GeoServerDataProvider<GeoServerRole> {
         try {
             GeoServerRoleService service = null;
             if (roleServiceName != null)
-                service =
-                        GeoServerApplication.get()
-                                .getSecurityManager()
-                                .loadRoleService(roleServiceName);
+                service = GeoServerApplication.get().getSecurityManager().loadRoleService(roleServiceName);
 
             if (service == null) roles = new TreeSet<>();
             else roles = service.getRoles();

@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Configuration of the URL checks subsystem. In particular, currently contains a flag for enabling
- * the checks, and a list of {@link AbstractURLCheck} to be applied.
+ * Configuration of the URL checks subsystem. In particular, currently contains a flag for enabling the checks, and a
+ * list of {@link AbstractURLCheck} to be applied.
  */
 public class URLChecksConfiguration {
 

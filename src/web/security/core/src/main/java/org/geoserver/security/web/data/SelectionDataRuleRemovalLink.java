@@ -30,8 +30,7 @@ public class SelectionDataRuleRemovalLink extends AjaxLink<Object> {
     ConfirmRemovalDataAccessRulePanel removePanel;
     GeoServerDialog.DialogDelegate delegate;
 
-    public SelectionDataRuleRemovalLink(
-            String id, GeoServerTablePanel<DataAccessRule> rules, GeoServerDialog dialog) {
+    public SelectionDataRuleRemovalLink(String id, GeoServerTablePanel<DataAccessRule> rules, GeoServerDialog dialog) {
         super(id);
         this.rules = rules;
         this.dialog = dialog;
@@ -48,53 +47,48 @@ public class SelectionDataRuleRemovalLink extends AjaxLink<Object> {
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(
                 target,
-                delegate =
-                        new GeoServerDialog.DialogDelegate() {
+                delegate = new GeoServerDialog.DialogDelegate() {
+                    @Override
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        return removePanel = new ConfirmRemovalDataAccessRulePanel(id, selection) {
                             @Override
-                            protected Component getContents(String id) {
-                                // show a confirmation panel for all the objects we have to remove
-                                return removePanel =
-                                        new ConfirmRemovalDataAccessRulePanel(id, selection) {
-                                            @Override
-                                            protected IModel<String> canRemove(
-                                                    DataAccessRule data) {
-                                                return SelectionDataRuleRemovalLink.this.canRemove(
-                                                        data);
-                                            }
-                                        };
+                            protected IModel<String> canRemove(DataAccessRule data) {
+                                return SelectionDataRuleRemovalLink.this.canRemove(data);
                             }
+                        };
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                // cascade delete the whole selection
-                                DataAccessRuleDAO dao = DataAccessRuleDAO.get();
-                                for (DataAccessRule rule : removePanel.getRoots()) {
-                                    dao.removeRule(rule);
-                                }
-                                try {
-                                    dao.storeRules();
-                                } catch (IOException e) {
-                                    LOGGER.log(Level.WARNING, "", e);
-                                }
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        // cascade delete the whole selection
+                        DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+                        for (DataAccessRule rule : removePanel.getRoots()) {
+                            dao.removeRule(rule);
+                        }
+                        try {
+                            dao.storeRules();
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING, "", e);
+                        }
 
-                                // the deletion will have changed what we see in the page
-                                // so better clear out the selection
-                                rules.clearSelection();
-                                return true;
-                            }
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        rules.clearSelection();
+                        return true;
+                    }
 
-                            @Override
-                            public void onClose(AjaxRequestTarget target) {
-                                // if the selection has been cleared out it's sign a deletion
-                                // occurred, so refresh the table
-                                if (rules.getSelection().isEmpty()) {
-                                    setEnabled(false);
-                                    target.add(SelectionDataRuleRemovalLink.this);
-                                    target.add(rules);
-                                }
-                            }
-                        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (rules.getSelection().isEmpty()) {
+                            setEnabled(false);
+                            target.add(SelectionDataRuleRemovalLink.this);
+                            target.add(rules);
+                        }
+                    }
+                });
     }
 
     protected StringResourceModel canRemove(DataAccessRule data) {

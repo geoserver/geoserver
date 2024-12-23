@@ -34,8 +34,7 @@ public final class EchoParametersDao {
         xStream.alias("EchoParameter", EchoParameter.class);
         xStream.alias("EchoParameters", EchoParametersDao.EchoParametersList.class);
         xStream.addImplicitCollection(EchoParametersDao.EchoParametersList.class, "parameters");
-        xStream.allowTypes(
-                new Class[] {EchoParameter.class, EchoParametersDao.EchoParametersList.class});
+        xStream.allowTypes(new Class[] {EchoParameter.class, EchoParametersDao.EchoParametersList.class});
     }
 
     public static String getEchoParametersPath() {
@@ -56,8 +55,8 @@ public final class EchoParametersDao {
     }
 
     /**
-     * Read a list of EchoParameter from a resource. Return an empty list if the resource does not
-     * exist. This prevents Resource.in() from creating the file or throwing an exception.
+     * Read a list of EchoParameter from a resource. Return an empty list if the resource does not exist. This prevents
+     * Resource.in() from creating the file or throwing an exception.
      *
      * @param resource to read.
      * @return a list of EchoParameter or an empty list if the resource does not exist.
@@ -88,8 +87,7 @@ public final class EchoParametersDao {
         tmpEchoParameters.renameTo(echoParameters);
     }
 
-    public static void saveOrUpdateEchoParameter(
-            EchoParameter echoParameter, Resource input, Resource output) {
+    public static void saveOrUpdateEchoParameter(EchoParameter echoParameter, Resource input, Resource output) {
         List<EchoParameter> echoParameters = getEchoParameters(input);
         boolean exists = false;
         for (int i = 0; i < echoParameters.size() && !exists; i++) {
@@ -116,10 +114,9 @@ public final class EchoParametersDao {
     public static void deleteEchoParameters(
             Resource inputResource, Resource outputResource, String... forwardParameterIds) {
 
-        List<EchoParameter> collect =
-                getEchoParameters(inputResource).stream()
-                        .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
-                        .collect(Collectors.toList());
+        List<EchoParameter> collect = getEchoParameters(inputResource).stream()
+                .filter(p -> !ArrayUtils.contains(forwardParameterIds, p.getId()))
+                .collect(Collectors.toList());
 
         writeEchoParameters(collect, outputResource);
     }
@@ -146,36 +143,27 @@ public final class EchoParametersDao {
             EchoParameterBuilder echoParameterBuilder = new EchoParameterBuilder();
             getAttribute("id", attributes, echoParameterBuilder::withId);
             getAttribute("parameter", attributes, echoParameterBuilder::withParameter);
-            getAttribute(
-                    "activated",
-                    attributes,
-                    compose(Boolean::valueOf, echoParameterBuilder::withActivated));
+            getAttribute("activated", attributes, compose(Boolean::valueOf, echoParameterBuilder::withActivated));
             echoParameters.add(echoParameterBuilder.build());
             Utils.debug(LOGGER, "End parsing echo parameter.");
         }
 
-        private static <T> Consumer<String> compose(
-                Function<String, T> convert, Consumer<T> setter) {
+        private static <T> Consumer<String> compose(Function<String, T> convert, Consumer<T> setter) {
             return (value) -> setter.accept(convert.apply(value));
         }
 
-        private void getAttribute(
-                String attributeName, Attributes attributes, Consumer<String> setter) {
+        private void getAttribute(String attributeName, Attributes attributes, Consumer<String> setter) {
             String attributeValue = attributes.getValue(attributeName);
             if (attributeValue == null) {
                 Utils.debug(LOGGER, "Echo parameter attribute %s is NULL.", attributeName);
                 return;
             }
-            Utils.debug(
-                    LOGGER, "Echo parameter attribute %s is %s.", attributeName, attributeValue);
+            Utils.debug(LOGGER, "Echo parameter attribute %s is %s.", attributeName, attributeValue);
             try {
                 setter.accept(attributeValue);
             } catch (Exception exception) {
                 throw Utils.exception(
-                        exception,
-                        "Error setting attribute '%s' with value '%s'.",
-                        attributeName,
-                        attributeValue);
+                        exception, "Error setting attribute '%s' with value '%s'.", attributeName, attributeValue);
             }
         }
     }

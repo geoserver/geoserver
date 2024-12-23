@@ -36,8 +36,7 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
         replay(fs);
 
         VectorAccessLimits limits =
-                new VectorAccessLimits(
-                        CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
+                new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
         SecuredFeatureStore<SimpleFeatureType, SimpleFeature> store =
                 new SecuredFeatureStore<>(fs, WrapperPolicy.readWrite(limits));
         store.modifyFeatures(names, values, filter);
@@ -56,10 +55,8 @@ public class SecuredFeatureStoreTest extends SecureObjectsTest {
         replay(fs);
 
         VectorAccessLimits limits =
-                new VectorAccessLimits(
-                        CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
-        SecuredSimpleFeatureStore store =
-                new SecuredSimpleFeatureStore(fs, WrapperPolicy.readWrite(limits));
+                new VectorAccessLimits(CatalogMode.HIDE, null, Filter.INCLUDE, null, Filter.INCLUDE);
+        SecuredSimpleFeatureStore store = new SecuredSimpleFeatureStore(fs, WrapperPolicy.readWrite(limits));
         store.modifyFeatures(names, values, filter);
         verify(fs);
     }

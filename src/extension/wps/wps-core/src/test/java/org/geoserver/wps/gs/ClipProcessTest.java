@@ -33,43 +33,41 @@ public class ClipProcessTest extends WPSTestSupport {
 
     @Test
     public void testClipRectangle() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>features</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData>"
-                        + readFileIntoString("illinois.xml")
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>clip</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<ows:BoundingBox>"
-                        + "<ows:LowerCorner>-100 40</ows:LowerCorner>"
-                        + "<ows:UpperCorner>-90 45</ows:UpperCorner>"
-                        + "</ows:BoundingBox>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:RawDataOutput>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:RawDataOutput>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>features</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData>"
+                + readFileIntoString("illinois.xml")
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>clip</ows:Identifier>"
+                + "<wps:Data>"
+                + "<ows:BoundingBox>"
+                + "<ows:LowerCorner>-100 40</ows:LowerCorner>"
+                + "<ows:UpperCorner>-90 45</ows:UpperCorner>"
+                + "</ows:BoundingBox>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:RawDataOutput>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         // System.out.println(response.getOutputStreamContent());
 
         Parser p = new Parser(new WFSConfiguration_1_0());
-        FeatureCollectionType fct =
-                (FeatureCollectionType)
-                        p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        FeatureCollectionType fct = (FeatureCollectionType)
+                p.parse(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         FeatureCollection fc = (FeatureCollection) fct.getFeature().get(0);
 
         assertEquals(1, fc.size());
@@ -81,41 +79,40 @@ public class ClipProcessTest extends WPSTestSupport {
 
     @Test
     public void testClipIAU() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1' "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
-                        + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>features</ows:Identifier>"
-                        + "  <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
-                        + "    <wps:Body>\n"
-                        + "      <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n"
-                        + "        <wfs:Query typeName=\"iau:MarsPoi\"/>\n"
-                        + "      </wfs:GetFeature>\n"
-                        + "    </wps:Body>\n"
-                        + "  </wps:Reference>\n"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>clip</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<ows:BoundingBox crs=\"IAU:49900\">"
-                        + "<ows:LowerCorner>-37 -40</ows:LowerCorner>"
-                        + "<ows:UpperCorner>-36 -20</ows:UpperCorner>"
-                        + "</ows:BoundingBox>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:ResponseDocument storeExecuteResponse='false' lineage='true'>"
-                        + "<wps:Output>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:Output>"
-                        + "</wps:ResponseDocument>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1' "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\">"
+                + "<ows:Identifier>gs:RectangularClip</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>features</ows:Identifier>"
+                + "  <wps:Reference mimeType=\"text/xml; subtype=wfs-collection/1.0\" xlink:href=\"http://geoserver/wfs\" method=\"POST\">\n"
+                + "    <wps:Body>\n"
+                + "      <wfs:GetFeature service=\"WFS\" version=\"1.0.0\">\n"
+                + "        <wfs:Query typeName=\"iau:MarsPoi\"/>\n"
+                + "      </wfs:GetFeature>\n"
+                + "    </wps:Body>\n"
+                + "  </wps:Reference>\n"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>clip</ows:Identifier>"
+                + "<wps:Data>"
+                + "<ows:BoundingBox crs=\"IAU:49900\">"
+                + "<ows:LowerCorner>-37 -40</ows:LowerCorner>"
+                + "<ows:UpperCorner>-36 -20</ows:UpperCorner>"
+                + "</ows:BoundingBox>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument storeExecuteResponse='false' lineage='true'>"
+                + "<wps:Output>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
 
         Document dom = postAsDOM(root(), xml);
         print(dom);
@@ -187,8 +184,7 @@ public class ClipProcessTest extends WPSTestSupport {
         // worked without balking at the IAU codes
         assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessSucceeded", d);
         assertXpathExists(
-                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection",
-                d);
+                "/wps:ExecuteResponse/wps:ProcessOutputs/wps:Output/wps:Data/wps:ComplexData/wfs:FeatureCollection", d);
 
         // only Blunck survived
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", d);

@@ -104,30 +104,25 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
         Map options = con.getRequest().getFormatOptions();
         attribute = (String) options.get("regionateAttr");
         if (attribute == null) attribute = checkAttribute(featureType);
-        if (attribute == null)
-            throw new ServiceException("Regionating attribute has not been specified");
+        if (attribute == null) throw new ServiceException("Regionating attribute has not been specified");
 
         // Make sure the attribute is actually there
         AttributeDescriptor ad = ft.getDescriptor(attribute);
         if (ad == null) {
             throw new ServiceException(
-                    "Could not find regionating attribute "
-                            + attribute
-                            + " in layer "
-                            + featureType.getName());
+                    "Could not find regionating attribute " + attribute + " in layer " + featureType.getName());
         }
 
         // Make sure we know how to turn that attribute into a HSQL type
         hsqlType = getHSQLDataType(ad);
         if (hsqlType == null)
-            throw new ServiceException(
-                    "Attribute type "
-                            + ad.getType()
-                            + " is not "
-                            + "supported for external sorting on "
-                            + featureType.getName()
-                            + "#"
-                            + attribute);
+            throw new ServiceException("Attribute type "
+                    + ad.getType()
+                    + " is not "
+                    + "supported for external sorting on "
+                    + featureType.getName()
+                    + "#"
+                    + attribute);
     }
 
     protected String checkAttribute(FeatureTypeInfo cfg) {
@@ -180,9 +175,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
         // prepare this statement so that the sql parser has to deal
         // with it just once
         try (PreparedStatement ps =
-                conn.prepareStatement(
-                        "INSERT INTO "
-                                + "FEATUREIDX(X, Y, FID, ORDER_FIELD) VALUES (?, ?, ?, ?)")) {
+                conn.prepareStatement("INSERT INTO " + "FEATUREIDX(X, Y, FID, ORDER_FIELD) VALUES (?, ?, ?, ?)")) {
 
             // build an optimized query, loading only the necessary attributes
             GeometryDescriptor geom = fs.getSchema().getGeometryDescriptor();
@@ -219,10 +212,7 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
                     // robustness check for bad geometries
                     if (Double.isNaN(centroid.getX()) || Double.isNaN(centroid.getY())) {
                         LOGGER.warning(
-                                "Could not calculate centroid for feature "
-                                        + f.getID()
-                                        + "; g =  "
-                                        + g.toText());
+                                "Could not calculate centroid for feature " + f.getID() + "; g =  " + g.toText());
                         continue;
                     }
 
@@ -266,30 +256,28 @@ public class ExternalSortRegionatingStrategy extends CachedHierarchyRegionatingS
 
         boolean next;
 
-        public IndexFeatureIterator(Connection cacheConn, ReferencedEnvelope envelope)
-                throws Exception {
+        public IndexFeatureIterator(Connection cacheConn, ReferencedEnvelope envelope) throws Exception {
             // grab all of the geometries sitting inside the envelope
 
             try {
                 st = cacheConn.createStatement();
                 // we are using Math.nextDown and Math.nextUp methods to prevent double precision
                 // problems
-                String sql =
-                        "SELECT X, Y, FID \n"
-                                + "FROM FEATUREIDX\n" //
-                                + "WHERE X > "
-                                + Math.nextDown(envelope.getMinX())
-                                + "\n"
-                                + "AND X < "
-                                + Math.nextUp(envelope.getMaxX())
-                                + "\n"
-                                + "AND Y > "
-                                + Math.nextDown(envelope.getMinY())
-                                + "\n"
-                                + "AND Y < "
-                                + Math.nextUp(envelope.getMaxY())
-                                + "\n"
-                                + "ORDER BY ORDER_FIELD DESC";
+                String sql = "SELECT X, Y, FID \n"
+                        + "FROM FEATUREIDX\n" //
+                        + "WHERE X > "
+                        + Math.nextDown(envelope.getMinX())
+                        + "\n"
+                        + "AND X < "
+                        + Math.nextUp(envelope.getMaxX())
+                        + "\n"
+                        + "AND Y > "
+                        + Math.nextDown(envelope.getMinY())
+                        + "\n"
+                        + "AND Y < "
+                        + Math.nextUp(envelope.getMaxY())
+                        + "\n"
+                        + "ORDER BY ORDER_FIELD DESC";
                 rs = st.executeQuery(sql);
                 // make sure everything is properly closed in case of
                 // exception

@@ -23,8 +23,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ItemHTMLMessageConverter extends AbstractServiceHTMLMessageConverter<ItemResponse> {
 
-    public ItemHTMLMessageConverter(
-            FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
+    public ItemHTMLMessageConverter(FreemarkerTemplateSupport templateSupport, GeoServer geoServer) {
         super(ItemResponse.class, OSEOInfo.class, templateSupport, geoServer);
     }
 
@@ -38,8 +37,7 @@ public class ItemHTMLMessageConverter extends AbstractServiceHTMLMessageConverte
         model.put("collection", value.getCollectionId());
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
-        try (OutputStreamWriter osw =
-                new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset())) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset())) {
             model.put("item", value.getItem());
             templateSupport.processTemplate(template, model, osw, getDefaultCharset());
             osw.flush();

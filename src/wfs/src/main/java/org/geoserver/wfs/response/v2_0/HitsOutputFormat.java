@@ -29,19 +29,16 @@ public class HitsOutputFormat extends org.geoserver.wfs.response.HitsOutputForma
 
     @Override
     public boolean canHandle(Operation operation) {
-        GetFeatureType request =
-                OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
+        GetFeatureType request = OwsUtils.parameter(operation.getParameters(), GetFeatureType.class);
         return request != null && request.getResultType() == ResultTypeType.HITS;
     }
 
     @Override
-    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs)
-            throws IOException {
+    protected void encode(FeatureCollectionResponse hits, OutputStream output, WFSInfo wfs) throws IOException {
         hits.setNumberOfFeatures(BigInteger.valueOf(0));
         Encoder e = new Encoder(new WFSConfiguration());
         e.setEncoding(Charset.forName(wfs.getGeoServer().getSettings().getCharset()));
-        e.setSchemaLocation(
-                WFS.NAMESPACE, ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/2.0/wfs.xsd"));
+        e.setSchemaLocation(WFS.NAMESPACE, ResponseUtils.appendPath(wfs.getSchemaBaseURL(), "wfs/2.0/wfs.xsd"));
 
         e.encode(hits.getAdaptee(), WFS.FeatureCollection, output);
     }

@@ -54,8 +54,7 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         setupReadAssertion(reader, requestFilter, securityFilter);
 
-        CoverageAccessLimits accessLimits =
-                new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
         SecuredGridCoverage2DReader secured =
                 new SecuredGridCoverage2DReader(reader, WrapperPolicy.readOnlyHide(accessLimits));
 
@@ -72,18 +71,15 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
 
         // create the mocks we need
         Format format = setupFormat();
-        StructuredGridCoverage2DReader reader =
-                createNiceMock(StructuredGridCoverage2DReader.class);
+        StructuredGridCoverage2DReader reader = createNiceMock(StructuredGridCoverage2DReader.class);
         expect(reader.getFormat()).andReturn(format).anyTimes();
 
         setupReadAssertion(reader, requestFilter, securityFilter);
 
-        CoverageAccessLimits accessLimits =
-                new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, securityFilter, null, null);
         Object securedObject = factory.secure(reader, WrapperPolicy.readOnlyHide(accessLimits));
         assertTrue(securedObject instanceof SecuredStructuredGridCoverage2DReader);
-        SecuredStructuredGridCoverage2DReader secured =
-                (SecuredStructuredGridCoverage2DReader) securedObject;
+        SecuredStructuredGridCoverage2DReader secured = (SecuredStructuredGridCoverage2DReader) securedObject;
 
         final ParameterValue pv = ImageMosaicFormat.FILTER.createValue();
         pv.setValue(requestFilter);
@@ -105,19 +101,19 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
                 .andReturn(DefaultGeographicCRS.WGS84)
                 .anyTimes();
         BufferedImage bi = new BufferedImage(100, 100, BufferedImage.TYPE_BYTE_GRAY);
-        expect(reader.getImageLayout("coverageView")).andReturn(new ImageLayout(bi)).anyTimes();
+        expect(reader.getImageLayout("coverageView"))
+                .andReturn(new ImageLayout(bi))
+                .anyTimes();
         replay(reader);
 
         CoverageView coverageView = createNiceMock(CoverageView.class);
         CoverageInfo coverageInfo = createNiceMock(CoverageInfo.class);
         expect(coverageView.getName()).andReturn("coverageView").anyTimes();
-        CoverageView.CoverageBand coverageBand =
-                new CoverageView.CoverageBand(
-                        Collections.singletonList(
-                                new CoverageView.InputCoverageBand("coverageView", "band1")),
-                        "band1",
-                        0,
-                        CoverageView.CompositionType.BAND_SELECT);
+        CoverageView.CoverageBand coverageBand = new CoverageView.CoverageBand(
+                Collections.singletonList(new CoverageView.InputCoverageBand("coverageView", "band1")),
+                "band1",
+                0,
+                CoverageView.CompositionType.BAND_SELECT);
         List<CoverageView.CoverageBand> bands = Collections.singletonList(coverageBand);
         expect(coverageView.getCoverageBands()).andReturn(bands).anyTimes();
         expect(coverageView.getBand(0)).andReturn(coverageBand).anyTimes();
@@ -129,33 +125,26 @@ public class SecuredGridCoverage2DReaderTest extends SecureObjectsTest {
                 .anyTimes();
         replay(coverageView);
 
-        CoverageViewReader viewReader =
-                new CoverageViewReader(reader, coverageView, coverageInfo, null);
-        CoverageAccessLimits accessLimits =
-                new CoverageAccessLimits(CatalogMode.HIDE, null, null, null);
+        CoverageViewReader viewReader = new CoverageViewReader(reader, coverageView, coverageInfo, null);
+        CoverageAccessLimits accessLimits = new CoverageAccessLimits(CatalogMode.HIDE, null, null, null);
 
         Object securedObject = factory.secure(viewReader, WrapperPolicy.readOnlyHide(accessLimits));
         assertTrue(securedObject instanceof SecuredGridCoverage2DReader);
 
-        securedObject =
-                factory.secure(viewReader.getFormat(), WrapperPolicy.readOnlyHide(accessLimits));
+        securedObject = factory.secure(viewReader.getFormat(), WrapperPolicy.readOnlyHide(accessLimits));
         assertTrue(securedObject instanceof SecuredGridFormat);
     }
 
     private static void setupReadAssertion(
-            GridCoverage2DReader reader, final Filter requestFilter, final Filter securityFilter)
-            throws IOException {
+            GridCoverage2DReader reader, final Filter requestFilter, final Filter securityFilter) throws IOException {
         // the assertion
-        expect(reader.read(isA(GeneralParameterValue[].class)))
-                .andAnswer(
-                        () -> {
-                            GeneralParameterValue[] params =
-                                    (GeneralParameterValue[]) EasyMock.getCurrentArguments()[0];
-                            ParameterValue param = (ParameterValue) params[0];
-                            Filter filter = (Filter) param.getValue();
-                            assertEquals(Predicates.and(requestFilter, securityFilter), filter);
-                            return null;
-                        });
+        expect(reader.read(isA(GeneralParameterValue[].class))).andAnswer(() -> {
+            GeneralParameterValue[] params = (GeneralParameterValue[]) EasyMock.getCurrentArguments()[0];
+            ParameterValue param = (ParameterValue) params[0];
+            Filter filter = (Filter) param.getValue();
+            assertEquals(Predicates.and(requestFilter, securityFilter), filter);
+            return null;
+        });
         EasyMock.replay(reader);
     }
 

@@ -16,8 +16,8 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * Very basic retyper, can only shave off root attributes and does not really reduce the feature
- * type, but only the attributes in the returned features.
+ * Very basic retyper, can only shave off root attributes and does not really reduce the feature type, but only the
+ * attributes in the returned features.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -27,8 +27,7 @@ public class RetypingFeatureCollection<T extends FeatureType, F extends Feature>
     FeatureCollection<T, F> delegate;
     List<PropertyName> properties;
 
-    public RetypingFeatureCollection(
-            FeatureCollection<T, F> delegate, List<PropertyName> properties) {
+    public RetypingFeatureCollection(FeatureCollection<T, F> delegate, List<PropertyName> properties) {
         super(delegate.getSchema());
         this.delegate = delegate;
         this.properties = properties;

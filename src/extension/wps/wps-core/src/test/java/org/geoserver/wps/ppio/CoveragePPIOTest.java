@@ -107,8 +107,7 @@ public class CoveragePPIOTest {
         assertTrue(highQualityFileSize > lowQualityFileSize);
     }
 
-    private void testIsFormat(
-            GridCoverage2D coverage, CoveragePPIO ppio, File encodedFile, String formatName)
+    private void testIsFormat(GridCoverage2D coverage, CoveragePPIO ppio, File encodedFile, String formatName)
             throws Exception {
         try (FileOutputStream fos = new FileOutputStream(encodedFile)) {
             ppio.encode(coverage, fos);

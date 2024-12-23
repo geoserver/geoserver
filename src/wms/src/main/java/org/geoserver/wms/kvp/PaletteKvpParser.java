@@ -22,10 +22,7 @@ public class PaletteKvpParser extends KvpParser {
             final IndexColorModel model = PaletteManager.getPalette(value);
             if (model == null) {
                 throw new ServiceException(
-                        "Palette "
-                                + value
-                                + " could not be found "
-                                + "in $GEOSERVER_DATA_DIR/palettes directory");
+                        "Palette " + value + " could not be found " + "in $GEOSERVER_DATA_DIR/palettes directory");
             }
 
             return model;

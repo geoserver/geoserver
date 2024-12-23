@@ -32,7 +32,8 @@ import org.springframework.context.support.GenericApplicationContext;
 
 public class AuditLoggerTest {
 
-    @Rule public TemporaryFolder directory = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder directory = new TemporaryFolder();
 
     private File bad;
     private File good;

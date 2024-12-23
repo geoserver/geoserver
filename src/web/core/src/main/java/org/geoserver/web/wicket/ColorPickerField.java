@@ -37,16 +37,15 @@ public class ColorPickerField extends TextField<String> {
     }
 
     void initComponents() {
-        add(
-                new Behavior() {
-                    private static final long serialVersionUID = 4269437302317170665L;
+        add(new Behavior() {
+            private static final long serialVersionUID = 4269437302317170665L;
 
-                    @Override
-                    public void renderHead(Component component, IHeaderResponse response) {
-                        super.renderHead(component, response);
-                        response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
-                    }
-                });
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                super.renderHead(component, response);
+                response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
+            }
+        });
         add(new AttributeAppender("class", new Model<>("color {required:false}"), ","));
     }
 }

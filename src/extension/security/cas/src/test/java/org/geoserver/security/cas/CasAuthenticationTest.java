@@ -71,16 +71,15 @@ import org.springframework.security.web.context.HttpSessionSecurityContextReposi
  *     proxycallbackurlprefix=https://ux-desktop03.mc-home.local:4711/geoserver/
  * </code>
  *
- * <p>Client ssl configuration: Create a keystore keystore.jks in home_dir/.geoserver with key store
- * key password "changeit"
+ * <p>Client ssl configuration: Create a keystore keystore.jks in home_dir/.geoserver with key store key password
+ * "changeit"
  *
- * <p>Create self signing certificate keytool -genkey -alias mc-home.local -keystore rsa-keystore
- * -keyalg RSA -sigalg MD5withRSA -validity 365000
+ * <p>Create self signing certificate keytool -genkey -alias mc-home.local -keystore rsa-keystore -keyalg RSA -sigalg
+ * MD5withRSA -validity 365000
  *
  * <p>Only the cn must be set to the full server name "ux-desktop03.mc-home.local"
  *
- * <p>Export the certificate keytool -export -alias mc-home.local -keystore keystore.jks -file
- * ux-desktop03.crt
+ * <p>Export the certificate keytool -export -alias mc-home.local -keystore keystore.jks -file ux-desktop03.crt
  *
  * <p>For the cas server copy ux-desktop03.crt to the server
  *
@@ -120,8 +119,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             LOGGER.info("Cas proxy callback: " + uri.toString());
             String query = uri.getQuery();
 
-            MockHttpServletRequest request =
-                    createRequest(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN);
+            MockHttpServletRequest request = createRequest(GeoServerCasConstants.CAS_PROXY_RECEPTOR_PATTERN);
             MockHttpServletResponse response = new MockHttpServletResponse();
             MockFilterChain chain = new MockFilterChain();
 
@@ -162,8 +160,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         @Override
         public void handle(HttpExchange ex) throws IOException {
             StringBuffer buff = new StringBuffer();
-            try (BufferedReader in =
-                    new BufferedReader(new InputStreamReader(ex.getRequestBody()))) {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(ex.getRequestBody()))) {
                 String line = "";
                 while ((line = in.readLine()) != null) {
                     buff.append(line);
@@ -175,8 +172,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             MockHttpServletResponse response = new MockHttpServletResponse();
             MockFilterChain chain = new MockFilterChain();
             String paramValue = URLDecoder.decode(buff.toString(), "utf-8");
-            request.addParameter(
-                    "logoutRequest", paramValue.substring(paramValue.indexOf("=") + 1));
+            request.addParameter("logoutRequest", paramValue.substring(paramValue.indexOf("=") + 1));
             try {
                 GeoServerSecurityFilterChainProxy proxy = getProxy();
                 //                System.out.println("SERVCIE: " + service);
@@ -221,17 +217,13 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
     protected HttpsServer createAndStartHttpsServer() throws Exception {
         HttpsServer httpsServer = ((LiveCasData) getTestData()).createSSLServer();
-        URL callbackUrl =
-                new URL(
-                        GeoServerCasConstants.createProxyCallBackURl(
-                                proxyCallbackUrlPrefix.toString()));
+        URL callbackUrl = new URL(GeoServerCasConstants.createProxyCallBackURl(proxyCallbackUrlPrefix.toString()));
         httpsServer.createContext(callbackUrl.getPath(), new HttpsProxyCallBackHandler());
 
         httpsServer.createContext(
                 createRequest("/j_spring_cas_security_check").getRequestURI(),
                 new SingleSignOutHandler("/j_spring_cas_security_check"));
-        httpsServer.createContext(
-                createRequest("/wms").getRequestURI(), new SingleSignOutHandler("/wms"));
+        httpsServer.createContext(createRequest("/wms").getRequestURI(), new SingleSignOutHandler("/wms"));
         httpsServer.start();
         return httpsServer;
     }
@@ -286,8 +278,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // test success
         String username = CASUSER;
         String password = CASPASSWORD;
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
         helper.ssoLogin();
 
         request = createRequest("/foo/bar");
@@ -296,12 +287,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         String ticket = loginUsingTicket(helper, request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(false)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext) request.getSession(false)
+                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -310,10 +297,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(username, auth.getPrincipal());
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(rootRole)));
         assertTrue(auth.getAuthorities().contains(new GeoServerRole(derivedRole)));
-        assertNotNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         // check unknown user
@@ -327,12 +313,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         ticket = loginUsingTicket(helper, request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -340,10 +322,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         checkForAuthenticatedRole(ctx.getAuthentication());
         assertEquals(username, auth.getPrincipal());
         assertEquals(1, auth.getAuthorities().size());
-        assertNotNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         // test root user
@@ -358,12 +339,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         ticket = loginUsingTicket(helper, request, response, chain);
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -372,10 +349,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(GeoServerUser.ROOT_USERNAME, auth.getPrincipal());
         assertEquals(1, auth.getAuthorities().size());
         assertTrue(auth.getAuthorities().contains(GeoServerRole.ADMIN_ROLE));
-        assertNotNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         // check disabled user
@@ -391,18 +367,13 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains("login"));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        assertNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         updateUser("ug1", username, true);
         helper.ssoLogout();
 
@@ -434,18 +405,13 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectURL = response.getHeader("Location");
         assertTrue(redirectURL.contains(GeoServerCasConstants.LOGIN_URI));
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNull(ctx);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
-        assertNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         // test success with proxy granting ticket
@@ -470,43 +436,30 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         //        redirectUrl = response.getHeader("Location");
         //        assertNotNull(redirectUrl);
 
-        ctx =
-                (SecurityContext)
-                        request.getSession(true)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext)
+                request.getSession(true).getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
-        PreAuthenticatedAuthenticationToken casAuth =
-                (PreAuthenticatedAuthenticationToken) ctx.getAuthentication();
+        PreAuthenticatedAuthenticationToken casAuth = (PreAuthenticatedAuthenticationToken) ctx.getAuthentication();
         assertNotNull(casAuth);
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         checkForAuthenticatedRole(casAuth);
         assertEquals(username, casAuth.getPrincipal());
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(rootRole)));
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));
-        Assertion ass =
-                (Assertion)
-                        request.getSession(true)
-                                .getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY);
+        Assertion ass = (Assertion) request.getSession(true).getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY);
         assertNotNull(ass);
         String proxyTicket = ass.getPrincipal().getProxyTicketFor("http://localhost/blabla");
         assertNull(proxyTicket);
-        assertNotNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
     }
 
     @Test
     public void testCASLogout() throws Exception {
-        LogoutFilterChain logoutchain =
-                (LogoutFilterChain)
-                        getSecurityManager()
-                                .getSecurityConfig()
-                                .getFilterChain()
-                                .getRequestChainByName("webLogout");
+        LogoutFilterChain logoutchain = (LogoutFilterChain)
+                getSecurityManager().getSecurityConfig().getFilterChain().getRequestChainByName("webLogout");
 
         String casFilterName = "testCasFilter2";
         CasAuthenticationFilterConfig config = new CasAuthenticationFilterConfig();
@@ -528,8 +481,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // login
         String username = CASUSER;
         String password = CASPASSWORD;
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
         helper.ssoLogin();
 
         MockHttpServletRequest request = createRequest(pattern);
@@ -538,12 +490,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         loginUsingTicket(helper, request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(false)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext) request.getSession(false)
+                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -559,10 +507,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         // getProxy().doFilter(request, response, chain);
-        GeoServerLogoutFilter logoutFilter =
-                (GeoServerLogoutFilter)
-                        getSecurityManager()
-                                .loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
+        GeoServerLogoutFilter logoutFilter = (GeoServerLogoutFilter)
+                getSecurityManager().loadFilter(GeoServerSecurityFilterChain.FORM_LOGOUT_FILTER);
         logoutFilter.doFilter(request, response, chain);
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         String redirectUrl = response.getHeader("Location");
@@ -580,12 +526,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         String ticket = loginUsingTicket(helper, request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        ctx =
-                (SecurityContext)
-                        request.getSession(false)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        ctx = (SecurityContext) request.getSession(false)
+                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -610,9 +552,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
         redirectUrl = response.getHeader("Location");
         assertNotNull(redirectUrl);
-        assertThat(
-                redirectUrl,
-                CoreMatchers.not(CoreMatchers.containsString(GeoServerCasConstants.LOGOUT_URI)));
+        assertThat(redirectUrl, CoreMatchers.not(CoreMatchers.containsString(GeoServerCasConstants.LOGOUT_URI)));
     }
 
     protected Assertion authenticateWithPGT(CasFormAuthenticationHelper helper) throws Exception {
@@ -620,14 +560,11 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         String ticket = helper.getServiceTicket(serviceUrl);
 
-        Cas20ProxyTicketValidator validator =
-                new Cas20ProxyTicketValidator(casServerURLPrefix.toString());
+        Cas20ProxyTicketValidator validator = new Cas20ProxyTicketValidator(casServerURLPrefix.toString());
         validator.setAcceptAnyProxy(true);
         validator.setProxyCallbackUrl(
-                GeoServerCasConstants.createProxyCallBackURl(
-                        proxyCallbackUrlPrefix.toExternalForm()));
-        validator.setProxyGrantingTicketStorage(
-                GeoServerExtensions.bean(ProxyGrantingTicketStorage.class));
+                GeoServerCasConstants.createProxyCallBackURl(proxyCallbackUrlPrefix.toExternalForm()));
+        validator.setProxyGrantingTicketStorage(GeoServerExtensions.bean(ProxyGrantingTicketStorage.class));
 
         Assertion result = validator.validate(ticket, serviceUrl.toExternalForm());
 
@@ -666,19 +603,14 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // test successful
         getCache().removeAll();
         String username = CASUSER;
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, username, username);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, username);
         helper.ssoLogin();
 
         request = createRequest("wms");
         request.setQueryString("request=getCapabilities");
         request.addHeader(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
         String ticket =
-                helper.getServiceTicket(
-                        new URL(
-                                request.getRequestURL().toString()
-                                        + "?"
-                                        + request.getQueryString()));
+                helper.getServiceTicket(new URL(request.getRequestURL().toString() + "?" + request.getQueryString()));
         assertNotNull(ticket);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -696,10 +628,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));
         assertNotNull(request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY));
 
-        assertNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
 
         // check unknown user
@@ -800,10 +731,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));
 
         // the service is not authorized
-        String proxyTicket =
-                ((Assertion) request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY))
-                        .getPrincipal()
-                        .getProxyTicketFor("http://localhost/blabla");
+        String proxyTicket = ((Assertion) request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY))
+                .getPrincipal()
+                .getProxyTicketFor("http://localhost/blabla");
         assertNull(proxyTicket);
         helper.ssoLogout();
     }
@@ -849,8 +779,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         chain = new MockFilterChain();
         request.addParameter("ticket", "ST-blabla");
         request.addParameter(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
-        request.setQueryString(
-                "ticket=ST-blabla&" + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT + "=false");
+        request.setQueryString("ticket=ST-blabla&" + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT + "=false");
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
 
@@ -858,8 +787,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
 
         getCache().removeAll();
         String username = CASUSER;
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, username, CASPASSWORD);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, CASPASSWORD);
         Assertion ass = authenticateWithPGT(helper);
         String proxyTicket = null;
         for (int i = 0; i < 2; i++) {
@@ -870,25 +798,20 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
                     URLMangler.URLType.SERVICE);
             request = createRequest("wms");
             request.setQueryString("request=getCapabilities");
-            proxyTicket =
-                    ass.getPrincipal()
-                            .getProxyTicketFor(
-                                    request.getRequestURL().toString()
-                                            + "?"
-                                            + request.getQueryString());
+            proxyTicket = ass.getPrincipal()
+                    .getProxyTicketFor(request.getRequestURL().toString() + "?" + request.getQueryString());
             assertNotNull(proxyTicket);
             response = new MockHttpServletResponse();
             chain = new MockFilterChain();
             request.addParameter("ticket", proxyTicket);
             if (i == 0) {
                 request.addParameter(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
-                request.setQueryString(
-                        request.getQueryString()
-                                + "&ticket="
-                                + proxyTicket
-                                + "&"
-                                + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT
-                                + "=false");
+                request.setQueryString(request.getQueryString()
+                        + "&ticket="
+                        + proxyTicket
+                        + "&"
+                        + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT
+                        + "=false");
             } else {
                 request.addHeader(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
                 request.setQueryString(request.getQueryString() + "&ticket=" + proxyTicket);
@@ -905,10 +828,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
             assertNotNull(request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY));
             assertNull(request.getSession(false));
         }
-        assertNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(proxyTicket));
+        assertNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(proxyTicket));
         helper.ssoLogout();
 
         // check unknown user
@@ -919,25 +841,20 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         for (int i = 0; i < 2; i++) {
             request = createRequest("wms");
             request.setQueryString("request=getCapabilities");
-            proxyTicket =
-                    ass.getPrincipal()
-                            .getProxyTicketFor(
-                                    request.getRequestURL().toString()
-                                            + "?"
-                                            + request.getQueryString());
+            proxyTicket = ass.getPrincipal()
+                    .getProxyTicketFor(request.getRequestURL().toString() + "?" + request.getQueryString());
             assertNotNull(proxyTicket);
             response = new MockHttpServletResponse();
             chain = new MockFilterChain();
             request.addParameter("ticket", proxyTicket);
             if (i == 0) {
                 request.addParameter(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
-                request.setQueryString(
-                        request.getQueryString()
-                                + "&ticket="
-                                + proxyTicket
-                                + "&"
-                                + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT
-                                + "=false");
+                request.setQueryString(request.getQueryString()
+                        + "&ticket="
+                        + proxyTicket
+                        + "&"
+                        + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT
+                        + "=false");
             } else {
                 request.addHeader(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
                 request.setQueryString(request.getQueryString() + "&ticket=" + proxyTicket);
@@ -963,18 +880,15 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, CASPASSWORD);
         ass = authenticateWithPGT(helper);
         request = createRequest("wms");
-        proxyTicket = ass.getPrincipal().getProxyTicketFor(request.getRequestURL().toString());
+        proxyTicket =
+                ass.getPrincipal().getProxyTicketFor(request.getRequestURL().toString());
         assertNotNull(proxyTicket);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
         request.addParameter("ticket", proxyTicket);
         request.addParameter(GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT, "false");
         request.setQueryString(
-                "ticket="
-                        + proxyTicket
-                        + "&"
-                        + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT
-                        + "=false");
+                "ticket=" + proxyTicket + "&" + GeoServerCasAuthenticationEntryPoint.CAS_REDIRECT + "=false");
 
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
@@ -1007,7 +921,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, CASPASSWORD);
         ass = authenticateWithPGT(helper);
         request = createRequest("wms");
-        proxyTicket = ass.getPrincipal().getProxyTicketFor(request.getRequestURL().toString());
+        proxyTicket =
+                ass.getPrincipal().getProxyTicketFor(request.getRequestURL().toString());
         assertNotNull(proxyTicket);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
@@ -1022,10 +937,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertEquals(username, casAuth.getPrincipal());
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(rootRole)));
         assertTrue(casAuth.getAuthorities().contains(new GeoServerRole(derivedRole)));
-        proxyTicket =
-                ((Assertion) request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY))
-                        .getPrincipal()
-                        .getProxyTicketFor("http://localhost/blabla");
+        proxyTicket = ((Assertion) request.getAttribute(GeoServerCasConstants.CAS_ASSERTION_KEY))
+                .getPrincipal()
+                .getProxyTicketFor("http://localhost/blabla");
 
         // the service is not authorized
         assertNull(proxyTicket);
@@ -1035,8 +949,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     @Test
     public void testAuthenticationHelper() throws Exception {
 
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, "fail", "abc");
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, "fail", "abc");
         assertFalse(helper.ssoLogin());
 
         helper = new CasFormAuthenticationHelper(casServerURLPrefix, CASUSER, CASPASSWORD);
@@ -1058,11 +971,10 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
     }
 
     protected String getBodyForLogoutRequest(String ticket) {
-        String template =
-                "<LogoutRequest ID=\"[RANDOM ID]\" Version=\"2.0\" IssueInstant=\"[CURRENT DATE/TIME]\">"
-                        + "<NameID>@NOT_USED@</NameID>"
-                        + "<SessionIndex>[SESSION IDENTIFIER]</SessionIndex>"
-                        + "</LogoutRequest>";
+        String template = "<LogoutRequest ID=\"[RANDOM ID]\" Version=\"2.0\" IssueInstant=\"[CURRENT DATE/TIME]\">"
+                + "<NameID>@NOT_USED@</NameID>"
+                + "<SessionIndex>[SESSION IDENTIFIER]</SessionIndex>"
+                + "</LogoutRequest>";
 
         return template.replace("[SESSION IDENTIFIER]", ticket);
     }
@@ -1102,8 +1014,7 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         // test success and role extraction
         String username = "user1@test.com";
         String password = "testpass";
-        CasFormAuthenticationHelper helper =
-                new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
+        CasFormAuthenticationHelper helper = new CasFormAuthenticationHelper(casServerURLPrefix, username, password);
         helper.ssoLogin();
 
         MockHttpServletRequest request = createRequest("/foo/bar");
@@ -1112,12 +1023,8 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         String ticket = loginUsingTicket(helper, request, response, chain);
         assertNotEquals(response.getStatus(), MockHttpServletResponse.SC_MOVED_TEMPORARILY);
 
-        SecurityContext ctx =
-                (SecurityContext)
-                        request.getSession(false)
-                                .getAttribute(
-                                        HttpSessionSecurityContextRepository
-                                                .SPRING_SECURITY_CONTEXT_KEY);
+        SecurityContext ctx = (SecurityContext) request.getSession(false)
+                .getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY);
         assertNotNull(ctx);
         Authentication auth = ctx.getAuthentication();
         assertNotNull(auth);
@@ -1127,10 +1034,9 @@ public class CasAuthenticationTest extends AbstractAuthenticationProviderTest {
         assertTrue(auth.getAuthorities().contains(new GeoServerRole("ROLE_ADMINISTRATOR")));
         assertTrue(auth.getAuthorities().contains(new GeoServerRole("CasRole1")));
         assertTrue(auth.getAuthorities().contains(new GeoServerRole("CasRole2")));
-        assertNotNull(
-                GeoServerCasAuthenticationFilter.getHandler()
-                        .getSessionMappingStorage()
-                        .removeSessionByMappingId(ticket));
+        assertNotNull(GeoServerCasAuthenticationFilter.getHandler()
+                .getSessionMappingStorage()
+                .removeSessionByMappingId(ticket));
         helper.ssoLogout();
     }
 }

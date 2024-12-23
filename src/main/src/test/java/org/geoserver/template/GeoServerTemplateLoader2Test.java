@@ -146,7 +146,9 @@ public class GeoServerTemplateLoader2Test {
 
         reset(dd);
 
-        expect(dd.getWorkspaces("dummy.ftl")).andReturn(Files.asResource(fooFile)).once();
+        expect(dd.getWorkspaces("dummy.ftl"))
+                .andReturn(Files.asResource(fooFile))
+                .once();
         replay(dd);
 
         assertNotNull(tl.findTemplateSource("dummy.ftl"));

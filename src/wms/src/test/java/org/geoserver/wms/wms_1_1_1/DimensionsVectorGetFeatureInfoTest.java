@@ -45,30 +45,27 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
     @Before
     public void setXpahEngine() throws Exception {
 
-        baseFeatureInfo =
-                "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
-                        + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&query_layers="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&feature_count=50";
+        baseFeatureInfo = "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
+                + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&query_layers="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&feature_count=50";
 
-        baseFeatureInfoStacked =
-                "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
-                        + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
-                        + getLayerId(V_TIME_ELEVATION_STACKED)
-                        + "&query_layers="
-                        + getLayerId(V_TIME_ELEVATION_STACKED)
-                        + "&feature_count=1";
+        baseFeatureInfoStacked = "wms?service=WMS&version=1.1.1&request=GetFeatureInfo&bbox=-180,-90,180,90"
+                + "&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326&layers="
+                + getLayerId(V_TIME_ELEVATION_STACKED)
+                + "&query_layers="
+                + getLayerId(V_TIME_ELEVATION_STACKED)
+                + "&feature_count=1";
 
-        baseFeatureInfoCustom =
-                "wms?service=WMS&version=1.1.1&request=GetFeatureInfo"
-                        + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
-                        + "&layers="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&query_layers="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&feature_count=1";
+        baseFeatureInfoCustom = "wms?service=WMS&version=1.1.1&request=GetFeatureInfo"
+                + "&bbox=-180,-90,180,90&styles=&Format=image/png&width=80&height=40&srs=EPSG:4326"
+                + "&layers="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&query_layers="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&feature_count=1";
 
         xpath = XMLUnit.newXpathEngine();
     }
@@ -89,14 +86,10 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
      */
     String getFeatureAt(String baseFeatureInfo, int x, int y, String typeName) throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        baseFeatureInfo
-                                + "&info_format=application/vnd.ogc.gml&x="
-                                + x
-                                + "&y="
-                                + y);
+                getAsServletResponse(baseFeatureInfo + "&info_format=application/vnd.ogc.gml&x=" + x + "&y=" + y);
         assertEquals("application/vnd.ogc.gml", response.getContentType());
-        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document doc =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         // print(doc);
         String sCount = xpath.evaluate("count(//" + typeName + ")", doc);
         int count = Integer.valueOf(sCount);
@@ -180,8 +173,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         try {
             // no match
-            Document dom =
-                    getAsDOM(base + "&info_format=application/vnd.ogc.gml&x=" + 20 + "&y=" + 10);
+            Document dom = getAsDOM(base + "&info_format=application/vnd.ogc.gml&x=" + 20 + "&y=" + 10);
             String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, ELEVATION);
             assertEquals("Could not find a match for 'elevation' value: '-10'", message.trim());
         } finally {
@@ -296,8 +288,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
 
         Document dom = getAsDOM(base + "&info_format=text/plain&x=" + 20 + "&y=" + 10);
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, TIME);
-        assertEquals(
-                "Could not find a match for 'time' value: '2011-05-02T012:00:00Z'", message.trim());
+        assertEquals("Could not find a match for 'time' value: '2011-05-02T012:00:00Z'", message.trim());
     }
 
     @Test
@@ -310,9 +301,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         try {
             Document dom = getAsDOM(base + "&info_format=text/plain&x=" + 20 + "&y=" + 10);
             String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, TIME);
-            assertEquals(
-                    "Could not find a match for 'time' value: '2011-05-02T012:00:00Z'",
-                    message.trim());
+            assertEquals("Could not find a match for 'time' value: '2011-05-02T012:00:00Z'", message.trim());
         } finally {
             VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = true;
         }
@@ -451,8 +440,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         DimensionDefaultValueSetting defaultValueSetting = new DimensionDefaultValueSetting();
         defaultValueSetting.setStrategyType(Strategy.FIXED);
         defaultValueSetting.setReferenceValue("1/3");
-        setupResourceDimensionDefaultValue(
-                V_TIME_ELEVATION, ELEVATION, defaultValueSetting, "elevation");
+        setupResourceDimensionDefaultValue(V_TIME_ELEVATION, ELEVATION, defaultValueSetting, "elevation");
 
         // the last three show up, the first does not
         assertNull(getFeatureAt(baseFeatureInfo, 20, 10));
@@ -481,11 +469,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         // check consistency with the visual output of GetMap
         assertEquals(
                 "TimeElevationStacked.3",
-                getFeatureAt(
-                        baseFeatureInfoStacked + "&sortBy=time,elevation",
-                        20,
-                        10,
-                        "sf:TimeElevationStacked"));
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time,elevation", 20, 10, "sf:TimeElevationStacked"));
     }
 
     @Test
@@ -493,11 +477,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         // check consistency with the visual output of GetMap
         assertEquals(
                 "TimeElevationStacked.0",
-                getFeatureAt(
-                        baseFeatureInfoStacked + "&sortBy=time D,elevation D",
-                        20,
-                        10,
-                        "sf:TimeElevationStacked"));
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time D,elevation D", 20, 10, "sf:TimeElevationStacked"));
     }
 
     @Test
@@ -505,11 +485,7 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         assertEquals(
                 "TimeElevationStacked.3",
-                getFeatureAt(
-                        baseFeatureInfoStacked + "&sortBy=time,elevation",
-                        20,
-                        10,
-                        "sf:TimeElevationStacked"));
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time,elevation", 20, 10, "sf:TimeElevationStacked"));
     }
 
     @Test
@@ -517,22 +493,15 @@ public class DimensionsVectorGetFeatureInfoTest extends WMSDimensionsTestSupport
         VectorRenderingLayerIdentifier.RENDERING_FEATUREINFO_ENABLED = false;
         assertEquals(
                 "TimeElevationStacked.0",
-                getFeatureAt(
-                        baseFeatureInfoStacked + "&sortBy=time D,elevation D",
-                        20,
-                        10,
-                        "sf:TimeElevationStacked"));
+                getFeatureAt(baseFeatureInfoStacked + "&sortBy=time D,elevation D", 20, 10, "sf:TimeElevationStacked"));
     }
 
     @Test
     public void testCustomDimensionStringInvalidException() throws Exception {
         setupVectorDimension("dim_custom", "shared_key", LIST, null, UNITS, UNIT_SYMBOL);
         setExceptionsOnInvalidDimension(true);
-        Document dom =
-                getAsDOM(
-                        String.format(
-                                "%s&info_format=text/plain&x=%d&y=%d&dim_custom=IAmNotThere",
-                                baseFeatureInfoCustom, 20, 10));
+        Document dom = getAsDOM(String.format(
+                "%s&info_format=text/plain&x=%d&y=%d&dim_custom=IAmNotThere", baseFeatureInfoCustom, 20, 10));
 
         String message = checkLegacyException(dom, INVALID_DIMENSION_VALUE, "DIM_CUSTOM");
         assertEquals("Could not find a match for 'custom' value: 'IAmNotThere'", message.trim());

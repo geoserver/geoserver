@@ -47,8 +47,7 @@ public class DataSecurityPage extends AbstractSecurityPage {
 
     // ArrayList as it needs to be serializable
     static final ArrayList<CatalogMode> CATALOG_MODES =
-            new ArrayList<>(
-                    Arrays.asList(CatalogMode.HIDE, CatalogMode.MIXED, CatalogMode.CHALLENGE));
+            new ArrayList<>(Arrays.asList(CatalogMode.HIDE, CatalogMode.MIXED, CatalogMode.CHALLENGE));
 
     private GeoServerTablePanel<DataAccessRule> rules;
 
@@ -59,29 +58,26 @@ public class DataSecurityPage extends AbstractSecurityPage {
     public DataSecurityPage() {
         DataAccessRuleProvider provider = new DataAccessRuleProvider();
         add(
-                rules =
-                        new GeoServerTablePanel<>("table", provider, true) {
+                rules = new GeoServerTablePanel<>("table", provider, true) {
 
-                            @Override
-                            protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<DataAccessRule> itemModel,
-                                    Property<DataAccessRule> property) {
-                                if (property == DataAccessRuleProvider.RULEKEY) {
-                                    return editRuleLink(id, itemModel, property);
-                                }
-                                if (property == DataAccessRuleProvider.ROLES) {
-                                    return new Label(id, property.getModel(itemModel));
-                                }
-                                throw new RuntimeException("Uknown property " + property);
-                            }
+                    @Override
+                    protected Component getComponentForProperty(
+                            String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
+                        if (property == DataAccessRuleProvider.RULEKEY) {
+                            return editRuleLink(id, itemModel, property);
+                        }
+                        if (property == DataAccessRuleProvider.ROLES) {
+                            return new Label(id, property.getModel(itemModel));
+                        }
+                        throw new RuntimeException("Uknown property " + property);
+                    }
 
-                            @Override
-                            protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                removal.setEnabled(!rules.getSelection().isEmpty());
-                                target.add(removal);
-                            }
-                        });
+                    @Override
+                    protected void onSelectionUpdate(AjaxRequestTarget target) {
+                        removal.setEnabled(!rules.getSelection().isEmpty());
+                        target.add(removal);
+                    }
+                });
 
         rules.setOutputMarkupId(true);
 
@@ -92,12 +88,11 @@ public class DataSecurityPage extends AbstractSecurityPage {
         form.add(new HelpLink("catalogModeHelp").setDialog(dialog));
 
         DataAccessRuleDAO dataAccessRuleDAO = DataAccessRuleDAO.get();
-        catalogModeChoice =
-                new RadioChoice<>(
-                        "catalogMode",
-                        new Model<>(dataAccessRuleDAO.getMode()),
-                        new Model<>(CATALOG_MODES),
-                        new CatalogModeRenderer());
+        catalogModeChoice = new RadioChoice<>(
+                "catalogMode",
+                new Model<>(dataAccessRuleDAO.getMode()),
+                new Model<>(CATALOG_MODES),
+                new CatalogModeRenderer());
         catalogModeChoice.add(new FormComponentUpdatingBehavior() {});
         catalogModeChoice.setSuffix(" ");
         form.add(catalogModeChoice);
@@ -106,40 +101,36 @@ public class DataSecurityPage extends AbstractSecurityPage {
         // not set it via a system property
         WebMarkupContainer sandboxContainer = new WebMarkupContainer("sandboxContainer");
         form.add(sandboxContainer);
-        DefaultFileAccessManager fam =
-                GeoServerExtensions.bean(
-                        DefaultFileAccessManager.class,
-                        getGeoServerApplication().getApplicationContext());
+        DefaultFileAccessManager fam = GeoServerExtensions.bean(
+                DefaultFileAccessManager.class, getGeoServerApplication().getApplicationContext());
         sandboxContainer.setVisible(!fam.isSystemSanboxEnabled());
         Model<String> sandboxModel = new Model<>(dataAccessRuleDAO.getFilesystemSandbox());
-        DirectoryInput sandboxInput =
-                new DirectoryInput(
-                        "sandbox",
-                        sandboxModel,
-                        new ParamResourceModel("sandbox", this),
-                        false,
-                        new DirectoryExistsValidator());
+        DirectoryInput sandboxInput = new DirectoryInput(
+                "sandbox",
+                sandboxModel,
+                new ParamResourceModel("sandbox", this),
+                false,
+                new DirectoryExistsValidator());
         sandboxInput.setPrefixPaths(false);
         sandboxContainer.add(sandboxInput);
 
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            // not serializable, so we cannot use the variable in the outer class
-                            DataAccessRuleDAO dao = DataAccessRuleDAO.get();
-                            CatalogMode newMode = dao.getByAlias(catalogModeChoice.getValue());
-                            dao.setCatalogMode(newMode);
-                            dao.setFilesystemSandbox(sandboxModel.getObject());
-                            dao.storeRules();
-                            doReturn();
-                        } catch (Exception e) {
-                            LOGGER.log(Level.SEVERE, "Error occurred while saving user", e);
-                            error(new ParamResourceModel("saveError", getPage(), e.getMessage()));
-                        }
-                    }
-                });
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                try {
+                    // not serializable, so we cannot use the variable in the outer class
+                    DataAccessRuleDAO dao = DataAccessRuleDAO.get();
+                    CatalogMode newMode = dao.getByAlias(catalogModeChoice.getValue());
+                    dao.setCatalogMode(newMode);
+                    dao.setFilesystemSandbox(sandboxModel.getObject());
+                    dao.storeRules();
+                    doReturn();
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Error occurred while saving user", e);
+                    error(new ParamResourceModel("saveError", getPage(), e.getMessage()));
+                }
+            }
+        });
         form.add(new BookmarkablePageLink<>("cancel", GeoServerHomePage.class));
     }
 
@@ -147,28 +138,25 @@ public class DataSecurityPage extends AbstractSecurityPage {
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // Content-Security-Policy: inline styles must be nonce=...
-        String css =
-                " #catalogMode {\n"
-                        + "         display:block;\n"
-                        + "         padding-top: 0.5em;\n"
-                        + "       }\n"
-                        + "       #catalogMode input {\n"
-                        + "          display: block;\n"
-                        + "          float: left;\n"
-                        + "          clear:left;\n"
-                        + "          padding-top:0.5em;\n"
-                        + "          margin-bottom: 0.5em;\n"
-                        + "       }\n"
-                        + "       #catalogMode label {\n"
-                        + "          clear:right;\n"
-                        + "          margin-bottom: 0.5em;\n"
-                        + "       }";
-        response.render(
-                CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
+        String css = " #catalogMode {\n"
+                + "         display:block;\n"
+                + "         padding-top: 0.5em;\n"
+                + "       }\n"
+                + "       #catalogMode input {\n"
+                + "          display: block;\n"
+                + "          float: left;\n"
+                + "          clear:left;\n"
+                + "          padding-top:0.5em;\n"
+                + "          margin-bottom: 0.5em;\n"
+                + "       }\n"
+                + "       #catalogMode label {\n"
+                + "          clear:right;\n"
+                + "          margin-bottom: 0.5em;\n"
+                + "       }";
+        response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-data-DataSecurityPage-1"));
     }
 
-    Component editRuleLink(
-            String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
+    Component editRuleLink(String id, IModel<DataAccessRule> itemModel, Property<DataAccessRule> property) {
         return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override

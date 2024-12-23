@@ -12,24 +12,20 @@ import org.geoserver.wcs2_0.response.GranuleStack;
 import org.geotools.coverage.grid.GridCoverage2D;
 
 /**
- * Builds a NetCDF encoder given the specified parameters. The {@link
- * NetCDFCoverageResponseDelegate} will look for factories registered in the application context
- * that can handle the specified parameters, if none is found, a {@link DefaultNetCDFEncoder} will
- * be used instead
+ * Builds a NetCDF encoder given the specified parameters. The {@link NetCDFCoverageResponseDelegate} will look for
+ * factories registered in the application context that can handle the specified parameters, if none is found, a
+ * {@link DefaultNetCDFEncoder} will be used instead
  */
 public interface NetCDFEncoderFactory {
 
     /**
-     * Attempts to build an encoder for the given parameters (see {@link
-     * CoverageResponseDelegate#encode(GridCoverage2D, String, Map, OutputStream)}
+     * Attempts to build an encoder for the given parameters (see {@link CoverageResponseDelegate#encode(GridCoverage2D,
+     * String, Map, OutputStream)}
      *
      * @return A {@link NetCDFEncoder}, or null if this factory could not generate one
      */
     NetCDFEncoder getEncoderFor(
-            GranuleStack granuleStack,
-            File file,
-            Map<String, String> encodingParameters,
-            String outputFormat)
+            GranuleStack granuleStack, File file, Map<String, String> encodingParameters, String outputFormat)
             throws IOException;
 
     /** Builds a file name from the object to be encoded, or returns null */

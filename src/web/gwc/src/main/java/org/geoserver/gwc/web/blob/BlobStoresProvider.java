@@ -30,8 +30,7 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
     public static final Property<BlobStoreInfo> DEFAULT = new BeanProperty<>("default", "default");
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<BlobStoreInfo>> getProperties() {
         return Arrays.asList(ID, TYPE, ENABLED, DEFAULT);
     }
 
@@ -40,10 +39,9 @@ public class BlobStoresProvider extends GeoServerDataProvider<BlobStoreInfo> {
         if (sort != null && sort.getProperty().equals(TYPE.getName())) {
 
             return (o1, o2) -> {
-                int r =
-                        BlobStoreTypes.getFromClass(o1.getClass())
-                                .toString()
-                                .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
+                int r = BlobStoreTypes.getFromClass(o1.getClass())
+                        .toString()
+                        .compareTo(BlobStoreTypes.getFromClass(o2.getClass()).toString());
                 return sort.isAscending() ? r : -r;
             };
 

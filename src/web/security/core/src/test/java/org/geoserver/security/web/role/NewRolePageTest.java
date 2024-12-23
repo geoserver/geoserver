@@ -46,10 +46,7 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
 
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRoleServiceName());
 
-        tester.startPage(
-                page =
-                        (NewRolePage)
-                                new NewRolePage(getRoleServiceName()).setReturnPage(returnPage));
+        tester.startPage(page = (NewRolePage) new NewRolePage(getRoleServiceName()).setReturnPage(returnPage));
 
         tester.assertRenderedPage(NewRolePage.class);
 
@@ -91,10 +88,7 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
 
         insertValues();
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRoleServiceName());
-        tester.startPage(
-                page =
-                        (NewRolePage)
-                                new NewRolePage(getRoleServiceName()).setReturnPage(returnPage));
+        tester.startPage(page = (NewRolePage) new NewRolePage(getRoleServiceName()).setReturnPage(returnPage));
 
         FormTester form = tester.newFormTester("form");
         form.setValue("name", "ROLE_WFS");
@@ -111,11 +105,7 @@ public class NewRolePageTest extends AbstractSecurityWicketTestSupport {
         AbstractSecurityPage returnPage = initializeForRoleServiceNamed(getRORoleServiceName());
         boolean fail = true;
         try {
-            tester.startPage(
-                    page =
-                            (NewRolePage)
-                                    new NewRolePage(getRORoleServiceName())
-                                            .setReturnPage(returnPage));
+            tester.startPage(page = (NewRolePage) new NewRolePage(getRORoleServiceName()).setReturnPage(returnPage));
         } catch (RuntimeException ex) {
             fail = false;
         }

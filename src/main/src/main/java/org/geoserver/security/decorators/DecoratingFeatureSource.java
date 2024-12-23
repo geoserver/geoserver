@@ -23,8 +23,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.decorate.AbstractDecorator;
 
 /**
- * Delegates every method to the wrapped feature source. Subclasses will override selected methods
- * to perform their "decoration" job
+ * Delegates every method to the wrapped feature source. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime
  */

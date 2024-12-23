@@ -11,8 +11,8 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
 
 /**
- * A class implementing this interface implements a backend for user and group management. The store
- * always operates on a {@link GeoServerUserGroupService} object.
+ * A class implementing this interface implements a backend for user and group management. The store always operates on
+ * a {@link GeoServerUserGroupService} object.
  *
  * @author christian
  */
@@ -27,19 +27,19 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
     /**
      * Adds a user, the {@link GeoServerUser#getPassword()} returns the raw password
      *
-     * <p>The method must use #getPasswordValidatorName() to validate the raw password and
-     * #getPasswordEncoderName() to encode the password.
+     * <p>The method must use #getPasswordValidatorName() to validate the raw password and #getPasswordEncoderName() to
+     * encode the password.
      */
     void addUser(GeoServerUser user) throws IOException, PasswordPolicyException;
 
     /**
      * Updates a user
      *
-     * <p>The method must be able to determine if {@link GeoServerUser#getPassword()} has changed
-     * (reread from backend, check for a prefix, ...)
+     * <p>The method must be able to determine if {@link GeoServerUser#getPassword()} has changed (reread from backend,
+     * check for a prefix, ...)
      *
-     * <p>if the password has changed, it is a raw password and the method must use
-     * #getPasswordValidatorName() to validate the raw password and #getPasswordEncoderName() to
+     * <p>if the password has changed, it is a raw password and the method must use #getPasswordValidatorName() to
+     * validate the raw password and #getPasswordEncoderName() to
      *
      * <p>encode the password.
      */
@@ -58,8 +58,8 @@ public interface GeoServerUserGroupStore extends GeoServerUserGroupService {
     boolean removeGroup(GeoServerUserGroup group) throws IOException;
 
     /**
-     * Synchronizes all changes with the backend store.On success, the associated {@link
-     * GeoServerUserGroupService} object should be loaded
+     * Synchronizes all changes with the backend store.On success, the associated {@link GeoServerUserGroupService}
+     * object should be loaded
      */
     void store() throws IOException;
 

@@ -43,14 +43,12 @@ public class SecurityHomePageContentProviderTest extends AbstractSecurityWicketT
     }
 
     private void checkMasterPasswordMessage(boolean loginEnabled) throws Exception {
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(loginEnabled);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
-        tester.startComponentInPage(
-                new SecurityHomePageContentProvider().getPageBodyComponent("swp"));
+        tester.startComponentInPage(new SecurityHomePageContentProvider().getPageBodyComponent("swp"));
         tester.assertComponent("swp", SecurityHomePageContentProvider.SecurityWarningsPanel.class);
         tester.assertVisible("swp:mpmessage");
         tester.assertVisible("swp:mplink");

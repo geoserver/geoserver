@@ -88,9 +88,9 @@ import org.xml.sax.SAXException;
  *
  * <p>Additional, an OWS request can contain an arbitray number of additional parameters.
  *
- * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all
- * the parameters come in the form of a set of key-value pairs. Commonly this type of request is
- * made in an http "GET" request, the parameters being specified in the query string:
+ * <p>An OWS request can be specified in two forms. The first form is known as "KVP" in which all the parameters come in
+ * the form of a set of key-value pairs. Commonly this type of request is made in an http "GET" request, the parameters
+ * being specified in the query string:
  *
  * <pre>
  * <code>http://www.xyz.com/geoserver?service=someService&amp;request=someRequest&amp;version=X.Y.Z&amp;param1=...&amp;param2=...</code>
@@ -99,8 +99,8 @@ import org.xml.sax.SAXException;
  * <p>This type of request can also be made in a "POST" request in with a mime-type of
  * "application/x-www-form-urlencoded".
  *
- * <p>The second form is known as "XML" in which all the parameters come in the form of an xml
- * document. This type of request is made in an http "POST" request.
+ * <p>The second form is known as "XML" in which all the parameters come in the form of an xml document. This type of
+ * request is made in an http "POST" request.
  *
  * <pre><code>
  *  &lt;?xml version="1.0" encoding="UTF-8"?&gt;
@@ -111,9 +111,9 @@ import org.xml.sax.SAXException;
  *  &lt;/SomeRequest&gt;
  * </code></pre>
  *
- * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to
- * locate a service desciptor, an instance of {@link Service} . With the service descriptor, the
- * <b>request</b> parameter is used to locate the operation of the service to call.
+ * <p>When a request is received, the <b>service</b> the <b>version</b> parameters are used to locate a service
+ * desciptor, an instance of {@link Service} . With the service descriptor, the <b>request</b> parameter is used to
+ * locate the operation of the service to call.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -164,10 +164,9 @@ public class Dispatcher extends AbstractController {
     /**
      * Sets the flag to control wether the dispatcher is cite compliante.
      *
-     * <p>If set to <code>true</code>, the dispatcher with throw exceptions when it encounters
-     * something that is not 100% compliant with CITE standards. An example would be a request which
-     * specifies the servce in the context path: '.../geoserver/wfs?request=...' and not with the
-     * kvp '&amp;service=wfs'.
+     * <p>If set to <code>true</code>, the dispatcher with throw exceptions when it encounters something that is not
+     * 100% compliant with CITE standards. An example would be a request which specifies the servce in the context path:
+     * '.../geoserver/wfs?request=...' and not with the kvp '&amp;service=wfs'.
      *
      * @param citeCompliant <code>true</code> to set compliance, <code>false</code> to unset it.
      */
@@ -191,16 +190,10 @@ public class Dispatcher extends AbstractController {
                 int lookaheadValue = Integer.valueOf(lookahead);
                 if (lookaheadValue <= 0)
                     logger.log(
-                            Level.SEVERE,
-                            "Invalid XML_LOOKAHEAD value, "
-                                    + "will use "
-                                    + XML_LOOKAHEAD
-                                    + " instead");
+                            Level.SEVERE, "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
                 XML_LOOKAHEAD = lookaheadValue;
             } catch (Exception e) {
-                logger.log(
-                        Level.SEVERE,
-                        "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
+                logger.log(Level.SEVERE, "Invalid XML_LOOKAHEAD value, " + "will use " + XML_LOOKAHEAD + " instead");
             }
         }
     }
@@ -221,8 +214,8 @@ public class Dispatcher extends AbstractController {
     }
 
     @Override
-    protected ModelAndView handleRequestInternal(
-            HttpServletRequest httpRequest, HttpServletResponse httpResponse) throws Exception {
+    protected ModelAndView handleRequestInternal(HttpServletRequest httpRequest, HttpServletResponse httpResponse)
+            throws Exception {
         preprocessRequest(httpRequest);
 
         // create a new request instance
@@ -325,14 +318,12 @@ public class Dispatcher extends AbstractController {
                     && httpRequest.getContentType().startsWith(SOAP_MIME)) {
                 request.setSOAP(true);
                 request.setInput(soapReader(httpRequest, request));
-            } else if (reqContentType != null
-                    && ServletFileUpload.isMultipartContent(httpRequest)) {
+            } else if (reqContentType != null && ServletFileUpload.isMultipartContent(httpRequest)) {
                 // multipart form upload
                 ServletFileUpload up = new ServletFileUpload(new DiskFileItemFactory());
 
                 // treat regular form fields as additional kvp parameters
-                Map<String, FileItem> kvpFileItems =
-                        new CaseInsensitiveMap<>(new LinkedHashMap<>());
+                Map<String, FileItem> kvpFileItems = new CaseInsensitiveMap<>(new LinkedHashMap<>());
                 try {
                     List<FileItem> items = up.parseRequest(httpRequest);
                     FileItemCleanupCallback.setFileItems(items);
@@ -356,8 +347,7 @@ public class Dispatcher extends AbstractController {
                     if (body == null) {
                         body = kvpFileItems.remove("body");
                         if (body == null) {
-                            throw new IllegalArgumentException(
-                                    "Unable to find input from multipart/form-data content");
+                            throw new IllegalArgumentException("Unable to find input from multipart/form-data content");
                         }
                     }
                     request.setInput(fileItemReader(body));
@@ -366,11 +356,10 @@ public class Dispatcher extends AbstractController {
                 }
 
                 Map<String, Object> kvpItems = new LinkedHashMap<>();
-                kvpFileItems.forEach(
-                        (key, value) -> {
-                            kvpItems.put(key, value.getString());
-                            value.delete(); // the temp file can be deleted at this point
-                        });
+                kvpFileItems.forEach((key, value) -> {
+                    kvpItems.put(key, value.getString());
+                    value.delete(); // the temp file can be deleted at this point
+                });
 
                 request.setOrAppendKvp(parseKVP(request, kvpItems));
             } else {
@@ -391,13 +380,12 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Initializes the request context by parsing the request path into two components: the
-     * 'context' and the 'path'. The 'context' is the part of the URI before the last '/' and the
-     * 'path' is the part after the last '/'.
+     * Initializes the request context by parsing the request path into two components: the 'context' and the 'path'.
+     * The 'context' is the part of the URI before the last '/' and the 'path' is the part after the last '/'.
      *
-     * <p>This method processes the given {@link Request} object to extract and set the context and
-     * path based on the HTTP request URI. Leading and trailing slashes are stripped from the
-     * request path before the context and path are determined.
+     * <p>This method processes the given {@link Request} object to extract and set the context and path based on the
+     * HTTP request URI. Leading and trailing slashes are stripped from the request path before the context and path are
+     * determined.
      *
      * @param request the {@link Request} object whose context and path need to be initialized.
      * @throws NullPointerException if the {@link Request} or its HTTP request is null.
@@ -504,15 +492,12 @@ public class Dispatcher extends AbstractController {
         // transform the payload back into an input stream so we can parse it as usual
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         try {
-            TransformerFactory.newInstance()
-                    .newTransformer()
-                    .transform(new DOMSource(payload), new StreamResult(bout));
+            TransformerFactory.newInstance().newTransformer().transform(new DOMSource(payload), new StreamResult(bout));
         } catch (Exception e) {
             throw new IOException("Error encoding payload of SOAP request", e);
         }
 
-        return RequestUtils.getBufferedXMLReader(
-                new ByteArrayInputStream(bout.toByteArray()), XML_LOOKAHEAD);
+        return RequestUtils.getBufferedXMLReader(new ByteArrayInputStream(bout.toByteArray()), XML_LOOKAHEAD);
     }
 
     BufferedReader reader(HttpServletRequest httpRequest) throws IOException {
@@ -532,8 +517,7 @@ public class Dispatcher extends AbstractController {
             // hack for backwards compatability, try finding the service with the context instead
             // of the service
             if (req.getContext() != null) {
-                serviceDescriptor =
-                        findService(req.getContext(), req.getVersion(), req.getNamespace());
+                serviceDescriptor = findService(req.getContext(), req.getVersion(), req.getNamespace());
                 if (serviceDescriptor != null) {
                     // found, assume that the client is using <service>/<request>
                     if (req.getRequest() == null) {
@@ -553,9 +537,9 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Retrieves the service name from the given request object, which may contain key-value pairs
-     * (KVP) or a request body. If the service name is not explicitly provided in the request,
-     * attempts to infer it from the request context.
+     * Retrieves the service name from the given request object, which may contain key-value pairs (KVP) or a request
+     * body. If the service name is not explicitly provided in the request, attempts to infer it from the request
+     * context.
      *
      * @param req The request object containing information about the service and request.
      * @return The name of the service extracted from the request.
@@ -567,13 +551,13 @@ public class Dispatcher extends AbstractController {
         if (req.getKvp() != null) {
 
             req.setService(normalize(KvpUtils.getSingleValue(req.getKvp(), "service")));
-            req.setVersion(
-                    normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
+            req.setVersion(normalizeVersion(normalize(KvpUtils.getSingleValue(req.getKvp(), "version"))));
             req.setRequest(normalize(KvpUtils.getSingleValue(req.getKvp(), "request")));
             req.setOutputFormat(normalize(KvpUtils.getSingleValue(req.getKvp(), "outputFormat")));
         }
         // check the body
-        if (req.getInput() != null && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
+        if (req.getInput() != null
+                && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
             readOpPost(req);
         }
 
@@ -601,8 +585,7 @@ public class Dispatcher extends AbstractController {
 
         if (service == null) {
             // give up
-            throw new ServiceException(
-                    "Could not determine service", "MissingParameterValue", "service");
+            throw new ServiceException("Could not determine service", "MissingParameterValue", "service");
         }
         return service;
     }
@@ -652,9 +635,7 @@ public class Dispatcher extends AbstractController {
         }
 
         if (v.getRevision() == null) {
-            return String.format(
-                    "%d.%d.0",
-                    ((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
+            return String.format("%d.%d.0", ((Number) v.getMajor()).intValue(), ((Number) v.getMinor()).intValue());
         }
 
         // version ok
@@ -663,9 +644,7 @@ public class Dispatcher extends AbstractController {
 
     Operation dispatch(Request req, Service serviceDescriptor) throws Throwable {
         if (req.getRequest() == null) {
-            String msg =
-                    "Could not determine geoserver request from http request "
-                            + req.getHttpRequest();
+            String msg = "Could not determine geoserver request from http request " + req.getHttpRequest();
             throw new ServiceException(msg, "MissingParameterValue", "request");
         }
 
@@ -742,27 +721,21 @@ public class Dispatcher extends AbstractController {
                         throw t;
                     }
                     if (kvpParsed && xmlParsed || (!kvpParsed && !xmlParsed)) {
-                        throw new ServiceException(
-                                "Could not find request reader (either kvp or xml) for: "
-                                        + parameterType.getName()
-                                        + ", it might be that some request parameters are missing, "
-                                        + "please check the documentation");
+                        throw new ServiceException("Could not find request reader (either kvp or xml) for: "
+                                + parameterType.getName()
+                                + ", it might be that some request parameters are missing, "
+                                + "please check the documentation");
                     } else if (kvpParsed) {
-                        throw new ServiceException(
-                                "Could not parse the KVP for: " + parameterType.getName());
+                        throw new ServiceException("Could not parse the KVP for: " + parameterType.getName());
                     } else {
-                        throw new ServiceException(
-                                "Could not parse the XML for: " + parameterType.getName());
+                        throw new ServiceException("Could not parse the XML for: " + parameterType.getName());
                     }
                 }
 
                 // GEOS-934  and GEOS-1288
-                Method setBaseUrl =
-                        OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
+                Method setBaseUrl = OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
-                    setBaseUrl.invoke(
-                            requestBean,
-                            new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
+                    setBaseUrl.invoke(requestBean, new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to
@@ -777,14 +750,11 @@ public class Dispatcher extends AbstractController {
                     }
 
                     if (req.getVersion() == null) {
-                        req.setVersion(
-                                normalizeVersion(
-                                        lookupRequestBeanProperty(requestBean, "version", false)));
+                        req.setVersion(normalizeVersion(lookupRequestBeanProperty(requestBean, "version", false)));
                     }
 
                     if (req.getOutputFormat() == null) {
-                        req.setOutputFormat(
-                                lookupRequestBeanProperty(requestBean, "outputFormat", true));
+                        req.setOutputFormat(lookupRequestBeanProperty(requestBean, "outputFormat", true));
                     }
 
                     parameters[i] = requestBean;
@@ -800,15 +770,12 @@ public class Dispatcher extends AbstractController {
             if (!"GetCapabilities".equalsIgnoreCase(req.getRequest())) {
                 if (req.getVersion() == null) {
                     // must be a version on non-capabilities requests
-                    throw new ServiceException(
-                            "Could not determine version", "MissingParameterValue", "version");
+                    throw new ServiceException("Could not determine version", "MissingParameterValue", "version");
                 } else {
                     // version must be valid
                     if (!req.getVersion().matches("[0-99].[0-99].[0-99]")) {
                         throw new ServiceException(
-                                "Invalid version: " + req.getVersion(),
-                                "InvalidParameterValue",
-                                "version");
+                                "Invalid version: " + req.getVersion(), "InvalidParameterValue", "version");
                     }
 
                     // make sure the versoin actually exists
@@ -825,9 +792,7 @@ public class Dispatcher extends AbstractController {
 
                     if (!found) {
                         throw new ServiceException(
-                                "Invalid version: " + req.getVersion(),
-                                "InvalidParameterValue",
-                                "version");
+                                "Invalid version: " + req.getVersion(), "InvalidParameterValue", "version");
                     }
                 }
             }
@@ -835,8 +800,7 @@ public class Dispatcher extends AbstractController {
             // the service is mandatory for all requests instead
             if (req.getService() == null) {
                 // give up
-                throw new ServiceException(
-                        "Could not determine service", "MissingParameterValue", "service");
+                throw new ServiceException("Could not determine service", "MissingParameterValue", "service");
             }
         }
 
@@ -863,8 +827,7 @@ public class Dispatcher extends AbstractController {
         return op;
     }
 
-    String lookupRequestBeanProperty(
-            Object requestBean, String property, boolean allowDefaultValues) {
+    String lookupRequestBeanProperty(Object requestBean, String property, boolean allowDefaultValues) {
         if (requestBean instanceof EObject && EMFUtils.has((EObject) requestBean, property)) {
             // special case hack for eObject, we should move
             // this out into an extension ppint
@@ -899,9 +862,7 @@ public class Dispatcher extends AbstractController {
                 // descriptor, although it used to match a method name, lets use the declared
                 // operation name for contract compliance.
                 String operationName = opDescriptor.getId();
-                result =
-                        ((DirectInvocationService) serviceBean)
-                                .invokeDirect(operationName, parameters);
+                result = ((DirectInvocationService) serviceBean).invokeDirect(operationName, parameters);
             } else {
                 Method operation = opDescriptor.getMethod();
                 result = operation.invoke(serviceBean, parameters);
@@ -937,8 +898,7 @@ public class Dispatcher extends AbstractController {
 
                 Class<?> binding = response.getBinding();
 
-                if (!binding.isAssignableFrom(result.getClass())
-                        || !response.canHandle(opDescriptor)) {
+                if (!binding.isAssignableFrom(result.getClass()) || !response.canHandle(opDescriptor)) {
                     itr.remove();
 
                     continue;
@@ -984,30 +944,27 @@ public class Dispatcher extends AbstractController {
 
             if (responses.size() > 1) {
                 // sort by class hierarchy
-                Collections.sort(
-                        responses,
-                        (o1, o2) -> {
-                            Class<?> c1 = o1.getBinding();
-                            Class<?> c2 = o2.getBinding();
+                Collections.sort(responses, (o1, o2) -> {
+                    Class<?> c1 = o1.getBinding();
+                    Class<?> c2 = o2.getBinding();
 
-                            if (c1.equals(c2)) {
-                                return 0;
-                            }
+                    if (c1.equals(c2)) {
+                        return 0;
+                    }
 
-                            if (c1.isAssignableFrom(c2)) {
-                                return 1;
-                            }
+                    if (c1.isAssignableFrom(c2)) {
+                        return 1;
+                    }
 
-                            return -1;
-                        });
+                    return -1;
+                });
 
                 // check first two and make sure bindings are not equal
                 Response r1 = responses.get(0);
                 Response r2 = responses.get(1);
 
                 if (r1.getBinding().equals(r2.getBinding())) {
-                    String msg =
-                            "Multiple responses: (" + result.getClass() + "): " + r1 + ", " + r2;
+                    String msg = "Multiple responses: (" + result.getClass() + "): " + r1 + ", " + r2;
                     throw new RuntimeException(msg);
                 }
             }
@@ -1134,11 +1091,8 @@ public class Dispatcher extends AbstractController {
         }
     }
 
-    void startSOAPEnvelope(OutputStream output, Request request, Response response)
-            throws IOException {
-        output.write(
-                ("<soap:Envelope xmlns:soap='" + request.getSOAPNamespace() + "'><soap:Header/>")
-                        .getBytes());
+    void startSOAPEnvelope(OutputStream output, Request request, Response response) throws IOException {
+        output.write(("<soap:Envelope xmlns:soap='" + request.getSOAPNamespace() + "'><soap:Header/>").getBytes());
         output.write("<soap:Body".getBytes());
         if (response != null && response instanceof SOAPAwareResponse) {
             String type = ((SOAPAwareResponse) response).getBodyType();
@@ -1153,8 +1107,7 @@ public class Dispatcher extends AbstractController {
         output.write(("</soap:Body></soap:Envelope>").getBytes());
     }
 
-    Response fireResponseDispatchedCallback(
-            Request req, Operation op, Object result, Response response) {
+    Response fireResponseDispatchedCallback(Request req, Operation op, Object result, Response response) {
         for (DispatcherCallback cb : callbacks) {
             Response r = cb.responseDispatched(req, op, result, response);
             response = r != null ? r : response;
@@ -1243,8 +1196,7 @@ public class Dispatcher extends AbstractController {
             // multiple services found, sort by version
             if (vmatches.size() > 1) {
                 // use highest version
-                Comparator<Service> comparator =
-                        (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
+                Comparator<Service> comparator = (s1, s2) -> s1.getVersion().compareTo(s2.getVersion());
 
                 Collections.sort(vmatches, comparator);
             }
@@ -1259,8 +1211,7 @@ public class Dispatcher extends AbstractController {
     }
 
     public static Collection<KvpRequestReader> loadKvpRequestReaders() {
-        Collection<KvpRequestReader> kvpReaders =
-                GeoServerExtensions.extensions(KvpRequestReader.class);
+        Collection<KvpRequestReader> kvpReaders = GeoServerExtensions.extensions(KvpRequestReader.class);
 
         if (!(new HashSet<>(kvpReaders).size() == kvpReaders.size())) {
             String msg = "Two identical kvp readers found";
@@ -1287,14 +1238,13 @@ public class Dispatcher extends AbstractController {
 
         if (matches.size() > 1) {
             // sort by class hierarchy
-            Comparator<KvpRequestReader> comparator =
-                    (kvp1, kvp2) -> {
-                        if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
-                            return -1;
-                        }
+            Comparator<KvpRequestReader> comparator = (kvp1, kvp2) -> {
+                if (kvp2.getRequestBean().isAssignableFrom(kvp1.getRequestBean())) {
+                    return -1;
+                }
 
-                        return 1;
-                    };
+                return 1;
+            };
 
             Collections.sort(matches, comparator);
         }
@@ -1326,8 +1276,7 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * Finds a registered {@link XmlRequestReader} bean able to read a request, given the request
-     * details
+     * Finds a registered {@link XmlRequestReader} bean able to read a request, given the request details
      *
      * @param namespace The XML namespace of the request body
      * @param element The OWS request, e.g. "GetMap"
@@ -1335,8 +1284,7 @@ public class Dispatcher extends AbstractController {
      * @param ver The OWS service version, e.g "1.1.1"
      * @return An {@link XmlRequestReader} capable of reading the request body
      */
-    public static XmlRequestReader findXmlReader(
-            String namespace, String element, String serviceId, String ver) {
+    public static XmlRequestReader findXmlReader(String namespace, String element, String serviceId, String ver) {
         Collection<XmlRequestReader> xmlReaders = loadXmlReaders();
 
         // first just match on namespace, element
@@ -1356,9 +1304,7 @@ public class Dispatcher extends AbstractController {
             // do a more lax serach, search only on the element name if the
             // namespace was unspecified
             if (namespace == null || namespace.equals("")) {
-                String msg =
-                        "No namespace specified in request, searching for "
-                                + " xml reader by element name only";
+                String msg = "No namespace specified in request, searching for " + " xml reader by element name only";
                 logger.info(msg);
 
                 for (XmlRequestReader xmlReader : xmlReaders) {
@@ -1439,46 +1385,45 @@ public class Dispatcher extends AbstractController {
             // multiple readers found, sort by version and by service match
             if (vmatches.size() > 1) {
                 // use highest version
-                Comparator<XmlRequestReader> comparator =
-                        (r1, r2) -> {
-                            Version v1 = r1.getVersion();
-                            Version v2 = r2.getVersion();
+                Comparator<XmlRequestReader> comparator = (r1, r2) -> {
+                    Version v1 = r1.getVersion();
+                    Version v2 = r2.getVersion();
 
-                            if ((v1 == null) && (v2 == null)) {
-                                return 0;
-                            }
+                    if ((v1 == null) && (v2 == null)) {
+                        return 0;
+                    }
 
-                            if ((v1 != null) && (v2 == null)) {
-                                return 1;
-                            }
+                    if ((v1 != null) && (v2 == null)) {
+                        return 1;
+                    }
 
-                            if ((v1 == null) && (v2 != null)) {
-                                return -1;
-                            }
+                    if ((v1 == null) && (v2 != null)) {
+                        return -1;
+                    }
 
-                            int versionCompare = v1.compareTo(v2);
+                    int versionCompare = v1.compareTo(v2);
 
-                            if (versionCompare != 0) {
-                                return versionCompare;
-                            }
+                    if (versionCompare != 0) {
+                        return versionCompare;
+                    }
 
-                            String sid1 = r1.getServiceId();
-                            String sid2 = r2.getServiceId();
+                    String sid1 = r1.getServiceId();
+                    String sid2 = r2.getServiceId();
 
-                            if ((sid1 == null) && (sid2 == null)) {
-                                return 0;
-                            }
+                    if ((sid1 == null) && (sid2 == null)) {
+                        return 0;
+                    }
 
-                            if ((sid1 != null) && (sid2 == null)) {
-                                return 1;
-                            }
+                    if ((sid1 != null) && (sid2 == null)) {
+                        return 1;
+                    }
 
-                            if ((sid1 == null) && (sid2 != null)) {
-                                return -1;
-                            }
+                    if ((sid1 == null) && (sid2 != null)) {
+                        return -1;
+                    }
 
-                            return sid1.compareTo(sid2);
-                        };
+                    return sid1.compareTo(sid2);
+                };
 
                 Collections.sort(vmatches, comparator);
             }
@@ -1569,15 +1514,14 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
-     * To be called once it was determined the request is a POST request with an XML request body;
-     * uses {@link XmlRequestReader} to parse the {@link Request#getInput() request input}.
+     * To be called once it was determined the request is a POST request with an XML request body; uses
+     * {@link XmlRequestReader} to parse the {@link Request#getInput() request input}.
      *
-     * <p>This method expects {@code request.} {@link Request#getNamespace() namespace}, {@link
-     * Request#getPostRequestElementName() postRequestElementName}, {@link Request#getVersion()
-     * version}, and {@link Request#getService() service} to be set already.
+     * <p>This method expects {@code request.} {@link Request#getNamespace() namespace},
+     * {@link Request#getPostRequestElementName() postRequestElementName}, {@link Request#getVersion() version}, and
+     * {@link Request#getService() service} to be set already.
      */
-    Object parseRequestXML(Object requestBean, BufferedReader input, Request request)
-            throws Exception {
+    Object parseRequestXML(Object requestBean, BufferedReader input, Request request) throws Exception {
         // check for an empty input stream
         if (!input.ready()) {
             return null;
@@ -1610,8 +1554,7 @@ public class Dispatcher extends AbstractController {
         Map<String, String> map = new HashMap<>();
         if (request.getPath() != null) {
             map.put("service", request.getPath());
-        } else if (request.getHttpRequest() != null
-                && request.getHttpRequest().getServletPath() != null) {
+        } else if (request.getHttpRequest() != null && request.getHttpRequest().getServletPath() != null) {
             // Path not found so try to fall back on HTTPRequest Servlet Path
             String service =
                     extractServiceFromHttpRequest(request.getHttpRequest().getRequestURI());
@@ -1896,7 +1839,6 @@ public class Dispatcher extends AbstractController {
      * @return true if t is a security exception
      */
     public static boolean isSecurityException(Throwable t) {
-        return t != null
-                && t.getClass().getPackage().getName().startsWith("org.springframework.security");
+        return t != null && t.getClass().getPackage().getName().startsWith("org.springframework.security");
     }
 }

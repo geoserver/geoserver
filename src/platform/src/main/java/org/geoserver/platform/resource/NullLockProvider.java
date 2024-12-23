@@ -10,8 +10,8 @@
 package org.geoserver.platform.resource;
 
 /**
- * A no-op implementation of LockProvider. It does not actually lock anything, can be used to test
- * if the other subsystems continue to work properly in face of absence of locks
+ * A no-op implementation of LockProvider. It does not actually lock anything, can be used to test if the other
+ * subsystems continue to work properly in face of absence of locks
  *
  * @author Andrea Aime - GeoSolutions
  */

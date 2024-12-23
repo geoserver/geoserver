@@ -34,48 +34,44 @@ public class ParamsExtractorRulePage extends GeoServerSecuredPage {
         add(form);
         List<WrappedTab> tabs = new ArrayList<>();
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().isEchoOnly()) {
-            tabs.add(
-                    new WrappedTab("Echo Parameter", echoParameterModel) {
-                        @Override
-                        public Panel getPanel(String panelId) {
-                            return new EchoParameterPanel(panelId, echoParameterModel);
-                        }
-                    });
+            tabs.add(new WrappedTab("Echo Parameter", echoParameterModel) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new EchoParameterPanel(panelId, echoParameterModel);
+                }
+            });
         }
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getPosition() != null) {
-            tabs.add(
-                    new WrappedTab("Basic Rule", simpleRuleModel) {
-                        @Override
-                        public Panel getPanel(String panelId) {
-                            return new SimpleRulePanel(panelId, simpleRuleModel);
-                        }
-                    });
+            tabs.add(new WrappedTab("Basic Rule", simpleRuleModel) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new SimpleRulePanel(panelId, simpleRuleModel);
+                }
+            });
         }
         if (!optionalRuleModel.isPresent() || optionalRuleModel.get().getMatch() != null) {
-            tabs.add(
-                    new WrappedTab("Advanced Rule", complexRuleModel) {
-                        @Override
-                        public Panel getPanel(String panelId) {
-                            return new ComplexRulePanel(panelId, complexRuleModel);
-                        }
-                    });
+            tabs.add(new WrappedTab("Advanced Rule", complexRuleModel) {
+                @Override
+                public Panel getPanel(String panelId) {
+                    return new ComplexRulePanel(panelId, complexRuleModel);
+                }
+            });
         }
         AjaxTabbedPanel tabbedPanel = new AjaxTabbedPanel<>("tabs", tabs);
         form.add(tabbedPanel);
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        try {
-                            WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
-                            RuleModel ruleModel = selectedTab.getModel().getObject();
-                            RulesModel.saveOrUpdate(ruleModel);
-                            doReturn(ParamsExtractorConfigPage.class);
-                        } catch (Exception exception) {
-                            error(exception);
-                        }
-                    }
-                });
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                try {
+                    WrappedTab selectedTab = tabs.get(tabbedPanel.getSelectedTab());
+                    RuleModel ruleModel = selectedTab.getModel().getObject();
+                    RulesModel.saveOrUpdate(ruleModel);
+                    doReturn(ParamsExtractorConfigPage.class);
+                } catch (Exception exception) {
+                    error(exception);
+                }
+            }
+        });
         form.add(new BookmarkablePageLink<>("cancel", ParamsExtractorConfigPage.class));
     }
 

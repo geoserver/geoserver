@@ -19,8 +19,8 @@ package org.geotools.dggs.h3;
 import java.util.BitSet;
 
 /**
- * Support class for the manipulation of H3 indexes. Refer to this page for the interpretation of
- * the binary content of a H3 index: https://h3geo.org/docs/core-library/h3indexing
+ * Support class for the manipulation of H3 indexes. Refer to this page for the interpretation of the binary content of
+ * a H3 index: https://h3geo.org/docs/core-library/h3indexing
  */
 class H3Index {
 
@@ -39,10 +39,7 @@ class H3Index {
         int resolution = getResolution();
         if (resolution > 14) throw new IllegalArgumentException("This H3 cell has no children");
         // switch the resolution up
-        long childId =
-                (id & (8l << (64 - 8)))
-                        | (((long) targetResolution) << (64 - 12))
-                        | (id & 0xFFFFFFFFFFFFFL);
+        long childId = (id & (8l << (64 - 8))) | (((long) targetResolution) << (64 - 12)) | (id & 0xFFFFFFFFFFFFFL);
         //        long mask = ((long) 0xFFFFE) << (64 - 20);
         //        childId &= mask;
         //        return childId;
@@ -60,10 +57,7 @@ class H3Index {
         int resolution = getResolution();
         if (resolution > 14) throw new IllegalArgumentException("This H3 cell has no children");
         // switch the resolution up
-        long childId =
-                (id & (8l << (64 - 8)))
-                        | (((long) targetResolution) << (64 - 12))
-                        | (id & 0xFFFFFFFFFFFFFL);
+        long childId = (id & (8l << (64 - 8))) | (((long) targetResolution) << (64 - 12)) | (id & 0xFFFFFFFFFFFFFL);
         return childId;
     }
 

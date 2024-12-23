@@ -34,8 +34,8 @@ import org.geotools.util.logging.Logging;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * Response object for the store=true path, that is, one that stores the coverage on disk and
- * returns its path thru the Coverages document
+ * Response object for the store=true path, that is, one that stores the coverage on disk and returns its path thru the
+ * Coverages document
  *
  * @author Andrea Aime - TOPP
  */
@@ -47,8 +47,7 @@ public class WCSGetCoverageStoreResponse extends Response {
     Catalog catalog;
     CoverageResponseDelegateFinder responseFactory;
 
-    public WCSGetCoverageStoreResponse(
-            GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
+    public WCSGetCoverageStoreResponse(GeoServer gs, CoverageResponseDelegateFinder responseFactory) {
         super(GridCoverage[].class);
         this.geoServer = gs;
         this.catalog = gs.getCatalog();
@@ -70,20 +69,19 @@ public class WCSGetCoverageStoreResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         GridCoverage[] coverages = (GridCoverage[]) value;
 
         // grab the delegate for coverage encoding
         GetCoverageType request = (GetCoverageType) operation.getParameters()[0];
         String outputFormat = request.getOutput().getFormat();
         CoverageResponseDelegate delegate = responseFactory.encoderFor(outputFormat);
-        if (delegate == null)
-            throw new WcsException("Could not find encoder for output format " + outputFormat);
+        if (delegate == null) throw new WcsException("Could not find encoder for output format " + outputFormat);
 
         // grab the coverage info for Coverages document encoding
         final GridCoverage2D coverage = (GridCoverage2D) coverages[0];
-        CoverageInfo coverageInfo = catalog.getCoverageByName(request.getIdentifier().getValue());
+        CoverageInfo coverageInfo =
+                catalog.getCoverageByName(request.getIdentifier().getValue());
 
         // write the coverage to temporary storage in the data dir
         Resource wcsStore = null;
@@ -100,13 +98,11 @@ public class WCSGetCoverageStoreResponse extends Response {
         Resource coverageFile = null;
         while (true) {
             // TODO: find a way to get good extensions
-            coverageFile =
-                    wcsStore.get(
-                            coverageInfo.getName().replace(':', '_')
-                                    + "_"
-                                    + System.nanoTime()
-                                    + "."
-                                    + delegate.getFileExtension(outputFormat));
+            coverageFile = wcsStore.get(coverageInfo.getName().replace(':', '_')
+                    + "_"
+                    + System.nanoTime()
+                    + "."
+                    + delegate.getFileExtension(outputFormat));
             if (!Resources.exists(coverageFile)) break;
         }
 
@@ -121,11 +117,7 @@ public class WCSGetCoverageStoreResponse extends Response {
 
         // build the path where the clients will be able to retrieve the coverage files
         final String coverageLocation =
-                buildURL(
-                        request.getBaseUrl(),
-                        appendPath("temp/wcs", coverageFile.name()),
-                        null,
-                        URLType.RESOURCE);
+                buildURL(request.getBaseUrl(), appendPath("temp/wcs", coverageFile.name()), null, URLType.RESOURCE);
 
         // build the response
         CoveragesTransformer tx = new CoveragesTransformer(request, coverageLocation);

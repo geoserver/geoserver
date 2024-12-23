@@ -48,35 +48,28 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        List<Object> serviceBeans =
-                applicationContext.getBeansWithAnnotation(APIService.class).values().stream()
-                        .filter(
-                                bean -> {
-                                    APIService annotation =
-                                            APIDispatcher.getApiServiceAnnotation(bean.getClass());
-                                    return serviceName.equalsIgnoreCase(annotation.service())
-                                            && version.equals(new Version(annotation.version()));
-                                })
-                        .collect(Collectors.toList());
+        List<Object> serviceBeans = applicationContext.getBeansWithAnnotation(APIService.class).values().stream()
+                .filter(bean -> {
+                    APIService annotation = APIDispatcher.getApiServiceAnnotation(bean.getClass());
+                    return serviceName.equalsIgnoreCase(annotation.service())
+                            && version.equals(new Version(annotation.version()));
+                })
+                .collect(Collectors.toList());
 
         if (serviceBeans.isEmpty()) {
-            throw new RuntimeException(
-                    "Was expecting a service bean marked with service name '"
-                            + serviceName
-                            + " and version "
-                            + version
-                            + "' but found none");
+            throw new RuntimeException("Was expecting a service bean marked with service name '"
+                    + serviceName
+                    + " and version "
+                    + version
+                    + "' but found none");
         }
 
-        List<Object> coreBeans =
-                serviceBeans.stream()
-                        .filter(
-                                bean -> {
-                                    APIService annotation =
-                                            APIDispatcher.getApiServiceAnnotation(bean.getClass());
-                                    return annotation.core();
-                                })
-                        .collect(Collectors.toList());
+        List<Object> coreBeans = serviceBeans.stream()
+                .filter(bean -> {
+                    APIService annotation = APIDispatcher.getApiServiceAnnotation(bean.getClass());
+                    return annotation.core();
+                })
+                .collect(Collectors.toList());
         Object coreBean;
         if (coreBeans.isEmpty()) {
             LOGGER.log(
@@ -99,14 +92,13 @@ public class APIServiceFactoryBean implements FactoryBean, ApplicationContextAwa
 
         APIService annotation = coreBean.getClass().getAnnotation(APIService.class);
 
-        List<String> operations =
-                serviceBeans.stream()
-                        .flatMap(sb -> Arrays.stream(sb.getClass().getMethods()))
-                        .filter(m -> APIDispatcher.hasRequestMapping(m))
-                        .map(m -> APIDispatcher.getOperationName(m))
-                        .distinct()
-                        .sorted()
-                        .collect(Collectors.toList());
+        List<String> operations = serviceBeans.stream()
+                .flatMap(sb -> Arrays.stream(sb.getClass().getMethods()))
+                .filter(m -> APIDispatcher.hasRequestMapping(m))
+                .map(m -> APIDispatcher.getOperationName(m))
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
 
         this.service = new Service(annotation.service(), coreBean, version, operations);
         this.service.setCustomCapabilitiesLink("../" + annotation.landingPage());

@@ -31,21 +31,13 @@ public class S3BlobStorePanel extends Panel {
         super(id, configModel);
 
         add(new TextField<>("bucket").setRequired(true).add(titleModifier("bucket.title")));
-        add(
-                new TextField<>("awsAccessKey")
-                        .setRequired(false)
-                        .add(titleModifier("awsAccessKey.title")));
-        add(
-                new PasswordTextFieldWriteOnlyModel(
-                                "awsSecretKey", new PropertyModel<>(configModel, "awsSecretKey"))
-                        .setRequired(false)
-                        .add(titleModifier("awsSecretKey.title")));
+        add(new TextField<>("awsAccessKey").setRequired(false).add(titleModifier("awsAccessKey.title")));
+        add(new PasswordTextFieldWriteOnlyModel("awsSecretKey", new PropertyModel<>(configModel, "awsSecretKey"))
+                .setRequired(false)
+                .add(titleModifier("awsSecretKey.title")));
         add(new TextField<>("prefix").add(titleModifier("prefix.title")));
         add(new TextField<>("endpoint").add(titleModifier("endpoint.title")));
-        add(
-                new TextField<>("maxConnections")
-                        .setRequired(true)
-                        .add(titleModifier("maxConnections.title")));
+        add(new TextField<>("maxConnections").setRequired(true).add(titleModifier("maxConnections.title")));
         add(new CheckBox("useHTTPS").add(titleModifier("useHTTPS.title")));
         add(new TextField<>("proxyDomain").add(titleModifier("proxyDomain.title")));
         add(new TextField<>("proxyWorkstation").add(titleModifier("proxyWorkstation.title")));

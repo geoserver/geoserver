@@ -37,8 +37,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
     }
 
     @Override
-    public boolean isBuilderSelected(
-            AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata) {
+    public boolean isBuilderSelected(AbstractTemplateBuilder templateBuilder, PropertySelectionContext extradata) {
 
         String key;
         if (extradata != null) {
@@ -58,9 +57,7 @@ public abstract class AbstractPropertySelection implements PropertySelectionHand
      * @return true if it is selected, false otherwise.
      */
     protected boolean isKeySelected(AbstractTemplateBuilder abstractTb, String key) {
-        return (hasSelectableKey(abstractTb) && isKeySelected(key))
-                || key == null
-                || !hasSelectableKey(abstractTb);
+        return (hasSelectableKey(abstractTb) && isKeySelected(key)) || key == null || !hasSelectableKey(abstractTb);
     }
 
     /**

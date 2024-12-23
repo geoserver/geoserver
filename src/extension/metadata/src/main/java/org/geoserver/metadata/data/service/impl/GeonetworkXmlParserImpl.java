@@ -49,7 +49,8 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
 
     private static final long serialVersionUID = -4931070325217885824L;
 
-    @Autowired private ConfigurationService configService;
+    @Autowired
+    private ConfigurationService configService;
 
     private NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
 
@@ -62,8 +63,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
     }
 
     @Override
-    public void parseMetadata(Document doc, ResourceInfo rInfo, ComplexMetadataMap metadataMap)
-            throws IOException {
+    public void parseMetadata(Document doc, ResourceInfo rInfo, ComplexMetadataMap metadataMap) throws IOException {
         for (AttributeMappingConfiguration attributeMapping :
                 configService.getGeonetworkMappingConfiguration().getGeonetworkmapping()) {
             if (attributeMapping.getMappingType() != MappingTypeEnum.NATIVE) {
@@ -76,30 +76,24 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                 addNativeAttribute(rInfo, attributeMapping, doc);
             } else {
                 AttributeConfiguration att =
-                        configService
-                                .getMetadataConfiguration()
-                                .findAttribute(attributeMapping.getGeoserver());
+                        configService.getMetadataConfiguration().findAttribute(attributeMapping.getGeoserver());
                 if (att == null) {
                     throw new IOException(
-                            "attribute "
-                                    + attributeMapping.getGeoserver()
-                                    + " not found in configuration");
+                            "attribute " + attributeMapping.getGeoserver() + " not found in configuration");
                 }
                 addAttribute(metadataMap, attributeMapping, att, doc, null);
             }
         }
     }
 
-    private void addNativeAttribute(
-            ResourceInfo rInfo, AttributeMappingConfiguration attributeMapping, Document doc)
+    private void addNativeAttribute(ResourceInfo rInfo, AttributeMappingConfiguration attributeMapping, Document doc)
             throws IOException {
         List<String> values = findValues(doc, attributeMapping.getGeonetwork(), null);
 
         if (!values.isEmpty()) {
             try {
-                Class<?> clazz =
-                        PropertyUtils.getPropertyDescriptor(rInfo, attributeMapping.getGeoserver())
-                                .getPropertyType();
+                Class<?> clazz = PropertyUtils.getPropertyDescriptor(rInfo, attributeMapping.getGeoserver())
+                        .getPropertyType();
 
                 if (List.class.isAssignableFrom(clazz)) {
                     List<String> list = new ArrayList<>();
@@ -108,29 +102,20 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
                     }
                     @SuppressWarnings("unchecked")
                     List<Object> propList =
-                            (List<Object>)
-                                    PropertyUtils.getProperty(
-                                            rInfo, attributeMapping.getGeoserver());
+                            (List<Object>) PropertyUtils.getProperty(rInfo, attributeMapping.getGeoserver());
                     propList.clear();
                     propList.addAll(list);
                 } else {
-                    Object value =
-                            clazz == null
-                                    ? values.get(0)
-                                    : Converters.convert(values.get(0), clazz);
+                    Object value = clazz == null ? values.get(0) : Converters.convert(values.get(0), clazz);
                     BeanUtils.setProperty(rInfo, attributeMapping.getGeoserver(), value);
                 }
-            } catch (IllegalAccessException
-                    | InvocationTargetException
-                    | DOMException
-                    | NoSuchMethodException e) {
+            } catch (IllegalAccessException | InvocationTargetException | DOMException | NoSuchMethodException e) {
                 throw new IOException(e);
             }
         }
     }
 
-    private void clearAttribute(
-            ComplexMetadataMap metadataMap, AttributeMappingConfiguration attributeMapping) {
+    private void clearAttribute(ComplexMetadataMap metadataMap, AttributeMappingConfiguration attributeMapping) {
         metadataMap.delete(attributeMapping.getGeoserver());
     }
 
@@ -147,19 +132,13 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
             switch (attConfig.getOccurrence()) {
                 case SINGLE:
                     if (nodes != null && nodes.getLength() > 0) {
-                        mapComplexNode(
-                                metadataMap, attributeMapping, attConfig, doc, nodes.item(0));
+                        mapComplexNode(metadataMap, attributeMapping, attConfig, doc, nodes.item(0));
                     }
                     break;
                 case REPEAT:
                     if (nodes != null) {
                         for (int count = 0; count < nodes.getLength(); count++) {
-                            mapComplexNode(
-                                    metadataMap,
-                                    attributeMapping,
-                                    attConfig,
-                                    doc,
-                                    nodes.item(count));
+                            mapComplexNode(metadataMap, attributeMapping, attConfig, doc, nodes.item(count));
                         }
                     }
                     break;
@@ -194,14 +173,12 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         AttributeTypeMappingConfiguration typeMapping =
                 configService.getGeonetworkMappingConfiguration().findType(attConfig.getTypename());
         if (typeMapping == null) {
-            throw new IOException(
-                    "type mapping " + attConfig.getTypename() + " not found in configuration");
+            throw new IOException("type mapping " + attConfig.getTypename() + " not found in configuration");
         }
         AttributeTypeConfiguration type =
                 configService.getMetadataConfiguration().findType(attConfig.getTypename());
         if (type == null) {
-            throw new IOException(
-                    "type " + attConfig.getTypename() + " not found in configuration");
+            throw new IOException("type " + attConfig.getTypename() + " not found in configuration");
         }
         ComplexMetadataMap submap;
         if (OccurrenceEnum.SINGLE.equals(attConfig.getOccurrence())) {
@@ -217,10 +194,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
             AttributeConfiguration att = type.findAttribute(aMapping.getGeoserver());
             if (att == null) {
                 throw new IOException(
-                        "attribute "
-                                + aMapping.getGeoserver()
-                                + " not found in type "
-                                + type.getTypename());
+                        "attribute " + aMapping.getGeoserver() + " not found in type " + type.getTypename());
             }
             addAttribute(submap, aMapping, att, doc, node);
         }
@@ -242,8 +216,7 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         att.setValue(value);
     }
 
-    private Object find(Document doc, String geonetwork, Node node, QName type)
-            throws XPathExpressionException {
+    private Object find(Document doc, String geonetwork, Node node, QName type) throws XPathExpressionException {
         XPathFactory factory = XPathFactory.newInstance();
         XPath xpath = factory.newXPath();
         xpath.setNamespaceContext(namespaceContext);
@@ -257,12 +230,10 @@ public class GeonetworkXmlParserImpl implements GeonetworkXmlParser {
         return result;
     }
 
-    private NodeList findNodes(
-            AttributeMappingConfiguration attributeMapping, Document doc, Node node)
+    private NodeList findNodes(AttributeMappingConfiguration attributeMapping, Document doc, Node node)
             throws IOException {
         try {
-            return (NodeList)
-                    find(doc, attributeMapping.getGeonetwork(), node, XPathConstants.NODESET);
+            return (NodeList) find(doc, attributeMapping.getGeonetwork(), node, XPathConstants.NODESET);
         } catch (XPathExpressionException e) {
             throw new IOException(e);
         }

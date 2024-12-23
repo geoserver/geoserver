@@ -105,8 +105,7 @@ public class Ows11Util {
         return type;
     }
 
-    public static ExceptionReportType exceptionReport(
-            ServiceException exception, boolean verboseExceptions) {
+    public static ExceptionReportType exceptionReport(ServiceException exception, boolean verboseExceptions) {
         return exceptionReport(exception, verboseExceptions, null);
     }
 
@@ -153,8 +152,7 @@ public class Ows11Util {
     public static DCPType dcp(String service, EObject request) {
         String baseUrl = (String) EMFUtils.get(request, "baseUrl");
         if (baseUrl == null) {
-            throw new IllegalArgumentException(
-                    "Request object" + request + " has no 'baseUrl' property.");
+            throw new IllegalArgumentException("Request object" + request + " has no 'baseUrl' property.");
         }
         String href = ResponseUtils.buildURL(baseUrl, service, new HashMap<>(), URLType.SERVICE);
 

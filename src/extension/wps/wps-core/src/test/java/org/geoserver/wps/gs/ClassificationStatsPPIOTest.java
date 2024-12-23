@@ -33,8 +33,7 @@ public class ClassificationStatsPPIOTest {
     @Test
     public void testSanity() throws Exception {
         List<Range<Double>> ranges =
-                Arrays.asList(
-                        Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
+                Arrays.asList(Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
 
         StreamingSampleStats s1 = new StreamingSampleStats();
         s1.setStatistic(Statistic.MEAN);
@@ -54,10 +53,9 @@ public class ClassificationStatsPPIOTest {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         ppio.encode(classStats, bout);
 
-        Document doc =
-                DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder()
-                        .parse(new ByteArrayInputStream(bout.toByteArray()));
+        Document doc = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(new ByteArrayInputStream(bout.toByteArray()));
 
         assertEquals("Results", doc.getDocumentElement().getNodeName());
         XMLAssert.assertXpathExists("/Results/Class[@lowerBound='0.0']", doc);
@@ -79,8 +77,7 @@ public class ClassificationStatsPPIOTest {
 
     ClassificationStats newStats() {
         List<Range<Double>> ranges =
-                Arrays.asList(
-                        Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
+                Arrays.asList(Range.create(0d, true, 10d, false), Range.create(10d, true, 20d, true));
 
         StreamingSampleStats s1 = new StreamingSampleStats();
         s1.setStatistic(Statistic.MEAN);

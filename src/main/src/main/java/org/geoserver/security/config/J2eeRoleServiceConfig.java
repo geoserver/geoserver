@@ -13,8 +13,7 @@ import org.geoserver.security.impl.GeoServerJ2eeRoleService;
  *
  * @author christian
  */
-public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig
-        implements SecurityRoleServiceConfig {
+public class J2eeRoleServiceConfig extends BaseSecurityNamedServiceConfig implements SecurityRoleServiceConfig {
     private static final long serialVersionUID = 1L;
     protected String adminRoleName;
     protected String groupAdminRoleName;

@@ -70,8 +70,7 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             return;
         }
         String request =
-                "st_gml32/wfs?request=GetFeature&version=2.0&typeNames=st_gml32:Station_gml32"
-                        + "&outputFormat=csv";
+                "st_gml32/wfs?request=GetFeature&version=2.0&typeNames=st_gml32:Station_gml32" + "&outputFormat=csv";
         String result = getAsString(request);
         checkCsv(result);
     }
@@ -84,8 +83,7 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             return;
         }
         String request =
-                "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31"
-                        + "&outputFormat=csv";
+                "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31" + "&outputFormat=csv";
         String result = getAsString(request);
         checkCsv(result);
     }
@@ -106,9 +104,8 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             // not a JDBC online test
             return;
         }
-        String request =
-                "st_gml32/wfs?request=GetFeature&version=2.0&typeNames=st_gml32:Station_gml32"
-                        + "&outputFormat=application%2Fvnd.google-earth.kml%2Bxml";
+        String request = "st_gml32/wfs?request=GetFeature&version=2.0&typeNames=st_gml32:Station_gml32"
+                + "&outputFormat=application%2Fvnd.google-earth.kml%2Bxml";
         Document document = getAsDOM(request);
         checkKml(document);
     }
@@ -120,9 +117,8 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             // not a JDBC online test
             return;
         }
-        String request =
-                "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31"
-                        + "&outputFormat=application%2Fvnd.google-earth.kml%2Bxml";
+        String request = "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31"
+                + "&outputFormat=application%2Fvnd.google-earth.kml%2Bxml";
         Document document = getAsDOM(request);
         checkKml(document);
     }
@@ -143,67 +139,40 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             // not a JDBC online test
             return;
         }
-        String request =
-                "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31";
+        String request = "st_gml31/wfs?request=GetFeature&version=1.1.0&typeNames=st_gml31:Station_gml31";
         Document document = getAsDOM(request);
         print(document);
         Element documentElement = document.getDocumentElement();
         // check namespaces and features
-        assertEquals(
-                "http://www.stations_gml31.org/1.0",
-                documentElement.getAttribute("xmlns:st_gml31"));
-        assertEquals(
-                "http://www.measurements_gml31.org/1.0",
-                documentElement.getAttribute("xmlns:ms_gml31"));
+        assertEquals("http://www.stations_gml31.org/1.0", documentElement.getAttribute("xmlns:st_gml31"));
+        assertEquals("http://www.measurements_gml31.org/1.0", documentElement.getAttribute("xmlns:ms_gml31"));
         assertEquals(
                 "3",
                 xpathEngine.evaluate(
-                        "count(//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31)",
-                        document));
+                        "count(//wfs:FeatureCollection/gml:featureMember/st_gml31:Station_gml31)", document));
     }
 
     private void checkKml(Document document) throws XpathException {
         // check fields
+        assertEquals("1", xpath.evaluate("count(//kml:Document/kml:Schema/kml:SimpleField[@name='mail'])", document));
+        assertEquals("1", xpath.evaluate("count(//kml:Document/kml:Schema/kml:SimpleField[@name='name'])", document));
         assertEquals(
-                "1",
-                xpath.evaluate(
-                        "count(//kml:Document/kml:Schema/kml:SimpleField[@name='mail'])",
-                        document));
+                "1", xpath.evaluate("count(//kml:Document/kml:Schema/kml:SimpleField[@name='codeNumber'])", document));
         assertEquals(
-                "1",
-                xpath.evaluate(
-                        "count(//kml:Document/kml:Schema/kml:SimpleField[@name='name'])",
-                        document));
-        assertEquals(
-                "1",
-                xpath.evaluate(
-                        "count(//kml:Document/kml:Schema/kml:SimpleField[@name='codeNumber'])",
-                        document));
-        assertEquals(
-                "1",
-                xpath.evaluate(
-                        "count(//kml:Document/kml:Schema/kml:SimpleField[@name='captureDate'])",
-                        document));
+                "1", xpath.evaluate("count(//kml:Document/kml:Schema/kml:SimpleField[@name='captureDate'])", document));
         // check data
-        String featureDataPath =
-                "//kml:Document/kml:Folder/kml:Placemark[@id='st.1']/kml:ExtendedData/kml:SchemaData";
+        String featureDataPath = "//kml:Document/kml:Folder/kml:Placemark[@id='st.1']/kml:ExtendedData/kml:SchemaData";
         assertEquals(
                 "station1@stations.org",
                 xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='mail']/text()", document));
-        assertEquals(
-                "station1",
-                xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='name']/text()", document));
+        assertEquals("station1", xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='name']/text()", document));
         assertEquals(
                 "station1@stations.org",
                 xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='mail']/text()", document));
-        assertEquals(
-                "12",
-                xpath.evaluate(
-                        featureDataPath + "/kml:SimpleData[@name='codeNumber']/text()", document));
+        assertEquals("12", xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='codeNumber']/text()", document));
         assertEquals(
                 "2006-10-25Z",
-                xpath.evaluate(
-                        featureDataPath + "/kml:SimpleData[@name='captureDate']/text()", document));
+                xpath.evaluate(featureDataPath + "/kml:SimpleData[@name='captureDate']/text()", document));
     }
 
     private void setupSimpleOutput(String workspace, String layerName) {
@@ -245,8 +214,7 @@ public class SimpleOutputTest extends StationsAppSchemaTestSupport {
             gml31Parameters.put("GML_PREFIX", "gml31");
             gml31Parameters.put("GML_PREFIX_UPPER", "GML31");
             gml31Parameters.put("GML_NAMESPACE", "http://www.opengis.net/gml");
-            gml31Parameters.put(
-                    "GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
+            gml31Parameters.put("GML_LOCATION", "http://schemas.opengis.net/gml/3.1.1/base/gml.xsd");
             addAppSchemaFeatureType(
                     STATIONS_PREFIX_GML31,
                     "gml31",

@@ -25,8 +25,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
 
     protected static final String SIMPLIFIED_JSONLD_TEMPLATE = "SimplifiedPropertyNamesJSONLD";
 
-    protected static final String SIMPLIFIED_JSONLD_PARAM =
-            "&" + SIMPLIFIED_JSONLD_TEMPLATE + "=true";
+    protected static final String SIMPLIFIED_JSONLD_PARAM = "&" + SIMPLIFIED_JSONLD_TEMPLATE + "=true";
 
     protected static final String SIMPLIFIED_FLAT_TEMPLATE = "SimplifiedPropertyNamesFlat";
 
@@ -70,30 +69,24 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
 
     @Test
     public void testGML() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "ogc/features/v1/collections/gsml:MappedFeature"
-                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
-                                + SIMPLIFIED_GML_PARAM);
+        Document doc = getAsDOM("ogc/features/v1/collections/gsml:MappedFeature"
+                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
+                + SIMPLIFIED_GML_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
-        assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description",
-                doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description", doc);
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);
     }
 
     @Test
     public void testJsonLd() throws Exception {
-        String path =
-                "ogc/features/v1/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application%2Fld%2Bjson&"
-                        + SIMPLIFIED_JSONLD_PARAM;
+        String path = "ogc/features/v1/collections/"
+                + "gsml:MappedFeature"
+                + "/items?f=application%2Fld%2Bjson&"
+                + SIMPLIFIED_JSONLD_PARAM;
         JSONObject result = (JSONObject) getJsonLd(path);
         Object context = result.get("@context");
         checkContext(context);
@@ -107,8 +100,7 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
         assertNotNull(geometry);
         JSONObject geologicUnit = feature.getJSONObject("gsml:GeologicUnit");
         assertEquals(
-                "Olivine basalt, tuff, microgabbro, minor sedimentary rocks",
-                geologicUnit.getString("description"));
+                "Olivine basalt, tuff, microgabbro, minor sedimentary rocks", geologicUnit.getString("description"));
         JSONObject composition = geologicUnit.getJSONArray("gsml:composition").getJSONObject(0);
 
         JSONObject role = composition.getJSONObject("gsml:role");
@@ -121,11 +113,10 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
 
     @Test
     public void testFlatGeoJSON() throws Exception {
-        String path =
-                "ogc/features/v1/collections/"
-                        + "gsml:MappedFeature"
-                        + "/items?f=application%2Fgeo%2Bjson&"
-                        + SIMPLIFIED_FLAT_PARAM;
+        String path = "ogc/features/v1/collections/"
+                + "gsml:MappedFeature"
+                + "/items?f=application%2Fgeo%2Bjson&"
+                + SIMPLIFIED_FLAT_PARAM;
         JSONObject result = (JSONObject) getJson(path);
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(5, features.size());
@@ -139,12 +130,10 @@ public class SimplifiedPropertyReferenceTest extends TemplateComplexTestSupport 
                 properties.getString("gsml:GeologicUnit_description"));
         assertEquals(
                 "fictitious component",
-                properties.getString(
-                        "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
+                properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_gsml:role_value"));
         assertEquals(
                 "name_cc_5",
-                properties.getString(
-                        "gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
+                properties.getString("gsml:GeologicUnit_gsml:composition_gsml:compositionPart_lithology_name"));
     }
 
     @Override

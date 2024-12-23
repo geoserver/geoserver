@@ -12,20 +12,16 @@ import org.geoserver.platform.Operation;
 import org.geoserver.platform.Service;
 
 /**
- * Injected into the OWS request life cycle to obtain context (path, query) for the MapML WFS (only)
- * response format.
+ * Injected into the OWS request life cycle to obtain context (path, query) for the MapML WFS (only) response format.
  *
  * @author prushforth
  */
 public class MapMLGetFeatureCallback extends AbstractDispatcherCallback {
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         Service service = operation.getService();
-        if (service == null
-                || service.getId() == null
-                || !service.getId().equalsIgnoreCase("wfs")) {
+        if (service == null || service.getId() == null || !service.getId().equalsIgnoreCase("wfs")) {
             // not a WFS service so we are not interested in it
             return response;
         }

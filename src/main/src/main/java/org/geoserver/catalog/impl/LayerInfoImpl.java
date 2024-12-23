@@ -74,16 +74,16 @@ public class LayerInfoImpl implements LayerInfo {
     protected AttributionInfo attribution;
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map with key
-     * "authorityURLs", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key "authorityURLs", and a not
+     * transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
     protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(1);
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map with key
-     * "identifiers", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key "identifiers", and a not
+     * transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
@@ -120,14 +120,11 @@ public class LayerInfoImpl implements LayerInfo {
     public void setName(String name) {
         // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(
-                Level.FINE,
-                "Warning, some code is setting the LayerInfo name, but that will be ignored");
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo name, but that will be ignored");
         this.name = name;
 
         if (resource == null) {
-            throw new NullPointerException(
-                    "Layer name must not be set without an underlying resource");
+            throw new NullPointerException("Layer name must not be set without an underlying resource");
         }
         resource.setName(name);
     }
@@ -165,9 +162,8 @@ public class LayerInfoImpl implements LayerInfo {
             // does not have any Style tags
             if (remoteDefaultStyleInfo != null) return remoteDefaultStyleInfo;
             else if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine(
-                        "No Default Style found on cascaded WMS Resource"
-                                + getResource().getName());
+                LOGGER.fine("No Default Style found on cascaded WMS Resource"
+                        + getResource().getName());
         }
 
         return defaultStyle;
@@ -186,9 +182,8 @@ public class LayerInfoImpl implements LayerInfo {
             // does not have any Style tags
             if (remoteStyles != null) return remoteStyles;
             else if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.fine(
-                        "No Default Styles found on cascaded WMS Resource"
-                                + getResource().getName());
+                LOGGER.fine("No Default Styles found on cascaded WMS Resource"
+                        + getResource().getName());
         }
 
         return styles;
@@ -231,8 +226,7 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public boolean isEnabled() {
         if (resource == null) {
-            throw new NullPointerException(
-                    "Unable to get Layer enabled flag without an underlying resource");
+            throw new NullPointerException("Unable to get Layer enabled flag without an underlying resource");
         }
         return resource.isEnabled();
         // TODO: uncomment back when resource/publish split is complete
@@ -252,14 +246,11 @@ public class LayerInfoImpl implements LayerInfo {
     public void setEnabled(boolean enabled) {
         // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(
-                Level.FINE,
-                "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo enabled flag, but that will be ignored");
         this.enabled = enabled;
 
         if (resource == null) {
-            throw new NullPointerException(
-                    "Layer enabled flag must not be set without an underlying resource");
+            throw new NullPointerException("Layer enabled flag must not be set without an underlying resource");
         }
         resource.setEnabled(enabled);
     }
@@ -379,8 +370,7 @@ public class LayerInfoImpl implements LayerInfo {
     @Override
     public boolean isAdvertised() {
         if (resource == null) {
-            throw new NullPointerException(
-                    "Unable to get Layer advertised flag without an underlying resource");
+            throw new NullPointerException("Unable to get Layer advertised flag without an underlying resource");
         }
         return resource.isAdvertised();
         // TODO: uncomment back when resource/publish split is complete
@@ -391,14 +381,11 @@ public class LayerInfoImpl implements LayerInfo {
     public void setAdvertised(boolean advertised) {
         // TODO: remove this log and reinstate field assignment when resource/publish split is
         // complete
-        LOGGER.log(
-                Level.FINE,
-                "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
+        LOGGER.log(Level.FINE, "Warning, some code is setting the LayerInfo advertised flag, but that will be ignored");
         this.advertised = advertised;
 
         if (resource == null) {
-            throw new NullPointerException(
-                    "Layer advertised flag must not be set without an underlying resource");
+            throw new NullPointerException("Layer advertised flag must not be set without an underlying resource");
         }
         resource.setAdvertised(advertised);
     }

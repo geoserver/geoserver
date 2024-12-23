@@ -43,34 +43,12 @@ public class DatesTest {
         assertEquals(expected, Dates.matchAndParse("foo_" + str + ".bar"));
     }
 
-    Date date(
-            int year,
-            int month,
-            int dayOfMonth,
-            int hourOfDay,
-            int minute,
-            int second,
-            int millisecond) {
-        return date(
-                year,
-                month,
-                dayOfMonth,
-                hourOfDay,
-                minute,
-                second,
-                millisecond,
-                TimeZone.getTimeZone("GMT"));
+    Date date(int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, int millisecond) {
+        return date(year, month, dayOfMonth, hourOfDay, minute, second, millisecond, TimeZone.getTimeZone("GMT"));
     }
 
     Date date(
-            int year,
-            int month,
-            int dayOfMonth,
-            int hourOfDay,
-            int minute,
-            int second,
-            int millisecond,
-            TimeZone tz) {
+            int year, int month, int dayOfMonth, int hourOfDay, int minute, int second, int millisecond, TimeZone tz) {
         Calendar c = Calendar.getInstance();
         c.set(YEAR, year);
         c.set(MONTH, month);

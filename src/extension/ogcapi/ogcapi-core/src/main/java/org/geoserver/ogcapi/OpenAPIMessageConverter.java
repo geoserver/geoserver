@@ -18,10 +18,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverter {
 
-    public static final String OPEN_API_MEDIA_TYPE_VALUE =
-            "application/vnd.oai.openapi+json;version=3.0";
-    public static final MediaType OPEN_API_MEDIA_TYPE =
-            MediaType.parseMediaType(OPEN_API_MEDIA_TYPE_VALUE);
+    public static final String OPEN_API_MEDIA_TYPE_VALUE = "application/vnd.oai.openapi+json;version=3.0";
+    public static final MediaType OPEN_API_MEDIA_TYPE = MediaType.parseMediaType(OPEN_API_MEDIA_TYPE_VALUE);
 
     public OpenAPIMessageConverter() {
         super(getMapper(), OPEN_API_MEDIA_TYPE);
@@ -36,8 +34,7 @@ public class OpenAPIMessageConverter extends AbstractJackson2HttpMessageConverte
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
-        return OPEN_API_MEDIA_TYPE.isCompatibleWith(mediaType)
-                && OpenAPI.class.isAssignableFrom(clazz);
+        return OPEN_API_MEDIA_TYPE.isCompatibleWith(mediaType) && OpenAPI.class.isAssignableFrom(clazz);
     }
 
     @Override

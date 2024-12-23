@@ -16,36 +16,33 @@ import org.geoserver.security.password.URLMasterPasswordProviderConfig;
 import org.geoserver.web.wicket.HelpLink;
 
 @SuppressWarnings("serial")
-public class URLMasterPasswordProviderPanel
-        extends MasterPasswordProviderPanel<URLMasterPasswordProviderConfig> {
+public class URLMasterPasswordProviderPanel extends MasterPasswordProviderPanel<URLMasterPasswordProviderConfig> {
 
-    public URLMasterPasswordProviderPanel(
-            String id, IModel<URLMasterPasswordProviderConfig> model) {
+    public URLMasterPasswordProviderPanel(String id, IModel<URLMasterPasswordProviderConfig> model) {
         super(id, model);
 
         add(new HelpLink("urlHelp", this).setDialog(dialog));
-        add(
-                new TextField<>("uRL", URL.class) {
+        add(new TextField<>("uRL", URL.class) {
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new IConverter<>() {
                     @Override
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        return new IConverter<>() {
-                            @Override
-                            public String convertToString(Object value, Locale locale) {
-                                return ((URL) value).toExternalForm();
-                            }
-
-                            @Override
-                            @SuppressWarnings("unchecked")
-                            public C convertToObject(String value, Locale locale) {
-                                try {
-                                    return (C) new URL(value);
-                                } catch (MalformedURLException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        };
+                    public String convertToString(Object value, Locale locale) {
+                        return ((URL) value).toExternalForm();
                     }
-                });
+
+                    @Override
+                    @SuppressWarnings("unchecked")
+                    public C convertToObject(String value, Locale locale) {
+                        try {
+                            return (C) new URL(value);
+                        } catch (MalformedURLException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                };
+            }
+        });
         add(new CheckBox("encrypting"));
     }
 }

@@ -30,18 +30,15 @@ public class JSONValidator {
 
     public static boolean isValidSchema(String json, File schemaFile) {
         boolean isValid = false;
-        final String baseURI =
-                "file:///" + schemaFile.getAbsolutePath().replace(File.separator, "/");
+        final String baseURI = "file:///" + schemaFile.getAbsolutePath().replace(File.separator, "/");
 
         JsonSchema schema;
         try {
-            JsonSchemaFactory factory =
-                    JsonSchemaFactory.newBuilder()
-                            .setLoadingConfiguration(
-                                    LoadingConfiguration.newBuilder()
-                                            .setNamespace(baseURI)
-                                            .freeze())
-                            .freeze();
+            JsonSchemaFactory factory = JsonSchemaFactory.newBuilder()
+                    .setLoadingConfiguration(LoadingConfiguration.newBuilder()
+                            .setNamespace(baseURI)
+                            .freeze())
+                    .freeze();
             JsonNode rawSchema = JsonLoader.fromFile(schemaFile);
             schema = factory.getJsonSchema(rawSchema);
         } catch (Exception e) {

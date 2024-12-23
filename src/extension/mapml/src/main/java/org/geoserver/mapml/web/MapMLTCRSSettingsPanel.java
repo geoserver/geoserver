@@ -27,8 +27,7 @@ public class MapMLTCRSSettingsPanel extends Panel {
     public MapMLTCRSSettingsPanel(String id, IModel<SettingsInfo> settingsInfoIModel) {
         super(id, settingsInfoIModel);
 
-        final PropertyModel<MetadataMap> metadata =
-                new PropertyModel<>(settingsInfoIModel, "metadata");
+        final PropertyModel<MetadataMap> metadata = new PropertyModel<>(settingsInfoIModel, "metadata");
 
         MetadataMap metadataMap = metadata.getObject();
 
@@ -38,34 +37,25 @@ public class MapMLTCRSSettingsPanel extends Panel {
         }
 
         MetadataMapModel metadataModel =
-                new MetadataMapModel<>(
-                        metadataMap, TiledCRSConstants.TCRS_METADATA_KEY, List.class);
+                new MetadataMapModel<>(metadataMap, TiledCRSConstants.TCRS_METADATA_KEY, List.class);
 
         MapMLGridsets mapMlGridsets = (MapMLGridsets) GeoServerExtensions.bean("mapMLGridsets");
         List<String> names = mapMlGridsets.getCandidateGridSets();
         IModel<List<String>> availableGridSetsModel = Model.ofList(names);
         @SuppressWarnings("unchecked")
         Palette tcrsSelector =
-                new Palette<String>(
-                        "tcrspalette",
-                        metadataModel,
-                        availableGridSetsModel,
-                        new TCSRenderer(),
-                        7,
-                        false) {
+                new Palette<String>("tcrspalette", metadataModel, availableGridSetsModel, new TCSRenderer(), 7, false) {
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("MapMLTCRSPanel.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("MapMLTCRSPanel.selectedHeader"));
                     }
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId, new ResourceModel("MapMLTCRSPanel.availableHeader"));
+                        return new Label(componentId, new ResourceModel("MapMLTCRSPanel.availableHeader"));
                     }
                 };
         tcrsSelector.add(new DefaultTheme());

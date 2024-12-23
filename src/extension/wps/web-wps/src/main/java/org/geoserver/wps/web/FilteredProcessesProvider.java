@@ -31,8 +31,7 @@ import org.geotools.process.ProcessFactory;
  * @author Andrea Aime - GeoSolutions
  */
 @SuppressWarnings("serial")
-public class FilteredProcessesProvider
-        extends GeoServerDataProvider<FilteredProcessesProvider.FilteredProcess> {
+public class FilteredProcessesProvider extends GeoServerDataProvider<FilteredProcessesProvider.FilteredProcess> {
 
     /**
      * Represents a selectable process in the GUI
@@ -126,9 +125,8 @@ public class FilteredProcessesProvider
         selectableProcesses = new ArrayList<>();
         List<ProcessInfo> filteredProcesses = pfi.getFilteredProcesses();
         for (Name name : names) {
-            InternationalString description =
-                    GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false)
-                            .getDescription(name);
+            InternationalString description = GeoServerProcessors.getProcessFactory(pfi.getFactoryClass(), false)
+                    .getDescription(name);
             String des = "";
             if (description != null) {
                 des = description.toString(locale);
@@ -156,18 +154,17 @@ public class FilteredProcessesProvider
         props.add(new BeanProperty<>("enabled", "enabled"));
         props.add(new BeanProperty<>("name", "name"));
         props.add(new BeanProperty<>("description", "description"));
-        props.add(
-                new AbstractProperty<>("roles") {
-                    @Override
-                    public Object getPropertyValue(FilteredProcess item) {
-                        return item.getRoles();
-                    }
+        props.add(new AbstractProperty<>("roles") {
+            @Override
+            public Object getPropertyValue(FilteredProcess item) {
+                return item.getRoles();
+            }
 
-                    @Override
-                    public IModel getModel(IModel itemModel) {
-                        return new PropertyModel<>(itemModel, "roles");
-                    }
-                });
+            @Override
+            public IModel getModel(IModel itemModel) {
+                return new PropertyModel<>(itemModel, "roles");
+            }
+        });
         props.add(new PropertyPlaceholder<>("edit"));
         props.add(new BeanProperty<>("validated", "validated"));
         return props;

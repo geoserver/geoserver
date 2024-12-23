@@ -65,11 +65,10 @@ public class NameSpaceTranslatorFactory {
     /**
      * addNameSpaceTranslator purpose.
      *
-     * <p>Adds a new translator for the namespace specified if a NameSpaceTranslator was registered
-     * for that namespace.
+     * <p>Adds a new translator for the namespace specified if a NameSpaceTranslator was registered for that namespace.
      *
-     * <p>Some the magic for creating instances using the classloader occurs here (ie. the
-     * translators are not loaded lazily)
+     * <p>Some the magic for creating instances using the classloader occurs here (ie. the translators are not loaded
+     * lazily)
      *
      * @param prefix The desired namespace prefix
      * @param namespace The desired namespace.
@@ -86,17 +85,12 @@ public class NameSpaceTranslatorFactory {
                 return;
             }
 
-            Constructor nstConstructor =
-                    nstClass.getConstructor(
-                            new Class[] {
-                                String.class,
-                            });
-            NameSpaceTranslator nst =
-                    (NameSpaceTranslator)
-                            nstConstructor.newInstance(
-                                    new Object[] {
-                                        prefix,
-                                    });
+            Constructor nstConstructor = nstClass.getConstructor(new Class[] {
+                String.class,
+            });
+            NameSpaceTranslator nst = (NameSpaceTranslator) nstConstructor.newInstance(new Object[] {
+                prefix,
+            });
             namespaceTranslatorInstances.put(prefix, nst);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "", e);
@@ -118,8 +112,7 @@ public class NameSpaceTranslatorFactory {
     /**
      * registerNameSpaceTranslator purpose.
      *
-     * <p>Registers a namespace and it's translator with the factory. good for adding additional
-     * namespaces :)
+     * <p>Registers a namespace and it's translator with the factory. good for adding additional namespaces :)
      *
      * @param namespace The namespace.
      * @param nameSpaceTranslator The translator class for this namespace.

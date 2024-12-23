@@ -23,16 +23,11 @@ import org.geoserver.wfs.WFSInfo;
 public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSInfo> {
 
     public FeaturesAPIBuilder() {
-        super(
-                FeaturesAPIBuilder.class,
-                "openapi.yaml",
-                "Features 1.0 server",
-                FeatureService.class);
+        super(FeaturesAPIBuilder.class, "openapi.yaml", "Features 1.0 server", FeatureService.class);
     }
 
     /**
-     * Build the document based on request, current WFS configuration, and list of available
-     * extensions
+     * Build the document based on request, current WFS configuration, and list of available extensions
      *
      * @param wfs The WFS configuration
      */
@@ -57,10 +52,9 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         }
 
         // the external documentation
-        api.externalDocs(
-                new ExternalDocumentation()
-                        .description("WFS specification")
-                        .url("https://github.com/opengeospatial/WFS_FES"));
+        api.externalDocs(new ExternalDocumentation()
+                .description("WFS specification")
+                .url("https://github.com/opengeospatial/WFS_FES"));
 
         // adjust path output formats
         declareGetResponseFormats(api, "/", OpenAPI.class);
@@ -74,8 +68,7 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         /// Check to remove optional parameters
         if (!features.filter(wfs)) {
             itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter"));
-            itemsParameters.removeIf(
-                    p -> p.get$ref().equals("#/components/parameters/filter-lang"));
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-lang"));
         }
         if (!features.crsByReference(wfs)) {
             itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-crs"));
@@ -84,19 +77,16 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
             itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/ids"));
         }
         if (!features.sortBy(wfs)) {
-            itemsParameters.removeIf(
-                    p -> p.get$ref().equals("#/components/parameters/filter-sortby"));
+            itemsParameters.removeIf(p -> p.get$ref().equals("#/components/parameters/filter-sortby"));
         }
 
-        declareGetResponseFormats(
-                api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
-        Content itemsContent =
-                api.getPaths()
-                        .get("/collections/{collectionId}/items/{featureId}")
-                        .getGet()
-                        .getResponses()
-                        .get("200")
-                        .getContent();
+        declareGetResponseFormats(api, "/collections/{collectionId}/items/{featureId}", FeaturesResponse.class);
+        Content itemsContent = api.getPaths()
+                .get("/collections/{collectionId}/items/{featureId}")
+                .getGet()
+                .getResponses()
+                .get("200")
+                .getContent();
         // Check to remove optional formats
         if (!features.gml321(wfs)) {
             itemsContent.remove("application/gml+xml;version=3.2");
@@ -106,11 +96,10 @@ public class FeaturesAPIBuilder extends org.geoserver.ogcapi.OpenAPIBuilder<WFSI
         Map<String, Parameter> parameters = api.getComponents().getParameters();
         Parameter collectionId = parameters.get("collectionId");
         Catalog catalog = wfs.getGeoServer().getCatalog();
-        List<String> validCollectionIds =
-                catalog.getFeatureTypes().stream()
-                        .filter(ft -> ft.isEnabled() && ft.isAdvertised())
-                        .map(ft -> ft.prefixedName())
-                        .collect(Collectors.toList());
+        List<String> validCollectionIds = catalog.getFeatureTypes().stream()
+                .filter(ft -> ft.isEnabled() && ft.isAdvertised())
+                .map(ft -> ft.prefixedName())
+                .collect(Collectors.toList());
         collectionId.getSchema().setEnum(validCollectionIds);
 
         // list of valid filter-lang values

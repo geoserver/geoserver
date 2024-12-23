@@ -51,52 +51,40 @@ public class ModuleStatusPanel extends Panel {
         add(popup);
 
         // get the list of ModuleStatuses
-        List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class).stream()
-                        .map(ModuleStatusImpl::new)
-                        .sorted(Comparator.comparing(ModuleStatus::getName))
-                        .collect(Collectors.toList());
+        List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class).stream()
+                .map(ModuleStatusImpl::new)
+                .sorted(Comparator.comparing(ModuleStatus::getName))
+                .collect(Collectors.toList());
 
-        final ListView<ModuleStatus> moduleView =
-                new ListView<>("modules", applicationStatus) {
-                    private static final long serialVersionUID = 235576083712961710L;
+        final ListView<ModuleStatus> moduleView = new ListView<>("modules", applicationStatus) {
+            private static final long serialVersionUID = 235576083712961710L;
 
+            @Override
+            protected void populateItem(ListItem<ModuleStatus> item) {
+                item.add(new Label("module", new PropertyModel<>(item.getModel(), "module")));
+                item.add(getIcons("available", item.getModelObject().isAvailable()));
+                item.add(getIcons("enabled", item.getModelObject().isEnabled()));
+                item.add(new Label(
+                        "component",
+                        new Model<>(item.getModelObject().getComponent().orElse(""))));
+                item.add(new Label(
+                        "version",
+                        new Model<>(item.getModelObject().getVersion().orElse(""))));
+                msgLink = new AjaxLink<>("msg") {
                     @Override
-                    protected void populateItem(ListItem<ModuleStatus> item) {
-                        item.add(
-                                new Label(
-                                        "module", new PropertyModel<>(item.getModel(), "module")));
-                        item.add(getIcons("available", item.getModelObject().isAvailable()));
-                        item.add(getIcons("enabled", item.getModelObject().isEnabled()));
-                        item.add(
-                                new Label(
-                                        "component",
-                                        new Model<>(
-                                                item.getModelObject().getComponent().orElse(""))));
-                        item.add(
-                                new Label(
-                                        "version",
-                                        new Model<>(
-                                                item.getModelObject().getVersion().orElse(""))));
-                        msgLink =
-                                new AjaxLink<>("msg") {
-                                    @Override
-                                    public void onClick(AjaxRequestTarget target) {
-                                        popup.setInitialHeight(325);
-                                        popup.setInitialWidth(525);
-                                        popup.setContent(
-                                                new MessagePanel(popup.getContentId(), item));
-                                        popup.setTitle("Module Info");
-                                        popup.show(target);
-                                    }
-                                };
-                        msgLink.setEnabled(true);
-                        msgLink.add(
-                                new Label(
-                                        "nameLink", new PropertyModel<>(item.getModel(), "name")));
-                        item.add(msgLink);
+                    public void onClick(AjaxRequestTarget target) {
+                        popup.setInitialHeight(325);
+                        popup.setInitialWidth(525);
+                        popup.setContent(new MessagePanel(popup.getContentId(), item));
+                        popup.setTitle("Module Info");
+                        popup.show(target);
                     }
                 };
+                msgLink.setEnabled(true);
+                msgLink.add(new Label("nameLink", new PropertyModel<>(item.getModel(), "name")));
+                item.add(msgLink);
+            }
+        };
         wmc.add(moduleView);
     }
 
@@ -116,13 +104,11 @@ public class ModuleStatusPanel extends Panel {
 
             Label name = new Label("name", new PropertyModel<>(item.getModel(), "name"));
             Label module = new Label("module", new PropertyModel<>(item.getModel(), "module"));
-            Label component =
-                    new Label(
-                            "component",
-                            new Model<>(item.getModelObject().getComponent().orElse("")));
-            Label version =
-                    new Label(
-                            "version", new Model<>(item.getModelObject().getVersion().orElse("")));
+            Label component = new Label(
+                    "component",
+                    new Model<>(item.getModelObject().getComponent().orElse("")));
+            Label version = new Label(
+                    "version", new Model<>(item.getModelObject().getVersion().orElse("")));
             MultiLineLabel msgLabel =
                     new MultiLineLabel("msg", item.getModelObject().getMessage().orElse(""));
 

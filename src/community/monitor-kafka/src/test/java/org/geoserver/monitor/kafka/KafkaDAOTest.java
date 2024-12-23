@@ -24,10 +24,14 @@ public class KafkaDAOTest {
 
     private KafkaDAO kafkaDAO;
 
-    @Mock private Producer<String, RequestDataRecord> producer;
-    @Mock private ConnectionTester connectionTester;
+    @Mock
+    private Producer<String, RequestDataRecord> producer;
 
-    @Mock private MonitorConfig config;
+    @Mock
+    private ConnectionTester connectionTester;
+
+    @Mock
+    private MonitorConfig config;
 
     @BeforeEach
     public void setUp() {
@@ -73,21 +77,18 @@ public class KafkaDAOTest {
         when(config.getProperties()).thenReturn(props);
 
         // verify the producer is created only if not set (setup has set it already)
-        try (MockedConstruction<KafkaProducer> mocked =
-                mockConstruction(
-                        KafkaProducer.class,
-                        (mock, context) -> {
-                            // grab the constructor argument
-                            var param = context.arguments().get(0);
+        try (MockedConstruction<KafkaProducer> mocked = mockConstruction(KafkaProducer.class, (mock, context) -> {
+            // grab the constructor argument
+            var param = context.arguments().get(0);
 
-                            Properties expectedProps = new Properties();
-                            expectedProps.put("bootstrap.servers", "kafka-bootstrap-server:9092");
-                            expectedProps.put("value.serializer", KafkaAvroSerializer.class);
-                            expectedProps.put("key.serializer", StringSerializer.class);
+            Properties expectedProps = new Properties();
+            expectedProps.put("bootstrap.servers", "kafka-bootstrap-server:9092");
+            expectedProps.put("value.serializer", KafkaAvroSerializer.class);
+            expectedProps.put("key.serializer", StringSerializer.class);
 
-                            // verify the constructor argument is as expected
-                            Assertions.assertEquals(expectedProps, param);
-                        })) {
+            // verify the constructor argument is as expected
+            Assertions.assertEquals(expectedProps, param);
+        })) {
             kafkaDAO.getProducer();
             kafkaDAO.getProducer();
             Assertions.assertEquals(0, mocked.constructed().size());
@@ -144,9 +145,7 @@ public class KafkaDAOTest {
         when(data.getStatus()).thenReturn(RequestData.Status.FINISHED);
         when(data.getCategory()).thenReturn(RequestData.Category.REST);
         when(data.getHttpMethod()).thenReturn("GET");
-        when(data.getBbox())
-                .thenReturn(
-                        new ReferencedEnvelope(10.0, 20.0, 30.0, 40.0, DefaultGeographicCRS.WGS84));
+        when(data.getBbox()).thenReturn(new ReferencedEnvelope(10.0, 20.0, 30.0, 40.0, DefaultGeographicCRS.WGS84));
         when(data.getPath()).thenReturn("path");
         when(data.getQueryString()).thenReturn("queryString");
         when(data.getBody()).thenReturn("body".getBytes());
@@ -189,11 +188,10 @@ public class KafkaDAOTest {
         Assertions.assertEquals("queryString", record.getQueryString());
         Assertions.assertEquals("text/plain", record.getBodyContentType());
         Assertions.assertEquals(4, record.getBodyContentLength());
-        Assertions.assertEquals("body", StandardCharsets.UTF_8.decode(record.getBody()).toString());
         Assertions.assertEquals(
-                new Date(1L).toInstant(), Instant.ofEpochMilli(record.getStartTime()));
-        Assertions.assertEquals(
-                new Date(2L).toInstant(), Instant.ofEpochMilli(record.getEndTime()));
+                "body", StandardCharsets.UTF_8.decode(record.getBody()).toString());
+        Assertions.assertEquals(new Date(1L).toInstant(), Instant.ofEpochMilli(record.getStartTime()));
+        Assertions.assertEquals(new Date(2L).toInstant(), Instant.ofEpochMilli(record.getEndTime()));
         Assertions.assertEquals("remote-addr", record.getRemoteAddress());
         Assertions.assertEquals("host", record.getHost());
         Assertions.assertEquals("1.2.3.4", record.getRemoteHost());

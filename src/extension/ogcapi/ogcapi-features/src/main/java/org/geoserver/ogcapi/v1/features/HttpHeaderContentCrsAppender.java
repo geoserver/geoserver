@@ -17,9 +17,7 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.util.logging.Logging;
 
-/**
- * Sets the Content-Crs header on the response, if the response is a feature collection response.
- */
+/** Sets the Content-Crs header on the response, if the response is a feature collection response. */
 public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
     static final Logger LOGGER = Logging.getLogger(HttpHeaderContentCrsAppender.class);
     /**
@@ -29,19 +27,17 @@ public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
     public static final String CRS_RESPONSE_HEADER = "Content-Crs";
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
 
         // is this a feature response we are about to encode?
         if (result instanceof FeaturesResponse) {
             HttpServletResponse httpResponse = request.getHttpResponse();
             FeatureCollectionResponse fcr = ((FeaturesResponse) result).getResponse();
-            CoordinateReferenceSystem crs =
-                    Optional.ofNullable(fcr)
-                            .map(fct -> fct.getFeatures().get(0))
-                            .map(fc -> fc.getSchema())
-                            .map(ft -> ft.getCoordinateReferenceSystem())
-                            .orElse(null);
+            CoordinateReferenceSystem crs = Optional.ofNullable(fcr)
+                    .map(fct -> fct.getFeatures().get(0))
+                    .map(fc -> fc.getSchema())
+                    .map(ft -> ft.getCoordinateReferenceSystem())
+                    .orElse(null);
             if (crs != null) {
                 try {
                     String crsURI = FeatureService.getCRSURI(crs);
@@ -51,8 +47,7 @@ public class HttpHeaderContentCrsAppender extends AbstractDispatcherCallback {
                 } catch (FactoryException e) {
                     LOGGER.log(
                             Level.INFO,
-                            "Failed to lookup EPSG code of CRS, won't set the Content-Crs header."
-                                    + crs,
+                            "Failed to lookup EPSG code of CRS, won't set the Content-Crs header." + crs,
                             e);
                 }
             }

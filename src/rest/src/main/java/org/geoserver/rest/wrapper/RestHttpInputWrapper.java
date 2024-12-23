@@ -13,8 +13,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
 
 /**
- * Wrapper around {@link HttpInputMessage} used by {@link XStreamMessageConverter} to configure the
- * persister before XStream objects get read.
+ * Wrapper around {@link HttpInputMessage} used by {@link XStreamMessageConverter} to configure the persister before
+ * XStream objects get read.
  */
 public class RestHttpInputWrapper implements HttpInputMessage {
 
@@ -32,8 +32,7 @@ public class RestHttpInputWrapper implements HttpInputMessage {
      * @param persister The XStream persister
      * @param xStreamMessageConverter The XStream converter
      */
-    public void configurePersister(
-            XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter xStreamMessageConverter) {
         controller.configurePersister(persister, xStreamMessageConverter);
     }
 

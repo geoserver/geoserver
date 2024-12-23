@@ -25,8 +25,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 /**
- * Creates an iterator of folders mapping the layers in the map content, using either kml dumps or
- * ground overlays (the classic approach, that is)
+ * Creates an iterator of folders mapping the layers in the map content, using either kml dumps or ground overlays (the
+ * classic approach, that is)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -50,8 +50,7 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
                 // do we use a KML placemark dump, or a ground overlay?
                 if (useVectorOutput(context)) {
                     List<Feature> features =
-                            new IteratorList<>(
-                                    new FeatureIteratorFactory(context, (FeatureLayer) layer));
+                            new IteratorList<>(new FeatureIteratorFactory(context, (FeatureLayer) layer));
                     context.addFeatures(folder, features);
                 } else {
                     addGroundOverlay(folder, layer);
@@ -67,19 +66,15 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
         }
 
         /**
-         * Adds the feature centroids to the output features, without actually adding the full
-         * geometry (used when doing raster overlays of vector data with a desire to retain the
-         * popups)
+         * Adds the feature centroids to the output features, without actually adding the full geometry (used when doing
+         * raster overlays of vector data with a desire to retain the popups)
          */
         private void addFeatureCentroids(Layer layer, Folder folder) {
             SimpleFeatureCollection centroids =
-                    new KMLCentroidFeatureCollection(
-                            context.getCurrentFeatureCollection(), context);
+                    new KMLCentroidFeatureCollection(context.getCurrentFeatureCollection(), context);
             context.setCurrentFeatureCollection(centroids);
-            FeatureLayer centroidsLayer =
-                    new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
-            List<Feature> features =
-                    new IteratorList<>(new FeatureIteratorFactory(context, centroidsLayer));
+            FeatureLayer centroidsLayer = new FeatureLayer(centroids, layer.getStyle(), layer.getTitle());
+            List<Feature> features = new IteratorList<>(new FeatureIteratorFactory(context, centroidsLayer));
             context.addFeatures(folder, features);
         }
 
@@ -88,8 +83,11 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
             int mapLayerOrder = context.getMapContent().layers().indexOf(layer);
 
             GroundOverlay go = folder.createAndAddGroundOverlay();
-            go.setName(
-                    context.getMapContent().getRequest().getLayers().get(mapLayerOrder).getLabel());
+            go.setName(context.getMapContent()
+                    .getRequest()
+                    .getLayers()
+                    .get(mapLayerOrder)
+                    .getLabel());
             go.setDrawOrder(mapLayerOrder);
             Icon icon = go.createAndSetIcon();
             icon.setHref(getGroundOverlayHRef(layer));
@@ -98,16 +96,13 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
 
             ReferencedEnvelope box =
                     new ReferencedEnvelope(context.getMapContent().getRenderingArea());
-            boolean reprojectBBox =
-                    (box.getCoordinateReferenceSystem() != null)
-                            && !CRS.equalsIgnoreMetadata(
-                                    box.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84);
+            boolean reprojectBBox = (box.getCoordinateReferenceSystem() != null)
+                    && !CRS.equalsIgnoreMetadata(box.getCoordinateReferenceSystem(), DefaultGeographicCRS.WGS84);
             if (reprojectBBox) {
                 try {
                     box = box.transform(DefaultGeographicCRS.WGS84, true);
                 } catch (Exception e) {
-                    throw new ServiceException(
-                            "Could not transform bbox to WGS84", e, "ReprojectionError", "");
+                    throw new ServiceException("Could not transform bbox to WGS84", e, "ReprojectionError", "");
                 }
             }
 
@@ -129,26 +124,23 @@ public class PlainFolderIteratorFactory extends AbstractFolderIteratorFactory {
             } else {
                 // refer to a GetMap request
                 return WMSRequests.getGetMapUrl(
-                        mapContent.getRequest(),
-                        layer,
-                        0,
-                        mapContent.getRenderingArea(),
-                        new String[] {"format", "image/png", "transparent", "true"});
+                        mapContent.getRequest(), layer, 0, mapContent.getRenderingArea(), new String[] {
+                            "format", "image/png", "transparent", "true"
+                        });
             }
         }
 
         /**
-         * Determines whether to return a vector (KML) result of the data or to return an image
-         * instead. If the kmscore is 100, then the output should always be vector. If the kmscore
-         * is 0, it should always be raster. In between, the number of features is weighed against
-         * the kmscore value. kmscore determines whether to return the features as vectors, or as
-         * one raster image. It is the point, determined by the user, where X number of features is
-         * "too many" and the result should be returned as an image instead.
+         * Determines whether to return a vector (KML) result of the data or to return an image instead. If the kmscore
+         * is 100, then the output should always be vector. If the kmscore is 0, it should always be raster. In between,
+         * the number of features is weighed against the kmscore value. kmscore determines whether to return the
+         * features as vectors, or as one raster image. It is the point, determined by the user, where X number of
+         * features is "too many" and the result should be returned as an image instead.
          *
-         * <p>kmscore is logarithmic. The higher the value, the more features it takes to make the
-         * algorithm return an image. The lower the kmscore, the fewer features it takes to force an
-         * image to be returned. (in use, the formula is exponential: as you increase the KMScore
-         * value, the number of features required increases exponentially).
+         * <p>kmscore is logarithmic. The higher the value, the more features it takes to make the algorithm return an
+         * image. The lower the kmscore, the fewer features it takes to force an image to be returned. (in use, the
+         * formula is exponential: as you increase the KMScore value, the number of features required increases
+         * exponentially).
          *
          * @return true: use just kml vectors, false: use raster result
          */

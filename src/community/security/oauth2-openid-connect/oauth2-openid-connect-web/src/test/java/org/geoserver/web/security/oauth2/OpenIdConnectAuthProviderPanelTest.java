@@ -20,8 +20,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     @Test
     public void smokeTest() {
         Model<OpenIdConnectFilterConfig> model = new Model<>(new OpenIdConnectFilterConfig());
-        FormTestPage testPage =
-                new FormTestPage(id -> new OpenIdConnectAuthProviderPanel(id, model));
+        FormTestPage testPage = new FormTestPage(id -> new OpenIdConnectAuthProviderPanel(id, model));
         tester.startPage(testPage);
     }
 
@@ -84,15 +83,12 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
         formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
         formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
 
-        formTester.setValue(
-                "panel:content:postLogoutRedirectUri", "http://localhost:8080/post/redirect");
+        formTester.setValue("panel:content:postLogoutRedirectUri", "http://localhost:8080/post/redirect");
 
         clickSave();
         tester.assertNoErrorMessage();
         clickNamedServiceConfig("OpenIdFilter3");
-        tester.assertModelValue(
-                "panel:panel:form:panel:postLogoutRedirectUri",
-                "http://localhost:8080/post/redirect");
+        tester.assertModelValue("panel:panel:form:panel:postLogoutRedirectUri", "http://localhost:8080/post/redirect");
     }
 
     @Test

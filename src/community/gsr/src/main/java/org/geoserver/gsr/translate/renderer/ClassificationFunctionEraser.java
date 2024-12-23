@@ -32,8 +32,7 @@ class ClassificationFunctionEraser extends DuplicatingFilterVisitor {
     public static Symbolizer erase(Symbolizer source, String propertyName, Object value) {
         SimpleFeature sample = buildSampleFeature(propertyName, value);
         DuplicatingStyleVisitor eraser =
-                new DuplicatingStyleVisitor(
-                        STYLE_FACTORY, FILTER_FACTORY_2, new ClassificationFunctionEraser(sample));
+                new DuplicatingStyleVisitor(STYLE_FACTORY, FILTER_FACTORY_2, new ClassificationFunctionEraser(sample));
         source.accept(eraser);
         return (Symbolizer) eraser.getCopy();
     }

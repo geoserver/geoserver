@@ -31,17 +31,23 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
 
-    @Autowired private DataAccessRuleDAO ruleDao;
+    @Autowired
+    private DataAccessRuleDAO ruleDao;
 
-    @Autowired private TaskManagerSecurityUtil secUtil;
+    @Autowired
+    private TaskManagerSecurityUtil secUtil;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
     private Configuration config;
 
@@ -128,32 +134,19 @@ public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
     @Test
     public void testReadable() {
         UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "jan",
-                        "jan",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("readcdf"),
-                                    new SimpleGrantedAuthority("readcite")
-                                }));
+                new UsernamePasswordAuthenticationToken("jan", "jan", Arrays.asList(new GrantedAuthority[] {
+                    new SimpleGrantedAuthority("readcdf"), new SimpleGrantedAuthority("readcite")
+                }));
         assertTrue(secUtil.isReadable(user, config));
         assertTrue(secUtil.isReadable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "piet",
-                        "piet",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("readcdf")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "piet", "piet", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("readcdf")}));
         assertTrue(secUtil.isReadable(user, config));
         assertFalse(secUtil.isReadable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "pol",
-                        "pol",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("readcite")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "pol", "pol", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("readcite")}));
         assertFalse(secUtil.isReadable(user, config));
         assertFalse(secUtil.isReadable(user, batch));
     }
@@ -161,62 +154,36 @@ public class TaskManagerSecurityUtilTest extends AbstractTaskManagerTest {
     @Test
     public void testWritable() {
         UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "jan",
-                        "jan",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("writecdf"),
-                                    new SimpleGrantedAuthority("writecite")
-                                }));
+                new UsernamePasswordAuthenticationToken("jan", "jan", Arrays.asList(new GrantedAuthority[] {
+                    new SimpleGrantedAuthority("writecdf"), new SimpleGrantedAuthority("writecite")
+                }));
         assertTrue(secUtil.isWritable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "piet",
-                        "piet",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("writecdf")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "piet", "piet", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("writecdf")}));
         assertFalse(secUtil.isWritable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "pol",
-                        "pol",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("writecite")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "pol", "pol", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("writecite")}));
         assertFalse(secUtil.isWritable(user, batch));
     }
 
     @Test
     public void testAdminable() {
         UsernamePasswordAuthenticationToken user =
-                new UsernamePasswordAuthenticationToken(
-                        "jan",
-                        "jan",
-                        Arrays.asList(
-                                new GrantedAuthority[] {
-                                    new SimpleGrantedAuthority("admincdf"),
-                                    new SimpleGrantedAuthority("admincite")
-                                }));
+                new UsernamePasswordAuthenticationToken("jan", "jan", Arrays.asList(new GrantedAuthority[] {
+                    new SimpleGrantedAuthority("admincdf"), new SimpleGrantedAuthority("admincite")
+                }));
         assertTrue(secUtil.isAdminable(user, config));
         assertTrue(secUtil.isAdminable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "piet",
-                        "piet",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("admincdf")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "piet", "piet", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("admincdf")}));
         assertTrue(secUtil.isAdminable(user, config));
         assertFalse(secUtil.isAdminable(user, batch));
 
-        user =
-                new UsernamePasswordAuthenticationToken(
-                        "pol",
-                        "pol",
-                        Arrays.asList(
-                                new GrantedAuthority[] {new SimpleGrantedAuthority("admincite")}));
+        user = new UsernamePasswordAuthenticationToken(
+                "pol", "pol", Arrays.asList(new GrantedAuthority[] {new SimpleGrantedAuthority("admincite")}));
         assertFalse(secUtil.isAdminable(user, config));
         assertFalse(secUtil.isAdminable(user, batch));
     }

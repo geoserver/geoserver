@@ -8,8 +8,8 @@ import net.opengis.wfs.FeatureCollectionType;
 import org.geoserver.wms.GetFeatureInfoRequest;
 
 /**
- * Response class that allows us to carry around the request, needed for the {@link
- * org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat}
+ * Response class that allows us to carry around the request, needed for the
+ * {@link org.geoserver.wms.featureinfo.GetFeatureInfoOutputFormat}
  */
 public class FeatureInfoResponse {
 

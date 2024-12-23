@@ -16,16 +16,14 @@ import org.springframework.stereotype.Component;
 
 /** Handles all exceptions encoding them as a JSON response as indicated by OGC API - Commons */
 @Component
-public class DefaultAPIExceptionHandler extends AbstractAPIExceptionHandler
-        implements ExtensionPriority {
+public class DefaultAPIExceptionHandler extends AbstractAPIExceptionHandler implements ExtensionPriority {
 
     public DefaultAPIExceptionHandler(GeoServer geoServer) {
         super(geoServer);
     }
 
     @Override
-    protected void writeResponse(
-            HttpServletResponse response, Throwable t, String type, String title) {
+    protected void writeResponse(HttpServletResponse response, Throwable t, String type, String title) {
         Map<String, String> error = new LinkedHashMap<>();
         error.put("type", type);
         error.put("title", title);
@@ -36,10 +34,7 @@ public class DefaultAPIExceptionHandler extends AbstractAPIExceptionHandler
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 

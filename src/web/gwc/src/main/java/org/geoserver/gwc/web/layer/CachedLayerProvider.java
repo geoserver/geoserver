@@ -22,119 +22,105 @@ import org.geoserver.web.wicket.GeoServerDataProvider;
 import org.geowebcache.layer.TileLayer;
 
 /**
- * Provides a filtered, sorted view over GWC {@link TileLayer}s for {@link CachedLayersPage} using
- * {@link TileLayer} as data view.
+ * Provides a filtered, sorted view over GWC {@link TileLayer}s for {@link CachedLayersPage} using {@link TileLayer} as
+ * data view.
  *
  * @author groldan
  */
 class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
 
     private static final long serialVersionUID = -8599398086587516574L;
-    static final Property<TileLayer> TYPE =
-            new AbstractProperty<>("type") {
+    static final Property<TileLayer> TYPE = new AbstractProperty<>("type") {
 
-                private static final long serialVersionUID = 3215255763580377079L;
+        private static final long serialVersionUID = 3215255763580377079L;
 
-                @Override
-                public GWCIconFactory.CachedLayerType getPropertyValue(TileLayer item) {
-                    return GWCIconFactory.getCachedLayerType(item);
-                }
+        @Override
+        public GWCIconFactory.CachedLayerType getPropertyValue(TileLayer item) {
+            return GWCIconFactory.getCachedLayerType(item);
+        }
 
-                @Override
-                public Comparator<TileLayer> getComparator() {
-                    return (o1, o2) -> {
-                        CachedLayerType r1 = getPropertyValue(o1);
-                        CachedLayerType r2 = getPropertyValue(o2);
-                        return r1.compareTo(r2);
-                    };
-                }
+        @Override
+        public Comparator<TileLayer> getComparator() {
+            return (o1, o2) -> {
+                CachedLayerType r1 = getPropertyValue(o1);
+                CachedLayerType r2 = getPropertyValue(o2);
+                return r1.compareTo(r2);
             };
+        }
+    };
 
     static final Property<TileLayer> NAME = new BeanProperty<>("name", "name");
 
-    static final Property<TileLayer> QUOTA_LIMIT =
-            new AbstractProperty<>("quotaLimit") {
-                private static final long serialVersionUID = 5091453765439157623L;
+    static final Property<TileLayer> QUOTA_LIMIT = new AbstractProperty<>("quotaLimit") {
+        private static final long serialVersionUID = 5091453765439157623L;
 
-                @Override
-                public Object getPropertyValue(TileLayer item) {
-                    GWC gwc = GWC.get();
+        @Override
+        public Object getPropertyValue(TileLayer item) {
+            GWC gwc = GWC.get();
 
-                    return gwc.getQuotaLimit(item.getName());
-                }
-            };
+            return gwc.getQuotaLimit(item.getName());
+        }
+    };
 
-    static final Property<TileLayer> QUOTA_USAGE =
-            new AbstractProperty<>("quotaUsed") {
-                private static final long serialVersionUID = 3503671083744555325L;
+    static final Property<TileLayer> QUOTA_USAGE = new AbstractProperty<>("quotaUsed") {
+        private static final long serialVersionUID = 3503671083744555325L;
 
-                /** @retun the used quota for the tile layer, may be {@code null} */
-                @Override
-                public Object getPropertyValue(TileLayer item) {
-                    GWC gwc = GWC.get();
-                    if (gwc.isDiskQuotaEnabled()) {
-                        return gwc.getUsedQuota(item.getName());
-                    } else {
-                        return null;
-                    }
-                }
-            };
+        /** @retun the used quota for the tile layer, may be {@code null} */
+        @Override
+        public Object getPropertyValue(TileLayer item) {
+            GWC gwc = GWC.get();
+            if (gwc.isDiskQuotaEnabled()) {
+                return gwc.getUsedQuota(item.getName());
+            } else {
+                return null;
+            }
+        }
+    };
 
     static final Property<TileLayer> BLOBSTORE = new BeanProperty<>("blobstore", "blobStoreId");
 
     static final Property<TileLayer> ENABLED = new BeanProperty<>("enabled", "enabled");
 
-    static final Property<TileLayer> PREVIEW_LINKS =
-            new AbstractProperty<>("preview") {
-                private static final long serialVersionUID = 4375670219356088450L;
+    static final Property<TileLayer> PREVIEW_LINKS = new AbstractProperty<>("preview") {
+        private static final long serialVersionUID = 4375670219356088450L;
 
-                @Override
-                public Object getPropertyValue(TileLayer item) {
-                    return item.getName();
-                }
+        @Override
+        public Object getPropertyValue(TileLayer item) {
+            return item.getName();
+        }
 
-                @Override
-                public boolean isSearchable() {
-                    return false;
-                }
+        @Override
+        public boolean isSearchable() {
+            return false;
+        }
 
-                @Override
-                public Comparator<TileLayer> getComparator() {
-                    return null;
-                }
-            };
+        @Override
+        public Comparator<TileLayer> getComparator() {
+            return null;
+        }
+    };
 
-    static final Property<TileLayer> ACTIONS =
-            new AbstractProperty<>("actions") {
-                private static final long serialVersionUID = 247933970378482802L;
+    static final Property<TileLayer> ACTIONS = new AbstractProperty<>("actions") {
+        private static final long serialVersionUID = 247933970378482802L;
 
-                @Override
-                public Object getPropertyValue(TileLayer item) {
-                    return item.getName();
-                }
+        @Override
+        public Object getPropertyValue(TileLayer item) {
+            return item.getName();
+        }
 
-                @Override
-                public boolean isSearchable() {
-                    return false;
-                }
+        @Override
+        public boolean isSearchable() {
+            return false;
+        }
 
-                @Override
-                public Comparator<TileLayer> getComparator() {
-                    return null;
-                }
-            };
+        @Override
+        public Comparator<TileLayer> getComparator() {
+            return null;
+        }
+    };
 
-    static final List<Property<TileLayer>> PROPERTIES =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            TYPE,
-                            NAME,
-                            QUOTA_LIMIT,
-                            QUOTA_USAGE,
-                            BLOBSTORE,
-                            ENABLED,
-                            PREVIEW_LINKS,
-                            ACTIONS));
+    static final List<Property<TileLayer>> PROPERTIES = Collections.unmodifiableList(
+            Arrays.asList(TYPE, NAME, QUOTA_LIMIT, QUOTA_USAGE, BLOBSTORE, ENABLED, PREVIEW_LINKS, ACTIONS));
 
     /** @see org.geoserver.web.wicket.GeoServerDataProvider#getItems() */
     @Override
@@ -143,15 +129,13 @@ class CachedLayerProvider extends GeoServerDataProvider<TileLayer> {
         List<String> tileLayerNames = new ArrayList<>(gwc.getTileLayerNames());
 
         // Filtering String in order to avoid Un-Advertised Layers
-        Predicate<? super String> predicate =
-                (Predicate<String>)
-                        input -> {
-                            if (input != null && !input.isEmpty()) {
-                                TileLayer layer = GWC.get().getTileLayerByName(input);
-                                return layer.isAdvertised();
-                            }
-                            return false;
-                        };
+        Predicate<? super String> predicate = (Predicate<String>) input -> {
+            if (input != null && !input.isEmpty()) {
+                TileLayer layer = GWC.get().getTileLayerByName(input);
+                return layer.isAdvertised();
+            }
+            return false;
+        };
         tileLayerNames = new ArrayList<>(Collections2.filter(tileLayerNames, predicate));
 
         return Lists.transform(tileLayerNames, input -> GWC.get().getTileLayerByName(input));

@@ -12,16 +12,12 @@ import org.geoserver.config.util.XStreamPersisterInitializer;
 import org.geotools.data.elasticsearch.ElasticAttribute;
 import org.geotools.data.elasticsearch.ElasticLayerConfiguration;
 
-/**
- * Implementation of XStreamPersisterInitializer extension point to serialize
- * ElasticLayerConfiguration
- */
+/** Implementation of XStreamPersisterInitializer extension point to serialize ElasticLayerConfiguration */
 class ElasticXStreamInitializer implements XStreamPersisterInitializer {
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType(
-                "elasticLayerConfiguration", ElasticLayerConfiguration.class);
+        persister.registerBreifMapComplexType("elasticLayerConfiguration", ElasticLayerConfiguration.class);
         XStream xs = persister.getXStream();
         xs.alias("esAttribute", ElasticAttribute.class);
     }

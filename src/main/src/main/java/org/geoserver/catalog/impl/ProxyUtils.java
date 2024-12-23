@@ -22,8 +22,7 @@ import org.springframework.util.ClassUtils;
 public class ProxyUtils {
 
     /** Avoids the cost of looking up over and over the same proxy class */
-    static final Map<ProxyClassConstructorKey, Constructor> PROXY_CLASS_CACHE =
-            new ConcurrentHashMap<>();
+    static final Map<ProxyClassConstructorKey, Constructor> PROXY_CLASS_CACHE = new ConcurrentHashMap<>();
 
     static final class ProxyClassConstructorKey {
         Class<?> c1;
@@ -83,8 +82,7 @@ public class ProxyUtils {
     public static <T> T createProxy(T proxyObject, Class<? extends T> clazz, InvocationHandler h) {
         try {
             // proxy all interfaces implemented by the source object
-            List<Class<?>> proxyInterfaces =
-                    new ArrayList<>(ClassUtils.getAllInterfacesAsSet(proxyObject));
+            List<Class<?>> proxyInterfaces = new ArrayList<>(ClassUtils.getAllInterfacesAsSet(proxyObject));
 
             // ensure that the specified class is included
             boolean add = true;
@@ -102,12 +100,8 @@ public class ProxyUtils {
             }
 
             @SuppressWarnings("unchecked")
-            T instance =
-                    (T)
-                            Proxy.newProxyInstance(
-                                    clazz.getClassLoader(),
-                                    proxyInterfaces.toArray(new Class[proxyInterfaces.size()]),
-                                    h);
+            T instance = (T) Proxy.newProxyInstance(
+                    clazz.getClassLoader(), proxyInterfaces.toArray(new Class[proxyInterfaces.size()]), h);
             return instance;
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -117,14 +111,12 @@ public class ProxyUtils {
     /**
      * Unwraps a proxy returning the underlying object, if one exists.
      *
-     * <p>This method handles two cases, the first is the case of a {@link WrappingProxy} in which
-     * the underlying proxy object is returned.. The second is the {@link ProxyList} case in which
-     * the underlying list is returned.
+     * <p>This method handles two cases, the first is the case of a {@link WrappingProxy} in which the underlying proxy
+     * object is returned.. The second is the {@link ProxyList} case in which the underlying list is returned.
      *
      * @param object The proxy object.
      * @param handlerClass The invocation handler class.
-     * @return The underlying proxied object, or the object passed in if no underlying object is
-     *     recognized.
+     * @return The underlying proxied object, or the object passed in if no underlying object is recognized.
      */
     @SuppressWarnings("unchecked")
     public static <T> T unwrap(T object, Class<? extends InvocationHandler> handlerClass) {

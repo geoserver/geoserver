@@ -40,24 +40,19 @@ public class MetadataCustomizer extends FeatureCustomizer {
     private static final AttributeDescriptor ONLINE_RESOURCE_DESCRIPTOR;
 
     static {
-        ComplexType distrPropType =
-                (ComplexType)
-                        ((FeatureType) MetaDataDescriptor.METADATA_DESCRIPTOR.getType())
-                                .getDescriptor("distributionInfo")
-                                .getType();
+        ComplexType distrPropType = (ComplexType) ((FeatureType) MetaDataDescriptor.METADATA_DESCRIPTOR.getType())
+                .getDescriptor("distributionInfo")
+                .getType();
         ComplexType distrType =
                 (ComplexType) distrPropType.getDescriptor("MD_Distribution").getType();
         ComplexType transferOptionsPropType =
                 (ComplexType) distrType.getDescriptor("transferOptions").getType();
-        ComplexType transferOptionsType =
-                (ComplexType)
-                        transferOptionsPropType
-                                .getDescriptor("MD_DigitalTransferOptions")
-                                .getType();
+        ComplexType transferOptionsType = (ComplexType) transferOptionsPropType
+                .getDescriptor("MD_DigitalTransferOptions")
+                .getType();
         ONLINE_DESCRIPTOR = (AttributeDescriptor) transferOptionsType.getDescriptor("onLine");
         ComplexType onlinePropType = (ComplexType) ONLINE_DESCRIPTOR.getType();
-        ONLINE_RESOURCE_DESCRIPTOR =
-                (AttributeDescriptor) onlinePropType.getDescriptor("CI_OnlineResource");
+        ONLINE_RESOURCE_DESCRIPTOR = (AttributeDescriptor) onlinePropType.getDescriptor("CI_OnlineResource");
         ComplexType onlineType = (ComplexType) ONLINE_RESOURCE_DESCRIPTOR.getType();
         LINKAGE_ATTRIBUTE_DESCRIPTOR = (AttributeDescriptor) onlineType.getDescriptor("linkage");
         ComplexType urlPropType = (ComplexType) LINKAGE_ATTRIBUTE_DESCRIPTOR.getType();
@@ -77,15 +72,13 @@ public class MetadataCustomizer extends FeatureCustomizer {
 
     @Override
     public void customizeFeature(Feature feature, CatalogInfo resource) {
-        PropertyName parentPropertyName =
-                ff.property(ONLINE_PARENT_NODE, MetaDataDescriptor.NAMESPACES);
+        PropertyName parentPropertyName = ff.property(ONLINE_PARENT_NODE, MetaDataDescriptor.NAMESPACES);
         Property parentProperty = (Property) parentPropertyName.evaluate(feature);
         if (parentProperty == null) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "Unable to get the specified property for the current feature: "
-                                + ONLINE_PARENT_NODE
-                                + "\n No customization will be applied");
+                LOGGER.fine("Unable to get the specified property for the current feature: "
+                        + ONLINE_PARENT_NODE
+                        + "\n No customization will be applied");
             }
             return;
         }
@@ -94,10 +87,9 @@ public class MetadataCustomizer extends FeatureCustomizer {
         Object value = parentProperty.getValue();
         if (value == null || !(value instanceof Collection)) {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "Unable to get a value for the current property: "
-                                + parentPropertyName.getPropertyName()
-                                + "\n No customization will be applied");
+                LOGGER.fine("Unable to get a value for the current property: "
+                        + parentPropertyName.getPropertyName()
+                        + "\n No customization will be applied");
             }
             return;
         }
@@ -109,8 +101,7 @@ public class MetadataCustomizer extends FeatureCustomizer {
 
         // Invoke the DownloadLinkGenerator to generate links for the specified resource
         String link = null;
-        try (CloseableIterator<String> links =
-                downloadLinkHandler.generateDownloadLinks(resource)) {
+        try (CloseableIterator<String> links = downloadLinkHandler.generateDownloadLinks(resource)) {
             if (links != null) {
                 while (links.hasNext()) {
                     link = links.next();
@@ -120,8 +111,7 @@ public class MetadataCustomizer extends FeatureCustomizer {
                 // link String should contain the last link generated
                 // let's recycle it to generate the full download link
                 updatedOnlineResources.add(
-                        createOnlineResourceElement(
-                                downloadLinkHandler.extractFullDownloadLink(link)));
+                        createOnlineResourceElement(downloadLinkHandler.extractFullDownloadLink(link)));
             }
         } catch (IOException e) {
             LOGGER.log(Level.WARNING, "Failed to close download links.", e);
@@ -137,18 +127,13 @@ public class MetadataCustomizer extends FeatureCustomizer {
 
         // Setting linkageURL
         Property linkage =
-                new ComplexAttributeImpl(
-                        Collections.singletonList(urlAttribute),
-                        LINKAGE_ATTRIBUTE_DESCRIPTOR,
-                        null);
+                new ComplexAttributeImpl(Collections.singletonList(urlAttribute), LINKAGE_ATTRIBUTE_DESCRIPTOR, null);
 
         // Wrap in Online Resource
         Property onlineResource =
-                new ComplexAttributeImpl(
-                        Collections.singletonList(linkage), ONLINE_RESOURCE_DESCRIPTOR, null);
+                new ComplexAttributeImpl(Collections.singletonList(linkage), ONLINE_RESOURCE_DESCRIPTOR, null);
 
         // Wrap in onLine
-        return new ComplexAttributeImpl(
-                Collections.singletonList(onlineResource), ONLINE_DESCRIPTOR, null);
+        return new ComplexAttributeImpl(Collections.singletonList(onlineResource), ONLINE_DESCRIPTOR, null);
     }
 }

@@ -18,21 +18,15 @@ import org.junit.Test;
 
 public class HTMLGetSimpleFeaturesResponseWFSTest extends TemplateComplexTestSupport {
 
-    static final QName HTML_FEATURES =
-            new QName(CiteTestData.CITE_URI, "HtmlFeatures", CiteTestData.CITE_PREFIX);
+    static final QName HTML_FEATURES = new QName(CiteTestData.CITE_URI, "HtmlFeatures", CiteTestData.CITE_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         testData.addVectorLayer(
-                HTML_FEATURES,
-                Collections.emptyMap(),
-                "HtmlFeatures.properties",
-                getClass(),
-                getCatalog());
+                HTML_FEATURES, Collections.emptyMap(), "HtmlFeatures.properties", getClass(), getCatalog());
         Catalog catalog = getCatalog();
         FeatureTypeInfo htmlFeatures =
-                catalog.getFeatureTypeByName(
-                        HTML_FEATURES.getPrefix(), HTML_FEATURES.getLocalPart());
+                catalog.getFeatureTypeByName(HTML_FEATURES.getPrefix(), HTML_FEATURES.getLocalPart());
         String htmlTemplate = "HTMLHtmlFeature.xhtml";
         setUpTemplate(
                 "requestParam('html')='true'",

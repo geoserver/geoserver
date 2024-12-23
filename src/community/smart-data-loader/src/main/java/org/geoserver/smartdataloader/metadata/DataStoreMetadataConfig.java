@@ -7,8 +7,7 @@ package org.geoserver.smartdataloader.metadata;
 import java.util.Map;
 
 /**
- * Configuration class that determines the type of DataStoreMetadata that the
- * DataStoreMetadataFactory will build.
+ * Configuration class that determines the type of DataStoreMetadata that the DataStoreMetadataFactory will build.
  *
  * @author Jose Macchi - Geosolutions
  */

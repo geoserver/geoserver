@@ -51,8 +51,7 @@ class ChooseImagePanel extends Panel {
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
 
         SortedSet<String> imageSet = new TreeSet<>();
-        GeoServerDataDirectory dd =
-                GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
         for (Resource r : dd.getStyles(ws).list()) {
             if (ArrayUtils.contains(
                     extensions, FilenameUtils.getExtension(r.name()).toLowerCase())) {
@@ -63,93 +62,74 @@ class ChooseImagePanel extends Panel {
         FileUploadField upload = new FileUploadField("upload", new Model<>());
 
         Model<String> imageModel = new Model<>();
-        DropDownChoice<String> image =
-                new DropDownChoice<>("image", imageModel, new ArrayList<>(imageSet));
+        DropDownChoice<String> image = new DropDownChoice<>("image", imageModel, new ArrayList<>(imageSet));
 
-        Image display =
-                new Image(
-                        "display",
-                        new ResourceStreamResource(
-                                new AbstractResourceStream() {
-                                    private static final long serialVersionUID =
-                                            9031811973994305485L;
+        Image display = new Image("display", new ResourceStreamResource(new AbstractResourceStream() {
+            private static final long serialVersionUID = 9031811973994305485L;
 
-                                    transient InputStream is;
+            transient InputStream is;
 
-                                    @Override
-                                    public InputStream getInputStream()
-                                            throws ResourceStreamNotFoundException {
-                                        GeoServerDataDirectory dd =
-                                                GeoServerApplication.get()
-                                                        .getBeanOfType(
-                                                                GeoServerDataDirectory.class);
-                                        is = dd.getStyles(ws).get(imageModel.getObject()).in();
-                                        return is;
-                                    }
+            @Override
+            public InputStream getInputStream() throws ResourceStreamNotFoundException {
+                GeoServerDataDirectory dd = GeoServerApplication.get().getBeanOfType(GeoServerDataDirectory.class);
+                is = dd.getStyles(ws).get(imageModel.getObject()).in();
+                return is;
+            }
 
-                                    @Override
-                                    public void close() throws IOException {
-                                        if (is != null) {
-                                            is.close();
-                                        }
-                                    }
-                                }));
+            @Override
+            public void close() throws IOException {
+                if (is != null) {
+                    is.close();
+                }
+            }
+        }));
         display.setOutputMarkupPlaceholderTag(true).setVisible(false);
 
-        image.setNullValid(true)
-                .setOutputMarkupId(true)
-                .add(
-                        new OnChangeAjaxBehavior() {
-                            private static final long serialVersionUID = 6320466559337730660L;
+        image.setNullValid(true).setOutputMarkupId(true).add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 6320466559337730660L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                upload.setModelObject(null);
-                                display.setVisible(image.getModelObject() != null);
-                                target.add(upload);
-                                target.add(display);
-                            }
-                        });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                upload.setModelObject(null);
+                display.setVisible(image.getModelObject() != null);
+                target.add(upload);
+                target.add(display);
+            }
+        });
 
-        upload.setOutputMarkupId(true)
-                .add(
-                        new OnChangeAjaxBehavior() {
-                            private static final long serialVersionUID = 5905505859401520055L;
+        upload.setOutputMarkupId(true).add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 5905505859401520055L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                image.setModelObject(null);
-                                display.setVisible(false);
-                                target.add(image);
-                                target.add(display);
-                            }
-                        });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                image.setModelObject(null);
+                display.setVisible(false);
+                target.add(image);
+                target.add(display);
+            }
+        });
 
         add(image);
         add(display);
         add(upload);
 
-        findParent(Form.class)
-                .add(
-                        new AbstractFormValidator() {
-                            private static final long serialVersionUID = 1388363954282359884L;
+        findParent(Form.class).add(new AbstractFormValidator() {
+            private static final long serialVersionUID = 1388363954282359884L;
 
-                            @Override
-                            public FormComponent<?>[] getDependentFormComponents() {
-                                return new FormComponent<?>[] {image, upload};
-                            }
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent<?>[] {image, upload};
+            }
 
-                            @Override
-                            public void validate(Form<?> form) {
-                                if (image.getConvertedInput() == null
-                                        && (upload.getConvertedInput() == null
-                                                || upload.getConvertedInput().isEmpty())) {
-                                    form.error(
-                                            new ParamResourceModel("missingImage", getPage())
-                                                    .getString());
-                                }
-                            }
-                        });
+            @Override
+            public void validate(Form<?> form) {
+                if (image.getConvertedInput() == null
+                        && (upload.getConvertedInput() == null
+                                || upload.getConvertedInput().isEmpty())) {
+                    form.error(new ParamResourceModel("missingImage", getPage()).getString());
+                }
+            }
+        });
     }
 
     public String getChoice() {

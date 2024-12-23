@@ -16,24 +16,14 @@ public class DemoPage extends GeoServerBasePage {
     @SuppressWarnings("serial")
     public DemoPage() {
         List<DemoLinkInfo> links = getGeoServerApplication().getBeansOfType(DemoLinkInfo.class);
-        add(
-                new ListView<>("demoList", links) {
-                    @Override
-                    public void populateItem(ListItem<DemoLinkInfo> item) {
-                        final DemoLinkInfo info = item.getModelObject();
-                        item.add(
-                                new BookmarkablePageLink<>("theLink", info.getComponentClass())
-                                        .add(
-                                                new Label(
-                                                        "theTitle",
-                                                        new StringResourceModel(
-                                                                info.getTitleKey(), null, null))));
-                        item.add(
-                                new Label(
-                                        "theDescription",
-                                        new StringResourceModel(
-                                                info.getDescriptionKey(), null, null)));
-                    }
-                });
+        add(new ListView<>("demoList", links) {
+            @Override
+            public void populateItem(ListItem<DemoLinkInfo> item) {
+                final DemoLinkInfo info = item.getModelObject();
+                item.add(new BookmarkablePageLink<>("theLink", info.getComponentClass())
+                        .add(new Label("theTitle", new StringResourceModel(info.getTitleKey(), null, null))));
+                item.add(new Label("theDescription", new StringResourceModel(info.getDescriptionKey(), null, null)));
+            }
+        });
     }
 }

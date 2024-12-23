@@ -33,10 +33,7 @@ public class RawMap extends WebMap {
         setMimeType(mimeType);
     }
 
-    public RawMap(
-            final WMSMapContent mapContent,
-            final ByteArrayOutputStream buff,
-            final String mimeType) {
+    public RawMap(final WMSMapContent mapContent, final ByteArrayOutputStream buff, final String mimeType) {
         super(mapContent);
         this.buffer = buff;
         setMimeType(mimeType);

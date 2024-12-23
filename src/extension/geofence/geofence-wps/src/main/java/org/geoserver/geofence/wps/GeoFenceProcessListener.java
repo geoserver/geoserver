@@ -26,51 +26,47 @@ public class GeoFenceProcessListener implements ChainedProcessListener {
         //                "*** SUBMITTED XID:" + executionId + " PROCESS:" + processName + " CH:" +
         // chained);
         statusHolder.stackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- +"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- +"
+                + processName);
     }
 
     @Override
     public void completed(String executionId, String processName) {
         //        LOGGER.warning("*** RETURNED XID:" + executionId + " PROCESS:" + processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- -"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- -"
+                + processName);
     }
 
     @Override
     public void dismissed(String executionId, String processName) {
         //        LOGGER.warning("*** FAILED XID:" + executionId + " PROCESS:" + processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- !"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- !"
+                + processName);
     }
 
     @Override
     public void failed(String executionId, String processName, Exception e) {
         //        LOGGER.warning("*** FAILED XID:" + executionId + " PROCESS:" + processName);
         statusHolder.unstackProcess(executionId, processName);
-        LOGGER.warning(
-                "ExecId:"
-                        + executionId
-                        + " Current process stack is "
-                        + statusHolder.stackToString(executionId)
-                        + " --- !"
-                        + processName);
+        LOGGER.warning("ExecId:"
+                + executionId
+                + " Current process stack is "
+                + statusHolder.stackToString(executionId)
+                + " --- !"
+                + processName);
     }
 }

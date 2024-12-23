@@ -11,8 +11,8 @@ import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 
 /**
- * Smart AppSchema model objects visitor interface. Defined with the purpose of accessing elements
- * on model and visiting them in order to build output structure data.
+ * Smart AppSchema model objects visitor interface. Defined with the purpose of accessing elements on model and visiting
+ * them in order to build output structure data.
  */
 public interface DomainModelVisitor {
 

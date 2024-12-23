@@ -34,7 +34,8 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
         } else {
             name = null;
         }
-    };
+    }
+    ;
 
     @Override
     protected T load() {
@@ -52,8 +53,7 @@ public class WorkspaceModel<T extends WorkspaceInfo> extends LoadableDetachableM
             }
         }
 
-        WorkspaceInfo workspace =
-                (T) GeoServerApplication.get().getCatalog().getWorkspaceByName(name);
+        WorkspaceInfo workspace = (T) GeoServerApplication.get().getCatalog().getWorkspaceByName(name);
         if (workspace != null) {
             return (T) workspace;
         }

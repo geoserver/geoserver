@@ -25,38 +25,28 @@ public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifier
 
     private TextField<String> identifier;
 
-    public LayerIdentifierFormField(
-            final String id, final IModel<List<LayerIdentifierInfo>> identifierModel) {
+    public LayerIdentifierFormField(final String id, final IModel<List<LayerIdentifierInfo>> identifierModel) {
         super(id);
 
-        add(
-                (authority =
-                        new TextField<>(
-                                "authority", new PropertyModel<>(identifierModel, "authority"))));
-        add(
-                (identifier =
-                        new TextField<>(
-                                "identifier", new PropertyModel<>(identifierModel, "identifier"))));
+        add((authority = new TextField<>("authority", new PropertyModel<>(identifierModel, "authority"))));
+        add((identifier = new TextField<>("identifier", new PropertyModel<>(identifierModel, "identifier"))));
 
-        add(
-                new IValidator<>() {
-                    private static final long serialVersionUID = 1L;
+        add(new IValidator<>() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void validate(IValidatable<LayerIdentifierInfo> arg) {
-                        LayerIdentifierInfo value = arg.getValue();
-                        if (value == null) {
-                            return;
-                        }
-                        if (value.getAuthority() == null || value.getIdentifier() == null) {
-                            ValidationError error = new ValidationError();
-                            error.setMessage(
-                                    new ResourceModel("LayerIdentifierFormField.validationError")
-                                            .getObject());
-                            arg.error(error);
-                        }
-                    }
-                });
+            @Override
+            public void validate(IValidatable<LayerIdentifierInfo> arg) {
+                LayerIdentifierInfo value = arg.getValue();
+                if (value == null) {
+                    return;
+                }
+                if (value.getAuthority() == null || value.getIdentifier() == null) {
+                    ValidationError error = new ValidationError();
+                    error.setMessage(new ResourceModel("LayerIdentifierFormField.validationError").getObject());
+                    arg.error(error);
+                }
+            }
+        });
     }
 
     @Override
@@ -78,10 +68,7 @@ public class LayerIdentifierFormField extends FormComponentPanel<LayerIdentifier
         setConvertedInput(info);
     }
 
-    /**
-     * Pull out each field from the LayerIdentifierInfo if it exists and put the contents into the
-     * fields.
-     */
+    /** Pull out each field from the LayerIdentifierInfo if it exists and put the contents into the fields. */
     @Override
     protected void onBeforeRender() {
 

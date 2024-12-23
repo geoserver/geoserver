@@ -33,8 +33,7 @@ import org.junit.experimental.categories.Category;
 @Category(SystemTest.class)
 public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String serviceName) throws Exception {
@@ -62,11 +61,10 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
         return config;
     }
 
-    protected GeoServerUserGroupService createUserGroupService(
-            String serviceName, String xmlFileName) throws Exception {
+    protected GeoServerUserGroupService createUserGroupService(String serviceName, String xmlFileName)
+            throws Exception {
         XMLUserGroupServiceConfig ugConfig =
-                (XMLUserGroupServiceConfig)
-                        getSecurityManager().loadUserGroupServiceConfig(serviceName);
+                (XMLUserGroupServiceConfig) getSecurityManager().loadUserGroupServiceConfig(serviceName);
 
         if (ugConfig == null) {
             ugConfig = createConfigObject(serviceName);
@@ -106,8 +104,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
     @Test
     public void testDefault() throws Exception {
-        GeoServerUserGroupService service =
-                getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
+        GeoServerUserGroupService service = getSecurityManager().loadUserGroupService(XMLUserGroupService.DEFAULT_NAME);
 
         assertEquals(1, service.getUsers().size());
         assertEquals(1, service.getUserCount());
@@ -119,8 +116,7 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
         assertEquals(GeoServerUser.AdminEnabled, admin.isEnabled());
 
         GeoServerMultiplexingPasswordEncoder enc = getEncoder(service);
-        assertTrue(
-                enc.isPasswordValid(admin.getPassword(), GeoServerUser.DEFAULT_ADMIN_PASSWD, null));
+        assertTrue(enc.isPasswordValid(admin.getPassword(), GeoServerUser.DEFAULT_ADMIN_PASSWD, null));
         assertEquals(admin.getProperties().size(), 0);
 
         assertEquals(0, service.getGroupsForUser(admin).size());
@@ -131,10 +127,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
         File xmlFile = File.createTempFile("users", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"), xmlFile);
-            GeoServerUserGroupService service1 =
-                    createUserGroupService("locking1", xmlFile.getCanonicalPath());
-            GeoServerUserGroupService service2 =
-                    createUserGroupService("locking2", xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service1 = createUserGroupService("locking1", xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service2 = createUserGroupService("locking2", xmlFile.getCanonicalPath());
             GeoServerUserGroupStore store1 = createStore(service1);
             GeoServerUserGroupStore store2 = createStore(service2);
 
@@ -240,10 +234,8 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
         File xmlFile = File.createTempFile("users", ".xml");
         try {
             FileUtils.copyURLToFile(getClass().getResource("usersTemplate.xml"), xmlFile);
-            GeoServerUserGroupService service1 =
-                    createUserGroupService("reload1", xmlFile.getCanonicalPath());
-            GeoServerUserGroupService service2 =
-                    createUserGroupService("reload2", xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service1 = createUserGroupService("reload1", xmlFile.getCanonicalPath());
+            GeoServerUserGroupService service2 = createUserGroupService("reload2", xmlFile.getCanonicalPath());
 
             GeoServerUserGroupStore store1 = createStore(service1);
 
@@ -254,16 +246,15 @@ public class XMLUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
             // prepare for syncing
 
-            UserGroupLoadedListener listener =
-                    new UserGroupLoadedListener() {
+            UserGroupLoadedListener listener = new UserGroupLoadedListener() {
 
-                        @Override
-                        public void usersAndGroupsChanged(UserGroupLoadedEvent event) {
-                            synchronized (this) {
-                                this.notifyAll();
-                            }
-                        }
-                    };
+                @Override
+                public void usersAndGroupsChanged(UserGroupLoadedEvent event) {
+                    synchronized (this) {
+                        this.notifyAll();
+                    }
+                }
+            };
 
             service2.registerUserGroupLoadedListener(listener);
 

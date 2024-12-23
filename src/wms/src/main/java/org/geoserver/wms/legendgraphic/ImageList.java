@@ -10,9 +10,9 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- * List of images with max memory control. (provides just enough functionality to support legend
- * graphic construction and layout, not a generic List implementation). Will check the memory limits
- * and throw an exception if they are exceeded.
+ * List of images with max memory control. (provides just enough functionality to support legend graphic construction
+ * and layout, not a generic List implementation). Will check the memory limits and throw an exception if they are
+ * exceeded.
  */
 class ImageList implements Iterable<BufferedImage> {
 

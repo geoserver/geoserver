@@ -39,17 +39,15 @@ public class WMTSCapabilitiesProvider extends WMTSExtensionImpl {
         ServiceProvider serviceProvider = new ServiceProvider();
 
         String providerName =
-                InternationalStringUtils.firstNonBlank(
-                        gsInfo.getMaintainer(), gsContactInfo.getContactOrganization());
+                InternationalStringUtils.firstNonBlank(gsInfo.getMaintainer(), gsContactInfo.getContactOrganization());
         if (providerName != null) {
             serviceProvider.setProviderName(providerName);
         }
 
-        String onlineResource =
-                InternationalStringUtils.firstNonBlank(
-                        gsInfo.getOnlineResource(),
-                        gsContactInfo != null ? gsContactInfo.getOnlineResource() : null,
-                        gsInfo.getGeoServer().getSettings().getOnlineResource());
+        String onlineResource = InternationalStringUtils.firstNonBlank(
+                gsInfo.getOnlineResource(),
+                gsContactInfo != null ? gsContactInfo.getOnlineResource() : null,
+                gsInfo.getGeoServer().getSettings().getOnlineResource());
         if (onlineResource != null) {
             serviceProvider.setProviderSite(onlineResource);
         }

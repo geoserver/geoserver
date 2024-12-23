@@ -42,8 +42,8 @@ public class ISO8601Formatter {
     }
 
     /**
-     * Formats the specified object either as a single time, if it's a Date, or as a continuous
-     * interval, if it's a DateRange (and will throw an {@link IllegalArgumentException} otherwise)
+     * Formats the specified object either as a single time, if it's a Date, or as a continuous interval, if it's a
+     * DateRange (and will throw an {@link IllegalArgumentException} otherwise)
      */
     public String format(Object date) {
         if (date instanceof Date) {
@@ -58,9 +58,7 @@ public class ISO8601Formatter {
             return sb.toString();
         } else {
             throw new IllegalArgumentException(
-                    "Date argument should be either a Date or a "
-                            + "DateRange, however this one is neither: "
-                            + date);
+                    "Date argument should be either a Date or a " + "DateRange, however this one is neither: " + date);
         }
     }
 

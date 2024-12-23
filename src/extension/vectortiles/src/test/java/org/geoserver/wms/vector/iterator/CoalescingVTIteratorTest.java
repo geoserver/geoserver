@@ -38,11 +38,8 @@ public class CoalescingVTIteratorTest {
 
     static {
         try {
-            POINT_TYPE =
-                    DataUtilities.createType("points", "sp:String,ip:Integer,geom:Point:srid=4326");
-            LINE_TYPE =
-                    DataUtilities.createType(
-                            "lines", "sp:String,ip:Integer,geom:LineString:srid=4326");
+            POINT_TYPE = DataUtilities.createType("points", "sp:String,ip:Integer,geom:Point:srid=4326");
+            LINE_TYPE = DataUtilities.createType("lines", "sp:String,ip:Integer,geom:LineString:srid=4326");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -64,8 +61,9 @@ public class CoalescingVTIteratorTest {
         ds.addFeature(feature(POINT_TYPE, ID_POINT_2, STRING_PROP_1_2, INT2000, P22));
         ds.addFeature(feature(POINT_TYPE, ID_POINT_3, STRING_PROP_1_3, INT3000, P33));
 
-        try (SimpleFeatureIterator fi =
-                        ds.getFeatureSource(POINT_TYPE.getTypeName()).getFeatures().features();
+        try (SimpleFeatureIterator fi = ds.getFeatureSource(POINT_TYPE.getTypeName())
+                        .getFeatures()
+                        .features();
                 CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
 
             // first feature
@@ -99,8 +97,9 @@ public class CoalescingVTIteratorTest {
         ds.addFeature(feature(POINT_TYPE, ID_POINT_2, STRING_PROP_1_2, INT2000, P22));
         ds.addFeature(feature(POINT_TYPE, ID_POINT_3, STRING_PROP_1_2, INT2000, P33));
 
-        try (SimpleFeatureIterator fi =
-                        ds.getFeatureSource(POINT_TYPE.getTypeName()).getFeatures().features();
+        try (SimpleFeatureIterator fi = ds.getFeatureSource(POINT_TYPE.getTypeName())
+                        .getFeatures()
+                        .features();
                 CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
             // first feature
             assertTrue(vti.hasNext());
@@ -127,8 +126,9 @@ public class CoalescingVTIteratorTest {
         ds.addFeature(feature(POINT_TYPE, ID_POINT_2, STRING_PROP_1_1, INT1000, P22));
         ds.addFeature(feature(POINT_TYPE, ID_POINT_3, STRING_PROP_1_3, INT3000, P33));
 
-        try (SimpleFeatureIterator fi =
-                        ds.getFeatureSource(POINT_TYPE.getTypeName()).getFeatures().features();
+        try (SimpleFeatureIterator fi = ds.getFeatureSource(POINT_TYPE.getTypeName())
+                        .getFeatures()
+                        .features();
                 CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
             // first feature (merged)
             assertTrue(vti.hasNext());
@@ -155,8 +155,9 @@ public class CoalescingVTIteratorTest {
         ds.addFeature(feature(POINT_TYPE, ID_POINT_2, STRING_PROP_1_1, INT1000, P22));
         ds.addFeature(feature(POINT_TYPE, ID_POINT_3, STRING_PROP_1_1, INT1000, P33));
 
-        try (SimpleFeatureIterator fi =
-                        ds.getFeatureSource(POINT_TYPE.getTypeName()).getFeatures().features();
+        try (SimpleFeatureIterator fi = ds.getFeatureSource(POINT_TYPE.getTypeName())
+                        .getFeatures()
+                        .features();
                 CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
             // all features merged into one
             assertTrue(vti.hasNext());
@@ -173,21 +174,21 @@ public class CoalescingVTIteratorTest {
     @Test
     public void testMergeLines() throws Exception {
         MemoryDataStore ds = new MemoryDataStore();
-        ds.addFeature(
-                feature(LINE_TYPE, "line1", STRING_PROP_1_1, INT1000, "LINESTRING(0 0, 1 1)"));
-        ds.addFeature(
-                feature(LINE_TYPE, "line2", STRING_PROP_1_1, INT1000, "LINESTRING(1 1, 2 2)"));
-        ds.addFeature(
-                feature(LINE_TYPE, "line3", STRING_PROP_1_1, INT1000, "LINESTRING(3 3, 4 4)"));
+        ds.addFeature(feature(LINE_TYPE, "line1", STRING_PROP_1_1, INT1000, "LINESTRING(0 0, 1 1)"));
+        ds.addFeature(feature(LINE_TYPE, "line2", STRING_PROP_1_1, INT1000, "LINESTRING(1 1, 2 2)"));
+        ds.addFeature(feature(LINE_TYPE, "line3", STRING_PROP_1_1, INT1000, "LINESTRING(3 3, 4 4)"));
 
-        try (SimpleFeatureIterator fi =
-                        ds.getFeatureSource(LINE_TYPE.getTypeName()).getFeatures().features();
+        try (SimpleFeatureIterator fi = ds.getFeatureSource(LINE_TYPE.getTypeName())
+                        .getFeatures()
+                        .features();
                 CoalescingVTIterator vti = new CoalescingVTIterator(new SimpleVTIterator(fi))) {
             // all features merged into one
             assertTrue(vti.hasNext());
             VTFeature f = vti.next();
             assertEquals("line1", f.getFeatureId());
-            assertEquals("MULTILINESTRING ((0 0, 1 1, 2 2), (3 3, 4 4))", f.getGeometry().toText());
+            assertEquals(
+                    "MULTILINESTRING ((0 0, 1 1, 2 2), (3 3, 4 4))",
+                    f.getGeometry().toText());
             assertEquals(Map.of("sp", STRING_PROP_1_1, "ip", INT1000), f.getProperties());
             // no more
             assertFalse(vti.hasNext());

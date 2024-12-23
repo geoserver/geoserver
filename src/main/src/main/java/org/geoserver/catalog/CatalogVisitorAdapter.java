@@ -6,8 +6,8 @@
 package org.geoserver.catalog;
 
 /**
- * Adapter for CatalogVisitor which stubs all methods allowing subclasses to selectively implement
- * visit methods of relevance.
+ * Adapter for CatalogVisitor which stubs all methods allowing subclasses to selectively implement visit methods of
+ * relevance.
  *
  * @author Justin Deoliveira, OpenGeo
  */

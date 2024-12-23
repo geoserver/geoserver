@@ -51,8 +51,8 @@ import org.locationtech.jts.geom.Polygon;
 
 // TODO WICKET8 - Verify this page works OK
 /**
- * Class to render and manage the SOLR modal dialog This dialog allow the user to choice which SOLR
- * attributes include in layers, selects attributes to use as PK, as GEOMETRY, and set native SRID
+ * Class to render and manage the SOLR modal dialog This dialog allow the user to choice which SOLR attributes include
+ * in layers, selects attributes to use as PK, as GEOMETRY, and set native SRID
  */
 public abstract class SolrConfigurationPage extends Panel {
 
@@ -64,16 +64,15 @@ public abstract class SolrConfigurationPage extends Panel {
 
     private FeedbackPanel feedbackPanel;
 
-    private static final List<Class<?>> GEOMETRY_TYPES =
-            Arrays.asList(
-                    Geometry.class,
-                    GeometryCollection.class,
-                    Point.class,
-                    MultiPoint.class,
-                    LineString.class,
-                    MultiLineString.class,
-                    Polygon.class,
-                    MultiPolygon.class);
+    private static final List<Class<?>> GEOMETRY_TYPES = Arrays.asList(
+            Geometry.class,
+            GeometryCollection.class,
+            Point.class,
+            MultiPoint.class,
+            LineString.class,
+            MultiLineString.class,
+            Polygon.class,
+            MultiPolygon.class);
 
     /**
      * Constructs the dialog to set SOLR attributes with the follow components:
@@ -94,43 +93,39 @@ public abstract class SolrConfigurationPage extends Panel {
 
         solrurl = (String) connectionparameters.get("solr_url");
 
-        final Form<SolrConfigurationPage> solr_form =
-                new Form<>("solr_form", new CompoundPropertyModel<>(this));
+        final Form<SolrConfigurationPage> solr_form = new Form<>("solr_form", new CompoundPropertyModel<>(this));
         add(solr_form);
 
         List<SolrAttribute> attributes =
                 fillSolrAttributes((ResourceInfo) model.getObject()).getAttributes();
         final SolrAttributeProvider attProvider = new SolrAttributeProvider(attributes);
 
-        final GeoServerTablePanel<SolrAttribute> solrAttributePanel =
-                getSolrAttributePanel(attProvider);
+        final GeoServerTablePanel<SolrAttribute> solrAttributePanel = getSolrAttributePanel(attProvider);
         solr_form.add(solrAttributePanel);
 
-        AjaxCheckBox checkBox =
-                new AjaxCheckBox("hideEmpty", Model.of(Boolean.TRUE)) {
-                    /** */
-                    private static final long serialVersionUID = 8715377219204904531L;
+        AjaxCheckBox checkBox = new AjaxCheckBox("hideEmpty", Model.of(Boolean.TRUE)) {
+            /** */
+            private static final long serialVersionUID = 8715377219204904531L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        attProvider.reload((Boolean) this.getDefaultModelObject());
-                        target.add(solrAttributePanel);
-                    }
-                };
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                attProvider.reload((Boolean) this.getDefaultModelObject());
+                target.add(solrAttributePanel);
+            }
+        };
 
         checkBox.setOutputMarkupId(true);
         solr_form.add(checkBox);
 
-        solr_form.add(
-                new AjaxButton("solr_save") {
-                    /** */
-                    private static final long serialVersionUID = 819555072210390051L;
+        solr_form.add(new AjaxButton("solr_save") {
+            /** */
+            private static final long serialVersionUID = 819555072210390051L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        onSave(target);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                onSave(target);
+            }
+        });
 
         feedbackPanel = new FeedbackPanel("solr_feedback");
         feedbackPanel.setOutputMarkupId(true);
@@ -143,8 +138,8 @@ public abstract class SolrConfigurationPage extends Panel {
     }
 
     /**
-     * Validates SOLR attributes configuration and stores the SOLR layer configuration into feature
-     * type metadata as {@link SolrLayerConfiguration#KEY} <br>
+     * Validates SOLR attributes configuration and stores the SOLR layer configuration into feature type metadata as
+     * {@link SolrLayerConfiguration#KEY} <br>
      * Validation include the follow rules
      * <li>One attribute must be a PK
      * <li>One attribute must be a GEOMETRY
@@ -174,18 +169,12 @@ public abstract class SolrConfigurationPage extends Panel {
                 }
             }
             if (!pkSet) {
-                error(
-                        new ParamResourceModel("pkEmptyFailure", SolrConfigurationPage.this)
-                                .getString());
+                error(new ParamResourceModel("pkEmptyFailure", SolrConfigurationPage.this).getString());
             }
             if (!geomSet) {
-                error(
-                        new ParamResourceModel("geomEmptyFailure", SolrConfigurationPage.this)
-                                .getString());
+                error(new ParamResourceModel("geomEmptyFailure", SolrConfigurationPage.this).getString());
             } else if (!sridSet) {
-                error(
-                        new ParamResourceModel("sridEmptyFailure", SolrConfigurationPage.this)
-                                .getString());
+                error(new ParamResourceModel("sridEmptyFailure", SolrConfigurationPage.this).getString());
             }
             if (!pkSet || !geomSet || !sridSet) {
                 target.add(feedbackPanel);
@@ -223,11 +212,8 @@ public abstract class SolrConfigurationPage extends Panel {
                 ri.getMetadata().put(SolrLayerConfiguration.KEY, solrLayerConfiguration);
             }
             SolrDataStore dataStore =
-                    (SolrDataStore)
-                            ((DataStoreInfo) ri.getStore())
-                                    .getDataStore(new NullProgressListener());
-            ArrayList<SolrAttribute> attributes =
-                    dataStore.getSolrAttributes(solrLayerConfiguration.getLayerName());
+                    (SolrDataStore) ((DataStoreInfo) ri.getStore()).getDataStore(new NullProgressListener());
+            ArrayList<SolrAttribute> attributes = dataStore.getSolrAttributes(solrLayerConfiguration.getLayerName());
             for (SolrAttribute at : attributes) {
                 if (tempMap.containsKey(at.getName())) {
                     SolrAttribute prev = tempMap.get(at.getName());
@@ -247,8 +233,7 @@ public abstract class SolrConfigurationPage extends Panel {
     /*
      * Builds attribute table
      */
-    private GeoServerTablePanel<SolrAttribute> getSolrAttributePanel(
-            SolrAttributeProvider attProvider) {
+    private GeoServerTablePanel<SolrAttribute> getSolrAttributePanel(SolrAttributeProvider attProvider) {
         GeoServerTablePanel<SolrAttribute> atts =
                 new GeoServerTablePanel<SolrAttribute>("solrAttributes", attProvider) {
                     /** */
@@ -256,18 +241,13 @@ public abstract class SolrConfigurationPage extends Panel {
 
                     @Override
                     protected Component getComponentForProperty(
-                            String id,
-                            IModel<SolrAttribute> itemModel,
-                            Property<SolrAttribute> property) {
+                            String id, IModel<SolrAttribute> itemModel, Property<SolrAttribute> property) {
                         SolrAttribute att = itemModel.getObject();
-                        boolean isGeometry =
-                                att.getType() != null
-                                        && Geometry.class.isAssignableFrom(att.getType());
+                        boolean isGeometry = att.getType() != null && Geometry.class.isAssignableFrom(att.getType());
                         boolean isPK = att.isPk();
                         if (property == SolrAttributeProvider.PK) {
                             if (isPK) {
-                                Fragment f =
-                                        new Fragment(id, "checkboxPk", SolrConfigurationPage.this);
+                                Fragment f = new Fragment(id, "checkboxPk", SolrConfigurationPage.this);
                                 f.add(new CheckBox("pk", new PropertyModel<>(itemModel, "pk")));
                                 return f;
                             } else {
@@ -281,29 +261,24 @@ public abstract class SolrConfigurationPage extends Panel {
 
                         } else if (property == SolrAttributeProvider.TYPE && isGeometry) {
                             Fragment f = new Fragment(id, "geometry", SolrConfigurationPage.this);
-                            f.add(
-                                    new DropDownChoice(
-                                            "geometry",
-                                            new PropertyModel(itemModel, "type"),
-                                            GEOMETRY_TYPES,
-                                            new GeometryTypeRenderer()));
+                            f.add(new DropDownChoice(
+                                    "geometry",
+                                    new PropertyModel(itemModel, "type"),
+                                    GEOMETRY_TYPES,
+                                    new GeometryTypeRenderer()));
                             return f;
                         } else if (property == SolrAttributeProvider.USE) {
-                            Fragment f =
-                                    new Fragment(id, "checkboxUse", SolrConfigurationPage.this);
+                            Fragment f = new Fragment(id, "checkboxUse", SolrConfigurationPage.this);
                             f.add(new CheckBox("use", new PropertyModel<>(itemModel, "use")));
                             return f;
                         } else if (property == SolrAttributeProvider.EMPTY) {
-                            Fragment f =
-                                    new Fragment(id, "checkboxEmpty", SolrConfigurationPage.this);
+                            Fragment f = new Fragment(id, "checkboxEmpty", SolrConfigurationPage.this);
                             f.add(new CheckBox("isEmpty", new PropertyModel<>(itemModel, "empty")));
                             return f;
                         } else if (property == SolrAttributeProvider.SRID) {
                             if (isGeometry) {
                                 Fragment f = new Fragment(id, "text", SolrConfigurationPage.this);
-                                f.add(
-                                        new TextField<>(
-                                                "text", new PropertyModel<>(itemModel, "srid")));
+                                f.add(new TextField<>("text", new PropertyModel<>(itemModel, "srid")));
                                 return f;
                             } else {
                                 Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
@@ -311,15 +286,9 @@ public abstract class SolrConfigurationPage extends Panel {
                             }
                         } else if (property == SolrAttributeProvider.DEFAULT_GEOMETRY) {
                             if (isGeometry) {
-                                Fragment f =
-                                        new Fragment(
-                                                id,
-                                                "checkboxDefaultGeometry",
-                                                SolrConfigurationPage.this);
-                                f.add(
-                                        new CheckBox(
-                                                "defaultGeometry",
-                                                new PropertyModel<>(itemModel, "defaultGeometry")));
+                                Fragment f = new Fragment(id, "checkboxDefaultGeometry", SolrConfigurationPage.this);
+                                f.add(new CheckBox(
+                                        "defaultGeometry", new PropertyModel<>(itemModel, "defaultGeometry")));
                                 return f;
                             } else {
                                 Fragment f = new Fragment(id, "empty", SolrConfigurationPage.this);
@@ -362,8 +331,7 @@ public abstract class SolrConfigurationPage extends Panel {
      *
      * @param target ajax response target
      * @param layerInfo contains attribute configuration
-     * @param isNew used to communicate to parent if the attributes configuration if for new or for
-     *     existing layer
+     * @param isNew used to communicate to parent if the attributes configuration if for new or for existing layer
      * @see {@link #onSave}
      * @see {@link #onCancel}
      */

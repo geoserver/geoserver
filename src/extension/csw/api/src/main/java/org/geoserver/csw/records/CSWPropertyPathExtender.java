@@ -15,8 +15,8 @@ import org.geotools.csw.DCT;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Extends a propertyName representing a SimpleLiteral adding /dc:value at its end, and fixing the
- * namespace support as necessary
+ * Extends a propertyName representing a SimpleLiteral adding /dc:value at its end, and fixing the namespace support as
+ * necessary
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -24,8 +24,7 @@ public class CSWPropertyPathExtender {
 
     QNameResolver resolver = new QNameResolver();
 
-    PropertyName extendProperty(
-            PropertyName expression, FilterFactory filterFactory, NamespaceSupport nss) {
+    PropertyName extendProperty(PropertyName expression, FilterFactory filterFactory, NamespaceSupport nss) {
         String path = expression.getPropertyName();
         if (nss != null) {
             QName name = resolver.parseQName(path, nss);

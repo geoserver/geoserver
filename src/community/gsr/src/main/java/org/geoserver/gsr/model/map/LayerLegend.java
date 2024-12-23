@@ -47,8 +47,7 @@ public class LayerLegend {
         } else if (renderer instanceof UniqueValueRenderer) {
             UniqueValueRenderer uniqueValueRenderer = (UniqueValueRenderer) renderer;
             for (UniqueValueInfo uniqueValueInfo : uniqueValueRenderer.getUniqueValueInfos()) {
-                legend.add(
-                        new LegendEntry(uniqueValueInfo.getLabel(), uniqueValueInfo.getSymbol()));
+                legend.add(new LegendEntry(uniqueValueInfo.getLabel(), uniqueValueInfo.getSymbol()));
             }
         }
     }

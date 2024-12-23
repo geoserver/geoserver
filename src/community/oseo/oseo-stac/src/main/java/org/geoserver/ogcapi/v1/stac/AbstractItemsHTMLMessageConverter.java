@@ -41,8 +41,7 @@ public abstract class AbstractItemsHTMLMessageConverter<T extends AbstractItemsR
         }
         addLinkFunctions(APIRequestInfo.get().getBaseURL(), model);
 
-        try (OutputStreamWriter osw =
-                new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset())) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(outputMessage.getBody(), getDefaultCharset())) {
             templateSupport.processTemplate(header, model, osw, getDefaultCharset());
 
             // process content template for all feature collections found

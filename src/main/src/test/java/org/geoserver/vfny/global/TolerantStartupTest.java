@@ -28,8 +28,7 @@ public class TolerantStartupTest extends GeoServerSystemTestSupport {
         props.put(LayerProperty.STYLE, styleName);
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);
         props.put(LayerProperty.SRS, 123456);
-        testData.setUpVectorLayer(
-                name, props, name.getLocalPart() + ".properties", SystemTestData.class);
+        testData.setUpVectorLayer(name, props, name.getLocalPart() + ".properties", SystemTestData.class);
 
         testData.setUpVectorLayer(SystemTestData.BUILDINGS);
         testData.setUpSecurity();
@@ -38,15 +37,10 @@ public class TolerantStartupTest extends GeoServerSystemTestSupport {
     @Test
     public void testContextStartup() {
         GeoServer config = (GeoServer) applicationContext.getBean("geoServer");
-        assertNotNull(
-                config.getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.BUILDINGS.getNamespaceURI(),
-                                MockData.BUILDINGS.getLocalPart()));
-        assertNotNull(
-                config.getCatalog()
-                        .getFeatureTypeByName(
-                                MockData.BASIC_POLYGONS.getNamespaceURI(),
-                                MockData.BASIC_POLYGONS.getLocalPart()));
+        assertNotNull(config.getCatalog()
+                .getFeatureTypeByName(MockData.BUILDINGS.getNamespaceURI(), MockData.BUILDINGS.getLocalPart()));
+        assertNotNull(config.getCatalog()
+                .getFeatureTypeByName(
+                        MockData.BASIC_POLYGONS.getNamespaceURI(), MockData.BASIC_POLYGONS.getLocalPart()));
     }
 }

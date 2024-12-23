@@ -63,19 +63,18 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     private static <T> T mockHamcrestMatcher(Matcher<Object> matcher) {
-        EasyMock.reportMatcher(
-                new IArgumentMatcher() {
+        EasyMock.reportMatcher(new IArgumentMatcher() {
 
-                    @Override
-                    public boolean matches(Object argument) {
-                        return matcher.matches(argument);
-                    }
+            @Override
+            public boolean matches(Object argument) {
+                return matcher.matches(argument);
+            }
 
-                    @Override
-                    public void appendTo(StringBuffer buffer) {
-                        matcher.describeTo(new StringDescription(buffer));
-                    }
-                });
+            @Override
+            public void appendTo(StringBuffer buffer) {
+                matcher.describeTo(new StringDescription(buffer));
+            }
+        });
         return null;
     }
 
@@ -117,8 +116,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
             expectationTestStoreDelete(info, storeName, storeId, DataStoreInfo.class);
         }
         replay(info, wsInfo);
-        ConfigChangeEvent evt =
-                new ConfigChangeEvent(storeId, storeName, DataStoreInfoImpl.class, Type.REMOVE);
+        ConfigChangeEvent evt = new ConfigChangeEvent(storeId, storeName, DataStoreInfoImpl.class, Type.REMOVE);
         {
             sync = getSynchronizer();
             sync.initialize(configWatcher);
@@ -136,27 +134,22 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestDisableLayer(LayerInfo info, String layerName, String id)
-            throws Exception {
+    protected void expectationTestDisableLayer(LayerInfo info, String layerName, String id) throws Exception {
         expect(getCatalog().getLayer(id)).andReturn(info);
         expectCatalogFire(info, id, Type.MODIFY);
     }
 
     @Override
     protected void expectationTestStoreDelete(
-            DataStoreInfo info, String storeName, String storeId, Class<? extends StoreInfo> clazz)
-            throws Exception {
-        expect(getCatalog().getStore(storeId, clazz))
-                .andStubReturn(null); // It's been deleted so return null
+            DataStoreInfo info, String storeName, String storeId, Class<? extends StoreInfo> clazz) throws Exception {
+        expect(getCatalog().getStore(storeId, clazz)).andStubReturn(null); // It's been deleted so return null
         expectCatalogFire(info, storeId, Type.REMOVE);
     }
 
     @Override
     protected void expectationTestFTDelete(
-            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz)
-            throws Exception {
-        expect(getCatalog().getFeatureType(ftId))
-                .andStubReturn(null); // It's been deleted so return null
+            FeatureTypeInfo info, String ftName, String ftId, String dsId, Class<?> clazz) throws Exception {
+        expect(getCatalog().getFeatureType(ftId)).andStubReturn(null); // It's been deleted so return null
         final String id = ftId;
         expectCatalogGetListeners();
         CatalogRemoveEvent catEvent =
@@ -166,8 +159,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestContactChange(GeoServerInfo info, String globalId)
-            throws Exception {
+    protected void expectationTestContactChange(GeoServerInfo info, String globalId) throws Exception {
         expect(getGeoServer().getGlobal()).andReturn(info);
 
         // TODO: Expect this instead of mocking ConfigurationListener
@@ -189,8 +181,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
 
     @Override
     protected void expectationTestMultipleChange(
-            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId)
-            throws Exception {
+            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId) throws Exception {
 
         expectationTestContactChange(gsInfo, globalId);
         expectationTestContactChange(gsInfo, globalId);
@@ -203,44 +194,39 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestTwoAddressChangeNoPause(GeoServerInfo gsInfo, String globalId)
-            throws Exception {
+    protected void expectationTestTwoAddressChangeNoPause(GeoServerInfo gsInfo, String globalId) throws Exception {
         expectationTestContactChange(gsInfo, globalId);
         expectationTestContactChange(gsInfo, globalId);
     }
 
     @Override
-    protected void expectationTestTwoAddressChangeWithPause(GeoServerInfo gsInfo, String globalId)
-            throws Exception {
+    protected void expectationTestTwoAddressChangeWithPause(GeoServerInfo gsInfo, String globalId) throws Exception {
         expectationTestContactChange(gsInfo, globalId);
         expectationTestContactChange(gsInfo, globalId);
     }
 
     @Override
-    protected void expectationTestTwoLayerChangeNoPause(final LayerInfo layerInfo, String layerId)
-            throws Exception {
+    protected void expectationTestTwoLayerChangeNoPause(final LayerInfo layerInfo, String layerId) throws Exception {
         expect(getCatalog().getLayer(layerId)).andReturn(layerInfo).anyTimes();
         expectCatalogFire(layerInfo, layerId, Type.MODIFY).times(2);
     }
 
     @Override
-    protected void expectationTestTwoLayerChangeWithPause(final LayerInfo layerInfo, String layerId)
-            throws Exception {
+    protected void expectationTestTwoLayerChangeWithPause(final LayerInfo layerInfo, String layerId) throws Exception {
         expect(getCatalog().getLayer(layerId)).andReturn(layerInfo).anyTimes();
         expectCatalogFire(layerInfo, layerId, Type.MODIFY).times(2);
     }
 
     @Override
-    protected void expectationTestWorkspaceAdd(
-            final WorkspaceInfo info, String workspaceName, String workspaceId) throws Exception {
+    protected void expectationTestWorkspaceAdd(final WorkspaceInfo info, String workspaceName, String workspaceId)
+            throws Exception {
         expect(getCatalog().getWorkspace(workspaceId)).andReturn(info);
         expectCatalogFire(info, workspaceId, Type.ADD);
     }
 
     @Override
     protected void expectationTestChangeSettings(
-            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId)
-            throws Exception {
+            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception {
 
         // TODO: Expect this instead of mocking ConfigurationListener
         // expect(getGeoServer().fireSettingsPostModified());
@@ -251,8 +237,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestChangeLogging(LoggingInfo info, String loggingId)
-            throws Exception {
+    protected void expectationTestChangeLogging(LoggingInfo info, String loggingId) throws Exception {
         // TODO: Expect this instead of mocking ConfigurationListener
         // expect(getGeoServer().fireLoggingPostModified());
 
@@ -262,8 +247,7 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestChangeService(ServiceInfo info, String serviceId)
-            throws Exception {
+    protected void expectationTestChangeService(ServiceInfo info, String serviceId) throws Exception {
         // TODO: Expect this instead of mocking ConfigurationListener
         // expect(getGeoServer().fireLoggingPostModified());
         configListener.handlePostServiceChange((ServiceInfo) info(serviceId));
@@ -272,27 +256,23 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     protected void expectConfigGetListeners() {
-        expect(getGeoServer().getListeners())
-                .andStubAnswer(
-                        new IAnswer<Collection<ConfigurationListener>>() {
+        expect(getGeoServer().getListeners()).andStubAnswer(new IAnswer<Collection<ConfigurationListener>>() {
 
-                            @Override
-                            public Collection<ConfigurationListener> answer() throws Throwable {
-                                return Arrays.asList(sync, configListener);
-                            }
-                        });
+            @Override
+            public Collection<ConfigurationListener> answer() throws Throwable {
+                return Arrays.asList(sync, configListener);
+            }
+        });
     }
 
     protected void expectCatalogGetListeners() {
-        expect(getCatalog().getListeners())
-                .andStubAnswer(
-                        new IAnswer<Collection<CatalogListener>>() {
+        expect(getCatalog().getListeners()).andStubAnswer(new IAnswer<Collection<CatalogListener>>() {
 
-                            @Override
-                            public Collection<CatalogListener> answer() throws Throwable {
-                                return Arrays.asList(sync, catListener);
-                            }
-                        });
+            @Override
+            public Collection<CatalogListener> answer() throws Throwable {
+                return Arrays.asList(sync, catListener);
+            }
+        });
     }
 
     CatalogEvent catEvent(final CatalogInfo info) {
@@ -303,19 +283,15 @@ public class EventHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
         return mockHamcrestMatcher(hasProperty("source", hasProperty("id", is(id))));
     }
     /**
-     * Matches a Catalog Event that has a source with the given ID, and a Store property, the value
-     * of which has the given ID.
+     * Matches a Catalog Event that has a source with the given ID, and a Store property, the value of which has the
+     * given ID.
      *
      * @param id id of the source
      * @param storeId id of the source's store
      */
     CatalogEvent catResEvent(final String id, final String storeId) {
-        return mockHamcrestMatcher(
-                hasProperty(
-                        "source",
-                        allOf(
-                                hasProperty("id", is(id)),
-                                hasProperty("store", hasProperty("id", is(storeId))))));
+        return mockHamcrestMatcher(hasProperty(
+                "source", allOf(hasProperty("id", is(id)), hasProperty("store", hasProperty("id", is(storeId))))));
     }
 
     protected IExpectationSetters<Object> expectCatalogFire(

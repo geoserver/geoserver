@@ -78,13 +78,11 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         testData.addWorkspace(SEC_PREFIX, SEC_URI, catalog);
 
         testData.addVectorLayer(SEC_BRIDGES, Collections.emptyMap(), SystemTestData.class, catalog);
-        testData.addVectorLayer(
-                SEC_BUILDINGS, Collections.emptyMap(), SystemTestData.class, catalog);
+        testData.addVectorLayer(SEC_BUILDINGS, Collections.emptyMap(), SystemTestData.class, catalog);
         testData.addVectorLayer(PUB_STREAMS, Collections.emptyMap(), SystemTestData.class, catalog);
         testData.addVectorLayer(PUB_LAKES, Collections.emptyMap(), SystemTestData.class, catalog);
 
-        DataAccessRuleDAO dao =
-                GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
+        DataAccessRuleDAO dao = GeoServerExtensions.bean(DataAccessRuleDAO.class, applicationContext);
         dao.setCatalogMode(CatalogMode.CHALLENGE);
 
         GWC.get().getConfig().setDirectWMSIntegrationEnabled(true);
@@ -114,15 +112,11 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
     }
 
     @Test
-    public void testSeedPublic()
-            throws GeoWebCacheException, InterruptedException, StorageException {
+    public void testSeedPublic() throws GeoWebCacheException, InterruptedException, StorageException {
 
         // Assert cache empty
         TileObject tileObject = getSampleTile(PUB_LAKES);
-        assertEquals(
-                "Cache should be empty at test start",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertEquals("Cache should be empty at test start", StorageObject.Status.MISS, tileObject.getStatus());
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(PUB_LAKES);
@@ -141,22 +135,15 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
 
         // expect success, assert nonempty
         tileObject = getSampleTile(PUB_LAKES);
-        assertNotEquals(
-                "Cache should not be empty after seeding",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertNotEquals("Cache should not be empty after seeding", StorageObject.Status.MISS, tileObject.getStatus());
         assertNotNull("Cache should not be empty after seeding", tileObject.getBlob());
     }
 
     @Test
-    public void testSeedSecuredAsAnonymous()
-            throws StorageException, GeoWebCacheException, InterruptedException {
+    public void testSeedSecuredAsAnonymous() throws StorageException, GeoWebCacheException, InterruptedException {
         // Assert cache empty
         TileObject tileObject = getSampleTile(SEC_BUILDINGS);
-        assertEquals(
-                "Cache should be empty at test start",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertEquals("Cache should be empty at test start", StorageObject.Status.MISS, tileObject.getStatus());
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(SEC_BUILDINGS);
@@ -175,24 +162,17 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
 
         // expect failure, assert empty
         tileObject = getSampleTile(SEC_BUILDINGS);
-        assertEquals(
-                "Cache should be empty after seeding",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertEquals("Cache should be empty after seeding", StorageObject.Status.MISS, tileObject.getStatus());
         assertNull("Cache should be empty after seeding", tileObject.getBlob());
     }
 
     @Test
-    public void testSeedSecuredAsAuthenticated()
-            throws StorageException, GeoWebCacheException, InterruptedException {
+    public void testSeedSecuredAsAuthenticated() throws StorageException, GeoWebCacheException, InterruptedException {
         login("admin", "geoserver", "ROLE_ADMINISTRATOR");
 
         // Assert cache empty
         TileObject tileObject = getSampleTile(SEC_BUILDINGS);
-        assertEquals(
-                "Cache should be empty at test start",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertEquals("Cache should be empty at test start", StorageObject.Status.MISS, tileObject.getStatus());
         assertNull("Cache should be empty at test start", tileObject.getBlob());
 
         SeedRequest sr = createSeedRequest(SEC_BUILDINGS);
@@ -211,10 +191,7 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
 
         // expect success, assert nonempty
         tileObject = getSampleTile(SEC_BUILDINGS);
-        assertNotEquals(
-                "Cache should not be empty after seeding",
-                StorageObject.Status.MISS,
-                tileObject.getStatus());
+        assertNotEquals("Cache should not be empty after seeding", StorageObject.Status.MISS, tileObject.getStatus());
         assertNotNull("Cache should not be empty after seeding", tileObject.getBlob());
     }
 
@@ -230,26 +207,23 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         LayerInfo layerInfo = rawCatalog.getLayerByName(prefixedName);
         TileLayer tileLayer = gwc.getTileLayer(layerInfo);
 
-        SeedRequest seedRequest =
-                new SeedRequest(
-                        prefixedName,
-                        tileLayer.getGridSubset("EPSG:4326").getOriginalExtent(),
-                        "EPSG:4326",
-                        1,
-                        0,
-                        2,
-                        "image/png",
-                        taskType,
-                        Collections.emptyMap());
+        SeedRequest seedRequest = new SeedRequest(
+                prefixedName,
+                tileLayer.getGridSubset("EPSG:4326").getOriginalExtent(),
+                "EPSG:4326",
+                1,
+                0,
+                2,
+                "image/png",
+                taskType,
+                Collections.emptyMap());
         return seedRequest;
     }
 
     protected GWCTask[] executeSeedRequest(SeedRequest sr) throws GeoWebCacheException {
         TileLayer tl = tileBreeder.findTileLayer(sr.getLayerName());
         TileRange tr = tileBreeder.createTileRange(sr, tl);
-        GWCTask[] tasks =
-                tileBreeder.createTasks(
-                        tr, tl, sr.getType(), sr.getThreadCount(), sr.getFilterUpdate());
+        GWCTask[] tasks = tileBreeder.createTasks(tr, tl, sr.getType(), sr.getThreadCount(), sr.getFilterUpdate());
         tileBreeder.dispatchTasks(tasks);
         return tasks;
     }
@@ -258,13 +232,8 @@ public class GWCSeedingSecurityIntegrationTest extends GeoServerSystemTestSuppor
         GWC gwc = GWC.get();
         String prefixedName = layerName.getPrefix() + ":" + layerName.getLocalPart();
 
-        TileObject tileObject =
-                TileObject.createQueryTileObject(
-                        prefixedName,
-                        new long[] {0L, 0L, 1L},
-                        "EPSG:4326",
-                        "image/png",
-                        Collections.emptyMap());
+        TileObject tileObject = TileObject.createQueryTileObject(
+                prefixedName, new long[] {0L, 0L, 1L}, "EPSG:4326", "image/png", Collections.emptyMap());
 
         gwc.getCompositeBlobStore().get(tileObject);
 

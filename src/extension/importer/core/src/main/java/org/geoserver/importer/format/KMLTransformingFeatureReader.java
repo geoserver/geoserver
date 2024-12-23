@@ -12,8 +12,7 @@ import org.geotools.api.data.FeatureReader;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 
-public class KMLTransformingFeatureReader
-        implements FeatureReader<SimpleFeatureType, SimpleFeature> {
+public class KMLTransformingFeatureReader implements FeatureReader<SimpleFeatureType, SimpleFeature> {
 
     private final SimpleFeatureType featureType;
 
@@ -53,8 +52,7 @@ public class KMLTransformingFeatureReader
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        SimpleFeature transformedFeature =
-                placemarkTransformer.convertFeature(feature, featureType);
+        SimpleFeature transformedFeature = placemarkTransformer.convertFeature(feature, featureType);
         return transformedFeature;
     }
 

@@ -144,22 +144,19 @@ public class GeoPackageProcess implements GeoServerProcess {
                 return tempDir;
             }
         }
-        throw new IllegalStateException(
-                "Failed to create directory within "
-                        + TEMP_DIR_ATTEMPTS
-                        + " attempts (tried "
-                        + baseName
-                        + "0 to "
-                        + baseName
-                        + (TEMP_DIR_ATTEMPTS - 1)
-                        + ')');
+        throw new IllegalStateException("Failed to create directory within "
+                + TEMP_DIR_ATTEMPTS
+                + " attempts (tried "
+                + baseName
+                + "0 to "
+                + baseName
+                + (TEMP_DIR_ATTEMPTS - 1)
+                + ')');
     }
 
     @DescribeResult(name = "geopackage", description = "Link to Compiled Geopackage File")
     public URL execute(
-            @DescribeParameter(
-                            name = "contents",
-                            description = "xml scheme describing geopackage contents")
+            @DescribeParameter(name = "contents", description = "xml scheme describing geopackage contents")
                     GeoPackageProcessRequest contents,
             ProgressListener listener)
             throws IOException {
@@ -174,8 +171,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
         MetadataManager metadataManager = new MetadataManager(gpkg);
         OWSContextWriter contextWriter =
-                new OWSContextWriter(
-                        geoServer, gpkg, new StyleWorker(dataDirectory, resolverProvider));
+                new OWSContextWriter(geoServer, gpkg, new StyleWorker(dataDirectory, resolverProvider));
         if (contents.isContext()) {
             contextWriter.addRequestContext();
         }
@@ -203,8 +199,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         return new URL(resources.getOutputResourceUrl(outputName, MIME_TYPE));
     }
 
-    private void addTilesEntry(GeoPackage gpkg, Layer layer, ProgressListener listener)
-            throws IOException {
+    private void addTilesEntry(GeoPackage gpkg, Layer layer, ProgressListener listener) throws IOException {
         TilesLayer tiles = (TilesLayer) layer;
         GetMapRequest request = buildGetMapRequest(tiles);
 
@@ -250,9 +245,9 @@ public class GeoPackageProcess implements GeoServerProcess {
     }
 
     /**
-     * Simulates the parsing of a GetMap in WMS to get full benefit of existing and future vendor
-     * options support. Yes we had some information alreay in parsed form, but we cannot do a
-     * partial parse, it has to start back straight from the strings.
+     * Simulates the parsing of a GetMap in WMS to get full benefit of existing and future vendor options support. Yes
+     * we had some information alreay in parsed form, but we cannot do a partial parse, it has to start back straight
+     * from the strings.
      *
      * @param tiles
      * @return
@@ -269,18 +264,14 @@ public class GeoPackageProcess implements GeoServerProcess {
 
             List<PublishedInfo> layers = getLayers(tiles);
 
-            rawKvp.put(
-                    "layers",
-                    layers.stream().map(l -> l.prefixedName()).collect(Collectors.joining(",")));
+            rawKvp.put("layers", layers.stream().map(l -> l.prefixedName()).collect(Collectors.joining(",")));
 
             Envelope bbox = tiles.getBbox();
             if (bbox == null) bbox = getBoundsFromLayers(tiles, layers);
             rawKvp.put("bbox", getCommaSeparated(bbox));
 
             String srs =
-                    Optional.ofNullable(tiles.getSrs())
-                            .map(s -> s.toString())
-                            .orElseGet(() -> getFirstCRS(layers));
+                    Optional.ofNullable(tiles.getSrs()).map(s -> s.toString()).orElseGet(() -> getFirstCRS(layers));
             rawKvp.put("srs", srs);
 
             if (tiles.getBgColor() != null) {
@@ -303,8 +294,7 @@ public class GeoPackageProcess implements GeoServerProcess {
             GetMapRequest request = getMapReader.createRequest();
             kvp.putAll(rawKvp);
             List<Throwable> errors = KvpUtils.parse(kvp);
-            if (!errors.isEmpty())
-                throw new ServiceException("Failed to parse KVPs", errors.get(0));
+            if (!errors.isEmpty()) throw new ServiceException("Failed to parse KVPs", errors.get(0));
             GetMapRequest getMap = getMapReader.read(request, kvp, rawKvp);
 
             // env is normally setup by a dispatcher callback, doing it manually here
@@ -349,8 +339,7 @@ public class GeoPackageProcess implements GeoServerProcess {
                     if (ns != null) {
                         publishable = catalog.getLayerGroupByName(ns.getPrefix(), localPart);
                     } else if (layerQName.getPrefix() != null) {
-                        publishable =
-                                catalog.getLayerGroupByName(layerQName.getPrefix(), localPart);
+                        publishable = catalog.getLayerGroupByName(layerQName.getPrefix(), localPart);
                     }
                 }
                 if (publishable == null) {
@@ -365,14 +354,11 @@ public class GeoPackageProcess implements GeoServerProcess {
         return layers;
     }
 
-    private ReferencedEnvelope getBoundsFromLayers(
-            TilesLayer tiles, List<PublishedInfo> publisheds) {
+    private ReferencedEnvelope getBoundsFromLayers(TilesLayer tiles, List<PublishedInfo> publisheds) {
         try {
             // generate one from requests layers
             CoordinateReferenceSystem crs =
-                    tiles.getSrs() != null
-                            ? CRS.decode(tiles.getSrs().toString())
-                            : getCRS(publisheds.get(0));
+                    tiles.getSrs() != null ? CRS.decode(tiles.getSrs().toString()) : getCRS(publisheds.get(0));
 
             ReferencedEnvelope bbox = null;
             for (PublishedInfo p : publisheds) {
@@ -440,10 +426,9 @@ public class GeoPackageProcess implements GeoServerProcess {
             }
         }
         if (features.getPropertyNames() != null) {
-            q.setPropertyNames(
-                    features.getPropertyNames().stream()
-                            .map(qn -> qn.getLocalPart())
-                            .toArray(n -> new String[n]));
+            q.setPropertyNames(features.getPropertyNames().stream()
+                    .map(qn -> qn.getLocalPart())
+                    .toArray(n -> new String[n]));
         }
 
         Filter filter = features.getFilter();
@@ -454,9 +439,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
             Envelope e = features.getBbox();
             Filter bboxFilter =
-                    filterFactory.bbox(
-                            filterFactory.property(defaultGeometry),
-                            ReferencedEnvelope.reference(e));
+                    filterFactory.bbox(filterFactory.property(defaultGeometry), ReferencedEnvelope.reference(e));
             if (filter == null) {
                 filter = bboxFilter;
             } else {
@@ -482,8 +465,7 @@ public class GeoPackageProcess implements GeoServerProcess {
                 ft.getFeatureSource(null, null).getFeatures(q);
 
         if (!(fc instanceof SimpleFeatureCollection)) {
-            throw new ServiceException(
-                    "GeoPackage OutputFormat does not support Complex Features.");
+            throw new ServiceException("GeoPackage OutputFormat does not support Complex Features.");
         }
         SimpleFeatureCollection collection = (SimpleFeatureCollection) fc;
 
@@ -535,8 +517,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
     /** Applies a default CRS to all geometric filter elements that do not already have one */
     public Filter applyDefaultCRS(Filter filter, CoordinateReferenceSystem defaultCRS) {
-        DefaultCRSFilterVisitor defaultVisitor =
-                new DefaultCRSFilterVisitor(filterFactory, defaultCRS);
+        DefaultCRSFilterVisitor defaultVisitor = new DefaultCRSFilterVisitor(filterFactory, defaultCRS);
         return (Filter) filter.accept(defaultVisitor, null);
     }
 
@@ -551,24 +532,19 @@ public class GeoPackageProcess implements GeoServerProcess {
         GeoHashCollection ghc = new GeoHashCollection(fc);
 
         // adapt sort to use geohash instead of the geometry
-        SortBy[] adaptedSort =
-                Arrays.stream(sort)
-                        .map(
-                                sb -> {
-                                    String name = sb.getPropertyName().getPropertyName();
-                                    if (fc.getSchema().getDescriptor(name)
-                                            instanceof GeometryDescriptor) {
-                                        return filterFactory.sort(
-                                                ghc.getGeoHashFieldName(), SortOrder.ASCENDING);
-                                    } else {
-                                        return sb;
-                                    }
-                                })
-                        .toArray(n -> new SortBy[n]);
+        SortBy[] adaptedSort = Arrays.stream(sort)
+                .map(sb -> {
+                    String name = sb.getPropertyName().getPropertyName();
+                    if (fc.getSchema().getDescriptor(name) instanceof GeometryDescriptor) {
+                        return filterFactory.sort(ghc.getGeoHashFieldName(), SortOrder.ASCENDING);
+                    } else {
+                        return sb;
+                    }
+                })
+                .toArray(n -> new SortBy[n]);
 
         // sort by geohash
-        SortedSimpleFeatureCollection sorted =
-                new SortedSimpleFeatureCollection(ghc, adaptedSort, 100000);
+        SortedSimpleFeatureCollection sorted = new SortedSimpleFeatureCollection(ghc, adaptedSort, 100000);
 
         // remove the geohash, casting to the original feature type
         return new ReTypingFeatureCollection(sorted, fc.getSchema());
@@ -583,8 +559,7 @@ public class GeoPackageProcess implements GeoServerProcess {
     }
 
     /**
-     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator
-     * computation rules
+     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator computation rules
      *
      * @param crs The CRS of the data
      * @param scaleDenominator The target scale denominator
@@ -595,8 +570,7 @@ public class GeoPackageProcess implements GeoServerProcess {
     }
 
     /**
-     * Converts a generalization distance to a scale denominator using the OGC SLD scale denominator
-     * computation rules
+     * Converts a generalization distance to a scale denominator using the OGC SLD scale denominator computation rules
      *
      * @param crs The CRS of the data
      * @param distance The target generalization distance
@@ -606,8 +580,7 @@ public class GeoPackageProcess implements GeoServerProcess {
         return distance * RendererUtilities.toMeters(1, crs) / 0.00028;
     }
 
-    private void addOverviews(
-            GeoPackage gpkg, FeaturesLayer layer, List<GeoPackageProcessRequest.Overview> overviews)
+    private void addOverviews(GeoPackage gpkg, FeaturesLayer layer, List<GeoPackageProcessRequest.Overview> overviews)
             throws IOException {
         Collections.sort(overviews);
         GeoPackageProcessRequest.Overview previousOverview = null;
@@ -635,10 +608,8 @@ public class GeoPackageProcess implements GeoServerProcess {
                 }
 
                 // build from previous overview if possible, base table otherwise
-                String sourceTable =
-                        previousOverview != null ? previousOverview.getName() : orginalLayerName;
-                SimpleFeatureStore source =
-                        (SimpleFeatureStore) dataStore.getFeatureSource(sourceTable);
+                String sourceTable = previousOverview != null ? previousOverview.getName() : orginalLayerName;
+                SimpleFeatureStore source = (SimpleFeatureStore) dataStore.getFeatureSource(sourceTable);
 
                 // make sure the distance is updated
                 double distance = overview.getDistance();
@@ -659,8 +630,7 @@ public class GeoPackageProcess implements GeoServerProcess {
                     source.setTransaction(t);
                     SimpleFeatureCollection fc = source.getFeatures(q);
 
-                    SimpleFeatureStore featureStore =
-                            (SimpleFeatureStore) dataStore.getFeatureSource(ft.getTypeName());
+                    SimpleFeatureStore featureStore = (SimpleFeatureStore) dataStore.getFeatureSource(ft.getTypeName());
                     featureStore.setTransaction(t);
                     featureStore.addFeatures(SimplifyingFeatureCollection.simplify(fc, distance));
                     t.commit();
@@ -674,10 +644,8 @@ public class GeoPackageProcess implements GeoServerProcess {
 
                 // register the overview table
                 try {
-                    GeneralizedTablesExtension generalized =
-                            gpkg.getExtension(GeneralizedTablesExtension.class);
-                    GeneralizedTable gt =
-                            new GeneralizedTable(orginalLayerName, overviewName, distance);
+                    GeneralizedTablesExtension generalized = gpkg.getExtension(GeneralizedTablesExtension.class);
+                    GeneralizedTable gt = new GeneralizedTable(orginalLayerName, overviewName, distance);
                     String provenance = "Source table: " + sourceTable;
                     if (filter != null) {
                         provenance += "\nFilter as CQL: " + ECQL.toCQL(filter);
@@ -695,12 +663,10 @@ public class GeoPackageProcess implements GeoServerProcess {
         }
     }
 
-    static JDBCDataStore getStoreFromPackage(GeoPackage gpkg, boolean contentsOnly)
-            throws IOException {
+    static JDBCDataStore getStoreFromPackage(GeoPackage gpkg, boolean contentsOnly) throws IOException {
         Map<String, Object> params = new HashMap<>();
         params.put(GeoPkgDataStoreFactory.DATASOURCE.key, gpkg.getDataSource());
-        JDBCDataStore dataStore =
-                new GeoPkgDataStoreFactory(gpkg.getWriterConfiguration()).createDataStore(params);
+        JDBCDataStore dataStore = new GeoPkgDataStoreFactory(gpkg.getWriterConfiguration()).createDataStore(params);
         ((GeoPkgDialect) dataStore.getSQLDialect()).setContentsOnly(contentsOnly);
         return dataStore;
     }
@@ -708,8 +674,7 @@ public class GeoPackageProcess implements GeoServerProcess {
     private void addLayerStyles(GeoPackage gpkg, LayerInfo layerInfo) throws IOException {
         try {
             PortrayalExtension portrayal = gpkg.getExtension(PortrayalExtension.class);
-            SemanticAnnotationsExtension annotations =
-                    gpkg.getExtension(SemanticAnnotationsExtension.class);
+            SemanticAnnotationsExtension annotations = gpkg.getExtension(SemanticAnnotationsExtension.class);
 
             StyleInfo defaultStyle = layerInfo.getDefaultStyle();
             GeoPkgStyle defaultGeoPkgStyle = addStyle(portrayal, annotations, defaultStyle);
@@ -724,21 +689,17 @@ public class GeoPackageProcess implements GeoServerProcess {
         }
     }
 
-    private void linkStyle(
-            SemanticAnnotationsExtension annotations, LayerInfo layerInfo, GeoPkgStyle style)
+    private void linkStyle(SemanticAnnotationsExtension annotations, LayerInfo layerInfo, GeoPkgStyle style)
             throws SQLException {
         // need to link style and layer (it's not done while adding the style, cause the
         // style could have been shared among different layers, and thus, created only once)
-        List<GeoPkgSemanticAnnotation> styleAnnotations =
-                annotations.getAnnotationsByURI(style.getUri());
+        List<GeoPkgSemanticAnnotation> styleAnnotations = annotations.getAnnotationsByURI(style.getUri());
         if (styleAnnotations.size() > 0) {
             GeoPkgSemanticAnnotation annotation = styleAnnotations.get(0);
             annotations.addReference(
-                    new GeoPkgAnnotationReference(
-                            layerInfo.getResource().getNativeName(), annotation));
+                    new GeoPkgAnnotationReference(layerInfo.getResource().getNativeName(), annotation));
             annotations.addReference(
-                    new GeoPkgAnnotationReference(
-                            PortrayalExtension.STYLES_TABLE, "id", style.getId(), annotation));
+                    new GeoPkgAnnotationReference(PortrayalExtension.STYLES_TABLE, "id", style.getId(), annotation));
         }
     }
 
@@ -768,13 +729,13 @@ public class GeoPackageProcess implements GeoServerProcess {
 
             // now go hunt for symbology
             WorkspaceInfo ws = style.getWorkspace();
-            String symbolPrefix =
-                    "symbols://" + (ws != null ? ws.getName() + "_" : "") + style.getName() + "/";
+            String symbolPrefix = "symbols://" + (ws != null ? ws.getName() + "_" : "") + style.getName() + "/";
             StyleResourceCollector collector =
                     new StyleResourceCollector(dataDirectory.getResourceLocator(ws), symbolPrefix);
             sld.accept(collector);
             int symbolId = 0;
-            for (Map.Entry<String, GeoPkgSymbolImage> entry : collector.getResources().entrySet()) {
+            for (Map.Entry<String, GeoPkgSymbolImage> entry :
+                    collector.getResources().entrySet()) {
                 String name = entry.getKey();
                 GeoPkgSymbolImage image = entry.getValue();
                 GeoPkgSymbol symbol = image.getSymbol();
@@ -787,8 +748,7 @@ public class GeoPackageProcess implements GeoServerProcess {
 
             // create a semantic annotation for the style
             GeoPkgSemanticAnnotation annotation =
-                    new GeoPkgSemanticAnnotation(
-                            PortrayalExtension.SA_TYPE_STYLE, styleName, styleURI);
+                    new GeoPkgSemanticAnnotation(PortrayalExtension.SA_TYPE_STYLE, styleName, styleURI);
             annotation.setDescription(description);
             annotations.addAnnotation(annotation);
         }
@@ -803,15 +763,9 @@ public class GeoPackageProcess implements GeoServerProcess {
             WorkspaceInfo ws = style.getWorkspace();
             String path = "styles/" + (ws != null ? ws.getName() + "/" : "") + style.getFilename();
             return ResponseUtils.buildURL(
-                    request.getBaseUrl(),
-                    path,
-                    Collections.emptyMap(),
-                    URLMangler.URLType.RESOURCE);
+                    request.getBaseUrl(), path, Collections.emptyMap(), URLMangler.URLType.RESOURCE);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Failed to build back-reference to the style, using a unique URI",
-                    e);
+            LOGGER.log(Level.INFO, "Failed to build back-reference to the style, using a unique URI", e);
             return style.prefixedName();
         }
     }

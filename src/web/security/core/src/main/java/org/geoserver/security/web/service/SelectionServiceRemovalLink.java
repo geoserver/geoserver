@@ -46,53 +46,48 @@ public class SelectionServiceRemovalLink extends AjaxLink<Object> {
         // could go wrong, and if the user accepts, let's delete what's needed
         dialog.showOkCancel(
                 target,
-                delegate =
-                        new GeoServerDialog.DialogDelegate() {
+                delegate = new GeoServerDialog.DialogDelegate() {
+                    @Override
+                    protected Component getContents(String id) {
+                        // show a confirmation panel for all the objects we have to remove
+                        return removePanel = new ConfirmRemovalServicePanel(id, selection) {
                             @Override
-                            protected Component getContents(String id) {
-                                // show a confirmation panel for all the objects we have to remove
-                                return removePanel =
-                                        new ConfirmRemovalServicePanel(id, selection) {
-                                            @Override
-                                            protected IModel<String> canRemove(
-                                                    ServiceAccessRule service) {
-                                                return SelectionServiceRemovalLink.this.canRemove(
-                                                        service);
-                                            }
-                                        };
+                            protected IModel<String> canRemove(ServiceAccessRule service) {
+                                return SelectionServiceRemovalLink.this.canRemove(service);
                             }
+                        };
+                    }
 
-                            @Override
-                            protected boolean onSubmit(
-                                    AjaxRequestTarget target, Component contents) {
-                                // cascade delete the whole selection
-                                ServiceAccessRuleDAO dao = ServiceAccessRuleDAO.get();
-                                for (ServiceAccessRule service : removePanel.getRoots()) {
-                                    dao.removeRule(service);
-                                }
-                                try {
-                                    dao.storeRules();
-                                } catch (IOException e) {
-                                    LOGGER.log(Level.WARNING, "", e);
-                                }
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        // cascade delete the whole selection
+                        ServiceAccessRuleDAO dao = ServiceAccessRuleDAO.get();
+                        for (ServiceAccessRule service : removePanel.getRoots()) {
+                            dao.removeRule(service);
+                        }
+                        try {
+                            dao.storeRules();
+                        } catch (IOException e) {
+                            LOGGER.log(Level.WARNING, "", e);
+                        }
 
-                                // the deletion will have changed what we see in the page
-                                // so better clear out the selection
-                                services.clearSelection();
-                                return true;
-                            }
+                        // the deletion will have changed what we see in the page
+                        // so better clear out the selection
+                        services.clearSelection();
+                        return true;
+                    }
 
-                            @Override
-                            public void onClose(AjaxRequestTarget target) {
-                                // if the selection has been cleared out it's sign a deletion
-                                // occurred, so refresh the table
-                                if (services.getSelection().isEmpty()) {
-                                    setEnabled(false);
-                                    target.add(SelectionServiceRemovalLink.this);
-                                    target.add(services);
-                                }
-                            }
-                        });
+                    @Override
+                    public void onClose(AjaxRequestTarget target) {
+                        // if the selection has been cleared out it's sign a deletion
+                        // occurred, so refresh the table
+                        if (services.getSelection().isEmpty()) {
+                            setEnabled(false);
+                            target.add(SelectionServiceRemovalLink.this);
+                            target.add(services);
+                        }
+                    }
+                });
     }
 
     protected StringResourceModel canRemove(ServiceAccessRule service) {

@@ -48,8 +48,7 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
 
     @Override
     public FeatureIterator<Feature> features() {
-        PushbackFeatureIterator<SimpleFeature> iterator =
-                new PushbackFeatureIterator<>(features.features());
+        PushbackFeatureIterator<SimpleFeature> iterator = new PushbackFeatureIterator<>(features.features());
         // scan through the joined features and map them
         return new FeatureIterator<Feature>() {
 
@@ -73,8 +72,7 @@ class MappingFeatureCollection extends BaseFeatureCollection<FeatureType, Featur
 
     @Override
     public void accepts(
-            org.geotools.api.feature.FeatureVisitor visitor,
-            org.geotools.api.util.ProgressListener progress)
+            org.geotools.api.feature.FeatureVisitor visitor, org.geotools.api.util.ProgressListener progress)
             throws IOException {
         if (visitor instanceof MinVisitor) {
             Expression expression = ((MinVisitor) visitor).getExpression();

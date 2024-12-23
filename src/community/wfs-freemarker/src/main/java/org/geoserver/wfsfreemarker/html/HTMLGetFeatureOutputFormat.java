@@ -22,16 +22,14 @@ import org.geoserver.wms.featureinfo.HTMLTemplateManager;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * A GetFeature response handler specialized in producing HTML data for a GetFeature request through
- * the {@link FreeMarkerTemplateManager}.
+ * A GetFeature response handler specialized in producing HTML data for a GetFeature request through the
+ * {@link FreeMarkerTemplateManager}.
  */
-public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat
-        implements ComplexFeatureAwareFormat {
+public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
 
     private final HTMLTemplateManager templateManager;
 
-    public HTMLGetFeatureOutputFormat(
-            GeoServer gs, final WMS wms, GeoServerResourceLoader resourceLoader) {
+    public HTMLGetFeatureOutputFormat(GeoServer gs, final WMS wms, GeoServerResourceLoader resourceLoader) {
         super(gs, HTML.getFormat());
         this.templateManager = new HTMLTemplateManager(HTML, wms, resourceLoader);
     }
@@ -49,10 +47,8 @@ public class HTMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    @SuppressWarnings(
-            "PMD.CloseResource") // the output stream is managed outside, only wrappers here
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
+    @SuppressWarnings("PMD.CloseResource") // the output stream is managed outside, only wrappers here
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation operation)
             throws IOException {
         List<FeatureCollection> resultsList = featureCollection.getFeature();
         templateManager.write(resultsList, output);

@@ -45,8 +45,8 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Tests temp values with commit and rollback, in this case of copy table followed by create view.
- * (The create view must use the temp table from the copy table).
+ * Tests temp values with commit and rollback, in this case of copy table followed by create view. (The create view must
+ * use the temp table from the copy table).
  *
  * @author Niels Charlier
  */
@@ -74,23 +74,32 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
     private static final String ATT_FAIL = "fail";
     private static final String ATT_EXT_GS = "ext_gs";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private LookupService<DbSource> dbSources;
+    @Autowired
+    private LookupService<DbSource> dbSources;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
     private Configuration config;
 
@@ -110,27 +119,19 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(CopyTableTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyTableTaskTypeImpl.PARAM_SOURCE_DB_NAME, ATT_SOURCE_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyTableTaskTypeImpl.PARAM_TARGET_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyTableTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CopyTableTaskTypeImpl.PARAM_TARGET_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_SOURCE_DB_NAME, ATT_SOURCE_DB);
+        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TARGET_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, CopyTableTaskTypeImpl.PARAM_TARGET_TABLE_NAME, ATT_TABLE_NAME);
         dataUtil.addTaskToConfiguration(config, task1);
 
         Task task2 = fac.createTask();
         task2.setName("task2");
         task2.setType(CreateViewTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, CreateViewTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task2, CreateViewTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, CreateViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task2, CreateViewTaskTypeImpl.PARAM_SELECT, ATT_SELECT);
+        dataUtil.setTaskParameterToAttribute(task2, CreateViewTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(task2, CreateViewTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(task2, CreateViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(task2, CreateViewTaskTypeImpl.PARAM_SELECT, ATT_SELECT);
         dataUtil.setTaskParameterToAttribute(task2, CreateViewTaskTypeImpl.PARAM_WHERE, ATT_WHERE);
         dataUtil.addTaskToConfiguration(config, task2);
 
@@ -166,8 +167,10 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_WHERE, WHERE);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -179,8 +182,7 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(VIEW_NAME));
 
         assertTrue(taskUtil.cleanup(config));
-        assertFalse(
-                viewOrTableExists(SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertFalse(viewOrTableExists(SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
         assertFalse(viewOrTableExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
     }
 
@@ -202,14 +204,15 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task3);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
-        assertFalse(
-                viewOrTableExists(SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertFalse(viewOrTableExists(SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
         assertFalse(viewOrTableExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
     }
 
@@ -223,12 +226,9 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         Task task3 = fac.createTask();
         task3.setName("task3");
         task3.setType(DbLocalPublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task3);
 
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
@@ -243,23 +243,17 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task3);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), "_temp%"));
-        assertTrue(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(TABLE_NAME),
-                        SqlUtil.notQualified(TABLE_NAME)));
-        assertTrue(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(VIEW_NAME),
-                        SqlUtil.notQualified(VIEW_NAME)));
+        assertTrue(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertTrue(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
         assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(TARGETDB_PUB_NAME, VIEW_NAME));
         assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(TARGETDB_PUB_NAME, VIEW_NAME));
 
@@ -269,23 +263,14 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         assertEquals(SqlUtil.notQualified(VIEW_NAME), fti.getNativeName());
 
         assertTrue(taskUtil.cleanup(config));
-        assertFalse(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(TABLE_NAME),
-                        SqlUtil.notQualified(TABLE_NAME)));
-        assertFalse(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(VIEW_NAME),
-                        SqlUtil.notQualified(VIEW_NAME)));
+        assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
         assertNull(catalog.getLayerByName(LAYER_NAME));
         assertNull(catalog.getResourceByName(LAYER_NAME, FeatureTypeInfo.class));
     }
 
     @Test
-    public void testRemotePublishSuccessAndCleanup()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testRemotePublishSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
         Assume.assumeTrue(extGeoservers.get("mygs").getRESTManager().getReader().existGeoserver());
         try (Connection conn = dbSources.get(TARGETDB_PUB_NAME).getDataSource().getConnection()) {
         } catch (SQLException e) {
@@ -295,25 +280,18 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         Task task3 = fac.createTask();
         task3.setName("task3");
         task3.setType(DbLocalPublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task3, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(task3, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task3);
 
         Task task4 = fac.createTask();
         task4.setName("task4");
         task4.setType(DbRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task4, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(
-                task4, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
-        dataUtil.setTaskParameterToAttribute(
-                task4, DbRemotePublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task4, DbRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task4, DbRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task4, DbRemotePublicationTaskTypeImpl.PARAM_DB_NAME, ATT_TARGET_DB);
+        dataUtil.setTaskParameterToAttribute(task4, DbRemotePublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(task4, DbRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task4);
 
         dataUtil.setConfigurationAttribute(config, ATT_SOURCE_DB, SOURCEDB_NAME);
@@ -331,23 +309,17 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task4);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), "_temp%"));
-        assertTrue(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(TABLE_NAME),
-                        SqlUtil.notQualified(TABLE_NAME)));
-        assertTrue(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(VIEW_NAME),
-                        SqlUtil.notQualified(VIEW_NAME)));
+        assertTrue(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertTrue(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
         assertEquals(NUMBER_OF_RECORDS, getNumberOfRecords(TARGETDB_PUB_NAME, VIEW_NAME));
         assertEquals(NUMBER_OF_COLUMNS, getNumberOfColumns(TARGETDB_PUB_NAME, VIEW_NAME));
 
@@ -369,16 +341,8 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         // cleanup
         assertTrue(taskUtil.cleanup(config));
 
-        assertFalse(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(TABLE_NAME),
-                        SqlUtil.notQualified(TABLE_NAME)));
-        assertFalse(
-                viewOrTableExists(
-                        TARGETDB_PUB_NAME,
-                        SqlUtil.schema(VIEW_NAME),
-                        SqlUtil.notQualified(VIEW_NAME)));
+        assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(TABLE_NAME), SqlUtil.notQualified(TABLE_NAME)));
+        assertFalse(viewOrTableExists(TARGETDB_PUB_NAME, SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
         assertNull(catalog.getLayerByName(LAYER_NAME));
         assertNull(catalog.getResourceByName(LAYER_NAME, FeatureTypeInfo.class));
         assertFalse(restManager.getReader().existsLayer("gs", LAYER_NAME, true));
@@ -419,8 +383,7 @@ public class ConsecutiveTest extends AbstractTaskManagerTest {
         return viewOrTableExists(TARGETDB_NAME, schema, pattern);
     }
 
-    private boolean viewOrTableExists(String dbName, String schema, String pattern)
-            throws SQLException {
+    private boolean viewOrTableExists(String dbName, String schema, String pattern) throws SQLException {
         DbSource ds = dbSources.get(dbName);
         try (Connection conn = ds.getDataSource().getConnection()) {
             DatabaseMetaData md = conn.getMetaData();

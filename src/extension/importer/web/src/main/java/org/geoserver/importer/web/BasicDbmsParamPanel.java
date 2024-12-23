@@ -57,13 +57,10 @@ class BasicDbParamPanel extends Panel {
         add(new TextField<>("host", new PropertyModel<>(this, "host")).setRequired(true));
         add(new TextField<>("port", new PropertyModel<>(this, "port")).setRequired(true));
         add(new TextField<>("username", new PropertyModel<>(this, "username")).setRequired(true));
-        add(
-                new PasswordTextField("password", new PropertyModel<>(this, "password"))
-                        .setResetPassword(false)
-                        .setRequired(false));
-        add(
-                new TextField<>("database", new PropertyModel<>(this, "database"))
-                        .setRequired(databaseRequired));
+        add(new PasswordTextField("password", new PropertyModel<>(this, "password"))
+                .setResetPassword(false)
+                .setRequired(false));
+        add(new TextField<>("database", new PropertyModel<>(this, "database")).setRequired(databaseRequired));
         add(new TextField<>("schema", new PropertyModel<>(this, "schema")));
 
         connPoolLink = toggleConnectionPoolLink();
@@ -79,19 +76,16 @@ class BasicDbParamPanel extends Panel {
 
     /** Toggles the connection pool param panel */
     Component toggleConnectionPoolLink() {
-        AjaxLink connPoolLink =
-                new AjaxLink("connectionPoolLink") {
+        AjaxLink connPoolLink = new AjaxLink("connectionPoolLink") {
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        connPoolPanel.setVisible(!connPoolPanel.isVisible());
-                        target.add(connPoolPanelContainer);
-                        target.add(this);
-                    }
-                };
-        connPoolLink.add(
-                new AttributeModifier(
-                        "class", () -> connPoolPanel.isVisible() ? "expanded" : "collapsed"));
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                connPoolPanel.setVisible(!connPoolPanel.isVisible());
+                target.add(connPoolPanelContainer);
+                target.add(this);
+            }
+        };
+        connPoolLink.add(new AttributeModifier("class", () -> connPoolPanel.isVisible() ? "expanded" : "collapsed"));
         connPoolLink.setOutputMarkupId(true);
         return connPoolLink;
     }

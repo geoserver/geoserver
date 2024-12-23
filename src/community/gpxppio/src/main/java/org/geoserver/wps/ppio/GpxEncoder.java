@@ -36,8 +36,8 @@ import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Encoder class to encode SimpleFeatureCollection to GPX The encoder uses only a XMLStreamWriter
- * for simplicity and performance sake.
+ * Encoder class to encode SimpleFeatureCollection to GPX The encoder uses only a XMLStreamWriter for simplicity and
+ * performance sake.
  */
 public class GpxEncoder {
     boolean writeExtendedData = false;
@@ -80,8 +80,7 @@ public class GpxEncoder {
 
         CRSAuthorityFactory crsFactory = CRS.getAuthorityFactory(true);
 
-        CoordinateReferenceSystem targetCRS =
-                crsFactory.createCoordinateReferenceSystem("EPSG:4326");
+        CoordinateReferenceSystem targetCRS = crsFactory.createCoordinateReferenceSystem("EPSG:4326");
         collection = new ReprojectingFeatureCollection(collection, targetCRS);
 
         XMLOutputFactory xmlFactory = XMLOutputFactory.newInstance();
@@ -170,13 +169,11 @@ public class GpxEncoder {
             throws XMLStreamException {
         Coordinate[] coordinates = ls.getCoordinates();
         for (int ic = 0; ic < coordinates.length; ic++) {
-            writeWpt(
-                    writer, ptElementName, coordinates[ic].x, coordinates[ic].y, coordinates[ic].z);
+            writeWpt(writer, ptElementName, coordinates[ic].x, coordinates[ic].y, coordinates[ic].z);
         }
     }
 
-    private void writeWpt(
-            XMLStreamWriter writer, String ptElementName, double x, double y, double z)
+    private void writeWpt(XMLStreamWriter writer, String ptElementName, double x, double y, double z)
             throws XMLStreamException {
         writer.writeStartElement(ptElementName);
         writer.writeAttribute("lat", format.format(y));
@@ -193,8 +190,7 @@ public class GpxEncoder {
         writer.writeEndElement();
     }
 
-    private void writeRte(XMLStreamWriter writer, LineString ls, SimpleFeature f)
-            throws XMLStreamException {
+    private void writeRte(XMLStreamWriter writer, LineString ls, SimpleFeature f) throws XMLStreamException {
         writer.writeStartElement("rte");
         if (writeExtendedData) {
             writeData(writer, f);
@@ -203,8 +199,7 @@ public class GpxEncoder {
         writer.writeEndElement();
     }
 
-    private void writeWpt(XMLStreamWriter writer, Point pt, SimpleFeature f)
-            throws XMLStreamException {
+    private void writeWpt(XMLStreamWriter writer, Point pt, SimpleFeature f) throws XMLStreamException {
         writer.writeStartElement("wpt");
         Coordinate c = pt.getCoordinate();
         writer.writeAttribute("lon", format.format(c.x));

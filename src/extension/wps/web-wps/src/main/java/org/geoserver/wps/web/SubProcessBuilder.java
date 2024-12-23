@@ -22,19 +22,18 @@ public class SubProcessBuilder extends Panel {
         final WPSRequestBuilderPanel builder = new WPSRequestBuilderPanel("builder", request);
         form.add(builder);
 
-        form.add(
-                new AjaxSubmitLink("apply") {
+        form.add(new AjaxSubmitLink("apply") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        window.close(target);
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                window.close(target);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        super.onError(target);
-                        target.add(builder.getFeedbackPanel());
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
+                target.add(builder.getFeedbackPanel());
+            }
+        });
     }
 }

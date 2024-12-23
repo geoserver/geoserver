@@ -27,13 +27,11 @@ public abstract class LayerGroupStylePanel extends FormComponentPanel<LayerGroup
     private LayerGroupEntryPanel<LayerGroupStyle> groupEntryPanel;
     private TextField<String> name;
 
-    public LayerGroupStylePanel(
-            String id, LayerGroupStyleModel model, IModel<WorkspaceInfo> workspaceInfo) {
+    public LayerGroupStylePanel(String id, LayerGroupStyleModel model, IModel<WorkspaceInfo> workspaceInfo) {
         super(id, model);
         IModel<StyleInfo> styleNameModel = new PropertyModel<>(model, "name");
         if (styleNameModel.getObject() == null)
-            styleNameModel.setObject(
-                    new StyleInfoImpl((Catalog) GeoServerExtensions.bean("catalog")));
+            styleNameModel.setObject(new StyleInfoImpl((Catalog) GeoServerExtensions.bean("catalog")));
         name = new TextField<>("layerGroupStyleName", model.nameModel());
         name.setRequired(true);
         add(name);
@@ -41,19 +39,17 @@ public abstract class LayerGroupStylePanel extends FormComponentPanel<LayerGroup
                 new TitleAndAbstractPanel("titleAndAbstract", model, "titleMsg", "abstract", this);
         add(titleAndAbstractPanel);
         add(removeLink());
-        this.groupEntryPanel =
-                new LayerGroupEntryPanel<>(
-                        "layerGroupEntryPanel", model, workspaceInfo, true, false) {
-                    @Override
-                    protected List<PublishedInfo> getLayers(LayerGroupStyle object) {
-                        return object.getLayers();
-                    }
+        this.groupEntryPanel = new LayerGroupEntryPanel<>("layerGroupEntryPanel", model, workspaceInfo, true, false) {
+            @Override
+            protected List<PublishedInfo> getLayers(LayerGroupStyle object) {
+                return object.getLayers();
+            }
 
-                    @Override
-                    protected List<StyleInfo> getStyles(LayerGroupStyle object) {
-                        return object.getStyles();
-                    }
-                };
+            @Override
+            protected List<StyleInfo> getStyles(LayerGroupStyle object) {
+                return object.getStyles();
+            }
+        };
         groupEntryPanel.setOutputMarkupId(true);
         add(groupEntryPanel);
     }

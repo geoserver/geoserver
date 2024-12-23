@@ -42,8 +42,8 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * Strategy to manage selection of {@link WorkspaceInfo} and {@link PublishedInfo}, as well as
- * describing the selection results.
+ * Strategy to manage selection of {@link WorkspaceInfo} and {@link PublishedInfo}, as well as describing the selection
+ * results.
  */
 // TODO WICKET8 - Verify this page works OK
 abstract class HomePageSelection implements Serializable {
@@ -64,8 +64,8 @@ abstract class HomePageSelection implements Serializable {
         /** Automatically choose between dropdowns and simple text based on catalog size */
         AUTOMATIC,
         /**
-         * Layer autocomplete is only available when workspace prefix provided. Suitable for large
-         * catalogues with many workspaces
+         * Layer autocomplete is only available when workspace prefix provided. Suitable for large catalogues with many
+         * workspaces
          */
         DROPDOWN,
 
@@ -91,8 +91,7 @@ abstract class HomePageSelection implements Serializable {
     static long HOME_PAGE_TIMEOUT = Long.getLong("GeoServerHomePage.selectionTimeout", 5000);
 
     /** Maximum number of workspaces and layers to load */
-    static int HOME_PAGE_MAX_ITEMS =
-            Integer.getInteger("GeoServerHomePage.selectionMaxItems", 1000);
+    static int HOME_PAGE_MAX_ITEMS = Integer.getInteger("GeoServerHomePage.selectionMaxItems", 1000);
 
     public static HomePageSelection getHomePageSelection(GeoServerHomePage page) {
         if (MODE == SelectionMode.DROPDOWN) {
@@ -116,25 +115,23 @@ abstract class HomePageSelection implements Serializable {
 
     static FormComponent<WorkspaceInfo> getWorkspaceSelect2Choice(
             GeoServerHomePage page, Form form, String componentId) {
-        Select2DropDownChoice<WorkspaceInfo> component =
-                new Select2DropDownChoice<>(
-                        "select",
-                        new PropertyModel<>(page, "workspaceInfo"),
-                        new WorkspacesModel(),
-                        new WorkspaceChoiceNameRenderer());
-        component.add(
-                new FormComponentUpdatingBehavior() {
-                    @Override
-                    protected void onUpdate() {
-                        WorkspaceInfo newSelection = component.getModelObject();
-                        if (newSelection != null) {
-                            page.selectHomePage(newSelection.getName(), null);
-                        } else {
-                            String workspaceName = page.getWorkspaceFieldText();
-                            page.selectHomePage(workspaceName, null);
-                        }
-                    }
-                });
+        Select2DropDownChoice<WorkspaceInfo> component = new Select2DropDownChoice<>(
+                "select",
+                new PropertyModel<>(page, "workspaceInfo"),
+                new WorkspacesModel(),
+                new WorkspaceChoiceNameRenderer());
+        component.add(new FormComponentUpdatingBehavior() {
+            @Override
+            protected void onUpdate() {
+                WorkspaceInfo newSelection = component.getModelObject();
+                if (newSelection != null) {
+                    page.selectHomePage(newSelection.getName(), null);
+                } else {
+                    String workspaceName = page.getWorkspaceFieldText();
+                    page.selectHomePage(workspaceName, null);
+                }
+            }
+        });
         component.setNullValid(true);
 
         Fragment fragment = new Fragment(componentId, "select", page);
@@ -145,17 +142,16 @@ abstract class HomePageSelection implements Serializable {
     }
 
     protected TextField<WorkspaceInfo> getWorkspaceTextField(Form form, String componentId) {
-        TextField<WorkspaceInfo> component =
-                new TextField<>("text", new PropertyModel<>(page, "workspaceInfo")) {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (WorkspaceInfo.class.isAssignableFrom(type)) {
-                            return (IConverter<C>) new WorkspaceInfoConverter();
-                        }
-                        return null;
-                    }
-                };
+        TextField<WorkspaceInfo> component = new TextField<>("text", new PropertyModel<>(page, "workspaceInfo")) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                if (WorkspaceInfo.class.isAssignableFrom(type)) {
+                    return (IConverter<C>) new WorkspaceInfoConverter();
+                }
+                return null;
+            }
+        };
         component.setOutputMarkupId(true);
 
         Fragment fragment = new Fragment(componentId, "text", page);
@@ -174,50 +170,41 @@ abstract class HomePageSelection implements Serializable {
 
     static Select2DropDownChoice<PublishedInfo> getPublishedSelect2Choice(
             GeoServerHomePage page, Form form, String componentId) {
-        PublishedInfosModel layersModel =
-                new PublishedInfosModel() {
-                    @Override
-                    protected Filter getFilter() {
-                        return getLayerFilter(page, page.getWorkspaceInfo());
-                    }
-                };
-        IChoiceRenderer<PublishedInfo> layersRenderer =
-                new PublishedChoiceRenderer() {
-                    @Override
-                    public Object getDisplayValue(PublishedInfo layer) {
-                        return page.getWorkspaceInfo() != null
-                                ? layer.getName()
-                                : layer.prefixedName();
-                    }
-                };
+        PublishedInfosModel layersModel = new PublishedInfosModel() {
+            @Override
+            protected Filter getFilter() {
+                return getLayerFilter(page, page.getWorkspaceInfo());
+            }
+        };
+        IChoiceRenderer<PublishedInfo> layersRenderer = new PublishedChoiceRenderer() {
+            @Override
+            public Object getDisplayValue(PublishedInfo layer) {
+                return page.getWorkspaceInfo() != null ? layer.getName() : layer.prefixedName();
+            }
+        };
 
-        Select2DropDownChoice<PublishedInfo> component =
-                new Select2DropDownChoice<>(
-                        "select",
-                        new PropertyModel<>(page, "publishedInfo"),
-                        layersModel,
-                        layersRenderer);
-        component.add(
-                new FormComponentUpdatingBehavior() {
-                    @Override
-                    protected void onUpdate() {
-                        PublishedInfo newSelection = component.getModelObject();
-                        if (newSelection != null) {
-                            String prefixed = newSelection.prefixedName();
-                            if (prefixed.contains(":")) {
-                                String workspaceName = prefixed.substring(0, prefixed.indexOf(":"));
-                                String layerName = prefixed.substring(prefixed.indexOf(":") + 1);
+        Select2DropDownChoice<PublishedInfo> component = new Select2DropDownChoice<>(
+                "select", new PropertyModel<>(page, "publishedInfo"), layersModel, layersRenderer);
+        component.add(new FormComponentUpdatingBehavior() {
+            @Override
+            protected void onUpdate() {
+                PublishedInfo newSelection = component.getModelObject();
+                if (newSelection != null) {
+                    String prefixed = newSelection.prefixedName();
+                    if (prefixed.contains(":")) {
+                        String workspaceName = prefixed.substring(0, prefixed.indexOf(":"));
+                        String layerName = prefixed.substring(prefixed.indexOf(":") + 1);
 
-                                page.selectHomePage(workspaceName, layerName);
-                            } else {
-                                page.selectHomePage(null, prefixed);
-                            }
-                        } else {
-                            String workspaceName = page.getWorkspaceFieldText();
-                            page.selectHomePage(workspaceName, null);
-                        }
+                        page.selectHomePage(workspaceName, layerName);
+                    } else {
+                        page.selectHomePage(null, prefixed);
                     }
-                });
+                } else {
+                    String workspaceName = page.getWorkspaceFieldText();
+                    page.selectHomePage(workspaceName, null);
+                }
+            }
+        });
         component.setNullValid(true);
 
         Fragment fragment = new Fragment(componentId, "select", page);
@@ -228,17 +215,16 @@ abstract class HomePageSelection implements Serializable {
     }
 
     protected TextField<PublishedInfo> getPublishedTextField(Form form, String componentId) {
-        TextField<PublishedInfo> component =
-                new TextField<>("text", new PropertyModel<>(page, "publishedInfo")) {
-                    @Override
-                    @SuppressWarnings("unchecked")
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (PublishedInfo.class.isAssignableFrom(type)) {
-                            return (IConverter<C>) new PublishedInfoConverter();
-                        }
-                        return null;
-                    }
-                };
+        TextField<PublishedInfo> component = new TextField<>("text", new PropertyModel<>(page, "publishedInfo")) {
+            @Override
+            @SuppressWarnings("unchecked")
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                if (PublishedInfo.class.isAssignableFrom(type)) {
+                    return (IConverter<C>) new PublishedInfoConverter();
+                }
+                return null;
+            }
+        };
         component.setOutputMarkupId(true);
 
         Fragment fragment = new Fragment(componentId, "text", page);
@@ -316,28 +302,22 @@ abstract class HomePageSelection implements Serializable {
 
         if (publishedInfo != null && publishedInfo instanceof LayerInfo) {
             params.put("layerName", escapeMarkup(publishedInfo.prefixedName()));
-            return new StringResourceModel(
-                    "GeoServerHomePage.descriptionLayer", page, new Model<>(params));
+            return new StringResourceModel("GeoServerHomePage.descriptionLayer", page, new Model<>(params));
         } else if (publishedInfo != null && publishedInfo instanceof LayerGroupInfo) {
             params.put("layerName", escapeMarkup(publishedInfo.prefixedName()));
-            return new StringResourceModel(
-                    "GeoServerHomePage.descriptionLayerGroup", page, new Model<>(params));
+            return new StringResourceModel("GeoServerHomePage.descriptionLayerGroup", page, new Model<>(params));
         } else if (workspaceInfo != null) {
             params.put("workspaceName", escapeMarkup(workspaceInfo.getName()));
-            return new StringResourceModel(
-                    "GeoServerHomePage.descriptionWorkspace", page, new Model<>(params));
+            return new StringResourceModel("GeoServerHomePage.descriptionWorkspace", page, new Model<>(params));
         } else if (isGlobal) {
-            return new StringResourceModel(
-                    "GeoServerHomePage.descriptionGlobal", page, new Model<>(params));
+            return new StringResourceModel("GeoServerHomePage.descriptionGlobal", page, new Model<>(params));
         } else {
-            return new StringResourceModel(
-                    "GeoServerHomePage.descriptionGlobalOff", page, new Model<>(params));
+            return new StringResourceModel("GeoServerHomePage.descriptionGlobalOff", page, new Model<>(params));
         }
     }
 
     /**
-     * Count of PublishedInfo (ie layer or layergroup) taking the current workspace and global
-     * services into account.
+     * Count of PublishedInfo (ie layer or layergroup) taking the current workspace and global services into account.
      *
      * @return Count of addressable layers
      */
@@ -408,20 +388,18 @@ abstract class HomePageSelection implements Serializable {
         public Auto(GeoServerHomePage page) {
             super(page);
             // load workspaces and layers honoring max total time
-            this.workspaceLoader =
-                    new BoundedCatalogLoader<>(
-                            page.getCatalog(),
-                            Predicates.acceptAll(),
-                            WorkspaceInfo.class,
-                            HOME_PAGE_TIMEOUT,
-                            HOME_PAGE_MAX_ITEMS);
-            this.publishedLoader =
-                    new BoundedCatalogLoader<>(
-                            page.getCatalog(),
-                            getLayerFilter(page, page.getWorkspaceInfo()),
-                            PublishedInfo.class,
-                            workspaceLoader.getResidualTime(),
-                            HOME_PAGE_MAX_ITEMS);
+            this.workspaceLoader = new BoundedCatalogLoader<>(
+                    page.getCatalog(),
+                    Predicates.acceptAll(),
+                    WorkspaceInfo.class,
+                    HOME_PAGE_TIMEOUT,
+                    HOME_PAGE_MAX_ITEMS);
+            this.publishedLoader = new BoundedCatalogLoader<>(
+                    page.getCatalog(),
+                    getLayerFilter(page, page.getWorkspaceInfo()),
+                    PublishedInfo.class,
+                    workspaceLoader.getResidualTime(),
+                    HOME_PAGE_MAX_ITEMS);
         }
 
         @Override

@@ -55,10 +55,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     /** Name of the page parameter that determines which gridset to edit */
     public static final String GRIDSET_NAME = "gridSet";
 
-    /**
-     * Name of page parameter that holds the name of an existing gridset to use as template to
-     * create a new one
-     */
+    /** Name of page parameter that holds the name of an existing gridset to use as template to create a new one */
     public static final String GRIDSET_TEMPLATE_NAME = "template";
 
     protected final Form<GridSetInfo> form;
@@ -118,9 +115,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(feedback);
 
         form.add(name = name(model));
-        form.add(
-                description =
-                        new TextArea<>("description", new PropertyModel<>(model, "description")));
+        form.add(description = new TextArea<>("description", new PropertyModel<>(model, "description")));
         form.add(crs = crs(model));
         form.add(bounds = bounds(model));
         form.add(computeBoundsLink = computeBoundsLink(form));
@@ -137,45 +132,38 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         form.add(saveLink);
         add(form);
 
-        tileWidth
-                .getFormComponent()
-                .add(
-                        new AjaxFormComponentUpdatingBehavior("blur") {
-                            private static final long serialVersionUID = 1L;
+        tileWidth.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                target.add(tileMatrixSetEditor);
-                            }
-                        });
-        tileHeight
-                .getFormComponent()
-                .add(
-                        new AjaxFormComponentUpdatingBehavior("blur") {
-                            private static final long serialVersionUID = 1L;
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(tileMatrixSetEditor);
+            }
+        });
+        tileHeight.getFormComponent().add(new AjaxFormComponentUpdatingBehavior("blur") {
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            protected void onUpdate(AjaxRequestTarget target) {
-                                target.add(tileMatrixSetEditor);
-                            }
-                        });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                target.add(tileMatrixSetEditor);
+            }
+        });
 
-        addLevelLink =
-                new GeoServerAjaxFormLink("addZoomLevel", form) {
-                    private static final long serialVersionUID = 1202251941625034786L;
+        addLevelLink = new GeoServerAjaxFormLink("addZoomLevel", form) {
+            private static final long serialVersionUID = 1202251941625034786L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        crs.processInput();
-                        bounds.processInput();
-                        tileWidth.getFormComponent().processInput();
-                        tileHeight.getFormComponent().processInput();
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                crs.processInput();
+                bounds.processInput();
+                tileWidth.getFormComponent().processInput();
+                tileHeight.getFormComponent().processInput();
 
-                        addZoomLevel(target);
-                        target.add(tileMatrixSetEditor);
-                        target.add(feedback);
-                    }
-                };
+                addZoomLevel(target);
+                target.add(tileMatrixSetEditor);
+                target.add(feedback);
+            }
+        };
 
         form.add(addLevelLink);
     }
@@ -183,33 +171,30 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     void addZoomLevel(AjaxRequestTarget target) {
         ReferencedEnvelope bbox = bounds.getModelObject();
         if (null == bbox) {
-            String message =
-                    new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
+            String message = new StringResourceModel("AbstractGridSetPage.cantAddZoomLevel").getString();
             feedback.error(message);
             return;
         }
         Integer width = (Integer) tileWidth.getFormComponent().getModelObject();
         Integer height = (Integer) tileHeight.getFormComponent().getModelObject();
 
-        tileMatrixSetEditor.addZoomLevel(
-                bbox, width == null ? 256 : width, height == null ? 256 : height);
+        tileMatrixSetEditor.addZoomLevel(bbox, width == null ? 256 : width, height == null ? 256 : height);
     }
 
     private Component computeBoundsLink(Form<GridSetInfo> form) {
 
-        GeoServerAjaxFormLink link =
-                new GeoServerAjaxFormLink("computeBounds", form) {
-                    private static final long serialVersionUID = 1L;
+        GeoServerAjaxFormLink link = new GeoServerAjaxFormLink("computeBounds", form) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                        crs.processInput();
-                        computeBounds();
-                        target.add(bounds);
-                        target.add(feedback);
-                        target.add(tileMatrixSetEditor);
-                    }
-                };
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                crs.processInput();
+                computeBounds();
+                target.add(bounds);
+                target.add(feedback);
+                target.add(tileMatrixSetEditor);
+            }
+        };
         return link;
     }
 
@@ -217,17 +202,13 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         // perform manual processing of the required fields
         CoordinateReferenceSystem coordSys = crs.getModelObject();
         if (coordSys == null) {
-            bounds.error(
-                    new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet")
-                            .getString());
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.crsNotSet").getString());
             return;
         }
         GWC mediator = GWC.get();
         ReferencedEnvelope aov = mediator.getAreaOfValidity(coordSys);
         if (aov == null) {
-            bounds.error(
-                    new StringResourceModel("AbstractGridsetPage.computeBounds.aovNotSet")
-                            .getString());
+            bounds.error(new StringResourceModel("AbstractGridsetPage.computeBounds.aovNotSet").getString());
         } else {
             bounds.setModelObject(aov);
         }
@@ -279,24 +260,22 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel tileHeight(IModel<GridSetInfo> model) {
-        TextParamPanel<Integer> panel =
-                new TextParamPanel<>(
-                        "tileHeight",
-                        new PropertyModel<>(model, "tileHeight"),
-                        new StringResourceModel("AbstractGridSetPage.tileHeight"),
-                        true,
-                        new RangeValidator<>(16, 2048));
+        TextParamPanel<Integer> panel = new TextParamPanel<>(
+                "tileHeight",
+                new PropertyModel<>(model, "tileHeight"),
+                new StringResourceModel("AbstractGridSetPage.tileHeight"),
+                true,
+                new RangeValidator<>(16, 2048));
         return panel;
     }
 
     private TextParamPanel tileWidth(IModel<GridSetInfo> model) {
-        TextParamPanel<Integer> panel =
-                new TextParamPanel<>(
-                        "tileWidth",
-                        new PropertyModel<>(model, "tileWidth"),
-                        new StringResourceModel("AbstractGridSetPage.tileWidth"),
-                        true,
-                        new RangeValidator<>(16, 2048));
+        TextParamPanel<Integer> panel = new TextParamPanel<>(
+                "tileWidth",
+                new PropertyModel<>(model, "tileWidth"),
+                new StringResourceModel("AbstractGridSetPage.tileWidth"),
+                true,
+                new RangeValidator<>(16, 2048));
         return panel;
     }
 
@@ -306,17 +285,15 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         return crsPanel;
     }
 
-    protected GridSet toGridSet(AjaxRequestTarget target, Form<?> form, GridSetInfo info)
-            throws Exception {
+    protected GridSet toGridSet(AjaxRequestTarget target, Form<?> form, GridSetInfo info) throws Exception {
         final GridSet newGridset = GridSetBuilder.build(info);
 
         // the creation above can fill in the blanks of empty UI names, here is where we can
         // check if the names are actually unique
-        List<String> names =
-                IntStream.range(0, newGridset.getNumLevels())
-                        .mapToObj(i -> newGridset.getGrid(i).getName())
-                        .sorted()
-                        .collect(Collectors.toList());
+        List<String> names = IntStream.range(0, newGridset.getNumLevels())
+                .mapToObj(i -> newGridset.getGrid(i).getName())
+                .sorted()
+                .collect(Collectors.toList());
         Set<String> duplicates = new LinkedHashSet<>();
         for (int i = 1; i < names.size(); i++) {
             String prevName = names.get(i - 1);
@@ -369,28 +346,27 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
 
         @Override
         protected SRSListPanel srsListPanel() {
-            SRSListPanel srsList =
-                    new SRSListPanel(popupWindow.getContentId()) {
+            SRSListPanel srsList = new SRSListPanel(popupWindow.getContentId()) {
 
-                        private static final long serialVersionUID = 2869219395676091081L;
+                private static final long serialVersionUID = 2869219395676091081L;
 
-                        @Override
-                        protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
-                            popupWindow.close(target);
+                @Override
+                protected void onCodeClicked(AjaxRequestTarget target, String epsgCode) {
+                    popupWindow.close(target);
 
-                            String srs = "EPSG:" + epsgCode;
-                            srsTextField.setModelObject(srs);
-                            target.add(srsTextField);
+                    String srs = "EPSG:" + epsgCode;
+                    srsTextField.setModelObject(srs);
+                    target.add(srsTextField);
 
-                            CoordinateReferenceSystem crs = fromSRS(srs);
-                            wktLabel.setDefaultModelObject(crs.getName().toString());
-                            wktLink.setEnabled(true);
-                            target.add(wktLink);
-                            updateUnits(crs);
-                            target.add(units);
-                            target.add(metersPerUnit);
-                        }
-                    };
+                    CoordinateReferenceSystem crs = fromSRS(srs);
+                    wktLabel.setDefaultModelObject(crs.getName().toString());
+                    wktLink.setEnabled(true);
+                    target.add(wktLink);
+                    updateUnits(crs);
+                    target.add(units);
+                    target.add(metersPerUnit);
+                }
+            };
             srsList.setCompactMode(true);
             return srsList;
         }
@@ -432,13 +408,12 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
     }
 
     private TextParamPanel name(IModel<GridSetInfo> model) {
-        TextParamPanel<String> namePanel =
-                new TextParamPanel<>(
-                        "name",
-                        new PropertyModel<>(model, "name"),
-                        new StringResourceModel("AbstractGridSetPage.name"),
-                        true,
-                        new UniqueNameValidator(model.getObject().getName()));
+        TextParamPanel<String> namePanel = new TextParamPanel<>(
+                "name",
+                new PropertyModel<>(model, "name"),
+                new StringResourceModel("AbstractGridSetPage.name"),
+                true,
+                new UniqueNameValidator(model.getObject().getName()));
         return namePanel;
     }
 
@@ -451,8 +426,7 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
             GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
             GridSet gridSet = gridSetBroker.get(gridSetName);
             if (gridSet == null) {
-                throw new IllegalArgumentException(
-                        "Requested GridSet does not exist: '" + gridSetName + "'");
+                throw new IllegalArgumentException("Requested GridSet does not exist: '" + gridSetName + "'");
             }
 
             final String name = gridSet.getName();
@@ -488,8 +462,8 @@ abstract class AbstractGridSetPage extends GeoServerSecuredPage {
         private final String previousName;
 
         /**
-         * @param previousName the initial name of the gridset when the page loaded, may be {@code
-         *     null} only in case we're creating a new gridset
+         * @param previousName the initial name of the gridset when the page loaded, may be {@code null} only in case
+         *     we're creating a new gridset
          */
         public UniqueNameValidator(final String previousName) {
             this.previousName = previousName;

@@ -26,29 +26,20 @@ import java.util.TreeMap;
 public class ClassProperties {
     private static final Multimap<String, Method> EMPTY = ImmutableMultimap.of();
 
-    private static final Set<String> COMMON_DERIVED_PROPERTIES =
-            new HashSet<>(Arrays.asList("prefixedName"));
+    private static final Set<String> COMMON_DERIVED_PROPERTIES = new HashSet<>(Arrays.asList("prefixedName"));
     Multimap<String, Method> methods;
     Multimap<String, Method> getters;
     Multimap<String, Method> setters;
 
     public ClassProperties(Class<?> clazz) {
-        methods =
-                Multimaps.newListMultimap(
-                        new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
-        getters =
-                Multimaps.newListMultimap(
-                        new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
-        setters =
-                Multimaps.newListMultimap(
-                        new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
+        methods = Multimaps.newListMultimap(new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
+        getters = Multimaps.newListMultimap(new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
+        setters = Multimaps.newListMultimap(new TreeMap<>(String.CASE_INSENSITIVE_ORDER), () -> new ArrayList<>());
         for (Method method : clazz.getMethods()) {
             final String name = method.getName();
             methods.put(name, method);
             final Class<?>[] params = method.getParameterTypes();
-            if ((name.startsWith("get")
-                            || name.startsWith("is")
-                            || COMMON_DERIVED_PROPERTIES.contains(name))
+            if ((name.startsWith("get") || name.startsWith("is") || COMMON_DERIVED_PROPERTIES.contains(name))
                     && params.length == 0) {
                 getters.put(gp(method), method);
             } else if (name.startsWith("set") && params.length == 1) {

@@ -7,10 +7,9 @@ package org.geoserver.cluster.integration;
 import org.geoserver.catalog.Info;
 
 /**
- * Represents a difference between two GeoServe instances. If one of the object is NULL it means
- * that it doesn't exists in one of the GeoServer instances. For example, if we are comparing
- * GeoServer A with GeoServer B and if info A is NULL it means that info B doesn't exists in
- * GeoServer A.
+ * Represents a difference between two GeoServe instances. If one of the object is NULL it means that it doesn't exists
+ * in one of the GeoServer instances. For example, if we are comparing GeoServer A with GeoServer B and if info A is
+ * NULL it means that info B doesn't exists in GeoServer A.
  */
 public final class InfoDiff {
 

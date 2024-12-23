@@ -58,13 +58,9 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsJSON() throws Exception {
-        String json =
-                "{'wmts': {'id':'wmts','enabled':'false','name':'WMTS', 'title':'New Title'}}";
+        String json = "{'wmts': {'id':'wmts','enabled':'false','name':'WMTS', 'title':'New Title'}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings",
-                        json,
-                        "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wmts/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wmts/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -78,17 +74,15 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml =
-                "<wmts>"
-                        + "<id>wmts</id>"
-                        + "<enabled>false</enabled>"
-                        + "<name>WMTS</name>"
-                        + "<title>New Title</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wmts>";
+        String xml = "<wmts>"
+                + "<id>wmts</id>"
+                + "<enabled>false</enabled>"
+                + "<name>WMTS</name>"
+                + "<title>New Title</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wmts>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wmts/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wmts/settings.xml");
@@ -99,15 +93,10 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testRoundTripJSON() throws Exception {
-        JSONObject original =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/services/wmts/settings.json");
+        JSONObject original = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/services/wmts/settings.json");
         assertNotNull(original);
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings",
-                        original.toString(),
-                        "text/json");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wmts/settings", original.toString(), "text/json");
         assertEquals(200, response.getStatus());
         JSON updated = getAsJSON(RestBaseController.ROOT_PATH + "/services/wmts/settings.json");
         assertEquals(original, updated);
@@ -119,11 +108,8 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
         assertEquals("wmts", original.getDocumentElement().getLocalName());
         String originalString = documentToString(original);
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings",
-                        originalString,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wmts/settings", originalString, "text/xml");
         assertEquals(200, response.getStatus());
         Document updated = getAsDOM(RestBaseController.ROOT_PATH + "/services/wmts/settings.xml");
         assertEquals(originalString, documentToString(updated));
@@ -145,15 +131,13 @@ public class WMTSSettingsControllerTest extends CatalogRESTTestSupport {
         WMTSInfo i = geoServer.getService(WMTSInfo.class);
         i.setEnabled(true);
         geoServer.save(i);
-        String xml =
-                "<wmts>"
-                        + "<id>wmts</id>"
-                        + "<name>WMTS</name><title>GeoServer Web Map Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wmts>";
+        String xml = "<wmts>"
+                + "<id>wmts</id>"
+                + "<name>WMTS</name><title>GeoServer Web Map Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wmts>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wmts/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wmts/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wmts/settings.xml");

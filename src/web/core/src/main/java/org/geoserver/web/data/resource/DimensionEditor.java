@@ -17,8 +17,7 @@ import org.geoserver.catalog.impl.DimensionInfoImpl;
  */
 public class DimensionEditor extends DimensionEditorBase<DimensionInfo> {
 
-    public DimensionEditor(
-            String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type) {
+    public DimensionEditor(String id, IModel<DimensionInfo> model, ResourceInfo resource, Class<?> type) {
         super(id, model, resource, type);
     }
 

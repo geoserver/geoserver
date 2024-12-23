@@ -10,8 +10,8 @@ import org.geoserver.security.csp.CSPHttpRequestWrapper;
 import org.geoserver.security.csp.CSPUtils;
 
 /**
- * CSP predicate that tests if the specified property matches the provided regular expression. The
- * system property value and whether it is valid is cached during instantiation.
+ * CSP predicate that tests if the specified property matches the provided regular expression. The system property value
+ * and whether it is valid is cached during instantiation.
  */
 public class CSPPredicateProperty implements CSPPredicate {
 
@@ -30,14 +30,12 @@ public class CSPPredicateProperty implements CSPPredicate {
     /**
      * @param key the property key
      * @param valueRegex the regular expression for valid property values
-     * @throws IllegalArgumentException if not a GeoServer/GeoTools/GeoWebCache property or the
-     *     regular expression is not valid
+     * @throws IllegalArgumentException if not a GeoServer/GeoTools/GeoWebCache property or the regular expression is
+     *     not valid
      */
     public CSPPredicateProperty(String key, String valueRegex) {
         Preconditions.checkArgument(
-                CSPUtils.PROPERTY_KEY_REGEX.matcher(key).matches(),
-                "Property key not allowed: %s",
-                key);
+                CSPUtils.PROPERTY_KEY_REGEX.matcher(key).matches(), "Property key not allowed: %s", key);
         this.key = key;
         this.valueRegex = Pattern.compile(valueRegex);
         this.propertyValue = CSPUtils.getStringProperty(this.key, "");
@@ -45,9 +43,8 @@ public class CSPPredicateProperty implements CSPPredicate {
     }
 
     /**
-     * Returns the cached value if the specified system property contained a non-empty value.
-     * Otherwise, checks if the key matches a field in the {@code CSPConfiguration} object and tests
-     * it against the regular expression.
+     * Returns the cached value if the specified system property contained a non-empty value. Otherwise, checks if the
+     * key matches a field in the {@code CSPConfiguration} object and tests it against the regular expression.
      *
      * @return whether the property value matches the provided regular expression
      */

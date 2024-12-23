@@ -10,8 +10,8 @@ import org.geoserver.metadata.data.dto.MappingTypeEnum;
 /**
  * Object that matches yaml structure.
  *
- * <p>The part describes one mapping between the geoserver fields en the xml metadata from
- * geonetwork. The geonetwork field is described as an xpath expression.
+ * <p>The part describes one mapping between the geoserver fields en the xml metadata from geonetwork. The geonetwork
+ * field is described as an xpath expression.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  */

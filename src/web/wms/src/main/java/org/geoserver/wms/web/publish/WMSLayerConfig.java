@@ -65,16 +65,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("styles");
         add(styleContainer);
         ResourceInfo resource = layerModel.getObject().getResource();
-        styleContainer.setVisible(
-                resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo);
+        styleContainer.setVisible(resource instanceof CoverageInfo || resource instanceof FeatureTypeInfo);
 
         // default style chooser. A default style is required
         StylesModel styles = new StylesModel();
-        final PropertyModel<StyleInfo> defaultStyleModel =
-                new PropertyModel<>(layerModel, "defaultStyle");
+        final PropertyModel<StyleInfo> defaultStyleModel = new PropertyModel<>(layerModel, "defaultStyle");
         final Select2DropDownChoice<StyleInfo> defaultStyle =
-                new Select2DropDownChoice<>(
-                        "defaultStyle", defaultStyleModel, styles, new StyleChoiceRenderer());
+                new Select2DropDownChoice<>("defaultStyle", defaultStyleModel, styles, new StyleChoiceRenderer());
         defaultStyle.setRequired(true);
         styleContainer.add(defaultStyle);
         final Image defStyleImg = new NonCachingImage("defaultStyleLegendGraphic");
@@ -84,49 +81,41 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         final LegendGraphicAjaxUpdater defaultStyleUpdater =
                 new LegendGraphicAjaxUpdater(defStyleImg, defaultStyleModel);
 
-        defaultStyle.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = -4098934889965471248L;
+        defaultStyle.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = -4098934889965471248L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        defaultStyleUpdater.updateStyleImage(target);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                defaultStyleUpdater.updateStyleImage(target);
+            }
+        });
 
         // build a palette with no reordering allowed, since order doesn't affect anything
         LiveCollectionModel<StyleInfo, Set<StyleInfo>> stylesModel =
                 LiveCollectionModel.set(new PropertyModel<>(layerModel, "styles"));
         Palette<StyleInfo> extraStyles =
-                new Palette<>(
-                        "extraStyles", stylesModel, styles, new StyleNameRenderer(), 10, false) {
+                new Palette<>("extraStyles", stylesModel, styles, new StyleNameRenderer(), 10, false) {
                     private static final long serialVersionUID = -3494299396410932090L;
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newSelectedHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("ExtraStylesPalette.selectedHeader"));
+                        return new Label(componentId, new ResourceModel("ExtraStylesPalette.selectedHeader"));
                     }
 
                     /** Override otherwise the header is not i18n'ized */
                     @Override
                     public Component newAvailableHeader(final String componentId) {
-                        return new Label(
-                                componentId,
-                                new ResourceModel("ExtraStylesPalette.availableHeader"));
+                        return new Label(componentId, new ResourceModel("ExtraStylesPalette.availableHeader"));
                     }
                 };
         extraStyles.add(new DefaultTheme());
         styleContainer.add(extraStyles);
 
-        TextField<Integer> renderingBuffer =
-                new TextField<>(
-                        "renderingBuffer",
-                        new MapModel<>(
-                                new PropertyModel<>(layerModel, "metadata"), LayerInfo.BUFFER),
-                        Integer.class);
+        TextField<Integer> renderingBuffer = new TextField<>(
+                "renderingBuffer",
+                new MapModel<>(new PropertyModel<>(layerModel, "metadata"), LayerInfo.BUFFER),
+                Integer.class);
         renderingBuffer.add(RangeValidator.minimum(0));
         styleContainer.add(renderingBuffer);
 
@@ -136,12 +125,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
 
         PropertyModel<WMSInterpolation> defaultInterpolModel =
                 new PropertyModel<>(layerModel, "defaultWMSInterpolationMethod");
-        DropDownChoice<WMSInterpolation> interpolDropDown =
-                new DropDownChoice<>(
-                        "defaultInterpolationMethod",
-                        defaultInterpolModel,
-                        interpolChoices,
-                        new InterpolationRenderer(this));
+        DropDownChoice<WMSInterpolation> interpolDropDown = new DropDownChoice<>(
+                "defaultInterpolationMethod", defaultInterpolModel, interpolChoices, new InterpolationRenderer(this));
         interpolDropDown.setNullValid(true);
         add(interpolDropDown);
 
@@ -175,10 +160,8 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         WebMarkupContainer styleContainer = new WebMarkupContainer("remotestyles");
         // remote formats
         WebMarkupContainer remoteForamtsContainer = new WebMarkupContainer("remoteformats");
-        WebMarkupContainer metaDataCheckBoxContainer =
-                new WebMarkupContainer("metaDataCheckBoxContainer");
-        WebMarkupContainer scaleDenominatorContainer =
-                new WebMarkupContainer("scaleDenominatorContainer");
+        WebMarkupContainer metaDataCheckBoxContainer = new WebMarkupContainer("metaDataCheckBoxContainer");
+        WebMarkupContainer scaleDenominatorContainer = new WebMarkupContainer("scaleDenominatorContainer");
 
         add(styleContainer);
         add(remoteForamtsContainer);
@@ -200,51 +183,41 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
             else {
                 // pull latest styles from remote WMS
                 wmsLayerInfo.getAllAvailableRemoteStyles().clear();
-                wmsLayerInfo
-                        .getAllAvailableRemoteStyles()
-                        .addAll(wmsLayerInfo.getRemoteStyleInfos());
+                wmsLayerInfo.getAllAvailableRemoteStyles().addAll(wmsLayerInfo.getRemoteStyleInfos());
             }
         } catch (Exception e) {
             error("unable to fetch remote styles for " + wmsLayerInfo.getNativeName());
             LOGGER.log(
                     Level.SEVERE,
-                    e.getMessage()
-                            + ":unable to fetch remote styles for "
-                            + wmsLayerInfo.getNativeName(),
+                    e.getMessage() + ":unable to fetch remote styles for " + wmsLayerInfo.getNativeName(),
                     e);
         }
         // empty string to use whatever default remote server has
         List<String> remoteSyles = new ArrayList<>();
         remoteSyles.add("");
         remoteSyles.addAll(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles()));
-        DropDownChoice<String> remotStyles =
-                new DropDownChoice<>(
-                        "remoteStylesDropDown",
-                        new PropertyModel<>(wmsLayerInfo, "forcedRemoteStyle"),
-                        remoteSyles);
+        DropDownChoice<String> remotStyles = new DropDownChoice<>(
+                "remoteStylesDropDown", new PropertyModel<>(wmsLayerInfo, "forcedRemoteStyle"), remoteSyles);
 
         styleContainer.add(remotStyles);
 
         LiveCollectionModel<String, Set<String>> stylesModel =
                 LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteStyles"));
-        Palette<String> extraRemoteStyles =
-                new Palette<>(
-                        "extraRemoteStyles",
-                        stylesModel,
-                        new CollectionModel<>(
-                                getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
-                        new SimpleChoiceRenderer<>(),
-                        10,
-                        true);
+        Palette<String> extraRemoteStyles = new Palette<>(
+                "extraRemoteStyles",
+                stylesModel,
+                new CollectionModel<>(getRemoteStyleNames(wmsLayerInfo.getAllAvailableRemoteStyles())),
+                new SimpleChoiceRenderer<>(),
+                10,
+                true);
 
         extraRemoteStyles.add(new DefaultTheme());
         styleContainer.add(extraRemoteStyles);
 
-        DropDownChoice<String> remoteForamts =
-                new DropDownChoice<>(
-                        "remoteFormatsDropDown",
-                        new PropertyModel<>(wmsLayerInfo, "preferredFormat"),
-                        wmsLayerInfo.availableFormats());
+        DropDownChoice<String> remoteForamts = new DropDownChoice<>(
+                "remoteFormatsDropDown",
+                new PropertyModel<>(wmsLayerInfo, "preferredFormat"),
+                wmsLayerInfo.availableFormats());
 
         remoteForamtsContainer.add(remoteForamts);
         // add format pallete
@@ -252,29 +225,24 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         LiveCollectionModel<String, Set<String>> remoteFormatsModel =
                 LiveCollectionModel.set(new PropertyModel<>(wmsLayerInfo, "selectedRemoteFormats"));
 
-        Palette<String> remoteFormatsPalette =
-                new Palette<>(
-                        "remoteFormatsPalette",
-                        remoteFormatsModel,
-                        new CollectionModel<>(wmsLayerInfo.availableFormats()),
-                        new SimpleChoiceRenderer<>(),
-                        10,
-                        true);
+        Palette<String> remoteFormatsPalette = new Palette<>(
+                "remoteFormatsPalette",
+                remoteFormatsModel,
+                new CollectionModel<>(wmsLayerInfo.availableFormats()),
+                new SimpleChoiceRenderer<>(),
+                10,
+                true);
 
         remoteFormatsPalette.add(new DefaultTheme());
         remoteForamtsContainer.add(remoteFormatsPalette);
         metaDataCheckBoxContainer.add(
-                new CheckBox(
-                        "respectMetadataBBoxChkBox",
-                        new PropertyModel<>(wmsLayerInfo, "metadataBBoxRespected")));
+                new CheckBox("respectMetadataBBoxChkBox", new PropertyModel<>(wmsLayerInfo, "metadataBBoxRespected")));
         // scale denominators
         TextField<Double> minScale =
-                new TextField<>(
-                        "minScale", new PropertyModel<>(wmsLayerInfo, "minScale"), Double.class);
+                new TextField<>("minScale", new PropertyModel<>(wmsLayerInfo, "minScale"), Double.class);
         scaleDenominatorContainer.add(minScale);
         TextField<Double> maxScale =
-                new TextField<>(
-                        "maxScale", new PropertyModel<>(wmsLayerInfo, "maxScale"), Double.class);
+                new TextField<>("maxScale", new PropertyModel<>(wmsLayerInfo, "maxScale"), Double.class);
         scaleDenominatorContainer.add(maxScale);
 
         minScale.add(new ScalesValidator(minScale, maxScale));
@@ -307,17 +275,13 @@ public class WMSLayerConfig extends PublishedConfigurationPanel<LayerInfo> {
         public void validate(IValidatable validatable) {
             if (this.minScale.getInput() != null && this.maxScale.getInput() != null) {
                 // negative check
-                if (Double.valueOf(minScale.getInput()) < 0
-                        || Double.valueOf(maxScale.getInput()) < 0) {
+                if (Double.valueOf(minScale.getInput()) < 0 || Double.valueOf(maxScale.getInput()) < 0) {
                     validatable.error(new ValidationError("Scale denominator cannot be Negative"));
                 }
                 // if both are set perform check min < max
 
-                if (safeGet(minScale.getInput(), 0d)
-                        >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
-                    validatable.error(
-                            new ValidationError(
-                                    "Minimum Scale cannot be greater than Maximum Scale"));
+                if (safeGet(minScale.getInput(), 0d) >= safeGet(maxScale.getInput(), Double.MAX_VALUE)) {
+                    validatable.error(new ValidationError("Minimum Scale cannot be greater than Maximum Scale"));
                 }
             }
         }

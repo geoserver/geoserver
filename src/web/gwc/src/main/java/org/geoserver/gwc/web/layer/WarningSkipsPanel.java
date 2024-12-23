@@ -21,24 +21,21 @@ public class WarningSkipsPanel extends Panel {
 
     public WarningSkipsPanel(String id, IModel<Set<WarningType>> warningSkipsModel) {
         super(id);
-        final CheckGroup warningSkipsGroup =
-                new CheckGroup<>("warningSkipsGroup", warningSkipsModel);
+        final CheckGroup warningSkipsGroup = new CheckGroup<>("warningSkipsGroup", warningSkipsModel);
         add(warningSkipsGroup);
 
         final List<WarningType> allWarningSkips = Arrays.asList(WarningType.values());
-        ListView<WarningType> warningSkips =
-                new ListView<>("warningSkips", allWarningSkips) {
-                    private static final long serialVersionUID = 1L;
+        ListView<WarningType> warningSkips = new ListView<>("warningSkips", allWarningSkips) {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void populateItem(ListItem<WarningType> item) {
-                        item.add(new Check<>("warningSkip", item.getModel()));
-                        String key = "warning." + item.getModel().getObject().toString();
-                        ParamResourceModel labelModel =
-                                new ParamResourceModel(key, WarningSkipsPanel.this);
-                        item.add(new Label("warningSkipLabel", labelModel));
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem<WarningType> item) {
+                item.add(new Check<>("warningSkip", item.getModel()));
+                String key = "warning." + item.getModel().getObject().toString();
+                ParamResourceModel labelModel = new ParamResourceModel(key, WarningSkipsPanel.this);
+                item.add(new Label("warningSkipLabel", labelModel));
+            }
+        };
         warningSkips.setReuseItems(true); // otherwise it looses state on invalid form state
         warningSkipsGroup.add(warningSkips);
     }

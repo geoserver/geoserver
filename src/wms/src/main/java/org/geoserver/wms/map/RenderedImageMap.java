@@ -23,8 +23,7 @@ public class RenderedImageMap extends WebMap {
 
     private List<GridCoverage2D> renderedCoverages;
 
-    public RenderedImageMap(
-            final WMSMapContent mapContent, final RenderedImage image, final String mimeType) {
+    public RenderedImageMap(final WMSMapContent mapContent, final RenderedImage image, final String mimeType) {
         super(mapContent);
         this.image = image;
         setMimeType(mimeType);
@@ -40,9 +39,9 @@ public class RenderedImageMap extends WebMap {
     }
 
     /**
-     * Returns the list of rendered coverages to produce this map, needed so they're disposed after
-     * writing them down to the destination output stream when their rendered images are used
-     * directly instead of pre-rendered to a buffered image or such.
+     * Returns the list of rendered coverages to produce this map, needed so they're disposed after writing them down to
+     * the destination output stream when their rendered images are used directly instead of pre-rendered to a buffered
+     * image or such.
      *
      * @return the list of rendered coverages or {@code null}
      */
@@ -51,8 +50,8 @@ public class RenderedImageMap extends WebMap {
     }
 
     /**
-     * Allows to store the coverages rendered for this map so that they can be disposed at a later
-     * stage. Useful in case there's a rendering pipeline making direct use of the coverages
+     * Allows to store the coverages rendered for this map so that they can be disposed at a later stage. Useful in case
+     * there's a rendering pipeline making direct use of the coverages
      */
     public void setRenderedCoverages(List<GridCoverage2D> renderedCoverages) {
         this.renderedCoverages = renderedCoverages;

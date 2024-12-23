@@ -53,21 +53,19 @@ public class ExecuteInternalWFSTest extends WPSTestSupport {
         String wfsUrl = "http://geoserver/wfs";
 
         if ("POST".equals(method) && "1.0".equals(version)) {
-            wfsReq =
-                    "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
-                            + "     <wfs:Query typeName=\"cite:Lakes\">\n"
-                            + "     </wfs:Query>\n"
-                            + "</wfs:GetFeature>\n";
+            wfsReq = "<wfs:GetFeature service=\"WFS\" version=\"1.0.0\" outputFormat=\"GML2\">\n"
+                    + "     <wfs:Query typeName=\"cite:Lakes\">\n"
+                    + "     </wfs:Query>\n"
+                    + "</wfs:GetFeature>\n";
         } else if ("GET".equals(method) && "1.0".equals(version)) {
             wfsUrl +=
                     "?service=WFS&amp;version=1.0.0&amp;request=GetFeature&amp;outputFormat=GML2&amp;typeName=cite:Lakes";
         } else if ("POST".equals(method) && "2.0".equals(version)) {
 
-            wfsReq =
-                    "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"GML2\">\n"
-                            + "     <wfs:Query typeNames=\"cite:Lakes\">\n"
-                            + "     </wfs:Query>\n"
-                            + "</wfs:GetFeature>\n";
+            wfsReq = "<wfs:GetFeature service=\"WFS\" version=\"2.0.0\" outputFormat=\"GML2\">\n"
+                    + "     <wfs:Query typeNames=\"cite:Lakes\">\n"
+                    + "     </wfs:Query>\n"
+                    + "</wfs:GetFeature>\n";
         } else if ("GET".equals(method) && "2.0".equals(version)) {
             wfsUrl +=
                     "?service=WFS&amp;version=2.0.0&amp;request=GetFeature&amp;outputFormat=GML2&amp;typeNames=cite:Lakes";
@@ -76,19 +74,16 @@ public class ExecuteInternalWFSTest extends WPSTestSupport {
         String featuresReference;
 
         if (wfsReq != null) {
-            featuresReference =
-                    "                    <wps:Reference mimeType=\"text/xml\" xlink:href=\""
-                            + wfsUrl
-                            + "\" method=\"POST\">\n"
-                            + "                        <wps:Body>\n"
-                            + wfsReq
-                            + "                        </wps:Body>\n"
-                            + "                    </wps:Reference>\n";
+            featuresReference = "                    <wps:Reference mimeType=\"text/xml\" xlink:href=\""
+                    + wfsUrl
+                    + "\" method=\"POST\">\n"
+                    + "                        <wps:Body>\n"
+                    + wfsReq
+                    + "                        </wps:Body>\n"
+                    + "                    </wps:Reference>\n";
         } else {
             featuresReference =
-                    "                    <wps:Reference mimeType=\"text/xml\" xlink:href=\""
-                            + wfsUrl
-                            + "\" />\n";
+                    "                    <wps:Reference mimeType=\"text/xml\" xlink:href=\"" + wfsUrl + "\" />\n";
         }
 
         return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"

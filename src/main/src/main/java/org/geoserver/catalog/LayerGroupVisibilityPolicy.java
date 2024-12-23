@@ -21,10 +21,9 @@ public interface LayerGroupVisibilityPolicy {
     public static final LayerGroupVisibilityPolicy HIDE_NEVER = (group, filteredLayers) -> false;
 
     /** Hide a LayerGroup if it doesn't contain Layers or if its Layers are all hidden */
-    public static final LayerGroupVisibilityPolicy HIDE_EMPTY =
-            (group, filteredLayers) -> filteredLayers.isEmpty();
+    public static final LayerGroupVisibilityPolicy HIDE_EMPTY = (group, filteredLayers) -> filteredLayers.isEmpty();
 
     /** Hide a LayerGroup if its Layers are all hidden */
-    public static final LayerGroupVisibilityPolicy HIDE_IF_ALL_HIDDEN =
-            (group, filteredLayers) -> filteredLayers.isEmpty() && !group.getLayers().isEmpty();
+    public static final LayerGroupVisibilityPolicy HIDE_IF_ALL_HIDDEN = (group, filteredLayers) ->
+            filteredLayers.isEmpty() && !group.getLayers().isEmpty();
 }

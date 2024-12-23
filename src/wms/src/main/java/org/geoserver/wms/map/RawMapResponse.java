@@ -26,8 +26,7 @@ public class RawMapResponse extends AbstractMapResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(RawMap.class, value);
         RawMap map = (RawMap) value;
         try {

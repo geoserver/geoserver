@@ -175,9 +175,8 @@ public class CSPConfiguration implements Serializable {
     }
 
     /**
-     * Gets the value of the field that matches the specific key, trimming leading and trailing
-     * whitespace from the value and returns that value or an empty string if no field matches the
-     * key.
+     * Gets the value of the field that matches the specific key, trimming leading and trailing whitespace from the
+     * value and returns that value or an empty string if no field matches the key.
      *
      * @param key the field key
      * @return the field value or an empty string
@@ -212,10 +211,7 @@ public class CSPConfiguration implements Serializable {
      * @return this configuration object
      */
     public CSPConfiguration parseFilters() {
-        getPolicies().stream()
-                .map(CSPPolicy::getRules)
-                .flatMap(List::stream)
-                .forEach(CSPRule::parseFilter);
+        getPolicies().stream().map(CSPPolicy::getRules).flatMap(List::stream).forEach(CSPRule::parseFilter);
         return this;
     }
 

@@ -69,8 +69,7 @@ public class CogRemoteHarvestOnlineTest extends CatalogRESTTestSupport {
         File f = new File(dir, "empty.zip");
         f.deleteOnExit();
         FileOutputStream fout = new FileOutputStream(f);
-        org.apache.commons.io.IOUtils.copy(
-                getClass().getResourceAsStream("test-data/empty.zip"), fout);
+        org.apache.commons.io.IOUtils.copy(getClass().getResourceAsStream("test-data/empty.zip"), fout);
         fout.flush();
         fout.close();
 
@@ -80,54 +79,42 @@ public class CogRemoteHarvestOnlineTest extends CatalogRESTTestSupport {
             fis.read(zipData);
         }
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/file.imagemosaic?configure=none",
-                        zipData,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/empty/file.imagemosaic?configure=none",
+                zipData,
+                "application/zip");
         // Store is created
         assertEquals(201, response.getStatus());
 
         // Harvesting
-        response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/remote.imagemosaic",
-                        MAIN_TEST_URL,
-                        "text/plain");
+        response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/empty/remote.imagemosaic",
+                MAIN_TEST_URL,
+                "text/plain");
         assertEquals(202, response.getStatus());
 
         // Getting the list of available coverages
         Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/coverages.xml?list=all");
+                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages.xml?list=all");
         XMLAssert.assertXpathEvaluatesTo("emptycog", "/list/coverageName", dom);
 
         // Configuring the coverage
-        response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/coverages",
-                        "<coverage><name>emptycog</name><nativeName>emptycog</nativeName></coverage>",
-                        "text/xml");
+        response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/empty/coverages",
+                "<coverage><name>emptycog</name><nativeName>emptycog</nativeName></coverage>",
+                "text/xml");
         assertEquals(201, response.getStatus());
 
         // Harvesting another granule
-        response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/remote.imagemosaic",
-                        "https://s3-us-west-2.amazonaws.com/landsat-pds/c1/L8/153/075/LC08_L1TP_153075_20190429_20190429_01_RT/LC08_L1TP_153075_20190429_20190429_01_RT_B1.TIF",
-                        "text/plain");
+        response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/gs/coveragestores/empty/remote.imagemosaic",
+                "https://s3-us-west-2.amazonaws.com/landsat-pds/c1/L8/153/075/LC08_L1TP_153075_20190429_20190429_01_RT/LC08_L1TP_153075_20190429_20190429_01_RT_B1.TIF",
+                "text/plain");
         assertEquals(202, response.getStatus());
 
         // Check we have 2 granules
-        dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/empty/coverages/emptycog/index/granules.xml");
+        dom = getAsDOM(RestBaseController.ROOT_PATH
+                + "/workspaces/gs/coveragestores/empty/coverages/emptycog/index/granules.xml");
         assertXpathEvaluatesTo("2", "count(//gf:emptycog)", dom);
     }
 

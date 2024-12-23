@@ -51,11 +51,11 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
 /**
- * Utility class for creating a query selecting those features relevant to the style and extent of
- * the given map, for the given layer. Note that this functionality is an adaption of methods
- * originally in org.geotools.renderer.lite.StreamingRenderer, currently used by
- * VectorTileMapOutputFormat and MapMLMapOutputFormat. Unlike the original, it does not build a list
- * of style attributes due to a need to dump all properties to the output format.
+ * Utility class for creating a query selecting those features relevant to the style and extent of the given map, for
+ * the given layer. Note that this functionality is an adaption of methods originally in
+ * org.geotools.renderer.lite.StreamingRenderer, currently used by VectorTileMapOutputFormat and MapMLMapOutputFormat.
+ * Unlike the original, it does not build a list of style attributes due to a need to dump all properties to the output
+ * format.
  */
 public final class StyleQueryUtil {
     public static final Logger LOGGER = Logging.getLogger(StyleQueryUtil.class);
@@ -66,8 +66,8 @@ public final class StyleQueryUtil {
     }
 
     /**
-     * Creates a list of queries selecting those features relevant to the style and extent of the
-     * given map, for the given layers.
+     * Creates a list of queries selecting those features relevant to the style and extent of the given map, for the
+     * given layers.
      *
      * @param layers the layers
      * @param mapContent the map content
@@ -75,26 +75,23 @@ public final class StyleQueryUtil {
      */
     public static List<Query> getStyleQuery(List<Layer> layers, WMSMapContent mapContent) {
         return layers.stream()
-                .map(
-                        layer -> {
-                            try {
-                                return getStyleQuery(layer, mapContent);
-                            } catch (IOException e) {
-                                throw new RuntimeException(e);
-                            }
-                        })
+                .map(layer -> {
+                    try {
+                        return getStyleQuery(layer, mapContent);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
                 .collect(Collectors.toList());
     }
 
     /**
-     * Creates a query selecting those features relevant to the style and extent of the given map,
-     * for the given layer.
+     * Creates a query selecting those features relevant to the style and extent of the given map, for the given layer.
      */
     public static Query getStyleQuery(Layer layer, WMSMapContent mapContent) throws IOException {
 
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
-        final Rectangle screenSize =
-                new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
+        final Rectangle screenSize = new Rectangle(mapContent.getMapWidth(), mapContent.getMapHeight());
         final double mapScale = getMapScale(mapContent, renderingArea);
 
         final int requestBufferScreen = mapContent.getBuffer();
@@ -135,8 +132,7 @@ public final class StyleQueryUtil {
         return query;
     }
 
-    public static List<LiteFeatureTypeStyle> getLiteFeatureStyles(
-            Layer layer, WMSMapContent mapContent) {
+    public static List<LiteFeatureTypeStyle> getLiteFeatureStyles(Layer layer, WMSMapContent mapContent) {
         final ReferencedEnvelope renderingArea = mapContent.getRenderingArea();
         final double mapScale = getMapScale(mapContent, renderingArea);
         FeatureSource<?, ?> featureSource = layer.getFeatureSource();
@@ -151,8 +147,7 @@ public final class StyleQueryUtil {
      * @param renderingArea the rendering area
      * @return the scale denominator
      */
-    public static double getMapScale(
-            WMSMapContent mapContent, final ReferencedEnvelope renderingArea) {
+    public static double getMapScale(WMSMapContent mapContent, final ReferencedEnvelope renderingArea) {
         return RendererUtilities.calculateOGCScale(renderingArea, mapContent.getMapWidth(), null);
     }
 
@@ -163,17 +158,12 @@ public final class StyleQueryUtil {
      * @param styleList the list of styles to be rendered
      * @return the buffer to be used for rendering
      */
-    public static int getComputedBuffer(
-            final int requestBufferScreen, List<LiteFeatureTypeStyle> styleList) {
+    public static int getComputedBuffer(final int requestBufferScreen, List<LiteFeatureTypeStyle> styleList) {
         final int bufferScreen;
         if (requestBufferScreen <= 0) {
             MetaBufferEstimator bufferEstimator = new MetaBufferEstimator();
             styleList.stream()
-                    .flatMap(
-                            fts ->
-                                    Stream.concat(
-                                            Arrays.stream(fts.elseRules),
-                                            Arrays.stream(fts.ruleList)))
+                    .flatMap(fts -> Stream.concat(Arrays.stream(fts.elseRules), Arrays.stream(fts.ruleList)))
                     .forEach(bufferEstimator::visit);
             bufferScreen = bufferEstimator.getBuffer();
         } else {
@@ -190,41 +180,33 @@ public final class StyleQueryUtil {
      * @param schema the feature type
      * @return the list of feature type styles
      */
-    public static List<LiteFeatureTypeStyle> getFeatureStyles(
-            Layer layer, final double mapScale, FeatureType schema) {
+    public static List<LiteFeatureTypeStyle> getFeatureStyles(Layer layer, final double mapScale, FeatureType schema) {
         Style style = layer.getStyle();
         List<FeatureTypeStyle> featureStyles = style.featureTypeStyles();
         return createLiteFeatureTypeStyles(layer, featureStyles, schema, mapScale);
     }
 
-    private static double[] getPixelSize(
-            final ReferencedEnvelope renderingArea, final Rectangle screenSize) {
+    private static double[] getPixelSize(final ReferencedEnvelope renderingArea, final Rectangle screenSize) {
         double[] pixelSize;
         try {
-            pixelSize =
-                    Decimator.computeGeneralizationDistances(
-                            ProjectiveTransform.create(
-                                            RendererUtilities.worldToScreenTransform(
-                                                    renderingArea, screenSize))
-                                    .inverse(),
-                            screenSize,
-                            1.0);
+            pixelSize = Decimator.computeGeneralizationDistances(
+                    ProjectiveTransform.create(RendererUtilities.worldToScreenTransform(renderingArea, screenSize))
+                            .inverse(),
+                    screenSize,
+                    1.0);
         } catch (TransformException ex) {
             if (LOGGER.isLoggable(Level.WARNING)) {
                 LOGGER.log(Level.WARNING, "Error while computing pixel size", ex);
             }
-            pixelSize =
-                    new double[] {
-                        renderingArea.getWidth() / screenSize.getWidth(),
-                        renderingArea.getHeight() / screenSize.getHeight()
-                    };
+            pixelSize = new double[] {
+                renderingArea.getWidth() / screenSize.getWidth(), renderingArea.getHeight() / screenSize.getHeight()
+            };
         }
         return pixelSize;
     }
 
     /**
-     * Creates a query selecting those features relevant to the style and extent of the given map,
-     * for the given layer.
+     * Creates a query selecting those features relevant to the style and extent of the given map, for the given layer.
      *
      * @param source the feature source
      * @param styleList the list of styles
@@ -246,16 +228,12 @@ public final class StyleQueryUtil {
         query.setProperties(Query.ALL_PROPERTIES);
 
         String geomName = geometryAttribute.getLocalName();
-        Filter filter =
-                reprojectSpatialFilter(
-                        queryArea.getCoordinateReferenceSystem(),
-                        schema,
-                        FF.bbox(FF.property(geomName), queryArea));
+        Filter filter = reprojectSpatialFilter(
+                queryArea.getCoordinateReferenceSystem(), schema, FF.bbox(FF.property(geomName), queryArea));
 
         query.setFilter(filter);
 
-        LiteFeatureTypeStyle[] styles =
-                styleList.toArray(new LiteFeatureTypeStyle[styleList.size()]);
+        LiteFeatureTypeStyle[] styles = styleList.toArray(new LiteFeatureTypeStyle[styleList.size()]);
 
         try {
             processRuleForQuery(styles, query);
@@ -300,8 +278,8 @@ public final class StyleQueryUtil {
     }
 
     /**
-     * Creates a list of LiteFeatureTypeStyles for the given layer, feature styles, feature type,
-     * scale denominator and screen size
+     * Creates a list of LiteFeatureTypeStyles for the given layer, feature styles, feature type, scale denominator and
+     * screen size
      *
      * @param layer the layer
      * @param featureStyles the feature styles
@@ -310,10 +288,7 @@ public final class StyleQueryUtil {
      * @return a list of LiteFeatureTypeStyles
      */
     private static ArrayList<LiteFeatureTypeStyle> createLiteFeatureTypeStyles(
-            Layer layer,
-            List<FeatureTypeStyle> featureStyles,
-            FeatureType ftype,
-            double scaleDenominator) {
+            Layer layer, List<FeatureTypeStyle> featureStyles, FeatureType ftype, double scaleDenominator) {
 
         ArrayList<LiteFeatureTypeStyle> result = new ArrayList<>();
 
@@ -334,14 +309,8 @@ public final class StyleQueryUtil {
                 // we can optimize this one and draw directly on the graphics, assuming
                 // there is no composition
                 Graphics2D graphics = null;
-                lfts =
-                        new LiteFeatureTypeStyle(
-                                layer,
-                                graphics,
-                                ruleList,
-                                elseRuleList,
-                                fts.getTransformation(),
-                                fts.getOptions());
+                lfts = new LiteFeatureTypeStyle(
+                        layer, graphics, ruleList, elseRuleList, fts.getTransformation(), fts.getOptions());
 
                 result.add(lfts);
             }
@@ -350,16 +319,14 @@ public final class StyleQueryUtil {
     }
 
     /**
-     * Splits the rules of a feature type style into two lists: one for the rules that are active at
-     * the current scale and one for the else rules
+     * Splits the rules of a feature type style into two lists: one for the rules that are active at the current scale
+     * and one for the else rules
      *
      * @param fts the feature type style
      * @param scaleDenominator the scale denominator
-     * @return an array of two lists: the first one contains the rules that are active at the
-     *     current
+     * @return an array of two lists: the first one contains the rules that are active at the current
      */
-    private static List<Rule>[] splitRules(
-            final FeatureTypeStyle fts, final double scaleDenominator) {
+    private static List<Rule>[] splitRules(final FeatureTypeStyle fts, final double scaleDenominator) {
 
         List<Rule> ruleList = new ArrayList<>();
         List<Rule> elseRuleList = new ArrayList<>();
@@ -405,18 +372,17 @@ public final class StyleQueryUtil {
     }
 
     /**
-     * JE: If there is a single rule "and" its filter together with the query's filter and send it
-     * off to datastore. This will allow as more processing to be done on the back end... Very
-     * useful if DataStore is a database. Problem is that worst case each filter is ran twice. Next
-     * we will modify it to find a "Common" filter between all rules and send that to the datastore.
+     * JE: If there is a single rule "and" its filter together with the query's filter and send it off to datastore.
+     * This will allow as more processing to be done on the back end... Very useful if DataStore is a database. Problem
+     * is that worst case each filter is ran twice. Next we will modify it to find a "Common" filter between all rules
+     * and send that to the datastore.
      *
-     * <p>DJB: trying to be smarter. If there are no "elseRules" and no rules w/o a filter, then it
-     * makes sense to send them off to the Datastore We limit the number of Filters sent off to the
-     * datastore, just because it could get a bit rediculous. In general, for a database, if you can
-     * limit 10% of the rows being returned you're probably doing quite well. The main problem is
-     * when your filters really mean you're secretly asking for all the data in which case sending
-     * the filters to the Datastore actually costs you. But, databases are *much* faster at
-     * processing the Filters than JAVA is and can use statistical analysis to do it.
+     * <p>DJB: trying to be smarter. If there are no "elseRules" and no rules w/o a filter, then it makes sense to send
+     * them off to the Datastore We limit the number of Filters sent off to the datastore, just because it could get a
+     * bit rediculous. In general, for a database, if you can limit 10% of the rows being returned you're probably doing
+     * quite well. The main problem is when your filters really mean you're secretly asking for all the data in which
+     * case sending the filters to the Datastore actually costs you. But, databases are *much* faster at processing the
+     * Filters than JAVA is and can use statistical analysis to do it.
      */
     private static void processRuleForQuery(LiteFeatureTypeStyle[] styles, Query query) {
         try {
@@ -464,10 +430,7 @@ public final class StyleQueryUtil {
             query.setFilter(ruleFiltersCombined);
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Could not send rules to datastore due to: " + e.getMessage(),
-                        e);
+                LOGGER.log(Level.SEVERE, "Could not send rules to datastore due to: " + e.getMessage(), e);
             }
         }
     }
@@ -475,18 +438,16 @@ public final class StyleQueryUtil {
     /**
      * Builds the transform from sourceCRS to destCRS/
      *
-     * <p>Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore
-     * implementations are capable. With that in mind if the provided soruceCRS is not 2D we are
-     * going to manually post-process the Geomtries into {@link DefaultGeographicCRS#WGS84} - and
-     * the {@link MathTransform2D} returned here will transition from WGS84 to the requested
-     * destCRS.
+     * <p>Although we ask for 2D content (via {@link Hints#FEATURE_2D} ) not all DataStore implementations are capable.
+     * With that in mind if the provided soruceCRS is not 2D we are going to manually post-process the Geomtries into
+     * {@link DefaultGeographicCRS#WGS84} - and the {@link MathTransform2D} returned here will transition from WGS84 to
+     * the requested destCRS.
      *
-     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity
-     *     transform if the two crs are equal
+     * @return the transform from {@code sourceCRS} to {@code destCRS}, will be an identity transform if the two crs are
+     *     equal
      * @throws FactoryException If no transform is available to the destCRS
      */
-    public static MathTransform buildTransform(
-            CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem destCRS)
+    public static MathTransform buildTransform(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem destCRS)
             throws FactoryException {
         Preconditions.checkNotNull(sourceCRS, "sourceCRS");
         Preconditions.checkNotNull(destCRS, "destCRS");
@@ -495,18 +456,14 @@ public final class StyleQueryUtil {
         if (sourceCRS.getCoordinateSystem().getDimension() >= 3) {
             // We are going to transform over to DefaultGeographic.WGS84 on the fly
             // so we will set up our math transform to take it from there
-            MathTransform toWgs84_3d =
-                    CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84_3D);
-            MathTransform toWgs84_2d =
-                    CRS.findMathTransform(
-                            DefaultGeographicCRS.WGS84_3D, DefaultGeographicCRS.WGS84);
+            MathTransform toWgs84_3d = CRS.findMathTransform(sourceCRS, DefaultGeographicCRS.WGS84_3D);
+            MathTransform toWgs84_2d = CRS.findMathTransform(DefaultGeographicCRS.WGS84_3D, DefaultGeographicCRS.WGS84);
             transform = ConcatenatedTransform.create(toWgs84_3d, toWgs84_2d);
             sourceCRS = DefaultGeographicCRS.WGS84;
         }
 
         // the basic crs transformation, if any
-        MathTransform2D sourceToTarget =
-                (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
+        MathTransform2D sourceToTarget = (MathTransform2D) CRS.findMathTransform(sourceCRS, destCRS, true);
 
         if (transform == null) {
             return sourceToTarget;

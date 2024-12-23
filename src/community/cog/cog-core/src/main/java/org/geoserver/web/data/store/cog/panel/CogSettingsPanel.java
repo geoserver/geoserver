@@ -36,51 +36,43 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
         container = new WebMarkupContainer("container");
         container.setOutputMarkupId(true);
         add(container);
-        useCachingStream =
-                new CheckBox("useCachingStream", new PropertyModel(model, "useCachingStream"));
+        useCachingStream = new CheckBox("useCachingStream", new PropertyModel(model, "useCachingStream"));
         useCachingStream.setVisible(false);
         container.add(useCachingStream);
 
         List<CogSettings.RangeReaderType> rangeReaderTypes =
-                new ArrayList<CogSettings.RangeReaderType>(
-                        Arrays.asList(CogSettings.RangeReaderType.values()));
+                new ArrayList<CogSettings.RangeReaderType>(Arrays.asList(CogSettings.RangeReaderType.values()));
 
         // create the editor, eventually set a default value
-        rangeReaderSettings =
-                new DropDownChoice<CogSettings.RangeReaderType>(
-                        "rangeReaderSettings",
-                        new PropertyModel(model, "rangeReaderSettings"),
-                        rangeReaderTypes);
+        rangeReaderSettings = new DropDownChoice<CogSettings.RangeReaderType>(
+                "rangeReaderSettings", new PropertyModel(model, "rangeReaderSettings"), rangeReaderTypes);
 
         rangeReaderSettings.setOutputMarkupId(true);
         container.add(rangeReaderSettings);
 
         CogSettings object = getSettings(model);
-        useCachingStream.add(
-                new OnChangeAjaxBehavior() {
-                    private static final long serialVersionUID = 1L;
+        useCachingStream.add(new OnChangeAjaxBehavior() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        boolean useCache = useCachingStream.getModelObject().booleanValue();
-                        CogSettings object = getSettings(model);
-                        object.setUseCachingStream(useCache);
-                        model.setObject((T) object);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean useCache = useCachingStream.getModelObject().booleanValue();
+                CogSettings object = getSettings(model);
+                object.setUseCachingStream(useCache);
+                model.setObject((T) object);
+            }
+        });
 
-        rangeReaderSettings.add(
-                new OnChangeAjaxBehavior() {
+        rangeReaderSettings.add(new OnChangeAjaxBehavior() {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        CogSettings.RangeReaderType rangeReader =
-                                rangeReaderSettings.getModelObject();
-                        CogSettings object = getSettings(model);
-                        object.setRangeReaderSettings(rangeReader);
-                        model.setObject((T) object);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                CogSettings.RangeReaderType rangeReader = rangeReaderSettings.getModelObject();
+                CogSettings object = getSettings(model);
+                object.setRangeReaderSettings(rangeReader);
+                model.setObject((T) object);
+            }
+        });
     }
 
     private CogSettings getSettings(IModel<T> model) {
@@ -93,13 +85,12 @@ public class CogSettingsPanel<T extends CogSettings> extends FormComponentPanel<
 
     @Override
     public void convertInput() {
-        IVisitor<Component, Object> formComponentVisitor =
-                (component, visit) -> {
-                    if (component instanceof FormComponent) {
-                        FormComponent<?> formComponent = (FormComponent<?>) component;
-                        formComponent.processInput();
-                    }
-                };
+        IVisitor<Component, Object> formComponentVisitor = (component, visit) -> {
+            if (component instanceof FormComponent) {
+                FormComponent<?> formComponent = (FormComponent<?>) component;
+                formComponent.processInput();
+            }
+        };
 
         CogSettings convertedInput = new CogSettings();
         convertedInput.setUseCachingStream(useCachingStream.getModelObject());

@@ -17,18 +17,15 @@ import org.geoserver.util.IOUtils;
 /**
  * Test setup uses for GeoServer mock tests.
  *
- * <p>This is the default test setup used by {@link GeoServerMockTestSupport}. During setup this
- * class creates a catalog whose contents contain all the layers defined by {@link CiteTestData}
+ * <p>This is the default test setup used by {@link GeoServerMockTestSupport}. During setup this class creates a catalog
+ * whose contents contain all the layers defined by {@link CiteTestData}
  *
- * <p>Customizing the setup, adding layers, etc... is done from {@link
- * GeoServerSystemTestSupport#setUpTestData(SystemTestData)}.
+ * <p>Customizing the setup, adding layers, etc... is done from
+ * {@link GeoServerSystemTestSupport#setUpTestData(SystemTestData)}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
-@SuppressWarnings({
-    "PMD.JUnit4TestShouldUseBeforeAnnotation",
-    "PMD.JUnit4TestShouldUseAfterAnnotation"
-})
+@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
 public class MockTestData extends CiteTestData {
 
     File data;

@@ -55,8 +55,7 @@ public class RuleCacheLoaderFactory {
         }
 
         @Override
-        public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo)
-                throws Exception {
+        public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo) throws Exception {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading {0}", filter);
 
             // the service, when integrated, may modify the filter
@@ -91,8 +90,7 @@ public class RuleCacheLoaderFactory {
         }
 
         @Override
-        public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo)
-                throws Exception {
+        public ListenableFuture<AccessInfo> reload(final RuleFilter filter, AccessInfo accessInfo) throws Exception {
             if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading {0}", filter);
 
             // the service, when integrated, may modify the filter
@@ -110,18 +108,15 @@ public class RuleCacheLoaderFactory {
 
         @Override
         public AuthUser load(NamePw user) throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Loading user '" + user.getName() + "'");
             AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());
             if (auth == null) throw new NoAuthException("Can't auth user [" + user.getName() + "]");
             return auth;
         }
 
         @Override
-        public ListenableFuture<AuthUser> reload(final NamePw user, AuthUser authUser)
-                throws NoAuthException {
-            if (LOGGER.isLoggable(Level.FINE))
-                LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
+        public ListenableFuture<AuthUser> reload(final NamePw user, AuthUser authUser) throws NoAuthException {
+            if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, "Reloading user '" + user.getName() + "'");
 
             // this is a sync implementation
             AuthUser auth = realRuleReaderService.authorize(user.getName(), user.getPw());

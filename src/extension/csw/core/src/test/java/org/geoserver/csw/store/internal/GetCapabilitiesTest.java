@@ -45,9 +45,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -83,9 +83,9 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
         // basic check on xpath node
         assertXpathEvaluatesTo("1", "count(/csw:Capabilities)", dom);
 
-        assertTrue(
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength()
-                        > 0);
+        assertTrue(xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength()
+                > 0);
         assertEquals("5", xpath.evaluate("count(//ows:Operation)", dom));
 
         // basic check on GetCapabilities operation constraint
@@ -98,10 +98,8 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
 
     @Test
     public void testSections() throws Exception {
-        Document dom =
-                getAsDOM(
-                        BASEPATH
-                                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
+        Document dom = getAsDOM(BASEPATH
+                + "?service=csw&version=2.0.2&request=GetCapabilities&sections=ServiceIdentification,ServiceProvider");
         // print(dom);
         checkValidationErrors(dom);
 
@@ -119,7 +117,8 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
 
         assertEquals(
                 0,
-                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom).getLength());
+                xpath.getMatchingNodes("//ows:OperationsMetadata/ows:Operation", dom)
+                        .getLength());
         assertEquals("0", xpath.evaluate("count(//ows:Operation)", dom));
     }
 }

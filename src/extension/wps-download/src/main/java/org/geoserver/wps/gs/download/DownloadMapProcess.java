@@ -84,9 +84,8 @@ import org.springframework.context.ApplicationContextAware;
 
 @DescribeProcess(
         title = "Map Download Process",
-        description =
-                "Builds a large map given a set of layer definitions, "
-                        + "area of interest, size and eventual target time.")
+        description = "Builds a large map given a set of layer definitions, "
+                + "area of interest, size and eventual target time.")
 public class DownloadMapProcess implements GeoServerProcess, ApplicationContextAware {
 
     private static final boolean TRANSPARENT_DEFAULT_VALUE =
@@ -100,24 +99,21 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     private final RasterCleaner rasterCleaner;
     private Service service;
     // defaulting to a stateless but reliable http client
-    private Supplier<org.geotools.http.HTTPClient> httpClientSupplier =
-            () -> HTTPClientFinder.createClient();
+    private Supplier<org.geotools.http.HTTPClient> httpClientSupplier = () -> HTTPClientFinder.createClient();
 
-    public DownloadMapProcess(
-            GeoServer geoServer, HTTPWarningAppender warningAppender, RasterCleaner rasterCleaner) {
+    public DownloadMapProcess(GeoServer geoServer, HTTPWarningAppender warningAppender, RasterCleaner rasterCleaner) {
         // TODO: make these configurable
-        this.wms =
-                new WMS(geoServer) {
-                    @Override
-                    public int getMaxRenderingTime() {
-                        return -1;
-                    }
+        this.wms = new WMS(geoServer) {
+            @Override
+            public int getMaxRenderingTime() {
+                return -1;
+            }
 
-                    @Override
-                    public int getMaxRenderingErrors() {
-                        return -1;
-                    }
-                };
+            @Override
+            public int getMaxRenderingErrors() {
+                return -1;
+            }
+        };
         this.getMapReader = new GetMapKvpRequestReader(wms);
         this.warningAppender = warningAppender;
         this.rasterCleaner = rasterCleaner;
@@ -140,10 +136,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 description = "map metadata, including dimension match warnings")
     })
     public Map<String, Object> execute(
-            @DescribeParameter(
-                            name = "bbox",
-                            min = 1,
-                            description = "The map area and output projection")
+            @DescribeParameter(name = "bbox", min = 1, description = "The map area and output projection")
                     ReferencedEnvelope bbox,
             @DescribeParameter(
                             name = "decoration",
@@ -158,39 +151,21 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             @DescribeParameter(
                             name = "time",
                             min = 0,
-                            description =
-                                    "Map time specification (a single time value or "
-                                            + "a range like in WMS time parameter)")
+                            description = "Map time specification (a single time value or "
+                                    + "a range like in WMS time parameter)")
                     String time,
-            @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1)
-                    int width,
-            @DescribeParameter(
-                            name = "height",
-                            min = 1,
-                            description = "Output height",
-                            minValue = 1)
-                    int height,
-            @DescribeParameter(name = "headerheight", min = 0, description = "Header height")
-                    Integer headerHeight,
-            @DescribeParameter(
-                            name = "layer",
-                            min = 1,
-                            description = "List of layers",
-                            minValue = 1)
-                    Layer[] layers,
-            @DescribeParameter(name = "format", min = 0, defaultValue = "image/png")
-                    final String format,
-            @DescribeParameter(
-                            name = "transparent",
-                            min = 0,
-                            description = "Map background transparency")
+            @DescribeParameter(name = "width", min = 1, description = "Output width", minValue = 1) int width,
+            @DescribeParameter(name = "height", min = 1, description = "Output height", minValue = 1) int height,
+            @DescribeParameter(name = "headerheight", min = 0, description = "Header height") Integer headerHeight,
+            @DescribeParameter(name = "layer", min = 1, description = "List of layers", minValue = 1) Layer[] layers,
+            @DescribeParameter(name = "format", min = 0, defaultValue = "image/png") final String format,
+            @DescribeParameter(name = "transparent", min = 0, description = "Map background transparency")
                     Boolean transparent,
             ProgressListener progressListener)
             throws Exception {
         // if kmlOutput, reproject request to WGS84 (test is done indirectly to make the code work
         // should KML not be available)
-        AbstractMapOutputFormat kmlOutputFormat =
-                (AbstractMapOutputFormat) GeoServerExtensions.bean("KMZMapProducer");
+        AbstractMapOutputFormat kmlOutputFormat = (AbstractMapOutputFormat) GeoServerExtensions.bean("KMZMapProducer");
         boolean kmlOutput = kmlOutputFormat.getOutputFormatNames().contains(format);
         if (kmlOutput) {
             bbox = bbox.transform(DefaultGeographicCRS.WGS84, true);
@@ -210,20 +185,19 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             warningAppender.init(Dispatcher.REQUEST.get());
 
             // assemble image
-            RenderedImage result =
-                    buildImage(
-                            bbox,
-                            decorationName,
-                            decorationEnvironment,
-                            time,
-                            width,
-                            height,
-                            headerHeight,
-                            layers,
-                            transparent,
-                            format,
-                            progressListener,
-                            new HashMap<>());
+            RenderedImage result = buildImage(
+                    bbox,
+                    decorationName,
+                    decorationEnvironment,
+                    time,
+                    width,
+                    height,
+                    headerHeight,
+                    layers,
+                    transparent,
+                    format,
+                    progressListener,
+                    new HashMap<>());
 
             // encode output (by faking a normal request)
             GetMapRequest request = new GetMapRequest();
@@ -233,8 +207,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             RawData response = null;
             try {
                 mapContent.getViewport().setBounds(bbox);
-                Operation operation =
-                        new Operation("GetMap", service, null, new Object[] {request});
+                Operation operation = new Operation("GetMap", service, null, new Object[] {request});
 
                 if (kmlOutput) {
                     response = buildKMLResponse(bbox, result, mapContent, operation);
@@ -270,10 +243,8 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     }
 
     private RawData buildImageResponse(
-            String format, RenderedImage result, WMSMapContent mapContent, Operation operation)
-            throws IOException {
-        List<RenderedImageMapResponse> encoders =
-                GeoServerExtensions.extensions(RenderedImageMapResponse.class);
+            String format, RenderedImage result, WMSMapContent mapContent, Operation operation) throws IOException {
+        List<RenderedImageMapResponse> encoders = GeoServerExtensions.extensions(RenderedImageMapResponse.class);
         for (RenderedImageMapResponse encoder : encoders) {
             if (encoder.canHandle(operation)) {
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -288,10 +259,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     }
 
     private RawData buildKMLResponse(
-            ReferencedEnvelope bbox,
-            RenderedImage result,
-            WMSMapContent mapContent,
-            Operation operation)
+            ReferencedEnvelope bbox, RenderedImage result, WMSMapContent mapContent, Operation operation)
             throws IOException {
         // custom KMZ building
         Kml kml = new Kml();
@@ -329,8 +297,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
             zip.flush();
         }
 
-        return new ByteArrayRawData(
-                bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE, "kmz");
+        return new ByteArrayRawData(bos.toByteArray(), org.geoserver.kml.KMZMapOutputFormat.MIME_TYPE, "kmz");
     }
 
     RenderedImage buildImage(
@@ -394,15 +361,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         if (time != null) {
             template.put("time", time);
         }
-        template.put(
-                "bbox",
-                bbox.getMinX()
-                        + ","
-                        + bbox.getMinY()
-                        + ","
-                        + bbox.getMaxX()
-                        + ","
-                        + bbox.getMaxY());
+        template.put("bbox", bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY());
         CoordinateReferenceSystem crs = bbox.getCoordinateReferenceSystem();
         if (crs == null) {
             throw new WPSException("The BBOX parameter must have a coordinate reference system");
@@ -426,8 +385,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         // prepare the decoration environment, if any
         Map<String, Object> decorationEnv = Collections.emptyMap();
         if (decorationName != null && decorationEnvironment != null) {
-            decorationEnv =
-                    (Map<String, Object>) new FormatOptionsKvpParser().parse(decorationEnvironment);
+            decorationEnv = (Map<String, Object>) new FormatOptionsKvpParser().parse(decorationEnvironment);
         }
 
         // loop over layers and accumulate
@@ -537,8 +495,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         return result;
     }
 
-    private RenderedImage getEmptyLayer(
-            String format, int width, int height, ReferencedEnvelope bbox) {
+    private RenderedImage getEmptyLayer(String format, int width, int height, ReferencedEnvelope bbox) {
         // Empty layer for header
         GetMapRequest request = new GetMapRequest();
         request.setFormat(format);
@@ -568,10 +525,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     /** Retrieves the image from the remote web map server */
     private RenderedImage getImageFromWebMapServer(
-            Layer layer,
-            Map<String, ?> template,
-            ReferencedEnvelope bbox,
-            Map<String, WebMapServer> cache)
+            Layer layer, Map<String, ?> template, ReferencedEnvelope bbox, Map<String, WebMapServer> cache)
             throws IOException, ServiceException, FactoryException {
         // using a WMS client so that it respects the GetMap URL from the capabilities
         WebMapServer server = getServer(layer, cache);
@@ -591,37 +545,16 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         String crsId = ResourcePool.lookupIdentifier(bbox.getCoordinateReferenceSystem(), true);
         CoordinateReferenceSystem epsgOrderCrs = CRS.decode(SrsSyntax.OGC_URN.getSRS(crsId));
         CRS.AxisOrder axisOrder = CRS.getAxisOrder(epsgOrderCrs);
-        getMap.setSRS(
-                SrsSyntax.AUTH_CODE.getSRS(crsId)); // takes into account the version already here
-        boolean flipNeeded =
-                !template.containsKey("crs")
-                        && new Version(server.getCapabilities().getVersion())
-                                        .compareTo(new Version("1.3.0"))
-                                >= 0;
-        boolean unflipNeeded =
-                template.containsKey("crs")
-                        && new Version(server.getCapabilities().getVersion())
-                                        .compareTo(new Version("1.3.0"))
-                                < 0;
+        getMap.setSRS(SrsSyntax.AUTH_CODE.getSRS(crsId)); // takes into account the version already here
+        boolean flipNeeded = !template.containsKey("crs")
+                && new Version(server.getCapabilities().getVersion()).compareTo(new Version("1.3.0")) >= 0;
+        boolean unflipNeeded = template.containsKey("crs")
+                && new Version(server.getCapabilities().getVersion()).compareTo(new Version("1.3.0")) < 0;
         if (flipNeeded || unflipNeeded) {
             if (flipNeeded && axisOrder == CRS.AxisOrder.NORTH_EAST) {
-                getMap.setBBox(
-                        bbox.getMinY()
-                                + ","
-                                + bbox.getMinX()
-                                + ","
-                                + bbox.getMaxY()
-                                + ","
-                                + bbox.getMaxX());
+                getMap.setBBox(bbox.getMinY() + "," + bbox.getMinX() + "," + bbox.getMaxY() + "," + bbox.getMaxX());
             } else if (unflipNeeded && axisOrder == CRS.AxisOrder.NORTH_EAST) {
-                getMap.setBBox(
-                        bbox.getMinX()
-                                + ","
-                                + bbox.getMinY()
-                                + ","
-                                + bbox.getMaxX()
-                                + ","
-                                + bbox.getMaxY());
+                getMap.setBBox(bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY());
             }
         }
 
@@ -639,8 +572,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         }
     }
 
-    private WebMapServer getServer(Layer layer, Map<String, WebMapServer> cache)
-            throws IOException, ServiceException {
+    private WebMapServer getServer(Layer layer, Map<String, WebMapServer> cache) throws IOException, ServiceException {
         String capabilitiesUrl = layer.getCapabilities();
         WebMapServer server = cache.get(capabilitiesUrl);
         if (server == null) {
@@ -666,9 +598,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         if (requestFormat == null) {
             for (String format : formats) {
                 String loFormat = format.toLowerCase();
-                if (loFormat.contains("jpeg")
-                        || loFormat.contains("gif")
-                        || loFormat.contains("tif")) {
+                if (loFormat.contains("jpeg") || loFormat.contains("gif") || loFormat.contains("tif")) {
                     requestFormat = format;
                     break;
                 }
@@ -677,14 +607,12 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
         if (requestFormat == null) {
             throw new WPSException(
-                    "Could not find a suitable WMS cascading format among server supported formats: "
-                            + formats);
+                    "Could not find a suitable WMS cascading format among server supported formats: " + formats);
         }
         return requestFormat;
     }
 
-    private RenderedImage mergeMapImagesStack(
-            RenderedImage result, RenderedImage image, int headerHeight) {
+    private RenderedImage mergeMapImagesStack(RenderedImage result, RenderedImage image, int headerHeight) {
         if (!(result instanceof BufferedImage)) {
             result = PlanarImage.wrapRenderedImage(result).getAsBufferedImage();
         }
@@ -703,9 +631,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
                 return image;
             } else {
                 // if opacity is requested, create an empty image to merge with
-                result =
-                        new BufferedImage(
-                                image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                result = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
             }
         }
         // make sure we can paint on it
@@ -726,19 +652,16 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
 
     private static void applyOpacity(RenderedImage image, Layer layer, Graphics2D graphics) {
         if (layer.getOpacity() < 0 || layer.getOpacity() > 100) {
-            throw new WPSException(
-                    "Layer: "
-                            + layer.getName()
-                            + " has opacity set to an invalid value (only 0-100 allowed): "
-                            + layer.getOpacity());
+            throw new WPSException("Layer: "
+                    + layer.getName()
+                    + " has opacity set to an invalid value (only 0-100 allowed): "
+                    + layer.getOpacity());
         }
-        graphics.setComposite(
-                java.awt.AlphaComposite.getInstance(
-                        java.awt.AlphaComposite.SRC_OVER, layer.getOpacity().floatValue() / 100));
+        graphics.setComposite(java.awt.AlphaComposite.getInstance(
+                java.awt.AlphaComposite.SRC_OVER, layer.getOpacity().floatValue() / 100));
     }
 
-    private GetMapRequest produceGetMapRequest(Layer layer, Map<String, Object> kvpTemplate)
-            throws Exception {
+    private GetMapRequest produceGetMapRequest(Layer layer, Map<String, Object> kvpTemplate) throws Exception {
         GetMapRequest request = getMapReader.createRequest();
 
         // prepare raw and parsed KVP maps to mimick a GetMap request
@@ -759,8 +682,7 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
         kvp.putAll(rawKvp);
         List<Throwable> exceptions = KvpUtils.parse(kvp);
         if (exceptions != null && !exceptions.isEmpty()) {
-            throw new WPSException(
-                    "Failed to build map for layer: " + layer.getName(), exceptions.get(0));
+            throw new WPSException("Failed to build map for layer: " + layer.getName(), exceptions.get(0));
         }
 
         // parse
@@ -772,27 +694,21 @@ public class DownloadMapProcess implements GeoServerProcess, ApplicationContextA
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.wms.setApplicationContext(applicationContext);
         List<Service> services = GeoServerExtensions.extensions(Service.class, applicationContext);
-        this.service =
-                services.stream()
-                        .filter(s -> "WMS".equalsIgnoreCase(s.getId()))
-                        .findFirst()
-                        .orElse(null);
+        this.service = services.stream()
+                .filter(s -> "WMS".equalsIgnoreCase(s.getId()))
+                .findFirst()
+                .orElse(null);
         if (service == null) {
             throw new RuntimeException("Could not find a WMS service");
         }
     }
 
-    /**
-     * Returns the current {@link Supplier<HTTPClient>} building http clients for remote WMS
-     * connection
-     */
+    /** Returns the current {@link Supplier<HTTPClient>} building http clients for remote WMS connection */
     public Supplier<HTTPClient> getHttpClientSupplier() {
         return httpClientSupplier;
     }
 
-    /**
-     * Sets the {@link Supplier<HTTPClient>} used to build http clients for remote WMS connections
-     */
+    /** Sets the {@link Supplier<HTTPClient>} used to build http clients for remote WMS connections */
     public void setHttpClientSupplier(Supplier<HTTPClient> httpClientSupplier) {
         this.httpClientSupplier = httpClientSupplier;
     }

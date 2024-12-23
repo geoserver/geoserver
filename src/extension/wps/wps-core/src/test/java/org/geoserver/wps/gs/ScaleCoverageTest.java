@@ -31,62 +31,61 @@ public class ScaleCoverageTest extends WPSTestSupport {
 
     @Test
     public void testScale() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
-                        + "  <ows:Identifier>gs:ScaleCoverage</ows:Identifier>\n"
-                        + "  <wps:DataInputs>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>coverage</ows:Identifier>\n"
-                        + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
-                        + "        <wps:Body>\n"
-                        + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
-                        + "            <ows:Identifier>"
-                        + getLayerId(MockData.TASMANIA_DEM)
-                        + "</ows:Identifier>\n"
-                        + "            <wcs:DomainSubset>\n"
-                        + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
-                        + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
-                        + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
-                        + "              </gml:BoundingBox>\n"
-                        + "            </wcs:DomainSubset>\n"
-                        + "            <wcs:Output format=\"image/tiff\"/>\n"
-                        + "          </wcs:GetCoverage>\n"
-                        + "        </wps:Body>\n"
-                        + "      </wps:Reference>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>xScale</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>2</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>yScale</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>2</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>xTranslate</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>0</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "    <wps:Input>\n"
-                        + "      <ows:Identifier>yTranslate</ows:Identifier>\n"
-                        + "      <wps:Data>\n"
-                        + "        <wps:LiteralData>0</wps:LiteralData>\n"
-                        + "      </wps:Data>\n"
-                        + "    </wps:Input>\n"
-                        + "  </wps:DataInputs>\n"
-                        + "  <wps:ResponseForm>\n"
-                        + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
-                        + "      <ows:Identifier>result</ows:Identifier>\n"
-                        + "    </wps:RawDataOutput>\n"
-                        + "  </wps:ResponseForm>\n"
-                        + "</wps:Execute>\n"
-                        + "";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<wps:Execute version=\"1.0.0\" service=\"WPS\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wps/1.0.0\" xmlns:wfs=\"http://www.opengis.net/wfs\" xmlns:wps=\"http://www.opengis.net/wps/1.0.0\" xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\" xmlns:ogc=\"http://www.opengis.net/ogc\" xmlns:wcs=\"http://www.opengis.net/wcs/1.1.1\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" xsi:schemaLocation=\"http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsAll.xsd\">\n"
+                + "  <ows:Identifier>gs:ScaleCoverage</ows:Identifier>\n"
+                + "  <wps:DataInputs>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>coverage</ows:Identifier>\n"
+                + "      <wps:Reference mimeType=\"image/tiff\" xlink:href=\"http://geoserver/wcs\" method=\"POST\">\n"
+                + "        <wps:Body>\n"
+                + "          <wcs:GetCoverage service=\"WCS\" version=\"1.1.1\">\n"
+                + "            <ows:Identifier>"
+                + getLayerId(MockData.TASMANIA_DEM)
+                + "</ows:Identifier>\n"
+                + "            <wcs:DomainSubset>\n"
+                + "              <gml:BoundingBox crs=\"http://www.opengis.net/gml/srs/epsg.xml#4326\">\n"
+                + "                <ows:LowerCorner>-180.0 -90.0</ows:LowerCorner>\n"
+                + "                <ows:UpperCorner>180.0 90.0</ows:UpperCorner>\n"
+                + "              </gml:BoundingBox>\n"
+                + "            </wcs:DomainSubset>\n"
+                + "            <wcs:Output format=\"image/tiff\"/>\n"
+                + "          </wcs:GetCoverage>\n"
+                + "        </wps:Body>\n"
+                + "      </wps:Reference>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>xScale</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>2</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>yScale</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>2</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>xTranslate</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>0</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "    <wps:Input>\n"
+                + "      <ows:Identifier>yTranslate</ows:Identifier>\n"
+                + "      <wps:Data>\n"
+                + "        <wps:LiteralData>0</wps:LiteralData>\n"
+                + "      </wps:Data>\n"
+                + "    </wps:Input>\n"
+                + "  </wps:DataInputs>\n"
+                + "  <wps:ResponseForm>\n"
+                + "    <wps:RawDataOutput mimeType=\"application/arcgrid\">\n"
+                + "      <ows:Identifier>result</ows:Identifier>\n"
+                + "    </wps:RawDataOutput>\n"
+                + "  </wps:ResponseForm>\n"
+                + "</wps:Execute>\n"
+                + "";
 
         MockHttpServletResponse response = postAsServletResponse(root(), xml);
         // System.out.println(response.getOutputStreamContent());
@@ -95,11 +94,9 @@ public class ScaleCoverageTest extends WPSTestSupport {
             ArcGridFormat format = new ArcGridFormat();
             GridCoverage gc = format.getReader(is).read(null);
 
-            GridCoverage2D original =
-                    (GridCoverage2D)
-                            getCatalog()
-                                    .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
-                                    .getGridCoverage(null, null);
+            GridCoverage2D original = (GridCoverage2D) getCatalog()
+                    .getCoverageByName(getLayerId(MockData.TASMANIA_DEM))
+                    .getGridCoverage(null, null);
             scheduleForDisposal(original);
 
             // check the envelope did not change

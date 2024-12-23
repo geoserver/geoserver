@@ -53,10 +53,9 @@ public class LoggerDomainModelVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainRelation(DomainRelation domainRelation) {
-        String dr =
-                domainRelation.getContainingEntity().getName()
-                        + " -> "
-                        + domainRelation.getDestinationEntity().getName();
+        String dr = domainRelation.getContainingEntity().getName()
+                + " -> "
+                + domainRelation.getDestinationEntity().getName();
         LOGGER.log(Level.INFO, dr);
         internalLogger.append(dr + "\n");
     }

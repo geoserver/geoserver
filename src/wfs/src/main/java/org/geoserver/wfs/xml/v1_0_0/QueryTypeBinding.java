@@ -126,8 +126,7 @@ public class QueryTypeBinding extends AbstractComplexBinding {
     }
 
     @Override
-    public void initializeChildContext(
-            ElementInstance childInstance, Node node, MutablePicoContainer context) {
+    public void initializeChildContext(ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
         // children, so they can use it as well
         if (node.hasAttribute("srsName")) {

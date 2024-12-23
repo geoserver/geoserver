@@ -11,9 +11,8 @@ import org.geoserver.web.ComponentInfo;
 /**
  * Information about panels plugged into additional tabs on style edit page.
  *
- * <p>Style edit tabs have a self declared order which describes where they end up on the style edit
- * page. Lower order panels are weighted toward the left hand side, higher order panels are weighted
- * toward the right hand side.
+ * <p>Style edit tabs have a self declared order which describes where they end up on the style edit page. Lower order
+ * panels are weighted toward the left hand side, higher order panels are weighted toward the right hand side.
  */
 public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
 
@@ -40,14 +39,14 @@ public class StyleEditTabPanelInfo extends ComponentInfo<StyleEditTabPanel> {
     }
 
     /**
-     * It may be that a tab contribution to the {@link AbstractStylePage} need to work on a
-     * different model object that the page's layer and resource models (for example, because it
-     * edits and saves related information not directly attached to the style); if such is the case,
-     * this method shall return the model to be passed to the {@link StyleEditTabPanel} constructor.
+     * It may be that a tab contribution to the {@link AbstractStylePage} need to work on a different model object that
+     * the page's layer and resource models (for example, because it edits and saves related information not directly
+     * attached to the style); if such is the case, this method shall return the model to be passed to the
+     * {@link StyleEditTabPanel} constructor.
      *
-     * <p>This default implementation just returns {@code null} and assumes the {@link
-     * StyleEditTabPanel} described by this tab panel info works against the {@link
-     * AbstractStylePage} StyleInfo model. Subclasses may override as appropriate.
+     * <p>This default implementation just returns {@code null} and assumes the {@link StyleEditTabPanel} described by
+     * this tab panel info works against the {@link AbstractStylePage} StyleInfo model. Subclasses may override as
+     * appropriate.
      *
      * @return {@code null} if no need for a custom model for the tab, the model to use otherwise
      * @see StyleEditTabPanel#save()

@@ -19,8 +19,7 @@ public interface ToolWrapperFactory {
      * Creates a {@link ToolWrapper} instance.
      *
      * @param executable the wrapped executable
-     * @param environment the environment variables that should be set prior to invoking the
-     *     executable
+     * @param environment the environment variables that should be set prior to invoking the executable
      * @return a {@link ToolWrapper} instance
      */
     public ToolWrapper createWrapper(String executable, Map<String, String> environment);

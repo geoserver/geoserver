@@ -27,8 +27,7 @@ public class OSEOAdminPageTest extends OSEOWebTestSupport {
         tester.assertModelValue("form:maximumRecordsPerPage", OSEOInfo.DEFAULT_MAXIMUM_RECORDS);
         tester.assertModelValue("form:recordsPerPage", OSEOInfo.DEFAULT_RECORDS_PER_PAGE);
         tester.assertModelValue("form:aggregatesCacheTTL", OSEOInfo.DEFAULT_AGGR_CACHE_TTL);
-        tester.assertModelValue(
-                "form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
+        tester.assertModelValue("form:aggregatesCacheTTLUnit", OSEOInfo.DEFAULT_AGGR_CACHE_TTL_UNIT);
         tester.assertModelValue("form:attribution", null);
         // print(tester.getLastRenderedPage(), true, true);
     }

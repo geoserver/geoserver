@@ -19,8 +19,8 @@ import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
 /**
- * A form component for a {@link Geometry} object, expressed either as 2-3 space separated ordinates
- * or a WKT formatted {@link Geometry}
+ * A form component for a {@link Geometry} object, expressed either as 2-3 space separated ordinates or a WKT formatted
+ * {@link Geometry}
  *
  * @author Andrea Aime, GeoSolutions
  */

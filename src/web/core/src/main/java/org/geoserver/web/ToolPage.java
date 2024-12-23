@@ -18,10 +18,8 @@ import org.apache.wicket.model.StringResourceModel;
 public class ToolPage extends GeoServerSecuredPage {
     @SuppressWarnings("serial")
     public ToolPage() {
-        List<ComponentInfo> links =
-                new ArrayList<>(getGeoServerApplication().getBeansOfType(ToolLinkInfo.class));
-        for (ToolLinkExternalInfo link :
-                getGeoServerApplication().getBeansOfType(ToolLinkExternalInfo.class)) {
+        List<ComponentInfo> links = new ArrayList<>(getGeoServerApplication().getBeansOfType(ToolLinkInfo.class));
+        for (ToolLinkExternalInfo link : getGeoServerApplication().getBeansOfType(ToolLinkExternalInfo.class)) {
             if (link.getDescriptionKey() == null) {
                 continue;
             }
@@ -29,32 +27,24 @@ public class ToolPage extends GeoServerSecuredPage {
         }
         links = filterByAuth(links);
 
-        add(
-                new ListView<>("toolList", links) {
-                    @Override
-                    public void populateItem(ListItem<ComponentInfo> item) {
-                        final ComponentInfo info = item.getModelObject();
+        add(new ListView<>("toolList", links) {
+            @Override
+            public void populateItem(ListItem<ComponentInfo> item) {
+                final ComponentInfo info = item.getModelObject();
 
-                        AbstractLink link = null;
-                        if (info instanceof ToolLinkInfo) {
-                            final ToolLinkInfo tool = (ToolLinkInfo) info;
-                            link = new BookmarkablePageLink<>("theLink", tool.getComponentClass());
-                        } else {
-                            final ToolLinkExternalInfo tool = (ToolLinkExternalInfo) info;
-                            link = new ExternalLink("theLink", tool.getHref());
-                        }
+                AbstractLink link = null;
+                if (info instanceof ToolLinkInfo) {
+                    final ToolLinkInfo tool = (ToolLinkInfo) info;
+                    link = new BookmarkablePageLink<>("theLink", tool.getComponentClass());
+                } else {
+                    final ToolLinkExternalInfo tool = (ToolLinkExternalInfo) info;
+                    link = new ExternalLink("theLink", tool.getHref());
+                }
 
-                        link.add(
-                                new Label(
-                                        "theTitle",
-                                        new StringResourceModel(info.getTitleKey(), null, null)));
-                        item.add(link);
-                        item.add(
-                                new Label(
-                                        "theDescription",
-                                        new StringResourceModel(
-                                                info.getDescriptionKey(), null, null)));
-                    }
-                });
+                link.add(new Label("theTitle", new StringResourceModel(info.getTitleKey(), null, null)));
+                item.add(link);
+                item.add(new Label("theDescription", new StringResourceModel(info.getDescriptionKey(), null, null)));
+            }
+        });
     }
 }

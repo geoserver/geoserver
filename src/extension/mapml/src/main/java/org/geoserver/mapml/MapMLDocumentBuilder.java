@@ -122,8 +122,8 @@ public class MapMLDocumentBuilder {
     private static final Pattern ALL_COMMAS = Pattern.compile("^,+$");
 
     /**
-     * The key for the metadata entry that controls whether a multi-layer request is rendered as a
-     * single extent or multiple extents.
+     * The key for the metadata entry that controls whether a multi-layer request is rendered as a single extent or
+     * multiple extents.
      */
     public static final String MAPML_MULTILAYER_AS_MULTIEXTENT = "mapmlMultiLayerAsMultiExtent";
 
@@ -169,8 +169,7 @@ public class MapMLDocumentBuilder {
     private static final String MAP_STYLE_CLOSE_TAG = "</map-style>";
     private static final Pattern MAP_STYLE_REGEX =
             Pattern.compile(MAP_STYLE_OPEN_TAG + "(.+?)" + MAP_STYLE_CLOSE_TAG, Pattern.DOTALL);
-    private static final Pattern MAP_LINK_REGEX =
-            Pattern.compile("<map-link (.+?)/>", Pattern.DOTALL);
+    private static final Pattern MAP_LINK_REGEX = Pattern.compile("<map-link (.+?)/>", Pattern.DOTALL);
 
     private static final Pattern MAP_LINK_HREF_REGEX = Pattern.compile("href=\"(.+?)\"");
 
@@ -195,8 +194,7 @@ public class MapMLDocumentBuilder {
      * @param wms WMS object
      * @param request HttpServletRequest object
      */
-    public MapMLDocumentBuilder(
-            WMSMapContent mapContent, WMS wms, GeoServer geoServer, HttpServletRequest request) {
+    public MapMLDocumentBuilder(WMSMapContent mapContent, WMS wms, GeoServer geoServer, HttpServletRequest request) {
         this.wms = wms;
         this.geoServer = geoServer;
         this.request = request;
@@ -204,39 +202,28 @@ public class MapMLDocumentBuilder {
         GetMapRequest getMapRequest = mapContent.getRequest();
         String rawLayersCommaDL = getMapRequest.getRawKvp().get("layers");
         this.layers = toRawLayers(rawLayersCommaDL);
-        this.stylesCommaDelimited =
-                getMapRequest.getRawKvp().get("styles") != null
-                        ? getMapRequest.getRawKvp().get("styles")
-                        : "";
-        styles =
-                Optional.ofNullable(
-                        stylesCommaDelimited.isEmpty()
-                                ? null
-                                : Arrays.asList(stylesCommaDelimited.split(",", -1)));
-        this.cqlCommadDelimited =
-                getMapRequest.getRawKvp().get("cql_filter") != null
-                        ? getMapRequest.getRawKvp().get("cql_filter")
-                        : "";
-        cqlFilter =
-                Optional.ofNullable(
-                        cqlCommadDelimited.isEmpty()
-                                ? null
-                                : Arrays.asList(cqlCommadDelimited.split(";", -1)));
+        this.stylesCommaDelimited = getMapRequest.getRawKvp().get("styles") != null
+                ? getMapRequest.getRawKvp().get("styles")
+                : "";
+        styles = Optional.ofNullable(
+                stylesCommaDelimited.isEmpty() ? null : Arrays.asList(stylesCommaDelimited.split(",", -1)));
+        this.cqlCommadDelimited = getMapRequest.getRawKvp().get("cql_filter") != null
+                ? getMapRequest.getRawKvp().get("cql_filter")
+                : "";
+        cqlFilter = Optional.ofNullable(
+                cqlCommadDelimited.isEmpty() ? null : Arrays.asList(cqlCommadDelimited.split(";", -1)));
         this.proj = extractCRS(getMapRequest.getRawKvp());
         this.height = getMapRequest.getHeight();
         this.width = getMapRequest.getWidth();
         this.bbox = toCommaDelimitedBbox(getMapRequest.getBbox());
         this.projectedBox = new ReferencedEnvelope(getMapRequest.getBbox(), getMapRequest.getCrs());
-        this.transparent =
-                Optional.ofNullable(
-                        getMapRequest.getRawKvp().get("transparent") == null
-                                ? null
-                                : Boolean.valueOf(getMapRequest.getRawKvp().get("transparent")));
+        this.transparent = Optional.ofNullable(
+                getMapRequest.getRawKvp().get("transparent") == null
+                        ? null
+                        : Boolean.valueOf(getMapRequest.getRawKvp().get("transparent")));
         this.format = getFormat(getMapRequest);
-        this.layersCommaDelimited =
-                layers.stream().map(RawLayer::getName).collect(Collectors.joining(","));
-        this.layerTitlesCommaDelimited =
-                layers.stream().map(RawLayer::getTitle).collect(Collectors.joining(","));
+        this.layersCommaDelimited = layers.stream().map(RawLayer::getName).collect(Collectors.joining(","));
+        this.layerTitlesCommaDelimited = layers.stream().map(RawLayer::getTitle).collect(Collectors.joining(","));
     }
 
     private String extractCRS(Map<String, String> rawKvp) {
@@ -301,8 +288,7 @@ public class MapMLDocumentBuilder {
      * @return Optional<Object> containing the format
      */
     private Optional<Object> getFormat(GetMapRequest getMapRequest) {
-        return Optional.ofNullable(
-                getMapRequest.getFormatOptions().get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION));
+        return Optional.ofNullable(getMapRequest.getFormatOptions().get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION));
     }
 
     /**
@@ -324,10 +310,9 @@ public class MapMLDocumentBuilder {
      */
     public void initialize() throws ServiceException {
         WMSInfo wmsInfo = geoServer.getService(WMSInfo.class);
-        isMultiExtent =
-                wmsInfo.getMetadata().get(MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class) != null
-                        ? wmsInfo.getMetadata().get(MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class)
-                        : MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
+        isMultiExtent = wmsInfo.getMetadata().get(MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class) != null
+                ? wmsInfo.getMetadata().get(MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class)
+                : MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT;
         if (isMultiExtent || layers.size() == 1) {
             for (int i = 0; i < layers.size(); i++) {
                 RawLayer layer = layers.get(i);
@@ -338,8 +323,7 @@ public class MapMLDocumentBuilder {
                         style = styles.get().get(i);
                     } catch (IndexOutOfBoundsException e) {
                         // if there are more layers than styles
-                        throw new ServiceException(
-                                "Number of styles does not match number of layers");
+                        throw new ServiceException("Number of styles does not match number of layers");
                     }
                 }
                 if (cqlFilter.isPresent()) {
@@ -347,12 +331,10 @@ public class MapMLDocumentBuilder {
                         cql = cqlFilter.get().get(i);
                     } catch (IndexOutOfBoundsException e) {
                         // if there are more layers than cql filters
-                        throw new ServiceException(
-                                "Number of cql filters does not match number of layers");
+                        throw new ServiceException("Number of cql filters does not match number of layers");
                     }
                 }
-                MapMLLayerMetadata mapMLLayerMetadata =
-                        layerToMapMLLayerMetadata(layer, style, cql);
+                MapMLLayerMetadata mapMLLayerMetadata = layerToMapMLLayerMetadata(layer, style, cql);
                 mapMLLayerMetadataList.add(mapMLLayerMetadata);
             }
         } else {
@@ -361,10 +343,9 @@ public class MapMLDocumentBuilder {
         }
         // populate Map-wide variables using the first layer
         if (!mapMLLayerMetadataList.isEmpty()) {
-            defaultStyle =
-                    stylesCommaDelimited == null || stylesCommaDelimited.isEmpty()
-                            ? getDefaultLayerStyles(mapMLLayerMetadataList)
-                            : stylesCommaDelimited;
+            defaultStyle = stylesCommaDelimited == null || stylesCommaDelimited.isEmpty()
+                    ? getDefaultLayerStyles(mapMLLayerMetadataList)
+                    : stylesCommaDelimited;
             MapMLLayerMetadata mapMLLayerMetadata = mapMLLayerMetadataList.get(0);
             projType = mapMLLayerMetadata.getProjType();
             layerTitle = layerTitlesCommaDelimited;
@@ -409,7 +390,8 @@ public class MapMLDocumentBuilder {
                 }
             } else {
                 LayerGroupInfo layerGroupInfo = mapMLLayerMetadata.getLayerGroupInfo();
-                if (layerGroupInfo != null && !layerGroupInfo.getLayerGroupStyles().isEmpty()) {
+                if (layerGroupInfo != null
+                        && !layerGroupInfo.getLayerGroupStyles().isEmpty()) {
                     defaultStyle += "default-style-" + mapMLLayerMetadata.getLayerName() + ",";
                 }
             }
@@ -449,21 +431,17 @@ public class MapMLDocumentBuilder {
         return mapMLLayerMetadata;
     }
 
-    /**
-     * Parses the projection into a ProjType, or throws a proper service exception indicating the
-     * unsupported CRS
-     */
+    /** Parses the projection into a ProjType, or throws a proper service exception indicating the unsupported CRS */
     private MapMLProjection parseProjType() {
         try {
             return new MapMLProjection(proj.toUpperCase());
         } catch (IllegalArgumentException | FactoryException iae) {
             // figure out the parameter name (version dependent) and the actual original
             // string value for the srs/crs parameter
-            String parameterName =
-                    Optional.ofNullable(mapContent.getRequest().getVersion())
-                            .filter(v -> v.equals("1.3.0"))
-                            .map(v -> "crs")
-                            .orElse("srs");
+            String parameterName = Optional.ofNullable(mapContent.getRequest().getVersion())
+                    .filter(v -> v.equals("1.3.0"))
+                    .map(v -> "crs")
+                    .orElse("srs");
             Map<String, Object> rawKvp = Dispatcher.REQUEST.get().getRawKvp();
             String value = (String) rawKvp.get("srs");
             if (value == null) value = (String) rawKvp.get("crs");
@@ -525,12 +503,9 @@ public class MapMLDocumentBuilder {
         for (int i = 0; i < layers.size(); i++) {
             RawLayer layer = layers.get(i);
             try {
-                ReferencedEnvelope layerBbbox =
-                        layer.isLayerGroup()
-                                ? ((LayerGroupInfo) layer.getPublishedInfo()).getBounds()
-                                : ((LayerInfo) layer.getPublishedInfo())
-                                        .getResource()
-                                        .boundingBox();
+                ReferencedEnvelope layerBbbox = layer.isLayerGroup()
+                        ? ((LayerGroupInfo) layer.getPublishedInfo()).getBounds()
+                        : ((LayerInfo) layer.getPublishedInfo()).getResource().boundingBox();
                 if (i == 0) {
                     bbbox = layerBbbox.transform(projType.getCRS(), true);
                 } else {
@@ -588,44 +563,37 @@ public class MapMLDocumentBuilder {
                 bbox.expandToInclude(referencedEnvelope);
             }
             layerMeta = layerGroupInfo.getMetadata();
-            workspace =
-                    (layerGroupInfo.getWorkspace() != null
-                            ? layerGroupInfo.getWorkspace().getName()
-                            : "");
+            workspace = (layerGroupInfo.getWorkspace() != null
+                    ? layerGroupInfo.getWorkspace().getName()
+                    : "");
             queryable = !layerGroupInfo.isQueryDisabled();
             layerName = layerGroupInfo.getName();
             layerTitle = getTitle(layerGroupInfo, layerName);
-            defaultMimeType =
-                    Optional.ofNullable(layerGroupInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
-                            .orElse(DEFAULT_MIME_TYPE)
-                            .toString();
+            defaultMimeType = Optional.ofNullable(layerGroupInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                    .orElse(DEFAULT_MIME_TYPE)
+                    .toString();
         } else {
             layerInfo = (LayerInfo) layer.getPublishedInfo();
             resourceInfo = layerInfo.getResource();
             bbox = layerInfo.getResource().getLatLonBoundingBox();
             layerMeta = resourceInfo.getMetadata();
-            workspace =
-                    (resourceInfo.getStore().getWorkspace() != null
-                            ? resourceInfo.getStore().getWorkspace().getName()
-                            : "");
+            workspace = (resourceInfo.getStore().getWorkspace() != null
+                    ? resourceInfo.getStore().getWorkspace().getName()
+                    : "");
             queryable = layerInfo.isQueryable();
             isTransparent = transparent.orElse(!layerInfo.isOpaque());
             layerName = layerInfo.getName().isEmpty() ? layer.getTitle() : layerInfo.getName();
             layerTitle = getTitle(layerInfo, layerName);
             // set the actual style name from the layer info
             if (style == null) styleName = layerInfo.getDefaultStyle().getName();
-            defaultMimeType =
-                    Optional.ofNullable(resourceInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
-                            .orElse(DEFAULT_MIME_TYPE)
-                            .toString();
+            defaultMimeType = Optional.ofNullable(resourceInfo.getMetadata().get(MapMLConstants.MAPML_MIME))
+                    .orElse(DEFAULT_MIME_TYPE)
+                    .toString();
         }
         MapMLProjection projType = parseProjType();
         cqlFilter = cql != null ? cql : "";
-        tileLayerExists =
-                gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
-                        && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
-                                        .getGridSubset(projType.value())
-                                != null;
+        tileLayerExists = gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
+                && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo).getGridSubset(projType.value()) != null;
         boolean useTiles = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_TILES, Boolean.class));
         boolean useRemote = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_REMOTE, Boolean.class));
         boolean useFeatures = useFeatures(layer, layerMeta);
@@ -670,18 +638,14 @@ public class MapMLDocumentBuilder {
      * @param bbox ReferencedEnvelope with CRS
      * @return ReferencedEnvelope with matching CRS
      */
-    private static ReferencedEnvelope matchReferencedEnvelopeCRS(
-            LayerInfo li, ReferencedEnvelope bbox) {
+    private static ReferencedEnvelope matchReferencedEnvelopeCRS(LayerInfo li, ReferencedEnvelope bbox) {
         ReferencedEnvelope referencedEnvelope = li.getResource().getLatLonBoundingBox();
         if (!CRS.equalsIgnoreMetadata(
-                bbox.getCoordinateReferenceSystem(),
-                referencedEnvelope.getCoordinateReferenceSystem())) {
+                bbox.getCoordinateReferenceSystem(), referencedEnvelope.getCoordinateReferenceSystem())) {
             try {
-                referencedEnvelope =
-                        referencedEnvelope.transform(bbox.getCoordinateReferenceSystem(), true);
+                referencedEnvelope = referencedEnvelope.transform(bbox.getCoordinateReferenceSystem(), true);
             } catch (TransformException | FactoryException e) {
-                throw new ServiceException(
-                        "Unable to transform layer bounds to WGS84 for layer" + li.getName());
+                throw new ServiceException("Unable to transform layer bounds to WGS84 for layer" + li.getName());
             }
         }
         return referencedEnvelope;
@@ -704,7 +668,9 @@ public class MapMLDocumentBuilder {
             } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
                 return li.getTitle().trim();
             } else {
-                return li.getName().trim().isEmpty() ? defaultTitle : li.getName().trim();
+                return li.getName().trim().isEmpty()
+                        ? defaultTitle
+                        : li.getName().trim();
             }
         } else {
             LayerInfo li = (LayerInfo) p;
@@ -715,7 +681,9 @@ public class MapMLDocumentBuilder {
             } else if (li.getTitle() != null && !li.getTitle().trim().isEmpty()) {
                 return li.getTitle().trim();
             } else {
-                return li.getName().trim().isEmpty() ? defaultTitle : li.getName().trim();
+                return li.getName().trim().isEmpty()
+                        ? defaultTitle
+                        : li.getName().trim();
             }
         }
     }
@@ -744,8 +712,7 @@ public class MapMLDocumentBuilder {
         Base base = new Base();
         Map<String, String> wmsParams = new HashMap<>();
         wmsParams.put("format", MapMLConstants.MAPML_MIME_TYPE);
-        wmsParams.put(
-                "format_options", MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + imageFormat);
+        wmsParams.put("format_options", MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + imageFormat);
         wmsParams.put("layers", layersCommaDelimited);
         wmsParams.put("crs", projType.getCRSCode());
         wmsParams.put("version", "1.3.0");
@@ -808,9 +775,7 @@ public class MapMLDocumentBuilder {
                     styleParams.put("width", Integer.toString(width));
                     styleParams.put("height", Integer.toString(height));
                     styleParams.put("bbox", bbox);
-                    String url =
-                            ResponseUtils.buildURL(
-                                    baseUrl, "wms", styleParams, URLMangler.URLType.SERVICE);
+                    String url = ResponseUtils.buildURL(baseUrl, "wms", styleParams, URLMangler.URLType.SERVICE);
                     styleLink.setHref(url);
                     links.add(styleLink);
                 }
@@ -826,8 +791,7 @@ public class MapMLDocumentBuilder {
                     // Copy the base params to create one for each style
                     Map<String, String> styleParams = new HashMap<>(wmsParams);
                     // skip the self style case (if it is even listed)
-                    if (layerGroupStyle.getName().getName().equalsIgnoreCase(effectiveStyleName))
-                        continue;
+                    if (layerGroupStyle.getName().getName().equalsIgnoreCase(effectiveStyleName)) continue;
                     Link styleLink = new Link();
                     styleLink.setRel(RelType.STYLE);
                     styleLink.setTitle(si.getName());
@@ -836,9 +800,7 @@ public class MapMLDocumentBuilder {
                     styleParams.put("width", Integer.toString(width));
                     styleParams.put("height", Integer.toString(height));
                     styleParams.put("bbox", bbox);
-                    String url =
-                            ResponseUtils.buildURL(
-                                    baseUrl, "wms", styleParams, URLMangler.URLType.SERVICE);
+                    String url = ResponseUtils.buildURL(baseUrl, "wms", styleParams, URLMangler.URLType.SERVICE);
                     styleLink.setHref(url);
                     links.add(styleLink);
                 }
@@ -849,21 +811,16 @@ public class MapMLDocumentBuilder {
         Link selfStyleLink = new Link();
         selfStyleLink.setRel(RelType.SELF_STYLE);
         selfStyleLink.setTitle(
-                stylesCommaDelimited == null || stylesCommaDelimited.isEmpty()
-                        ? defaultStyle
-                        : stylesCommaDelimited);
+                stylesCommaDelimited == null || stylesCommaDelimited.isEmpty() ? defaultStyle : stylesCommaDelimited);
         // Copy the base params to create one for self style
         Map<String, String> selfStyleParams = new HashMap<>(wmsParams);
         selfStyleParams.put(
                 "styles",
-                stylesCommaDelimited == null || stylesCommaDelimited.isEmpty()
-                        ? defaultStyle
-                        : stylesCommaDelimited);
+                stylesCommaDelimited == null || stylesCommaDelimited.isEmpty() ? defaultStyle : stylesCommaDelimited);
         selfStyleParams.put("width", Integer.toString(width));
         selfStyleParams.put("height", Integer.toString(height));
         selfStyleParams.put("bbox", bbox);
-        String selfStyleURL =
-                ResponseUtils.buildURL(baseUrl, "wms", selfStyleParams, URLMangler.URLType.SERVICE);
+        String selfStyleURL = ResponseUtils.buildURL(baseUrl, "wms", selfStyleParams, URLMangler.URLType.SERVICE);
         selfStyleLink.setHref(selfStyleURL);
         links.add(selfStyleLink);
         // alternate projection links
@@ -877,17 +834,14 @@ public class MapMLDocumentBuilder {
                 projectionLink.setRel(RelType.ALTERNATE);
                 projectionLink.setProjection(pt.value());
                 // reproject the bounds
-                ReferencedEnvelope reprojectedBounds =
-                        reproject(projectedBox, new MapMLProjection(pt));
+                ReferencedEnvelope reprojectedBounds = reproject(projectedBox, new MapMLProjection(pt));
                 // Copy the base params to create one for self style
                 Map<String, String> projParams = new HashMap<>(wmsParams);
                 projParams.put("crs", pt.getCRSCode());
                 projParams.put("width", Integer.toString(width));
                 projParams.put("height", Integer.toString(height));
                 projParams.put("bbox", toCommaDelimitedBbox(reprojectedBounds));
-                String projURL =
-                        ResponseUtils.buildURL(
-                                baseUrl, "wms", projParams, URLMangler.URLType.SERVICE);
+                String projURL = ResponseUtils.buildURL(baseUrl, "wms", projParams, URLMangler.URLType.SERVICE);
                 projectionLink.setHref(projURL);
                 links.add(projectionLink);
             } catch (Exception e) {
@@ -960,9 +914,7 @@ public class MapMLDocumentBuilder {
             Matcher matcher = MAP_STYLE_REGEX.matcher(stylesAndLink);
             while (matcher.find()) {
                 extractedStyles.add(
-                        matcher.group()
-                                .replaceAll(MAP_STYLE_OPEN_TAG, "")
-                                .replace(MAP_STYLE_CLOSE_TAG, ""));
+                        matcher.group().replaceAll(MAP_STYLE_OPEN_TAG, "").replace(MAP_STYLE_CLOSE_TAG, ""));
             }
         }
         return extractedStyles;
@@ -977,8 +929,7 @@ public class MapMLDocumentBuilder {
                 Style style = wms.getStyleByName(styleName);
                 if (style != null) {
                     Map<String, MapMLStyle> styles =
-                            MapMLFeatureUtil.getMapMLStyleMap(
-                                    style, mapContent.getScaleDenominator());
+                            MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());
                     String css = MapMLFeatureUtil.getCSSStyles(styles);
                     cssStyles.add(css);
                 } else {
@@ -1054,13 +1005,9 @@ public class MapMLDocumentBuilder {
             NumberRange<Double> scaleDenominators = null;
             // layerInfo is null when layer is a layer group or multi layer request for multi-extent
             if (!mapMLLayerMetadata.isLayerGroup() && mapMLLayerMetadata.getLayerInfo() != null) {
-                scaleDenominators =
-                        CapabilityUtil.searchMinMaxScaleDenominator(
-                                mapMLLayerMetadata.getLayerInfo());
+                scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerInfo());
             } else if (mapMLLayerMetadata.getLayerGroupInfo() != null) {
-                scaleDenominators =
-                        CapabilityUtil.searchMinMaxScaleDenominator(
-                                mapMLLayerMetadata.getLayerGroupInfo());
+                scaleDenominators = CapabilityUtil.searchMinMaxScaleDenominator(mapMLLayerMetadata.getLayerGroupInfo());
             }
 
             Input extentZoomInput = new Input();
@@ -1069,18 +1016,15 @@ public class MapMLDocumentBuilder {
             // passing in max sld denominator to get min zoom
             extentZoomInput.setMin(
                     scaleDenominators != null
-                            ? String.valueOf(
-                                    tiledCRS.getMinZoomForDenominator(
-                                            scaleDenominators.getMaxValue().intValue()))
+                            ? String.valueOf(tiledCRS.getMinZoomForDenominator(
+                                    scaleDenominators.getMaxValue().intValue()))
                             : "0");
             int mxz = tiledCRS.getScales().length - 1;
             // passing in min sld denominator to get max zoom
-            String maxZoom =
-                    scaleDenominators != null
-                            ? String.valueOf(
-                                    tiledCRS.getMaxZoomForDenominator(
-                                            scaleDenominators.getMinValue().intValue()))
-                            : String.valueOf(mxz);
+            String maxZoom = scaleDenominators != null
+                    ? String.valueOf(tiledCRS.getMaxZoomForDenominator(
+                            scaleDenominators.getMinValue().intValue()))
+                    : String.valueOf(mxz);
             extentZoomInput.setMax(maxZoom);
             extentList.add(extentZoomInput);
 
@@ -1097,8 +1041,7 @@ public class MapMLDocumentBuilder {
         return extents;
     }
 
-    private boolean isSingleLayerWithDimensionOptions(
-            List<MapMLLayerMetadata> mapMLLayerMetadataList) {
+    private boolean isSingleLayerWithDimensionOptions(List<MapMLLayerMetadata> mapMLLayerMetadataList) {
         if (mapMLLayerMetadataList.size() == 1) {
             MapMLLayerMetadata metadata = mapMLLayerMetadataList.get(0);
             return metadata.isTimeEnabled()
@@ -1115,8 +1058,7 @@ public class MapMLDocumentBuilder {
      * @param dimension dimension name
      * @throws IOException In the event of an I/O error.
      */
-    private void prepareExtentForLayer(MapMLLayerMetadata mapMLLayerMetadata, String dimension)
-            throws IOException {
+    private void prepareExtentForLayer(MapMLLayerMetadata mapMLLayerMetadata, String dimension) throws IOException {
         if (dimension == null || mapMLLayerMetadata.isLayerGroup()) {
             return;
         }
@@ -1130,8 +1072,7 @@ public class MapMLDocumentBuilder {
     }
 
     @SuppressWarnings("unchecked")
-    private void prepareFeatureExtent(
-            FeatureTypeInfo typeInfo, MapMLLayerMetadata layerMetadata, String dimension)
+    private void prepareFeatureExtent(FeatureTypeInfo typeInfo, MapMLLayerMetadata layerMetadata, String dimension)
             throws IOException {
         MetadataMap metadataMap = typeInfo.getMetadata();
         DimensionOptions options;
@@ -1158,11 +1099,10 @@ public class MapMLDocumentBuilder {
                     } else if (Number.class.isAssignableFrom(type)) {
                         options.addNumbers((Collection<Number>) (Collection<?>) values);
                     } else {
-                        final List<String> valuesList =
-                                values.stream()
-                                        .filter(x -> x != null)
-                                        .map(x -> x.toString())
-                                        .collect(Collectors.toList());
+                        final List<String> valuesList = values.stream()
+                                .filter(x -> x != null)
+                                .map(x -> x.toString())
+                                .collect(Collectors.toList());
                         options.addStrings(valuesList);
                     }
                 }
@@ -1170,8 +1110,7 @@ public class MapMLDocumentBuilder {
         }
     }
 
-    private void prepareCoverageExtent(
-            CoverageInfo cvInfo, MapMLLayerMetadata layerMetadata, String dimension)
+    private void prepareCoverageExtent(CoverageInfo cvInfo, MapMLLayerMetadata layerMetadata, String dimension)
             throws IOException {
         MetadataMap metadataMap = cvInfo.getMetadata();
         DimensionOptions options;
@@ -1217,13 +1156,11 @@ public class MapMLDocumentBuilder {
         GridCoverage2DReader reader = null;
         Catalog catalog = cvInfo.getCatalog();
         if (catalog == null)
-            throw new ServiceException(
-                    "Unable to acquire catalog resource for coverage: " + cvInfo.getName());
+            throw new ServiceException("Unable to acquire catalog resource for coverage: " + cvInfo.getName());
 
         CoverageStoreInfo csinfo = cvInfo.getStore();
         if (csinfo == null)
-            throw new ServiceException(
-                    "Unable to acquire coverage store resource for coverage: " + cvInfo.getName());
+            throw new ServiceException("Unable to acquire coverage store resource for coverage: " + cvInfo.getName());
 
         try {
             reader = (GridCoverage2DReader) cvInfo.getGridCoverageReader(null, null);
@@ -1235,16 +1172,14 @@ public class MapMLDocumentBuilder {
                     t);
         }
         if (reader == null) {
-            throw new ServiceException(
-                    "Unable to acquire a reader for this coverage with format: "
-                            + csinfo.getFormat().getName());
+            throw new ServiceException("Unable to acquire a reader for this coverage with format: "
+                    + csinfo.getFormat().getName());
         }
         ReaderDimensionsAccessor accessor = new ReaderDimensionsAccessor(reader);
         return accessor;
     }
 
-    private DimensionOptions initOptions(
-            MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String dimName) {
+    private DimensionOptions initOptions(MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String dimName) {
         DimensionOptions options = new DimensionOptions(mapMLLayerMetadata, metadata, dimName);
         if (options.isAvailable()) {
             extentList.add(options.getSelect());
@@ -1291,11 +1226,8 @@ public class MapMLDocumentBuilder {
         // client requests for WMTS tiles (GetTile)
         LayerInfo layerInfo = mapMLLayerMetadata.getLayerInfo();
 
-        GeoServerTileLayer gstl =
-                gwc.getTileLayer(
-                        mapMLLayerMetadata.isLayerGroup()
-                                ? mapMLLayerMetadata.getLayerGroupInfo()
-                                : layerInfo.getResource());
+        GeoServerTileLayer gstl = gwc.getTileLayer(
+                mapMLLayerMetadata.isLayerGroup() ? mapMLLayerMetadata.getLayerGroupInfo() : layerInfo.getResource());
         GridSubset gss = gstl.getGridSubset(projType.value());
 
         long[][] minMax = gss.getWMTSCoverages();
@@ -1347,12 +1279,7 @@ public class MapMLDocumentBuilder {
             params.put("format", MAPML_MIME_TYPE);
             params.put(
                     "format_options",
-                    MAPML_FEATURE_FO
-                            + ":true;"
-                            + MAPML_SKIP_ATTRIBUTES_FO
-                            + ":true;"
-                            + MAPML_SKIP_STYLES_FO
-                            + ":true");
+                    MAPML_FEATURE_FO + ":true;" + MAPML_SKIP_ATTRIBUTES_FO + ":true;" + MAPML_SKIP_STYLES_FO + ":true");
             tileLink.setType(MimeType.TEXT_MAPML);
         } else {
             params.put("format", imageFormat);
@@ -1362,16 +1289,15 @@ public class MapMLDocumentBuilder {
         setCustomDimensionParam(mapMLLayerMetadata, params, gstl);
         setCqlFilterParam(mapMLLayerMetadata, params);
         MapMLURLBuilder mangler =
-                new MapMLURLBuilder(
-                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+                new MapMLURLBuilder(mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
         String urlTemplate = mangler.getUrlTemplate();
         tileLink.setTref(urlTemplate);
         extentList.add(tileLink);
     }
 
     /**
-     * Gnerate inputs and templated links that the client will use to make WMS requests for
-     * individual tiles i.e. a GetMap for each 256x256 tile image
+     * Gnerate inputs and templated links that the client will use to make WMS requests for individual tiles i.e. a
+     * GetMap for each 256x256 tile image
      */
     private void generateTiledWMSClientLinks(MapMLLayerMetadata mapMLLayerMetadata) {
         // generateTiledWMSClientLinks
@@ -1393,10 +1319,9 @@ public class MapMLDocumentBuilder {
             LayerInfo layerInfo = mapMLLayerMetadata.getLayerInfo();
 
             try {
-                bbbox =
-                        mapMLLayerMetadata.isLayerGroup()
-                                ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
-                                : layerInfo.getResource().boundingBox();
+                bbbox = mapMLLayerMetadata.isLayerGroup()
+                        ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
+                        : layerInfo.getResource().boundingBox();
                 bbbox = bbbox.transform(projType.getCRS(), true);
             } catch (Exception e) {
                 // sometimes, when the geographicBox is right to 90N or 90S, in epsg:3857,
@@ -1481,12 +1406,7 @@ public class MapMLDocumentBuilder {
             params.put("format", MAPML_MIME_TYPE);
             params.put(
                     "format_options",
-                    MAPML_FEATURE_FO
-                            + ":true;"
-                            + MAPML_SKIP_ATTRIBUTES_FO
-                            + ":true;"
-                            + MAPML_SKIP_STYLES_FO
-                            + ":true");
+                    MAPML_FEATURE_FO + ":true;" + MAPML_SKIP_ATTRIBUTES_FO + ":true;" + MAPML_SKIP_STYLES_FO + ":true");
             tileLink.setType(MimeType.TEXT_MAPML);
         } else {
             params.put("format", imageFormat);
@@ -1495,17 +1415,13 @@ public class MapMLDocumentBuilder {
         params.put("width", "256");
         params.put("height", "256");
         MapMLURLBuilder mangler =
-                new MapMLURLBuilder(
-                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+                new MapMLURLBuilder(mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
         String urlTemplate = mangler.getUrlTemplate();
         tileLink.setTref(urlTemplate);
         extentList.add(tileLink);
     }
 
-    /**
-     * Generate inputs and links that the client will use to create WMS GetMap requests for full map
-     * images
-     */
+    /** Generate inputs and links that the client will use to create WMS GetMap requests for full map images */
     public void generateWMSClientLinks(MapMLLayerMetadata mapMLLayerMetadata) {
         // generateWMSClientLinks
         // emit MapML extent that uses WMS requests to request complete images
@@ -1518,10 +1434,9 @@ public class MapMLDocumentBuilder {
                 // initialization is necessary so as to set the PCRS to which
                 // the resource's geographicBox will be transformed, below.
                 bbbox = new ReferencedEnvelope(projType.getCRS());
-                bbbox =
-                        mapMLLayerMetadata.isLayerGroup
-                                ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
-                                : layerInfo.getResource().boundingBox();
+                bbbox = mapMLLayerMetadata.isLayerGroup
+                        ? mapMLLayerMetadata.getLayerGroupInfo().getBounds()
+                        : layerInfo.getResource().boundingBox();
                 // transform can cause an exception if the geographicBox coordinates fall
                 // too near the pole (at least in OSMTILE, where the poles are
                 // undefined/out of scope).
@@ -1626,8 +1541,7 @@ public class MapMLDocumentBuilder {
         params.put("width", "{w}");
         params.put("height", "{h}");
         MapMLURLBuilder mangler =
-                new MapMLURLBuilder(
-                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+                new MapMLURLBuilder(mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
         String urlTemplate = mangler.getUrlTemplate();
         imageLink.setTref(urlTemplate);
         extentList.add(imageLink);
@@ -1665,9 +1579,7 @@ public class MapMLDocumentBuilder {
         extentList.add(inputHeight);
     }
 
-    /**
-     * Generate inputs and links that the client will use to generate WMTS GetFeatureInfo requests
-     */
+    /** Generate inputs and links that the client will use to generate WMTS GetFeatureInfo requests */
     private void generateWMTSQueryClientLinks(MapMLLayerMetadata mapMLLayerMetadata) {
 
         // query link
@@ -1690,8 +1602,7 @@ public class MapMLDocumentBuilder {
         params.put("i", "{i}");
         params.put("j", "{j}");
         MapMLURLBuilder mangler =
-                new MapMLURLBuilder(
-                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+                new MapMLURLBuilder(mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
         String urlTemplate = mangler.getUrlTemplate();
         // It may be that the mangler decided to not generate any query URL due
         // to unsupported info formats from the remote layer. So we are not
@@ -1760,8 +1671,7 @@ public class MapMLDocumentBuilder {
         params.put("x", "{i}");
         params.put("y", "{j}");
         MapMLURLBuilder mangler =
-                new MapMLURLBuilder(
-                        mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
+                new MapMLURLBuilder(mapContent, mapMLLayerMetadata, baseUrlPattern, path, params, proj);
         String urlTemplate = mangler.getUrlTemplate();
         // It may be that the mangler decided to not generate any query URL due
         // to unsupported info formats from the remote layer. So we are not
@@ -1788,39 +1698,30 @@ public class MapMLDocumentBuilder {
         }
     }
 
-    private void setCqlFilterParam(
-            MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params) {
+    private void setCqlFilterParam(MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params) {
         if (cqlFilter.isPresent()) {
             params.put("cql_filter", mapMLLayerMetadata.getCqlFilter());
         }
     }
 
     private void setElevationParam(
-            MapMLLayerMetadata mapMLLayerMetadata,
-            HashMap<String, String> params,
-            GeoServerTileLayer tileLayer) {
-        if (mapMLLayerMetadata.isElevationEnabled()
-                && checkTileLayerParam(tileLayer, "elevation")) {
+            MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params, GeoServerTileLayer tileLayer) {
+        if (mapMLLayerMetadata.isElevationEnabled() && checkTileLayerParam(tileLayer, "elevation")) {
             params.put("elevation", "{elevation}");
         }
     }
 
     private void setTimeParam(
-            MapMLLayerMetadata mapMLLayerMetadata,
-            HashMap<String, String> params,
-            GeoServerTileLayer tileLayer) {
+            MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params, GeoServerTileLayer tileLayer) {
         if (mapMLLayerMetadata.isTimeEnabled() && checkTileLayerParam(tileLayer, "time")) {
             params.put("time", "{time}");
         }
     }
 
     private void setCustomDimensionParam(
-            MapMLLayerMetadata mapMLLayerMetadata,
-            HashMap<String, String> params,
-            GeoServerTileLayer tileLayer) {
+            MapMLLayerMetadata mapMLLayerMetadata, HashMap<String, String> params, GeoServerTileLayer tileLayer) {
         String customDimension = mapMLLayerMetadata.getCustomDimension();
-        if (StringUtils.isNotBlank(customDimension)
-                && checkTileLayerParam(tileLayer, customDimension)) {
+        if (StringUtils.isNotBlank(customDimension) && checkTileLayerParam(tileLayer, customDimension)) {
             params.put(customDimension, "{" + customDimension + "}");
         }
     }
@@ -1867,18 +1768,12 @@ public class MapMLDocumentBuilder {
             } else {
                 if (mapMLLayerMetadata.isLayerGroup()) {
                     layerLabel +=
-                            getLabel(
-                                            mapMLLayerMetadata.getLayerGroupInfo(),
-                                            mapMLLayerMetadata.getLayerName(),
-                                            request)
+                            getLabel(mapMLLayerMetadata.getLayerGroupInfo(), mapMLLayerMetadata.getLayerName(), request)
                                     + ",";
 
                 } else {
                     layerLabel +=
-                            getLabel(
-                                            mapMLLayerMetadata.getLayerInfo(),
-                                            mapMLLayerMetadata.getLayerName(),
-                                            request)
+                            getLabel(mapMLLayerMetadata.getLayerInfo(), mapMLLayerMetadata.getLayerName(), request)
                                     + ",";
                 }
             }
@@ -1902,26 +1797,17 @@ public class MapMLDocumentBuilder {
         if (ALL_COMMAS.matcher(cqlFilter).matches()) {
             cqlFilter = "";
         }
-        MapMLHTMLOutput htmlOutput =
-                new MapMLHTMLOutput.HTMLOutputBuilder()
-                        .setSourceUrL(
-                                buildGetMap(
-                                        layer,
-                                        projectedBbox,
-                                        width,
-                                        height,
-                                        escapeHtml4(proj),
-                                        styleName,
-                                        format,
-                                        cqlFilter))
-                        .setProjType(projType)
-                        .setLatitude(latitude)
-                        .setLongitude(longitude)
-                        .setRequest(request)
-                        .setProjectedBbox(projectedBbox)
-                        .setLayerLabel(layerLabel)
-                        .setTemplateHeader(String.join("\n", headerContent))
-                        .build();
+        MapMLHTMLOutput htmlOutput = new MapMLHTMLOutput.HTMLOutputBuilder()
+                .setSourceUrL(buildGetMap(
+                        layer, projectedBbox, width, height, escapeHtml4(proj), styleName, format, cqlFilter))
+                .setProjType(projType)
+                .setLatitude(latitude)
+                .setLongitude(longitude)
+                .setRequest(request)
+                .setProjectedBbox(projectedBbox)
+                .setLayerLabel(layerLabel)
+                .setTemplateHeader(String.join("\n", headerContent))
+                .build();
         return htmlOutput.toHTML();
     }
 
@@ -1937,14 +1823,11 @@ public class MapMLDocumentBuilder {
                 if (mapLayerInfo.getType() == MapLayerInfo.TYPE_VECTOR
                         && mapLayerInfo.getFeature() != null
                         && mapLayerInfo.getFeature().getFeatureType() != null
-                        && mapLayerInfo.getFeature().getFeatureType()
-                                instanceof SimpleFeatureType) {
+                        && mapLayerInfo.getFeature().getFeatureType() instanceof SimpleFeatureType) {
                     featureTypes.add(
                             (SimpleFeatureType) mapLayerInfo.getFeature().getFeatureType());
                 } else if (mapLayerInfo.getType() == MapLayerInfo.TYPE_RASTER) {
-                    LOGGER.fine(
-                            "Templating not supported for raster layers: "
-                                    + mapLayerInfo.getName());
+                    LOGGER.fine("Templating not supported for raster layers: " + mapLayerInfo.getName());
                 }
             }
         } catch (IOException | ClassCastException e) {
@@ -1960,22 +1843,16 @@ public class MapMLDocumentBuilder {
      * @param featureTypes list of feature types
      * @return list of head content
      */
-    private List<String> getPreviewTemplates(
-            String templateName, List<SimpleFeatureType> featureTypes) {
+    private List<String> getPreviewTemplates(String templateName, List<SimpleFeatureType> featureTypes) {
         List<String> templates = new ArrayList<>();
         for (SimpleFeatureType featureType : featureTypes) {
             try {
-                if (!mapMLMapTemplate.isTemplateEmpty(
-                        featureType, templateName, FeatureTemplate.class, "0\n")) {
+                if (!mapMLMapTemplate.isTemplateEmpty(featureType, templateName, FeatureTemplate.class, "0\n")) {
                     templates.add(mapMLMapTemplate.preview(featureType));
                 }
 
             } catch (IOException e) {
-                LOGGER.fine(
-                        "Template not found: "
-                                + templateName
-                                + " for schema: "
-                                + featureType.getTypeName());
+                LOGGER.fine("Template not found: " + templateName + " for schema: " + featureType.getTypeName());
             }
         }
         return templates;
@@ -1988,26 +1865,19 @@ public class MapMLDocumentBuilder {
      * @param featureTypes list of feature types
      * @return list of head content
      */
-    private List<String> getHeaderTemplates(
-            String templateName, List<SimpleFeatureType> featureTypes) {
+    private List<String> getHeaderTemplates(String templateName, List<SimpleFeatureType> featureTypes) {
         List<String> templates = new ArrayList<>();
 
         for (SimpleFeatureType featureType : featureTypes) {
             try {
                 Map<String, Object> model =
-                        getMapRequestElementsToModel(
-                                layersCommaDelimited, bbox, format, width, height);
-                if (!mapMLMapTemplate.isTemplateEmpty(
-                        featureType, templateName, FeatureTemplate.class, "0\n")) {
+                        getMapRequestElementsToModel(layersCommaDelimited, bbox, format, width, height);
+                if (!mapMLMapTemplate.isTemplateEmpty(featureType, templateName, FeatureTemplate.class, "0\n")) {
                     templates.add(mapMLMapTemplate.head(model, featureType));
                 }
 
             } catch (IOException e) {
-                LOGGER.fine(
-                        "Template not found: "
-                                + templateName
-                                + " for schema: "
-                                + featureType.getTypeName());
+                LOGGER.fine("Template not found: " + templateName + " for schema: " + featureType.getTypeName());
             }
         }
         return templates;
@@ -2035,9 +1905,7 @@ public class MapMLDocumentBuilder {
         }
         kvp.put("FORMAT", MAPML_MIME_TYPE);
         String formatOptions =
-                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":"
-                        + escapeHtml4((String) format.orElse(imageFormat));
+                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + escapeHtml4((String) format.orElse(imageFormat));
         kvp.put("format_options", formatOptions);
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");
@@ -2112,23 +1980,19 @@ public class MapMLDocumentBuilder {
     /**
      * Builds a link from the arguments passed into the template
      *
-     * @param arguments List of arguments, the first argument is the base URL, the second is the
-     *     path, and the third is the query string
+     * @param arguments List of arguments, the first argument is the base URL, the second is the path, and the third is
+     *     the query string
      * @return URL string
      */
     private String serviceLink(List arguments) {
         Request request = Dispatcher.REQUEST.get();
-        String baseURL =
-                arguments.get(0) != null
-                        ? arguments.get(0).toString()
-                        : ResponseUtils.baseURL(request.getHttpRequest());
-        Map<String, String> kvp =
-                arguments.get(2) != null
-                        ? getParametersFromQuery(arguments.get(2).toString())
-                        : request.getKvp().entrySet().stream()
-                                .collect(
-                                        Collectors.toMap(
-                                                Map.Entry::getKey, e -> e.getValue().toString()));
+        String baseURL = arguments.get(0) != null
+                ? arguments.get(0).toString()
+                : ResponseUtils.baseURL(request.getHttpRequest());
+        Map<String, String> kvp = arguments.get(2) != null
+                ? getParametersFromQuery(arguments.get(2).toString())
+                : request.getKvp().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue()
+                        .toString()));
 
         return ResponseUtils.buildURL(baseURL, request.getPath(), kvp, URLMangler.URLType.SERVICE);
     }
@@ -2144,25 +2008,16 @@ public class MapMLDocumentBuilder {
      * @return
      */
     private Map<String, Object> getMapRequestElementsToModel(
-            String layersCommaDelimited,
-            String bbox,
-            Optional<Object> format,
-            int width,
-            int height) {
+            String layersCommaDelimited, String bbox, Optional<Object> format, int width, int height) {
         HashMap<String, Object> model = new HashMap<>();
         Request request = Dispatcher.REQUEST.get();
         String baseURL = ResponseUtils.baseURL(request.getHttpRequest());
-        String kvp =
-                request.getKvp().entrySet().stream()
-                        .map(
-                                p ->
-                                        URLEncoder.encode(p.getKey(), StandardCharsets.UTF_8)
-                                                + "="
-                                                + URLEncoder.encode(
-                                                        p.getValue().toString(),
-                                                        StandardCharsets.UTF_8))
-                        .reduce((p1, p2) -> p1 + "&" + p2)
-                        .orElse("");
+        String kvp = request.getKvp().entrySet().stream()
+                .map(p -> URLEncoder.encode(p.getKey(), StandardCharsets.UTF_8)
+                        + "="
+                        + URLEncoder.encode(p.getValue().toString(), StandardCharsets.UTF_8))
+                .reduce((p1, p2) -> p1 + "&" + p2)
+                .orElse("");
         String path = request.getPath();
         model.put("base", baseURL);
         model.put("path", path);
@@ -2257,8 +2112,7 @@ public class MapMLDocumentBuilder {
         Select select;
         boolean available;
 
-        public DimensionOptions(
-                MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String name) {
+        public DimensionOptions(MapMLLayerMetadata mapMLLayerMetadata, MetadataMap metadata, String name) {
             info = metadata.get(name, DimensionInfo.class);
             if (info != null && info.isEnabled()) {
                 if ("elevation".equalsIgnoreCase(name)) {
@@ -2442,8 +2296,7 @@ public class MapMLDocumentBuilder {
          * @return
          */
         public String prefixedName() {
-            return (getWorkspace() == null || getWorkspace().isEmpty() ? "" : getWorkspace() + ":")
-                    + getLayerName();
+            return (getWorkspace() == null || getWorkspace().isEmpty() ? "" : getWorkspace() + ":") + getLayerName();
         }
 
         /**

@@ -22,8 +22,7 @@ public class DeferredFileOutputStreamWebMap extends RawMap {
      * @param mimeType Format of the map
      */
     public DeferredFileOutputStreamWebMap(
-            WMSMapContent mapContent, DeferredFileOutputStream mapContents, String mimeType)
-            throws IOException {
+            WMSMapContent mapContent, DeferredFileOutputStream mapContents, String mimeType) throws IOException {
 
         super(mapContent, (byte[]) null, mimeType);
         // make sure the stream is closed to be able of retrieving its contents

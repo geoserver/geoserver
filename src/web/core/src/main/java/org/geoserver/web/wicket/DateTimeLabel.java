@@ -40,9 +40,7 @@ public class DateTimeLabel extends Panel {
                 Date date = (Date) val;
                 formattedDateString = dateFormat.format(date);
                 formattedTimeString = timeFormat.format(date);
-            } else
-                LOGGER.severe(
-                        "expected instance of java.util.Date as Model object in DateTimeLabel");
+            } else LOGGER.severe("expected instance of java.util.Date as Model object in DateTimeLabel");
         }
         Label dateLabel = new Label("dateTimelabel", formattedDateString);
         dateLabel.add(new AttributeModifier("title", formattedTimeString));

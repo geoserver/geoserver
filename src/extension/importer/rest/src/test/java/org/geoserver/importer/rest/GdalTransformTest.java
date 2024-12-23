@@ -14,9 +14,7 @@ public class GdalTransformTest extends TransformTestSupport {
 
     @Test
     public void testGdalTransformJSON() throws Exception {
-        doJSONTest(
-                new GdalTranslateTransform(
-                        Arrays.asList("-co", "blockxsize=128", "-co", "blockysize=128")));
+        doJSONTest(new GdalTranslateTransform(Arrays.asList("-co", "blockxsize=128", "-co", "blockysize=128")));
     }
 
     @Test

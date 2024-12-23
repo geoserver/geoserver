@@ -24,26 +24,23 @@ import org.geoserver.config.SettingsInfo;
 import org.geotools.util.logging.Logging;
 
 /**
- * JMS MASTER (Producer) Listener used to send GeoServer JMSGeoServerConfigurationExt events over
- * the JMS channel.
+ * JMS MASTER (Producer) Listener used to send GeoServer JMSGeoServerConfigurationExt events over the JMS channel.
  *
  * @see {@link JMSApplicationListener}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
  */
-public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
-        implements ConfigurationListener {
+public class JMSConfigurationListener extends JMSAbstractGeoServerProducer implements ConfigurationListener {
 
     private final GeoServer geoserver;
 
-    private static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(JMSConfigurationListener.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSConfigurationListener.class);
 
     private final JMSPublisher jmsPublisher;
 
     /**
      * @param topicTemplate the JmsTemplate object used to send message to the topic queue
-     * @param props properties to attach to all the message. May contains at least the producer name
-     *     which should be unique.
+     * @param props properties to attach to all the message. May contains at least the producer name which should be
+     *     unique.
      */
     public JMSConfigurationListener(final GeoServer geoserver, final JMSPublisher jmsPublisher) {
         super();
@@ -57,10 +54,7 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
             LOGGER.fine("Incoming event");
@@ -82,8 +76,7 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
                     getTopic(),
                     getJmsTemplate(),
                     options,
-                    new JMSGlobalModifyEvent(
-                            ModificationProxy.unwrap(global), propertyNames, oldValues, newValues));
+                    new JMSGlobalModifyEvent(ModificationProxy.unwrap(global), propertyNames, oldValues, newValues));
 
         } catch (JMSException e) {
             if (LOGGER.isLoggable(java.util.logging.Level.SEVERE)) {
@@ -94,10 +87,7 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
 
     @Override
     public void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
             LOGGER.fine("Incoming event");
@@ -142,13 +132,9 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // this handler is invoked when a service configuration is modified
-        JMSServiceModifyEvent event =
-                new JMSServiceModifyEvent(service, propertyNames, oldValues, newValues);
+        JMSServiceModifyEvent event = new JMSServiceModifyEvent(service, propertyNames, oldValues, newValues);
         handleServiceEvent(event);
     }
 
@@ -156,18 +142,16 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
     private void handleServiceEvent(JMSServiceModifyEvent event) {
         // if possible log about the received event
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine(
-                    String.format(
-                            "Incoming service '%s' modified event of type '%s'.",
-                            event.getSource().getId(), event.getEventType()));
+            LOGGER.fine(String.format(
+                    "Incoming service '%s' modified event of type '%s'.",
+                    event.getSource().getId(), event.getEventType()));
         }
         // skip incoming events if producer is not enabled
         if (!isEnabled()) {
             if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-                LOGGER.fine(
-                        String.format(
-                                "Skipping incoming service '%s' modified event of type '%s' since producer is not enabled.",
-                                event.getSource().getId(), event.getEventType()));
+                LOGGER.fine(String.format(
+                        "Skipping incoming service '%s' modified event of type '%s' since producer is not enabled.",
+                        event.getSource().getId(), event.getEventType()));
             }
             return;
         }
@@ -176,12 +160,9 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
             jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
         } catch (Exception exception) {
             // failed to publish event
-            LOGGER.severe(
-                    String.format(
-                            "Error publishing service '%s' modified event of type '%s': %s",
-                            event.getSource().getId(),
-                            event.getEventType(),
-                            exception.getLocalizedMessage()));
+            LOGGER.severe(String.format(
+                    "Error publishing service '%s' modified event of type '%s': %s",
+                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
         }
     }
 
@@ -189,21 +170,16 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
     public void handleSettingsAdded(SettingsInfo settings) {
         // this handler is invoked when new settings for a certain workspace are added
         SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
-        JMSSettingsModifyEvent event =
-                new JMSSettingsModifyEvent(finalSettings, JMSEventType.ADDED);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, JMSEventType.ADDED);
         handleSettingsEvent(event);
     }
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // this handler is invoked when new settings for a certain workspace are added
         SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
-        JMSSettingsModifyEvent event =
-                new JMSSettingsModifyEvent(finalSettings, propertyNames, oldValues, newValues);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, propertyNames, oldValues, newValues);
         handleSettingsEvent(event);
     }
 
@@ -211,8 +187,7 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
     public void handleSettingsRemoved(SettingsInfo settings) {
         // this handler is invoked when new settings for a certain workspace are added
         SettingsInfo finalSettings = ModificationProxy.unwrap(settings);
-        JMSSettingsModifyEvent event =
-                new JMSSettingsModifyEvent(finalSettings, JMSEventType.REMOVED);
+        JMSSettingsModifyEvent event = new JMSSettingsModifyEvent(finalSettings, JMSEventType.REMOVED);
         handleSettingsEvent(event);
     }
 
@@ -225,18 +200,16 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
     private void handleSettingsEvent(JMSSettingsModifyEvent event) {
         // if possible log about the received event
         if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-            LOGGER.fine(
-                    String.format(
-                            "Incoming settings '%s' modified event of type '%s'.",
-                            event.getSource().getId(), event.getEventType()));
+            LOGGER.fine(String.format(
+                    "Incoming settings '%s' modified event of type '%s'.",
+                    event.getSource().getId(), event.getEventType()));
         }
         // skip incoming events if producer is not enabled
         if (!isEnabled()) {
             if (LOGGER.isLoggable(java.util.logging.Level.FINE)) {
-                LOGGER.fine(
-                        String.format(
-                                "Skipping incoming settings '%s' modified event of type '%s' since producer is not enabled.",
-                                event.getSource().getId(), event.getEventType()));
+                LOGGER.fine(String.format(
+                        "Skipping incoming settings '%s' modified event of type '%s' since producer is not enabled.",
+                        event.getSource().getId(), event.getEventType()));
             }
             return;
         }
@@ -245,12 +218,9 @@ public class JMSConfigurationListener extends JMSAbstractGeoServerProducer
             jmsPublisher.publish(getTopic(), getJmsTemplate(), getProperties(), event);
         } catch (Exception exception) {
             // failed to publish event
-            LOGGER.severe(
-                    String.format(
-                            "Error publishing settings '%s' modified event of type '%s': %s",
-                            event.getSource().getId(),
-                            event.getEventType(),
-                            exception.getLocalizedMessage()));
+            LOGGER.severe(String.format(
+                    "Error publishing settings '%s' modified event of type '%s': %s",
+                    event.getSource().getId(), event.getEventType(), exception.getLocalizedMessage()));
         }
     }
 

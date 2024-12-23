@@ -16,8 +16,7 @@ public class DispatcherController extends GeoWebCacheDispatcherController {
     public static final ThreadLocal<String> BASE_URL = new InheritableThreadLocal<>();
 
     @Override
-    public void handleRestApiRequest(HttpServletRequest request, HttpServletResponse response)
-            throws Exception {
+    public void handleRestApiRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         BASE_URL.set(ResponseUtils.baseURL(request));
         super.handleRestApiRequest(request, response);
     }

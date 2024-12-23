@@ -48,8 +48,8 @@ public class SLDValidator {
     }
 
     /**
-     * returns a better formated error message - suitable for framing. There's a more complex
-     * version in StylesEditorAction. This will kick out a VERY LARGE errorMessage.
+     * returns a better formated error message - suitable for framing. There's a more complex version in
+     * StylesEditorAction. This will kick out a VERY LARGE errorMessage.
      */
     public static String getErrorMessage(Reader xml, List<? extends Exception> errors) {
 
@@ -89,8 +89,7 @@ public class SLDValidator {
                 boolean keep_going = true;
 
                 while (keep_going) {
-                    if ((exceptionNum < errors.size())
-                            && errors.get(exceptionNum) instanceof SAXParseException) {
+                    if ((exceptionNum < errors.size()) && errors.get(exceptionNum) instanceof SAXParseException) {
                         SAXParseException sax = (SAXParseException) errors.get(exceptionNum);
 
                         if (sax.getLineNumber() <= linenumber) {
@@ -105,9 +104,8 @@ public class SLDValidator {
                             }
 
                             if (colNum > body.length()) {
-                                body =
-                                        body + body + body + body + body
-                                                + body; // make it longer (not usually required, but
+                                body = body + body + body + body + body
+                                        + body; // make it longer (not usually required, but
                                 // might be for SLD_BODY=... which is all
                                 // one line)
 
@@ -117,14 +115,13 @@ public class SLDValidator {
                             }
 
                             result.append(head + body.substring(0, colNum - 1) + "^\n");
-                            result.append(
-                                    "       (line "
-                                            + sax.getLineNumber()
-                                            + ", column "
-                                            + sax.getColumnNumber()
-                                            + ")"
-                                            + sax.getLocalizedMessage()
-                                            + "\n");
+                            result.append("       (line "
+                                    + sax.getLineNumber()
+                                    + ", column "
+                                    + sax.getColumnNumber()
+                                    + ")"
+                                    + sax.getLocalizedMessage()
+                                    + "\n");
                             exceptionNum++;
                         } else {
                             keep_going = false; // report later (sax.getLineNumber() > linenumber)
@@ -140,14 +137,13 @@ public class SLDValidator {
 
             for (int t = exceptionNum; t < errors.size(); t++) {
                 SAXParseException sax = (SAXParseException) errors.get(t);
-                result.append(
-                        "       (line "
-                                + sax.getLineNumber()
-                                + ", column "
-                                + sax.getColumnNumber()
-                                + ")"
-                                + sax.getLocalizedMessage()
-                                + "\n");
+                result.append("       (line "
+                        + sax.getLineNumber()
+                        + ", column "
+                        + sax.getColumnNumber()
+                        + ")"
+                        + sax.getLocalizedMessage()
+                        + "\n");
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "", e);

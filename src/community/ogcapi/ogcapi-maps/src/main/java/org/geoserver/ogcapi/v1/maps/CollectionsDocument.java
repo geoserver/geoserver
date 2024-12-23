@@ -24,8 +24,8 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * A class representing the Maps service "collections" in a way that Jackson can easily translate to
- * JSON/YAML (and can be used as a Freemarker template model)
+ * A class representing the Maps service "collections" in a way that Jackson can easily translate to JSON/YAML (and can
+ * be used as a Freemarker template model)
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
@@ -41,8 +41,7 @@ public class CollectionsDocument extends AbstractDocument {
         String path = "ogc/maps/v1/collections/";
         addSelfLinks(path);
         skipInvalid =
-                geoServer.getGlobal().getResourceErrorHandling()
-                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+                geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @JacksonXmlProperty(localName = "Links")
@@ -54,8 +53,7 @@ public class CollectionsDocument extends AbstractDocument {
     @JacksonXmlProperty(localName = "Collection")
     public Iterator<CollectionDocument> getCollections() {
         @SuppressWarnings("PMD.CloseResource") // wrapped and returned
-        CloseableIterator<PublishedInfo> publisheds =
-                geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
+        CloseableIterator<PublishedInfo> publisheds = geoServer.getCatalog().list(PublishedInfo.class, Filter.INCLUDE);
         return new Iterator<>() {
 
             CollectionDocument next;
@@ -72,12 +70,10 @@ public class CollectionsDocument extends AbstractDocument {
                         return true;
                     } catch (Exception e) {
                         if (skipInvalid) {
-                            LOGGER.log(
-                                    Level.WARNING, "Skipping map type " + published.prefixedName());
+                            LOGGER.log(Level.WARNING, "Skipping map type " + published.prefixedName());
                         } else {
                             publisheds.close();
-                            throw new ServiceException(
-                                    "Failed to iterate over the map types in the catalog", e);
+                            throw new ServiceException("Failed to iterate over the map types in the catalog", e);
                         }
                     }
                 }
@@ -94,8 +90,7 @@ public class CollectionsDocument extends AbstractDocument {
     }
 
     private CollectionDocument getCollectionDocument(
-            PublishedInfo published, CloseableIterator<PublishedInfo> publisheds)
-            throws IOException {
+            PublishedInfo published, CloseableIterator<PublishedInfo> publisheds) throws IOException {
         CollectionDocument collection = new CollectionDocument(geoServer, published);
         for (Consumer<CollectionDocument> collectionDecorator : collectionDecorators) {
             collectionDecorator.accept(collection);

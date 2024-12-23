@@ -35,12 +35,7 @@ public class CustomManglerTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testKVP() {
-        String url =
-                buildURL(
-                        BASEURL,
-                        "test",
-                        Collections.singletonMap("param", "value()"),
-                        URLType.SERVICE);
+        String url = buildURL(BASEURL, "test", Collections.singletonMap("param", "value()"), URLType.SERVICE);
         assertEquals("http://localhost:8080/geoserver/test?param=value%28%29&here=iam", url);
     }
 }

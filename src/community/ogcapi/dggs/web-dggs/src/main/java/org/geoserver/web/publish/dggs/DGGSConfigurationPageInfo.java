@@ -14,10 +14,7 @@ import org.geoserver.web.publish.LayerConfigurationPanelInfo;
 import org.geotools.dggs.gstore.DGGSStore;
 import org.geotools.util.logging.Logging;
 
-/**
- * Configuration page for DGGS layers, makes sure the layer is a feature type and the store is a
- * DGGS store.
- */
+/** Configuration page for DGGS layers, makes sure the layer is a feature type and the store is a DGGS store. */
 public class DGGSConfigurationPageInfo extends LayerConfigurationPanelInfo {
     private static final Logger LOGGER = Logging.getLogger(DGGSConfigurationPageInfo.class);
 

@@ -24,7 +24,8 @@ import org.junit.rules.TemporaryFolder;
 
 public class IOUtilsTest {
 
-    @Rule public TemporaryFolder temp = new TemporaryFolder(new File("target"));
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder(new File("target"));
 
     @Test
     public void testZipUnzip() throws IOException {

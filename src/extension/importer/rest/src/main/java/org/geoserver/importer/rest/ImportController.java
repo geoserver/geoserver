@@ -68,8 +68,7 @@ public class ImportController extends ImportBaseController {
                 if (t instanceof ValidationException) {
                     throw new RestException(t.getMessage(), HttpStatus.BAD_REQUEST, t);
                 } else {
-                    throw new RestException(
-                            "Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR, t);
+                    throw new RestException("Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR, t);
                 }
             }
             return new ResponseEntity<>("", new HttpHeaders(), HttpStatus.NO_CONTENT);
@@ -78,8 +77,7 @@ public class ImportController extends ImportBaseController {
         if (context != null) {
             importer.changed(context);
         } else {
-            throw new RestException(
-                    "Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RestException("Error occurred executing import", HttpStatus.INTERNAL_SERVER_ERROR);
         }
         UriComponents uriComponents = getUriComponents(context.getId().toString(), builder);
         HttpHeaders headers = new HttpHeaders();
@@ -147,15 +145,9 @@ public class ImportController extends ImportBaseController {
             } catch (IOException ioe) {
                 LOGGER.log(
                         Level.SEVERE,
-                        "Error deleting context "
-                                + ctx.getId()
-                                + ", message is: "
-                                + ioe.getMessage(),
+                        "Error deleting context " + ctx.getId() + ", message is: " + ioe.getMessage(),
                         ioe);
-                throw new RestException(
-                        "Error deleting context " + ctx.getId(),
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        ioe);
+                throw new RestException("Error deleting context " + ctx.getId(), HttpStatus.INTERNAL_SERVER_ERROR, ioe);
             }
         }
     }
@@ -167,8 +159,7 @@ public class ImportController extends ImportBaseController {
     private void runImport(ImportContext context, boolean async) throws IOException {
         if (context.getState() == ImportContext.State.INIT) {
             throw new RestException(
-                    "Import context is still in INIT state, cannot run it yet",
-                    HttpStatus.PRECONDITION_FAILED);
+                    "Import context is still in INIT state, cannot run it yet", HttpStatus.PRECONDITION_FAILED);
         }
         // if the import is empty, prep it but leave data as is
         if (context.getTasks().isEmpty()) {
@@ -182,8 +173,7 @@ public class ImportController extends ImportBaseController {
         }
     }
 
-    private ImportContext createImport(
-            Long id, ImportContext newContext, boolean async, boolean execute) {
+    private ImportContext createImport(Long id, ImportContext newContext, boolean async, boolean execute) {
         // create a new import
         ImportContext context;
         try {
@@ -214,8 +204,7 @@ public class ImportController extends ImportBaseController {
                     else ts = cat.getStoreByName(storeName, StoreInfo.class);
                     if (ts == null) {
                         throw new RestException(
-                                "Target store does not exist : " + targetStore.getName(),
-                                HttpStatus.BAD_REQUEST);
+                                "Target store does not exist : " + targetStore.getName(), HttpStatus.BAD_REQUEST);
                     }
                     context.setTargetStore(ts);
                 }

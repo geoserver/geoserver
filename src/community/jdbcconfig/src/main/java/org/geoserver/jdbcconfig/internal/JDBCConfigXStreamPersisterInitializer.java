@@ -11,14 +11,11 @@ public class JDBCConfigXStreamPersisterInitializer implements XStreamPersisterIn
 
     @Override
     public void init(XStreamPersister persister) {
-        persister
-                .getXStream()
-                .allowTypes(
-                        new String[] {
-                            "org.geoserver.wfs.WFSInfo.Version",
-                            "org.geoserver.wfs.WFSInfo$Version",
-                            "org.geoserver.wms.WatermarkInfoImpl",
-                            "org.geoserver.wfs.GMLInfoImpl"
-                        });
+        persister.getXStream().allowTypes(new String[] {
+            "org.geoserver.wfs.WFSInfo.Version",
+            "org.geoserver.wfs.WFSInfo$Version",
+            "org.geoserver.wms.WatermarkInfoImpl",
+            "org.geoserver.wfs.GMLInfoImpl"
+        });
     }
 }

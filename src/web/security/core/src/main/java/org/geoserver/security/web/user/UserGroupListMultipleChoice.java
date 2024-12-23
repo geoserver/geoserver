@@ -18,9 +18,7 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 public class UserGroupListMultipleChoice extends ListMultipleChoice<GeoServerUserGroup> {
 
     public UserGroupListMultipleChoice(
-            String id,
-            IModel<List<GeoServerUserGroup>> model,
-            IModel<List<GeoServerUserGroup>> choicesModel) {
+            String id, IModel<List<GeoServerUserGroup>> model, IModel<List<GeoServerUserGroup>> choicesModel) {
         super(id, model, choicesModel, new UserGroupRenderer());
     }
 }

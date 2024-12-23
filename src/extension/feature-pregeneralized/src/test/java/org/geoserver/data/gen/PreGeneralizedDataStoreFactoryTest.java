@@ -37,19 +37,17 @@ public class PreGeneralizedDataStoreFactoryTest extends GeoServerSystemTestSuppo
         final AtomicBoolean configurationFileRequested = new AtomicBoolean(false);
 
         URL url = PreGeneralizedDataStoreFactoryTest.class.getResource("/");
-        GeoServerResourceLoader resourceLoader =
-                new GeoServerResourceLoader(URLs.urlToFile(url)) {
-                    @Override
-                    public Resource get(String path) {
-                        if ("geninfo1.xml".equals(path)) {
-                            configurationFileRequested.set(true);
-                        }
-                        return super.get(path);
-                    }
-                };
+        GeoServerResourceLoader resourceLoader = new GeoServerResourceLoader(URLs.urlToFile(url)) {
+            @Override
+            public Resource get(String path) {
+                if ("geninfo1.xml".equals(path)) {
+                    configurationFileRequested.set(true);
+                }
+                return super.get(path);
+            }
+        };
         GeoServerExtensionsHelper.clear();
-        GeoServerExtensionsHelper.singleton(
-                "resourceLoader", resourceLoader, GeoServerResourceLoader.class);
+        GeoServerExtensionsHelper.singleton("resourceLoader", resourceLoader, GeoServerResourceLoader.class);
 
         org.geoserver.data.gen.info.GeneralizationInfosProviderImpl infoProvider =
                 new org.geoserver.data.gen.info.GeneralizationInfosProviderImpl();

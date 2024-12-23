@@ -27,8 +27,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * Clips geometries on a given envelope, and if they are polygons or do contain polygon parts, tags
- * the sides of the polygon to pinpoint the artificial sides introduced by the clipping.
+ * Clips geometries on a given envelope, and if they are polygons or do contain polygon parts, tags the sides of the
+ * polygon to pinpoint the artificial sides introduced by the clipping.
  */
 class MapMLGeometryClipper {
 
@@ -45,8 +45,7 @@ class MapMLGeometryClipper {
 
         // tolerance used to avoid numerical issues testing for segment on boundary
         Envelope originalBounds = original.getEnvelopeInternal();
-        double max =
-                Math.max(Math.abs(originalBounds.getMaxX()), Math.abs(originalBounds.getMaxY()));
+        double max = Math.max(Math.abs(originalBounds.getMaxX()), Math.abs(originalBounds.getMaxY()));
         this.eps = (Math.nextUp(max) - max) * 10;
 
         // if a clipped geometry is fully inside this envelope, it cannot contain artificial sides
@@ -65,10 +64,7 @@ class MapMLGeometryClipper {
                 Polygon g = (Polygon) clippedGeom.getGeometryN(i);
                 if (!g.isEmpty()) geometries.add(g);
             }
-            clippedGeom =
-                    clippedGeom
-                            .getFactory()
-                            .createMultiPolygon(geometries.toArray(n -> new Polygon[n]));
+            clippedGeom = clippedGeom.getFactory().createMultiPolygon(geometries.toArray(n -> new Polygon[n]));
         } else if (clippedGeom instanceof GeometryCollection) {
             List<Geometry> geometries = new ArrayList<>();
             for (int i = 0; i < clippedGeom.getNumGeometries(); i++) {
@@ -117,25 +113,21 @@ class MapMLGeometryClipper {
         List<LinearRing> rings = new ArrayList<>();
         original.apply(new PolygonRingsExtractor(rings));
         Envelope clippedEnvelope = reversed.getEnvelopeInternal();
-        List<LinearRing> boundaries =
-                rings.stream()
-                        .filter(b -> b.getEnvelopeInternal().intersects(clippedEnvelope))
-                        .collect(Collectors.toList());
+        List<LinearRing> boundaries = rings.stream()
+                .filter(b -> b.getEnvelopeInternal().intersects(clippedEnvelope))
+                .collect(Collectors.toList());
 
         // collect tagged boundary and tagged holes
-        TaggedPolygon.TaggedLineString boundary =
-                tagLineString(reversed.getExteriorRing(), boundaries);
-        List<TaggedPolygon.TaggedLineString> holes =
-                IntStream.range(0, reversed.getNumInteriorRing())
-                        .mapToObj(i -> tagLineString(reversed.getInteriorRingN(i), boundaries))
-                        .collect(Collectors.toList());
+        TaggedPolygon.TaggedLineString boundary = tagLineString(reversed.getExteriorRing(), boundaries);
+        List<TaggedPolygon.TaggedLineString> holes = IntStream.range(0, reversed.getNumInteriorRing())
+                .mapToObj(i -> tagLineString(reversed.getInteriorRingN(i), boundaries))
+                .collect(Collectors.toList());
 
         TaggedPolygon tagged = new TaggedPolygon(boundary, holes);
         clipped.setUserData(tagged);
     }
 
-    private TaggedPolygon.TaggedLineString tagLineString(
-            LinearRing ring, List<LinearRing> boundaries) {
+    private TaggedPolygon.TaggedLineString tagLineString(LinearRing ring, List<LinearRing> boundaries) {
         // Grab the coordinates. A valid ring has at least 3
         Coordinate[] coordinates = ring.getCoordinates();
         // build first segment and test it
@@ -192,19 +184,18 @@ class MapMLGeometryClipper {
      * For this method, other approaches have been explored and discarded:
      *
      * <ul>
-     *   <li>Testing if the segment is in the original geometry boundary with "contains". Normally
-     *       works, but some times fails due to floating point precision issues
-     *   <li>Create a fixed precision PrecisionModel, pass the original geometry and the segment
-     *       through a geometry precision reducer, test for boundary containment. Did not work
-     *       (unclear why) and was also modifying in place the Coordinate objects, changing the
-     *       output
-     *   <li>Buffer the original geometry with the tolerance distance and test for containment. Was
-     *       reliable, but too slow with complex geoemtries.
+     *   <li>Testing if the segment is in the original geometry boundary with "contains". Normally works, but some times
+     *       fails due to floating point precision issues
+     *   <li>Create a fixed precision PrecisionModel, pass the original geometry and the segment through a geometry
+     *       precision reducer, test for boundary containment. Did not work (unclear why) and was also modifying in
+     *       place the Coordinate objects, changing the output
+     *   <li>Buffer the original geometry with the tolerance distance and test for containment. Was reliable, but too
+     *       slow with complex geoemtries.
      * </ul>
      *
-     * The current approach works in all examples we have and is fast, but should be improved to the
-     * segment vs segment rather than linestring vs segment (if the linestring is W shaped the tests
-     * could pass even if the segment is not contained in it, but only touches the tips of the W)
+     * The current approach works in all examples we have and is fast, but should be improved to the segment vs segment
+     * rather than linestring vs segment (if the linestring is W shaped the tests could pass even if the segment is not
+     * contained in it, but only touches the tips of the W)
      *
      * @param segment
      * @param boundaries
@@ -229,9 +220,7 @@ class MapMLGeometryClipper {
                 DistanceToPoint.computeDistance(boundary, first, distance0);
                 DistanceToPoint.computeDistance(boundary, second, distance1);
                 DistanceToPoint.computeDistance(boundary, mid, distanceMid);
-                if (distance0.getDistance() < eps
-                        && distance1.getDistance() < eps
-                        && distanceMid.getDistance() < eps) {
+                if (distance0.getDistance() < eps && distance1.getDistance() < eps && distanceMid.getDistance() < eps) {
                     return true;
                 }
             }

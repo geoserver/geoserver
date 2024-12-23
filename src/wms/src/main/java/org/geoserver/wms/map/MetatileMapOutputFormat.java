@@ -36,10 +36,9 @@ import org.geotools.renderer.lite.gridcoverage2d.GridCoverageRenderer;
 import org.geotools.util.logging.Logging;
 
 /**
- * Wrapping map producer that performs on the fly meta tiling wrapping another map producer. It will
- * first peek inside a tile cache to see if the requested tile has already been computed, if so,
- * it'll encode and return that one, otherwise it'll build a meta tile, split it, and finally encode
- * just the requested tile, putting the others in the tile cache.
+ * Wrapping map producer that performs on the fly meta tiling wrapping another map producer. It will first peek inside a
+ * tile cache to see if the requested tile has already been computed, if so, it'll encode and return that one, otherwise
+ * it'll build a meta tile, split it, and finally encode just the requested tile, putting the others in the tile cache.
  *
  * @author Andrea Aime - TOPP
  * @author Simone Giannecchini - GeoSolutions
@@ -53,23 +52,19 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     public static final double EPS = 1E-6;
 
     /**
-     * This variable is use for testing purposes in order to force this {@link GridCoverageRenderer}
-     * to dump images at various steps on the disk.
+     * This variable is use for testing purposes in order to force this {@link GridCoverageRenderer} to dump images at
+     * various steps on the disk.
      */
     private static boolean DEBUG =
-            Boolean.valueOf(
-                    GeoServerExtensions.getProperty(
-                            "org.geoserver.wms.map.MetatileMapOutputFormat.debug"));
+            Boolean.valueOf(GeoServerExtensions.getProperty("org.geoserver.wms.map.MetatileMapOutputFormat.debug"));
 
     private static String DEBUG_DIR;
 
     static {
         if (DEBUG) {
-            final File tempDir =
-                    new File(GeoServerExtensions.getProperty("user.home"), ".geoserver");
+            final File tempDir = new File(GeoServerExtensions.getProperty("user.home"), ".geoserver");
             if (!tempDir.exists()) {
-                if (!tempDir.mkdir())
-                    LOGGER.severe("Unable to create debug dir, exiting application!!!");
+                if (!tempDir.mkdir()) LOGGER.severe("Unable to create debug dir, exiting application!!!");
                 DEBUG = false;
                 DEBUG_DIR = null;
             } else {
@@ -87,11 +82,9 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
      */
     static void writeRenderedImage(final RenderedImage raster, final String fileName) {
         if (DEBUG_DIR == null)
-            throw new NullPointerException(
-                    "Unable to write the provided coverage in the debug directory");
+            throw new NullPointerException("Unable to write the provided coverage in the debug directory");
         if (DEBUG == false)
-            throw new IllegalStateException(
-                    "Unable to write the provided coverage since we are not in debug mode");
+            throw new IllegalStateException("Unable to write the provided coverage since we are not in debug mode");
         try {
             ImageIO.write(raster, "tiff", new File(DEBUG_DIR, fileName + ".tiff"));
         } catch (IOException e) {
@@ -130,29 +123,27 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
             List<GridCoverage2D> renderedCoverages = null;
 
             if (LOGGER.isLoggable(Level.FINER)) {
-                LOGGER.finer(
-                        "Looked for meta tile "
-                                + key.metaTileCoords.x
-                                + ", "
-                                + key.metaTileCoords.y
-                                + "in cache: "
-                                + ((tile != null) ? "hit!" : "miss"));
+                LOGGER.finer("Looked for meta tile "
+                        + key.metaTileCoords.x
+                        + ", "
+                        + key.metaTileCoords.y
+                        + "in cache: "
+                        + ((tile != null) ? "hit!" : "miss"));
             }
 
             if (tile == null) {
                 // compute the meta-tile
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer(
-                            "Building meta tile "
-                                    + key.metaTileCoords.x
-                                    + ", "
-                                    + key.metaTileCoords.y
-                                    + " of size w="
-                                    + key.getTileSize() * key.getMetaFactor()
-                                    + ", h="
-                                    + key.getTileSize() * key.getMetaFactor()
-                                    + " with metatilign factor "
-                                    + key.getMetaFactor());
+                    LOGGER.finer("Building meta tile "
+                            + key.metaTileCoords.x
+                            + ", "
+                            + key.metaTileCoords.y
+                            + " of size w="
+                            + key.getTileSize() * key.getMetaFactor()
+                            + ", h="
+                            + key.getTileSize() * key.getMetaFactor()
+                            + " with metatilign factor "
+                            + key.getMetaFactor());
                 }
 
                 // alter the map definition so that we build a meta-tile instead
@@ -194,10 +185,7 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
         return delegate.getMimeType();
     }
 
-    /**
-     * True if the request has the tiled hint, is 256x256 image, and the raw delegate is a raster
-     * one
-     */
+    /** True if the request has the tiled hint, is 256x256 image, and the raw delegate is a raster one */
     public static boolean isRequestTiled(GetMapRequest request, GetMapOutputFormat delegate) {
         boolean tiled = request.isTiled();
         Point2D tilesOrigin = request.getTilesOrigin();
@@ -215,9 +203,8 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
     }
 
     /**
-     * Splits the tile into a set of tiles, numbered from lower right and going up so that first row
-     * is 0,1,2,...,metaTileFactor, and so on. In the case of a 3x3 meta-tile, the layout is as
-     * follows:
+     * Splits the tile into a set of tiles, numbered from lower right and going up so that first row is
+     * 0,1,2,...,metaTileFactor, and so on. In the case of a 3x3 meta-tile, the layout is as follows:
      *
      * <pre>
      *    6 7 8
@@ -266,12 +253,9 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                                 LOGGER.finer("Metatile split on PlanarImage");
                             }
                             final PlanarImage pImage = (PlanarImage) metaTile;
-                            final WritableRaster wTile =
-                                    WritableRaster.createWritableRaster(
-                                            pImage.getSampleModel()
-                                                    .createCompatibleSampleModel(
-                                                            tileSize, tileSize),
-                                            new Point(x, y));
+                            final WritableRaster wTile = WritableRaster.createWritableRaster(
+                                    pImage.getSampleModel().createCompatibleSampleModel(tileSize, tileSize),
+                                    new Point(x, y));
                             Rectangle sourceArea = new Rectangle(x, y, tileSize, tileSize);
                             sourceArea = sourceArea.intersection(pImage.getBounds());
 
@@ -279,19 +263,17 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                             // the cache
                             pImage.copyData(wTile);
                             if (wTile.getMinX() != 0 || wTile.getMinY() != 0) {
-                                tile =
-                                        new BufferedImage(
-                                                pImage.getColorModel(),
-                                                wTile.createWritableTranslatedChild(0, 0),
-                                                pImage.getColorModel().isAlphaPremultiplied(),
-                                                null);
+                                tile = new BufferedImage(
+                                        pImage.getColorModel(),
+                                        wTile.createWritableTranslatedChild(0, 0),
+                                        pImage.getColorModel().isAlphaPremultiplied(),
+                                        null);
                             } else {
-                                tile =
-                                        new BufferedImage(
-                                                pImage.getColorModel(),
-                                                wTile,
-                                                pImage.getColorModel().isAlphaPremultiplied(),
-                                                null);
+                                tile = new BufferedImage(
+                                        pImage.getColorModel(),
+                                        wTile,
+                                        pImage.getColorModel().isAlphaPremultiplied(),
+                                        null);
                             }
                             break;
                         case 2:
@@ -303,11 +285,10 @@ public final class MetatileMapOutputFormat implements GetMapOutputFormat {
                             tile = image.getSubimage(x, y, tileSize, tileSize);
                             break;
                         default:
-                            throw new IllegalStateException(
-                                    MessageFormat.format(
-                                            ErrorKeys.ILLEGAL_ARGUMENT_$2,
-                                            "metaTile class",
-                                            metaTile.getClass().toString()));
+                            throw new IllegalStateException(MessageFormat.format(
+                                    ErrorKeys.ILLEGAL_ARGUMENT_$2,
+                                    "metaTile class",
+                                    metaTile.getClass().toString()));
                     }
 
                     tiles[(i * key.getMetaFactor()) + j] = tile;

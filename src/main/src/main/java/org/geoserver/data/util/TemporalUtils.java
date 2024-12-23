@@ -24,8 +24,8 @@ public final class TemporalUtils {
     private TemporalUtils() {}
 
     /**
-     * Returns a print ready string representation for a Date value, handling timezone
-     * configurations and date/datetime difference.
+     * Returns a print ready string representation for a Date value, handling timezone configurations and date/datetime
+     * difference.
      */
     public static String printDate(Date date) {
         if (date == null) return "null";
@@ -82,7 +82,8 @@ public final class TemporalUtils {
                 if (Boolean.TRUE.equals(hint)) {
                     zonedDateTime = cal.toInstant().atZone(ZoneId.systemDefault());
                 } else {
-                    zonedDateTime = cal.toInstant().atZone(TimeZone.getTimeZone("UTC").toZoneId());
+                    zonedDateTime =
+                            cal.toInstant().atZone(TimeZone.getTimeZone("UTC").toZoneId());
                 }
                 return zonedDateTime.format(formatter);
             }

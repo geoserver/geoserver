@@ -59,8 +59,7 @@ public class AbstractResourceAccessManager implements ResourceAccessManager {
     }
 
     @Override
-    public Filter getSecurityFilter(
-            final Authentication user, final Class<? extends CatalogInfo> clazz) {
+    public Filter getSecurityFilter(final Authentication user, final Class<? extends CatalogInfo> clazz) {
         return InMemorySecurityFilter.buildUserAccessFilter(this, user);
     }
 }

@@ -165,8 +165,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
     }
 
     @Override
-    public java.util.List<RequestData> getOwsRequests(
-            String service, String operation, String version) {
+    public java.util.List<RequestData> getOwsRequests(String service, String operation, String version) {
         return null;
     }
 
@@ -253,8 +252,7 @@ public class MemoryMonitorDAO implements MonitorDAO {
 
             if (compare == Comparison.IN) {
                 if (!(value instanceof List)) {
-                    throw new UnsupportedOperationException(
-                            "IN comparison only supported against list values");
+                    throw new UnsupportedOperationException("IN comparison only supported against list values");
                 }
 
                 return ((List) value).contains(o);
@@ -270,10 +268,9 @@ public class MemoryMonitorDAO implements MonitorDAO {
             if (o instanceof Comparable) {
                 return compare(value, (Comparable) o);
             } else {
-                throw new UnsupportedOperationException(
-                        "Values of type "
-                                + value.getClass().getName()
-                                + " only support equality and non-equality comparison.");
+                throw new UnsupportedOperationException("Values of type "
+                        + value.getClass().getName()
+                        + " only support equality and non-equality comparison.");
             }
         }
 

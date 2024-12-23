@@ -19,8 +19,8 @@ import org.geotools.brewer.styling.filter.expression.FunctionBuilder;
 import org.geotools.factory.CommonFactoryFinder;
 
 /**
- * Support class to parse a palette file and turn it into a dynamic style. The palette file syntax
- * can contain rows with:
+ * Support class to parse a palette file and turn it into a dynamic style. The palette file syntax can contain rows
+ * with:
  *
  * <ul>
  *   <li>A comment, started with %
@@ -104,8 +104,16 @@ public class PaletteParser {
                 .literal("maximum")
                 .end()
                 .end();
-        cmFunction.function("env").literal(COLOR_BEFORE).literal("rgba(255,255,255,0)").end();
-        cmFunction.function("env").literal(COLOR_AFTER).literal("rgba(255,255,255,0)").end();
+        cmFunction
+                .function("env")
+                .literal(COLOR_BEFORE)
+                .literal("rgba(255,255,255,0)")
+                .end();
+        cmFunction
+                .function("env")
+                .literal(COLOR_AFTER)
+                .literal("rgba(255,255,255,0)")
+                .end();
         cmFunction.function("env").literal(LOGSCALE).literal("false").end();
         cmFunction.function("env").literal(NUMCOLORS).literal("254").end();
         cmFunction.end();
@@ -126,12 +134,7 @@ public class PaletteParser {
             return String.format("rgb(%d,%d,%d)", c.getRed(), c.getGreen(), c.getBlue());
         } else {
             return String.format(
-                    Locale.ENGLISH,
-                    "rgba(%d,%d,%d,%.2f)",
-                    c.getRed(),
-                    c.getGreen(),
-                    c.getBlue(),
-                    c.getAlpha() / 255.);
+                    Locale.ENGLISH, "rgba(%d,%d,%d,%.2f)", c.getRed(), c.getGreen(), c.getBlue(), c.getAlpha() / 255.);
         }
     }
 
@@ -171,9 +174,7 @@ public class PaletteParser {
 
         public InvalidColorException(String color, Throwable cause) {
             super(
-                    "Invalid color '"
-                            + color
-                            + "', supported syntaxes are #RRGGBB, 0xRRGGBB, #AARRGGBB and 0xAARRGGBB",
+                    "Invalid color '" + color + "', supported syntaxes are #RRGGBB, 0xRRGGBB, #AARRGGBB and 0xAARRGGBB",
                     cause);
         }
     }

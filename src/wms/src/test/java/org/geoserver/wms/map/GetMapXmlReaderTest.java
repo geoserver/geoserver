@@ -77,8 +77,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testResolveStylesForLayerGroup() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
@@ -96,8 +95,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testLayerFeatureConstraintFilterParsing() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerFeatureConstraintFilter.xml")) {
 
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
 
@@ -115,8 +113,7 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
     @Test
     public void testAllowDynamicStyles() throws Exception {
         GetMapRequest request = reader.createRequest();
-        try (BufferedReader input =
-                getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
+        try (BufferedReader input = getResourceInputStream("WMSPostLayerGroupNonDefaultStyle.xml")) {
 
             WMS wms = new WMS(getGeoServer());
             WMSInfo oldInfo = wms.getGeoServer().getService(WMSInfo.class);
@@ -150,16 +147,12 @@ public class GetMapXmlReaderTest extends KvpRequestReaderTestSupport {
             request = (GetMapRequest) reader.read(request, input, new HashMap<>());
             fail("ServiceException with IOException Expected");
         } catch (ServiceException e) {
-            assertTrue(
-                    e.getMessage()
-                            .contains(
-                                    "xml request is most probably not compliant to GetMap element"));
+            assertTrue(e.getMessage().contains("xml request is most probably not compliant to GetMap element"));
             assertTrue(e.getCause() instanceof SAXException);
         } finally {
             cfg.setXmlExternalEntitiesEnabled(null);
             getGeoServer().save(cfg);
-            EntityResolverProvider.setEntityResolver(
-                    GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
+            EntityResolverProvider.setEntityResolver(GeoServerSystemTestSupport.RESOLVE_DISABLED_PROVIDER_DEVMODE);
         }
     }
 

@@ -23,8 +23,7 @@ import org.geotools.xsd.impl.HandlerFactory;
 import org.geotools.xsd.impl.ParserHandler;
 
 /**
- * Special handler factory which creates handlers for elements which are defined as wfs feature
- * types.
+ * Special handler factory which creates handlers for elements which are defined as wfs feature types.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -78,13 +77,11 @@ public class WFSHandlerFactory implements HandlerFactory {
     }
 
     @Override
-    public ElementHandler createElementHandler(
-            XSDElementDeclaration e, Handler parent, ParserHandler parser) {
+    public ElementHandler createElementHandler(XSDElementDeclaration e, Handler parent, ParserHandler parser) {
         return null;
     }
 
-    public AttributeHandler createAttributeHandler(
-            XSDAttributeDeclaration a, Handler parent, ParserHandler parser) {
+    public AttributeHandler createAttributeHandler(XSDAttributeDeclaration a, Handler parent, ParserHandler parser) {
         return null;
     }
 }

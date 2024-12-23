@@ -80,9 +80,7 @@ import org.vfny.geoserver.util.WCSUtils;
  *
  * @author Andrea Aime - OpenGeo
  */
-@DescribeProcess(
-        title = "Import to Catalog",
-        description = "Imports a feature collection into the catalog")
+@DescribeProcess(title = "Import to Catalog", description = "Imports a feature collection into the catalog")
 public class ImportProcess implements GeoServerProcess {
 
     static final Logger LOGGER = Logging.getLogger(ImportProcess.class);
@@ -109,17 +107,13 @@ public class ImportProcess implements GeoServerProcess {
     public String execute(
             @DescribeParameter(name = "features", min = 0, description = "Input feature collection")
                     SimpleFeatureCollection features,
-            @DescribeParameter(name = "coverage", min = 0, description = "Input raster")
-                    GridCoverage2D coverage,
+            @DescribeParameter(name = "coverage", min = 0, description = "Input raster") GridCoverage2D coverage,
             @DescribeParameter(
                             name = "workspace",
                             min = 0,
                             description = "Target workspace (default is the system default)")
                     String workspace,
-            @DescribeParameter(
-                            name = "store",
-                            min = 0,
-                            description = "Target store (default is the workspace default)")
+            @DescribeParameter(name = "store", min = 0, description = "Target store (default is the workspace default)")
                     String store,
             @DescribeParameter(
                             name = "name",
@@ -165,8 +159,7 @@ public class ImportProcess implements GeoServerProcess {
         } else {
             ws = catalog.getDefaultWorkspace();
             if (ws == null) {
-                throw new ProcessException(
-                        "The catalog is empty, could not find a default workspace");
+                throw new ProcessException("The catalog is empty, could not find a default workspace");
             }
         }
 
@@ -174,16 +167,7 @@ public class ImportProcess implements GeoServerProcess {
         try {
             AdminRequest.start(this);
             return executeAsAdminRequest(
-                    features,
-                    coverage,
-                    workspace,
-                    ws,
-                    store,
-                    name,
-                    srs,
-                    srsHandling,
-                    styleName,
-                    listener);
+                    features, coverage, workspace, ws, store, name, srs, srsHandling, styleName, listener);
         } finally {
             AdminRequest.finish();
         }
@@ -221,8 +205,7 @@ public class ImportProcess implements GeoServerProcess {
                 if (features != null) {
                     storeInfo = catalog.getDefaultDataStore(ws);
                     if (storeInfo == null) {
-                        throw new ProcessException(
-                                "Could not find a default store in workspace " + ws.getName());
+                        throw new ProcessException("Could not find a default store in workspace " + ws.getName());
                     }
                 } else if (coverage != null) {
                     // since the store doesn't exist, create it
@@ -235,23 +218,20 @@ public class ImportProcess implements GeoServerProcess {
         } else if (features != null) {
             storeInfo = catalog.getDefaultDataStore(ws);
             if (storeInfo == null) {
-                throw new ProcessException(
-                        "Could not find a default store in workspace " + ws.getName());
+                throw new ProcessException("Could not find a default store in workspace " + ws.getName());
             }
         } else if (coverage != null) {
             // create a new coverage store
-            LOGGER.info(
-                    "Auto-configuring coverage store: "
-                            + (name != null ? name : coverage.getName().toString()));
+            LOGGER.info("Auto-configuring coverage store: "
+                    + (name != null ? name : coverage.getName().toString()));
 
-            storeInfo =
-                    cb.buildCoverageStore((name != null ? name : coverage.getName().toString()));
+            storeInfo = cb.buildCoverageStore(
+                    (name != null ? name : coverage.getName().toString()));
             add = true;
             store = (name != null ? name : coverage.getName().toString());
 
             if (storeInfo == null) {
-                throw new ProcessException(
-                        "Could not find a default store in workspace " + ws.getName());
+                throw new ProcessException("Could not find a default store in workspace " + ws.getName());
             }
         }
 
@@ -268,32 +248,19 @@ public class ImportProcess implements GeoServerProcess {
 
         if (features != null) {
             checkNameConflict(features, name, ws);
-            return importFeatures(
-                    features, name, srs, srsHandling, listener, cb, storeInfo, targetStyle);
+            return importFeatures(features, name, srs, srsHandling, listener, cb, storeInfo, targetStyle);
         } else if (coverage != null) {
             return importCoverage(
-                    coverage,
-                    workspace,
-                    store,
-                    name,
-                    srs,
-                    styleName,
-                    listener,
-                    cb,
-                    storeInfo,
-                    add,
-                    targetStyle);
+                    coverage, workspace, store, name, srs, styleName, listener, cb, storeInfo, add, targetStyle);
         }
 
         return null;
     }
 
     private static void checkAdminAccess(WorkspaceInfo info) {
-        WorkspaceAccessLimits wl =
-                GeoServerExtensions.bean(SecureCatalogImpl.class)
-                        .getResourceAccessManager()
-                        .getAccessLimits(
-                                SecurityContextHolder.getContext().getAuthentication(), info);
+        WorkspaceAccessLimits wl = GeoServerExtensions.bean(SecureCatalogImpl.class)
+                .getResourceAccessManager()
+                .getAccessLimits(SecurityContextHolder.getContext().getAuthentication(), info);
         if (wl == null || !wl.isAdminable()) {
             throw new ProcessException("Operation unallowed with the current privileges");
         }
@@ -312,8 +279,7 @@ public class ImportProcess implements GeoServerProcess {
             boolean add,
             StyleInfo targetStyle) {
         try {
-            final Resource directory =
-                    catalog.getResourceLoader().get(Paths.path("data", workspace, store));
+            final Resource directory = catalog.getResourceLoader().get(Paths.path("data", workspace, store));
             final File file = File.createTempFile(store, ".tif", directory.dir());
             ((CoverageStoreInfo) storeInfo).setURL(URLs.fileToUrl(file).toExternalForm());
             storeInfo.setType("GeoTIFF");
@@ -327,8 +293,7 @@ public class ImportProcess implements GeoServerProcess {
                         throw new WPSException("Could not find a EPSG code for " + srs);
                     }
                 } catch (Exception e) {
-                    throw new ProcessException(
-                            "Could not lookup the EPSG code for the provided srs", e);
+                    throw new ProcessException("Could not lookup the EPSG code for the provided srs", e);
                 }
             } else {
                 // check we can extract a code from the original data
@@ -339,8 +304,7 @@ public class ImportProcess implements GeoServerProcess {
                     CoordinateReferenceSystem nativeCrs = cvCrs;
                     if (nativeCrs == null) {
                         throw new ProcessException(
-                                "The original data has no native CRS, "
-                                        + "you need to specify the srs parameter");
+                                "The original data has no native CRS, " + "you need to specify the srs parameter");
                     } else {
                         srs = CRS.decode(getSRSFromCRS(nativeCrs), true);
                     }
@@ -352,13 +316,8 @@ public class ImportProcess implements GeoServerProcess {
             MathTransform tx = CRS.findMathTransform(cvCrs, srs);
 
             if (!tx.isIdentity() || !CRS.equalsIgnoreMetadata(cvCrs, srs)) {
-                coverage =
-                        WCSUtils.resample(
-                                coverage,
-                                cvCrs,
-                                srs,
-                                null,
-                                Interpolation.getInstance(Interpolation.INTERP_NEAREST));
+                coverage = WCSUtils.resample(
+                        coverage, cvCrs, srs, null, Interpolation.getInstance(Interpolation.INTERP_NEAREST));
             }
 
             GeoTiffWriter writer = new GeoTiffWriter(file);
@@ -367,8 +326,7 @@ public class ImportProcess implements GeoServerProcess {
             final ParameterValueGroup params = new GeoTiffFormat().getWriteParameters();
             params.parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
                     .setValue(DEFAULT_WRITE_PARAMS);
-            final GeneralParameterValue[] wps =
-                    params.values().toArray(new GeneralParameterValue[1]);
+            final GeneralParameterValue[] wps = params.values().toArray(new GeneralParameterValue[1]);
 
             try {
                 writer.write(coverage, wps);
@@ -414,14 +372,12 @@ public class ImportProcess implements GeoServerProcess {
 
             if (!add) {
                 // update the existing
-                CoverageInfo existing =
-                        catalog.getCoverageByCoverageStore(
-                                (CoverageStoreInfo) storeInfo,
-                                name != null ? name : coverage.getName().toString());
+                CoverageInfo existing = catalog.getCoverageByCoverageStore(
+                        (CoverageStoreInfo) storeInfo,
+                        name != null ? name : coverage.getName().toString());
                 if (existing == null) {
                     // grab the first if there is only one
-                    List<CoverageInfo> coverages =
-                            catalog.getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
+                    List<CoverageInfo> coverages = catalog.getCoveragesByCoverageStore((CoverageStoreInfo) storeInfo);
                     if (coverages.size() == 1) {
                         existing = coverages.get(0);
                     }
@@ -534,8 +490,7 @@ public class ImportProcess implements GeoServerProcess {
                 CoordinateReferenceSystem nativeCrs = gd.getCoordinateReferenceSystem();
                 if (nativeCrs == null) {
                     throw new ProcessException(
-                            "The original data has no native CRS, "
-                                    + "you need to specify the srs parameter");
+                            "The original data has no native CRS, " + "you need to specify the srs parameter");
                 } else {
                     targetSRSCode = getSRSFromCRS(nativeCrs);
                 }
@@ -585,8 +540,7 @@ public class ImportProcess implements GeoServerProcess {
         } catch (ProcessException pe) {
             throw pe;
         } catch (Exception e) {
-            throw new ProcessException(
-                    "Failed to complete the import inside the GeoServer catalog", e);
+            throw new ProcessException("Failed to complete the import inside the GeoServer catalog", e);
         }
     }
 
@@ -595,30 +549,26 @@ public class ImportProcess implements GeoServerProcess {
         try {
             String identifier = ResourcePool.lookupIdentifier(nativeCrs, true);
             if (identifier == null) {
-                throw new ProcessException(
-                        "Could not find an EPSG identifier for data "
-                                + "native spatial reference system: "
-                                + nativeCrs);
+                throw new ProcessException("Could not find an EPSG identifier for data "
+                        + "native spatial reference system: "
+                        + nativeCrs);
             } else {
                 targetSRSCode = SrsSyntax.AUTH_CODE.getSRS(identifier);
             }
         } catch (Exception e) {
             throw new ProcessException(
-                    "Failed to loookup an official EPSG code for the source data "
-                            + "native spatial reference system",
+                    "Failed to loookup an official EPSG code for the source data " + "native spatial reference system",
                     e);
         }
         return targetSRSCode;
     }
 
     /**
-     * check if the target layer and the target feature type are not already there (this is a
-     * half-assed attempt as we don't have an API telling us how the feature type name will be
-     * changed by DataStore.createSchema(...), but better than fully importing the data into the
-     * target store to find out we cannot create the layer...)
+     * check if the target layer and the target feature type are not already there (this is a half-assed attempt as we
+     * don't have an API telling us how the feature type name will be changed by DataStore.createSchema(...), but better
+     * than fully importing the data into the target store to find out we cannot create the layer...)
      */
-    private void checkNameConflict(
-            SimpleFeatureCollection features, String name, WorkspaceInfo ws) {
+    private void checkNameConflict(SimpleFeatureCollection features, String name, WorkspaceInfo ws) {
         String tentativeTargetName;
         if (name != null) {
             tentativeTargetName = ws.getName() + ":" + name;
@@ -631,10 +581,7 @@ public class ImportProcess implements GeoServerProcess {
     }
 
     private SimpleFeatureType importDataIntoStore(
-            SimpleFeatureCollection features,
-            String name,
-            DataStoreInfo storeInfo,
-            ProgressListener listener)
+            SimpleFeatureCollection features, String name, DataStoreInfo storeInfo, ProgressListener listener)
             throws IOException, ProcessException {
         // grab the data store
         DataStore ds = (DataStore) storeInfo.getDataStore(null);
@@ -661,19 +608,16 @@ public class ImportProcess implements GeoServerProcess {
         }
 
         if (targetType == null) {
-            throw new WPSException(
-                    "The target schema was created, but with a name "
-                            + "that we cannot relate to the one we provided the data store. Cannot proceeed further");
+            throw new WPSException("The target schema was created, but with a name "
+                    + "that we cannot relate to the one we provided the data store. Cannot proceeed further");
         } else {
             // check the layer is not already there
-            String newLayerName =
-                    storeInfo.getWorkspace().getName() + ":" + targetType.getTypeName();
+            String newLayerName = storeInfo.getWorkspace().getName() + ":" + targetType.getTypeName();
             LayerInfo layer = catalog.getLayerByName(newLayerName);
             // todo: we should not really reach here and know beforehand what the targetType
             // name is, but if we do we should at least get a way to drop it
             if (layer != null) {
-                throw new ProcessException(
-                        "Target layer " + newLayerName + " already exists in the catalog");
+                throw new ProcessException("Target layer " + newLayerName + " already exists in the catalog");
             }
         }
 
@@ -697,8 +641,7 @@ public class ImportProcess implements GeoServerProcess {
             Map<String, String> mapping)
             throws IOException {
         // start a transaction and fill the target with the input features
-        SimpleFeatureStore fstore =
-                (SimpleFeatureStore) ds.getFeatureSource(targetType.getTypeName());
+        SimpleFeatureStore fstore = (SimpleFeatureStore) ds.getFeatureSource(targetType.getTypeName());
 
         Transaction t = new DefaultTransaction();
         fstore.setTransaction(t);
@@ -734,12 +677,8 @@ public class ImportProcess implements GeoServerProcess {
         }
     }
 
-    /**
-     * Applies a set of heuristics to find which target attribute corresponds to a certain input
-     * attribute
-     */
-    Map<String, String> buildAttributeMapping(
-            SimpleFeatureType sourceType, SimpleFeatureType targetType) {
+    /** Applies a set of heuristics to find which target attribute corresponds to a certain input attribute */
+    Map<String, String> buildAttributeMapping(SimpleFeatureType sourceType, SimpleFeatureType targetType) {
         // look for the typical manglings. For example, if the target is a
         // shapefile store it will move the geometry and name it the_geom
 
@@ -793,11 +732,10 @@ public class ImportProcess implements GeoServerProcess {
 
         // and finally we return with as much as we can match
         if (!sourceNames.isEmpty()) {
-            LOGGER.warning(
-                    "Could not match the following attributes "
-                            + sourceNames
-                            + " to the target feature type ones: "
-                            + targetType);
+            LOGGER.warning("Could not match the following attributes "
+                    + sourceNames
+                    + " to the target feature type ones: "
+                    + targetType);
         }
         return result;
     }

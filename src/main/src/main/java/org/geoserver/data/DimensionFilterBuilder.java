@@ -15,8 +15,8 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor;
 import org.geotools.util.Range;
 
 /**
- * Helper class that builds dimension related filters against reference objects that can be point
- * ones (date, number, string) or range types (DateRange, NumberRange)
+ * Helper class that builds dimension related filters against reference objects that can be point ones (date, number,
+ * string) or range types (DateRange, NumberRange)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -37,8 +37,7 @@ public class DimensionFilterBuilder {
 
         final List<Filter> timeFilters = new ArrayList<>();
         final PropertyName attribute = ff.property(startAttributeName);
-        final PropertyName endAttribute =
-                endAttributeName == null ? null : ff.property(endAttributeName);
+        final PropertyName endAttribute = endAttributeName == null ? null : ff.property(endAttributeName);
 
         for (Object range : ranges) {
             timeFilters.add(buildDimensionFilter(range, attribute, endAttribute));
@@ -59,8 +58,8 @@ public class DimensionFilterBuilder {
     }
 
     /**
-     * Build a filter for a single value based on an attribute and optional endAttribute. The value
-     * is either a Range or object that can be used as a literal (Date,Number).
+     * Build a filter for a single value based on an attribute and optional endAttribute. The value is either a Range or
+     * object that can be used as a literal (Date,Number).
      */
     Filter buildDimensionFilter(Object value, PropertyName attribute, PropertyName endAttribute) {
         Filter filter;
@@ -69,11 +68,7 @@ public class DimensionFilterBuilder {
         } else if (value instanceof Range) {
             Range range = (Range) value;
             if (endAttribute == null) {
-                filter =
-                        ff.between(
-                                attribute,
-                                ff.literal(range.getMinValue()),
-                                ff.literal(range.getMaxValue()));
+                filter = ff.between(attribute, ff.literal(range.getMinValue()), ff.literal(range.getMaxValue()));
             } else {
                 // Range intersects valid range of feature
                 // @todo adding another option to dimensionInfo allows contains, versus intersects

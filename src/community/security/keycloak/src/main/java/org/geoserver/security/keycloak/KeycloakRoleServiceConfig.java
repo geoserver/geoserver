@@ -7,8 +7,7 @@ package org.geoserver.security.keycloak;
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
 /** Configuration class for the {@link org.geoserver.security.keycloak.KeycloakRoleService}. */
-public class KeycloakRoleServiceConfig extends KeycloakSecurityServiceConfig
-        implements SecurityRoleServiceConfig {
+public class KeycloakRoleServiceConfig extends KeycloakSecurityServiceConfig implements SecurityRoleServiceConfig {
 
     protected String adminRoleName;
     protected String groupAdminRoleName;

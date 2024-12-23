@@ -47,14 +47,13 @@ import org.geotools.factory.CommonFactoryFinder;
 /**
  * Proxies an object storing any modifications to it.
  *
- * <p>Each time a setter is called through this invocation handler, the property is stored and not
- * set on the underlying object being proxied until {@link #commit()} is called. When a getter is
- * called through this invocation handler, the local properties are checked for one that has been
- * previously set, if found it is returned, if not found the getter is forwarded to the underlying
- * proxy object being called.
+ * <p>Each time a setter is called through this invocation handler, the property is stored and not set on the underlying
+ * object being proxied until {@link #commit()} is called. When a getter is called through this invocation handler, the
+ * local properties are checked for one that has been previously set, if found it is returned, if not found the getter
+ * is forwarded to the underlying proxy object being called.
  *
- * <p>Any collections handled through this interface are cloned and client code obtains a copy. The
- * two collections will be synced on a call to {@link #commit()}.
+ * <p>Any collections handled through this interface are cloned and client code obtains a copy. The two collections will
+ * be synced on a call to {@link #commit()}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  *     <p>TODO: this class should use BeanUtils for all reflection stuff
@@ -71,8 +70,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     volatile HashMap<String, Object> properties;
 
     /**
-     * The old values of the live collections (we have to clone them because once the proxy commits
-     * the original map will contain the same values as the new one, breaking getOldValues()
+     * The old values of the live collections (we have to clone them because once the proxy commits the original map
+     * will contain the same values as the new one, breaking getOldValues()
      */
     volatile HashMap<String, Object> oldCollectionValues;
 
@@ -87,9 +86,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         return cp;
     }
 
-    /**
-     * Intercepts getter and setter methods, as well as {@link CatalogInfo#accept(CatalogVisitor)}.
-     */
+    /** Intercepts getter and setter methods, as well as {@link CatalogInfo#accept(CatalogVisitor)}. */
     @Override
     @SuppressWarnings("unchecked") // lots of generic behavior, cannot use params
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -156,8 +153,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
             // in case this is a live indirection, resolve it. Typically this means
             // the reference is dangling, and we are going to avoid a wrapper around null
-            if (result instanceof Proxy
-                    && Proxy.getInvocationHandler(result) instanceof ResolvingProxy) {
+            if (result instanceof Proxy && Proxy.getInvocationHandler(result) instanceof ResolvingProxy) {
                 ResolvingProxy rp = ProxyUtils.handler(result, ResolvingProxy.class);
                 // try to resolve, and return null if the reference is dangling
                 final Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
@@ -268,8 +264,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                                 // case 2, just call the setter with the new object
                                 s.invoke(proxyObject, v);
                             } else {
-                                throw new IllegalStateException(
-                                        "New info object set, but no setter for it.");
+                                throw new IllegalStateException("New info object set, but no setter for it.");
                             }
                         } else {
                             // call the setter
@@ -559,9 +554,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
             return clone;
         } catch (Exception e) {
-            throw new RuntimeException(
-                    "Unexpected failure while cloning collection of class " + oldCollectionClass,
-                    e);
+            throw new RuntimeException("Unexpected failure while cloning collection of class " + oldCollectionClass, e);
         }
     }
 
@@ -570,14 +563,12 @@ public class ModificationProxy implements WrappingProxy, Serializable {
         Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
         FilterFactory ff = CommonFactoryFinder.getFilterFactory();
         Class<? extends CatalogInfo> iface = getCatalogInfoInterface(ci.getClass());
-        CatalogInfo replacement =
-                catalog.get(iface, ff.equal(ff.property("id"), ff.literal(id), true));
+        CatalogInfo replacement = catalog.get(iface, ff.equal(ff.property("id"), ff.literal(id), true));
         return replacement;
     }
 
     /** Gathers the most specific CatalogInfo sub-interface from the specified class object */
-    private Class<? extends CatalogInfo> getCatalogInfoInterface(
-            Class<? extends CatalogInfo> clazz) {
+    private Class<? extends CatalogInfo> getCatalogInfoInterface(Class<? extends CatalogInfo> clazz) {
         Class<? extends CatalogInfo> result = CatalogInfo.class;
         for (Class<?> c : clazz.getInterfaces()) {
             if (result.isAssignableFrom(c)) {
@@ -607,8 +598,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /**
      * Wraps a proxy instance.
      *
-     * <p>This method is safe in that if the object passed in is not a proxy it is simply returned.
-     * If the proxy is not an instance of {@link ModificationProxy} it is also returned untouched.
+     * <p>This method is safe in that if the object passed in is not a proxy it is simply returned. If the proxy is not
+     * an instance of {@link ModificationProxy} it is also returned untouched.
      */
     public static <T> T unwrap(T object) {
         return ProxyUtils.unwrap(object, ModificationProxy.class);
@@ -617,20 +608,20 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /**
      * Returns the ModificationProxy invocation handler for an proxy object.
      *
-     * <p>This method will return null in the case where the object is not a proxy, or it is being
-     * proxies by another invocation handler.
+     * <p>This method will return null in the case where the object is not a proxy, or it is being proxies by another
+     * invocation handler.
      */
     public static ModificationProxy handler(Object object) {
         return ProxyUtils.handler(object, ModificationProxy.class);
     }
 
     /**
-     * If the given object is a modification proxy, unwraps it, passes it to innerWrap, then wraps
-     * the result with a proxy that has the same modifications as the original. If the object is not
-     * a modification proxy, then it simply returns the result of applying innerWrap.
+     * If the given object is a modification proxy, unwraps it, passes it to innerWrap, then wraps the result with a
+     * proxy that has the same modifications as the original. If the object is not a modification proxy, then it simply
+     * returns the result of applying innerWrap.
      *
-     * <p>This will not recursively re-wrap properties that hold other ModificationProxies. If that
-     * is needed, it is up to innerWrap do this itself.
+     * <p>This will not recursively re-wrap properties that hold other ModificationProxies. If that is needed, it is up
+     * to innerWrap do this itself.
      */
     @SuppressWarnings("unchecked")
     public static <T> T rewrap(T object, UnaryOperator<T> innerWrap, Class<T> clazz) {

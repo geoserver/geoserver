@@ -278,16 +278,14 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             gt2Style = resizeForDPI(request, gt2Style);
 
-            final FeatureTypeStyle[] ftStyles =
-                    gt2Style.featureTypeStyles().toArray(new FeatureTypeStyle[0]);
+            final FeatureTypeStyle[] ftStyles = gt2Style.featureTypeStyles().toArray(new FeatureTypeStyle[0]);
             final double scaleDenominator = request.getScale();
 
             Rule[] applicableRules;
             if (ruleName != null) {
                 Rule rule = LegendUtils.getRule(ftStyles, ruleName);
                 if (rule == null) {
-                    throw new ServiceException(
-                            "Specified style does not contains a rule named " + ruleName);
+                    throw new ServiceException("Specified style does not contains a rule named " + ruleName);
                 }
                 applicableRules = new Rule[] {rule};
             } else {
@@ -309,8 +307,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 // if null or empty..go back to default behavior
                 if (cascadedRules != null) {
                     if (!cascadedRules.isEmpty()) {
-                        for (int i = 0; i < cascadedRules.size(); i++)
-                            jRules.add(cascadedRules.getJSONObject(i));
+                        for (int i = 0; i < cascadedRules.size(); i++) jRules.add(cascadedRules.getJSONObject(i));
                         // we have all the rules from cascaded JSON request
                         // no need to loop
                         layerName = cascadedLegend.getLayer();
@@ -358,13 +355,8 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 org.geotools.api.style.GraphicLegend l = rule.getLegend();
                 if (l != null) {
                     for (GraphicalSymbol g : l.graphicalSymbols()) {
-                        String href =
-                                IconPropertyExtractor.extractProperties(
-                                                gt2Style, (SimpleFeature) feature)
-                                        .href(
-                                                request.getBaseUrl(),
-                                                legend.getLayer(),
-                                                legend.getStyleName());
+                        String href = IconPropertyExtractor.extractProperties(gt2Style, (SimpleFeature) feature)
+                                .href(request.getBaseUrl(), legend.getLayer(), legend.getStyleName());
 
                         JSONObject jGraphicSymb = processGraphicalSymbol(g, href);
                         jGraphicSymb.element("url", href);
@@ -395,8 +387,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         return response;
     }
 
-    protected Rule[] updateRuleTitles(
-            FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
+    protected Rule[] updateRuleTitles(FeatureCountProcessor processor, LegendRequest legend, Rule[] applicableRules) {
         // skip rules with RasterSymbolizers, as they are not counted
         Rule[] rasterRules = rasterRules(applicableRules);
         Rule[] nonRasterRules = nonRasterRules(applicableRules);
@@ -463,10 +454,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         for (ColorMapEntry entry : colorMap.getColorMapEntries()) {
             JSONObject ent = new JSONObject();
             final Double qty = entry.getQuantity().evaluate(null, Double.class);
-            if (colorMap.getType() == ColorMap.TYPE_INTERVALS
-                    && first
-                    && qty < 0
-                    && Double.isInfinite(qty)) {
+            if (colorMap.getType() == ColorMap.TYPE_INTERVALS && first && qty < 0 && Double.isInfinite(qty)) {
                 continue;
             }
             first = false;
@@ -553,8 +541,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             newStyle.add(newRules);
         }
 
-        IconProperties props =
-                IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
+        IconProperties props = IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
 
         String iconUrl = props.href(baseURL, wsName, styleName);
         int index = iconUrl.indexOf('?');
@@ -563,8 +550,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             String[] refs = iconUrl.substring(index + 1).split("&");
             for (String s : refs) {
                 if (s.matches("(\\d\\.)\\d(\\.\\d[\\.\\w+]*=[\\d.]*)")) {
-                    String ref =
-                            s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
+                    String ref = s.replaceAll("(\\d\\.)\\d(\\.\\d=)", "$1" + origRuleNo.get(0) + "$2");
                     String[] split = s.split("\\.");
                     int symCount = Integer.parseInt(split[2].replaceAll("=", ""));
                     if (symbolizerCount == symCount) base += ref + "&";
@@ -677,9 +663,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
     private JSONObject processLineSymbolizer(JSONObject ret, LineSymbolizer symbolizer) {
         ret = processStroke(ret, symbolizer.getStroke());
         if (symbolizer.getPerpendicularOffset() != null) {
-            ret.element(
-                    PERPENDICULAR_OFFSET,
-                    toJSONValue(symbolizer.getPerpendicularOffset(), Number.class));
+            ret.element(PERPENDICULAR_OFFSET, toJSONValue(symbolizer.getPerpendicularOffset(), Number.class));
         }
         return ret;
     }
@@ -707,8 +691,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         return ret;
     }
     /** */
-    private JSONObject processContrastEnhancement(
-            JSONObject ret, ContrastEnhancement contrastEnhancement) {
+    private JSONObject processContrastEnhancement(JSONObject ret, ContrastEnhancement contrastEnhancement) {
         if (contrastEnhancement != null) {
             JSONObject ce = new JSONObject();
             Expression gammaValue = contrastEnhancement.getGammaValue();
@@ -851,8 +834,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
             for (Entry<String, ?> opt : map.entrySet()) {
                 if (opt.getValue() instanceof Expression) {
-                    vendorOpts.element(
-                            opt.getKey(), toJSONValue((Expression) opt.getValue(), Object.class));
+                    vendorOpts.element(opt.getKey(), toJSONValue((Expression) opt.getValue(), Object.class));
                 } else {
                     vendorOpts.element(opt.getKey(), opt.getValue());
                 }
@@ -900,17 +882,13 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
             jPlacement.element(ROTATION, toJSONValue(pplacement.getRotation(), Number.class));
             Displacement displacement = pplacement.getDisplacement();
             if (displacement != null) {
-                jPlacement.element(
-                        X_DISPLACEMENT, toJSONValue(displacement.getDisplacementX(), Number.class));
-                jPlacement.element(
-                        Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
+                jPlacement.element(X_DISPLACEMENT, toJSONValue(displacement.getDisplacementX(), Number.class));
+                jPlacement.element(Y_DISPLACEMENT, toJSONValue(displacement.getDisplacementY(), Number.class));
             }
         }
         if (placement instanceof LinePlacement) {
             LinePlacement lPlacement = (LinePlacement) placement;
-            jPlacement.element(
-                    PERPENDICULAR_OFFSET,
-                    toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
+            jPlacement.element(PERPENDICULAR_OFFSET, toJSONValue(lPlacement.getPerpendicularOffset(), String.class));
         }
         ret.element(LABEL_PLACEMENT, jPlacement);
         Halo halo = symbolizer.getHalo();

@@ -46,12 +46,10 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
     }
 
     @Override
-    protected void beforeFeatureIteration(
-            TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {}
+    protected void beforeFeatureIteration(TemplateOutputWriter writer, RootBuilder root, FeatureTypeInfo typeInfo) {}
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws ServiceException {
         String outputFormat = getMimeType(null, getFeature);
         try (XMLTemplateWriter writer = getOutputWriter(output, outputFormat)) {
@@ -72,13 +70,12 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
             ReferencedEnvelope bounds)
             throws IOException {}
 
-    protected XHTMLTemplateWriter getOutputWriter(OutputStream output, String outputFormat)
-            throws IOException {
+    protected XHTMLTemplateWriter getOutputWriter(OutputStream output, String outputFormat) throws IOException {
         return (XHTMLTemplateWriter) helper.getOutputWriter(output, outputFormat);
     }
 
-    private EncodingHints mapVendorOptionsToHints(
-            FeatureCollectionResponse response, String outputFormat) throws ExecutionException {
+    private EncodingHints mapVendorOptionsToHints(FeatureCollectionResponse response, String outputFormat)
+            throws ExecutionException {
         List<FeatureCollection> collectionList = response.getFeature();
         List<String> scripts = new ArrayList<>();
         List<String> styles = new ArrayList<>();
@@ -102,9 +99,7 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
     }
 
     private void addToJsonLdScriptNameList(
-            List<FeatureCollection> jsonLdScriptNames,
-            VendorOptions options,
-            FeatureCollection collection) {
+            List<FeatureCollection> jsonLdScriptNames, VendorOptions options, FeatureCollection collection) {
         boolean jsonLdScript = options.get(JSON_LD_SCRIPT, Boolean.class, false);
         if (jsonLdScript) jsonLdScriptNames.add(collection);
     }
@@ -123,14 +118,12 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
     }
 
     @Override
-    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
-            throws IOException {
+    protected void beforeEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature) throws IOException {
         super.beforeEvaluation(writer, root, feature);
     }
 
     @Override
-    protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature)
-            throws IOException {
+    protected void afterEvaluation(TemplateOutputWriter writer, RootBuilder root, Feature feature) throws IOException {
         super.afterEvaluation(writer, root, feature);
     }
 
@@ -140,9 +133,7 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
         if (result) {
             String outputFormat = identifier.getOutputFormat();
             boolean hasParam =
-                    operation != null
-                            && operation.getParameters() != null
-                            && operation.getParameters().length > 0;
+                    operation != null && operation.getParameters() != null && operation.getParameters().length > 0;
             if (hasParam) {
                 String param = operation.getParameters()[0].toString();
                 Request request = Dispatcher.REQUEST.get();
@@ -161,8 +152,7 @@ public class HTMLTemplateResponse extends BaseTemplateGetFeatureResponse {
     private boolean hasTemplate(FeatureTypeInfo fti) {
         boolean result = true;
         try {
-            RootBuilder template =
-                    configuration.getTemplate(fti, TemplateIdentifier.HTML.getOutputFormat());
+            RootBuilder template = configuration.getTemplate(fti, TemplateIdentifier.HTML.getOutputFormat());
             if (template == null) result = false;
         } catch (Exception e) {
             result = false;

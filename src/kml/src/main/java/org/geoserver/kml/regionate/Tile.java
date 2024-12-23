@@ -24,8 +24,8 @@ public class Tile {
     static final double MAX_TILE_WIDTH;
 
     /**
-     * This structure is used to make sure that multiple threads end up using the same table name
-     * object, so that we can use it as a synchonization token
+     * This structure is used to make sure that multiple threads end up using the same table name object, so that we can
+     * use it as a synchonization token
      */
     static CanonicalSet<String> canonicalizer = CanonicalSet.newInstance(String.class);
 
@@ -63,9 +63,9 @@ public class Tile {
      * Tile containment check is not trivial due to a couple of issues:
      *
      * <ul>
-     *   <li>centroids sitting on the tile borders must be associated to exactly one tile, so we
-     *       have to consider only two borders as inclusive in general (S and W) but add on occasion
-     *       the other two when we reach the extent of our data set
+     *   <li>centroids sitting on the tile borders must be associated to exactly one tile, so we have to consider only
+     *       two borders as inclusive in general (S and W) but add on occasion the other two when we reach the extent of
+     *       our data set
      *   <li>coordinates going beyond the natural lat/lon range
      * </ul>
      *
@@ -92,23 +92,12 @@ public class Tile {
     /** Builds the best matching tile for the specified envelope */
     public Tile(ReferencedEnvelope wgs84Envelope) {
         z = Math.round(Math.log(MAX_TILE_WIDTH / wgs84Envelope.getWidth()) / Math.log(2));
-        x =
-                Math.round(
-                        ((wgs84Envelope.getMinimum(0) - WORLD_BOUNDS.getMinimum(0))
-                                        / MAX_TILE_WIDTH)
-                                * Math.pow(2, z));
-        y =
-                Math.round(
-                        ((wgs84Envelope.getMinimum(1) - WORLD_BOUNDS.getMinimum(1))
-                                        / MAX_TILE_WIDTH)
-                                * Math.pow(2, z));
+        x = Math.round(((wgs84Envelope.getMinimum(0) - WORLD_BOUNDS.getMinimum(0)) / MAX_TILE_WIDTH) * Math.pow(2, z));
+        y = Math.round(((wgs84Envelope.getMinimum(1) - WORLD_BOUNDS.getMinimum(1)) / MAX_TILE_WIDTH) * Math.pow(2, z));
         envelope = envelope(x, y, z);
     }
 
-    /**
-     * Returns the parent of this tile, or null if this tile is (one of) the root of the current
-     * dataset
-     */
+    /** Returns the parent of this tile, or null if this tile is (one of) the root of the current dataset */
     public Tile getParent() {
         // if we got to one of the root tiles for this data set, just stop
         if (z == 0) return null;

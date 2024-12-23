@@ -12,8 +12,7 @@ package org.geoserver.gsr.model.service;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 
 /**
- * Simple model of a geometry service, for use in the list of services published by {@link
- * CatalogService}
+ * Simple model of a geometry service, for use in the list of services published by {@link CatalogService}
  *
  * @author Juan Marin, OpenGeo
  */

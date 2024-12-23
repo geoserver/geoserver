@@ -57,15 +57,12 @@ public final class CascadedLegendRequest extends LegendRequest {
         this.remoteLegendGraphicRequest = remoteLegendGraphicRequest;
         Map<String, String> params = request.getRawKvp();
         // relaying request params
-        params.keySet()
-                .forEach(
-                        k -> {
-                            // layer param has already been read from WMSStore
-                            // we need to use the layer name on remote server
-                            if (!k.equalsIgnoreCase("layer"))
-                                this.remoteLegendGraphicRequest.setProperty(
-                                        k, String.valueOf(params.get(k)));
-                        });
+        params.keySet().forEach(k -> {
+            // layer param has already been read from WMSStore
+            // we need to use the layer name on remote server
+            if (!k.equalsIgnoreCase("layer"))
+                this.remoteLegendGraphicRequest.setProperty(k, String.valueOf(params.get(k)));
+        });
         // generating URL
         super.getLegendInfo()
                 .setOnlineResource(this.remoteLegendGraphicRequest.getFinalURL().toExternalForm());
@@ -84,8 +81,7 @@ public final class CascadedLegendRequest extends LegendRequest {
             if (defaultRemoteStyle == WMSLayerInfoImpl.DEFAULT_ON_REMOTE) return null;
             // execute the request and fetch JSON
             HTTPClient client = wmsLayerInfo.getStore().getWebMapServer(null).getHTTPClient();
-            HTTPResponse jsonResponse =
-                    client.get(new URL(super.getLegendInfo().getOnlineResource()));
+            HTTPResponse jsonResponse = client.get(new URL(super.getLegendInfo().getOnlineResource()));
             try (InputStream is = jsonResponse.getResponseStream();
                     BufferedReader bufferedReader =
                             new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
@@ -98,8 +94,7 @@ public final class CascadedLegendRequest extends LegendRequest {
                 LOGGER.fine("Cascaded GetLegend Request JSON Response: " + jsonText);
                 JSONObject jsonLegend = JSONObject.fromObject(jsonText);
                 JSONArray layerLegends = jsonLegend.getJSONArray(JSONLegendGraphicBuilder.LEGEND);
-                JSONArray cascadedRules =
-                        layerLegends.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
+                JSONArray cascadedRules = layerLegends.getJSONObject(0).getJSONArray(JSONLegendGraphicBuilder.RULES);
                 return cascadedRules;
             }
         } catch (Exception e) {
@@ -120,8 +115,7 @@ public final class CascadedLegendRequest extends LegendRequest {
         }
 
         @Override
-        public Response createResponse(HTTPResponse httpResponse)
-                throws ServiceException, IOException {
+        public Response createResponse(HTTPResponse httpResponse) throws ServiceException, IOException {
             return new GetLegendGraphicResponse(httpResponse);
         }
     }

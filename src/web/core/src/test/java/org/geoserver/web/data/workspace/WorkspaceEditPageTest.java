@@ -105,7 +105,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
 
         // the change was applied
         assertEquals(
-                newTestURI, getCatalog().getNamespaceByPrefix(citeWorkspace.getName()).getURI());
+                newTestURI,
+                getCatalog().getNamespaceByPrefix(citeWorkspace.getName()).getURI());
     }
 
     @Test
@@ -117,9 +118,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
         List messages = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, messages.size());
-        assertEquals(
-                "Invalid URI syntax: not a valid uri",
-                ((ValidationErrorFeedback) messages.get(0)).getMessage());
+        assertEquals("Invalid URI syntax: not a valid uri", ((ValidationErrorFeedback) messages.get(0)).getMessage());
     }
 
     @Test
@@ -131,20 +130,14 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
         List messages = tester.getMessages(FeedbackMessage.ERROR);
         assertEquals(1, messages.size());
-        assertEquals(
-                "Invalid URI syntax: not a valid uri",
-                ((ValidationErrorFeedback) messages.get(0)).getMessage());
+        assertEquals("Invalid URI syntax: not a valid uri", ((ValidationErrorFeedback) messages.get(0)).getMessage());
     }
 
-    /**
-     * See GEOS-3322, upon a namespace URI change the datastores connection parameter shall be
-     * changed accordingly
-     */
+    /** See GEOS-3322, upon a namespace URI change the datastores connection parameter shall be changed accordingly */
     @Test
     public void testUpdatesDataStoresNamespace() {
         final Catalog catalog = getCatalog();
-        final List<DataStoreInfo> storesInitial =
-                catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+        final List<DataStoreInfo> storesInitial = catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
 
         final NamespaceInfo citeNamespace = catalog.getNamespaceByPrefix(citeWorkspace.getName());
 
@@ -158,8 +151,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
         tester.assertNoErrorMessage();
 
-        List<DataStoreInfo> storesChanged =
-                catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+        List<DataStoreInfo> storesChanged = catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
         for (DataStoreInfo store : storesChanged) {
             assertEquals(newNsURI, store.getConnectionParameters().get("namespace"));
         }
@@ -204,9 +196,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspaceEditPage.class);
 
         FormTester form = tester.newFormTester("form");
-        form.setValue(
-                "tabs:panel:settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix",
-                false);
+        form.setValue("tabs:panel:settings:settingsContainer:otherSettings:localWorkspaceIncludesPrefix", false);
         form.submit("save");
 
         assertFalse(settings.isLocalWorkspaceIncludesPrefix());
@@ -227,8 +217,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         assertEquals(
                 "http://foo.org",
-                form.getTextComponentValue(
-                        "tabs:panel:settings:settingsContainer:otherSettings:proxyBaseUrl"));
+                form.getTextComponentValue("tabs:panel:settings:settingsContainer:otherSettings:proxyBaseUrl"));
         form.setValue("tabs:panel:settings:enabled", false);
         form.submit("save");
 
@@ -243,8 +232,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // edit the second workspace to make it non isolated, this should fail
         updateWorkspace("test_a2", "test_a2", "http://www.test_a.org", false);
         tester.assertRenderedPage(WorkspaceEditPage.class);
-        tester.assertErrorMessages(
-                new String[] {"Namespace with URI 'http://www.test_a.org' already exists."});
+        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test_a.org' already exists."});
         // edit the first workspace and make it isolated
         updateWorkspace("test_a1", "test_a1", "http://www.test_a.org", true);
         tester.assertRenderedPage(WorkspacePage.class);
@@ -279,8 +267,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         // change second workspace name and try to make non isolated, this should fail
         updateWorkspace("test_b2", "test_b3", "http://www.test_b.org", false);
         tester.assertRenderedPage(WorkspaceEditPage.class);
-        tester.assertErrorMessages(
-                new String[] {"Namespace with URI 'http://www.test_b.org' already exists."});
+        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test_b.org' already exists."});
         // check that the catalog contains the expected objects
         Catalog catalog = getCatalog();
         // validate the first workspace
@@ -302,8 +289,8 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * Helper method that creates a workspace and add it to the catalog. This method will first
-     * create the namespace and then the workspace.
+     * Helper method that creates a workspace and add it to the catalog. This method will first create the namespace and
+     * then the workspace.
      *
      * @param prefix name of the workspace and prefix of the namespace
      * @param namespaceUri URI fo the namespace associated to the workspace
@@ -331,8 +318,7 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
      * @param namespace new workspace namespace URI
      * @param isolated TRUE if the workspace should be isolated, otherwise false
      */
-    private void updateWorkspace(
-            String originalName, String name, String namespace, boolean isolated) {
+    private void updateWorkspace(String originalName, String name, String namespace, boolean isolated) {
         // make sure the form is initiated
         WorkspaceInfo originalWorkspace = getCatalog().getWorkspaceByName(originalName);
         tester.startPage(new WorkspaceEditPage(originalWorkspace));
@@ -364,26 +350,29 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         AccessDataRuleInfoManager ruleMan = new AccessDataRuleInfoManager();
         try {
             final Catalog catalog = getCatalog();
-            final List<DataStoreInfo> storesInitial =
-                    catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+            final List<DataStoreInfo> storesInitial = catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
 
-            final NamespaceInfo citeNamespace =
-                    catalog.getNamespaceByPrefix(citeWorkspace.getName());
+            final NamespaceInfo citeNamespace = catalog.getNamespaceByPrefix(citeWorkspace.getName());
             for (DataStoreInfo store : storesInitial) {
                 assertEquals(
                         citeNamespace.getURI(), store.getConnectionParameters().get("namespace"));
             }
-            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace)
+                    .isEmpty());
             FormTester form = tester.newFormTester("form");
             tester.clickLink("form:tabs:tabs-container:tabs:1:link");
             form.setValue("tabs:panel:listContainer:rules:0:admin", true);
             tester.clickLink("form:save");
-            assertEquals(1, ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size());
+            assertEquals(
+                    1,
+                    ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace)
+                            .size());
             tester.assertNoErrorMessage();
 
         } finally {
             ruleMan.removeAllResourceRules(citeWorkspace.getName(), citeWorkspace);
-            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace)
+                    .isEmpty());
         }
     }
 
@@ -392,41 +381,36 @@ public class WorkspaceEditPageTest extends GeoServerWicketTestSupport {
         AccessDataRuleInfoManager ruleMan = new AccessDataRuleInfoManager();
         try {
             final Catalog catalog = getCatalog();
-            final List<DataStoreInfo> storesInitial =
-                    catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
+            final List<DataStoreInfo> storesInitial = catalog.getStoresByWorkspace(citeWorkspace, DataStoreInfo.class);
 
-            final NamespaceInfo citeNamespace =
-                    catalog.getNamespaceByPrefix(citeWorkspace.getName());
+            final NamespaceInfo citeNamespace = catalog.getNamespaceByPrefix(citeWorkspace.getName());
             for (DataStoreInfo store : storesInitial) {
                 assertEquals(
                         citeNamespace.getURI(), store.getConnectionParameters().get("namespace"));
             }
-            DataAccessRule ruleLayer =
-                    new DataAccessRule(
-                            citeWorkspace.getName(), "Forests", AccessMode.READ, "ADMIN");
+            DataAccessRule ruleLayer = new DataAccessRule(citeWorkspace.getName(), "Forests", AccessMode.READ, "ADMIN");
             DataAccessRule ruleWS =
-                    new DataAccessRule(
-                            citeWorkspace.getName(), DataAccessRule.ANY, AccessMode.ADMIN, "ADMIN");
+                    new DataAccessRule(citeWorkspace.getName(), DataAccessRule.ANY, AccessMode.ADMIN, "ADMIN");
             Set<DataAccessRule> news = new HashSet<>();
             news.add(ruleLayer);
             news.add(ruleWS);
             ruleMan.saveRules(new HashSet<>(), news);
-            assertEquals(1, ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).size());
+            assertEquals(
+                    1,
+                    ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace)
+                            .size());
             tester.clickLink("form:tabs:tabs-container:tabs:1:link");
             CheckBox checkboxFalse =
-                    (CheckBox)
-                            tester.getComponentFromLastRenderedPage(
-                                    "form:tabs:panel:listContainer:rules:0:read");
+                    (CheckBox) tester.getComponentFromLastRenderedPage("form:tabs:panel:listContainer:rules:0:read");
             CheckBox checkboxTrue =
-                    (CheckBox)
-                            tester.getComponentFromLastRenderedPage(
-                                    "form:tabs:panel:listContainer:rules:0:admin");
+                    (CheckBox) tester.getComponentFromLastRenderedPage("form:tabs:panel:listContainer:rules:0:admin");
             assertFalse(checkboxFalse.getModelObject().booleanValue());
             assertTrue(checkboxTrue.getModelObject().booleanValue());
 
         } finally {
             ruleMan.removeAllResourceRules(citeWorkspace.getName(), citeWorkspace);
-            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace).isEmpty());
+            assertTrue(ruleMan.getResourceRule(citeWorkspace.getName(), citeWorkspace)
+                    .isEmpty());
         }
     }
 }

@@ -18,8 +18,7 @@ import org.springframework.security.web.authentication.preauth.x509.X509Principa
  *
  * @author mcr
  */
-public class GeoServerX509CertificateAuthenticationFilter
-        extends GeoServerJ2eeBaseAuthenticationFilter {
+public class GeoServerX509CertificateAuthenticationFilter extends GeoServerJ2eeBaseAuthenticationFilter {
 
     private X509PrincipalExtractor principalExtractor;
 
@@ -35,8 +34,7 @@ public class GeoServerX509CertificateAuthenticationFilter
 
     @Override
     protected String getPreAuthenticatedPrincipalName(HttpServletRequest request) {
-        X509Certificate[] certs =
-                (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
+        X509Certificate[] certs = (X509Certificate[]) request.getAttribute("javax.servlet.request.X509Certificate");
         if (certs == null || certs.length == 0) return null;
 
         X509Certificate cert = certs[0];

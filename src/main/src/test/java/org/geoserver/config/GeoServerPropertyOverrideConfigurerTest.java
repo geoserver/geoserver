@@ -33,8 +33,7 @@ public class GeoServerPropertyOverrideConfigurerTest {
         // linux paths
         testPropertyOverride("before/${GEOSERVER_DATA_DIR}/after", "", "before//after");
         testPropertyOverride("${GEOSERVER_DATA_DIR}", "/linux/path/", "/linux/path/");
-        testPropertyOverride(
-                "before/${GEOSERVER_DATA_DIR}/after", "linux/path", "before/linux/path/after");
+        testPropertyOverride("before/${GEOSERVER_DATA_DIR}/after", "linux/path", "before/linux/path/after");
         testPropertyOverride(
                 "before/a space/${GEOSERVER_DATA_DIR}/after/another space",
                 "linux/path",
@@ -47,10 +46,7 @@ public class GeoServerPropertyOverrideConfigurerTest {
         // windows paths
         testPropertyOverride("before\\${GEOSERVER_DATA_DIR}\\after", "", "before\\\\after");
         testPropertyOverride("${GEOSERVER_DATA_DIR}", "\\linux\\path\\", "\\linux\\path\\");
-        testPropertyOverride(
-                "before\\${GEOSERVER_DATA_DIR}\\after",
-                "linux\\path",
-                "before\\linux\\path\\after");
+        testPropertyOverride("before\\${GEOSERVER_DATA_DIR}\\after", "linux\\path", "before\\linux\\path\\after");
         testPropertyOverride(
                 "before\\a space\\${GEOSERVER_DATA_DIR}\\after\\another space",
                 "linux\\path",
@@ -73,8 +69,7 @@ public class GeoServerPropertyOverrideConfigurerTest {
 
     // Helper method that test that a GEOSERVER_DATA_DIR placeholder is correctly overridden by a
     // specific path
-    private void testPropertyOverride(
-            String property, String dataDirectoryPath, String expectedResult) {
+    private void testPropertyOverride(String property, String dataDirectoryPath, String expectedResult) {
         GeoServerPropertyOverrideConfigurer overrider = getOverriderForPath(dataDirectoryPath);
         String result = overrider.convertPropertyValue(property);
         if (expectedResult == null) {

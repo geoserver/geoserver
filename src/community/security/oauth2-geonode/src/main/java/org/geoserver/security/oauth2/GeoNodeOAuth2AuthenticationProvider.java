@@ -17,11 +17,7 @@ public class GeoNodeOAuth2AuthenticationProvider extends GeoServerOAuthAuthentic
             String tokenServices,
             String oauth2SecurityConfiguration,
             String geoServerOauth2RestTemplate) {
-        super(
-                securityManager,
-                tokenServices,
-                oauth2SecurityConfiguration,
-                geoServerOauth2RestTemplate);
+        super(securityManager, tokenServices, oauth2SecurityConfiguration, geoServerOauth2RestTemplate);
     }
 
     @Override

@@ -97,10 +97,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         WorkspaceInfo wsi = getCatalog().getWorkspaceByName(wsName);
 
         if (wsi == null) {
-            getSession()
-                    .error(
-                            new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName)
-                                    .getString());
+            getSession().error(new ParamResourceModel("WorkspaceEditPage.notFound", this, wsName).getString());
             doReturn(WorkspacePage.class);
             return;
         }
@@ -123,70 +120,63 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             // unfortunately this may happen if the namespace associated to the workspace was
             // deleted or never created
             throw new RuntimeException(
-                    String.format(
-                            "Workspace '%s' associated namespace doesn't exists.", ws.getName()));
+                    String.format("Workspace '%s' associated namespace doesn't exists.", ws.getName()));
         }
 
         nsModel = new NamespaceDetachableModel(ns);
 
         Form form = new Form<>("form", new CompoundPropertyModel<>(nsModel));
         List<ITab> tabs = new ArrayList<>();
-        tabs.add(
-                new AbstractTab(new Model<>("Basic Info")) {
+        tabs.add(new AbstractTab(new Model<>("Basic Info")) {
 
-                    private static final long serialVersionUID = 5216769765556937554L;
+            private static final long serialVersionUID = 5216769765556937554L;
 
-                    @Override
-                    public WebMarkupContainer getPanel(String panelId) {
-                        try {
-                            basicInfoPanel =
-                                    new WsEditInfoPanel(panelId, wsModel, nsModel, defaultWs);
-                            return basicInfoPanel;
-                        } catch (Exception e) {
-                            throw new WicketRuntimeException(e);
-                        }
-                    }
-                });
+            @Override
+            public WebMarkupContainer getPanel(String panelId) {
+                try {
+                    basicInfoPanel = new WsEditInfoPanel(panelId, wsModel, nsModel, defaultWs);
+                    return basicInfoPanel;
+                } catch (Exception e) {
+                    throw new WicketRuntimeException(e);
+                }
+            }
+        });
         if (AccessDataRuleInfoManager.canAccess()) {
-            tabs.add(
-                    new AbstractTab(new Model<>("Security")) {
+            tabs.add(new AbstractTab(new Model<>("Security")) {
 
-                        private static final long serialVersionUID = 5216769765556937554L;
+                private static final long serialVersionUID = 5216769765556937554L;
 
-                        @Override
-                        public WebMarkupContainer getPanel(String panelId) {
-                            try {
-                                AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
-                                ListModel<DataAccessRuleInfo> ownModel =
-                                        new ListModel<>(
-                                                manager.getDataAccessRuleInfo(wsModel.getObject()));
-                                accessDataPanel =
-                                        new AccessDataRulePanel(panelId, wsModel, ownModel);
-                                return accessDataPanel;
-                            } catch (Exception e) {
-                                throw new WicketRuntimeException(e);
-                            }
-                        }
-                    });
+                @Override
+                public WebMarkupContainer getPanel(String panelId) {
+                    try {
+                        AccessDataRuleInfoManager manager = new AccessDataRuleInfoManager();
+                        ListModel<DataAccessRuleInfo> ownModel =
+                                new ListModel<>(manager.getDataAccessRuleInfo(wsModel.getObject()));
+                        accessDataPanel = new AccessDataRulePanel(panelId, wsModel, ownModel);
+                        return accessDataPanel;
+                    } catch (Exception e) {
+                        throw new WicketRuntimeException(e);
+                    }
+                }
+            });
         }
 
-        tabbedPanel =
-                new TabbedPanel<>("tabs", tabs) {
+        tabbedPanel = new TabbedPanel<>("tabs", tabs) {
 
+            private static final long serialVersionUID = 1L;
+
+            @Override
+            protected WebMarkupContainer newLink(String linkId, final int index) {
+                return new SubmitLink(linkId) {
                     private static final long serialVersionUID = 1L;
 
                     @Override
-                    protected WebMarkupContainer newLink(String linkId, final int index) {
-                        return new SubmitLink(linkId) {
-                            private static final long serialVersionUID = 1L;
-
-                            @Override
-                            public void onSubmit() {
-                                setSelectedTab(index);
-                            }
-                        };
+                    public void onSubmit() {
+                        setSelectedTab(index);
                     }
                 };
+            }
+        };
         tabbedPanel.setOutputMarkupId(true);
         form.add(tabbedPanel);
         form.add(submitLink());
@@ -281,10 +271,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 }
             } catch (Exception e) {
                 LOGGER.log(
-                        Level.INFO,
-                        "Error saving access rules associated to workspace "
-                                + workspaceInfo.getName(),
-                        e);
+                        Level.INFO, "Error saving access rules associated to workspace " + workspaceInfo.getName(), e);
                 error(e.getMessage() == null ? e.toString() : e.getMessage());
             }
         } catch (RuntimeException e) {
@@ -370,10 +357,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
         boolean defaultWs;
 
         public WsEditInfoPanel(
-                String id,
-                IModel<WorkspaceInfo> wsModel,
-                IModel<NamespaceInfo> nsModel,
-                boolean defaultWs) {
+                String id, IModel<WorkspaceInfo> wsModel, IModel<NamespaceInfo> nsModel, boolean defaultWs) {
             super(id, wsModel);
             this.defaultWs = defaultWs;
 
@@ -386,8 +370,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             name.add(new XMLNameValidator());
             add(name);
-            TextField<String> uri =
-                    new TextField<>("uri", new PropertyModel<>(nsModel, "uRI"), String.class);
+            TextField<String> uri = new TextField<>("uri", new PropertyModel<>(nsModel, "uRI"), String.class);
             uri.setRequired(true);
             uri.add(new URIValidator());
             add(uri);
@@ -395,8 +378,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             add(defaultChk);
             defaultChk.setEnabled(isFullAdmin);
 
-            CheckBox isolatedChk =
-                    new CheckBox("isolated", new PropertyModel<>(wsModel, "isolated"));
+            CheckBox isolatedChk = new CheckBox("isolated", new PropertyModel<>(wsModel, "isolated"));
             add(isolatedChk);
             defaultChk.setEnabled(isFullAdmin);
 
@@ -432,74 +414,56 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
             set = new Settings();
             set.enabled = settings != null;
-            set.model =
-                    settings != null
-                            ? new ExistingSettingsModel(wsModel)
-                            : new NewSettingsModel(wsModel);
+            set.model = settings != null ? new ExistingSettingsModel(wsModel) : new NewSettingsModel(wsModel);
 
-            add(
-                    new CheckBox("enabled", new PropertyModel<>(set, "enabled"))
-                            .add(
-                                    new AjaxFormComponentUpdatingBehavior("click") {
-                                        private static final long serialVersionUID =
-                                                -7851699665702753119L;
+            add(new CheckBox("enabled", new PropertyModel<>(set, "enabled"))
+                    .add(new AjaxFormComponentUpdatingBehavior("click") {
+                        private static final long serialVersionUID = -7851699665702753119L;
 
-                                        @Override
-                                        protected void onUpdate(AjaxRequestTarget target) {
-                                            contactHeading.setVisible(set.enabled);
-                                            contactPanel.setVisible(set.enabled);
-                                            otherHeading.setVisible(set.enabled);
-                                            otherSettingsPanel.setVisible(set.enabled);
-                                            target.add(settingsContainer);
-                                        }
-                                    }));
+                        @Override
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            contactHeading.setVisible(set.enabled);
+                            contactPanel.setVisible(set.enabled);
+                            otherHeading.setVisible(set.enabled);
+                            otherSettingsPanel.setVisible(set.enabled);
+                            target.add(settingsContainer);
+                        }
+                    }));
 
             settingsContainer = new WebMarkupContainer("settingsContainer");
             settingsContainer.setOutputMarkupId(true);
             add(settingsContainer);
 
-            contactHeading =
-                    new Label(
-                            "contactHeading",
-                            new StringResourceModel("ContactPage.title", null, null));
+            contactHeading = new Label("contactHeading", new StringResourceModel("ContactPage.title", null, null));
             contactHeading.setVisible(set.enabled);
             settingsContainer.add(contactHeading);
 
             contactPanel =
-                    new ContactPanel(
-                            "contact",
-                            new CompoundPropertyModel<>(new PropertyModel<>(set.model, "contact")));
+                    new ContactPanel("contact", new CompoundPropertyModel<>(new PropertyModel<>(set.model, "contact")));
             contactPanel.setOutputMarkupId(true);
             contactPanel.setVisible(set.enabled);
             settingsContainer.add(contactPanel);
 
-            otherHeading =
-                    new Label(
-                            "otherHeading",
-                            new StringResourceModel(
-                                    "GlobalSettingsPage.serviceSettings", null, null));
+            otherHeading = new Label(
+                    "otherHeading", new StringResourceModel("GlobalSettingsPage.serviceSettings", null, null));
             otherHeading.setVisible(set.enabled);
             settingsContainer.add(otherHeading);
 
-            otherSettingsPanel =
-                    new WebMarkupContainer("otherSettings", new CompoundPropertyModel<>(set.model));
+            otherSettingsPanel = new WebMarkupContainer("otherSettings", new CompoundPropertyModel<>(set.model));
             otherSettingsPanel.setOutputMarkupId(true);
             otherSettingsPanel.setVisible(set.enabled);
             otherSettingsPanel.add(new CheckBox("verbose"));
             otherSettingsPanel.add(new CheckBox("verboseExceptions"));
             otherSettingsPanel.add(new CheckBox("localWorkspaceIncludesPrefix"));
-            otherSettingsPanel.add(
-                    new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
-            otherSettingsPanel.add(
-                    new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
+            otherSettingsPanel.add(new TextField<Integer>("numDecimals").add(RangeValidator.minimum(0)));
+            otherSettingsPanel.add(new DropDownChoice<>("charset", GlobalSettingsPage.AVAILABLE_CHARSETS));
             // Formerly provided a new UrlValidator(), but removed with placeholder compatibility
             otherSettingsPanel.add(new TextField<>("proxyBaseUrl"));
             otherSettingsPanel.add(new CheckBox("useHeadersProxyURL"));
 
             // Addition of pluggable extension points
             ListView<SettingsPluginPanelInfo> extensions =
-                    SettingsPluginPanelInfo.createExtensions(
-                            "extensions", set.model, getGeoServerApplication());
+                    SettingsPluginPanelInfo.createExtensions("extensions", set.model, getGeoServerApplication());
             otherSettingsPanel.add(extensions);
 
             settingsContainer.add(otherSettingsPanel);
@@ -574,9 +538,7 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
         @Override
         protected ServiceInfo load() {
-            return GeoServerApplication.get()
-                    .getGeoServer()
-                    .getService(wsModel.getObject(), serviceClass);
+            return GeoServerApplication.get().getGeoServer().getService(wsModel.getObject(), serviceClass);
         }
     }
 
@@ -591,77 +553,56 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
             add(new HelpLink("servicesHelp").setDialog(dialog));
 
             services = services(wsModel);
-            ListView<Service> serviceList =
-                    new ListView<>("services", services) {
+            ListView<Service> serviceList = new ListView<>("services", services) {
 
-                        private static final long serialVersionUID = -4142739871430618450L;
+                private static final long serialVersionUID = -4142739871430618450L;
+
+                @Override
+                protected void populateItem(ListItem<Service> item) {
+                    Service service = item.getModelObject();
+
+                    final Link<Service> link = new ServiceLink(service, wsModel);
+                    link.setOutputMarkupId(true);
+                    link.setEnabled(service.enabled);
+
+                    AjaxCheckBox enabled = new AjaxCheckBox("enabled", new PropertyModel<>(service, "enabled")) {
+                        private static final long serialVersionUID = 6369730006169869310L;
 
                         @Override
-                        protected void populateItem(ListItem<Service> item) {
-                            Service service = item.getModelObject();
-
-                            final Link<Service> link = new ServiceLink(service, wsModel);
-                            link.setOutputMarkupId(true);
-                            link.setEnabled(service.enabled);
-
-                            AjaxCheckBox enabled =
-                                    new AjaxCheckBox(
-                                            "enabled", new PropertyModel<>(service, "enabled")) {
-                                        private static final long serialVersionUID =
-                                                6369730006169869310L;
-
-                                        @Override
-                                        protected void onUpdate(AjaxRequestTarget target) {
-                                            link.setEnabled(getModelObject());
-                                            target.add(link);
-                                        }
-                                    };
-                            item.add(enabled);
-
-                            ServiceMenuPageInfo info = service.adminPage;
-
-                            link.add(
-                                    new AttributeModifier(
-                                            "title",
-                                            new StringResourceModel(
-                                                    info.getDescriptionKey(), null, null)));
-                            link.add(
-                                    new Label(
-                                            "link.label",
-                                            new StringResourceModel(
-                                                    info.getTitleKey(), null, null)));
-
-                            Image image;
-                            if (info.getIcon() != null) {
-                                image =
-                                        new Image(
-                                                "link.icon",
-                                                new PackageResourceReference(
-                                                        info.getComponentClass(), info.getIcon()));
-                            } else {
-                                image =
-                                        new Image(
-                                                "link.icon",
-                                                new PackageResourceReference(
-                                                        GeoServerBasePage.class,
-                                                        "img/icons/silk/wrench.png"));
-                            }
-                            image.add(
-                                    new AttributeModifier(
-                                            "alt",
-                                            new ParamResourceModel(info.getTitleKey(), null)));
-                            link.add(image);
-                            item.add(link);
+                        protected void onUpdate(AjaxRequestTarget target) {
+                            link.setEnabled(getModelObject());
+                            target.add(link);
                         }
                     };
+                    item.add(enabled);
+
+                    ServiceMenuPageInfo info = service.adminPage;
+
+                    link.add(new AttributeModifier(
+                            "title", new StringResourceModel(info.getDescriptionKey(), null, null)));
+                    link.add(new Label("link.label", new StringResourceModel(info.getTitleKey(), null, null)));
+
+                    Image image;
+                    if (info.getIcon() != null) {
+                        image = new Image(
+                                "link.icon", new PackageResourceReference(info.getComponentClass(), info.getIcon()));
+                    } else {
+                        image = new Image(
+                                "link.icon",
+                                new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/wrench.png"));
+                    }
+                    image.add(new AttributeModifier("alt", new ParamResourceModel(info.getTitleKey(), null)));
+                    link.add(image);
+                    item.add(link);
+                }
+            };
             add(serviceList);
         }
 
         List<Service> services(IModel<WorkspaceInfo> wsModel) {
             List<Service> services = new ArrayList<>();
 
-            for (ServiceMenuPageInfo page :
-                    getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {
+            for (ServiceMenuPageInfo page : getGeoServerApplication().getBeansOfType(ServiceMenuPageInfo.class)) {
                 Service service = new Service();
                 service.adminPage = page;
                 service.enabled = isEnabled(wsModel, page);
@@ -670,10 +611,9 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
                 // otherwise create a live model to the existing service
                 @SuppressWarnings("unchecked")
                 Class<ServiceInfo> serviceClass = (Class<ServiceInfo>) page.getServiceClass();
-                service.model =
-                        !service.enabled
-                                ? new NewServiceModel(wsModel, serviceClass)
-                                : new ExistingServiceModel(wsModel, serviceClass);
+                service.model = !service.enabled
+                        ? new NewServiceModel(wsModel, serviceClass)
+                        : new ExistingServiceModel(wsModel, serviceClass);
                 services.add(service);
             }
 
@@ -701,25 +641,23 @@ public class WorkspaceEditPage extends GeoServerSecuredPage {
 
                 if (s.model instanceof ExistingServiceModel) {
                     // service that has already been added,
-                    PageParameters pp =
-                            new PageParameters().add("workspace", wsModel.getObject().getName());
+                    PageParameters pp = new PageParameters()
+                            .add("workspace", wsModel.getObject().getName());
                     try {
-                        page =
-                                s.adminPage
-                                        .getComponentClass()
-                                        .getConstructor(PageParameters.class)
-                                        .newInstance(pp);
+                        page = s.adminPage
+                                .getComponentClass()
+                                .getConstructor(PageParameters.class)
+                                .newInstance(pp);
                     } catch (Exception e) {
                         throw new WicketRuntimeException(e);
                     }
                 } else {
                     // service that has yet to be added
                     try {
-                        page =
-                                s.adminPage
-                                        .getComponentClass()
-                                        .getConstructor(s.adminPage.getServiceClass())
-                                        .newInstance(s.model.getObject());
+                        page = s.adminPage
+                                .getComponentClass()
+                                .getConstructor(s.adminPage.getServiceClass())
+                                .newInstance(s.model.getObject());
                     } catch (Exception e) {
                         throw new WicketRuntimeException(e);
                     }

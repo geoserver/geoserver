@@ -30,9 +30,7 @@ public class TransformTest {
 
     @Test
     public void testDateFormatTransform() throws Exception {
-        SimpleFeature f =
-                transform(
-                        new DateFormatTransform("date", null), "date", String.class, "1980-09-10");
+        SimpleFeature f = transform(new DateFormatTransform("date", null), "date", String.class, "1980-09-10");
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime((Date) f.getAttribute("date"));
         assertEquals(1980, cal.get(GregorianCalendar.YEAR));
@@ -42,8 +40,7 @@ public class TransformTest {
 
     @Test
     public void testIntegerFieldToDateTransform() throws Exception {
-        SimpleFeature f =
-                transform(new IntegerFieldToDateTransform("number"), "number", Integer.class, 1999);
+        SimpleFeature f = transform(new IntegerFieldToDateTransform("number"), "number", Integer.class, 1999);
         GregorianCalendar cal = new GregorianCalendar(TimeZone.getTimeZone("UTC"));
         cal.setTime((Date) f.getAttribute("number"));
         assertEquals(1999, cal.get(GregorianCalendar.YEAR));
@@ -54,11 +51,7 @@ public class TransformTest {
     @Test
     public void testNumberFormatTransform() throws Exception {
         SimpleFeature f =
-                transform(
-                        new NumberFormatTransform("number", Double.class),
-                        "number",
-                        String.class,
-                        "1234.5678");
+                transform(new NumberFormatTransform("number", Double.class), "number", String.class, "1234.5678");
         assertEquals(1234.5678, f.getAttribute("number"));
     }
 
@@ -68,18 +61,14 @@ public class TransformTest {
         sftb.setName("ft");
         sftb.add("geom", Geometry.class, CRS.decode("EPSG:4326"));
         SimpleFeatureType type = sftb.buildFeatureType();
-        SimpleFeature f =
-                transformType(
-                        new ReprojectTransform(crs),
-                        type,
-                        new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
+        SimpleFeature f = transformType(
+                new ReprojectTransform(crs), type, new GeometryFactory().createPoint(new Coordinate(1d, 1d)));
         Point p = (Point) f.getAttribute("geom");
         assertEquals(111319.49079327357, p.getX(), 0d);
         assertEquals(111325.14286638486, p.getY(), 0d);
     }
 
-    private SimpleFeature transform(InlineVectorTransform transform, Object... values)
-            throws Exception {
+    private SimpleFeature transform(InlineVectorTransform transform, Object... values) throws Exception {
         Object[] args = new Object[values.length / 3];
         for (int i = 0; i < values.length; i += 3) {
             args[i] = values[i + 2];
@@ -87,8 +76,7 @@ public class TransformTest {
         return transformType(transform, buildType(values), args);
     }
 
-    private SimpleFeature transformType(
-            InlineVectorTransform transform, SimpleFeatureType type, Object... values)
+    private SimpleFeature transformType(InlineVectorTransform transform, SimpleFeatureType type, Object... values)
             throws Exception {
         transform.init();
         SimpleFeatureBuilder sfb = new SimpleFeatureBuilder(type);

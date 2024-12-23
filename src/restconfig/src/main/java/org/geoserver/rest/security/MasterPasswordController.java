@@ -69,8 +69,7 @@ public class MasterPasswordController extends RestBaseController {
     public void masterPasswordPut(@RequestBody Map<String, String> putMap) throws IOException {
         if (!getManager().checkAuthenticationForAdminRole()) {
             // yes, for backwards compat, it's really METHOD_NOT_ALLOWED
-            throw new RestException(
-                    "Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Administrative privileges required", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         String providerName;
@@ -78,34 +77,27 @@ public class MasterPasswordController extends RestBaseController {
             providerName = getManager().loadMasterPasswordConfig().getProviderName();
             if (getManager().loadMasterPassswordProviderConfig(providerName).isReadOnly()) {
                 throw new RestException(
-                        "Master password provider does not allow writes",
-                        HttpStatus.METHOD_NOT_ALLOWED);
+                        "Master password provider does not allow writes", HttpStatus.METHOD_NOT_ALLOWED);
             }
         } catch (IOException e) {
-            throw new RestException(
-                    "Master password provider does not allow writes",
-                    HttpStatus.METHOD_NOT_ALLOWED);
+            throw new RestException("Master password provider does not allow writes", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         String current = putMap.get(MP_CURRENT_KEY);
         String newpass = putMap.get(MP_NEW_KEY);
 
-        if (!StringUtils.isNotBlank(current))
-            throw new RestException("no master password", HttpStatus.BAD_REQUEST);
+        if (!StringUtils.isNotBlank(current)) throw new RestException("no master password", HttpStatus.BAD_REQUEST);
 
-        if (!StringUtils.isNotBlank(newpass))
-            throw new RestException("no master password", HttpStatus.BAD_REQUEST);
+        if (!StringUtils.isNotBlank(newpass)) throw new RestException("no master password", HttpStatus.BAD_REQUEST);
 
         char[] currentArray = current.trim().toCharArray();
         char[] newpassArray = newpass.trim().toCharArray();
 
         GeoServerSecurityManager m = getManager();
         try {
-            m.saveMasterPasswordConfig(
-                    m.loadMasterPasswordConfig(), currentArray, newpassArray, newpassArray);
+            m.saveMasterPasswordConfig(m.loadMasterPasswordConfig(), currentArray, newpassArray, newpassArray);
         } catch (Exception e) {
-            throw new RestException(
-                    "Cannot change master password", HttpStatus.UNPROCESSABLE_ENTITY, e);
+            throw new RestException("Cannot change master password", HttpStatus.UNPROCESSABLE_ENTITY, e);
         } finally {
             m.disposePassword(currentArray);
             m.disposePassword(newpassArray);

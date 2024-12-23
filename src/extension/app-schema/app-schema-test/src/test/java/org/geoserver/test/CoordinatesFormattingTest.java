@@ -17,9 +17,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     @Test
     public void testCoordinateFormatWfs11() throws Exception {
         enableCoordinatesFormattingGml31();
-        Document doc =
-                getAsDOM(
-                        "st_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_gml31:Station_gml31");
+        Document doc = getAsDOM("st_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 doc,
@@ -38,9 +36,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     @Test
     public void testCoordinateFormatDisabledWfs11() throws Exception {
         disableCoordinatesFormattingGml31();
-        Document doc =
-                getAsDOM(
-                        "st_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_gml31:Station_gml31");
+        Document doc = getAsDOM("st_gml31/wfs?request=GetFeature&version=1.1.0&typename=st_gml31:Station_gml31");
         checkCount(
                 WFS11_XPATH_ENGINE,
                 doc,
@@ -59,8 +55,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     @Test
     public void testCoordinateFormatWfs20() throws Exception {
         enableCoordinatesFormattingGml32();
-        Document document =
-                getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32");
+        Document document = getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
@@ -79,8 +74,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     @Test
     public void testCoordinateFormatDisabledWfs20() throws Exception {
         disableCoordinatesFormattingGml32();
-        Document document =
-                getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32");
+        Document document = getAsDOM("wfs?request=GetFeature&version=2.0&typename=st_gml32:Station_gml32");
         checkCount(
                 WFS20_XPATH_ENGINE,
                 document,
@@ -97,28 +91,23 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     }
 
     private void enableCoordinatesFormattingGml31() {
-        enableCoordinateFormatting(
-                new NameImpl(StationsMockData.STATIONS_PREFIX_GML31, "Station_gml31"));
+        enableCoordinateFormatting(new NameImpl(StationsMockData.STATIONS_PREFIX_GML31, "Station_gml31"));
     }
 
     private void disableCoordinatesFormattingGml31() {
-        disableCoordinateFormatting(
-                new NameImpl(StationsMockData.STATIONS_PREFIX_GML31, "Station_gml31"));
+        disableCoordinateFormatting(new NameImpl(StationsMockData.STATIONS_PREFIX_GML31, "Station_gml31"));
     }
 
     private void enableCoordinatesFormattingGml32() {
-        enableCoordinateFormatting(
-                new NameImpl(StationsMockData.STATIONS_PREFIX_GML32, "Station_gml32"));
+        enableCoordinateFormatting(new NameImpl(StationsMockData.STATIONS_PREFIX_GML32, "Station_gml32"));
     }
 
     private void disableCoordinatesFormattingGml32() {
-        disableCoordinateFormatting(
-                new NameImpl(StationsMockData.STATIONS_PREFIX_GML32, "Station_gml32"));
+        disableCoordinateFormatting(new NameImpl(StationsMockData.STATIONS_PREFIX_GML32, "Station_gml32"));
     }
 
     private void enableCoordinateFormatting(Name qname) {
-        FeatureTypeInfo info =
-                getGeoServer().getCatalog().getResourceByName(qname, FeatureTypeInfo.class);
+        FeatureTypeInfo info = getGeoServer().getCatalog().getResourceByName(qname, FeatureTypeInfo.class);
         info.setNumDecimals(8);
         info.setForcedDecimal(true);
         info.setPadWithZeros(true);
@@ -126,8 +115,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
     }
 
     private void disableCoordinateFormatting(Name qname) {
-        FeatureTypeInfo info =
-                getGeoServer().getCatalog().getResourceByName(qname, FeatureTypeInfo.class);
+        FeatureTypeInfo info = getGeoServer().getCatalog().getResourceByName(qname, FeatureTypeInfo.class);
         info.setForcedDecimal(false);
         info.setPadWithZeros(false);
         getGeoServer().getCatalog().save(info);
@@ -138,8 +126,7 @@ public class CoordinatesFormattingTest extends StationsAppSchemaTestSupport {
         return new StationsMockData() {
             @Override
             protected Optional<String> extraStationFeatures() {
-                String features =
-                        "\nst.2=st.2|station2|32154895|station2@stations.org|POINT(-1.0E-7 1.0E-7)";
+                String features = "\nst.2=st.2|station2|32154895|station2@stations.org|POINT(-1.0E-7 1.0E-7)";
                 return Optional.of(features);
             }
 

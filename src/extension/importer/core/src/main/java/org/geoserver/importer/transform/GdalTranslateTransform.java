@@ -17,8 +17,7 @@ import org.geoserver.importer.ImportData;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class GdalTranslateTransform extends AbstractCommandLinePreTransform
-        implements RasterTransform {
+public class GdalTranslateTransform extends AbstractCommandLinePreTransform implements RasterTransform {
     private static final long serialVersionUID = -6241844409161277128L;
 
     /** Checks if gdal_translate is available */

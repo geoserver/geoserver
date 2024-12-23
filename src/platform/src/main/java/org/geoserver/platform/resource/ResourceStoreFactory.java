@@ -29,20 +29,13 @@ public class ResourceStoreFactory implements FactoryBean<ResourceStore>, Applica
 
         ResourceStore resourceStore = null;
         try {
-            resourceStore =
-                    (ResourceStore)
-                            GeoServerExtensions.bean("resourceStoreImpl", applicationContext);
+            resourceStore = (ResourceStore) GeoServerExtensions.bean("resourceStoreImpl", applicationContext);
         } catch (NoSuchBeanDefinitionException e) {
             LOGGER.log(
-                    Level.FINER,
-                    "No resourceStoreImpl beans found, "
-                            + "falling back to DataDirectoryResourceStore");
+                    Level.FINER, "No resourceStoreImpl beans found, " + "falling back to DataDirectoryResourceStore");
         }
         if (resourceStore == null) {
-            resourceStore =
-                    (ResourceStore)
-                            GeoServerExtensions.bean(
-                                    "dataDirectoryResourceStore", applicationContext);
+            resourceStore = (ResourceStore) GeoServerExtensions.bean("dataDirectoryResourceStore", applicationContext);
         }
 
         return resourceStore;

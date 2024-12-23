@@ -27,7 +27,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 /** Simple test to make sure the SecurityHeadersFilter works and is configurable. */
 public class SecurityHeadersFilterTest {
 
-    @ClassRule public static TemporaryFolder folder = new TemporaryFolder();
+    @ClassRule
+    public static TemporaryFolder folder = new TemporaryFolder();
 
     private static CSPHeaderDAO dao;
 
@@ -66,11 +67,10 @@ public class SecurityHeadersFilterTest {
     @Test
     public void testFilterCSPBlocking() throws Exception {
         setCSPConfig(true, false);
-        String expected =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                        + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                        + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
-                        + "frame-ancestors 'self';";
+        String expected = "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
+                + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
+                + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
+                + "frame-ancestors 'self';";
         assertEquals(expected, getHeader("Content-Security-Policy"));
         assertNull(getHeader("Content-Security-Policy-Report-Only"));
     }
@@ -78,11 +78,10 @@ public class SecurityHeadersFilterTest {
     @Test
     public void testFilterCSPReporting() throws Exception {
         setCSPConfig(true, true);
-        String expected =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                        + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                        + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
-                        + "frame-ancestors 'self';";
+        String expected = "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
+                + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
+                + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
+                + "frame-ancestors 'self';";
         assertNull(getHeader("Content-Security-Policy"));
         assertEquals(expected, getHeader("Content-Security-Policy-Report-Only"));
     }
@@ -118,8 +117,7 @@ public class SecurityHeadersFilterTest {
 
     @Test
     public void testFilterWithoutContentTypeOptions() throws Exception {
-        System.setProperty(
-                SecurityHeadersFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY, "false");
+        System.setProperty(SecurityHeadersFilter.GEOSERVER_XCONTENT_TYPE_SHOULD_SET_POLICY, "false");
         assertNull(getHeader("X-Content-Type-Options"));
     }
 
@@ -130,15 +128,13 @@ public class SecurityHeadersFilterTest {
 
     @Test
     public void testFilterWithXssProtection() throws Exception {
-        System.setProperty(
-                SecurityHeadersFilter.GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY, "true");
+        System.setProperty(SecurityHeadersFilter.GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY, "true");
         assertEquals("0", getHeader("X-XSS-Protection"));
     }
 
     @Test
     public void testFilterCustomXssProtection() throws Exception {
-        System.setProperty(
-                SecurityHeadersFilter.GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY, "true");
+        System.setProperty(SecurityHeadersFilter.GEOSERVER_XXSS_PROTECTION_SHOULD_SET_POLICY, "true");
         System.setProperty(SecurityHeadersFilter.GEOSERVER_XXSS_PROTECTION_POLICY, "1; mode=block");
         assertEquals("1; mode=block", getHeader("X-XSS-Protection"));
     }
@@ -162,9 +158,7 @@ public class SecurityHeadersFilterTest {
     @Test
     public void testFilterHttpsHstsEnabled() throws Exception {
         System.setProperty(SecurityHeadersFilter.GEOSERVER_HSTS_SHOULD_SET_POLICY, "true");
-        assertEquals(
-                "max-age=31536000 ; includeSubDomains",
-                getHeader(true, "Strict-Transport-Security"));
+        assertEquals("max-age=31536000 ; includeSubDomains", getHeader(true, "Strict-Transport-Security"));
     }
 
     @Test

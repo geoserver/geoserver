@@ -13,10 +13,7 @@ import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.IValidator;
 
-/**
- * A reusable component for values that can be provided both as a TextField and as an i18n editable
- * table.
- */
+/** A reusable component for values that can be provided both as a TextField and as an i18n editable table. */
 public class StringAndInternationalStringPanel extends Panel {
 
     /**
@@ -26,15 +23,8 @@ public class StringAndInternationalStringPanel extends Panel {
      * @param model the model of the form object.
      * @param labelProvider the WebMarkupContainer being the context for labels in properties files.
      */
-    public StringAndInternationalStringPanel(
-            String id, IModel<?> model, WebMarkupContainer labelProvider) {
-        this(
-                id,
-                model,
-                id,
-                id,
-                "international" + id.substring(0, 1).toUpperCase() + id.substring(1),
-                labelProvider);
+    public StringAndInternationalStringPanel(String id, IModel<?> model, WebMarkupContainer labelProvider) {
+        this(id, model, id, id, "international" + id.substring(0, 1).toUpperCase() + id.substring(1), labelProvider);
     }
 
     /**
@@ -75,8 +65,7 @@ public class StringAndInternationalStringPanel extends Panel {
         WebMarkupContainer container = new WebMarkupContainer("labelContainer");
         add(container);
         container.add(new Label("stringLabel", new StringResourceModel(labelKey, labelProvider)));
-        TextField<String> title =
-                new TextField<>("stringField", new PropertyModel<>(model, stringProperty));
+        TextField<String> title = new TextField<>("stringField", new PropertyModel<>(model, stringProperty));
         add(title);
         if (validator != null) {
             title.add(validator);
@@ -84,10 +73,7 @@ public class StringAndInternationalStringPanel extends Panel {
 
         InternationalStringPanel<TextField<String>> internationalStringField =
                 new InternationalStringPanel<>(
-                        "internationalField",
-                        new PropertyModel<>(model, internationalProperty),
-                        title,
-                        container) {
+                        "internationalField", new PropertyModel<>(model, internationalProperty), title, container) {
                     @Override
                     protected TextField<String> getTextComponent(String id, IModel<String> model) {
                         TextField<String> field = new TextField<>(id, model);

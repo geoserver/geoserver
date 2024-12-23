@@ -61,8 +61,7 @@ public class GPXPPIOTest extends GeoServerTestSupport {
 
     @Test
     public void testEncodePolygon() throws IOException {
-        FeatureTypeInfo fti =
-                getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
+        FeatureTypeInfo fti = getCatalog().getFeatureTypeByName(getLayerId(MockData.BASIC_POLYGONS));
         SimpleFeatureCollection fc =
                 (SimpleFeatureCollection) fti.getFeatureSource(null, null).getFeatures();
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -87,9 +86,7 @@ public class GPXPPIOTest extends GeoServerTestSupport {
 
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/@creator", dom));
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/gpx:text", dom));
-        assertEquals(
-                "http://www.geoserver.org",
-                xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
+        assertEquals("http://www.geoserver.org", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
         assertEquals(5, xpath.getMatchingNodes("/gpx:gpx/gpx:trk", dom).getLength());
         assertEquals("102", xpath.evaluate("/gpx:gpx/gpx:trk[1]/gpx:extensions/att:FID", dom));
         assertEquals("Route 5", xpath.evaluate("/gpx:gpx/gpx:trk[1]/gpx:extensions/att:NAME", dom));
@@ -108,9 +105,7 @@ public class GPXPPIOTest extends GeoServerTestSupport {
 
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/@creator", dom));
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/gpx:text", dom));
-        assertEquals(
-                "http://www.geoserver.org",
-                xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
+        assertEquals("http://www.geoserver.org", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
         assertEquals(1, xpath.getMatchingNodes("/gpx:gpx/gpx:rte", dom).getLength());
         assertEquals("t0001 ", xpath.evaluate("/gpx:gpx/gpx:rte[1]/gpx:extensions/att:id", dom));
         // check the data was reprojected to wgs84
@@ -132,9 +127,7 @@ public class GPXPPIOTest extends GeoServerTestSupport {
         checkValidationErorrs(dom, "./src/test/resources/org/geoserver/wps/ppio/gpx.xsd");
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/@creator", dom));
         assertEquals("GeoServer", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/gpx:text", dom));
-        assertEquals(
-                "http://www.geoserver.org",
-                xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
+        assertEquals("http://www.geoserver.org", xpath.evaluate("/gpx:gpx/gpx:metadata/gpx:link/@href", dom));
         assertEquals(1, xpath.getMatchingNodes("/gpx:gpx/gpx:wpt", dom).getLength());
         assertEquals("t0000", xpath.evaluate("/gpx:gpx/gpx:wpt[1]/gpx:extensions/att:id", dom));
     }

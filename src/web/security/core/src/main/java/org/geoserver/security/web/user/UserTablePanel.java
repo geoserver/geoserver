@@ -23,17 +23,13 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
 
     String ugServiceName;
 
-    public UserTablePanel(
-            String id, String ugServiceName, GeoServerDataProvider<GeoServerUser> dataProvider) {
+    public UserTablePanel(String id, String ugServiceName, GeoServerDataProvider<GeoServerUser> dataProvider) {
         super(id, dataProvider);
         this.ugServiceName = ugServiceName;
     }
 
     public UserTablePanel(
-            String id,
-            String ugServiceName,
-            GeoServerDataProvider<GeoServerUser> dataProvider,
-            boolean selectable) {
+            String id, String ugServiceName, GeoServerDataProvider<GeoServerUser> dataProvider, boolean selectable) {
         super(id, dataProvider, selectable);
         this.ugServiceName = ugServiceName;
         setItemReuseStrategy(new DefaultItemReuseStrategy());
@@ -57,15 +53,13 @@ public class UserTablePanel extends GeoServerTablePanel<GeoServerUser> {
         throw new RuntimeException("Uknown property " + property);
     }
 
-    protected Component editUserLink(
-            String id, IModel<GeoServerUser> itemModel, Property<GeoServerUser> property) {
+    protected Component editUserLink(String id, IModel<GeoServerUser> itemModel, Property<GeoServerUser> property) {
         return new SimpleAjaxLink<>(id, itemModel, property.getModel(itemModel)) {
 
             @Override
             protected void onClick(AjaxRequestTarget target) {
-                setResponsePage(
-                        new EditUserPage(ugServiceName, (GeoServerUser) getDefaultModelObject())
-                                .setReturnPage(getPage()));
+                setResponsePage(new EditUserPage(ugServiceName, (GeoServerUser) getDefaultModelObject())
+                        .setReturnPage(getPage()));
             }
         };
     }

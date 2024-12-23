@@ -32,11 +32,9 @@ public class LayerEditAction implements Action {
             IModel<String> valueModel,
             List<String> dependentValues) {
         String[] prefixname = valueModel.getObject().split(":", 2);
-        onPage.setResponsePage(
-                new ResourceConfigurationPage(
-                                prefixname.length > 1 ? prefixname[0] : null,
-                                prefixname[prefixname.length - 1])
-                        .setReturnPage(onPage));
+        onPage.setResponsePage(new ResourceConfigurationPage(
+                        prefixname.length > 1 ? prefixname[0] : null, prefixname[prefixname.length - 1])
+                .setReturnPage(onPage));
     }
 
     @Override

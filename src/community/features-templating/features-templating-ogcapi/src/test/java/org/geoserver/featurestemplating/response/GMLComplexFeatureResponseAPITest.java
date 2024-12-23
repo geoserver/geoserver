@@ -35,28 +35,19 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
 
     @Test
     public void getMappedFeature() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "ogc/features/v1/collections/gsml:MappedFeature"
-                                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
-                                + MF_GML32_PARAM);
+        Document doc = getAsDOM("ogc/features/v1/collections/gsml:MappedFeature"
+                + "/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2&"
+                + MF_GML32_PARAM);
         assertXpathCount(5, "//gsml:MappedFeature", doc);
         assertXpathCount(5, "//gsml:samplingFrame//@xlink:href", doc);
         assertXpathCount(5, "//gsml:MappedFeature/gsml:geometry/gml:Surface", doc);
         assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit", doc);
 
         assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href",
-                doc);
+                4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gml:description/@xlink:href", doc);
+        assertXpathCount(4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent", doc);
         assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent",
-                doc);
-        assertXpathCount(
-                4,
-                "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title",
-                doc);
+                4, "//gsml:MappedFeature/gsml:specification/gsml:GeologicUnit/gsml:staticContent/@xlink:title", doc);
 
         // filter on array element lithology
         assertXpathCount(2, "//gsml:lithology", doc);
@@ -64,24 +55,22 @@ public class GMLComplexFeatureResponseAPITest extends TemplateComplexTestSupport
 
     @Test
     public void getMappedFeatureBackwardsMappingToExpression() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "ogc/features/v1/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
-                                + "&filter=wfs:FeatureCollection.wfs:member"
-                                + ".gsml:MappedFeature.gml:name='mf.GUNTHORPE FORMATION'&"
-                                + MF_GML32_PARAM);
+        Document doc = getAsDOM(
+                "ogc/features/v1/collections/gsml:MappedFeature/items?filter-lang=cql-text&f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&filter=wfs:FeatureCollection.wfs:member"
+                        + ".gsml:MappedFeature.gml:name='mf.GUNTHORPE FORMATION'&"
+                        + MF_GML32_PARAM);
         assertXpathCount(1, "//gsml:MappedFeature", doc);
         assertXpathEvaluatesTo("mf1", "//gsml:MappedFeature/@gml:id", doc);
     }
 
     @Test
     public void getMappedFeatureBackwardsMappingPointingToExpression2() throws IOException {
-        Document doc =
-                getAsDOM(
-                        "ogc/features/v1/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
-                                + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
-                                + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'&"
-                                + MF_GML32_PARAM);
+        Document doc = getAsDOM(
+                "ogc/features/v1/collections/gsml:MappedFeature/items?f=application%2Fgml%2Bxml%3Bversion%3D3.2"
+                        + "&filter=wfs:FeatureCollection.wfs:member.gsml:MappedFeature.gsml:specification.gsml:GeologicUnit"
+                        + ".gsml:composition.gsml:CompositionPart.gsml:role='interbedded component'&"
+                        + MF_GML32_PARAM);
         assertXpathCount(3, "//gsml:MappedFeature", doc);
         assertXpathCount(0, "gsml:MappedFeature[@gml:id=mf1 or @gml:id=mf5]", doc);
     }

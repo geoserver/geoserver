@@ -60,8 +60,7 @@ public class BulkInitPanel extends Panel {
         TextField<String> configuration = new TextField<>("configuration", configurationModel);
         add(configuration.setRequired(true));
 
-        NumberTextField<Integer> startDelay =
-                new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
+        NumberTextField<Integer> startDelay = new NumberTextField<>("startDelay", new Model<Integer>(0), Integer.class);
         startDelay.setMinimum(0);
         add(startDelay);
 
@@ -71,126 +70,100 @@ public class BulkInitPanel extends Panel {
         add(betweenDelay);
 
         Label configsFound =
-                new Label(
-                        "configsFound",
-                        new ParamResourceModel(
-                                "configsFound",
-                                this,
-                                new IModel<String>() {
-                                    private static final long serialVersionUID =
-                                            -6328441242635771092L;
+                new Label("configsFound", new ParamResourceModel("configsFound", this, new IModel<String>() {
+                    private static final long serialVersionUID = -6328441242635771092L;
 
-                                    @Override
-                                    public String getObject() {
-                                        return Integer.toString(batches.size());
-                                    }
+                    @Override
+                    public String getObject() {
+                        return Integer.toString(batches.size());
+                    }
 
-                                    @Override
-                                    public void setObject(String object) {}
+                    @Override
+                    public void setObject(String object) {}
 
-                                    @Override
-                                    public void detach() {}
-                                }));
+                    @Override
+                    public void detach() {}
+                }));
         add(configsFound.setOutputMarkupId(true));
 
-        AjaxSubmitLink run =
-                new AjaxSubmitLink("run") {
-                    private static final long serialVersionUID = -3288982013478650146L;
+        AjaxSubmitLink run = new AjaxSubmitLink("run") {
+            private static final long serialVersionUID = -3288982013478650146L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        if (batches.size() == 0) {
-                            error(
-                                    new StringResourceModel("noConfigs", BulkInitPanel.this)
-                                            .getString());
-                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
-                        } else {
-                            dialog.showOkCancel(
-                                    target,
-                                    new DialogDelegate() {
-                                        private static final long serialVersionUID =
-                                                -8203963847815744909L;
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                if (batches.size() == 0) {
+                    error(new StringResourceModel("noConfigs", BulkInitPanel.this).getString());
+                    ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                } else {
+                    dialog.showOkCancel(target, new DialogDelegate() {
+                        private static final long serialVersionUID = -8203963847815744909L;
 
-                                        @Override
-                                        protected Component getContents(String id) {
-                                            int time =
-                                                    ((batches.size() - 1)
-                                                                            * betweenDelay
-                                                                                    .getModelObject()
-                                                                    + startDelay.getModelObject())
-                                                            / 60;
-                                            return new Label(
-                                                    id,
-                                                    new ParamResourceModel(
-                                                            "initConfigs",
-                                                            BulkInitPanel.this,
-                                                            Integer.toString(batches.size()),
-                                                            Integer.toString(time)));
-                                        }
-
-                                        @Override
-                                        protected boolean onSubmit(
-                                                AjaxRequestTarget target, Component contents) {
-                                            TaskManagerBeans beans = TaskManagerBeans.get();
-                                            beans.getBjService()
-                                                    .scheduleNow(
-                                                            batches,
-                                                            startDelay.getModelObject(),
-                                                            betweenDelay.getModelObject(),
-                                                            new Consumer<Batch>() {
-
-                                                                @Override
-                                                                public void accept(Batch batch) {
-                                                                    tryToValidate(
-                                                                            beans,
-                                                                            batch
-                                                                                    .getConfiguration());
-                                                                }
-                                                            });
-                                            info(
-                                                    new ParamResourceModel(
-                                                                    "initializingConfigs",
-                                                                    BulkInitPanel.this,
-                                                                    Integer.toString(
-                                                                            batches.size()))
-                                                            .getString());
-                                            ((GeoServerBasePage) getPage())
-                                                    .addFeedbackPanels(target);
-                                            return true;
-                                        }
-                                    });
+                        @Override
+                        protected Component getContents(String id) {
+                            int time =
+                                    ((batches.size() - 1) * betweenDelay.getModelObject() + startDelay.getModelObject())
+                                            / 60;
+                            return new Label(
+                                    id,
+                                    new ParamResourceModel(
+                                            "initConfigs",
+                                            BulkInitPanel.this,
+                                            Integer.toString(batches.size()),
+                                            Integer.toString(time)));
                         }
-                    }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
-                    }
-                };
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            TaskManagerBeans beans = TaskManagerBeans.get();
+                            beans.getBjService()
+                                    .scheduleNow(
+                                            batches,
+                                            startDelay.getModelObject(),
+                                            betweenDelay.getModelObject(),
+                                            new Consumer<Batch>() {
+
+                                                @Override
+                                                public void accept(Batch batch) {
+                                                    tryToValidate(beans, batch.getConfiguration());
+                                                }
+                                            });
+                            info(new ParamResourceModel(
+                                            "initializingConfigs", BulkInitPanel.this, Integer.toString(batches.size()))
+                                    .getString());
+                            ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+                            return true;
+                        }
+                    });
+                }
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                ((GeoServerBasePage) getPage()).addFeedbackPanels(target);
+            }
+        };
         add(run);
 
-        workspace.add(
-                new AjaxFormSubmitBehavior("change") {
-                    private static final long serialVersionUID = 3397757222203749030L;
+        workspace.add(new AjaxFormSubmitBehavior("change") {
+            private static final long serialVersionUID = 3397757222203749030L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateConfigs();
-                        target.add(configsFound);
-                        target.add(run);
-                    }
-                });
-        configuration.add(
-                new AjaxFormSubmitBehavior("change") {
-                    private static final long serialVersionUID = 3397757222203749030L;
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateConfigs();
+                target.add(configsFound);
+                target.add(run);
+            }
+        });
+        configuration.add(new AjaxFormSubmitBehavior("change") {
+            private static final long serialVersionUID = 3397757222203749030L;
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateConfigs();
-                        target.add(configsFound);
-                        target.add(run);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateConfigs();
+                target.add(configsFound);
+                target.add(run);
+            }
+        });
 
         updateConfigs();
     }
@@ -205,11 +178,7 @@ public class BulkInitPanel extends Panel {
                     errorMessages.append("\n").append(error.toString());
                 }
                 LOGGER.log(
-                        Level.WARNING,
-                        "Validation for "
-                                + config.getName()
-                                + " failed: "
-                                + errorMessages.toString());
+                        Level.WARNING, "Validation for " + config.getName() + " failed: " + errorMessages.toString());
                 return;
             } else {
                 config.setValidated(true);
@@ -219,10 +188,8 @@ public class BulkInitPanel extends Panel {
     }
 
     private void updateConfigs() {
-        batches =
-                TaskManagerBeans.get()
-                        .getDao()
-                        .findInitBatches(
-                                workspaceModel.getObject(), configurationModel.getObject());
+        batches = TaskManagerBeans.get()
+                .getDao()
+                .findInitBatches(workspaceModel.getObject(), configurationModel.getObject());
     }
 }

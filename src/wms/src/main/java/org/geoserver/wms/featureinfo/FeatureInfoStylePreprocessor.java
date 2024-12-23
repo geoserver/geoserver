@@ -38,8 +38,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * Removes text symbolizers, makes sure lines and polygons are painted at least with a solid color
- * to ensure we match even when hitting in spaces between dashes or spaced fills
+ * Removes text symbolizers, makes sure lines and polygons are painted at least with a solid color to ensure we match
+ * even when hitting in spaces between dashes or spaced fills
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -85,8 +85,8 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
     }
 
     /**
-     * Force a solid color, otherwise we might decide the user did not click on the polygon because
-     * the area in which he clicked is fully transparent
+     * Force a solid color, otherwise we might decide the user did not click on the polygon because the area in which he
+     * clicked is fully transparent
      */
     @Override
     public void visit(PolygonSymbolizer poly) {
@@ -167,8 +167,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         List<FeatureTypeStyle> reduced = new ArrayList<>();
         FeatureTypeStyle current = null;
         for (FeatureTypeStyle fts : featureTypeStyles) {
-            if (current == null
-                    || !sameTranformation(current.getTransformation(), fts.getTransformation())) {
+            if (current == null || !sameTranformation(current.getTransformation(), fts.getTransformation())) {
                 current = fts;
                 reduced.add(current);
             } else {
@@ -217,8 +216,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         geometriesOnLineSymbolizer.removeAll(geometriesOnPolygonSymbolizer);
         for (Expression geom : geometriesOnLineSymbolizer) {
             Class<?> geometryType = getTargetGeometryType(geom);
-            if (Polygon.class.isAssignableFrom(geometryType)
-                    || MultiPolygon.class.isAssignableFrom(geometryType)) {
+            if (Polygon.class.isAssignableFrom(geometryType) || MultiPolygon.class.isAssignableFrom(geometryType)) {
                 // we know it's a polygon type, but there is no polygon symbolizer, add one
                 // in the current rule
                 copy.symbolizers().add(sb.createPolygonSymbolizer());
@@ -226,12 +224,7 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
                 // dynamic, we need to add an extra rule then to paint as polygon
                 // only if the actual geometry is a polygon type
                 Rule extra =
-                        buildDynamicGeometryRule(
-                                copy,
-                                geom,
-                                sb.createPolygonSymbolizer(),
-                                "Polygon",
-                                "MultiPolygon");
+                        buildDynamicGeometryRule(copy, geom, sb.createPolygonSymbolizer(), "Polygon", "MultiPolygon");
                 extraRules.add(extra);
             }
         }
@@ -242,56 +235,36 @@ class FeatureInfoStylePreprocessor extends SymbolizerFilteringVisitor {
         geometriesOnTextSymbolizer.removeAll(geometriesOnPointSymbolizer);
         for (Expression geom : geometriesOnTextSymbolizer) {
             Class<?> geometryType = getTargetGeometryType(geom);
-            if (Polygon.class.isAssignableFrom(geometryType)
-                    || MultiPolygon.class.isAssignableFrom(geometryType)) {
+            if (Polygon.class.isAssignableFrom(geometryType) || MultiPolygon.class.isAssignableFrom(geometryType)) {
                 copy.symbolizers().add(sb.createPolygonSymbolizer());
             } else if (LineString.class.isAssignableFrom(geometryType)
                     || MultiLineString.class.isAssignableFrom(geometryType)) {
                 copy.symbolizers().add(sb.createLineSymbolizer());
-            } else if (Point.class.isAssignableFrom(geometryType)
-                    || MultiPoint.class.isAssignableFrom(geometryType)) {
+            } else if (Point.class.isAssignableFrom(geometryType) || MultiPoint.class.isAssignableFrom(geometryType)) {
                 copy.symbolizers().add(sb.createPointSymbolizer());
             } else {
                 // ouch, it's a generic geometry... now this is going to be painful, we have to
                 // build a dynamic symbolizer for each possible geometry type
                 Rule extra =
-                        buildDynamicGeometryRule(
-                                copy,
-                                geom,
-                                sb.createPolygonSymbolizer(),
-                                "Polygon",
-                                "MultiPolygon");
+                        buildDynamicGeometryRule(copy, geom, sb.createPolygonSymbolizer(), "Polygon", "MultiPolygon");
                 extraRules.add(extra);
-                extra =
-                        buildDynamicGeometryRule(
-                                copy,
-                                geom,
-                                sb.createLineSymbolizer(),
-                                "LineString",
-                                "LinearRing",
-                                "MultiLineString");
+                extra = buildDynamicGeometryRule(
+                        copy, geom, sb.createLineSymbolizer(), "LineString", "LinearRing", "MultiLineString");
                 extraRules.add(extra);
-                extra =
-                        buildDynamicGeometryRule(
-                                copy, geom, sb.createPointSymbolizer(), "Point", "MultiPoint");
+                extra = buildDynamicGeometryRule(copy, geom, sb.createPointSymbolizer(), "Point", "MultiPoint");
                 extraRules.add(extra);
             }
         }
     }
 
-    private Rule buildDynamicGeometryRule(
-            Rule base, Expression geom, Symbolizer symbolizer, String... geometryTypes) {
+    private Rule buildDynamicGeometryRule(Rule base, Expression geom, Symbolizer symbolizer, String... geometryTypes) {
         List<Filter> typeChecks = new ArrayList<>();
         for (String geometryType : geometryTypes) {
-            typeChecks.add(
-                    ff.equal(ff.function("geometryType", geom), ff.literal(geometryType), false));
+            typeChecks.add(ff.equal(ff.function("geometryType", geom), ff.literal(geometryType), false));
         }
         Filter geomCheck = ff.or(typeChecks);
         Filter ruleFilter = base.getFilter();
-        Filter filter =
-                ruleFilter == null || ruleFilter == Filter.INCLUDE
-                        ? geomCheck
-                        : ff.and(geomCheck, ruleFilter);
+        Filter filter = ruleFilter == null || ruleFilter == Filter.INCLUDE ? geomCheck : ff.and(geomCheck, ruleFilter);
         Rule extra = new RuleBuilder().reset(base).filter(filter).build();
         extra.symbolizers().clear();
         extra.symbolizers().add(symbolizer);

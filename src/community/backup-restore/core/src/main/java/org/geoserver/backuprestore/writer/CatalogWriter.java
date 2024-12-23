@@ -41,8 +41,7 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
         this.setExecutionContextName(ClassUtils.getShortName(clazz));
     }
 
-    private final ExecutionContextUserSupport executionContextUserSupport =
-            new ExecutionContextUserSupport();
+    private final ExecutionContextUserSupport executionContextUserSupport = new ExecutionContextUserSupport();
 
     /**
      * No-op.
@@ -69,9 +68,8 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
     public void update(ExecutionContext executionContext) {}
 
     /**
-     * The name of the component which will be used as a stem for keys in the {@link
-     * ExecutionContext}. Subclasses should provide a default value, e.g. the short form of the
-     * class name.
+     * The name of the component which will be used as a stem for keys in the {@link ExecutionContext}. Subclasses
+     * should provide a default value, e.g. the short form of the class name.
      *
      * @param name the name for the component
      */
@@ -98,8 +96,7 @@ public abstract class CatalogWriter<T> extends BackupRestoreItem
 
         for (CatalogAdditionalResourcesWriter wr : additionalResourceWriters) {
             if (wr.canHandle(item)) {
-                wr.writeAdditionalResources(
-                        backupFacade, Files.asResource(resource.getFile()), item);
+                wr.writeAdditionalResources(backupFacade, Files.asResource(resource.getFile()), item);
             }
         }
     }

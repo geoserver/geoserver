@@ -37,13 +37,12 @@ public class LanguagesEditor extends FormComponentPanel<String> {
         add(languages);
 
         langChoice = new LanguageDropDownChoice("selectLanguage", new Model<>());
-        langChoice.setChoiceRenderer(
-                new ChoiceRenderer<>() {
-                    @Override
-                    public String getIdValue(String object, int index) {
-                        return object;
-                    }
-                });
+        langChoice.setChoiceRenderer(new ChoiceRenderer<>() {
+            @Override
+            public String getIdValue(String object, int index) {
+                return object;
+            }
+        });
         langChoice.setOutputMarkupId(true);
         add(langChoice);
         add(addButton());
@@ -51,48 +50,46 @@ public class LanguagesEditor extends FormComponentPanel<String> {
     }
 
     private AjaxButton addButton() {
-        AjaxButton button =
-                new AjaxButton("addLanguage") {
-                    private static final long serialVersionUID = 1L;
+        AjaxButton button = new AjaxButton("addLanguage") {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        String value = langChoice.getInput();
-                        langChoice.setModelObject(null);
-                        langChoice.modelChanged();
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                String value = langChoice.getInput();
+                langChoice.setModelObject(null);
+                langChoice.modelChanged();
 
-                        @SuppressWarnings("unchecked")
-                        List<String> languagesList = (List<String>) languages.getChoices();
-                        List<String> newList = new ArrayList<>(languagesList);
-                        newList.removeIf(l -> l.contains(value) || value.contains(l));
-                        newList.add(value);
-                        languages.setChoices(newList);
-                        languages.modelChanged();
-                        target.add(langChoice, languages);
-                    }
-                };
+                @SuppressWarnings("unchecked")
+                List<String> languagesList = (List<String>) languages.getChoices();
+                List<String> newList = new ArrayList<>(languagesList);
+                newList.removeIf(l -> l.contains(value) || value.contains(l));
+                newList.add(value);
+                languages.setChoices(newList);
+                languages.modelChanged();
+                target.add(langChoice, languages);
+            }
+        };
         button.setDefaultFormProcessing(false);
         return button;
     }
 
     private AjaxButton removeButton() {
-        AjaxButton button =
-                new AjaxButton("removeLanguages") {
+        AjaxButton button = new AjaxButton("removeLanguages") {
 
-                    private static final long serialVersionUID = 1L;
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        Collection<String> selection = languages.getModelObject();
-                        List<String> languagesList = new ArrayList<>(languages.getChoices());
-                        for (String selected : selection) {
-                            languagesList.remove(selected);
-                        }
-                        languages.setChoices(languagesList);
-                        languages.modelChanged();
-                        target.add(languages);
-                    }
-                };
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                Collection<String> selection = languages.getModelObject();
+                List<String> languagesList = new ArrayList<>(languages.getChoices());
+                for (String selected : selection) {
+                    languagesList.remove(selected);
+                }
+                languages.setChoices(languagesList);
+                languages.modelChanged();
+                target.add(languages);
+            }
+        };
         return button;
     }
 

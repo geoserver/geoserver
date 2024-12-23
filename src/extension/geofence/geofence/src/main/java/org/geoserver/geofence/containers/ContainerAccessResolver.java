@@ -13,9 +13,8 @@ import org.geoserver.security.impl.LayerGroupContainmentCache;
 import org.springframework.security.core.Authentication;
 
 /**
- * Provides a method for computing the ProcessingResult. Two implementation for this interface: -
- * the default one, that performs the real computation - the cached one, that provides a layer of
- * caching above the default implementation
+ * Provides a method for computing the ProcessingResult. Two implementation for this interface: - the default one, that
+ * performs the real computation - the cached one, that provides a layer of caching above the default implementation
  *
  * @author Emanuele Tajariol- GeoSolutions
  */

@@ -31,16 +31,15 @@ public class MapMLHTMLGetFeatureTest extends WFSTestSupport {
 
         LayerInfo li = cat.getLayerByName(MockData.LAKES.getLocalPart());
         FeatureTypeInfo typeName = getCatalog().getFeatureTypeByName(li.getName());
-        String path =
-                "wfs?typeName="
-                        + typeName.getName()
-                        + "&outputFormat="
-                        // + "application/json"
-                        + MapMLConstants.MAPML_HTML_MIME_TYPE
-                        + "&SERVICE=WFS&VERSION=1.1.0"
-                        + "&REQUEST=GetFeature"
-                        + "&SRSNAME=epsg:3857"
-                        + "&CQL_FILTER=NAME='Blue Lake'";
+        String path = "wfs?typeName="
+                + typeName.getName()
+                + "&outputFormat="
+                // + "application/json"
+                + MapMLConstants.MAPML_HTML_MIME_TYPE
+                + "&SERVICE=WFS&VERSION=1.1.0"
+                + "&REQUEST=GetFeature"
+                + "&SRSNAME=epsg:3857"
+                + "&CQL_FILTER=NAME='Blue Lake'";
 
         MockHttpServletRequest request = createRequest(path);
 
@@ -81,14 +80,13 @@ public class MapMLHTMLGetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testHTMLWorkspaceQualified() throws Exception {
-        String path =
-                "cite/wfs?typeName=cite:Lakes"
-                        + "&OutputFormat="
-                        + MapMLConstants.MAPML_HTML_MIME_TYPE
-                        + "&SERVICE=WFS&VERSION=1.1.0"
-                        + "&REQUEST=GetFeature"
-                        + "&SRSNAME=epsg:3857"
-                        + "&BBOX=80,-50,100,0";
+        String path = "cite/wfs?typeName=cite:Lakes"
+                + "&OutputFormat="
+                + MapMLConstants.MAPML_HTML_MIME_TYPE
+                + "&SERVICE=WFS&VERSION=1.1.0"
+                + "&REQUEST=GetFeature"
+                + "&SRSNAME=epsg:3857"
+                + "&BBOX=80,-50,100,0";
 
         Document doc = getAsJSoup(path);
         Element layer = doc.select("mapml-viewer > map-layer").first();
@@ -101,14 +99,13 @@ public class MapMLHTMLGetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testInvalidProjectionHTML() throws Exception {
-        String path =
-                "wfs?typeNames=cite:Lakes"
-                        + "&outputFormat="
-                        + MapMLConstants.MAPML_HTML_MIME_TYPE
-                        + "&SERVICE=WFS&VERSION=1.1.0"
-                        + "&REQUEST=GetFeature"
-                        + "&SRSNAME=EPSG:32632"
-                        + "&BBOX=-13885038,2870337,-7455049,6338174";
+        String path = "wfs?typeNames=cite:Lakes"
+                + "&outputFormat="
+                + MapMLConstants.MAPML_HTML_MIME_TYPE
+                + "&SERVICE=WFS&VERSION=1.1.0"
+                + "&REQUEST=GetFeature"
+                + "&SRSNAME=EPSG:32632"
+                + "&BBOX=-13885038,2870337,-7455049,6338174";
         org.w3c.dom.Document dom = getAsDOM(path);
         checkOws10Exception(dom, "InvalidParameterValue", "srsName");
     }

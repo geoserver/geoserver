@@ -53,19 +53,15 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         if (debugMode) config.notifier(new ConsoleNotifier(debugMode));
         wmtsService = new WireMockServer(config);
         wmtsService.start();
-        capabilities =
-                "http://localhost:"
-                        + wmtsService.port()
-                        + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
+        capabilities = "http://localhost:"
+                + wmtsService.port()
+                + "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS";
         wmtsService.stubFor(
-                WireMock.get(
-                                urlEqualTo(
-                                        "/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBodyFile("nasa.getcapa.xml")));
+                WireMock.get(urlEqualTo("/geoserver/gwc?REQUEST=GetCapabilities&VERSION=1.0.0&SERVICE=WMTS"))
+                        .willReturn(aResponse()
+                                .withStatus(200)
+                                .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                                .withBodyFile("nasa.getcapa.xml")));
     }
 
     @AfterClass
@@ -133,8 +129,7 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "foo");
         form.setValue("capabilitiesURL:border:border_body:paramValue", "http://foo");
@@ -177,8 +172,7 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "bar");
         form.setValue("capabilitiesURL:border:border_body:paramValue", url.toExternalForm());
@@ -213,14 +207,11 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         FormTester form = tester.newFormTester("form");
         form.select("workspacePanel:border:border_body:paramValue", 4);
         Component wsDropDown =
-                tester.getComponentFromLastRenderedPage(
-                        "form:workspacePanel:border:border_body:paramValue");
+                tester.getComponentFromLastRenderedPage("form:workspacePanel:border:border_body:paramValue");
         tester.executeAjaxEvent(wsDropDown, "change");
         form.setValue("namePanel:border:border_body:paramValue", "fooAutoDisable");
         form.setValue("capabilitiesURL:border:border_body:paramValue", capabilities);
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "form:disableOnConnFailurePanel:paramValue");
+        Component component = tester.getComponentFromLastRenderedPage("form:disableOnConnFailurePanel:paramValue");
         CheckBox checkBox = (CheckBox) component;
         assertFalse(Boolean.valueOf(checkBox.getInput()).booleanValue());
         form.setValue("disableOnConnFailurePanel:paramValue", true);
@@ -228,8 +219,6 @@ public class WMTSStoreNewPageTest extends GeoServerWicketTestSupport {
         form.submit("save");
         tester.assertNoErrorMessage();
         final Catalog catalog = getCatalog();
-        assertTrue(
-                catalog.getStoreByName("fooAutoDisable", WMTSStoreInfo.class)
-                        .isDisableOnConnFailure());
+        assertTrue(catalog.getStoreByName("fooAutoDisable", WMTSStoreInfo.class).isDisableOnConnFailure());
     }
 }

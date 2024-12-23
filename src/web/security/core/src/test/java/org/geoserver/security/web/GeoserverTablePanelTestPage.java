@@ -13,8 +13,8 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.wicket.GeoServerTablePanel;
 
 /**
- * Helper class to test {@link GeoServerTablePanel} Since the concrete page gets a random id, the id
- * is available using {@link #getComoponentId()} for building wicket path expressions
+ * Helper class to test {@link GeoServerTablePanel} Since the concrete page gets a random id, the id is available using
+ * {@link #getComoponentId()} for building wicket path expressions
  *
  * <p>The panel will be placed into a form named "form"
  */

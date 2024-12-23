@@ -186,19 +186,18 @@ public class WorkspaceNamespaceConstencyTest {
     }
 
     protected StoreInfo hasNamespace(final String namespace) {
-        EasyMock.reportMatcher(
-                new IArgumentMatcher() {
-                    @Override
-                    public boolean matches(Object argument) {
-                        return namespace.equals(
-                                ((StoreInfo) argument).getConnectionParameters().get("namespace"));
-                    }
+        EasyMock.reportMatcher(new IArgumentMatcher() {
+            @Override
+            public boolean matches(Object argument) {
+                return namespace.equals(
+                        ((StoreInfo) argument).getConnectionParameters().get("namespace"));
+            }
 
-                    @Override
-                    public void appendTo(StringBuffer buffer) {
-                        buffer.append("hasNamespace '").append(namespace).append("'");
-                    }
-                });
+            @Override
+            public void appendTo(StringBuffer buffer) {
+                buffer.append("hasNamespace '").append(namespace).append("'");
+            }
+        });
         return null;
     }
 }

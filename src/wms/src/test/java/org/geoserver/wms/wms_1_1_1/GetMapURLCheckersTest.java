@@ -72,62 +72,47 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
         // remote style
         String bridgesStyleBody = getResourceAsString("bridges.sld");
         bridgesStyleURL = "http://localhost:" + service.port() + "/styles/bridges.sld";
-        service.stubFor(
-                WireMock.get(urlEqualTo("/styles/bridges.sld"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(bridgesStyleBody)));
+        service.stubFor(WireMock.get(urlEqualTo("/styles/bridges.sld"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(bridgesStyleBody)));
 
         // remote icon test
-        burgStyle =
-                getResourceAsString("burg_remote.sld")
-                        .replace("${styleBase}", "http://localhost:" + service.port() + "/styles");
+        burgStyle = getResourceAsString("burg_remote.sld")
+                .replace("${styleBase}", "http://localhost:" + service.port() + "/styles");
         String burgSvg = getResourceAsString("burg02.svg");
-        service.stubFor(
-                WireMock.get(urlEqualTo("/styles/burg02.svg"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(burgSvg)));
+        service.stubFor(WireMock.get(urlEqualTo("/styles/burg02.svg"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(burgSvg)));
 
         // remote WFS
         String capabilities = getWFSResource("capabilities.xml");
-        service.stubFor(
-                WireMock.get(urlEqualTo("/wfs?REQUEST=GetCapabilities&SERVICE=WFS"))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(capabilities)));
+        service.stubFor(WireMock.get(urlEqualTo("/wfs?REQUEST=GetCapabilities&SERVICE=WFS"))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(capabilities)));
         String describe = getWFSResource("describePoi.xml");
         Map<String, String> namespaces = Map.of("wfs", "http://www.opengis.net/wfs");
-        service.stubFor(
-                WireMock.post("/wfs")
-                        .withRequestBody(
-                                WireMock.matchingXPath(
-                                        "/wfs:DescribeFeatureType[wfs:TypeName='tiger:poi']",
-                                        namespaces))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(describe)));
+        service.stubFor(WireMock.post("/wfs")
+                .withRequestBody(
+                        WireMock.matchingXPath("/wfs:DescribeFeatureType[wfs:TypeName='tiger:poi']", namespaces))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(describe)));
 
         String getFeature = getWFSResource("getFeature.xml");
-        service.stubFor(
-                WireMock.post("/wfs")
-                        .withRequestBody(
-                                WireMock.matchingXPath(
-                                        "/wfs:GetFeature[wfs:Query[@typeName='tiger:poi']]",
-                                        namespaces))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBody(getFeature)));
+        service.stubFor(WireMock.post("/wfs")
+                .withRequestBody(
+                        WireMock.matchingXPath("/wfs:GetFeature[wfs:Query[@typeName='tiger:poi']]", namespaces))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBody(getFeature)));
     }
 
     private static String getWFSResource(String resourceName) throws IOException {
@@ -197,9 +182,7 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
     @Test
     public void testRemoteStyleAllowed() throws Exception {
         URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
-        dao.save(
-                new RegexURLCheck(
-                        "pointStyle", "Just the point style", "^" + bridgesStyleURL + "$"));
+        dao.save(new RegexURLCheck("pointStyle", "Just the point style", "^" + bridgesStyleURL + "$"));
 
         // base request, no layers, no library mode
         String base =
@@ -257,17 +240,13 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
     @Test
     public void testRemoteIconAllowed() throws Exception {
         URLCheckDAO dao = applicationContext.getBean(URLCheckDAO.class);
-        dao.save(
-                new RegexURLCheck(
-                        "icons",
-                        "Any SVG icon",
-                        "^http://localhost:" + service.port() + "/styles/.*\\.svg$"));
+        dao.save(new RegexURLCheck(
+                "icons", "Any SVG icon", "^http://localhost:" + service.port() + "/styles/.*\\.svg$"));
 
         // base request, no layers, no library mode
         String base =
                 "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-180,-90,180,90&width=256&height=256&srs=EPSG:4326&format=image/png";
-        BufferedImage image =
-                getAsImage(base + "&sld_body=" + ResponseUtils.urlEncode(burgStyle), "image/png");
+        BufferedImage image = getAsImage(base + "&sld_body=" + ResponseUtils.urlEncode(burgStyle), "image/png");
         // has painted the red flag
         assertPixel(image, 130, 121, Color.RED);
     }
@@ -280,8 +259,7 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
         // base request, no layers, no library mode
         String base =
                 "wms?service=WMS&version=1.1.1&request=GetMap&bbox=-180,-90,180,90&width=256&height=256&srs=EPSG:4326&format=image/png";
-        BufferedImage image =
-                getAsImage(base + "&sld_body=" + ResponseUtils.urlEncode(burgStyle), "image/png");
+        BufferedImage image = getAsImage(base + "&sld_body=" + ResponseUtils.urlEncode(burgStyle), "image/png");
         // has fallen back to the square gray default icon
         assertPixel(image, 130, 121, Color.GRAY);
     }

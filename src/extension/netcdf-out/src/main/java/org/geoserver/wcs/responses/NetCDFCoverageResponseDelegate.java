@@ -39,12 +39,9 @@ import ucar.ma2.InvalidRangeException;
  * @author Daniele Romagnoli, GeoSolutions SAS
  */
 public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
-        implements CoverageResponseDelegate,
-                ApplicationContextAware,
-                MultidimensionalCoverageResponse {
+        implements CoverageResponseDelegate, ApplicationContextAware, MultidimensionalCoverageResponse {
 
-    public static final Logger LOGGER =
-            Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
+    public static final Logger LOGGER = Logging.getLogger("org.geoserver.wcs.responses.NetCDFCoverageResponseDelegate");
     private List<NetCDFEncoderFactory> encoderFactories;
 
     @SuppressWarnings("serial")
@@ -80,9 +77,7 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
         try {
             tempFile = File.createTempFile("tempNetCDF", ".nc");
             for (NetCDFEncoderFactory factory : encoderFactories) {
-                NetCDFEncoder encoder =
-                        factory.getEncoderFor(
-                                granuleStack, tempFile, encodingParameters, outputFormat);
+                NetCDFEncoder encoder = factory.getEncoderFor(granuleStack, tempFile, encodingParameters, outputFormat);
                 if (encoder != null) {
                     encoder.write();
                     encoder.close();
@@ -104,14 +99,12 @@ public class NetCDFCoverageResponseDelegate extends BaseCoverageResponseDelegate
 
     public GranuleStack toGranuleStack(GridCoverage2D sourceCoverage) {
         if (sourceCoverage == null) {
-            throw new IllegalStateException(
-                    new StringBuffer("It seems prepare() has not been called")
-                            .append(" or has not succeed")
-                            .toString());
+            throw new IllegalStateException(new StringBuffer("It seems prepare() has not been called")
+                    .append(" or has not succeed")
+                    .toString());
         }
         if (!(sourceCoverage instanceof GranuleStack)) {
-            throw new IllegalArgumentException(
-                    "NetCDF encoding only supports granuleStack coverages");
+            throw new IllegalArgumentException("NetCDF encoding only supports granuleStack coverages");
         }
         return (GranuleStack) sourceCoverage;
     }

@@ -23,8 +23,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 /**
- * This is a wrapper class for a {@link GeoServerUserGroupService} This wrapper protects internal
- * data structures using read/write locks
+ * This is a wrapper class for a {@link GeoServerUserGroupService} This wrapper protects internal data structures using
+ * read/write locks
  *
  * @author christian
  */
@@ -74,12 +74,11 @@ public class LockingUserGroupService extends AbstractLockingService
     /**
      * READ_LOCK
      *
-     * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String,
-     *     java.lang.String, boolean)
+     * @see org.geoserver.security.GeoServerUserGroupService#createUserObject(java.lang.String, java.lang.String,
+     *     boolean)
      */
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         readLock();
         try {
             return getService().createUserObject(username, password, isEnabled);
@@ -121,12 +120,10 @@ public class LockingUserGroupService extends AbstractLockingService
     /**
      * READ_LOCK
      *
-     * @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String,
-     *     boolean)
+     * @see org.geoserver.security.GeoServerUserGroupService#createGroupObject(java.lang.String, boolean)
      */
     @Override
-    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled)
-            throws IOException {
+    public GeoServerUserGroup createGroupObject(String groupname, boolean isEnabled) throws IOException {
         readLock();
         try {
             return getService().createGroupObject(groupname, isEnabled);
@@ -184,8 +181,7 @@ public class LockingUserGroupService extends AbstractLockingService
     /**
      * READ_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
+     * @see org.geoserver.security.GeoServerUserGroupService#getGroupsForUser(org.geoserver.security.impl.GeoServerUser)
      */
     @Override
     public SortedSet<GeoServerUserGroup> getGroupsForUser(GeoServerUser user) throws IOException {
@@ -261,12 +257,10 @@ public class LockingUserGroupService extends AbstractLockingService
     /**
      * READ_LOCK
      *
-     * @see
-     *     org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
+     * @see org.springframework.security.core.userdetails.UserDetailsService#loadUserByUsername(java.lang.String)
      */
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         readLock();
         try {
             return getService().loadUserByUsername(username);
@@ -362,8 +356,7 @@ public class LockingUserGroupService extends AbstractLockingService
 
     /** READ_LOCK */
     @Override
-    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public SortedSet<GeoServerUser> getUsersHavingPropertyValue(String propname, String propvalue) throws IOException {
         readLock();
         try {
             return getService().getUsersHavingPropertyValue(propname, propvalue);
@@ -374,8 +367,7 @@ public class LockingUserGroupService extends AbstractLockingService
 
     /** READ_LOCK */
     @Override
-    public int getUserCountHavingPropertyValue(String propname, String propvalue)
-            throws IOException {
+    public int getUserCountHavingPropertyValue(String propname, String propvalue) throws IOException {
         readLock();
         try {
             return getService().getUserCountHavingPropertyValue(propname, propvalue);

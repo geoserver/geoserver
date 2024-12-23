@@ -39,8 +39,7 @@ import org.geotools.util.logging.Logging;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Feature collection Wrapper. Converts complex features to simple features on the fly based on the
- * Layer info rules.
+ * Feature collection Wrapper. Converts complex features to simple features on the fly based on the Layer info rules.
  */
 public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection {
 
@@ -69,13 +68,9 @@ public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection
         LOGGER.fine(() -> "Converted feature type: " + featureType);
     }
 
-    /**
-     * Builds and returns the simple feature type based on the complex type and the transformation
-     * rules.
-     */
+    /** Builds and returns the simple feature type based on the complex type and the transformation rules. */
     protected SimpleFeatureType buildConvertedType() {
-        FeatureTypeConverter converter =
-                new FeatureTypeConverter(delegate.getSchema(), rulesMap, namespaceSupport);
+        FeatureTypeConverter converter = new FeatureTypeConverter(delegate.getSchema(), rulesMap, namespaceSupport);
         return converter.produceSimpleType();
     }
 
@@ -176,8 +171,8 @@ public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection
         }
 
         /**
-         * Transform the original complex feature into a simple feature, using the convention and
-         * rules. Returns the resulting simple feature.
+         * Transform the original complex feature into a simple feature, using the convention and rules. Returns the
+         * resulting simple feature.
          */
         private SimpleFeature convert(Feature feature) {
             SimpleFeatureBuilder builder = new SimpleFeatureBuilder(featureType);
@@ -189,23 +184,19 @@ public class ComplexToSimpleFeatureCollection implements SimpleFeatureCollection
             return builder.buildFeature(feature.getIdentifier().getID());
         }
 
-        /**
-         * Returns the attribute value from the original complex feature based on its simple name.
-         */
+        /** Returns the attribute value from the original complex feature based on its simple name. */
         private Object getComplexAttributeValue(Name name, Feature feature) {
             String simpleName = name.getLocalPart();
             String attrPath = rulesMap.get(simpleName);
             // if it's a rule based attribute, use the expression
             if (attrPath != null) {
-                AttributeExpressionImpl expression =
-                        new AttributeExpressionImpl(attrPath, namespaceSupport);
+                AttributeExpressionImpl expression = new AttributeExpressionImpl(attrPath, namespaceSupport);
                 return expression.evaluate(feature);
             }
             // not rule based, look up simple feature based on simple name
-            Optional<Property> propertyOpt =
-                    feature.getProperties().stream()
-                            .filter(prop -> simpleName.equals(prop.getName().getLocalPart()))
-                            .findFirst();
+            Optional<Property> propertyOpt = feature.getProperties().stream()
+                    .filter(prop -> simpleName.equals(prop.getName().getLocalPart()))
+                    .findFirst();
             if (propertyOpt.isPresent()) {
                 return propertyOpt.get().getValue();
             }

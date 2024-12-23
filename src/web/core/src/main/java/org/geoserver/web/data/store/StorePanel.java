@@ -63,8 +63,7 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
     }
 
     @Override
-    protected Component getComponentForProperty(
-            String id, IModel<StoreInfo> itemModel, Property<StoreInfo> property) {
+    protected Component getComponentForProperty(String id, IModel<StoreInfo> itemModel, Property<StoreInfo> property) {
 
         final CatalogIconFactory icons = CatalogIconFactory.get();
 
@@ -157,17 +156,15 @@ public class StorePanel extends GeoServerTablePanel<StoreInfo> {
 
         ResourceModel resRemove = new ResourceModel("removeStore", "Remove");
 
-        ParamResourceModel confirmRemove =
-                new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
+        ParamResourceModel confirmRemove = new ParamResourceModel("confirmRemoveStoreX", this, info.getName());
 
-        SimpleAjaxLink<Object> linkPanel =
-                new ConfirmationAjaxLink<>(id, null, resRemove, confirmRemove) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        getCatalog().remove((StoreInfo) itemModel.getObject());
-                        target.add(StorePanel.this);
-                    }
-                };
+        SimpleAjaxLink<Object> linkPanel = new ConfirmationAjaxLink<>(id, null, resRemove, confirmRemove) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                getCatalog().remove((StoreInfo) itemModel.getObject());
+                target.add(StorePanel.this);
+            }
+        };
         return linkPanel;
     }
 }

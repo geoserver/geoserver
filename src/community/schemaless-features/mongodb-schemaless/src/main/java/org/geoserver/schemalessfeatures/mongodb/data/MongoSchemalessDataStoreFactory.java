@@ -10,15 +10,9 @@ import org.geotools.api.data.DataAccessFactory;
 
 public class MongoSchemalessDataStoreFactory implements DataAccessFactory {
 
-    public static final Param NAMESPACE =
-            new Param("namespace", String.class, "Namespace prefix", false);
+    public static final Param NAMESPACE = new Param("namespace", String.class, "Namespace prefix", false);
     public static final Param CONNECTION_STRING =
-            new Param(
-                    "MongoDBUri",
-                    String.class,
-                    "MongoDB URI",
-                    true,
-                    "mongodb://localhost/<database name>");
+            new Param("MongoDBUri", String.class, "MongoDB URI", true, "mongodb://localhost/<database name>");
 
     @Override
     public String getDisplayName() {

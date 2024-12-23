@@ -38,11 +38,10 @@ import org.geoserver.platform.resource.Resource;
 import org.geotools.util.logging.Logging;
 
 /**
- * Handles the persistence of configuration files when changes happen to the catalog, such as
- * rename, remove and change of workspace.
+ * Handles the persistence of configuration files when changes happen to the catalog, such as rename, remove and change
+ * of workspace.
  */
-public class GeoServerConfigPersister
-        implements CatalogListener, ConfigurationListener, ExtensionPriority {
+public class GeoServerConfigPersister implements CatalogListener, ConfigurationListener, ExtensionPriority {
 
     /** logging instance */
     static Logger LOGGER = Logging.getLogger("org.geoserver.config");
@@ -120,7 +119,8 @@ public class GeoServerConfigPersister
             if (source instanceof StoreInfo) {
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
-                    WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    WorkspaceInfo newWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
                     Resource oldDir = dd.get((StoreInfo) source);
                     moveResToDir(oldDir, dd.get(newWorkspace));
                 }
@@ -141,7 +141,8 @@ public class GeoServerConfigPersister
             if (source instanceof LayerGroupInfo) {
                 i = event.getPropertyNames().indexOf("workspace");
                 if (i > -1) {
-                    final WorkspaceInfo newWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    final WorkspaceInfo newWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
                     final Resource oldRes = dd.config((LayerGroupInfo) source);
                     final Resource newDir = dd.getLayerGroups(newWorkspace);
                     moveResToDir(oldRes, newDir);
@@ -152,7 +153,8 @@ public class GeoServerConfigPersister
             if (source instanceof Catalog) {
                 i = event.getPropertyNames().indexOf("defaultWorkspace");
                 if (i > -1) {
-                    WorkspaceInfo defWorkspace = (WorkspaceInfo) event.getNewValues().get(i);
+                    WorkspaceInfo defWorkspace =
+                            (WorkspaceInfo) event.getNewValues().get(i);
                     // SG don't bother with a default workspace if we do not have one
                     if (defWorkspace != null) {
                         persist(defWorkspace, dd.getWorkspaces("default.xml"));
@@ -239,10 +241,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleGlobalChange(
-            GeoServerInfo global,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostGlobalChange(GeoServerInfo global) {
@@ -260,10 +259,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleSettingsModified(
-            SettingsInfo settings,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {
+            SettingsInfo settings, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
         // handle case of settings changing workspace
         int i = propertyNames.indexOf("workspace");
         if (i > -1) {
@@ -292,10 +288,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleLoggingChange(
-            LoggingInfo logging,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostLoggingChange(LoggingInfo logging) {
@@ -310,10 +303,7 @@ public class GeoServerConfigPersister
 
     @Override
     public void handleServiceChange(
-            ServiceInfo service,
-            List<String> propertyNames,
-            List<Object> oldValues,
-            List<Object> newValues) {}
+            ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {}
 
     @Override
     public void handlePostServiceChange(ServiceInfo service) {}

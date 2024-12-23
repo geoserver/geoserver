@@ -27,8 +27,7 @@ public abstract class AbstractGeoServerSecurityService implements GeoServerSecur
     // TODO Justin, feel free to change the name
     public static String DEFAULT_LOCAL_GROUP_ADMIN_ROLE = "GROUP_ADMIN";
     /** logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security");
 
     protected String name;
     protected GeoServerSecurityManager securityManager;
@@ -65,9 +64,7 @@ public abstract class AbstractGeoServerSecurityService implements GeoServerSecur
         return false;
     }
 
-    /**
-     * Authentication filters with an {@link AuthenticationEntryPoint} must return their entry point
-     */
+    /** Authentication filters with an {@link AuthenticationEntryPoint} must return their entry point */
     public AuthenticationEntryPoint getAuthenticationEntryPoint() {
         return null;
     }

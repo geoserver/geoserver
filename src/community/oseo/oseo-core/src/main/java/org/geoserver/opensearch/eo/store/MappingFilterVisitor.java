@@ -41,9 +41,7 @@ class MappingFilterVisitor extends DuplicatingFilterVisitor {
 
         if (sourceName == null) {
             throw new ServiceException(
-                    "Simple feature translation failed, could not back-map '"
-                            + name
-                            + "' to a source property");
+                    "Simple feature translation failed, could not back-map '" + name + "' to a source property");
         } else {
             return ff.property(sourceName);
         }

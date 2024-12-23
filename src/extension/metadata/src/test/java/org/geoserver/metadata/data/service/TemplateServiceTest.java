@@ -35,7 +35,8 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class TemplateServiceTest extends AbstractMetadataTest {
 
-    @Autowired private GeoServerDataDirectory dataDirectory;
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
     @After
     public void after() throws Exception {
@@ -122,10 +123,8 @@ public class TemplateServiceTest extends AbstractMetadataTest {
         Serializable initialCustom = initialMyLayer.getResource().getMetadata().get("custom");
         @SuppressWarnings("unchecked")
         IModel<ComplexMetadataMap> initialMetadataModel =
-                new Model<>(
-                        new ComplexMetadataMapImpl((HashMap<String, Serializable>) initialCustom));
-        assertEquals(
-                1, initialMetadataModel.getObject().size("feature-catalog/feature-attribute/type"));
+                new Model<>(new ComplexMetadataMapImpl((HashMap<String, Serializable>) initialCustom));
+        assertEquals(1, initialMetadataModel.getObject().size("feature-catalog/feature-attribute/type"));
 
         templateService.save(initial);
         templateService.update(initial, null);

@@ -40,7 +40,8 @@ public class MultiPolygonAdapter extends XmlAdapter<Object, MultiPolygon> {
     @Override
     public MultiPolygon unmarshal(Object o) throws Exception {
         try {
-            Document doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+            Document doc =
+                    DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
             doc.appendChild(doc.importNode(((Element) o).getFirstChild(), true));
             DOMParser parser = new DOMParser(new GMLConfiguration(), doc);
             Geometry geom = (Geometry) parser.parse();

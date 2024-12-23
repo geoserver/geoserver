@@ -59,8 +59,7 @@ public enum TemplateIdentifier {
 
     private static boolean isGML2(String outputFormat) {
         Request request = Dispatcher.REQUEST.get();
-        boolean isFeatureInfo =
-                request != null && "GetFeatureInfo".equalsIgnoreCase(request.getRequest());
+        boolean isFeatureInfo = request != null && "GetFeatureInfo".equalsIgnoreCase(request.getRequest());
         boolean result = false;
         if (TemplateIdentifier.GML2.getOutputFormat().contains(outputFormat)) result = true;
         else if (isFeatureInfo && "text/xml".equals(outputFormat)) result = true;

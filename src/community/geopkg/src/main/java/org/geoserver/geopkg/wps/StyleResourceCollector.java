@@ -43,18 +43,14 @@ class StyleResourceCollector extends AbstractStyleVisitor {
             } catch (Exception e) {
                 LOGGER.log(
                         Level.WARNING,
-                        "Cannot retrieve external graphic source "
-                                + location
-                                + " for original uri "
-                                + uri,
+                        "Cannot retrieve external graphic source " + location + " for original uri " + uri,
                         e);
                 return;
             }
 
             String symbolUri = symbolPrefix + symbolId;
             GeoPkgSymbol symbol = new GeoPkgSymbol(uri, null, symbolUri);
-            GeoPkgSymbolImage image =
-                    new GeoPkgSymbolImage(exgr.getFormat(), contents, symbolUri, symbol);
+            GeoPkgSymbolImage image = new GeoPkgSymbolImage(exgr.getFormat(), contents, symbolUri, symbol);
             symbolId++;
             resources.put(uri, image);
         }

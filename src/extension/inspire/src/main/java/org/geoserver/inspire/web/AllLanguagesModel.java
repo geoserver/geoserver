@@ -17,8 +17,8 @@ import org.geoserver.inspire.InspireDirectoryManager;
 /**
  * Model for the list of INSPIRE supported languages.
  *
- * <p>The three-letter ISO language codes are loaded from the {@code
- * org/geoserver/inspire/wms/available_languages.properties} properties file.
+ * <p>The three-letter ISO language codes are loaded from the
+ * {@code org/geoserver/inspire/wms/available_languages.properties} properties file.
  */
 public class AllLanguagesModel implements IModel<List<String>> {
 

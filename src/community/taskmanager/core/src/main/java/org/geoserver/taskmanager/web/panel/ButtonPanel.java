@@ -18,20 +18,19 @@ public class ButtonPanel extends Panel {
     public ButtonPanel(String id, IModel<String> model) {
         super(id);
 
-        add(
-                new AjaxButton("button", model) {
-                    private static final long serialVersionUID = 3516037457693268460L;
+        add(new AjaxButton("button", model) {
+            private static final long serialVersionUID = 3516037457693268460L;
 
-                    @Override
-                    public void onSubmit(AjaxRequestTarget target) {
-                        ButtonPanel.this.onSubmit(target);
-                    }
+            @Override
+            public void onSubmit(AjaxRequestTarget target) {
+                ButtonPanel.this.onSubmit(target);
+            }
 
-                    @Override
-                    public boolean isEnabled() {
-                        return ButtonPanel.this.isEnabled();
-                    }
-                });
+            @Override
+            public boolean isEnabled() {
+                return ButtonPanel.this.isEnabled();
+            }
+        });
     }
 
     public Button getButton() {

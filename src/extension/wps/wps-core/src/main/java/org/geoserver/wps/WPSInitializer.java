@@ -68,16 +68,15 @@ public class WPSInitializer implements GeoServerReinitializer {
         initWPS(geoServer.getService(WPSInfo.class), geoServer);
         synchronized (this) {
             if (configurationListener == null) {
-                configurationListener =
-                        new ConfigurationListenerAdapter() {
-                            @Override
-                            public void handlePostGlobalChange(GeoServerInfo global) {
-                                WPSInfo wpsInfo = geoServer.getService(WPSInfo.class);
-                                if (wpsInfo != null) {
-                                    initWPS(wpsInfo, geoServer);
-                                }
-                            }
-                        };
+                configurationListener = new ConfigurationListenerAdapter() {
+                    @Override
+                    public void handlePostGlobalChange(GeoServerInfo global) {
+                        WPSInfo wpsInfo = geoServer.getService(WPSInfo.class);
+                        if (wpsInfo != null) {
+                            initWPS(wpsInfo, geoServer);
+                        }
+                    }
+                };
             }
             geoServer.addListener(configurationListener);
         }
@@ -158,18 +157,14 @@ public class WPSInitializer implements GeoServerReinitializer {
                 File storage = new File(outputStorageDirectory);
                 // if it's a path relative to the data directory, make it absolute
                 if (!storage.isAbsolute()) {
-                    storage =
-                            Resources.find(
-                                    Resources.fromURL(
-                                            Files.asResource(resourceLoader.getBaseDirectory()),
-                                            outputStorageDirectory),
-                                    true);
+                    storage = Resources.find(
+                            Resources.fromURL(
+                                    Files.asResource(resourceLoader.getBaseDirectory()), outputStorageDirectory),
+                            true);
                 }
                 if (storage.exists() && !storage.isDirectory()) {
                     throw new IllegalArgumentException(
-                            "Invalid wps storage path, "
-                                    + "it represents a file: "
-                                    + storage.getPath());
+                            "Invalid wps storage path, " + "it represents a file: " + storage.getPath());
                 }
                 if (!storage.exists()) {
                     if (!storage.mkdirs()) {
@@ -186,12 +181,10 @@ public class WPSInitializer implements GeoServerReinitializer {
                 resourceStore.setLockProvider(new FileLockProvider(lockDirectory.dir()));
             } catch (IllegalStateException e) {
                 throw new RuntimeException(
-                        "Unexpected failure searching for tmp directory inside geoserver data dir",
-                        e);
+                        "Unexpected failure searching for tmp directory inside geoserver data dir", e);
             }
 
-            DefaultProcessArtifactsStore artifactsStore =
-                    (DefaultProcessArtifactsStore) resources.getArtifactsStore();
+            DefaultProcessArtifactsStore artifactsStore = (DefaultProcessArtifactsStore) resources.getArtifactsStore();
             artifactsStore.setResourceStore(resourceStore);
         }
         resources.setExternalOutputDirectory(info.getExternalOutputDirectory());
@@ -234,17 +227,15 @@ public class WPSInitializer implements GeoServerReinitializer {
         List<ProcessFactory> factories = new ArrayList<>(Processors.getProcessFactories());
 
         // ensure there is a stable order across invocations, JDK and so on
-        Collections.sort(
-                factories,
-                (o1, o2) -> {
-                    if (o1 == null) {
-                        return o2 == null ? 0 : -1;
-                    } else if (o2 == null) {
-                        return 1;
-                    } else {
-                        return o1.getClass().getName().compareTo(o2.getClass().getName());
-                    }
-                });
+        Collections.sort(factories, (o1, o2) -> {
+            if (o1 == null) {
+                return o2 == null ? 0 : -1;
+            } else if (o2 == null) {
+                return 1;
+            } else {
+                return o1.getClass().getName().compareTo(o2.getClass().getName());
+            }
+        });
 
         // build the result, adding the ProcessFactoryInfo as necessary for the factories
         // that do not already have a configuration

@@ -48,16 +48,12 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
     class DuplicateRuleValidator extends AbstractFormValidator {
         @Override
         public FormComponent<?>[] getDependentFormComponents() {
-            return new FormComponent[] {
-                rootChoice, layerChoice, accessModeChoice, rolesFormComponent
-            };
+            return new FormComponent[] {rootChoice, layerChoice, accessModeChoice, rolesFormComponent};
         }
 
         @Override
         public void validate(Form<?> form) {
-            if (!form.findSubmitter()
-                    .getInputName()
-                    .equals("save")) { // only validate on final submit
+            if (!form.findSubmitter().getInputName().equals("save")) { // only validate on final submit
                 return;
             }
 
@@ -67,9 +63,7 @@ public class NewDataAccessRulePage extends AbstractDataAccessRulePage {
             //        model.getLayer(),model.getAccessMode(),
             //       rolesFormComponent.getRolesNamesForStoring());
             if (DataAccessRuleDAO.get().getRules().contains(rule)) {
-                form.error(
-                        new ParamResourceModel("duplicateRule", getPage(), rule.getKey())
-                                .getString());
+                form.error(new ParamResourceModel("duplicateRule", getPage(), rule.getKey()).getString());
             }
         }
     }

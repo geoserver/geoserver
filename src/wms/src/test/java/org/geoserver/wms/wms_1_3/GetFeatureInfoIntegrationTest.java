@@ -64,10 +64,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-/**
- * A GetFeatureInfo 1.3.0 integration test suite covering both spec mandates and geoserver specific
- * features.
- */
+/** A GetFeatureInfo 1.3.0 integration test suite covering both spec mandates and geoserver specific features. */
 public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
     public static String WCS_PREFIX = "wcs";
@@ -82,15 +79,12 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
     public static QName SAMPLEGRIB = new QName(WCS_URI, "sampleGrib", WCS_PREFIX);
 
-    public static QName GENERIC_LINES =
-            new QName(MockData.DEFAULT_URI, "genericLines", MockData.DEFAULT_PREFIX);
+    public static QName GENERIC_LINES = new QName(MockData.DEFAULT_URI, "genericLines", MockData.DEFAULT_PREFIX);
 
     public static QName STATES = new QName(MockData.SF_URI, "states", MockData.SF_PREFIX);
 
-    private static final QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
-    private static final QName V_TIME_ELEVATION =
-            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+    private static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    private static final QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -127,52 +121,29 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         testData.addStyle("raster", "raster.sld", CapabilitiesTest.class, catalog);
         testData.addStyle("rasterScales", "rasterScales.sld", CapabilitiesTest.class, catalog);
         testData.addStyle("squares", "squares.sld", CapabilitiesTest.class, catalog);
-        testData.addStyle(
-                "forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
-        testData.addVectorLayer(
-                SQUARES,
-                Collections.emptyMap(),
-                "squares.properties",
-                CapabilitiesTest.class,
-                catalog);
+        testData.addStyle("forestsManyRules", "ForestsManyRules.sld", CapabilitiesTest.class, catalog);
+        testData.addVectorLayer(SQUARES, Collections.emptyMap(), "squares.properties", CapabilitiesTest.class, catalog);
         Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "raster");
+        testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
         testData.addRasterLayer(
-                TASMANIA_BM, "tazbm.tiff", "tiff", propertyMap, SystemTestData.class, catalog);
-        testData.addRasterLayer(
-                SAMPLEGRIB,
-                "sampleGrib.tif",
-                null,
-                propertyMap,
-                GetFeatureInfoIntegrationTest.class,
-                catalog);
-        testData.addRasterLayer(
-                CUSTOM, "custom.zip", null, propertyMap, CapabilitiesTest.class, catalog);
+                SAMPLEGRIB, "sampleGrib.tif", null, propertyMap, GetFeatureInfoIntegrationTest.class, catalog);
+        testData.addRasterLayer(CUSTOM, "custom.zip", null, propertyMap, CapabilitiesTest.class, catalog);
 
         // this data set contain lines strings but with geometry type set as geometry
         testData.addVectorLayer(
-                GENERIC_LINES,
-                Collections.emptyMap(),
-                "genericLines.properties",
-                getClass(),
-                getCatalog());
+                GENERIC_LINES, Collections.emptyMap(), "genericLines.properties", getClass(), getCatalog());
         testData.addStyle("genericLinesStyle", "genericLines.sld", getClass(), getCatalog());
 
         // set up a non-querable layer.
         testData.addStyle("Population", "Population.sld", CapabilitiesTest.class, catalog);
-        testData.addVectorLayer(
-                STATES,
-                Collections.emptyMap(),
-                "states.properties",
-                CapabilitiesTest.class,
-                catalog);
+        testData.addVectorLayer(STATES, Collections.emptyMap(), "states.properties", CapabilitiesTest.class, catalog);
         LayerInfo layer = catalog.getLayerByName(getLayerId(STATES));
         layer.setQueryable(false);
         catalog.save(layer);
 
         testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, getCatalog());
-        setupRasterDimension(
-                TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
+        setupRasterDimension(TIMESERIES, ResourceInfo.TIME, DimensionPresentation.LIST, null, null, null);
 
         testData.addVectorLayer(V_TIME_ELEVATION, getCatalog());
         setupVectorDimension(
@@ -226,16 +197,14 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     //    }
 
     /**
-     * As per section 7.4.1, a client shall not issue a GetFeatureInfo request for non queryable
-     * layers; yet that section is not too clear with regard to whether an exception should be
-     * thrown. I read it like an exception with OperationNotSupported code should be thrown. The
-     * full text is:
+     * As per section 7.4.1, a client shall not issue a GetFeatureInfo request for non queryable layers; yet that
+     * section is not too clear with regard to whether an exception should be thrown. I read it like an exception with
+     * OperationNotSupported code should be thrown. The full text is:
      *
-     * <p><i> GetFeatureInfo is an optional operation. It is only supported for those Layers for
-     * which the attribute queryable="1" (true) has been defined or inherited. A client shall not
-     * issue a GetFeatureInfo request for other layers. A WMS shall respond with a properly
-     * formatted service exception (XML) response (code = OperationNotSupported) if it receives a
-     * GetFeatureInfo request but does not support it. </i>
+     * <p><i> GetFeatureInfo is an optional operation. It is only supported for those Layers for which the attribute
+     * queryable="1" (true) has been defined or inherited. A client shall not issue a GetFeatureInfo request for other
+     * layers. A WMS shall respond with a properly formatted service exception (XML) response (code =
+     * OperationNotSupported) if it receives a GetFeatureInfo request but does not support it. </i>
      */
     @Test
     public void testQueryNonQueryableLayer() throws Exception {
@@ -245,16 +214,15 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         GetFeatureInfoKvpReader reader =
                 (GetFeatureInfoKvpReader) applicationContext.getBean("getFeatureInfoKvpReader");
         try {
-            WMS fakeWMS =
-                    new WMS(wms.getGeoServer()) {
-                        @Override
-                        public boolean isQueryable(LayerInfo layer) {
-                            if ("Forests".equals(layer.getName())) {
-                                return false;
-                            }
-                            return super.isQueryable(layer);
-                        }
-                    };
+            WMS fakeWMS = new WMS(wms.getGeoServer()) {
+                @Override
+                public boolean isQueryable(LayerInfo layer) {
+                    if ("Forests".equals(layer.getName())) {
+                        return false;
+                    }
+                    return super.isQueryable(layer);
+                }
+            };
 
             reader.setWMS(fakeWMS);
 
@@ -267,10 +235,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                             + "&width=20&height=20&i=10&j=10";
             Document doc = dom(get(request), true);
 
-            assertXpathEvaluatesTo(
-                    "LayerNotQueryable",
-                    "/ogc:ServiceExceptionReport/ogc:ServiceException/@code",
-                    doc);
+            assertXpathEvaluatesTo("LayerNotQueryable", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
         } finally {
             // restore the original wms
             reader.setWMS(wms);
@@ -278,8 +243,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * As for section 7.4.3.7, a missing or incorrectly specified pair of I,J parameters shall issue
-     * a service exception with {@code InvalidPoint} code.
+     * As for section 7.4.3.7, a missing or incorrectly specified pair of I,J parameters shall issue a service exception
+     * with {@code InvalidPoint} code.
      */
     @Test
     public void testInvalidPoint() throws Exception {
@@ -293,8 +258,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=20&height=20";
         Document doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo(
-                "InvalidPoint", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
+        assertXpathEvaluatesTo("InvalidPoint", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
 
         // invalid I,J parameters
         request =
@@ -305,8 +269,7 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=20&height=20&i=A&j=";
         doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo(
-                "InvalidPoint", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
+        assertXpathEvaluatesTo("InvalidPoint", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
     }
 
     /** Tests a simple GetFeatureInfo works, and that the result contains the expected polygon */
@@ -348,14 +311,13 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertTrue(result.indexOf("Green Forest") > 0);
 
         // check mime type not allowed
-        request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&i=10&j=10";
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&i=10&j=10";
         result = getAsString(request);
         assertTrue(result.indexOf("ForbiddenFormat") > 0);
 
@@ -363,26 +325,24 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         wms.setGetFeatureInfoMimeTypeCheckingEnabled(false);
         getGeoServer().save(wms);
 
-        request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&i=10&j=10";
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&i=10&j=10";
         result = getAsString(request);
         assertTrue(result.indexOf("Green Forest") > 0);
 
         // GML 3.1.1 as text/xml; subtype=gml/3.1.1
-        request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                        + XML311FeatureInfoOutputFormat.FORMAT
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&i=10&j=10";
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
+                + XML311FeatureInfoOutputFormat.FORMAT
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&i=10&j=10";
         result = getAsString(request);
         assertTrue(result.indexOf("Green Forest") > 0);
     }
@@ -439,14 +399,10 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document dom = getAsDOM(request);
         // print(dom);
         // count lines that do contain a forest reference
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'Forests.')])", dom);
     }
 
-    /**
-     * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
-     * polygon
-     */
+    /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
     @Test
     public void testBuffer() throws Exception {
         // to setup the request and the buffer I rendered BASIC_POLYGONS using GeoServer, then
@@ -465,25 +421,18 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // another request that will catch one feature due to the extended buffer, make sure it's in
         dom = getAsDOM(base + "&i=85&j=230&buffer=40");
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
 
         // this one would end up catching everything (3 features) if it wasn't that we say the max
         // buffer at 50
         // in the WMS configuration
         dom = getAsDOM(base + "&i=85&j=230&buffer=300");
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
-    /**
-     * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
-     * polygon
-     */
+    /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
     @Test
     public void testAutoBuffer() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
@@ -500,25 +449,19 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         // another request that will catch one feature due to the style with a thick stroke, make
         // sure it's in
         dom = getAsDOM(base + "&styles=thickStroke");
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'BasicPolygons.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'BasicPolygons.1107531493630'])", dom);
     }
 
-    /**
-     * Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected
-     * polygon
-     */
+    /** Tests GetFeatureInfo with a buffer specified works, and that the result contains the expected polygon */
     @Test
     public void testBufferScales() throws Exception {
         String layer = getLayerId(SQUARES);
-        String base =
-                "wms?version=1.3.0&&format=png&info_format=text/html&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&styles=squares&bbox=0,0,10000,10000&feature_count=10&srs=EPSG:32632";
+        String base = "wms?version=1.3.0&&format=png&info_format=text/html&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&styles=squares&bbox=0,0,10000,10000&feature_count=10&srs=EPSG:32632";
 
         // first request, should provide no result, scale is 1:100
         int w = (int) (100.0 / 0.28 * 1000); // dpi compensation
@@ -531,16 +474,14 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         w = (int) (200.0 / 0.28 * 1000); // dpi compensation
         dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
-        assertXpathEvaluatesTo(
-                "1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
+        assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
 
         // third request, should provide two result, scale is 1:10
         w = (int) (1000.0 / 0.28 * 1000); // dpi compensation
         dom = getAsDOM(featureInfoRequest(base, w));
         // print(dom);
-        assertXpathEvaluatesTo(
-                "2", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
+        assertXpathEvaluatesTo("2", "count(/html/body/table/tr/td[starts-with(.,'squares.')])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.1'])", dom);
         assertXpathEvaluatesTo("1", "count(/html/body/table/tr/td[. = 'squares.2'])", dom);
     }
@@ -569,8 +510,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Check GetFeatureInfo returns an error if the format is not known, instead of returning the
-     * text format as in https://osgeo-org.atlassian.net/browse/GEOS-1924
+     * Check GetFeatureInfo returns an error if the format is not known, instead of returning the text format as in
+     * https://osgeo-org.atlassian.net/browse/GEOS-1924
      */
     @Test
     public void testUknownFormat() throws Exception {
@@ -583,26 +524,22 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
                         + "&width=20&height=20&i=10&j=10";
         Document doc = dom(get(request), true);
         // print(doc);
-        assertXpathEvaluatesTo(
-                "1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", doc);
-        assertXpathEvaluatesTo(
-                "InvalidFormat", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
-        assertXpathEvaluatesTo(
-                "info_format", "/ogc:ServiceExceptionReport/ogc:ServiceException/@locator", doc);
+        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", doc);
+        assertXpathEvaluatesTo("InvalidFormat", "/ogc:ServiceExceptionReport/ogc:ServiceException/@code", doc);
+        assertXpathEvaluatesTo("info_format", "/ogc:ServiceExceptionReport/ogc:ServiceException/@locator", doc);
     }
 
     @Test
     public void testCoverage() throws Exception {
         // https://osgeo-org.atlassian.net/browse/GEOS-2574
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format=text/html&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=text/html&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
         // print(dom);
         // we also have the charset which may be platf. dep.
@@ -615,131 +552,90 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testCoverageGML() throws Exception {
         // https://osgeo-org.atlassian.net/browse/GEOS-3996
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format=application/vnd.ogc.gml&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=application/vnd.ogc.gml&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
         // print(dom);
 
-        assertXpathEvaluatesTo(
-                "26.0",
-                "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:RED_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "70.0",
-                "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "126.0",
-                "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND",
-                dom);
+        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:RED_BAND", dom);
+        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMember/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test
     public void testCoverageGML31() throws Exception {
         // https://osgeo-org.atlassian.net/browse/GEOS-3996
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
         // print(dom);
 
-        assertXpathEvaluatesTo(
-                "26.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "70.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "126.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND",
-                dom);
+        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     /** Test that a GetFeatureInfo request shifted plus 360 degrees east has the same results. */
     @Test
     public void testCoverageGML31Plus360() throws Exception {
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,506.5,-43,508&width=600&height=600"
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,506.5,-43,508&width=600&height=600"
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo(
-                "26.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "70.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "126.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND",
-                dom);
+        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     /** Test that a GetFeatureInfo request shifted minus 360 degrees east has the same results. */
     @Test
     public void testCoverageGML31Minus360() throws Exception {
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,-213.5,-43,-212&width=600&height=600"
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,-213.5,-43,-212&width=600&height=600"
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
         Document dom = getAsDOM(request);
-        assertXpathEvaluatesTo(
-                "26.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "70.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND",
-                dom);
-        assertXpathEvaluatesTo(
-                "126.0",
-                "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND",
-                dom);
+        assertXpathEvaluatesTo("26.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:RED_BAND", dom);
+        assertXpathEvaluatesTo("70.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:GREEN_BAND", dom);
+        assertXpathEvaluatesTo("126.0", "//wfs:FeatureCollection/gml:featureMembers/wcs:BlueMarble/wcs:BLUE_BAND", dom);
     }
 
     @Test
     public void testCoverageScales() throws Exception {
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=rasterScales&bbox=-44.5,146.5,-43,148"
-                        + "&info_format=text/html&query_layers="
-                        + layer
-                        + "&i=300&j=300&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=rasterScales&bbox=-44.5,146.5,-43,148"
+                + "&info_format=text/html&query_layers="
+                + layer
+                + "&i=300&j=300&srs=EPSG:4326";
 
         // this one should be blank
         Document dom = getAsDOM(request + "&width=300&height=300");
@@ -757,14 +653,13 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testOutsideCoverage() throws Exception {
         // a request which is way large on the west side, lots of blank space
         String layer = getLayerId(TASMANIA_BM);
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=raster&bbox=0,-90,148,-43"
-                        + "&info_format=text/html&query_layers="
-                        + layer
-                        + "&width=300&height=300&i=10&j=150&srs=EPSG:4326";
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=raster&bbox=0,-90,148,-43"
+                + "&info_format=text/html&query_layers="
+                + layer
+                + "&width=300&height=300&i=10&j=150&srs=EPSG:4326";
 
         // this one should be blank, but not be a service exception
         Document dom = getAsDOM(request + "");
@@ -792,20 +687,19 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testDeriveLayersFromSLD() throws Exception {
         String layers = getLayerId(MockData.FORESTS) + "," + getLayerId(MockData.LAKES);
 
-        String sld =
-                "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" "
-                        + "       xmlns:se=\"http://www.opengis.net/se\" version=\"1.1.0\"> "
-                        + " <NamedLayer> "
-                        + "  <se:Name>"
-                        + getLayerId(MockData.FORESTS)
-                        + "</se:Name> "
-                        + " </NamedLayer> "
-                        + " <NamedLayer> "
-                        + "  <se:Name>"
-                        + getLayerId(MockData.LAKES)
-                        + "</se:Name> "
-                        + " </NamedLayer> "
-                        + "</StyledLayerDescriptor>";
+        String sld = "<StyledLayerDescriptor xmlns=\"http://www.opengis.net/sld\" "
+                + "       xmlns:se=\"http://www.opengis.net/se\" version=\"1.1.0\"> "
+                + " <NamedLayer> "
+                + "  <se:Name>"
+                + getLayerId(MockData.FORESTS)
+                + "</se:Name> "
+                + " </NamedLayer> "
+                + " <NamedLayer> "
+                + "  <se:Name>"
+                + getLayerId(MockData.LAKES)
+                + "</se:Name> "
+                + " </NamedLayer> "
+                + "</StyledLayerDescriptor>";
 
         // sld present & query_layers null/empty
         String request1 =
@@ -858,10 +752,8 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         Document invalidResult1 = getAsDOM(invalidRequest1);
         Document invalidResult2 = getAsDOM(invalidRequest2);
         // print(invalidResult1);
-        assertXpathEvaluatesTo(
-                "1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult1);
-        assertXpathEvaluatesTo(
-                "1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult2);
+        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult1);
+        assertXpathEvaluatesTo("1", "count(//ogc:ServiceExceptionReport/ogc:ServiceException)", invalidResult2);
     }
 
     @Test
@@ -902,12 +794,11 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testXYGeo() throws Exception {
         String layer = getLayerId(MockData.BASIC_POLYGONS);
-        String url =
-                "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=292&height=512&x=147&y=360&srs=epsg:4326";
+        String url = "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=292&height=512&x=147&y=360&srs=epsg:4326";
 
         String request = url + "&VERSION=1.1.1&BBOX=-3.992187,-4.5,3.992188,9.5";
         String result = getAsString(request);
@@ -921,21 +812,18 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testXYProj() throws Exception {
         String layer = getLayerId(MockData.POLYGONS);
-        String url =
-                "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&WIDTH=512&HEIGHT=511&X=136&Y=380&srs=epsg:32615";
+        String url = "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&WIDTH=512&HEIGHT=511&X=136&Y=380&srs=epsg:32615";
 
-        String request =
-                url + "&VERSION=1.1.1&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
+        String request = url + "&VERSION=1.1.1&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
         String result = getAsString(request);
         // System.out.println(result);
         assertTrue(result.indexOf("polygonProperty =") > 0);
 
-        request =
-                url + "&VERSION=1.3.0&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
+        request = url + "&VERSION=1.3.0&BBOX=499699.999705,499502.050472,501800.000326,501597.949528";
         result = getAsString(request);
         assertTrue(result.indexOf("polygonProperty =") > 0);
     }
@@ -943,20 +831,18 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testXYCoverage() throws Exception {
         String layer = getLayerId(MockData.USA_WORLDIMG);
-        String url =
-                "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&WIDTH=512&HEIGHT=408&X=75&Y=132&srs=epsg:4326";
+        String url = "wms?styles=&format=jpeg&info_format=text/plain&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&WIDTH=512&HEIGHT=408&X=75&Y=132&srs=epsg:4326";
 
         String request = url + "&VERSION=1.1.1&BBOX=-180,-143.4375,180,143.4375";
         String result = getAsString(request);
-        Matcher m =
-                Pattern.compile(
-                                ".*RED_BAND = (\\d+\\.\\d+).*GREEN_BAND = (\\d+\\.\\d+).*BLUE_BAND = (\\d+\\.\\d+).*",
-                                Pattern.DOTALL)
-                        .matcher(result);
+        Matcher m = Pattern.compile(
+                        ".*RED_BAND = (\\d+\\.\\d+).*GREEN_BAND = (\\d+\\.\\d+).*BLUE_BAND = (\\d+\\.\\d+).*",
+                        Pattern.DOTALL)
+                .matcher(result);
         assertTrue(m.matches());
         double red = Double.parseDouble(m.group(1));
         double green = Double.parseDouble(m.group(2));
@@ -965,11 +851,10 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         request = url + "&VERSION=1.3.0&BBOX=-143.4375,-180,143.4375,180";
         result = getAsString(request);
 
-        m =
-                Pattern.compile(
-                                ".*RED_BAND = (\\d+\\.\\d+).*GREEN_BAND = (\\d+\\.\\d+).*BLUE_BAND = (\\d+\\.\\d+).*",
-                                Pattern.DOTALL)
-                        .matcher(result);
+        m = Pattern.compile(
+                        ".*RED_BAND = (\\d+\\.\\d+).*GREEN_BAND = (\\d+\\.\\d+).*BLUE_BAND = (\\d+\\.\\d+).*",
+                        Pattern.DOTALL)
+                .matcher(result);
         assertTrue(m.matches());
         assertEquals(red, Double.parseDouble(m.group(1)), 0.0000001);
         assertEquals(green, Double.parseDouble(m.group(2)), 0.0000001);
@@ -980,15 +865,14 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testSampleGrib() throws Exception {
         String layer = getLayerId(SAMPLEGRIB);
-        String request =
-                "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&width=300&height=400&i=150&j=100"
-                        + "&crs=EPSG:4326&bbox=2,302,10,308";
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:4326&bbox=2,302,10,308";
         Document dom = getAsDOM(request);
         // print(dom);
         assertXpathEvaluatesTo(
@@ -998,21 +882,20 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a
-     * request shifted 360 degrees west.
+     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360
+     * degrees west.
      */
     @Test
     public void testSampleGribWest() throws Exception {
         String layer = getLayerId(SAMPLEGRIB);
-        String request =
-                "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&width=300&height=400&i=150&j=100"
-                        + "&crs=EPSG:4326&bbox=2,-58,10,-52";
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:4326&bbox=2,-58,10,-52";
         Document dom = getAsDOM(request);
         assertXpathEvaluatesTo(
                 "-0.095",
@@ -1021,22 +904,21 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a
-     * request shifted 360 degrees west, using the Web Mercator projection.
+     * Test GetFeatureInfo for a coverage with longitudes greater than 300 degrees east, with a request shifted 360
+     * degrees west, using the Web Mercator projection.
      */
     @Test
     public void testSampleGribWebMercator() throws Exception {
         String layer = getLayerId(SAMPLEGRIB);
-        String request =
-                "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&width=300&height=400&i=150&j=100"
-                        + "&crs=EPSG:3857"
-                        + "&bbox=-6456530.466009867,222684.20850554455,-5788613.521250226,1118889.9748579597";
+        String request = "wms?service=WMS&version=1.3.0&request=GetFeatureInfo&styles=&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&width=300&height=400&i=150&j=100"
+                + "&crs=EPSG:3857"
+                + "&bbox=-6456530.466009867,222684.20850554455,-5788613.521250226,1118889.9748579597";
         Document dom = getAsDOM(request);
         assertXpathEvaluatesTo(
                 "-0.095",
@@ -1045,35 +927,33 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     }
 
     /**
-     * Test GetFeatureInfo operation with lines styled with a line symbolizer. GenericLines layer
-     * geometry type is not defined so this use case will force the styles rendering machinery to
-     * deal with a generic geometry.
+     * Test GetFeatureInfo operation with lines styled with a line symbolizer. GenericLines layer geometry type is not
+     * defined so this use case will force the styles rendering machinery to deal with a generic geometry.
      */
     @Test
     public void testGetFeatureInfoOnLineStringsWithGenericGeometry() throws Exception {
         // perform the get feature info request
         String layer = getLayerId(GENERIC_LINES);
-        String request =
-                "wms?"
-                        + "SERVICE=WMS"
-                        + "&VERSION=1.1.1"
-                        + "&REQUEST=GetFeatureInfo"
-                        + "&FORMAT=image/png"
-                        + "&TRANSPARENT=true"
-                        + "&STYLES=genericLinesStyle"
-                        + "&WIDTH=101"
-                        + "&HEIGHT=101"
-                        + "&BBOX=0.72235107421875,-1.26617431640625,1.27716064453125,-0.71136474609375"
-                        + "&SRS=EPSG:4326"
-                        + "&FEATURE_COUNT=50"
-                        + "&X=50"
-                        + "&Y=50"
-                        + "&QUERY_LAYERS="
-                        + layer
-                        + "&LAYERS="
-                        + layer
-                        + "&INFO_FORMAT=text/xml"
-                        + "&PROPERTYNAME=name";
+        String request = "wms?"
+                + "SERVICE=WMS"
+                + "&VERSION=1.1.1"
+                + "&REQUEST=GetFeatureInfo"
+                + "&FORMAT=image/png"
+                + "&TRANSPARENT=true"
+                + "&STYLES=genericLinesStyle"
+                + "&WIDTH=101"
+                + "&HEIGHT=101"
+                + "&BBOX=0.72235107421875,-1.26617431640625,1.27716064453125,-0.71136474609375"
+                + "&SRS=EPSG:4326"
+                + "&FEATURE_COUNT=50"
+                + "&X=50"
+                + "&Y=50"
+                + "&QUERY_LAYERS="
+                + layer
+                + "&LAYERS="
+                + layer
+                + "&INFO_FORMAT=text/xml"
+                + "&PROPERTYNAME=name";
         Document result = getAsDOM(request, true);
         // xpath engine that will be used to check XML content
         Map<String, String> namespaces = new HashMap<>();
@@ -1100,14 +980,13 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testSchemaLeak() throws Exception {
         String layer = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT
-                        + "&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20&i=10&j=10";
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT
+                + "&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20&i=10&j=10";
         // prime system, make sure everything is wired
         getAsDOM(request);
 
@@ -1129,21 +1008,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         getCatalog().save(ci);
 
         // make a first reprojected request on a pixel that's black (0)
-        String result =
-                getAsString(
-                        "wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
-                                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
-                                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
-                                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=177&j=225");
+        String result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
+                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
+                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
+                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=177&j=225");
         assertTrue(result.contains("0.0"));
 
         // and now one with actual data, 2
-        result =
-                getAsString(
-                        "wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
-                                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
-                                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
-                                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=135&j=223");
+        result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
+                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
+                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
+                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=135&j=223");
         assertTrue(result.contains("2.0"));
     }
 
@@ -1156,21 +1031,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         getCatalog().save(ci);
 
         // make a first reprojected request on a pixel that's black (0)
-        String result =
-                getAsString(
-                        "wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
-                                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
-                                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
-                                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=177&j=225");
+        String result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
+                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
+                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
+                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=177&j=225");
         assertTrue(result.contains("0.0"));
 
         // and now one with actual data, 2
-        result =
-                getAsString(
-                        "wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
-                                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
-                                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
-                                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=135&j=223");
+        result = getAsString("wms?REQUEST=GetFeatureInfo&EXCEPTIONS=application%2Fvnd.ogc.se_xml"
+                + "&BBOX=-887430.34934%2C4467316.30601%2C-885862.361705%2C4468893.535223&SERVICE=WMS"
+                + "&INFO_FORMAT=text%2Fplain&QUERY_LAYERS=cite%3Acustom&FEATURE_COUNT=50&Layers=custom"
+                + "&WIDTH=509&HEIGHT=512&format=image%2Fjpeg&styles=&srs=epsg%3A900913&version=1.3.0&i=135&j=223");
         assertTrue(result.contains("2.0"));
     }
 
@@ -1178,18 +1049,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testQueryableAndNonQueryableLayersWithStyles() throws Exception {
         String states = getLayerId(STATES);
         String forests = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
-                        + "&layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&query_layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&styles=Population,Forests";
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
+                + "&layers="
+                + states
+                + ","
+                + forests
+                + "&query_layers="
+                + states
+                + ","
+                + forests
+                + "&styles=Population,Forests";
         String result = getAsString(request);
         // System.out.println(result);
         assertNotNull(result);
@@ -1200,18 +1070,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testQueryableAndNonQueryableLayersWithCqlFilter() throws Exception {
         String states = getLayerId(STATES);
         String forests = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
-                        + "&layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&query_layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&styles=&cql_filter=PERSONS>25000000;NAME='Green Forest'";
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
+                + "&layers="
+                + states
+                + ","
+                + forests
+                + "&query_layers="
+                + states
+                + ","
+                + forests
+                + "&styles=&cql_filter=PERSONS>25000000;NAME='Green Forest'";
         String result = getAsString(request);
         // System.out.println(result);
         assertNotNull(result);
@@ -1222,20 +1091,19 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     public void testQueryableAndNonQueryableLayersWithFilter() throws Exception {
         String states = getLayerId(STATES);
         String forests = getLayerId(MockData.FORESTS);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
-                        + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
-                        + "&layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&query_layers="
-                        + states
-                        + ","
-                        + forests
-                        + "&styles=&filter="
-                        + "(%3CFilter%3E%3CPropertyIsGreaterThan%3E%3CPropertyName%3EPERSONS%3C/PropertyName%3E%3CLiteral%3E25000000%3C/Literal%3E%3C/PropertyIsGreaterThan%3E%3C/Filter%3E)"
-                        + "(%3CFilter%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3ENAME%3C/PropertyName%3E%3CLiteral%3EGreen%20Forest%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E)";
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&format=jpeg"
+                + "&info_format=text/plain&request=GetFeatureInfo&width=20&height=20&i=10&j=10"
+                + "&layers="
+                + states
+                + ","
+                + forests
+                + "&query_layers="
+                + states
+                + ","
+                + forests
+                + "&styles=&filter="
+                + "(%3CFilter%3E%3CPropertyIsGreaterThan%3E%3CPropertyName%3EPERSONS%3C/PropertyName%3E%3CLiteral%3E25000000%3C/Literal%3E%3C/PropertyIsGreaterThan%3E%3C/Filter%3E)"
+                + "(%3CFilter%3E%3CPropertyIsEqualTo%3E%3CPropertyName%3ENAME%3C/PropertyName%3E%3CLiteral%3EGreen%20Forest%3C/Literal%3E%3C/PropertyIsEqualTo%3E%3C/Filter%3E)";
         String result = getAsString(request);
         // System.out.println(result);
         assertNotNull(result);
@@ -1250,64 +1118,61 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         String layer = getLayerId(MockData.FORESTS);
 
         // click outside mask geom
-        String insideXY =
-                "&x=18&y=18"; // click area inside clip mask and geometry:should return geom
-        String outsideXY =
-                "&x=5&y=20"; // click area outside clip mask and inside geometry:-should not return
+        String insideXY = "&x=18&y=18"; // click area inside clip mask and geometry:should return geom
+        String outsideXY = "&x=5&y=20"; // click area outside clip mask and inside geometry:-should not return
         // geom
         String clipBorderXY = "&x=10&y=10"; // click area bordering clip mask and inside geometry
 
-        CoordinateReferenceSystem crs =
-                getCatalog().getLayerByName(MockData.FORESTS.getLocalPart()).getResource().getCRS();
+        CoordinateReferenceSystem crs = getCatalog()
+                .getLayerByName(MockData.FORESTS.getLocalPart())
+                .getResource()
+                .getCRS();
         int srid = CRS.lookupEpsgCode(crs, false);
-        String request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&info_format=application/json&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + insideXY
-                        + "&srs=EPSG:"
-                        + srid
-                        + "&clip="
-                        + wkt;
+        String request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&info_format=application/json&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + insideXY
+                + "&srs=EPSG:"
+                + srid
+                + "&clip="
+                + wkt;
         String result = getAsString(request);
         assertNotNull(result);
         // assert a feature was returned
         JSONObject responseJson = JSONObject.fromObject(result);
         assertFalse(responseJson.getJSONArray("features").isEmpty());
 
-        request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&info_format=application/json&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + outsideXY
-                        + "&srs=EPSG:"
-                        + srid
-                        + "&clip="
-                        + wkt;
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&info_format=application/json&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + outsideXY
+                + "&srs=EPSG:"
+                + srid
+                + "&clip="
+                + wkt;
         result = getAsString(request);
         assertNotNull(result);
         // assert no feature was returned
         responseJson = JSONObject.fromObject(result);
         assertTrue(responseJson.getJSONArray("features").isEmpty());
 
-        request =
-                "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
-                        + "&info_format=application/json&request=GetFeatureInfo&layers="
-                        + layer
-                        + "&query_layers="
-                        + layer
-                        + "&width=20&height=20"
-                        + clipBorderXY
-                        + "&srs=EPSG:"
-                        + srid
-                        + "&clip="
-                        + wkt;
+        request = "wms?version=1.3.0&bbox=-0.002,-0.002,0.002,0.002&styles=&format=jpeg"
+                + "&info_format=application/json&request=GetFeatureInfo&layers="
+                + layer
+                + "&query_layers="
+                + layer
+                + "&width=20&height=20"
+                + clipBorderXY
+                + "&srs=EPSG:"
+                + srid
+                + "&clip="
+                + wkt;
         result = getAsString(request);
         assertNotNull(result);
         // assert a feature was returned
@@ -1316,20 +1181,17 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         // asserting that the returned geometry is clipped
         JSONObject geoJson = responseJson.getJSONArray("features").getJSONObject(0);
-        JSONArray coordsArray =
-                geoJson.getJSONObject("geometry")
-                        .getJSONArray("coordinates")
-                        .getJSONArray(0)
-                        .getJSONArray(0);
+        JSONArray coordsArray = geoJson.getJSONObject("geometry")
+                .getJSONArray("coordinates")
+                .getJSONArray(0)
+                .getJSONArray(0);
         final GeometryFactory gf = new GeometryFactory();
-        Coordinate[] coordinates =
-                Arrays.stream(coordsArray.toArray())
-                        .map(
-                                t -> {
-                                    JSONArray cArray = (JSONArray) t;
-                                    return new Coordinate(cArray.getDouble(0), cArray.getDouble(1));
-                                })
-                        .toArray(Coordinate[]::new);
+        Coordinate[] coordinates = Arrays.stream(coordsArray.toArray())
+                .map(t -> {
+                    JSONArray cArray = (JSONArray) t;
+                    return new Coordinate(cArray.getDouble(0), cArray.getDouble(1));
+                })
+                .toArray(Coordinate[]::new);
 
         // the clipped feature geometry
         Polygon clippedPolygon = gf.createPolygon(coordinates);
@@ -1350,54 +1212,50 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
 
         String insideXY = "&i=400&j=400"; // click area inside clip mask, should return results
         String outsideXY = "&i=5&j=5"; // click area outside clip mask , should not return results
-        String clipBorderXY =
-                "&i=300&j=300"; // click area bordering clip mask should return results
+        String clipBorderXY = "&i=300&j=300"; // click area bordering clip mask should return results
 
-        String request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format=application/json&query_layers="
-                        + layer
-                        + insideXY
-                        + "&srs=EPSG:4326"
-                        + "&clip="
-                        + wkt;
+        String request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=application/json&query_layers="
+                + layer
+                + insideXY
+                + "&srs=EPSG:4326"
+                + "&clip="
+                + wkt;
         String json = getAsString(request);
         assertNotNull(json);
         // assert a features was returned
         JSONObject responseJson = JSONObject.fromObject(json);
         assertFalse(responseJson.getJSONArray("features").isEmpty());
 
-        request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format=application/json&query_layers="
-                        + layer
-                        + outsideXY
-                        + "&srs=EPSG:4326"
-                        + "&clip="
-                        + wkt;
+        request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=application/json&query_layers="
+                + layer
+                + outsideXY
+                + "&srs=EPSG:4326"
+                + "&clip="
+                + wkt;
         json = getAsString(request);
         assertNotNull(json);
         // assert no features were returned
         responseJson = JSONObject.fromObject(json);
         assertTrue(responseJson.getJSONArray("features").isEmpty());
 
-        request =
-                "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
-                        + "&layers="
-                        + layer
-                        + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
-                        + "&info_format=application/json&query_layers="
-                        + layer
-                        + clipBorderXY
-                        + "&srs=EPSG:4326"
-                        + "&clip="
-                        + wkt;
+        request = "wms?version=1.3.0&service=wms&request=GetFeatureInfo"
+                + "&layers="
+                + layer
+                + "&styles=&bbox=-44.5,146.5,-43,148&width=600&height=600"
+                + "&info_format=application/json&query_layers="
+                + layer
+                + clipBorderXY
+                + "&srs=EPSG:4326"
+                + "&clip="
+                + wkt;
         json = getAsString(request);
         assertNotNull(json);
         // assert a features was returned
@@ -1405,39 +1263,35 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
         assertFalse(responseJson.getJSONArray("features").isEmpty());
     }
 
-    private void testMaxDimensions(String timelayer, int maxDimensions, boolean expectException)
-            throws Exception {
+    private void testMaxDimensions(String timelayer, int maxDimensions, boolean expectException) throws Exception {
         WMSInfo wms = getWMS().getServiceInfo();
         wms.setMaxRequestedDimensionValues(maxDimensions);
         getGeoServer().save(wms);
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bbox=-130,24,-66,50"
-                                + "&x=50"
-                                + "&y=50"
-                                + "&LAYERS="
-                                + timelayer
-                                + "&QUERY_LAYERS="
-                                + timelayer
-                                + "&TIME=1972-09-01T00:00:00.0Z/2023-10-31T23:59:59.999Z"
-                                + "&INFO_FORMAT=text/html"
-                                + "&request=GetFeatureInfo"
-                                + "&width=550"
-                                + "&height=250"
-                                + "&srs=EPSG:4326&version=1.3.0");
+        MockHttpServletResponse response = getAsServletResponse("wms?bbox=-130,24,-66,50"
+                + "&x=50"
+                + "&y=50"
+                + "&LAYERS="
+                + timelayer
+                + "&QUERY_LAYERS="
+                + timelayer
+                + "&TIME=1972-09-01T00:00:00.0Z/2023-10-31T23:59:59.999Z"
+                + "&INFO_FORMAT=text/html"
+                + "&request=GetFeatureInfo"
+                + "&width=550"
+                + "&height=250"
+                + "&srs=EPSG:4326&version=1.3.0");
 
         if (expectException) {
-            Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+            Document dom =
+                    dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
             Element root = dom.getDocumentElement();
             assertEquals("ServiceExceptionReport", root.getNodeName());
-            assertTrue(
-                    dom.getDocumentElement()
-                            .getElementsByTagName("ServiceException")
-                            .item(0)
-                            .getFirstChild()
-                            .getNodeValue()
-                            .contains(
-                                    "This request would process more time than the maximum allowed"));
+            assertTrue(dom.getDocumentElement()
+                    .getElementsByTagName("ServiceException")
+                    .item(0)
+                    .getFirstChild()
+                    .getNodeValue()
+                    .contains("This request would process more time than the maximum allowed"));
         } else {
             assertEquals("text/html;charset=UTF-8", response.getContentType());
         }
@@ -1458,25 +1312,19 @@ public class GetFeatureInfoIntegrationTest extends WMSTestSupport {
     @Test
     public void testIAUVectorFeatureInfo() throws Exception {
         String layerId = getLayerId(SystemTestData.MARS_POI);
-        String url =
-                "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.3.0"
-                        + "&REQUEST=GetFeatureInfo&CRS=IAU:49900&BBOX=-90,-180,90,180"
-                        + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
-                        + "&LAYERS="
-                        + layerId
-                        + "&query_layers="
-                        + layerId
-                        + "&info_format="
-                        + GML3FeatureInfoOutputFormat.FORMAT;
+        String url = "wms?&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetFeatureInfo&CRS=IAU:49900&BBOX=-90,-180,90,180"
+                + "&WIDTH=20&HEIGHT=20&x=10&y=10&buffer=20"
+                + "&LAYERS="
+                + layerId
+                + "&query_layers="
+                + layerId
+                + "&info_format="
+                + GML3FeatureInfoOutputFormat.FORMAT;
         Document dom = getAsDOM(url);
         // print(dom);
         assertXpathEvaluatesTo(
-                "urn:x-ogc:def:crs:IAU:49900",
-                "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/@srsName",
-                dom);
-        assertXpathEvaluatesTo(
-                "-27.2282 -36.897",
-                "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/gml:pos",
-                dom);
+                "urn:x-ogc:def:crs:IAU:49900", "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/@srsName", dom);
+        assertXpathEvaluatesTo("-27.2282 -36.897", "//iau:MarsPoi[@gml:id = 'mars.1']/iau:geom/gml:Point/gml:pos", dom);
     }
 }

@@ -29,14 +29,14 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+        springContextLocations.add(getClass()
+                .getResource(getClass().getSimpleName() + "-context.xml")
+                .toString());
     }
 
     @Test
     public void testInactive() throws Exception {
-        UsernamePasswordAuthenticationToken upAuth =
-                new UsernamePasswordAuthenticationToken("foo", "bar");
+        UsernamePasswordAuthenticationToken upAuth = new UsernamePasswordAuthenticationToken("foo", "bar");
         try {
             getSecurityManager().authenticationManager().authenticate(upAuth);
         } catch (BadCredentialsException | ProviderNotFoundException e) {
@@ -46,8 +46,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     @Test
     public void testActive() throws Exception {
         GeoServerSecurityManager secMgr = getSecurityManager();
-        UsernamePasswordAuthenticationProviderConfig config =
-                new UsernamePasswordAuthenticationProviderConfig();
+        UsernamePasswordAuthenticationProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();
         config.setName("custom");
         config.setClassName(AuthProvider.class.getName());
         secMgr.saveAuthenticationProvider(config);
@@ -69,8 +68,7 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
         }
 
         @Override
-        public GeoServerAuthenticationProvider createAuthenticationProvider(
-                SecurityNamedServiceConfig config) {
+        public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
             return new AuthProvider();
         }
     }
@@ -78,24 +76,19 @@ public class GeoServerCustomAuthTest extends GeoServerSystemTestSupport {
     static class AuthProvider extends GeoServerAuthenticationProvider {
 
         @Override
-        public Authentication authenticate(
-                Authentication authentication, HttpServletRequest request)
+        public Authentication authenticate(Authentication authentication, HttpServletRequest request)
                 throws AuthenticationException {
             if (authentication instanceof UsernamePasswordAuthenticationToken) {
-                UsernamePasswordAuthenticationToken up =
-                        (UsernamePasswordAuthenticationToken) authentication;
+                UsernamePasswordAuthenticationToken up = (UsernamePasswordAuthenticationToken) authentication;
                 if ("foo".equals(up.getPrincipal()) && "bar".equals(up.getCredentials())) {
-                    authentication =
-                            new UsernamePasswordAuthenticationToken(
-                                    "foo", "bar", Collections.emptyList());
+                    authentication = new UsernamePasswordAuthenticationToken("foo", "bar", Collections.emptyList());
                 }
             }
             return authentication;
         }
 
         @Override
-        public boolean supports(
-                Class<? extends Object> authentication, HttpServletRequest request) {
+        public boolean supports(Class<? extends Object> authentication, HttpServletRequest request) {
             return UsernamePasswordAuthenticationToken.class.isAssignableFrom(authentication);
         }
     }

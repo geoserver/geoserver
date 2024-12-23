@@ -58,9 +58,9 @@ import org.geotools.util.factory.Hints;
 import tech.units.indriya.format.SimpleUnitFormat;
 
 /**
- * A {@link GridCoverage2DReader} wrapper to customize the {@link CoverageDimensionInfo} associated
- * with a coverage by exposing configured values such as null values, band name, and data ranges
- * instead of the ones associated with the underlying coverage.
+ * A {@link GridCoverage2DReader} wrapper to customize the {@link CoverageDimensionInfo} associated with a coverage by
+ * exposing configured values such as null values, band name, and data ranges instead of the ones associated with the
+ * underlying coverage.
  *
  * @author Daniele Romagnoli - GeoSolutions SAS
  */
@@ -74,8 +74,8 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
     private String coverageName;
 
-    static class CoverageDimensionCustomizerStructuredReader
-            extends CoverageDimensionCustomizerReader implements StructuredGridCoverage2DReader {
+    static class CoverageDimensionCustomizerStructuredReader extends CoverageDimensionCustomizerReader
+            implements StructuredGridCoverage2DReader {
 
         private StructuredGridCoverage2DReader structuredDelegate;
 
@@ -86,9 +86,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
 
         public CoverageDimensionCustomizerStructuredReader(
-                StructuredGridCoverage2DReader delegate,
-                String coverageName,
-                CoverageStoreInfo storeInfo) {
+                StructuredGridCoverage2DReader delegate, String coverageName, CoverageStoreInfo storeInfo) {
             super(delegate, coverageName, storeInfo);
             this.structuredDelegate = delegate;
         }
@@ -122,15 +120,13 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         }
 
         @Override
-        public List<HarvestedSource> harvest(
-                String defaultTargetCoverage, Object source, Hints hints)
+        public List<HarvestedSource> harvest(String defaultTargetCoverage, Object source, Hints hints)
                 throws IOException, UnsupportedOperationException {
             return structuredDelegate.harvest(defaultTargetCoverage, source, hints);
         }
 
         @Override
-        public List<DimensionDescriptor> getDimensionDescriptors(String coverageName)
-                throws IOException {
+        public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
             return structuredDelegate.getDimensionDescriptors(coverageName);
         }
     }
@@ -139,14 +135,11 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * Wrap a {@link GridCoverage2DReader} into a {@link CoverageDimensionCustomizerReader}.
      *
      * @param delegate the reader to be wrapped.
-     * @param coverageName the specified coverageName. It may be null in case of {@link
-     *     GridCoverage2DReader}s with a single coverage, coming from an old catalog where no
-     *     coverageName has been stored.
-     * @param info the {@link CoverageStoreInfo} instance used to look for {@link CoverageInfo}
-     *     instances.
+     * @param coverageName the specified coverageName. It may be null in case of {@link GridCoverage2DReader}s with a
+     *     single coverage, coming from an old catalog where no coverageName has been stored.
+     * @param info the {@link CoverageStoreInfo} instance used to look for {@link CoverageInfo} instances.
      */
-    public static GridCoverageReader wrap(
-            GridCoverage2DReader delegate, String coverageName, CoverageStoreInfo info) {
+    public static GridCoverageReader wrap(GridCoverage2DReader delegate, String coverageName, CoverageStoreInfo info) {
         GridCoverage2DReader reader = delegate;
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
@@ -163,14 +156,11 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
      * Wrap a {@link GridCoverage2DReader} into a {@link CoverageDimensionCustomizerReader}.
      *
      * @param delegate the reader to be wrapped.
-     * @param coverageName the specified coverageName. It may be null in case of {@link
-     *     GridCoverage2DReader}s with a single coverage, coming from an old catalog where no
-     *     coverageName has been stored.
-     * @param info the {@link CoverageInfo} instance used to look for {@link CoverageInfo}
-     *     instances.
+     * @param coverageName the specified coverageName. It may be null in case of {@link GridCoverage2DReader}s with a
+     *     single coverage, coming from an old catalog where no coverageName has been stored.
+     * @param info the {@link CoverageInfo} instance used to look for {@link CoverageInfo} instances.
      */
-    public static GridCoverageReader wrap(
-            GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
+    public static GridCoverageReader wrap(GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
         GridCoverage2DReader reader = delegate;
         if (coverageName != null) {
             reader = SingleGridCoverage2DReader.wrap(delegate, coverageName);
@@ -190,8 +180,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         this.info = ResourcePool.getCoverageInfo(coverageName, storeInfo);
     }
 
-    public CoverageDimensionCustomizerReader(
-            GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
+    public CoverageDimensionCustomizerReader(GridCoverage2DReader delegate, String coverageName, CoverageInfo info) {
         this.delegate = delegate;
         this.coverageName = coverageName;
         this.info = info;
@@ -217,22 +206,19 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
         return read(this.coverageName, parameters);
     }
 
     @Override
     /**
-     * This specific read operation is a customized one since we need to wrap the coverage
-     * properties (null values, ranges, sampleDimensions...)
+     * This specific read operation is a customized one since we need to wrap the coverage properties (null values,
+     * ranges, sampleDimensions...)
      */
     public GridCoverage2D read(String coverageName, GeneralParameterValue[] parameters)
             throws IllegalArgumentException, IOException {
         final GridCoverage2D coverage =
-                coverageName != null
-                        ? delegate.read(coverageName, parameters)
-                        : delegate.read(parameters);
+                coverageName != null ? delegate.read(coverageName, parameters) : delegate.read(parameters);
         if (coverage == null) {
             return coverage;
         }
@@ -291,7 +277,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         if (parameters != null) {
             for (GeneralParameterValue parameter : parameters) {
                 final ParameterValue param = (ParameterValue) parameter;
-                if (AbstractGridFormat.BANDS.getName().equals(param.getDescriptor().getName())) {
+                if (AbstractGridFormat.BANDS
+                        .getName()
+                        .equals(param.getDescriptor().getName())) {
                     int[] bandIndicesParam = (int[]) param.getValue();
                     return bandIndicesParam;
                 }
@@ -302,9 +290,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     protected GridSampleDimension[] wrapDimensions(
-            SampleDimension[] dims,
-            List<CoverageDimensionInfo> storedDimensions,
-            int[] bandIndexes) {
+            SampleDimension[] dims, List<CoverageDimensionInfo> storedDimensions, int[] bandIndexes) {
         GridSampleDimension[] wrappedDims = null;
         if (storedDimensions != null && !storedDimensions.isEmpty()) {
             int i = 0;
@@ -428,21 +414,18 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     @Override
-    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
-            throws IOException {
+    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         checkCoverageName(coverageName);
         return delegate.getDynamicParameters(coverageName);
     }
 
     @Override
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
-            throws IOException {
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) throws IOException {
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
     @Override
-    public double[] getReadingResolutions(
-            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         checkCoverageName(coverageName);
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
@@ -484,20 +467,14 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     protected void checkCoverageName(String coverageName) {
         if (this.coverageName != null && !this.coverageName.equals(coverageName)) {
             throw new IllegalArgumentException(
-                    "Unkonwn coverage named "
-                            + coverageName
-                            + ", the only valid value is: "
-                            + this.coverageName);
+                    "Unkonwn coverage named " + coverageName + ", the only valid value is: " + this.coverageName);
         }
     }
 
     /** Utility class to wrap a GridCoverage by overriding its sampleDimensions and properties */
     public static class GridCoverageWrapper extends GridCoverage2D implements Wrapper {
 
-        /**
-         * A custom propertySource allowing to redefine properties (since getProperties return a
-         * clone)
-         */
+        /** A custom propertySource allowing to redefine properties (since getProperties return a clone) */
         private PropertySourceImpl wrappedPropertySource;
 
         /** Configured sampleDimensions */
@@ -507,16 +484,12 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         private GridCoverage2D gridCoverage;
 
         public GridCoverageWrapper(
-                String name,
-                GridCoverage2D coverage,
-                GridSampleDimension[] sampleDimensions,
-                Map properties) {
+                String name, GridCoverage2D coverage, GridSampleDimension[] sampleDimensions, Map properties) {
             super(name, coverage);
             this.gridCoverage = coverage;
             this.wrappedSampleDimensions = sampleDimensions;
             wrappedPropertySource =
-                    new PropertySourceImpl(
-                            properties, coverage instanceof PropertySource ? coverage : null);
+                    new PropertySourceImpl(properties, coverage instanceof PropertySource ? coverage : null);
         }
 
         @Override
@@ -549,9 +522,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 return new GridCoverageWrapper(
                         coverage.getName().toString(),
                         coverage,
-                        wrappedDimensions == null
-                                ? coverage.getSampleDimensions()
-                                : wrappedDimensions,
+                        wrappedDimensions == null ? coverage.getSampleDimensions() : wrappedDimensions,
                         properties == null ? sourceCoverage.getProperties() : properties);
             }
             return coverage;
@@ -574,8 +545,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             if (iface.isInstance(gridCoverage)) {
                 return (T) gridCoverage;
             } else {
-                throw new IllegalArgumentException(
-                        "Cannot unwrap to the requested interface " + iface);
+                throw new IllegalArgumentException("Cannot unwrap to the requested interface " + iface);
             }
         }
     }
@@ -601,15 +571,13 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
         /** The custom description */
         private InternationalString configuredDescription;
 
-        public static WrappedSampleDimension build(
-                GridSampleDimension sampleDim, CoverageDimensionInfo info) {
+        public static WrappedSampleDimension build(GridSampleDimension sampleDim, CoverageDimensionInfo info) {
             String name = info.getName();
             final InternationalString sampleDimDescription = sampleDim.getDescription();
-            InternationalString configuredDescription =
-                    (sampleDimDescription == null
-                                    || !sampleDimDescription.toString().equalsIgnoreCase(name))
-                            ? new SimpleInternationalString(name)
-                            : sampleDimDescription;
+            InternationalString configuredDescription = (sampleDimDescription == null
+                            || !sampleDimDescription.toString().equalsIgnoreCase(name))
+                    ? new SimpleInternationalString(name)
+                    : sampleDimDescription;
             final List<Category> categories = sampleDim.getCategories();
             NumberRange<? extends Number> configuredRange = info.getRange();
             final String uom = info.getUnit();
@@ -621,11 +589,10 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                 }
             } catch (MeasurementParseException | IllegalArgumentException iae) {
                 if (LOGGER.isLoggable(Level.WARNING) && defaultUnit != null) {
-                    LOGGER.warning(
-                            "Unable to parse the specified unit ("
-                                    + uom
-                                    + "). Using the previous one: "
-                                    + defaultUnit.toString());
+                    LOGGER.warning("Unable to parse the specified unit ("
+                            + uom
+                            + "). Using the previous one: "
+                            + defaultUnit.toString());
                 }
             }
             Unit configuredUnit = unit;
@@ -644,8 +611,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             }
 
             // Check if the nodata has been configured
-            boolean nodataConfigured =
-                    configuredNoDataValues != null && configuredNoDataValues.length > 0;
+            boolean nodataConfigured = configuredNoDataValues != null && configuredNoDataValues.length > 0;
             // custom categories
             int numCategories = 0;
             List<Category> customCategories = new ArrayList<>(numCategories);
@@ -656,28 +622,21 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
                     if (Category.NODATA.getName().equals(category.getName())) {
                         if (category.isQuantitative()) {
                             // Get minimum and maximum value
-                            double minimum =
-                                    nodataConfigured
-                                            ? configuredNoDataValues[0]
-                                            : category.getRange().getMinimum();
-                            double maximum =
-                                    nodataConfigured
-                                            ? configuredNoDataValues[0]
-                                            : category.getRange().getMaximum();
+                            double minimum = nodataConfigured
+                                    ? configuredNoDataValues[0]
+                                    : category.getRange().getMinimum();
+                            double maximum = nodataConfigured
+                                    ? configuredNoDataValues[0]
+                                    : category.getRange().getMaximum();
                             if (Double.isNaN(minimum) && Double.isNaN(maximum)) {
                                 // Create a qualitative category
-                                wrapped =
-                                        new Category(
-                                                Category.NODATA.getName(),
-                                                category.getColors()[0],
-                                                minimum);
+                                wrapped = new Category(Category.NODATA.getName(), category.getColors()[0], minimum);
                             } else {
                                 // Create the wrapped category
-                                wrapped =
-                                        new Category(
-                                                Category.NODATA.getName(),
-                                                category.getColors(),
-                                                NumberRange.create(minimum, maximum));
+                                wrapped = new Category(
+                                        Category.NODATA.getName(),
+                                        category.getColors(),
+                                        NumberRange.create(minimum, maximum));
                             }
                         }
                     }
@@ -690,10 +649,9 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
             if (configuredRange != null
                     && !Double.isInfinite(configuredRange.getMinimum())
                     && !Double.isInfinite(configuredRange.getMaximum())) {
-                Class targetType =
-                        categories != null && !categories.isEmpty()
-                                ? categories.get(0).getRange().getElementClass()
-                                : Double.class;
+                Class targetType = categories != null && !categories.isEmpty()
+                        ? categories.get(0).getRange().getElementClass()
+                        : Double.class;
                 @SuppressWarnings("unchecked")
                 final NumberRange<?> dataRange = configuredRange.castTo(targetType);
                 List<NumberRange<?>> dataRanges = new ArrayList<>();

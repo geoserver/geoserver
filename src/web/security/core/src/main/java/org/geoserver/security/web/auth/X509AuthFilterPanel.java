@@ -16,8 +16,7 @@ import org.geoserver.security.filter.GeoServerX509CertificateAuthenticationFilte
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class X509AuthFilterPanel
-        extends J2eeBaseAuthFilterPanel<X509CertificateAuthenticationFilterConfig> {
+public class X509AuthFilterPanel extends J2eeBaseAuthFilterPanel<X509CertificateAuthenticationFilterConfig> {
 
     public X509AuthFilterPanel(String id, IModel<X509CertificateAuthenticationFilterConfig> model) {
         super(id, model);
@@ -27,7 +26,6 @@ public class X509AuthFilterPanel
     public void renderHead(IHeaderResponse response) {
         // Content-Security-Policy: inline styles must be nonce=...
         String css = " ul.horizontal div {\n" + "    display:inline;\n" + "  }";
-        response.render(
-                CssHeaderItem.forCSS(css, "org-geoserver-security-web-auth-X509AuthFilterPanel"));
+        response.render(CssHeaderItem.forCSS(css, "org-geoserver-security-web-auth-X509AuthFilterPanel"));
     }
 }

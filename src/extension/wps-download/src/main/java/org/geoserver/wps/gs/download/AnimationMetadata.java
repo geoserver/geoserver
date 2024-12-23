@@ -7,8 +7,7 @@ package org.geoserver.wps.gs.download;
 import org.geoserver.util.HTTPWarningAppender;
 
 /**
- * Secondary result of the animation process, collects time related WMS warnings (default, failed
- * match, nearest match)
+ * Secondary result of the animation process, collects time related WMS warnings (default, failed match, nearest match)
  */
 public class AnimationMetadata extends DownloadMetadata {
 

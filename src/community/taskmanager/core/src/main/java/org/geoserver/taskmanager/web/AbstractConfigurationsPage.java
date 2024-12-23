@@ -73,360 +73,278 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
         dialog.setInitialHeight(150);
         ((GSModalWindow) dialog.get("dialog")).showUnloadConfirmation(false);
 
+        add(new AjaxLink<Object>("addNew") {
+            private static final long serialVersionUID = 3581476968062788921L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if (templates
+                        || TaskManagerBeans.get()
+                                .getDao()
+                                .getConfigurations(true)
+                                .isEmpty()) {
+                    Configuration configuration =
+                            TaskManagerBeans.get().getFac().createConfiguration();
+                    configuration.setTemplate(templates);
+
+                    setResponsePage(new ConfigurationPage(configuration));
+
+                } else {
+                    dialog.setTitle(new ParamResourceModel("addNewDialog.title", getPage()));
+
+                    dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                        private static final long serialVersionUID = -5552087037163833563L;
+
+                        private DropDownPanel panel;
+
+                        @Override
+                        protected Component getContents(String id) {
+                            ArrayList<String> list = new ArrayList<String>();
+                            for (Configuration template :
+                                    TaskManagerBeans.get().getDao().getConfigurations(true)) {
+                                if (TaskManagerBeans.get()
+                                        .getSecUtil()
+                                        .isReadable(
+                                                SecurityContextHolder.getContext()
+                                                        .getAuthentication(),
+                                                template)) {
+                                    list.add(template.getName());
+                                }
+                            }
+                            panel = new DropDownPanel(
+                                    id,
+                                    new Model<String>(),
+                                    new Model<ArrayList<String>>(list),
+                                    new ParamResourceModel("addNewDialog.chooseTemplate", getPage()),
+                                    true);
+                            return panel;
+                        }
+
+                        @Override
+                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                            String choice = (String) panel.getDefaultModelObject();
+                            Configuration configuration;
+                            if (choice == null) {
+                                configuration = TaskManagerBeans.get().getFac().createConfiguration();
+                            } else {
+                                configuration = TaskManagerBeans.get().getDao().copyConfiguration(choice);
+                                configuration.setTemplate(false);
+                                configuration.setName(null);
+                            }
+
+                            setResponsePage(new ConfigurationPage(configuration));
+
+                            return true;
+                        }
+                    });
+                }
+            }
+        });
+
+        // the removal button
         add(
-                new AjaxLink<Object>("addNew") {
+                remove = new AjaxLink<Object>("removeSelected") {
                     private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        if (templates
-                                || TaskManagerBeans.get()
-                                        .getDao()
-                                        .getConfigurations(true)
-                                        .isEmpty()) {
-                            Configuration configuration =
-                                    TaskManagerBeans.get().getFac().createConfiguration();
-                            configuration.setTemplate(templates);
-
-                            setResponsePage(new ConfigurationPage(configuration));
-
+                        boolean someCant = false;
+                        for (Configuration config : configurationsPanel.getSelection()) {
+                            BatchElement be =
+                                    TaskManagerBeans.get().getDataUtil().taskInUseByExternalBatch(config);
+                            if (be != null) {
+                                error(new ParamResourceModel(
+                                                "taskInUse",
+                                                AbstractConfigurationsPage.this,
+                                                config.getName(),
+                                                be.getTask().getName(),
+                                                be.getBatch().getName())
+                                        .getString());
+                                someCant = true;
+                            } else if (!TaskManagerBeans.get().getDataUtil().isDeletable(config)) {
+                                error(new ParamResourceModel(
+                                                "stillRunning", AbstractConfigurationsPage.this, config.getName())
+                                        .getString());
+                                someCant = true;
+                            } else if (!TaskManagerBeans.get()
+                                    .getSecUtil()
+                                    .isAdminable(
+                                            AbstractConfigurationsPage.this
+                                                    .getSession()
+                                                    .getAuthentication(),
+                                            config)) {
+                                error(new ParamResourceModel(
+                                                "noDeleteRights", AbstractConfigurationsPage.this, config.getName())
+                                        .getString());
+                                someCant = true;
+                            }
+                        }
+                        if (someCant) {
+                            addFeedbackPanels(target);
                         } else {
-                            dialog.setTitle(
-                                    new ParamResourceModel("addNewDialog.title", getPage()));
+                            dialog.setTitle(new ParamResourceModel("confirmDeleteDialog.title", getPage()));
+                            dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
-                            dialog.showOkCancel(
-                                    target,
-                                    new GeoServerDialog.DialogDelegate() {
+                                private static final long serialVersionUID = -5552087037163833563L;
 
-                                        private static final long serialVersionUID =
-                                                -5552087037163833563L;
+                                private String error = null;
 
-                                        private DropDownPanel panel;
+                                private IModel<Boolean> shouldCleanupModel = new Model<Boolean>(false);
 
-                                        @Override
-                                        protected Component getContents(String id) {
-                                            ArrayList<String> list = new ArrayList<String>();
-                                            for (Configuration template :
-                                                    TaskManagerBeans.get()
-                                                            .getDao()
-                                                            .getConfigurations(true)) {
+                                @Override
+                                protected Component getContents(String id) {
+                                    StringBuilder sb = new StringBuilder();
+                                    sb.append(new ParamResourceModel("confirmDeleteDialog.content", getPage())
+                                            .getString());
+                                    for (Configuration config : configurationsPanel.getSelection()) {
+                                        sb.append("\n&nbsp;&nbsp;");
+                                        sb.append(StringEscapeUtils.escapeHtml4(config.getName()));
+                                    }
+                                    return new MultiLabelCheckBoxPanel(
+                                            id,
+                                            sb.toString(),
+                                            new ParamResourceModel("cleanUp", getPage()).getString(),
+                                            shouldCleanupModel,
+                                            !templates);
+                                }
+
+                                @Override
+                                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                                    try {
+                                        for (Configuration config : configurationsPanel.getSelection()) {
+                                            if (shouldCleanupModel.getObject()) {
+                                                config = TaskManagerBeans.get()
+                                                        .getDao()
+                                                        .init(config);
                                                 if (TaskManagerBeans.get()
-                                                        .getSecUtil()
-                                                        .isReadable(
-                                                                SecurityContextHolder.getContext()
-                                                                        .getAuthentication(),
-                                                                template)) {
-                                                    list.add(template.getName());
+                                                        .getTaskUtil()
+                                                        .canCleanup(config)) {
+                                                    if (TaskManagerBeans.get()
+                                                            .getTaskUtil()
+                                                            .cleanup(config)) {
+                                                        info(new ParamResourceModel(
+                                                                        "cleanUp.success", getPage(), config.getName())
+                                                                .getString());
+                                                    } else {
+                                                        error(new ParamResourceModel(
+                                                                        "cleanUp.failed", getPage(), config.getName())
+                                                                .getString());
+                                                    }
+                                                } else {
+                                                    info(new ParamResourceModel(
+                                                                    "cleanUp.ignore", getPage(), config.getName())
+                                                            .getString());
                                                 }
                                             }
-                                            panel =
-                                                    new DropDownPanel(
-                                                            id,
-                                                            new Model<String>(),
-                                                            new Model<ArrayList<String>>(list),
-                                                            new ParamResourceModel(
-                                                                    "addNewDialog.chooseTemplate",
-                                                                    getPage()),
-                                                            true);
-                                            return panel;
+                                            TaskManagerBeans.get()
+                                                    .getBjService()
+                                                    .remove(config);
                                         }
+                                        configurationsPanel.clearSelection();
+                                        remove.setEnabled(false);
+                                    } catch (Exception e) {
+                                        LOGGER.log(Level.WARNING, e.getMessage(), e);
+                                        Throwable rootCause = ExceptionUtils.getRootCause(e);
+                                        error = rootCause == null
+                                                ? e.getLocalizedMessage()
+                                                : rootCause.getLocalizedMessage();
+                                    }
+                                    return true;
+                                }
 
-                                        @Override
-                                        protected boolean onSubmit(
-                                                AjaxRequestTarget target, Component contents) {
-                                            String choice = (String) panel.getDefaultModelObject();
-                                            Configuration configuration;
-                                            if (choice == null) {
-                                                configuration =
-                                                        TaskManagerBeans.get()
-                                                                .getFac()
-                                                                .createConfiguration();
-                                            } else {
-                                                configuration =
-                                                        TaskManagerBeans.get()
-                                                                .getDao()
-                                                                .copyConfiguration(choice);
-                                                configuration.setTemplate(false);
-                                                configuration.setName(null);
-                                            }
-
-                                            setResponsePage(new ConfigurationPage(configuration));
-
-                                            return true;
-                                        }
-                                    });
+                                @Override
+                                public void onClose(AjaxRequestTarget target) {
+                                    if (error != null) {
+                                        error(error);
+                                        addFeedbackPanels(target);
+                                    }
+                                    addFeedbackPanels(target);
+                                    target.add(configurationsPanel);
+                                    target.add(remove);
+                                }
+                            });
                         }
                     }
                 });
-
-        // the removal button
-        add(
-                remove =
-                        new AjaxLink<Object>("removeSelected") {
-                            private static final long serialVersionUID = 3581476968062788921L;
-
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                boolean someCant = false;
-                                for (Configuration config : configurationsPanel.getSelection()) {
-                                    BatchElement be =
-                                            TaskManagerBeans.get()
-                                                    .getDataUtil()
-                                                    .taskInUseByExternalBatch(config);
-                                    if (be != null) {
-                                        error(
-                                                new ParamResourceModel(
-                                                                "taskInUse",
-                                                                AbstractConfigurationsPage.this,
-                                                                config.getName(),
-                                                                be.getTask().getName(),
-                                                                be.getBatch().getName())
-                                                        .getString());
-                                        someCant = true;
-                                    } else if (!TaskManagerBeans.get()
-                                            .getDataUtil()
-                                            .isDeletable(config)) {
-                                        error(
-                                                new ParamResourceModel(
-                                                                "stillRunning",
-                                                                AbstractConfigurationsPage.this,
-                                                                config.getName())
-                                                        .getString());
-                                        someCant = true;
-                                    } else if (!TaskManagerBeans.get()
-                                            .getSecUtil()
-                                            .isAdminable(
-                                                    AbstractConfigurationsPage.this
-                                                            .getSession()
-                                                            .getAuthentication(),
-                                                    config)) {
-                                        error(
-                                                new ParamResourceModel(
-                                                                "noDeleteRights",
-                                                                AbstractConfigurationsPage.this,
-                                                                config.getName())
-                                                        .getString());
-                                        someCant = true;
-                                    }
-                                }
-                                if (someCant) {
-                                    addFeedbackPanels(target);
-                                } else {
-                                    dialog.setTitle(
-                                            new ParamResourceModel(
-                                                    "confirmDeleteDialog.title", getPage()));
-                                    dialog.showOkCancel(
-                                            target,
-                                            new GeoServerDialog.DialogDelegate() {
-
-                                                private static final long serialVersionUID =
-                                                        -5552087037163833563L;
-
-                                                private String error = null;
-
-                                                private IModel<Boolean> shouldCleanupModel =
-                                                        new Model<Boolean>(false);
-
-                                                @Override
-                                                protected Component getContents(String id) {
-                                                    StringBuilder sb = new StringBuilder();
-                                                    sb.append(
-                                                            new ParamResourceModel(
-                                                                            "confirmDeleteDialog.content",
-                                                                            getPage())
-                                                                    .getString());
-                                                    for (Configuration config :
-                                                            configurationsPanel.getSelection()) {
-                                                        sb.append("\n&nbsp;&nbsp;");
-                                                        sb.append(
-                                                                StringEscapeUtils.escapeHtml4(
-                                                                        config.getName()));
-                                                    }
-                                                    return new MultiLabelCheckBoxPanel(
-                                                            id,
-                                                            sb.toString(),
-                                                            new ParamResourceModel(
-                                                                            "cleanUp", getPage())
-                                                                    .getString(),
-                                                            shouldCleanupModel,
-                                                            !templates);
-                                                }
-
-                                                @Override
-                                                protected boolean onSubmit(
-                                                        AjaxRequestTarget target,
-                                                        Component contents) {
-                                                    try {
-                                                        for (Configuration config :
-                                                                configurationsPanel
-                                                                        .getSelection()) {
-                                                            if (shouldCleanupModel.getObject()) {
-                                                                config =
-                                                                        TaskManagerBeans.get()
-                                                                                .getDao()
-                                                                                .init(config);
-                                                                if (TaskManagerBeans.get()
-                                                                        .getTaskUtil()
-                                                                        .canCleanup(config)) {
-                                                                    if (TaskManagerBeans.get()
-                                                                            .getTaskUtil()
-                                                                            .cleanup(config)) {
-                                                                        info(
-                                                                                new ParamResourceModel(
-                                                                                                "cleanUp.success",
-                                                                                                getPage(),
-                                                                                                config
-                                                                                                        .getName())
-                                                                                        .getString());
-                                                                    } else {
-                                                                        error(
-                                                                                new ParamResourceModel(
-                                                                                                "cleanUp.failed",
-                                                                                                getPage(),
-                                                                                                config
-                                                                                                        .getName())
-                                                                                        .getString());
-                                                                    }
-                                                                } else {
-                                                                    info(
-                                                                            new ParamResourceModel(
-                                                                                            "cleanUp.ignore",
-                                                                                            getPage(),
-                                                                                            config
-                                                                                                    .getName())
-                                                                                    .getString());
-                                                                }
-                                                            }
-                                                            TaskManagerBeans.get()
-                                                                    .getBjService()
-                                                                    .remove(config);
-                                                        }
-                                                        configurationsPanel.clearSelection();
-                                                        remove.setEnabled(false);
-                                                    } catch (Exception e) {
-                                                        LOGGER.log(
-                                                                Level.WARNING, e.getMessage(), e);
-                                                        Throwable rootCause =
-                                                                ExceptionUtils.getRootCause(e);
-                                                        error =
-                                                                rootCause == null
-                                                                        ? e.getLocalizedMessage()
-                                                                        : rootCause
-                                                                                .getLocalizedMessage();
-                                                    }
-                                                    return true;
-                                                }
-
-                                                @Override
-                                                public void onClose(AjaxRequestTarget target) {
-                                                    if (error != null) {
-                                                        error(error);
-                                                        addFeedbackPanels(target);
-                                                    }
-                                                    addFeedbackPanels(target);
-                                                    target.add(configurationsPanel);
-                                                    target.add(remove);
-                                                }
-                                            });
-                                }
-                            }
-                        });
         remove.setOutputMarkupId(true);
         remove.setEnabled(false);
 
         // the copy button
         add(
-                copy =
-                        new AjaxLink<Object>("copySelected") {
-                            private static final long serialVersionUID = 3581476968062788921L;
-
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                Configuration copy =
-                                        TaskManagerBeans.get()
-                                                .getDao()
-                                                .copyConfiguration(
-                                                        configurationsPanel
-                                                                .getSelection()
-                                                                .get(0)
-                                                                .getName());
-                                // re-order attributes, useful if new attributes were added since
-                                // old config/template was made
-                                TaskManagerBeans.get().getTaskUtil().reorderConfiguration(copy);
-                                // make sure we can't copy with workspace we don't have access to
-                                WorkspaceInfo wi =
-                                        GeoServerApplication.get()
-                                                .getCatalog()
-                                                .getWorkspaceByName(copy.getWorkspace());
-                                if (wi == null
-                                        || !TaskManagerBeans.get()
-                                                .getSecUtil()
-                                                .isAdminable(
-                                                        AbstractConfigurationsPage.this
-                                                                .getSession()
-                                                                .getAuthentication(),
-                                                        wi)) {
-                                    copy.setWorkspace(null);
-                                }
-                                setResponsePage(new ConfigurationPage(copy));
-                            }
-                        });
-        copy.setOutputMarkupId(true);
-        copy.setEnabled(false);
-
-        add(
-                new AjaxLink<Object>("import") {
-                    private static final long serialVersionUID = 6122970349448584029L;
+                copy = new AjaxLink<Object>("copySelected") {
+                    private static final long serialVersionUID = 3581476968062788921L;
 
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        dialog.setTitle(new ParamResourceModel("importDialog.title", getPage()));
-
-                        dialog.showOkCancel(
-                                target,
-                                new GeoServerDialog.DialogDelegate() {
-
-                                    private static final long serialVersionUID =
-                                            -5552087037163833563L;
-
-                                    private ImportPanel panel;
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        return panel = new ImportPanel(id);
-                                    }
-
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        Configuration configuration;
-                                        try (InputStream is =
-                                                panel.getFileUpload()
-                                                        .getFileUpload()
-                                                        .getInputStream()) {
-                                            configuration =
-                                                    (Configuration) XStreamUtil.xs().fromXML(is);
-                                            configuration.setTemplate(templates);
-
-                                            setResponsePage(new ConfigurationPage(configuration));
-
-                                            return true;
-                                        } catch (IOException
-                                                | XStreamException
-                                                | ClassCastException e) {
-                                            Throwable rootCause = ExceptionUtils.getRootCause(e);
-                                            error(
-                                                    rootCause == null
-                                                            ? e.getLocalizedMessage()
-                                                            : rootCause.getLocalizedMessage());
-                                            target.add(panel.getFeedbackPanel());
-
-                                            return false;
-                                        }
-                                    }
-                                });
+                        Configuration copy = TaskManagerBeans.get()
+                                .getDao()
+                                .copyConfiguration(configurationsPanel
+                                        .getSelection()
+                                        .get(0)
+                                        .getName());
+                        // re-order attributes, useful if new attributes were added since
+                        // old config/template was made
+                        TaskManagerBeans.get().getTaskUtil().reorderConfiguration(copy);
+                        // make sure we can't copy with workspace we don't have access to
+                        WorkspaceInfo wi =
+                                GeoServerApplication.get().getCatalog().getWorkspaceByName(copy.getWorkspace());
+                        if (wi == null
+                                || !TaskManagerBeans.get()
+                                        .getSecUtil()
+                                        .isAdminable(
+                                                AbstractConfigurationsPage.this
+                                                        .getSession()
+                                                        .getAuthentication(),
+                                                wi)) {
+                            copy.setWorkspace(null);
+                        }
+                        setResponsePage(new ConfigurationPage(copy));
                     }
                 });
+        copy.setOutputMarkupId(true);
+        copy.setEnabled(false);
+
+        add(new AjaxLink<Object>("import") {
+            private static final long serialVersionUID = 6122970349448584029L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.setTitle(new ParamResourceModel("importDialog.title", getPage()));
+
+                dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+
+                    private static final long serialVersionUID = -5552087037163833563L;
+
+                    private ImportPanel panel;
+
+                    @Override
+                    protected Component getContents(String id) {
+                        return panel = new ImportPanel(id);
+                    }
+
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        Configuration configuration;
+                        try (InputStream is =
+                                panel.getFileUpload().getFileUpload().getInputStream()) {
+                            configuration = (Configuration) XStreamUtil.xs().fromXML(is);
+                            configuration.setTemplate(templates);
+
+                            setResponsePage(new ConfigurationPage(configuration));
+
+                            return true;
+                        } catch (IOException | XStreamException | ClassCastException e) {
+                            Throwable rootCause = ExceptionUtils.getRootCause(e);
+                            error(rootCause == null ? e.getLocalizedMessage() : rootCause.getLocalizedMessage());
+                            target.add(panel.getFeedbackPanel());
+
+                            return false;
+                        }
+                    }
+                });
+            }
+        });
 
         // the panel
         add(
@@ -438,8 +356,10 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
 
                             @Override
                             protected void onSelectionUpdate(AjaxRequestTarget target) {
-                                remove.setEnabled(configurationsPanel.getSelection().size() > 0);
-                                copy.setEnabled(configurationsPanel.getSelection().size() == 1);
+                                remove.setEnabled(
+                                        configurationsPanel.getSelection().size() > 0);
+                                copy.setEnabled(
+                                        configurationsPanel.getSelection().size() == 1);
                                 target.add(remove);
                                 target.add(copy);
                             }
@@ -453,33 +373,23 @@ public class AbstractConfigurationsPage extends GeoServerSecuredPage {
                             @SuppressWarnings("unchecked")
                             @Override
                             protected Component getComponentForProperty(
-                                    String id,
-                                    IModel<Configuration> itemModel,
-                                    Property<Configuration> property) {
+                                    String id, IModel<Configuration> itemModel, Property<Configuration> property) {
                                 if (property.equals(ConfigurationsModel.NAME)) {
                                     SimpleAjaxLink<String> link =
                                             new SimpleAjaxLink<String>(
-                                                    id,
-                                                    (IModel<String>) property.getModel(itemModel)) {
-                                                private static final long serialVersionUID =
-                                                        -9184383036056499856L;
+                                                    id, (IModel<String>) property.getModel(itemModel)) {
+                                                private static final long serialVersionUID = -9184383036056499856L;
 
                                                 @Override
                                                 protected void onClick(AjaxRequestTarget target) {
-                                                    setResponsePage(
-                                                            new ConfigurationPage(
-                                                                    TaskManagerBeans.get()
-                                                                            .getDao()
-                                                                            .init(
-                                                                                    itemModel
-                                                                                            .getObject())));
+                                                    setResponsePage(new ConfigurationPage(TaskManagerBeans.get()
+                                                            .getDao()
+                                                            .init(itemModel.getObject())));
                                                 }
                                             };
                                     if (!itemModel.getObject().isTemplate()
                                             && !itemModel.getObject().isValidated()) {
-                                        link.add(
-                                                new AttributeAppender(
-                                                        "class", "notvalidated", " "));
+                                        link.add(new AttributeAppender("class", "notvalidated", " "));
                                     }
                                     return link;
                                 }

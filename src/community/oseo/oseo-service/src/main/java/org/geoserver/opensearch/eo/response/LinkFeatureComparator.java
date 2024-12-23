@@ -13,8 +13,8 @@ import org.springframework.util.comparator.ComparableComparator;
 import org.springframework.util.comparator.NullSafeComparator;
 
 /**
- * Sorts feature by "code", that is, the operation name, along the service operation list, if
- * available, Lexicographically otherwise
+ * Sorts feature by "code", that is, the operation name, along the service operation list, if available,
+ * Lexicographically otherwise
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -22,7 +22,8 @@ public class LinkFeatureComparator implements Comparator<SimpleFeature> {
 
     public static final LinkFeatureComparator INSTANCE = new LinkFeatureComparator();
 
-    private LinkFeatureComparator() {};
+    private LinkFeatureComparator() {}
+    ;
 
     static final Comparator<String> STRING_COMPARATOR =
             new NullSafeComparator<String>(new ComparableComparator<>(), true);

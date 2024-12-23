@@ -26,9 +26,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 /**
- * Tests functionality using TEST_LOGGING profile (which does not use a file appender) and
- * DEFAULT_LOGGING which will create a log file (and require {@link #cleanupLogs()}) after testing
- * is completed.
+ * Tests functionality using TEST_LOGGING profile (which does not use a file appender) and DEFAULT_LOGGING which will
+ * create a log file (and require {@link #cleanupLogs()}) after testing is completed.
  */
 public class LoggingControllerTest extends CatalogRESTTestSupport {
 
@@ -93,14 +92,12 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutLoggingAsJSON() throws Exception {
-        String inputJson =
-                "{'logging':{"
-                        + "    'level':'DEFAULT_LOGGING.xml',"
-                        + "    'location':'logs/geoserver-test-2.log',"
-                        + "    'stdOutLogging':false}}";
+        String inputJson = "{'logging':{"
+                + "    'level':'DEFAULT_LOGGING.xml',"
+                + "    'location':'logs/geoserver-test-2.log',"
+                + "    'stdOutLogging':false}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/logging", inputJson, "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/logging", inputJson, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/logging.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -114,10 +111,9 @@ public class LoggingControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutLoggingAsXML() throws Exception {
-        String xml =
-                "<logging> <level>DEFAULT_LOGGING.xml</level>"
-                        + "<location>logs/geoserver-test-2.log</location>"
-                        + "<stdOutLogging>false</stdOutLogging> </logging>";
+        String xml = "<logging> <level>DEFAULT_LOGGING.xml</level>"
+                + "<location>logs/geoserver-test-2.log</location>"
+                + "<stdOutLogging>false</stdOutLogging> </logging>";
         MockHttpServletResponse response =
                 putAsServletResponse(RestBaseController.ROOT_PATH + "/logging", xml, "text/xml");
         assertEquals(200, response.getStatus());

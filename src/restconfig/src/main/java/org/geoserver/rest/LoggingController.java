@@ -33,11 +33,7 @@ public class LoggingController extends AbstractGeoServerController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<LoggingInfo> settingsGet() {
         return wrapObject(geoServer.getLogging(), LoggingInfo.class);
     }
@@ -57,9 +53,7 @@ public class LoggingController extends AbstractGeoServerController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return LoggingInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 }

@@ -38,13 +38,11 @@ public class OWSRequestMatcher implements Predicate<Request> {
         this.outputFormat = outputFormat;
 
         if (service == null && (method != null || outputFormat != null))
-            throw new IllegalArgumentException(
-                    "Invalid OWS definition, service cannot be non null when method "
-                            + "or output format are provided");
+            throw new IllegalArgumentException("Invalid OWS definition, service cannot be non null when method "
+                    + "or output format are provided");
         else if (method == null && outputFormat != null)
             throw new IllegalArgumentException(
-                    "Invalid OWS definition, output format cannot be valued if "
-                            + "method is not provided");
+                    "Invalid OWS definition, output format cannot be valued if " + "method is not provided");
     }
 
     @Override

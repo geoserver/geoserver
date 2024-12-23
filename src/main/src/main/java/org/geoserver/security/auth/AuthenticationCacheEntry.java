@@ -27,8 +27,7 @@ public class AuthenticationCacheEntry {
     /** Time stamp of creation in milliseconds */
     private long created;
 
-    public AuthenticationCacheEntry(
-            Authentication authentication, int timeToIdleSeconds, int timeToLiveSeconds) {
+    public AuthenticationCacheEntry(Authentication authentication, int timeToIdleSeconds, int timeToLiveSeconds) {
         super();
 
         this.authentication = authentication;

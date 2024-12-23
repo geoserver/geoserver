@@ -10,9 +10,8 @@ import org.geoserver.ows.Request;
 import org.geotools.util.logging.Logging;
 
 /**
- * {@link PriorityProvider} picking the request priority from a configured HTTP header, if found, or
- * returning the default priority otherwise. The header must contain a integer value (the priority
- * itself)
+ * {@link PriorityProvider} picking the request priority from a configured HTTP header, if found, or returning the
+ * default priority otherwise. The header must contain a integer value (the priority itself)
  */
 public class HttpHeaderPriorityProvider implements PriorityProvider {
 
@@ -35,25 +34,15 @@ public class HttpHeaderPriorityProvider implements PriorityProvider {
             try {
                 int priority = Integer.parseInt(priorityString);
                 if (LOGGER.isLoggable(Level.FINE)) {
-                    LOGGER.fine(
-                            "Found priority header "
-                                    + headerName
-                                    + " in request with value "
-                                    + priority);
+                    LOGGER.fine("Found priority header " + headerName + " in request with value " + priority);
                 }
                 return priority;
             } catch (NumberFormatException e) {
-                LOGGER.log(
-                        Level.INFO,
-                        "Priority header found, but did not have a valid integer value",
-                        e);
+                LOGGER.log(Level.INFO, "Priority header found, but did not have a valid integer value", e);
             }
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine(
-                        "Did not find priority header "
-                                + headerName
-                                + " in request, using default priorirty");
+                LOGGER.fine("Did not find priority header " + headerName + " in request, using default priorirty");
             }
         }
 

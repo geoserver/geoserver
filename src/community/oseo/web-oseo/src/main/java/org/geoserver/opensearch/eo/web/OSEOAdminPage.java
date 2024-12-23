@@ -94,12 +94,10 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
 
         TextArea<List<String>> globalQueryables =
                 new TextArea<List<String>>(
-                        "globalQueryables",
-                        LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
+                        "globalQueryables", LiveCollectionModel.list(new PropertyModel(info, "globalQueryables"))) {
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (type.isAssignableFrom(ArrayList.class))
-                            return (IConverter<C>) new QueryablesConverter();
+                        if (type.isAssignableFrom(ArrayList.class)) return (IConverter<C>) new QueryablesConverter();
                         return super.getConverter(type);
                     }
                 };
@@ -110,75 +108,62 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
         if (oseo.getOpenSearchAccessStoreId() != null) {
             this.backend = getCatalog().getDataStore(oseo.getOpenSearchAccessStoreId());
         }
-        DropDownChoice<DataStoreInfo> openSearchAccessReference =
-                new DropDownChoice<>(
-                        "openSearchAccessId",
-                        new PropertyModel<DataStoreInfo>(this, "backend"),
-                        new OpenSearchAccessListModel(),
-                        new StoreListChoiceRenderer());
+        DropDownChoice<DataStoreInfo> openSearchAccessReference = new DropDownChoice<>(
+                "openSearchAccessId",
+                new PropertyModel<DataStoreInfo>(this, "backend"),
+                new OpenSearchAccessListModel(),
+                new StoreListChoiceRenderer());
         form.add(openSearchAccessReference);
-        final TextField<Integer> aggregatesCacheTTL =
-                new TextField<>("aggregatesCacheTTL", Integer.class);
+        final TextField<Integer> aggregatesCacheTTL = new TextField<>("aggregatesCacheTTL", Integer.class);
         aggregatesCacheTTL.add(RangeValidator.minimum(0));
         aggregatesCacheTTL.setRequired(true);
         form.add(aggregatesCacheTTL);
         List<String> units =
-                Arrays.asList(
-                        new String[] {
-                            TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name()
-                        });
-        DropDownChoice<String> aggregatesCacheTTLUnit =
-                new DropDownChoice<String>("aggregatesCacheTTLUnit", units);
+                Arrays.asList(new String[] {TimeUnit.HOURS.name(), TimeUnit.MINUTES.name(), TimeUnit.SECONDS.name()});
+        DropDownChoice<String> aggregatesCacheTTLUnit = new DropDownChoice<String>("aggregatesCacheTTLUnit", units);
         aggregatesCacheTTLUnit.setRequired(true);
         form.add(aggregatesCacheTTLUnit);
         final TextField<Integer> recordsPerPage = new TextField<>("recordsPerPage", Integer.class);
         recordsPerPage.add(RangeValidator.minimum(0));
         recordsPerPage.setRequired(true);
         form.add(recordsPerPage);
-        final TextField<Integer> maximumRecordsPerPage =
-                new TextField<>("maximumRecordsPerPage", Integer.class);
+        final TextField<Integer> maximumRecordsPerPage = new TextField<>("maximumRecordsPerPage", Integer.class);
         maximumRecordsPerPage.add(RangeValidator.minimum(0));
         maximumRecordsPerPage.setRequired(true);
         form.add(maximumRecordsPerPage);
         // check that records is lower or equal than maximum
-        form.add(
-                new AbstractFormValidator() {
+        form.add(new AbstractFormValidator() {
 
-                    @Override
-                    public void validate(Form<?> form) {
-                        Integer records = recordsPerPage.getConvertedInput();
-                        Integer maximum = maximumRecordsPerPage.getConvertedInput();
-                        if (recordsPerPage != null && maximum != null && records > maximum) {
-                            form.error(
-                                    new ParamResourceModel(
-                                            "recordsGreaterThanMaximum", form, records, maximum));
-                        }
+            @Override
+            public void validate(Form<?> form) {
+                Integer records = recordsPerPage.getConvertedInput();
+                Integer maximum = maximumRecordsPerPage.getConvertedInput();
+                if (recordsPerPage != null && maximum != null && records > maximum) {
+                    form.error(new ParamResourceModel("recordsGreaterThanMaximum", form, records, maximum));
+                }
 
-                        // doing the validation here, as just making the text fields as
-                        // required makes one lose edits, and error messages do not show up
-                        productClasses.processInputs();
-                        List<ProductClass> productClasses = oseo.getProductClasses();
-                        for (ProductClass pc : productClasses) {
-                            if (Strings.isEmpty(pc.getName())
-                                    || Strings.isEmpty(pc.getPrefix())
-                                    || Strings.isEmpty(pc.getNamespace())) {
-                                form.error(
-                                        new ParamResourceModel("paramClassNotEmpty", form)
-                                                .getString());
-                                break;
-                            }
-                        }
+                // doing the validation here, as just making the text fields as
+                // required makes one lose edits, and error messages do not show up
+                productClasses.processInputs();
+                List<ProductClass> productClasses = oseo.getProductClasses();
+                for (ProductClass pc : productClasses) {
+                    if (Strings.isEmpty(pc.getName())
+                            || Strings.isEmpty(pc.getPrefix())
+                            || Strings.isEmpty(pc.getNamespace())) {
+                        form.error(new ParamResourceModel("paramClassNotEmpty", form).getString());
+                        break;
                     }
+                }
+            }
 
-                    @Override
-                    public FormComponent<?>[] getDependentFormComponents() {
-                        return new FormComponent<?>[] {recordsPerPage, maximumRecordsPerPage};
-                    }
-                });
+            @Override
+            public FormComponent<?>[] getDependentFormComponents() {
+                return new FormComponent<?>[] {recordsPerPage, maximumRecordsPerPage};
+            }
+        });
 
         productClasses =
-                new GeoServerTablePanel<ProductClass>(
-                        "productClasses", new ProductClassesProvider(info), true) {
+                new GeoServerTablePanel<ProductClass>("productClasses", new ProductClassesProvider(info), true) {
 
                     @Override
                     protected Component getComponentForProperty(
@@ -228,23 +213,19 @@ public class OSEOAdminPage extends BaseServiceAdminPage<OSEOInfo> {
     private Component removeLink(String id, IModel<ProductClass> itemModel) {
         Fragment f = new Fragment(id, "imageLink", OSEOAdminPage.this);
         final ProductClass entry = itemModel.getObject();
-        GeoServerAjaxFormLink link =
-                new GeoServerAjaxFormLink("link") {
+        GeoServerAjaxFormLink link = new GeoServerAjaxFormLink("link") {
 
-                    @Override
-                    protected void onClick(AjaxRequestTarget target, Form form) {
-                        productClasses.processInputs();
-                        OSEOInfo oseo = model.getObject();
-                        oseo.getProductClasses().remove(entry);
-                        target.add(productClasses);
-                    }
-                };
+            @Override
+            protected void onClick(AjaxRequestTarget target, Form form) {
+                productClasses.processInputs();
+                OSEOInfo oseo = model.getObject();
+                oseo.getProductClasses().remove(entry);
+                target.add(productClasses);
+            }
+        };
         f.add(link);
         Image image =
-                new Image(
-                        "image",
-                        new PackageResourceReference(
-                                GeoServerBasePage.class, "img/icons/silk/delete.png"));
+                new Image("image", new PackageResourceReference(GeoServerBasePage.class, "img/icons/silk/delete.png"));
         link.add(image);
         return f;
     }

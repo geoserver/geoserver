@@ -50,13 +50,10 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
         wm.setPosition(Position.get((Integer) props.get("globalWatermarkingPosition")));
         wms.setWatermark(wm);
         wms.setDynamicStylingDisabled(
-                props.containsKey("dynamicStylingDisabled")
-                        ? (Boolean) props.get("dynamicStylingDisabled")
-                        : false);
+                props.containsKey("dynamicStylingDisabled") ? (Boolean) props.get("dynamicStylingDisabled") : false);
 
         try {
-            wms.setInterpolation(
-                    WMSInterpolation.valueOf((String) props.get("allowInterpolation")));
+            wms.setInterpolation(WMSInterpolation.valueOf((String) props.get("allowInterpolation")));
         } catch (Exception e) {
             // fallback on the default value if loading failed
             wms.setInterpolation(WMSInterpolation.Nearest);
@@ -96,30 +93,27 @@ public class WMSLoader extends LegacyServiceLoader<WMSInfo> {
                     ResourceInfo resource = null;
                     if (layerName.contains(":")) {
                         String[] qname = layerName.split(":");
-                        resource =
-                                catalog.getResourceByName(qname[0], qname[1], ResourceInfo.class);
+                        resource = catalog.getResourceByName(qname[0], qname[1], ResourceInfo.class);
                     } else {
                         resource = catalog.getResourceByName(layerName, ResourceInfo.class);
                     }
 
                     if (resource == null) {
-                        LOGGER.warning(
-                                "Ignoring layer group '"
-                                        + bm.getName()
-                                        + "', resource '"
-                                        + layerName
-                                        + "' does not exist");
+                        LOGGER.warning("Ignoring layer group '"
+                                + bm.getName()
+                                + "', resource '"
+                                + layerName
+                                + "' does not exist");
                         continue O;
                     }
 
                     List<LayerInfo> layers = catalog.getLayers(resource);
                     if (layers.isEmpty()) {
-                        LOGGER.warning(
-                                "Ignoring layer group '"
-                                        + bm.getName()
-                                        + "', no layer found for resource '"
-                                        + layerName
-                                        + "'");
+                        LOGGER.warning("Ignoring layer group '"
+                                + bm.getName()
+                                + "', no layer found for resource '"
+                                + layerName
+                                + "'");
                         continue O;
                     }
 

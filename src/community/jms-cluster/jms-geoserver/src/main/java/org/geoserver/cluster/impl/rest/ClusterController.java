@@ -47,20 +47,18 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/cluster")
 public class ClusterController extends AbstractCatalogController {
 
-    @Autowired private Controller controller;
+    @Autowired
+    private Controller controller;
 
-    @Autowired private JMSConfiguration config;
+    @Autowired
+    private JMSConfiguration config;
 
     public ClusterController(Catalog catalog) {
         super(catalog);
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<Properties> getClusterConfiguration() {
         return wrapObject(config.getConfigurations(), Properties.class);
     }
@@ -72,8 +70,8 @@ public class ClusterController extends AbstractCatalogController {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public ResponseEntity<String> postClusterConfiguration(
-            @RequestBody Properties props, UriComponentsBuilder builder) throws IOException {
+    public ResponseEntity<String> postClusterConfiguration(@RequestBody Properties props, UriComponentsBuilder builder)
+            throws IOException {
         for (Object key : props.keySet()) {
             String k = key.toString();
             final String value = props.get(key).toString();
@@ -116,22 +114,18 @@ public class ClusterController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return Properties.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-        template.setObjectWrapper(
-                new ObjectToMapWrapper<Properties>(Properties.class) {
-                    @Override
-                    protected void wrapInternal(
-                            Map properties, SimpleHash model, Properties props) {
-                        properties.putAll(props);
-                    }
-                });
+        template.setObjectWrapper(new ObjectToMapWrapper<Properties>(Properties.class) {
+            @Override
+            protected void wrapInternal(Map properties, SimpleHash model, Properties props) {
+                properties.putAll(props);
+            }
+        });
     }
 
     @Override

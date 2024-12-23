@@ -9,8 +9,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * The GUI configuration for a vector layer. At the moment just the layer name is provided, but
- * there are plans to add filtering and attribute selection as well
+ * The GUI configuration for a vector layer. At the moment just the layer name is provided, but there are plans to add
+ * filtering and attribute selection as well
  *
  * @author Andrea Aime - OpenGeo
  */

@@ -56,20 +56,24 @@ public class BatchImpl extends BaseImpl implements Batch {
     @Filter(name = "activeElementFilter")
     private List<BatchElement> elements = new ArrayList<BatchElement>();
 
-    @Column private String workspace;
+    @Column
+    private String workspace;
 
     @Column(nullable = false)
     private String name;
 
     // stupid work-around
     // duplicate of name only set if configuration == null, just for unique constraint
-    @Column @XStreamOmitField private String nameNoConfig;
+    @Column
+    @XStreamOmitField
+    private String nameNoConfig;
 
     @ManyToOne
     @JoinColumn(name = "configuration", nullable = true)
     private ConfigurationImpl configuration;
 
-    @Column private String description;
+    @Column
+    private String description;
 
     @Column(nullable = true)
     private String frequency;
@@ -81,11 +85,7 @@ public class BatchImpl extends BaseImpl implements Batch {
     @XStreamOmitField
     private Long removeStamp = 0L;
 
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            targetEntity = BatchRunImpl.class,
-            mappedBy = "batch",
-            cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, targetEntity = BatchRunImpl.class, mappedBy = "batch", cascade = CascadeType.ALL)
     @OrderBy("id")
     @XStreamOmitField
     private List<BatchRun> batchRuns = new ArrayList<BatchRun>();

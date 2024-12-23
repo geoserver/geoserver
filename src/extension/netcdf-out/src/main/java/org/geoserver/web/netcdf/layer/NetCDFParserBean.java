@@ -57,8 +57,7 @@ public class NetCDFParserBean {
             // Getting the directory file
             File netCDFDir = new File(NetCDFUtilities.EXTERNAL_DATA_DIR);
             // Creating a File filter
-            FileFilter filter =
-                    FileFilterUtils.nameFileFilter(NETCDF_STANDARD_NAME, IOCase.INSENSITIVE);
+            FileFilter filter = FileFilterUtils.nameFileFilter(NETCDF_STANDARD_NAME, IOCase.INSENSITIVE);
             // Getting the filtered file array
             File[] files = netCDFDir.listFiles(filter);
             // Getting the file if present
@@ -96,8 +95,8 @@ public class NetCDFParserBean {
     }
 
     /**
-     * @return an instance of {@link NetCDFCFParser} if present, or null if no cf-standard table
-     *     file is present or badly parsed.
+     * @return an instance of {@link NetCDFCFParser} if present, or null if no cf-standard table file is present or
+     *     badly parsed.
      */
     public NetCDFCFParser getParser() {
         return parser;

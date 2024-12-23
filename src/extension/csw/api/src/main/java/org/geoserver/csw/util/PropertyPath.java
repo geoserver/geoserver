@@ -55,8 +55,7 @@ public class PropertyPath {
             Matcher matcher = PATTERN_ATT_WITH_INDEX.matcher(name);
             if (matcher.matches()) {
                 try {
-                    key.elements.add(
-                            new Element(matcher.group(1), Integer.parseInt(matcher.group(2))));
+                    key.elements.add(new Element(matcher.group(1), Integer.parseInt(matcher.group(2))));
                 } catch (NumberFormatException e) {
                     key.elements.add(new Element(name));
                 }

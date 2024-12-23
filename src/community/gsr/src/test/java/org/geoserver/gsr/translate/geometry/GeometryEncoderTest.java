@@ -51,9 +51,8 @@ public class GeometryEncoderTest {
         GeometryEncoder encoder = new GeometryEncoder();
         GeoServicesJacksonJsonConverter jsonConverter = new GeoServicesJacksonJsonConverter();
 
-        String stringSource =
-                FileUtils.readFileToString(
-                        new File(getClass().getResource(filename).toURI()), "UTF-8");
+        String stringSource = FileUtils.readFileToString(
+                new File(getClass().getResource(filename).toURI()), "UTF-8");
         JSON jsonSource = JSONSerializer.toJSON(stringSource);
 
         org.locationtech.jts.geom.Geometry jtsGeom = GeometryEncoder.jsonToJtsGeometry(jsonSource);

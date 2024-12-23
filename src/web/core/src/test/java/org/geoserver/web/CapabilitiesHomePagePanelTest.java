@@ -37,8 +37,7 @@ public class CapabilitiesHomePagePanelTest extends GeoServerWicketTestSupport {
                 new org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo(
                         "FakeService2", new Version("1.1.0"), "../caps2");
 
-        CapabilitiesHomePagePanel panel =
-                new CapabilitiesHomePagePanel("capsList", Arrays.asList(ci1, ci2, ci3));
+        CapabilitiesHomePagePanel panel = new CapabilitiesHomePagePanel("capsList", Arrays.asList(ci1, ci2, ci3));
 
         TestPage page = new TestPage();
         page.add(panel);

@@ -20,14 +20,10 @@ public class TestDataWriter {
         GridCoverageFactory factory = new GridCoverageFactory();
 
         GridCoverage2D g2d =
-                factory.create(
-                        "test",
-                        data,
-                        new ReferencedEnvelope(0, 100, 0, 100, CRS.decode("EPSG:3857", true)));
-        GeoTiffWriter writer =
-                new GeoTiffWriter(
-                        new File(
-                                "/home/aaime/devel/git-gs/src/extension/sldService/src/test/resources/org/geoserver/sldservice/singleValueNoData.tif"));
+                factory.create("test", data, new ReferencedEnvelope(0, 100, 0, 100, CRS.decode("EPSG:3857", true)));
+        GeoTiffWriter writer = new GeoTiffWriter(
+                new File(
+                        "/home/aaime/devel/git-gs/src/extension/sldService/src/test/resources/org/geoserver/sldservice/singleValueNoData.tif"));
         writer.write(g2d, null);
     }
 }

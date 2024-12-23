@@ -12,8 +12,8 @@ import org.geowebcache.GeoWebCacheException;
 /**
  * Adapter allowing GeoWebCache to make use of {@link org.geoserver.platform.resource.LockProvider}.
  *
- * <p>This implementation is provided to allow GeoWebCache to make use of the global lock provider
- * used for ResourceStore.
+ * <p>This implementation is provided to allow GeoWebCache to make use of the global lock provider used for
+ * ResourceStore.
  *
  * @author Jody Garnett (Boundless)
  */

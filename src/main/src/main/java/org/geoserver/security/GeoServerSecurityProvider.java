@@ -29,34 +29,28 @@ import org.geoserver.security.validation.SecurityConfigValidator;
  */
 public abstract class GeoServerSecurityProvider {
 
-    /**
-     * Find the provider for a service type and a concrete class name. May return <code>null</code>
-     */
+    /** Find the provider for a service type and a concrete class name. May return <code>null</code> */
     public static GeoServerSecurityProvider getProvider(Class<?> serviceClass, String className) {
 
-        for (GeoServerSecurityProvider prov :
-                GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
+        for (GeoServerSecurityProvider prov : GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
 
             if (GeoServerAuthenticationProvider.class == serviceClass
                     && prov.getAuthenticationProviderClass() != null) {
                 if (prov.getAuthenticationProviderClass().getName().equals(className)) return prov;
             }
-            if (GeoServerUserGroupService.class == serviceClass
-                    && prov.getUserGroupServiceClass() != null) {
+            if (GeoServerUserGroupService.class == serviceClass && prov.getUserGroupServiceClass() != null) {
                 if (prov.getUserGroupServiceClass().getName().equals(className)) return prov;
             }
             if (GeoServerRoleService.class == serviceClass && prov.getRoleServiceClass() != null) {
                 if (prov.getRoleServiceClass().getName().equals(className)) return prov;
             }
-            if (PasswordValidator.class == serviceClass
-                    && prov.getPasswordValidatorClass() != null) {
+            if (PasswordValidator.class == serviceClass && prov.getPasswordValidatorClass() != null) {
                 if (prov.getPasswordValidatorClass().getName().equals(className)) return prov;
             }
             if (GeoServerSecurityFilter.class == serviceClass && prov.getFilterClass() != null) {
                 if (prov.getFilterClass().getName().equals(className)) return prov;
             }
-            if (MasterPasswordProvider.class == serviceClass
-                    && prov.getMasterPasswordProviderClass() != null) {
+            if (MasterPasswordProvider.class == serviceClass && prov.getMasterPasswordProviderClass() != null) {
                 if (prov.getMasterPasswordProviderClass().getName().equals(className)) {
                     return prov;
                 }
@@ -66,42 +60,38 @@ public abstract class GeoServerSecurityProvider {
     }
 
     /**
-     * An implementation of {@link SingleValueConverter} for encryption and decryption of
-     * configuration passwords.
+     * An implementation of {@link SingleValueConverter} for encryption and decryption of configuration passwords.
      *
      * <p>Register the fields in {@link #configure(XStreamPersister)} <code>
      * xp.getXStream().registerLocalConverter(class, fieldName, encrypter);
      * </code> TODO: remove the GeoServerExtensions looksups in this class
      */
-    public SingleValueConverter encrypter =
-            new SingleValueConverter() {
+    public SingleValueConverter encrypter = new SingleValueConverter() {
 
-                @Override
-                public boolean canConvert(Class type) {
-                    return type.equals(String.class);
-                }
+        @Override
+        public boolean canConvert(Class type) {
+            return type.equals(String.class);
+        }
 
-                @Override
-                public String toString(Object obj) {
-                    String source = obj == null ? "" : (String) obj;
-                    GeoServerSecurityManager manager =
-                            GeoServerExtensions.bean(GeoServerSecurityManager.class);
-                    return manager.getConfigPasswordEncryptionHelper().encode(source);
-                }
+        @Override
+        public String toString(Object obj) {
+            String source = obj == null ? "" : (String) obj;
+            GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+            return manager.getConfigPasswordEncryptionHelper().encode(source);
+        }
 
-                @Override
-                public Object fromString(String str) {
-                    GeoServerSecurityManager manager =
-                            GeoServerExtensions.bean(GeoServerSecurityManager.class);
-                    return manager.getConfigPasswordEncryptionHelper().decode(str);
-                }
-            };
+        @Override
+        public Object fromString(String str) {
+            GeoServerSecurityManager manager = GeoServerExtensions.bean(GeoServerSecurityManager.class);
+            return manager.getConfigPasswordEncryptionHelper().decode(str);
+        }
+    };
 
     /**
      * Flag determining if this provider is available.
      *
-     * <p>This default implementation returns <code>true</code>, subclasses should override in cases
-     * where a meaningful check can be made... for instance checking for a jdbc driver, etc...
+     * <p>This default implementation returns <code>true</code>, subclasses should override in cases where a meaningful
+     * check can be made... for instance checking for a jdbc driver, etc...
      */
     public boolean isAvailable() {
         return true;
@@ -119,11 +109,11 @@ public abstract class GeoServerSecurityProvider {
     }
 
     /**
-     * Returns the concrete class of authentication provider created by {@link
-     * #createAuthenticationProvider(SecurityNamedServiceConfig)}.
+     * Returns the concrete class of authentication provider created by
+     * {@link #createAuthenticationProvider(SecurityNamedServiceConfig)}.
      *
-     * <p>If the extension does not provide an authentication provider this method should simply
-     * return <code>null</code>. TODO: change this interface to GeoServerAuthenticationProvider
+     * <p>If the extension does not provide an authentication provider this method should simply return <code>null
+     * </code>. TODO: change this interface to GeoServerAuthenticationProvider
      */
     public Class<? extends GeoServerAuthenticationProvider> getAuthenticationProviderClass() {
         return null;
@@ -132,17 +122,15 @@ public abstract class GeoServerSecurityProvider {
     /**
      * Creates an authentication provider.
      *
-     * <p>If the extension does not provide an authentication provider this method should simply
-     * return <code>null</code>.
+     * <p>If the extension does not provide an authentication provider this method should simply return <code>null
+     * </code>.
      */
-    public GeoServerAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         return null;
     }
 
     /**
-     * Returns the concrete class of security filter created by {@link
-     * #createFilter(SecurityNamedServiceConfig)}.
+     * Returns the concrete class of security filter created by {@link #createFilter(SecurityNamedServiceConfig)}.
      *
      * <p>If the extension does not provide an filter this method should simply return <code>null
      * </code>.
@@ -162,11 +150,10 @@ public abstract class GeoServerSecurityProvider {
     }
 
     /**
-     * Returns the specific class of the user group service created by {@link
-     * #createUserGroupService(SecurityNamedServiceConfig)}.
+     * Returns the specific class of the user group service created by
+     * {@link #createUserGroupService(SecurityNamedServiceConfig)}.
      *
-     * <p>If the extension does not provide a user group service this method should simply return
-     * <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
      */
     public Class<? extends GeoServerUserGroupService> getUserGroupServiceClass() {
         return null;
@@ -175,17 +162,14 @@ public abstract class GeoServerSecurityProvider {
     /**
      * Creates a new user group service.
      *
-     * <p>If the extension does not provide a user group service this method should simply return
-     * <code>null</code>.
+     * <p>If the extension does not provide a user group service this method should simply return <code>null</code>.
      */
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return null;
     }
 
     /**
-     * Returns the specific class of the role service created by {@link
-     * #createRoleService(SecurityNamedServiceConfig)}
+     * Returns the specific class of the role service created by {@link #createRoleService(SecurityNamedServiceConfig)}
      *
      * <p>If the extension does not provide a role service this method should simply return <code>
      * null</code>.
@@ -200,17 +184,16 @@ public abstract class GeoServerSecurityProvider {
      * <p>If the extension does not provide a role service this method should simply return <code>
      * null</code>.
      */
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return null;
     }
 
     /**
-     * Returns the specific class of the master password provider created by {@link
-     * #createMasterPasswordProvider(MasterPasswordProviderConfig)}
+     * Returns the specific class of the master password provider created by
+     * {@link #createMasterPasswordProvider(MasterPasswordProviderConfig)}
      *
-     * <p>If the extension does not provide a master password provider e this method should simply
-     * return <code>null</code>.
+     * <p>If the extension does not provide a master password provider e this method should simply return <code>null
+     * </code>.
      */
     public Class<? extends MasterPasswordProvider> getMasterPasswordProviderClass() {
         return null;
@@ -219,17 +202,16 @@ public abstract class GeoServerSecurityProvider {
     /**
      * Creates a new role group service.
      *
-     * <p>If the extension does not provide a master password provider this method should simply
-     * return <code>null</code>.
+     * <p>If the extension does not provide a master password provider this method should simply return <code>null
+     * </code>.
      */
-    public MasterPasswordProvider createMasterPasswordProvider(MasterPasswordProviderConfig config)
-            throws IOException {
+    public MasterPasswordProvider createMasterPasswordProvider(MasterPasswordProviderConfig config) throws IOException {
         return null;
     }
 
     /**
-     * Returns the specific class of the password validator created by {@link
-     * #createPasswordValidator(PasswordPolicyConfig)}.
+     * Returns the specific class of the password validator created by
+     * {@link #createPasswordValidator(PasswordPolicyConfig)}.
      *
      * <p>If the extension does not provide a validator this method should simply return <code>null
      * </code>.
@@ -244,10 +226,7 @@ public abstract class GeoServerSecurityProvider {
         return null;
     }
 
-    /**
-     * Returns a map containing the field names which should be encrypted. (backend store passwords
-     * as an example)
-     */
+    /** Returns a map containing the field names which should be encrypted. (backend store passwords as an example) */
     public Map<Class<?>, Set<String>> getFieldsForEncryption() {
         return Collections.emptyMap();
     }
@@ -263,8 +242,7 @@ public abstract class GeoServerSecurityProvider {
     }
 
     /** Return a configuration validator, subclass of {@link SecurityConfigValidator} */
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new SecurityConfigValidator(securityManager);
     }
 
@@ -272,8 +250,8 @@ public abstract class GeoServerSecurityProvider {
     public void configureFilterChain(GeoServerSecurityFilterChain filterChain) {}
 
     /**
-     * Startup hook - this will be executed after loading the security configuration, allowing
-     * plugins to apply custom modifications to the security settings.
+     * Startup hook - this will be executed after loading the security configuration, allowing plugins to apply custom
+     * modifications to the security settings.
      */
     public void init(GeoServerSecurityManager manager) {}
 

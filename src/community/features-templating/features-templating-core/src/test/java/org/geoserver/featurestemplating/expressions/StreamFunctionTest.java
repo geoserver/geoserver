@@ -13,8 +13,7 @@ public class StreamFunctionTest extends ListFunctionsTestSupport {
 
     @Test
     public void testStreamFunction() {
-        Expression filtering =
-                ff.function("filter", ff.literal("stringValue = \"A\" OR intValue >= 8 "));
+        Expression filtering = ff.function("filter", ff.literal("stringValue = \"A\" OR intValue >= 8 "));
         Expression sort = ff.function("sort", ff.literal("DESC"));
         Expression pn = ff.property("doubleValue");
         Expression stream = ff.function("stream", filtering, pn, sort);

@@ -33,9 +33,7 @@ public class CatalogResponseSerializationTest extends SerializationTest {
         NamedLink link = decode(raw, NamedLink.class);
         assertNotNull(link);
         assertEquals("nyc", link.getName());
-        assertEquals(
-                "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json",
-                link.getHref());
+        assertEquals("http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json", link.getHref());
         assertNull(link.getLink());
     }
 
@@ -45,9 +43,7 @@ public class CatalogResponseSerializationTest extends SerializationTest {
         NamedLink link = decode(raw, NamedLink.class);
         assertNotNull(link);
         assertEquals("nyc", link.getName());
-        assertEquals(
-                "http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json",
-                link.getLink());
+        assertEquals("http://localhost:8080/geoserver/rest/workspaces/tiger/datastores/nyc.json", link.getLink());
         assertNull(link.getHref());
     }
 
@@ -118,21 +114,14 @@ public class CatalogResponseSerializationTest extends SerializationTest {
         expected.put("namespace", "http://www.census.gov");
         expected.put("cache and reuse memory maps", "false");
         expected.put("url", "file:data/nyc");
-        Map<String, String> actual =
-                entry.stream()
-                        .collect(
-                                Collectors.toMap(
-                                        ConnectionParameterEntry::getAtKey,
-                                        ConnectionParameterEntry::getValue));
+        Map<String, String> actual = entry.stream()
+                .collect(Collectors.toMap(ConnectionParameterEntry::getAtKey, ConnectionParameterEntry::getValue));
         assertEquals(expected, actual);
     }
 
     public @Test void testFeatureTypeResponse() throws IOException {
         FeatureTypeResponseWrapper rw =
-                decode(
-                        "FeatureTypeResponse.json",
-                        FeatureTypeInfo.class,
-                        FeatureTypeResponseWrapper.class);
+                decode("FeatureTypeResponse.json", FeatureTypeInfo.class, FeatureTypeResponseWrapper.class);
         FeatureTypeResponse r = rw.getFeatureType();
         assertNotNull(r);
         assertEquals("tasmania_roads", r.getName());
@@ -161,40 +150,39 @@ public class CatalogResponseSerializationTest extends SerializationTest {
     }
 
     public @Test void styleList() throws IOException {
-        String raw =
-                "{\n"
-                        + //
-                        "	\"styles\": \n"
-                        + //
-                        "	{\n"
-                        + //
-                        "		\"style\": \n"
-                        + //
-                        "		[\n"
-                        + //
-                        "			{\n"
-                        + //
-                        "				\"name\": \"generic\",\n"
-                        + //
-                        "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/generic.json\"\n"
-                        + //
-                        "			},\n"
-                        + //
-                        "\n"
-                        + //
-                        "			{\n"
-                        + //
-                        "				\"name\": \"line\",\n"
-                        + //
-                        "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/line.json\"\n"
-                        + //
-                        "			}\n"
-                        + //
-                        "		]\n"
-                        + //
-                        "	}\n"
-                        + //
-                        "}";
+        String raw = "{\n"
+                + //
+                "	\"styles\": \n"
+                + //
+                "	{\n"
+                + //
+                "		\"style\": \n"
+                + //
+                "		[\n"
+                + //
+                "			{\n"
+                + //
+                "				\"name\": \"generic\",\n"
+                + //
+                "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/generic.json\"\n"
+                + //
+                "			},\n"
+                + //
+                "\n"
+                + //
+                "			{\n"
+                + //
+                "				\"name\": \"line\",\n"
+                + //
+                "				\"href\": \"http:\\/\\/localhost:8080\\/rest\\/styles\\/line.json\"\n"
+                + //
+                "			}\n"
+                + //
+                "		]\n"
+                + //
+                "	}\n"
+                + //
+                "}";
         StyleListWrapper wrapper = decode(raw, StyleListWrapper.class);
         assertNotNull(wrapper);
         assertEquals(2, wrapper.getStyles().getStyle().size());

@@ -24,15 +24,10 @@ public class PaginationLinksBuilderTest {
     public static void setupRequestInfo() {
         RequestAttributes attributes = EasyMock.niceMock(RequestAttributes.class);
         RequestContextHolder.setRequestAttributes(attributes);
-        APIRequestInfo requestInfo =
-                new APIRequestInfo(
-                        new MockHttpServletRequest(),
-                        new MockHttpServletResponse(),
-                        EasyMock.mock(APIDispatcher.class));
+        APIRequestInfo requestInfo = new APIRequestInfo(
+                new MockHttpServletRequest(), new MockHttpServletResponse(), EasyMock.mock(APIDispatcher.class));
         APIRequestInfo.set(requestInfo);
-        EasyMock.expect(
-                        attributes.getAttribute(
-                                APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST))
+        EasyMock.expect(attributes.getAttribute(APIRequestInfo.KEY, RequestAttributes.SCOPE_REQUEST))
                 .andReturn(requestInfo)
                 .anyTimes();
         EasyMock.replay(attributes);

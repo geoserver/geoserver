@@ -39,8 +39,7 @@ import org.geotools.gml.producer.FeatureTypeTransformer;
 
 public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     /** Standard logging instance for class */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses");
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.responses");
 
     // Initialize some generic GML information
     // ABSTRACT OUTSIDE CLASS, IF POSSIBLE
@@ -49,8 +48,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     private static final String GML_URL = "\"http://www.opengis.net/gml\"";
     private static final String GML_NAMESPACE = "\n  xmlns:gml=" + GML_URL;
     private static final String ELEMENT_FORM_DEFAULT = "\n  elementFormDefault=\"qualified\"";
-    private static final String ATTR_FORM_DEFAULT =
-            "\n  attributeFormDefault=\"unqualified\" version=\"1.0\">";
+    private static final String ATTR_FORM_DEFAULT = "\n  attributeFormDefault=\"unqualified\" version=\"1.0\">";
     private static final String TARGETNS_PREFIX = "\n  targetNamespace=\"";
     private static final String TARGETNS_SUFFIX = "\" ";
 
@@ -71,16 +69,13 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     @Override
-    protected void write(
-            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
+    protected void write(FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
         WFSInfo wfs = getInfo();
 
         // generates response, using general function
-        String xmlResponse =
-                generateTypes(
-                        featureTypeInfos,
-                        (DescribeFeatureTypeType) describeFeatureType.getParameters()[0]);
+        String xmlResponse = generateTypes(
+                featureTypeInfos, (DescribeFeatureTypeType) describeFeatureType.getParameters()[0]);
 
         if (!wfs.getGeoServer().getSettings().isVerbose()) {
             // strip out the formatting.  This is pretty much the only way we
@@ -105,16 +100,14 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * @return The XMLSchema describing the features requested.
      * @throws WFSException For any problems.
      */
-    private final String generateTypes(FeatureTypeInfo[] infos, DescribeFeatureTypeType request)
-            throws IOException {
+    private final String generateTypes(FeatureTypeInfo[] infos, DescribeFeatureTypeType request) throws IOException {
         // Initialize return information and intermediate return objects
         StringBuffer tempResponse = new StringBuffer();
 
-        tempResponse.append(
-                "<?xml version=\"1.0\" encoding=\""
-                        + getInfo().getGeoServer().getSettings().getCharset()
-                        + "\"?>"
-                        + "\n<xs:schema ");
+        tempResponse.append("<?xml version=\"1.0\" encoding=\""
+                + getInfo().getGeoServer().getSettings().getCharset()
+                + "\"?>"
+                + "\n<xs:schema ");
 
         // allSameType will throw WFSException if there are types that are not found.
         if (allSameType(infos)) {
@@ -127,13 +120,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             tempResponse.append(TARGETNS_PREFIX + targetNs + TARGETNS_SUFFIX);
 
             // namespace
-            tempResponse.append(
-                    "\n  "
-                            + "xmlns:"
-                            + ftInfo.getNamespace().getPrefix()
-                            + "=\""
-                            + targetNs
-                            + "\"");
+            tempResponse.append("\n  " + "xmlns:" + ftInfo.getNamespace().getPrefix() + "=\"" + targetNs + "\"");
 
             // xmlns:" + nsPrefix + "=\"" + targetNs
             // + "\"");
@@ -151,12 +138,11 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             //            tempResponse.append("\n\n<xs:import namespace=" + GML_URL
             //                + " schemaLocation=\"" + request.getSchemaBaseUrl()
             //                + "gml/2.1.2/feature.xsd\"/>\n\n");
-            tempResponse.append(
-                    "\n\n<xs:import namespace="
-                            + GML_URL
-                            + " schemaLocation=\""
-                            + buildSchemaURL(request.getBaseUrl(), "gml/2.1.2.1/feature.xsd")
-                            + "\"/>\n\n");
+            tempResponse.append("\n\n<xs:import namespace="
+                    + GML_URL
+                    + " schemaLocation=\""
+                    + buildSchemaURL(request.getBaseUrl(), "gml/2.1.2.1/feature.xsd")
+                    + "\"/>\n\n");
             tempResponse.append(generateSpecifiedTypes(infos));
         } else {
             // the featureTypes do not have all the same prefixes.
@@ -175,12 +161,11 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             while (prefixIter.hasNext()) {
                 // iterate through prefixes, and add the types that have that prefix.
                 String prefix = prefixIter.next().toString();
-                tempResponse.append(
-                        getNSImport(
-                                prefix,
-                                infos,
-                                request.getBaseUrl(),
-                                request.getService().toLowerCase()));
+                tempResponse.append(getNSImport(
+                        prefix,
+                        infos,
+                        request.getBaseUrl(),
+                        request.getService().toLowerCase()));
             }
         }
 
@@ -190,18 +175,16 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     /**
-     * Creates a import namespace element, for cases when requests contain multiple namespaces, as
-     * you can not have more than one target namespace. See wfs spec. 8.3.1. All the typeNames that
-     * have the correct prefix are added to the import statement.
+     * Creates a import namespace element, for cases when requests contain multiple namespaces, as you can not have more
+     * than one target namespace. See wfs spec. 8.3.1. All the typeNames that have the correct prefix are added to the
+     * import statement.
      *
-     * @param prefix the namespace prefix, which must be mapped in the main ConfigInfo, for this
-     *     import statement.
-     * @param infos a list of all requested typeNames, only those that match the prefix will be a
-     *     part of this import statement.
+     * @param prefix the namespace prefix, which must be mapped in the main ConfigInfo, for this import statement.
+     * @param infos a list of all requested typeNames, only those that match the prefix will be a part of this import
+     *     statement.
      * @return The namespace element.
      */
-    private StringBuffer getNSImport(
-            String prefix, FeatureTypeInfo[] infos, String baseUrl, String service) {
+    private StringBuffer getNSImport(String prefix, FeatureTypeInfo[] infos, String baseUrl, String service) {
         LOGGER.finer("prefix is " + prefix);
 
         StringBuffer retBuffer = new StringBuffer("\n  <xs:import namespace=\"");
@@ -242,19 +225,18 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     /**
-     * Internal method to print just the requested types. They should all be in the same namespace,
-     * that handling should be done before. This will not do any namespace handling, just prints up
-     * either what's in the schema file, or if it's not there then generates the types from their
-     * FeatureTypes. Also appends the global element so that the types can substitute as features.
+     * Internal method to print just the requested types. They should all be in the same namespace, that handling should
+     * be done before. This will not do any namespace handling, just prints up either what's in the schema file, or if
+     * it's not there then generates the types from their FeatureTypes. Also appends the global element so that the
+     * types can substitute as features.
      *
      * @param infos The requested table names.
      * @return A string of the types printed.
-     * @task REVISIT: We need a way to make sure the extension bases are correct. should likely add
-     *     a field to the info.xml in the featureTypes folder, that optionally references an
-     *     extension base (should it be same namespace? we could also probably just do an import on
-     *     the extension base). This function then would see if the typeInfo has an extension base,
-     *     and would add or import the file appropriately, and put the correct substitution group in
-     *     this function.
+     * @task REVISIT: We need a way to make sure the extension bases are correct. should likely add a field to the
+     *     info.xml in the featureTypes folder, that optionally references an extension base (should it be same
+     *     namespace? we could also probably just do an import on the extension base). This function then would see if
+     *     the typeInfo has an extension base, and would add or import the file appropriately, and put the correct
+     *     substitution group in this function.
      */
     private String generateSpecifiedTypes(FeatureTypeInfo[] infos) {
         // TypeRepository repository = TypeRepository.getInstance();
@@ -312,8 +294,8 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
      * Transforms a FeatureTypeInfo into gml, with no headers.
      *
      * @param schema the schema to transform.
-     * @task REVISIT: when this class changes to writing directly to out this can just take a writer
-     *     and write directly to it.
+     * @task REVISIT: when this class changes to writing directly to out this can just take a writer and write directly
+     *     to it.
      */
     private String generateFromSchema(FeatureType schema) throws IOException {
         try {
@@ -371,19 +353,15 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
             // don't have schemas in the right place?  Because as it is now
             // a describe all will choke if there is one ft with no schema.xml
             throw (IOException)
-                    new IOException(
-                                    "problem writing featureType information "
-                                            + " from "
-                                            + inputFile)
-                            .initCause(e);
+                    new IOException("problem writing featureType information " + " from " + inputFile).initCause(e);
         }
 
         return sb.toString();
     }
 
     /**
-     * Checks that the collection of featureTypeNames all have the same prefix. Used to determine if
-     * their schemas are all in the same namespace or if imports need to be done.
+     * Checks that the collection of featureTypeNames all have the same prefix. Used to determine if their schemas are
+     * all in the same namespace or if imports need to be done.
      *
      * @param infos list of feature type info objects..
      * @return true if all the types in the collection have the same prefix.

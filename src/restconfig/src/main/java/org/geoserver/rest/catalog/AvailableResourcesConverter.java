@@ -61,16 +61,14 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
     }
 
     @Override
-    protected AvailableResources readInternal(
-            Class<? extends AvailableResources> clazz, HttpInputMessage inputMessage)
+    protected AvailableResources readInternal(Class<? extends AvailableResources> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new HttpMessageNotReadableException(
                 "AvailableResourceConverter does not support deserialization", inputMessage);
     }
 
     @Override
-    protected void writeInternal(
-            AvailableResources availableResources, HttpOutputMessage outputMessage)
+    protected void writeInternal(AvailableResources availableResources, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
         MediaType contentType = outputMessage.getHeaders().getContentType();
 
@@ -83,8 +81,7 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
         }
     }
 
-    private void writeJSON(AvailableResources t, HttpOutputMessage outputMessage)
-            throws IOException {
+    private void writeJSON(AvailableResources t, HttpOutputMessage outputMessage) throws IOException {
         JSONArray names = new JSONArray();
         names.addAll(t);
         JSONObject string = new JSONObject();
@@ -98,8 +95,7 @@ public class AvailableResourcesConverter extends BaseMessageConverter<AvailableR
         }
     }
 
-    protected void writeXML(AvailableResources t, HttpOutputMessage outputMessage)
-            throws IOException {
+    protected void writeXML(AvailableResources t, HttpOutputMessage outputMessage) throws IOException {
 
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try {

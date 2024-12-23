@@ -32,16 +32,14 @@ import org.springframework.test.context.web.WebAppConfiguration;
  * @author Niels Charlier
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration({
-    "classpath*:/applicationContext.xml",
-    "classpath*:/applicationSecurityContext.xml"
-})
+@ContextConfiguration({"classpath*:/applicationContext.xml", "classpath*:/applicationSecurityContext.xml"})
 @WebAppConfiguration // we need web app context to have data directory set.
 public abstract class AbstractTaskManagerTest {
 
     protected static MockData DATA_DIRECTORY;
 
-    @Autowired protected GeoServer geoServer;
+    @Autowired
+    protected GeoServer geoServer;
 
     @BeforeClass
     public static void init() throws Exception {
@@ -75,16 +73,12 @@ public abstract class AbstractTaskManagerTest {
 
     @After
     public void cleanDataDirectory() throws Exception {
-        for (File file :
-                DATA_DIRECTORY
-                        .getDataDirectoryRoot()
-                        .listFiles(
-                                new FilenameFilter() {
-                                    @Override
-                                    public boolean accept(java.io.File dir, String name) {
-                                        return !name.equals("taskmanager");
-                                    }
-                                })) {
+        for (File file : DATA_DIRECTORY.getDataDirectoryRoot().listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(java.io.File dir, String name) {
+                return !name.equals("taskmanager");
+            }
+        })) {
             if (file.isDirectory()) {
                 FileUtils.cleanDirectory(file);
             } else {
@@ -96,8 +90,7 @@ public abstract class AbstractTaskManagerTest {
     /**
      * Sets up the authentication context for the test.
      *
-     * <p>This context lasts only for a single test case, it is cleared after every test has
-     * completed.
+     * <p>This context lasts only for a single test case, it is cleared after every test has completed.
      *
      * @param username The username.
      * @param password The password.

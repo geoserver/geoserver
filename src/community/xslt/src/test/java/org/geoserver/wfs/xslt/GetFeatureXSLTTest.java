@@ -71,12 +71,10 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testOutputFormatWrongCase() throws Exception {
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BUILDINGS)
-                                + "&version=1.1.0&service=wfs&outputFormat="
-                                + "text/html; subtype=xslt".toUpperCase());
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&outputFormat="
+                + "text/html; subtype=xslt".toUpperCase());
         // print(d);
 
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
@@ -84,11 +82,9 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testGeneralOutput() throws Exception {
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BUILDINGS)
-                                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
         // print(d);
 
         // two features
@@ -98,9 +94,7 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
         // check the first
         XMLAssert.assertXpathEvaluatesTo(
-                "113",
-                "//h2[text() = 'Buildings.1107531701010']/following-sibling::table/tr[td='cite:FID']/td[2]",
-                d);
+                "113", "//h2[text() = 'Buildings.1107531701010']/following-sibling::table/tr[td='cite:FID']/td[2]", d);
         XMLAssert.assertXpathEvaluatesTo(
                 "123 Main Street",
                 "//h2[text() = 'Buildings.1107531701010']/following-sibling::table/tr[td='cite:ADDRESS']/td[2]",
@@ -109,11 +103,9 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testHeaders() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BUILDINGS)
-                                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
 
         assertEquals("text/html; subtype=xslt", response.getContentType());
         assertEquals("inline; filename=Buildings.html", response.getHeader("Content-Disposition"));
@@ -121,26 +113,21 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testHeadersTwoLayers() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BUILDINGS)
-                                + ","
-                                + getLayerId(MockData.LAKES)
-                                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + ","
+                + getLayerId(MockData.LAKES)
+                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
 
         assertEquals("text/html; subtype=xslt", response.getContentType());
-        assertEquals(
-                "inline; filename=Buildings_Lakes.html", response.getHeader("Content-Disposition"));
+        assertEquals("inline; filename=Buildings_Lakes.html", response.getHeader("Content-Disposition"));
     }
 
     @Test
     public void testLayerSpecific() throws Exception {
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BRIDGES)
-                                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BRIDGES)
+                + "&version=1.0.0&service=wfs&outputFormat=text/html; subtype=xslt");
         // print(d);
 
         // just one features
@@ -152,11 +139,9 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testMimeType() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BRIDGES)
-                                + "&version=1.0.0&service=wfs&outputFormat=HTML");
+        MockHttpServletResponse response = getAsServletResponse("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BRIDGES)
+                + "&version=1.0.0&service=wfs&outputFormat=HTML");
         assertEquals("text/html", response.getContentType());
 
         Document d = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
@@ -170,11 +155,9 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testLayerSpecificOnOtherLayer() throws Exception {
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BASIC_POLYGONS)
-                                + "&version=1.1.0&service=wfs&outputFormat=HTML");
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&version=1.1.0&service=wfs&outputFormat=HTML");
 
         print(d);
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
@@ -182,13 +165,11 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
 
     @Test
     public void testIncompatibleMix() throws Exception {
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BRIDGES)
-                                + ","
-                                + getLayerId(MockData.BUILDINGS)
-                                + "&version=1.1.0&service=wfs&outputFormat=text/html; subtype=xslt");
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BRIDGES)
+                + ","
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.1.0&service=wfs&outputFormat=text/html; subtype=xslt");
         // print(d);
 
         checkOws10Exception(d, ServiceException.INVALID_PARAMETER_VALUE, "typeName");
@@ -209,13 +190,11 @@ public class GetFeatureXSLTTest extends XSLTTestSupport {
         updater.run();
 
         // now run a GML2 request, it should work fine (GEOS-5804)
-        Document d =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename="
-                                + getLayerId(MockData.BRIDGES)
-                                + ","
-                                + getLayerId(MockData.BUILDINGS)
-                                + "&version=1.0.0&service=wfs");
+        Document d = getAsDOM("wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BRIDGES)
+                + ","
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs");
         XMLAssert.assertXpathEvaluatesTo("1", "count(/wfs:FeatureCollection)", d);
     }
 }

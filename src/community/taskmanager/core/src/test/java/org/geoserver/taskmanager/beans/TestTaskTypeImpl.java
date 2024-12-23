@@ -36,15 +36,12 @@ public class TestTaskTypeImpl implements TaskType {
 
     private static final Logger LOGGER = Logging.getLogger(TestTaskTypeImpl.class);
 
-    private static final Map<String, ParameterInfo> PARAM_INFO =
-            new LinkedHashMap<String, ParameterInfo>();
+    private static final Map<String, ParameterInfo> PARAM_INFO = new LinkedHashMap<String, ParameterInfo>();
 
     static {
         PARAM_INFO.put(PARAM_FAIL, new ParameterInfo(PARAM_FAIL, ParameterType.BOOLEAN, false));
         PARAM_INFO.put(PARAM_DELAY, new ParameterInfo(PARAM_DELAY, ParameterType.INTEGER, false));
-        PARAM_INFO.put(
-                PARAM_DELAY_COMMIT,
-                new ParameterInfo(PARAM_DELAY_COMMIT, ParameterType.INTEGER, false));
+        PARAM_INFO.put(PARAM_DELAY_COMMIT, new ParameterInfo(PARAM_DELAY_COMMIT, ParameterType.INTEGER, false));
     }
 
     /** Contains the results of the runs that this task type has done. */
@@ -61,10 +58,9 @@ public class TestTaskTypeImpl implements TaskType {
 
     @Override
     public TaskResult run(TaskContext ctx) throws TaskException {
-        String identifier =
-                ctx.getBatchContext().getBatchRun().getBatch().getFullName()
-                        + ":"
-                        + ctx.getTask().getFullName();
+        String identifier = ctx.getBatchContext().getBatchRun().getBatch().getFullName()
+                + ":"
+                + ctx.getTask().getFullName();
         LOGGER.log(Level.INFO, "running task " + identifier);
 
         status.put(identifier, 1);

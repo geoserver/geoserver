@@ -26,20 +26,18 @@ public class ImageTest extends ImagesTestSupport {
     @Test
     public void testWaterTempImages() throws Exception {
         String waterTemp = getLayerId(WATER_TEMP);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/images/v1/collections/"
-                                + waterTemp
-                                + "/images?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                "ogc/images/v1/collections/"
+                        + waterTemp
+                        + "/images?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
 
         // get the feature id by the properties, as the harvesting order might change
         // with the file system
-        String featureId =
-                readSingle(
-                        json,
-                        "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
+        String featureId = readSingle(
+                json,
+                "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
         // check properties (location is gone, time torned to "datetime")
         String basePath = "features[?(@.id == '" + featureId + "')]";
@@ -72,18 +70,14 @@ public class ImageTest extends ImagesTestSupport {
         // check links (mandatory in STAC)
         assertThat(
                 readSingle(json, basePath + ".links[?(@.rel=='self')].href"),
-                equalTo(
-                        "http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
-                                + featureId
-                                + "?f=application%2Fstac%2Bjson"));
+                equalTo("http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
+                        + featureId
+                        + "?f=application%2Fstac%2Bjson"));
         assertThat(
-                readSingle(
-                        json,
-                        basePath + ".links[?(@.rel=='alternate' && @.type =='text/html')].href"),
-                equalTo(
-                        "http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
-                                + featureId
-                                + "?f=text%2Fhtml"));
+                readSingle(json, basePath + ".links[?(@.rel=='alternate' && @.type =='text/html')].href"),
+                equalTo("http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
+                        + featureId
+                        + "?f=text%2Fhtml"));
         // check the assets (also mandatory in STAC)
         assertThat(
                 readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].title"),
@@ -91,10 +85,9 @@ public class ImageTest extends ImagesTestSupport {
         assertThat(
                 readSingle(json, basePath + ".assets[?(@.type=='image/tiff')].href"),
                 allOf(
-                        startsWith(
-                                "http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
-                                        + featureId
-                                        + "/assets/"),
+                        startsWith("http://localhost:8080/geoserver/ogc/images/v1/collections/sf%3Awatertemp/images/"
+                                + featureId
+                                + "/assets/"),
                         endsWith("-NCOM_wattemp_100_20081101T0000000_12.tiff")));
     }
 
@@ -102,14 +95,12 @@ public class ImageTest extends ImagesTestSupport {
     public void testImageNotFound() throws Exception {
         String waterTemp = getLayerId(WATER_TEMP);
 
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/images/v1/collections/"
-                                + waterTemp
-                                + "/images/"
-                                + "floopaloo"
-                                + "?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME));
+        MockHttpServletResponse response = getAsServletResponse("ogc/images/v1/collections/"
+                + waterTemp
+                + "/images/"
+                + "floopaloo"
+                + "?f="
+                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME));
         assertThat(response.getStatus(), equalTo(404));
     }
 
@@ -118,17 +109,15 @@ public class ImageTest extends ImagesTestSupport {
         // get the feature id we want to query, as the harvesting order might change with the file
         // system
         String waterTemp = getLayerId(WATER_TEMP);
-        DocumentContext collectionJson =
-                getAsJSONPath(
-                        "ogc/images/v1/collections/"
-                                + waterTemp
-                                + "/images?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
-        String featureId =
-                readSingle(
-                        collectionJson,
-                        "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
+        DocumentContext collectionJson = getAsJSONPath(
+                "ogc/images/v1/collections/"
+                        + waterTemp
+                        + "/images?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
+        String featureId = readSingle(
+                collectionJson,
+                "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
 
         // get the single feature now by service call system
@@ -147,17 +136,15 @@ public class ImageTest extends ImagesTestSupport {
         // get the feature id we want to query, as the harvesting order might change with the file
         // system
         String waterTemp = getLayerId(WATER_TEMP);
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/images/v1/collections/"
-                                + waterTemp
-                                + "/images?f="
-                                + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
-                        200);
-        String featureId =
-                readSingle(
-                        json,
-                        "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
+        DocumentContext json = getAsJSONPath(
+                "ogc/images/v1/collections/"
+                        + waterTemp
+                        + "/images?f="
+                        + ResponseUtils.urlEncode(STACItemFeaturesResponse.MIME),
+                200);
+        String featureId = readSingle(
+                json,
+                "features[?(@.properties.datetime == '2008-11-01T00:00:00Z' && @.properties.elevation == 100)].id");
         assertThat(featureId, startsWith("watertemp."));
 
         String basePath = "features[?(@.id == '" + featureId + "')]";
@@ -173,8 +160,7 @@ public class ImageTest extends ImagesTestSupport {
         Resource mosaicDirectory = getDataDirectory().get("watertemp");
         Resource referenceFile = mosaicDirectory.get("NCOM_wattemp_100_20081101T0000000_12.tiff");
         try (InputStream referenceIs = referenceFile.in()) {
-            IOUtils.contentEquals(
-                    referenceIs, new ByteArrayInputStream(response.getContentAsByteArray()));
+            IOUtils.contentEquals(referenceIs, new ByteArrayInputStream(response.getContentAsByteArray()));
         }
     }
 }

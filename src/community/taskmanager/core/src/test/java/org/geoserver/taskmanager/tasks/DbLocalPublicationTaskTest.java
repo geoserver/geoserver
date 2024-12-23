@@ -38,8 +38,8 @@ import org.quartz.TriggerBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * To run this test you should have a postgres running on localhost with database 'mydb' (or
- * configure in application context), initiated with create-source.sql.
+ * To run this test you should have a postgres running on localhost with database 'mydb' (or configure in application
+ * context), initiated with create-source.sql.
  *
  * @author Niels Charlier
  */
@@ -58,21 +58,29 @@ public class DbLocalPublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_LAYER = "layer";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private LookupService<DbSource> dbSources;
+    @Autowired
+    private LookupService<DbSource> dbSources;
 
     private Configuration config;
 
@@ -101,12 +109,9 @@ public class DbLocalPublicationTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(DbLocalPublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, DbLocalPublicationTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, DbLocalPublicationTaskTypeImpl.PARAM_TABLE_NAME, ATT_TABLE_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, DbLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -137,8 +142,10 @@ public class DbLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, LAYER_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -173,8 +180,10 @@ public class DbLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

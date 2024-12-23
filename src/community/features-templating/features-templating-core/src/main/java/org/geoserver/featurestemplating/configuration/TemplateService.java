@@ -4,9 +4,7 @@
  */
 package org.geoserver.featurestemplating.configuration;
 
-/**
- * This class provides the business logic to handle save, update and delete operation on a template.
- */
+/** This class provides the business logic to handle save, update and delete operation on a template. */
 public class TemplateService {
 
     private TemplateLoader loader;

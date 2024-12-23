@@ -45,12 +45,10 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
         tester.assertComponent("form:panel:locale", AbstractSingleSelectChoice.class);
 
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:case");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:case");
 
         AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:locale");
+                (AbstractSingleSelectChoice<Locale>) tester.getComponentFromLastRenderedPage("form:panel:locale");
 
         assertThat(kase.isNullValid(), is(false));
         assertThat(locale.isNullValid(), is(true));
@@ -62,12 +60,10 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
         startPage();
 
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:case");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:case");
 
         AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:locale");
+                (AbstractSingleSelectChoice<Locale>) tester.getComponentFromLastRenderedPage("form:panel:locale");
 
         assertThat(kase.getValue(), equalTo("NONE"));
         assertThat(locale.getValue(), equalTo(""));
@@ -81,12 +77,10 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
         startPage();
 
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:case");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:case");
 
         AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:locale");
+                (AbstractSingleSelectChoice<Locale>) tester.getComponentFromLastRenderedPage("form:panel:locale");
 
         assertThat(kase.getValue(), equalTo("UPPER"));
         assertThat(locale.getValue(), equalTo("en_CA"));
@@ -137,16 +131,14 @@ public class CaseNormalizerSubformTest extends GeoServerWicketTestSupport {
     }
 
     private void startPage() {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            /** serialVersionUID */
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new CaseNormalizerSubform(id, model);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new CaseNormalizerSubform(id, model);
+            }
+        }));
     }
 }

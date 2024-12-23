@@ -27,26 +27,24 @@ public class RootLayerEntryPanel extends Panel {
 
     private static final long serialVersionUID = 3471204885852128002L;
 
-    public RootLayerEntryPanel(
-            String id, WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
+    public RootLayerEntryPanel(String id, WorkspaceInfo workspace, final IModel<LayerGroupInfo> model) {
         super(id);
 
         setOutputMarkupId(true);
 
-        final TextField<LayerInfo> rootLayerField =
-                new TextField<>("rootLayer") {
-                    private static final long serialVersionUID = -8033503312874828019L;
+        final TextField<LayerInfo> rootLayerField = new TextField<>("rootLayer") {
+            private static final long serialVersionUID = -8033503312874828019L;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (LayerInfo.class.isAssignableFrom(type)) {
-                            return (IConverter<C>) new LayerInfoConverter();
-                        } else {
-                            return super.getConverter(type);
-                        }
-                    }
-                };
+            @SuppressWarnings("unchecked")
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                if (LayerInfo.class.isAssignableFrom(type)) {
+                    return (IConverter<C>) new LayerInfoConverter();
+                } else {
+                    return super.getConverter(type);
+                }
+            }
+        };
         rootLayerField.setOutputMarkupId(true);
         rootLayerField.setRequired(true);
         add(rootLayerField);
@@ -67,50 +65,45 @@ public class RootLayerEntryPanel extends Panel {
             styles.addAll(GeoServerApplication.get().getCatalog().getStylesByWorkspace(workspace));
         }
 
-        DropDownChoice<StyleInfo> styleField =
-                new DropDownChoice<>("rootLayerStyle", styles) {
-                    private static final long serialVersionUID = 1190134258726393181L;
+        DropDownChoice<StyleInfo> styleField = new DropDownChoice<>("rootLayerStyle", styles) {
+            private static final long serialVersionUID = 1190134258726393181L;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <C> IConverter<C> getConverter(Class<C> type) {
-                        if (StyleInfo.class.isAssignableFrom(type)) {
-                            return (IConverter<C>) new StyleInfoConverter();
-                        } else {
-                            return super.getConverter(type);
-                        }
-                    }
-                };
+            @SuppressWarnings("unchecked")
+            @Override
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                if (StyleInfo.class.isAssignableFrom(type)) {
+                    return (IConverter<C>) new StyleInfoConverter();
+                } else {
+                    return super.getConverter(type);
+                }
+            }
+        };
         styleField.setNullValid(true);
         add(styleField);
 
         final GSModalWindow popupWindow = new GSModalWindow("popup");
         add(popupWindow);
-        add(
-                new AjaxLink<>("add") {
-                    private static final long serialVersionUID = 723787950130153037L;
+        add(new AjaxLink<>("add") {
+            private static final long serialVersionUID = 723787950130153037L;
+
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                popupWindow.setInitialHeight(375);
+                popupWindow.setInitialWidth(525);
+                popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
+                popupWindow.setContent(new LayerListPanel(popupWindow.getContentId(), workspace) {
+                    private static final long serialVersionUID = -650599334132713975L;
 
                     @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        popupWindow.setInitialHeight(375);
-                        popupWindow.setInitialWidth(525);
-                        popupWindow.setTitle(new ParamResourceModel("chooseLayer", this));
-                        popupWindow.setContent(
-                                new LayerListPanel(popupWindow.getContentId(), workspace) {
-                                    private static final long serialVersionUID =
-                                            -650599334132713975L;
-
-                                    @Override
-                                    protected void handleLayer(
-                                            LayerInfo layer, AjaxRequestTarget target) {
-                                        popupWindow.close(target);
-                                        model.getObject().setRootLayer(layer);
-                                        target.add(rootLayerField);
-                                    }
-                                });
-
-                        popupWindow.show(target);
+                    protected void handleLayer(LayerInfo layer, AjaxRequestTarget target) {
+                        popupWindow.close(target);
+                        model.getObject().setRootLayer(layer);
+                        target.add(rootLayerField);
                     }
                 });
+
+                popupWindow.show(target);
+            }
+        });
     }
 }

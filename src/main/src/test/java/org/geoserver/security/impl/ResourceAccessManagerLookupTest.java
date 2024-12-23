@@ -63,8 +63,7 @@ public class ResourceAccessManagerLookupTest extends GeoServerSystemTestSupport 
     }
 
     private void destroyManagerBean(String name) {
-        DefaultListableBeanFactory factory =
-                (DefaultListableBeanFactory) applicationContext.getBeanFactory();
+        DefaultListableBeanFactory factory = (DefaultListableBeanFactory) applicationContext.getBeanFactory();
         factory.destroySingleton(name);
     }
 

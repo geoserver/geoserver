@@ -8,19 +8,16 @@ import org.geotools.util.logging.Logging;
 
 public class GeorchestraHeaderWebComponent extends WebComponent {
 
-    private String headerUrl;
-    private String headerHeight;
-    private String legacyHeader;
-    private String logoUrl;
+    private String headerConfigFile;
     private String georchestraStylesheet;
+    private String headerHeight;
 
     private static Logger LOGGER = Logging.getLogger(GeorchestraHeaderWebComponent.class);
 
     private void init() {
         headerHeight = getGeoServerApplication().getBean("georchestraHeaderHeight").toString();
-        headerUrl = getGeoServerApplication().getBean("georchestraHeaderUrl").toString();
-        legacyHeader = getGeoServerApplication().getBean("georchestraLegacyHeader").toString();
-        logoUrl = getGeoServerApplication().getBean("georchestraLogoUrl").toString();
+        headerConfigFile =
+                getGeoServerApplication().getBean("georchestraHeaderConfigFile").toString();
         georchestraStylesheet =
                 getGeoServerApplication().getBean("georchestraStylesheet").toString();
     }
@@ -36,11 +33,8 @@ public class GeorchestraHeaderWebComponent extends WebComponent {
 
     @Override
     protected void onComponentTag(ComponentTag tag) {
-        tag.put("style", "width:100%;height:" + this.headerHeight + "px;border:none;");
         tag.put("active-app", "geoserver");
-        tag.put("legacy-url", this.headerUrl);
-        tag.put("legacy-header", this.legacyHeader);
-        tag.put("logo-url", this.logoUrl);
+        tag.put("config-file", this.headerConfigFile);
         tag.put("stylesheet", this.georchestraStylesheet);
         super.onComponentTag(tag);
     }

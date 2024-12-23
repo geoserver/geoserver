@@ -12,8 +12,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 
 /**
- * Abstract TestData class that defines names for all the layers from the WFS, WMS, and WCS CITE
- * tests.
+ * Abstract TestData class that defines names for all the layers from the WFS, WMS, and WCS CITE tests.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -207,8 +206,8 @@ public abstract class CiteTestData implements TestData {
 
     /** List of wfs 1.0 type names. */
     public static QName[] WFS10_TYPENAMES = {
-        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS,
-        MPOLYGONS, POINTS, POLYGONS
+        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES, LINES, MLINES, MPOINTS, MPOLYGONS, POINTS,
+        POLYGONS
     };
 
     /** List of wfs 1.1 type names. */
@@ -216,9 +215,7 @@ public abstract class CiteTestData implements TestData {
         PRIMITIVEGEOFEATURE, AGGREGATEGEOFEATURE, GENERICENTITY /* ENTIT\u00C9G\u00C9N\u00C9RIQUE */
     };
 
-    public static QName[] CDF_TYPENAMES = {
-        DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES
-    };
+    public static QName[] CDF_TYPENAMES = {DELETES, FIFTEEN, INSERTS, LOCKS, NULLS, OTHER, SEVEN, UPDATES};
 
     public static QName[] CGF_TYPENAMES = {LINES, MLINES, MPOINTS, MPOLYGONS, POINTS, POLYGONS};
 

@@ -11,8 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 /**
- * Simple wrapper class for a {@link UserDetails} object. Subclasses should override individual
- * methods.
+ * Simple wrapper class for a {@link UserDetails} object. Subclasses should override individual methods.
  *
  * @author christian
  */

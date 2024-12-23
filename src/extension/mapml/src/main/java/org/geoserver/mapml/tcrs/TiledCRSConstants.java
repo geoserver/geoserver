@@ -44,25 +44,11 @@ public class TiledCRSConstants {
 
     static {
         crsMappers = new HashSet<>();
-        crsMappers.add(
-                new CRSMapper(
-                        Set.of(
-                                "EPSG:4326",
-                                "urn:ogc:def:crs:EPSG::4326",
-                                "urn:ogc:def:crs:MapML::WGS84"),
-                        "EPSG:4326"));
-        crsMappers.add(
-                new CRSMapper(
-                        Set.of("EPSG:3857", "urn:ogc:def:crs:EPSG::3857", "MapML:OSMTILE"),
-                        "EPSG:3857"));
-        crsMappers.add(
-                new CRSMapper(
-                        Set.of("EPSG:5936", "urn:ogc:def:crs:EPSG::5936", "MapML:APSTILE"),
-                        "EPSG:5936"));
-        crsMappers.add(
-                new CRSMapper(
-                        Set.of("EPSG:3978", "urn:ogc:def:crs:EPSG::3978", "MapML:CBMTILE"),
-                        "EPSG:3978"));
+        crsMappers.add(new CRSMapper(
+                Set.of("EPSG:4326", "urn:ogc:def:crs:EPSG::4326", "urn:ogc:def:crs:MapML::WGS84"), "EPSG:4326"));
+        crsMappers.add(new CRSMapper(Set.of("EPSG:3857", "urn:ogc:def:crs:EPSG::3857", "MapML:OSMTILE"), "EPSG:3857"));
+        crsMappers.add(new CRSMapper(Set.of("EPSG:5936", "urn:ogc:def:crs:EPSG::5936", "MapML:APSTILE"), "EPSG:5936"));
+        crsMappers.add(new CRSMapper(Set.of("EPSG:3978", "urn:ogc:def:crs:EPSG::3978", "MapML:CBMTILE"), "EPSG:3978"));
     }
 
     public static String getSupportedOutputCRS(String proj) {
@@ -86,8 +72,7 @@ public class TiledCRSConstants {
             WGS84_SRSNAME = CRS.toSRS(CRS_WGS84);
         } catch (Exception e) {
         }
-        final Bounds WGS84_BOUNDS =
-                new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
+        final Bounds WGS84_BOUNDS = new Bounds(new Point(-180.0D, -90.0D), new Point(180.0D, 90.0D));
         final int WGS84_TILE_SIZE = 256;
         final double[] WGS84_SCALES = {
             /* "scale" is the reciprocal of "resolution", per Proj4Leaflet.js */
@@ -118,12 +103,7 @@ public class TiledCRSConstants {
         tiledCRSDefinitions.put(
                 WGS84_NAME,
                 new TiledCRSParams(
-                        WGS84_NAME,
-                        WGS84_CODE,
-                        WGS84_BOUNDS,
-                        WGS84_TILE_SIZE,
-                        WGS84_TILE_ORIGIN,
-                        WGS84_SCALES));
+                        WGS84_NAME, WGS84_CODE, WGS84_BOUNDS, WGS84_TILE_SIZE, WGS84_TILE_ORIGIN, WGS84_SCALES));
         tiledCRSDefinitions.put(WGS84_SRSNAME, tiledCRSDefinitions.get(WGS84_NAME));
         tiledCRSDefinitions.put(WGS84_CODE, tiledCRSDefinitions.get(WGS84_NAME));
         tiledCRSBySrsName.put(WGS84_SRSNAME, tiledCRSDefinitions.get(WGS84_NAME));
@@ -140,10 +120,8 @@ public class TiledCRSConstants {
         Projection proj = new Projection(OSMTILE_CODE);
         final Bounds OSMTILE_BOUNDS;
         try {
-            OSMTILE_BOUNDS =
-                    new Bounds(
-                            proj.project(new LatLng(-85.0511287798, -180)),
-                            proj.project(new LatLng(85.0511287798, 180)));
+            OSMTILE_BOUNDS = new Bounds(
+                    proj.project(new LatLng(-85.0511287798, -180)), proj.project(new LatLng(85.0511287798, 180)));
         } catch (MismatchedDimensionException | TransformException ex) {
             throw new RuntimeException(ex);
         }
@@ -193,8 +171,7 @@ public class TiledCRSConstants {
             CBMTILE_SRSNAME = CRS.toSRS(CRS_CBMTILE);
         } catch (Exception e) {
         }
-        final Bounds CBMTILE_BOUNDS =
-                new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
+        final Bounds CBMTILE_BOUNDS = new Bounds(new Point(-3.46558E7D, -3.9E7D), new Point(1.0E7D, 3.931E7D));
         //                new Bounds(new Point(-4282638.06150141,-5153821.09213678),new
         // Point(4852210.1755664,4659267.000000001));
         final int CBMTILE_TILE_SIZE = 256;
@@ -250,10 +227,9 @@ public class TiledCRSConstants {
             APSTILE_SRSNAME = CRS.toSRS(CRS_APSTILE);
         } catch (Exception e) {
         }
-        final Bounds APSTILE_BOUNDS =
-                new Bounds(
-                        new Point(-28567784.109254867D, -28567784.109254755D),
-                        new Point(32567784.109255023D, 32567784.10925506D));
+        final Bounds APSTILE_BOUNDS = new Bounds(
+                new Point(-28567784.109254867D, -28567784.109254755D),
+                new Point(32567784.109255023D, 32567784.10925506D));
         final int APSTILE_TILE_SIZE = 256;
         final double[] APSTILE_SCALES = {
             /* "scale" is the reciprocal of "resolution", per Proj4Leaflet.js */

@@ -33,26 +33,23 @@ public class AbstractCatalogStoreTest {
 
     @Test
     public void testNamespaceSupport() throws IOException, URISyntaxException {
-        AbstractCatalogStore store =
-                new AbstractCatalogStore() {
-                    {
-                        support(CSWRecordDescriptor.getInstance());
-                        support(GSRecordDescriptor.getInstance());
-                    }
+        AbstractCatalogStore store = new AbstractCatalogStore() {
+            {
+                support(CSWRecordDescriptor.getInstance());
+                support(GSRecordDescriptor.getInstance());
+            }
 
-                    @Override
-                    public FeatureCollection<FeatureType, Feature> getRecordsInternal(
-                            RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t)
-                            throws IOException {
-                        if (rd == GSRecordDescriptor.getInstance()) {
-                            return new MemoryFeatureCollection(
-                                    GSRecordDescriptor.getInstance().getFeatureType());
-                        } else {
-                            throw new RuntimeException(
-                                    "Was expecting the geoserver record descriptor");
-                        }
-                    }
-                };
+            @Override
+            public FeatureCollection<FeatureType, Feature> getRecordsInternal(
+                    RecordDescriptor rd, RecordDescriptor rdOutput, Query q, Transaction t) throws IOException {
+                if (rd == GSRecordDescriptor.getInstance()) {
+                    return new MemoryFeatureCollection(
+                            GSRecordDescriptor.getInstance().getFeatureType());
+                } else {
+                    throw new RuntimeException("Was expecting the geoserver record descriptor");
+                }
+            }
+        };
 
         RecordDescriptor[] descriptors = store.getRecordDescriptors();
         assertEquals(2, descriptors.length);
@@ -77,15 +74,8 @@ public class AbstractCatalogStoreTest {
         public FeatureType getFeatureType() {
             FeatureType ft = delegate.getFeatureType();
             FeatureTypeFactory factory = new FeatureTypeFactoryImpl();
-            FeatureType gsft =
-                    factory.createFeatureType(
-                            new NameImpl(GS_NAMESPACE, "Record"),
-                            ft.getDescriptors(),
-                            null,
-                            false,
-                            null,
-                            ft.getSuper(),
-                            null);
+            FeatureType gsft = factory.createFeatureType(
+                    new NameImpl(GS_NAMESPACE, "Record"), ft.getDescriptors(), null, false, null, ft.getSuper(), null);
             return gsft;
         }
 
@@ -93,8 +83,7 @@ public class AbstractCatalogStoreTest {
         public AttributeDescriptor getFeatureDescriptor() {
             AttributeTypeBuilder builder = new AttributeTypeBuilder();
             AttributeDescriptor descriptor =
-                    builder.buildDescriptor(
-                            new NameImpl(GS_NAMESPACE, "Record"), delegate.getFeatureType());
+                    builder.buildDescriptor(new NameImpl(GS_NAMESPACE, "Record"), delegate.getFeatureType());
             return descriptor;
         }
 

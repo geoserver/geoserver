@@ -21,13 +21,13 @@ import org.junit.Test;
  */
 public class StyleParameterFilterTest {
     /**
-     * Test covers a scenario where multiple threads are concurrently invoking {@link
-     * StyleParameterFilter#setLayer(LayerInfo)} method. Purpose of the test is to make sure that
-     * concurrent modification will not lead to corruption of internal state of the parameter filter
-     * class (TreeSet is not thread-safe and does not support concurrent modifications).
+     * Test covers a scenario where multiple threads are concurrently invoking
+     * {@link StyleParameterFilter#setLayer(LayerInfo)} method. Purpose of the test is to make sure that concurrent
+     * modification will not lead to corruption of internal state of the parameter filter class (TreeSet is not
+     * thread-safe and does not support concurrent modifications).
      *
-     * <p>Corruption manifests it-self as infinite loop in the internal tree set structure which
-     * leads to out of memory errors when attempts are made to iterate through the set.
+     * <p>Corruption manifests it-self as infinite loop in the internal tree set structure which leads to out of memory
+     * errors when attempts are made to iterate through the set.
      *
      * <p>See more at:
      * https://ivoanjo.me/blog/2018/07/21/writing-to-a-java-treemap-concurrently-can-lead-to-an-infinite-loop-during-reads/
@@ -49,9 +49,7 @@ public class StyleParameterFilterTest {
             UUID.randomUUID().toString()
         };
 
-        LayerInfo layerInfo =
-                GWCTestHelpers.mockLayer(
-                        UUID.randomUUID().toString(), styleNames, PublishedType.WMS);
+        LayerInfo layerInfo = GWCTestHelpers.mockLayer(UUID.randomUUID().toString(), styleNames, PublishedType.WMS);
 
         int concurrency = 10;
         int opsPerThread = 1000;
@@ -59,16 +57,14 @@ public class StyleParameterFilterTest {
         List<Thread> modifierThreads = new ArrayList<>(concurrency);
 
         for (int i = 0; i < concurrency; i++) {
-            Thread thread =
-                    new Thread(
-                            new Runnable() {
-                                @Override
-                                public void run() {
-                                    for (int j = 0; j < opsPerThread; j++) {
-                                        filter.setLayer(layerInfo);
-                                    }
-                                }
-                            });
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    for (int j = 0; j < opsPerThread; j++) {
+                        filter.setLayer(layerInfo);
+                    }
+                }
+            });
             modifierThreads.add(thread);
         }
 

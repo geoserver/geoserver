@@ -16,17 +16,14 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.FunctionImpl;
 import org.geotools.filter.capability.FunctionNameImpl;
 
-/**
- * A function that returns the min, max, bounds, or distinct values of a property in a collection.
- */
+/** A function that returns the min, max, bounds, or distinct values of a property in a collection. */
 public class EoSummaries extends FunctionImpl {
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "eoSummaries",
-                    Object.class,
-                    parameter("aggregate", String.class),
-                    parameter("collectionIdentifier", String.class),
-                    parameter("property", String.class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "eoSummaries",
+            Object.class,
+            parameter("aggregate", String.class),
+            parameter("collectionIdentifier", String.class),
+            parameter("property", String.class));
     static FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     static final String DELEGATE_PARENT_ID_FIELD = "eoParentIdentifier";
     private static final String DELEGATE_GEOMETRY_FIELD = "footprint";
@@ -64,15 +61,13 @@ public class EoSummaries extends FunctionImpl {
         }
     }
 
-    protected Object getFromCache(String aggregate, String collectionIdentifier, String property)
-            throws IOException {
+    protected Object getFromCache(String aggregate, String collectionIdentifier, String property) throws IOException {
         AggregatesCache aggregatesCacheInit = getAggregatesCache();
         AggregatesCache.AggregateCacheKey key = getKey(aggregate, collectionIdentifier, property);
         return aggregatesCacheInit.getWrappedAggregate(key);
     }
 
-    protected AggregatesCache.AggregateCacheKey getKey(
-            String aggregate, String collectionIdentifier, String property) {
+    protected AggregatesCache.AggregateCacheKey getKey(String aggregate, String collectionIdentifier, String property) {
         return new AggregatesCache.AggregateCacheKey(aggregate, collectionIdentifier, property);
     }
 
@@ -81,15 +76,14 @@ public class EoSummaries extends FunctionImpl {
                 || MAX.equals(aggregate)
                 || DISTINCT.equals(aggregate)
                 || BOUNDS.equals(aggregate))) {
-            throw new IllegalArgumentException(
-                    "Invalid aggregate function, valid values are: "
-                            + MIN
-                            + ", "
-                            + MAX
-                            + ", "
-                            + DISTINCT
-                            + ", "
-                            + BOUNDS);
+            throw new IllegalArgumentException("Invalid aggregate function, valid values are: "
+                    + MIN
+                    + ", "
+                    + MAX
+                    + ", "
+                    + DISTINCT
+                    + ", "
+                    + BOUNDS);
         }
         if (collectionIdentifier == null) {
             throw new IllegalArgumentException("Collection identifier cannot be null");

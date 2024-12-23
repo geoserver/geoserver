@@ -33,18 +33,14 @@ public class BandsPanel extends Panel {
         super(id, new Model<>(coverage));
 
         // the parameters table
-        bands =
-                new GeoServerTablePanel<CoverageDimensionInfo>(
-                        "bands", new CoverageDimensionsProvider(), true) {
+        bands = new GeoServerTablePanel<CoverageDimensionInfo>("bands", new CoverageDimensionsProvider(), true) {
 
-                    @Override
-                    protected GeoServerTablePanel<CoverageDimensionInfo> getComponentForProperty(
-                            String id,
-                            IModel<CoverageDimensionInfo> itemModel,
-                            Property<CoverageDimensionInfo> property) {
-                        return null;
-                    }
-                };
+            @Override
+            protected GeoServerTablePanel<CoverageDimensionInfo> getComponentForProperty(
+                    String id, IModel<CoverageDimensionInfo> itemModel, Property<CoverageDimensionInfo> property) {
+                return null;
+            }
+        };
         bands.setFilterVisible(false);
         bands.setSortable(false);
         bands.getTopPager().setVisible(false);
@@ -62,48 +58,46 @@ public class BandsPanel extends Panel {
         protected List<Property<CoverageDimensionInfo>> getProperties() {
             List<Property<CoverageDimensionInfo>> result = new ArrayList<>();
             result.add(new BeanProperty<>("band", "name"));
-            result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("dimensionType") {
+            result.add(new AbstractProperty<CoverageDimensionInfo>("dimensionType") {
 
-                        @Override
-                        public Object getPropertyValue(CoverageDimensionInfo item) {
-                            SampleDimensionType type = item.getDimensionType();
-                            if (type == null) {
-                                return "-";
-                            } else {
-                                String name = type.name();
-                                try {
-                                    String key = BandsPanel.class.getSimpleName() + "." + name;
-                                    ParamResourceModel rm = new ParamResourceModel(key, null);
-                                    return rm.getString();
-                                } catch (Exception e) {
-                                    return name;
-                                }
+                @Override
+                public Object getPropertyValue(CoverageDimensionInfo item) {
+                    SampleDimensionType type = item.getDimensionType();
+                    if (type == null) {
+                        return "-";
+                    } else {
+                        String name = type.name();
+                        try {
+                            String key = BandsPanel.class.getSimpleName() + "." + name;
+                            ParamResourceModel rm = new ParamResourceModel(key, null);
+                            return rm.getString();
+                        } catch (Exception e) {
+                            return name;
+                        }
+                    }
+                }
+            });
+            result.add(new AbstractProperty<CoverageDimensionInfo>("nullValues") {
+
+                @Override
+                public Object getPropertyValue(CoverageDimensionInfo item) {
+                    List<Double> values = item.getNullValues();
+                    if (values == null || values.isEmpty()) {
+                        return "-";
+                    } else {
+                        StringBuilder sb = new StringBuilder();
+                        final int size = values.size();
+                        for (int i = 0; i < size; i++) {
+                            sb.append(values.get(i));
+                            if (i < size - 1) {
+                                sb.append(", ");
                             }
                         }
-                    });
-            result.add(
-                    new AbstractProperty<CoverageDimensionInfo>("nullValues") {
 
-                        @Override
-                        public Object getPropertyValue(CoverageDimensionInfo item) {
-                            List<Double> values = item.getNullValues();
-                            if (values == null || values.isEmpty()) {
-                                return "-";
-                            } else {
-                                StringBuilder sb = new StringBuilder();
-                                final int size = values.size();
-                                for (int i = 0; i < size; i++) {
-                                    sb.append(values.get(i));
-                                    if (i < size - 1) {
-                                        sb.append(", ");
-                                    }
-                                }
-
-                                return sb.toString();
-                            }
-                        }
-                    });
+                        return sb.toString();
+                    }
+                }
+            });
             result.add(new BeanProperty<>("unit", "unit"));
             return result;
         }

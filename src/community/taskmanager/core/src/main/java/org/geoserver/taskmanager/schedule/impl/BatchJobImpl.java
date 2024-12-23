@@ -50,18 +50,14 @@ public class BatchJobImpl implements Job {
 
         // run with admin rights
         SecurityContextHolder.getContext()
-                .setAuthentication(
-                        new UsernamePasswordAuthenticationToken(
-                                "admin",
-                                null,
-                                Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
+                .setAuthentication(new UsernamePasswordAuthenticationToken(
+                        "admin", null, Collections.singletonList(GeoServerRole.ADMIN_ROLE)));
 
         // get all the context beans
         ApplicationContext appContext;
         try {
             appContext =
-                    (ApplicationContext)
-                            context.getScheduler().getContext().get("applicationContext");
+                    (ApplicationContext) context.getScheduler().getContext().get("applicationContext");
         } catch (SchedulerException e) {
             throw new JobExecutionException(e);
         }
@@ -141,9 +137,7 @@ public class BatchJobImpl implements Job {
                 // make sure we are working with the 'good' batchRun
                 batchRun = beans.getDao().reload(batchRun);
                 if (batchRun.isInterruptMe()) {
-                    LOGGER.log(
-                            Level.INFO,
-                            "Batch  " + batch.getFullName() + " manually cancelled, rolling back.");
+                    LOGGER.log(Level.INFO, "Batch  " + batch.getFullName() + " manually cancelled, rolling back.");
                     rollback = true;
                 }
 
@@ -200,10 +194,7 @@ public class BatchJobImpl implements Job {
                     Task task = runPop.getBatchElement().getTask();
                     LOGGER.log(
                             Level.SEVERE,
-                            "Task "
-                                    + task.getFullName()
-                                    + " failed to commit in batch "
-                                    + batch.getFullName(),
+                            "Task " + task.getFullName() + " failed to commit in batch " + batch.getFullName(),
                             e);
                     runPop.setMessage(e.getMessage());
                     runPop.setStatus(Run.Status.NOT_COMMITTED);
@@ -213,15 +204,13 @@ public class BatchJobImpl implements Job {
 
             LOGGER.log(Level.INFO, "Finished batch " + batch.getFullName());
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "Batch " + batch.getFullName() + " was aborted due to an external exception",
-                    e);
+            LOGGER.log(Level.SEVERE, "Batch " + batch.getFullName() + " was aborted due to an external exception", e);
             batchRun = beans.getDataUtil().closeBatchRun(batchRun, e.getMessage());
         }
 
         // send the report
-        Report report = beans.getReportBuilder().buildBatchRunReport(beans.getDao().init(batchRun));
+        Report report =
+                beans.getReportBuilder().buildBatchRunReport(beans.getDao().init(batchRun));
         for (ReportService reportService : beans.getReportServices()) {
             if (reportService.getFilter().matches(report.getType())) {
                 reportService.sendReport(report);

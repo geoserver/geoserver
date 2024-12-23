@@ -41,8 +41,7 @@ public class FileUploadAction implements Action {
 
         private String fileService;
 
-        public DialogDelegate(
-                ConfigurationPage onPage, IModel<String> valueModel, String fileService) {
+        public DialogDelegate(ConfigurationPage onPage, IModel<String> valueModel, String fileService) {
             this.onPage = onPage;
             this.valueModel = valueModel;
             this.fileService = fileService;
@@ -67,7 +66,8 @@ public class FileUploadAction implements Action {
         }
     }
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     @Override
     public String getName() {

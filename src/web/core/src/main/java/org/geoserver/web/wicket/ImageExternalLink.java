@@ -28,10 +28,7 @@ public class ImageExternalLink extends Panel {
 
     /** Constructs the panel with a link containing an image and a label. */
     public ImageExternalLink(
-            final String id,
-            final String href,
-            final PackageResourceReference imageRef,
-            final IModel<String> label) {
+            final String id, final String href, final PackageResourceReference imageRef, final IModel<String> label) {
         super(id);
         add(this.link = new ExternalLink("link", href));
         link.add(this.image = new Image("image", imageRef));
@@ -44,8 +41,8 @@ public class ImageExternalLink extends Panel {
     }
 
     /**
-     * Returns the link wrapped by the {@link ImageExternalLink} panel (allows playing with its
-     * attributes and enable/disable the link)
+     * Returns the link wrapped by the {@link ImageExternalLink} panel (allows playing with its attributes and
+     * enable/disable the link)
      */
     public ExternalLink getLink() {
         return link;

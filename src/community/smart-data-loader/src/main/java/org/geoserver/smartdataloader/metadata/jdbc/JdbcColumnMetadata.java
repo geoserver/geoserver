@@ -12,10 +12,7 @@ import org.geoserver.smartdataloader.metadata.AttributeMetadata;
 public class JdbcColumnMetadata extends AttributeMetadata implements JdbcConnectable {
 
     public JdbcColumnMetadata(
-            JdbcTableMetadata table,
-            String columnName,
-            String columnType,
-            boolean externalReference) {
+            JdbcTableMetadata table, String columnName, String columnType, boolean externalReference) {
         super(table, columnName, columnType, externalReference);
     }
 

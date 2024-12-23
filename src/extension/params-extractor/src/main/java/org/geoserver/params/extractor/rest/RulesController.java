@@ -65,7 +65,10 @@ public class RulesController extends RestBaseController {
             })
     public ResponseEntity<String> postRule(@RequestBody Rule newValue) throws URISyntaxException {
         // force a new id like the UI would, using a random UUID
-        newValue = new RuleBuilder().copy(newValue).withId(UUID.randomUUID().toString()).build();
+        newValue = new RuleBuilder()
+                .copy(newValue)
+                .withId(UUID.randomUUID().toString())
+                .build();
         RulesDao.saveOrUpdateRule(newValue);
 
         // return the location of the created echo parameter
@@ -77,15 +80,10 @@ public class RulesController extends RestBaseController {
 
     @GetMapping(path = "{id}")
     public RestWrapper<Rule> getRule(@PathVariable String id) {
-        Rule result =
-                RulesDao.getRules().stream()
-                        .filter(r -> id.equals(r.getId()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new RestException(
-                                                "Rule with id " + id + " not found",
-                                                HttpStatus.NOT_FOUND));
+        Rule result = RulesDao.getRules().stream()
+                .filter(r -> id.equals(r.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RestException("Rule with id " + id + " not found", HttpStatus.NOT_FOUND));
         return new RestWrapperAdapter<>(result, Rule.class, this);
     }
 
@@ -113,10 +111,7 @@ public class RulesController extends RestBaseController {
             newValue = new RuleBuilder().copy(newValue).withId(id).build();
         } else if (!newValue.getId().equals(id)) {
             throw new RestException(
-                    "Incosistent identifier, body uses "
-                            + newValue.getId()
-                            + " but REST API path has "
-                            + id,
+                    "Incosistent identifier, body uses " + newValue.getId() + " but REST API path has " + id,
                     HttpStatus.BAD_REQUEST);
         }
         // overwrite
@@ -140,9 +135,7 @@ public class RulesController extends RestBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return Rule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 }

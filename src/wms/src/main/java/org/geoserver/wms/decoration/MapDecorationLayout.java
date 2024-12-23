@@ -44,9 +44,9 @@ import org.w3c.dom.Element;
 import org.xml.sax.InputSource;
 
 /**
- * The MapDecorationLayout class describes a set of overlays to be used to enhance a WMS response.
- * It maintains a collection of MapDecoration objects and the configuration associated with each,
- * and delegates the actual rendering operations to the decorations.
+ * The MapDecorationLayout class describes a set of overlays to be used to enhance a WMS response. It maintains a
+ * collection of MapDecoration objects and the configuration associated with each, and delegates the actual rendering
+ * operations to the decorations.
  *
  * @author David Winslow <dwinslow@opengeo.org>
  */
@@ -60,14 +60,13 @@ public class MapDecorationLayout {
     private static Logger LOGGER = Logging.getLogger(MapDecorationLayout.class);
 
     /**
-     * The Block class annotates a MapDecoration object with positioning and sizing information, and
-     * encapsulates the logic involved in resizing a decoration to fit within a particular image.
+     * The Block class annotates a MapDecoration object with positioning and sizing information, and encapsulates the
+     * logic involved in resizing a decoration to fit within a particular image.
      */
     public static class Block {
         /**
-         * The Position enum encodes the 'affinity' attribute of decorations. A decoration can be
-         * anchored at either extreme or centered in the X and Y dimensions, independently, allowing
-         * for nine possible Positions.
+         * The Position enum encodes the 'affinity' attribute of decorations. A decoration can be anchored at either
+         * extreme or centered in the X and Y dimensions, independently, allowing for nine possible Positions.
          */
         public static enum Position {
             UL("top,left"),
@@ -89,8 +88,7 @@ public class MapDecorationLayout {
             /**
              * Decode a Position from a (presumably user-provided) string.
              *
-             * @param str the input String, expected to be in the format <vpos,hpos> with no
-             *     whitespace
+             * @param str the input String, expected to be in the format <vpos,hpos> with no whitespace
              * @return the associated Position, or null if none can be found
              */
             public static Position fromString(String str) {
@@ -103,21 +101,16 @@ public class MapDecorationLayout {
         }
 
         /**
-         * Given the configuration and the geometry of a particular WMS response, determine the
-         * appropriate space into which a MapDecoration should draw itself.
+         * Given the configuration and the geometry of a particular WMS response, determine the appropriate space into
+         * which a MapDecoration should draw itself.
          *
-         * @param p the Position instance indicating the area of the image where the decoration is
-         *     anchored
+         * @param p the Position instance indicating the area of the image where the decoration is anchored
          * @param container a Rectangle indicating the entire drawable area of the map image
-         * @param dim the requested size based on either configuration or feedback from the
-         *     MapDecoration
-         * @param o a Point whose x- and y-coordinates will be interpreted as x- and y-offsets for
-         *     the MapDecoration
-         * @return A rectangle that is as close to the desired size and position without exceeding
-         *     the container bounds
+         * @param dim the requested size based on either configuration or feedback from the MapDecoration
+         * @param o a Point whose x- and y-coordinates will be interpreted as x- and y-offsets for the MapDecoration
+         * @return A rectangle that is as close to the desired size and position without exceeding the container bounds
          */
-        public static Rectangle findBounds(
-                Position p, Rectangle container, Dimension dim, Point o) {
+        public static Rectangle findBounds(Position p, Rectangle container, Dimension dim, Point o) {
 
             if (p == null || container == null || dim == null || o == null) {
                 throw new ServiceException("Bad params for decoration sizing.");
@@ -189,14 +182,11 @@ public class MapDecorationLayout {
         /** The Position at which the Block is anchored */
         final Position position;
 
-        /**
-         * The requested size, or null if the MapDecoration should be allowed to determine sizing
-         */
+        /** The requested size, or null if the MapDecoration should be allowed to determine sizing */
         final Dimension dimension;
 
         /**
-         * A Point whose x- and y-coordinates are interpreted as the x- and y-offsets when rendering
-         * the MapDecoration
+         * A Point whose x- and y-coordinates are interpreted as the x- and y-offsets when rendering the MapDecoration
          */
         final Point offset;
 
@@ -205,8 +195,8 @@ public class MapDecorationLayout {
          *
          * @param d the MapDecoration which the Block will render
          * @param p the Position to which the Block is anchored
-         * @param dim the Dimension of the user-requested size, or null if the MapDecoration should
-         *     determine its own size
+         * @param dim the Dimension of the user-requested size, or null if the MapDecoration should determine its own
+         *     size
          * @param o a Point indicating the offset (see {offset})
          */
         public Block(MapDecoration d, Position p, Dimension dim, Point o) {
@@ -217,14 +207,13 @@ public class MapDecorationLayout {
         }
 
         /**
-         * Determine the desired size for the decoration, either the user-specified size, or an
-         * automatically detemrined size from the MapDecoration
+         * Determine the desired size for the decoration, either the user-specified size, or an automatically detemrined
+         * size from the MapDecoration
          *
          * @param g2d the Graphics2D context into which the MapDecoration will be rendered
          * @param mapContent the WMSMapContext for the request being handled
          */
-        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent)
-                throws Exception {
+        public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception {
             return (dimension != null) ? dimension : decoration.findOptimalSize(g2d, mapContent);
         }
 
@@ -235,8 +224,7 @@ public class MapDecorationLayout {
          * @param rect the current drawable area
          * @param mapContent the map context for the current map request
          */
-        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContent mapContent)
-                throws Exception {
+        public void paint(Graphics2D g2d, Rectangle rect, WMSMapContent mapContent) throws Exception {
             Dimension desiredSize = findOptimalSize(g2d, mapContent);
 
             Rectangle box = findBounds(position, rect, desiredSize, offset);
@@ -248,8 +236,8 @@ public class MapDecorationLayout {
     }
 
     /**
-     * A container for the blocks in this layout. Blocks contain the positioning information, so
-     * this contains all the state for the layout.
+     * A container for the blocks in this layout. Blocks contain the positioning information, so this contains all the
+     * state for the layout.
      *
      * @see {Block}
      */
@@ -261,8 +249,7 @@ public class MapDecorationLayout {
     }
 
     /**
-     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations
-     * specified therein.
+     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations specified therein.
      *
      * @param f the File from which the layout should be read
      * @param tiled is this map metatiled?
@@ -270,8 +257,7 @@ public class MapDecorationLayout {
      * @throws Exception if the configuration is invalid or other errors occur while parsing
      */
     public static MapDecorationLayout fromFile(Resource f, boolean tiled) throws Exception {
-        MapDecorationLayout dl =
-                tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
+        MapDecorationLayout dl = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document confFile;
@@ -282,18 +268,15 @@ public class MapDecorationLayout {
     }
 
     /**
-     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations
-     * specified therein.
+     * Read an XML layout file and populate a new MapDecorationLayout with the MapDecorations specified therein.
      *
      * @param definition The layout definition as a string
      * @param tiled is this map metatiled?
      * @return a new MapDecorationLayout containing the MapDecorations specified
      * @throws Exception if the configuration is invalid or other errors occur while parsing
      */
-    public static MapDecorationLayout fromString(String definition, boolean tiled)
-            throws Exception {
-        MapDecorationLayout dl =
-                tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
+    public static MapDecorationLayout fromString(String definition, boolean tiled) throws Exception {
+        MapDecorationLayout dl = tiled ? new MetatiledMapDecorationLayout() : new MapDecorationLayout();
 
         DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         InputSource source = new InputSource(new StringReader(definition));
@@ -311,8 +294,7 @@ public class MapDecorationLayout {
                 .iterator();
     }
 
-    private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile)
-            throws Exception {
+    private static MapDecorationLayout fromDocument(MapDecorationLayout dl, Document confFile) throws Exception {
         Iterator<Element> decorations = getChildren(confFile.getDocumentElement(), "decoration");
         while (decorations.hasNext()) {
             Element e = decorations.next();
@@ -341,18 +323,14 @@ public class MapDecorationLayout {
 
             MapDecoration decoration = getDecoration(decorationType);
             if (decoration == null) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Unknown decoration type: " + decorationType + " requested.");
+                LOGGER.log(Level.WARNING, "Unknown decoration type: " + decorationType + " requested.");
                 continue;
             }
             decoration.loadOptions(m);
 
             Block.Position pos = Block.Position.fromString(evaluateAttribute(e, "affinity"));
             if (pos == null) {
-                LOGGER.log(
-                        Level.WARNING,
-                        "Unknown affinity: " + e.getAttribute("affinity") + " requested.");
+                LOGGER.log(Level.WARNING, "Unknown affinity: " + e.getAttribute("affinity") + " requested.");
                 continue;
             }
 
@@ -374,8 +352,7 @@ public class MapDecorationLayout {
             try {
                 if (!StringUtils.isEmpty(theOffset)) {
                     String[] offsetArr = theOffset.split(",");
-                    offset =
-                            new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
+                    offset = new Point(Integer.valueOf(offsetArr[0]), Integer.valueOf(offsetArr[1]));
                 } else {
                     offset = new Point(0, 0);
                 }
@@ -396,10 +373,7 @@ public class MapDecorationLayout {
         return parseExpression(attribute).evaluate(null, String.class);
     }
 
-    /**
-     * Checks if the provided value can be a <code>${...}</code> expression and parses it
-     * accordingly
-     */
+    /** Checks if the provided value can be a <code>${...}</code> expression and parses it accordingly */
     private static Expression parseExpression(String value) throws CQLException {
         Expression expression;
         Matcher matcher = EXPRESSION.matcher(value);
@@ -412,9 +386,9 @@ public class MapDecorationLayout {
     }
 
     /**
-     * The message option of the text decoration is already handled as a FreeMarker template, we
-     * don't want to allow verbatim expansion of a HTTP provided content into a freemarker template,
-     * as it could be another bit of Freemarker, potentially active and dangerous.
+     * The message option of the text decoration is already handled as a FreeMarker template, we don't want to allow
+     * verbatim expansion of a HTTP provided content into a freemarker template, as it could be another bit of
+     * Freemarker, potentially active and dangerous.
      */
     private static boolean isTextMessage(String name, String decorationType) {
         return "message".equals(name) && "text".equals(decorationType);
@@ -449,8 +423,8 @@ public class MapDecorationLayout {
     }
 
     /**
-     * Resets the graphics to most of its default values, making each block paint independent of
-     * what happened before the decoration layout was called, and from each other
+     * Resets the graphics to most of its default values, making each block paint independent of what happened before
+     * the decoration layout was called, and from each other
      */
     private void resetGraphics(Graphics2D g2d) {
         g2d.setComposite(AlphaComposite.SrcOver);
@@ -517,22 +491,18 @@ public class MapDecorationLayout {
                 a = Integer.valueOf(input.substring(6, 8), 16);
                 return new Color(r, g, b, a);
             default:
-                throw new RuntimeException(
-                        "Couldn't decode color value: " + origInput + " (" + input + ")");
+                throw new RuntimeException("Couldn't decode color value: " + origInput + " (" + input + ")");
         }
     }
 
-    /**
-     * Retrieves an option from the map, evaluating the expression as a String. Null safe, may
-     * return null.
-     */
+    /** Retrieves an option from the map, evaluating the expression as a String. Null safe, may return null. */
     static String getOption(Map<String, Expression> options, String key) {
         return getOption(options, key, String.class);
     }
 
     /**
-     * Retrieves an option from the map, evaluating the expression as the desired target type. Null
-     * safe, may return null.
+     * Retrieves an option from the map, evaluating the expression as the desired target type. Null safe, may return
+     * null.
      */
     static <T> T getOption(Map<String, Expression> options, String key, Class<T> target) {
         if (options == null) return null;
@@ -546,8 +516,7 @@ public class MapDecorationLayout {
         T result = (T) expression.evaluate(null, target);
         // did the conversion fail? throw an exception with some context as to what happened
         if (result == null && expression != null)
-            throw new IllegalArgumentException(
-                    "Could not convert " + expression + " to " + target.getSimpleName());
+            throw new IllegalArgumentException("Could not convert " + expression + " to " + target.getSimpleName());
         return result;
     }
 }

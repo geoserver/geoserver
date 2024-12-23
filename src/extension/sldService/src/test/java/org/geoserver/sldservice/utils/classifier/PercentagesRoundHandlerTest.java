@@ -18,11 +18,7 @@ public class PercentagesRoundHandlerTest {
     public void testPercentagesRoundedToOneArr() {
         PercentagesRoundHandler handler = new PercentagesRoundHandler();
         double[] percentages = {
-            34.42846516241011,
-            5.684354078849492,
-            19.929333002727496,
-            20.078105628564344,
-            19.879742127448548
+            34.42846516241011, 5.684354078849492, 19.929333002727496, 20.078105628564344, 19.879742127448548
         };
         double[] rounded = handler.roundPercentages(percentages);
         for (double d : rounded) {
@@ -35,11 +31,7 @@ public class PercentagesRoundHandlerTest {
     public void testPercentagesRoundedToFiveArr() {
         PercentagesRoundHandler handler = new PercentagesRoundHandler(5);
         double[] percentages = {
-            34.42846516241011,
-            5.684354078849492,
-            19.929333002727496,
-            20.078105628564344,
-            19.879742127448548
+            34.42846516241011, 5.684354078849492, 19.929333002727496, 20.078105628564344, 19.879742127448548
         };
         double[] rounded = handler.roundPercentages(percentages);
         for (double d : rounded) {
@@ -51,13 +43,8 @@ public class PercentagesRoundHandlerTest {
     @Test
     public void testPercentagesRoundedToTwoList() {
         PercentagesRoundHandler handler = new PercentagesRoundHandler(2);
-        List<Double> percentages =
-                Arrays.asList(
-                        34.42846516241011,
-                        5.684354078849492,
-                        19.929333002727496,
-                        20.078105628564344,
-                        19.879742127448548);
+        List<Double> percentages = Arrays.asList(
+                34.42846516241011, 5.684354078849492, 19.929333002727496, 20.078105628564344, 19.879742127448548);
         List<Double> rounded = handler.roundPercentages(percentages);
         for (double d : rounded) {
             testRounded(2, d);
@@ -68,13 +55,8 @@ public class PercentagesRoundHandlerTest {
     @Test
     public void testPercentagesRoundedToThreeList() {
         PercentagesRoundHandler handler = new PercentagesRoundHandler(3);
-        List<Double> percentages =
-                Arrays.asList(
-                        34.42846516241011,
-                        5.684354078849492,
-                        19.929333002727496,
-                        20.078105628564344,
-                        19.879742127448548);
+        List<Double> percentages = Arrays.asList(
+                34.42846516241011, 5.684354078849492, 19.929333002727496, 20.078105628564344, 19.879742127448548);
         List<Double> rounded = handler.roundPercentages(percentages);
         for (double d : rounded) {
             testRounded(3, d);

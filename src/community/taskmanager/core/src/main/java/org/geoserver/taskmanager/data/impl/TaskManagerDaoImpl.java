@@ -41,7 +41,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional("tmTransactionManager")
 public class TaskManagerDaoImpl implements TaskManagerDao {
 
-    @Autowired private SessionFactory sf;
+    @Autowired
+    private SessionFactory sf;
 
     protected final Session getSession() {
         Session session = sf.getCurrentSession();
@@ -77,12 +78,8 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Identifiable> T lockReload(T object) {
-        return (T)
-                getSession()
-                        .get(
-                                object.getClass(),
-                                object.getId(),
-                                new LockOptions(LockMode.PESSIMISTIC_READ).setScope(true));
+        return (T) getSession()
+                .get(object.getClass(), object.getId(), new LockOptions(LockMode.PESSIMISTIC_READ).setScope(true));
     }
 
     @Override
@@ -188,9 +185,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         Root<ConfigurationImpl> root = query.from(ConfigurationImpl.class);
         query.select(root);
         if (templates != null) {
-            query.where(
-                    cb.equal(root.get("removeStamp"), 0L),
-                    cb.equal(root.get("template"), templates));
+            query.where(cb.equal(root.get("removeStamp"), 0L), cb.equal(root.get("template"), templates));
         } else {
             query.where(cb.equal(root.get("removeStamp"), 0L));
         }
@@ -255,8 +250,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         subRoot.join("task");
         subQuery.select(subRoot.get("task").get("id"));
         subQuery.where(
-                cb.equal(subRoot.get("batch").get("id"), batch.getId()),
-                cb.equal(subRoot.get("removeStamp"), 0L));
+                cb.equal(subRoot.get("batch").get("id"), batch.getId()), cb.equal(subRoot.get("removeStamp"), 0L));
 
         query.where(
                 cb.equal(root.get("removeStamp"), 0L),
@@ -296,9 +290,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public List<Batch> findBatches(
-            final String workspacePattern,
-            final String configNamePattern,
-            final String namePattern) {
+            final String workspacePattern, final String configNamePattern, final String namePattern) {
         CriteriaBuilder cb = getSession().getCriteriaBuilder();
         CriteriaQuery<Batch> query = cb.createQuery(Batch.class);
         Root<BatchImpl> root = query.from(BatchImpl.class);
@@ -317,9 +309,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                             ? cb.isNull(root.get("configuration").get("workspace"))
                             : "%".equals(workspacePattern)
                                     ? cb.isTrue(cb.literal(true))
-                                    : cb.like(
-                                            root.get("configuration").get("workspace"),
-                                            workspacePattern));
+                                    : cb.like(root.get("configuration").get("workspace"), workspacePattern));
         } else {
             query.where(
                     cb.equal(root.get("removeStamp"), 0L),
@@ -355,9 +345,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
                             ? cb.isNull(root.get("configuration").get("workspace"))
                             : "%".equals(workspacePattern)
                                     ? cb.isTrue(cb.literal(true))
-                                    : cb.like(
-                                            root.get("configuration").get("workspace"),
-                                            workspacePattern));
+                                    : cb.like(root.get("configuration").get("workspace"), workspacePattern));
         }
 
         query.select(root);
@@ -389,9 +377,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         Root<RunImpl> root = query.from(RunImpl.class);
         root.join("batchElement").join("task");
         query.select(root);
-        query.where(
-                cb.equal(root.get("batchElement").get("task").get("id"), task.getId()),
-                cb.isNull(root.get("end")));
+        query.where(cb.equal(root.get("batchElement").get("task").get("id"), task.getId()), cb.isNull(root.get("end")));
         try {
             return getSession()
                     .createQuery(query)
@@ -413,8 +399,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         query.groupBy(batchRun.get("id"));
         query.where(
                 cb.equal(root.get("batchRun").get("batch").get("id"), batch.getId()),
-                root.get("status")
-                        .in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
+                root.get("status").in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
         return getSession().createQuery(query).getResultList();
     }
 
@@ -427,9 +412,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
         batchRun.join("batch");
         query.select(root.get("batchRun"));
         query.groupBy(batchRun.get("id"));
-        query.where(
-                root.get("status")
-                        .in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
+        query.where(root.get("status").in(Run.Status.RUNNING, Run.Status.READY_TO_COMMIT, Run.Status.COMMITTING));
         return getSession().createQuery(query).getResultList();
     }
 
@@ -486,9 +469,7 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
     }
 
     @Override
-    @Transactional(
-            transactionManager = "tmTransactionManager",
-            propagation = Propagation.REQUIRES_NEW)
+    @Transactional(transactionManager = "tmTransactionManager", propagation = Propagation.REQUIRES_NEW)
     public Configuration copyConfiguration(String configName) {
         ConfigurationImpl clone = (ConfigurationImpl) getConfiguration(configName);
         initInternal(clone);
@@ -548,14 +529,12 @@ public class TaskManagerDaoImpl implements TaskManagerDao {
 
     @Override
     public void delete(Configuration config) {
-        getSessionNoFilters()
-                .delete(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
+        getSessionNoFilters().delete(getSessionNoFilters().get(ConfigurationImpl.class, config.getId()));
     }
 
     @Override
     public void delete(BatchElement batchElement) {
-        batchElement =
-                (BatchElement) getSession().get(BatchElementImpl.class, batchElement.getId());
+        batchElement = (BatchElement) getSession().get(BatchElementImpl.class, batchElement.getId());
         batchElement.getBatch().getElements().remove(batchElement);
         getSession().delete(batchElement);
     }

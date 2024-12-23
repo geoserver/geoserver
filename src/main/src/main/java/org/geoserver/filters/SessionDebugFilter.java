@@ -21,9 +21,8 @@ import org.geoserver.security.filter.GeoServerSecurityContextPersistenceFilter;
 import org.geotools.util.logging.Logging;
 
 /**
- * Utility filter that will dump a stack trace identifying any session creation outside of the user
- * interface (OGC and REST services are supposed to be stateless, session creation is harmful to
- * scalability)
+ * Utility filter that will dump a stack trace identifying any session creation outside of the user interface (OGC and
+ * REST services are supposed to be stateless, session creation is harmful to scalability)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -53,8 +52,7 @@ public class SessionDebugFilter implements Filter {
     }
 
     /**
-     * {@link HttpServletRequest} wrapper that will dump a full trace for any session creation
-     * attempt
+     * {@link HttpServletRequest} wrapper that will dump a full trace for any session creation attempt
      *
      * @author Andrea Aime - GeoSolutions
      */
@@ -82,11 +80,7 @@ public class SessionDebugFilter implements Filter {
             // check for the hint passed by the GeoServerSecurityContextPersistenceFilter and
             // signal the issue in the logs
 
-            Boolean allow =
-                    (Boolean)
-                            getAttribute(
-                                    GeoServerSecurityContextPersistenceFilter
-                                            .ALLOWSESSIONCREATION_ATTR);
+            Boolean allow = (Boolean) getAttribute(GeoServerSecurityContextPersistenceFilter.ALLOWSESSIONCREATION_ATTR);
 
             // are we creating the session in the web ui?
             String pathInfo = getPathInfo();
@@ -95,10 +89,7 @@ public class SessionDebugFilter implements Filter {
                 if (LOGGER.isLoggable(Level.FINE)) {
                     Exception e = new Exception("Full stack trace for the session creation path");
                     e.fillInStackTrace();
-                    LOGGER.log(
-                            Level.FINE,
-                            "Creating a new http session inside the web UI (normal behavior)",
-                            e);
+                    LOGGER.log(Level.FINE, "Creating a new http session inside the web UI (normal behavior)", e);
                 }
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {

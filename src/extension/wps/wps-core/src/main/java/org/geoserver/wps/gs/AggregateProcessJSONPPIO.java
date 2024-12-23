@@ -13,13 +13,12 @@ import org.geoserver.wps.ppio.CDataPPIO;
 import org.geotools.process.vector.AggregateProcess;
 
 /**
- * Provides a JSON output for the aggregate process result. The result are encoded in a tabular
- * format very similar to the output of SQL query.
+ * Provides a JSON output for the aggregate process result. The result are encoded in a tabular format very similar to
+ * the output of SQL query.
  *
- * <p>The tabular data is the composition of the group by attributes values and the aggregation
- * functions results. Both of these values appear in the order they are declared, the group by
- * values appear first and the aggregation values after. If there is no group by attributes, only
- * the aggregations values appear.
+ * <p>The tabular data is the composition of the group by attributes values and the aggregation functions results. Both
+ * of these values appear in the order they are declared, the group by values appear first and the aggregation values
+ * after. If there is no group by attributes, only the aggregations values appear.
  *
  * <p>Follow some examples:
  *
@@ -81,9 +80,8 @@ public class AggregateProcessJSONPPIO extends CDataPPIO {
     }
 
     /**
-     * Helper method that encodes the result of an aggregator process when there is no group by
-     * attributes. We encode the value of each aggregation function producing an output very similar
-     * of an SQL query result.
+     * Helper method that encodes the result of an aggregator process when there is no group by attributes. We encode
+     * the value of each aggregation function producing an output very similar of an SQL query result.
      *
      * @param processResult the result of the aggregator process
      * @return aggregation functions result values

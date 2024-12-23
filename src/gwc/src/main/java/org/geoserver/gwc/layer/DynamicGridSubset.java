@@ -23,10 +23,7 @@ public class DynamicGridSubset extends GridSubset {
     }
 
     public DynamicGridSubset(
-            GridSet gridSet,
-            Map<Integer, GridCoverage> coverages,
-            BoundingBox originalExtent,
-            boolean fullCoverage) {
+            GridSet gridSet, Map<Integer, GridCoverage> coverages, BoundingBox originalExtent, boolean fullCoverage) {
         super(gridSet, coverages, originalExtent, fullCoverage);
     }
 

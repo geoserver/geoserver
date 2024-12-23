@@ -12,8 +12,7 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Represents a service access rule: identifies a service, a method, and the set of roles that are
- * allowed to access it
+ * Represents a service access rule: identifies a service, a method, and the set of roles that are allowed to access it
  */
 @SuppressWarnings("serial")
 public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Serializable {
@@ -97,10 +96,7 @@ public class ServiceAccessRule implements Comparable<ServiceAccessRule>, Seriali
         }
     }
 
-    /**
-     * Comparison implemented so that generic rules get first, specific one are compared by service
-     * and method
-     */
+    /** Comparison implemented so that generic rules get first, specific one are compared by service and method */
     @Override
     public int compareTo(ServiceAccessRule other) {
         int compareService = compareServiceItems(service, other.service);

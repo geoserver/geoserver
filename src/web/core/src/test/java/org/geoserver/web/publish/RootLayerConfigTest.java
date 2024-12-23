@@ -29,9 +29,7 @@ public class RootLayerConfigTest extends GeoServerWicketTestSupport {
     @Before
     public void init() {
         polygons = getCatalog().getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new RootLayerConfig(id, new Model<>(polygons)));
+        page = new FormTestPage((ComponentBuilder) id -> new RootLayerConfig(id, new Model<>(polygons)));
         tester.startPage(page);
     }
 

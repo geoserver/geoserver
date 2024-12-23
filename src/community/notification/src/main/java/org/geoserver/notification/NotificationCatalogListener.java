@@ -35,8 +35,7 @@ import org.geoserver.notification.common.Notification.Type;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-public class NotificationCatalogListener extends NotificationListener
-        implements INotificationCatalogListener {
+public class NotificationCatalogListener extends NotificationListener implements INotificationCatalogListener {
 
     private Boolean filterEvent(CatalogInfo source) {
         return (source instanceof WorkspaceInfo
@@ -56,13 +55,7 @@ public class NotificationCatalogListener extends NotificationListener
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
             Notification notification =
-                    new NotificationImpl(
-                            Type.Catalog,
-                            event.getSource().getId(),
-                            Action.Remove,
-                            info,
-                            null,
-                            user);
+                    new NotificationImpl(Type.Catalog, event.getSource().getId(), Action.Remove, info, null, user);
             notify(notification);
         }
     }
@@ -73,14 +66,13 @@ public class NotificationCatalogListener extends NotificationListener
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
-            Notification notification =
-                    new NotificationImpl(
-                            Type.Catalog,
-                            event.getSource().getId(),
-                            Action.Update,
-                            info,
-                            handleModifiedProperties(event),
-                            user);
+            Notification notification = new NotificationImpl(
+                    Type.Catalog,
+                    event.getSource().getId(),
+                    Action.Update,
+                    info,
+                    handleModifiedProperties(event),
+                    user);
             notify(notification);
         }
     }
@@ -92,8 +84,7 @@ public class NotificationCatalogListener extends NotificationListener
             String user = (auth != null) ? auth.getName() : null;
             CatalogInfo info = ModificationProxy.unwrap(event.getSource());
             Notification notification =
-                    new NotificationImpl(
-                            Type.Catalog, event.getSource().getId(), Action.Add, info, null, user);
+                    new NotificationImpl(Type.Catalog, event.getSource().getId(), Action.Add, info, null, user);
             notify(notification);
         }
     }
@@ -145,17 +136,11 @@ public class NotificationCatalogListener extends NotificationListener
             final int stylesIndex = changedProperties.indexOf("styles");
             BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("name");
             String oldStyles =
-                    StringUtils.join(
-                            CollectionUtils.collect(
-                                            (Set<StyleInfo>) oldValues.get(stylesIndex),
-                                            transformer)
-                                    .toArray());
+                    StringUtils.join(CollectionUtils.collect((Set<StyleInfo>) oldValues.get(stylesIndex), transformer)
+                            .toArray());
             String newStyles =
-                    StringUtils.join(
-                            CollectionUtils.collect(
-                                            (Set<StyleInfo>) newValues.get(stylesIndex),
-                                            transformer)
-                                    .toArray());
+                    StringUtils.join(CollectionUtils.collect((Set<StyleInfo>) newValues.get(stylesIndex), transformer)
+                            .toArray());
             if (!oldStyles.equals(newStyles)) {
                 properties.put("styles", newStyles);
             }
@@ -185,17 +170,11 @@ public class NotificationCatalogListener extends NotificationListener
             final int stylesIndex = changedProperties.indexOf("styles");
             BeanToPropertyValueTransformer transformer = new BeanToPropertyValueTransformer("name");
             String oldStyles =
-                    StringUtils.join(
-                            CollectionUtils.collect(
-                                            (Set<StyleInfo>) oldValues.get(stylesIndex),
-                                            transformer)
-                                    .toArray());
+                    StringUtils.join(CollectionUtils.collect((Set<StyleInfo>) oldValues.get(stylesIndex), transformer)
+                            .toArray());
             String newStyles =
-                    StringUtils.join(
-                            CollectionUtils.collect(
-                                            (Set<StyleInfo>) newValues.get(stylesIndex),
-                                            transformer)
-                                    .toArray());
+                    StringUtils.join(CollectionUtils.collect((Set<StyleInfo>) newValues.get(stylesIndex), transformer)
+                            .toArray());
             if (!oldStyles.equals(newStyles)) {
                 properties.put("styles", newStyles);
             }

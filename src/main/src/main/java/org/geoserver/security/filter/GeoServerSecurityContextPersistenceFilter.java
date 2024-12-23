@@ -36,53 +36,44 @@ public class GeoServerSecurityContextPersistenceFilter extends GeoServerComposit
     public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
         super.initializeFromConfig(config);
 
-        SecurityContextPersistenceFilterConfig pConfig =
-                (SecurityContextPersistenceFilterConfig) config;
+        SecurityContextPersistenceFilterConfig pConfig = (SecurityContextPersistenceFilterConfig) config;
 
         HttpSessionSecurityContextRepository repo = new HttpSessionSecurityContextRepository();
         // Previous implementation
         // (https://github.com/geoserver/geoserver/blob/2.22.x/src/main/src/main/java/org/geoserver/security/filter/GeoServerSecurityContextPersistenceFilter.java#L39)
         // migrated to use OncePerRequestFilter due to deprecation of
         // SecurityContextPersistenceFilter
-        OncePerRequestFilter eagerFilter =
-                new OncePerRequestFilter() {
-                    @Override
-                    public void doFilterInternal(
-                            HttpServletRequest request,
-                            HttpServletResponse response,
-                            FilterChain chain)
-                            throws IOException, ServletException {
-                        // set the hint for authentcation servlets
-                        request.setAttribute(ALLOWSESSIONCREATION_ATTR, isAllowSessionCreation);
-                        if (isAllowSessionCreation) {
-                            request.getSession();
-                        }
-                        // set the hint for other components
-                        request.setAttribute(
-                                GeoServerSecurityFilterChainProxy.SECURITY_ENABLED_ATTRIBUTE,
-                                Boolean.TRUE);
-                        // ensure that filter is only applied once per request
-                        if (request.getAttribute(FILTER_APPLIED) != null) {
-                            chain.doFilter(request, response);
-                            return;
-                        }
-                        request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
-                        try {
-                            Supplier<SecurityContext> securityContext =
-                                    repo.loadDeferredContext(request);
-                            SecurityContextHolder.setDeferredContext(securityContext);
-                            chain.doFilter(request, response);
-                        } finally {
-                            SecurityContext contextAfterChainExecution =
-                                    SecurityContextHolder.getContext();
-                            // Crucial removal of SecurityContextHolder contents before anything
-                            // else.
-                            SecurityContextHolder.clearContext();
-                            repo.saveContext(contextAfterChainExecution, request, response);
-                            request.removeAttribute(FILTER_APPLIED);
-                        }
-                    }
-                };
+        OncePerRequestFilter eagerFilter = new OncePerRequestFilter() {
+            @Override
+            public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
+                    throws IOException, ServletException {
+                // set the hint for authentcation servlets
+                request.setAttribute(ALLOWSESSIONCREATION_ATTR, isAllowSessionCreation);
+                if (isAllowSessionCreation) {
+                    request.getSession();
+                }
+                // set the hint for other components
+                request.setAttribute(GeoServerSecurityFilterChainProxy.SECURITY_ENABLED_ATTRIBUTE, Boolean.TRUE);
+                // ensure that filter is only applied once per request
+                if (request.getAttribute(FILTER_APPLIED) != null) {
+                    chain.doFilter(request, response);
+                    return;
+                }
+                request.setAttribute(FILTER_APPLIED, Boolean.TRUE);
+                try {
+                    Supplier<SecurityContext> securityContext = repo.loadDeferredContext(request);
+                    SecurityContextHolder.setDeferredContext(securityContext);
+                    chain.doFilter(request, response);
+                } finally {
+                    SecurityContext contextAfterChainExecution = SecurityContextHolder.getContext();
+                    // Crucial removal of SecurityContextHolder contents before anything
+                    // else.
+                    SecurityContextHolder.clearContext();
+                    repo.saveContext(contextAfterChainExecution, request, response);
+                    request.removeAttribute(FILTER_APPLIED);
+                }
+            }
+        };
         isAllowSessionCreation = pConfig.isAllowSessionCreation();
         repo.setAllowSessionCreation(pConfig.isAllowSessionCreation());
         try {

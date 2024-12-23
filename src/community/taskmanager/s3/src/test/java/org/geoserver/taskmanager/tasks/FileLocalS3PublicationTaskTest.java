@@ -65,21 +65,29 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_FILE = "file";
     private static final String ATT_LAYER = "layer";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -109,10 +117,8 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
         task1.setType(FileLocalPublicationTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(
                 task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE_SERVICE, ATT_FILE_SERVICE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, FileLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -140,8 +146,7 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
         try {
             fileService = fileServices.get(FILE_SERVICE);
             Assume.assumeNotNull(fileService);
-            Assume.assumeTrue(
-                    "File exists on s3 service", fileService.checkFileExists(FILE_LOCATION));
+            Assume.assumeTrue("File exists on s3 service", fileService.checkFileExists(FILE_LOCATION));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
             Assume.assumeTrue("S3 service is configured and available", false);
@@ -152,15 +157,16 @@ public class FileLocalS3PublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_LAYER, LAYER_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
 
         assertNotNull(catalog.getLayerByName(LAYER_NAME));
-        CoverageStoreInfo csi =
-                catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
+        CoverageStoreInfo csi = catalog.getStoreByName(WORKSPACE, COVERAGE_NAME, CoverageStoreInfo.class);
         assertNotNull(csi);
         assertEquals(fileService.getURI(FILE_LOCATION).toString(), csi.getURL());
         assertNotNull(catalog.getResourceByName(LAYER_NAME, CoverageInfo.class));

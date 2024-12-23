@@ -55,8 +55,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
         // according to a wicket user forum post, when setting a value after dropdown select
         // a new form test is needed otherwise the value will not be set.
         ft = tester.newFormTester("form");
-        ft.setValue(
-                "tabs:panel:allowedArea", "SRID=4326;POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))");
+        ft.setValue("tabs:panel:allowedArea", "SRID=4326;POLYGON((30 10, 40 40, 20 40, 10 20, 30 10))");
         tester.clickLink("form:tabs:tabs-container:tabs:1:link");
         ft.submit("save");
         tester.assertNoErrorMessage();
@@ -93,23 +92,17 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
             FormTester ft = tester.newFormTester("form");
             ft.setValue("tabs:panel:layerDetailsCheck", true);
             tester.executeAjaxEvent("form:tabs:panel:layerDetailsCheck", "change");
-            tester.assertModelValue(
-                    "form:tabs:panel:layerDetailsContainer:layerType", LayerType.VECTOR);
+            tester.assertModelValue("form:tabs:panel:layerDetailsContainer:layerType", LayerType.VECTOR);
             Component availableStyles =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:allowedStyles");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:allowedStyles");
             Component defaultStyle =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:defaultStyle");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:defaultStyle");
             Component cqlFilterRead =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:cqlFilterRead");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:cqlFilterRead");
             Component cqlFilterWrite =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:cqlFilterWrite");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:cqlFilterWrite");
             Component allowedArea =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:allowedArea");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:allowedArea");
             // checks component are present and enabled
             assertTrue(availableStyles.isEnabled());
             assertTrue(defaultStyle.isEnabled());
@@ -118,10 +111,8 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
             assertTrue(allowedArea.isEnabled());
 
             @SuppressWarnings("unchecked")
-            DropDownChoice<SpatialFilterType> spatialFilterType =
-                    (DropDownChoice<SpatialFilterType>)
-                            tester.getComponentFromLastRenderedPage(
-                                    "form:tabs:panel:layerDetailsContainer:spatialFilterType");
+            DropDownChoice<SpatialFilterType> spatialFilterType = (DropDownChoice<SpatialFilterType>)
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:spatialFilterType");
 
             assertTrue(spatialFilterType.isEnabled());
             assertEquals(SpatialFilterType.INTERSECT, spatialFilterType.getModelObject());
@@ -151,23 +142,17 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
             FormTester ft = tester.newFormTester("form");
             ft.setValue("tabs:panel:layerDetailsCheck", true);
             tester.executeAjaxEvent("form:tabs:panel:layerDetailsCheck", "change");
-            tester.assertModelValue(
-                    "form:tabs:panel:layerDetailsContainer:layerType", LayerType.LAYERGROUP);
+            tester.assertModelValue("form:tabs:panel:layerDetailsContainer:layerType", LayerType.LAYERGROUP);
             Component availableStyles =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:allowedStyles");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:allowedStyles");
             Component defaultStyle =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:defaultStyle");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:defaultStyle");
             Component cqlFilterRead =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:cqlFilterRead");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:cqlFilterRead");
             Component cqlFilterWrite =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:cqlFilterWrite");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:cqlFilterWrite");
             Component allowedArea =
-                    tester.getComponentFromLastRenderedPage(
-                            "form:tabs:panel:layerDetailsContainer:allowedArea");
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:allowedArea");
 
             assertFalse(availableStyles.isEnabled());
             assertFalse(defaultStyle.isEnabled());
@@ -176,10 +161,8 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
             assertTrue(allowedArea.isEnabled());
 
             @SuppressWarnings("unchecked")
-            DropDownChoice<SpatialFilterType> spatialFilterType =
-                    (DropDownChoice<SpatialFilterType>)
-                            tester.getComponentFromLastRenderedPage(
-                                    "form:tabs:panel:layerDetailsContainer:spatialFilterType");
+            DropDownChoice<SpatialFilterType> spatialFilterType = (DropDownChoice<SpatialFilterType>)
+                    tester.getComponentFromLastRenderedPage("form:tabs:panel:layerDetailsContainer:spatialFilterType");
 
             assertTrue(spatialFilterType.isEnabled());
             assertEquals(SpatialFilterType.INTERSECT, spatialFilterType.getModelObject());
@@ -207,10 +190,7 @@ public class GeofenceRulePageTest extends LayerGroupBaseTest {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
         }
     }
 }

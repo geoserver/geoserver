@@ -39,27 +39,24 @@ public final class GetFeatureContext {
     }
 
     /**
-     * The full GetFeature request being run. The object returned may be mutable, but the callback
-     * is strongly suggested not to attempt any modification, the behavior of doing so is undefined
-     * and might change over time
+     * The full GetFeature request being run. The object returned may be mutable, but the callback is strongly suggested
+     * not to attempt any modification, the behavior of doing so is undefined and might change over time
      */
     public GetFeatureRequest getRequest() {
         return request;
     }
 
     /**
-     * The feature type being queried. The object returned may be mutable, but the callback is
-     * strongly suggested not to attempt any modification, the behavior of doing so is undefined and
-     * might change over time
+     * The feature type being queried. The object returned may be mutable, but the callback is strongly suggested not to
+     * attempt any modification, the behavior of doing so is undefined and might change over time
      */
     public FeatureTypeInfo getFeatureTypeInfo() {
         return featureTypeInfo;
     }
 
     /**
-     * The feature source being queried. The object returned may be mutable, but the callback is
-     * strongly suggested not to attempt any modification, the behavior of doing so is undefined and
-     * might change over time
+     * The feature source being queried. The object returned may be mutable, but the callback is strongly suggested not
+     * to attempt any modification, the behavior of doing so is undefined and might change over time
      */
     public FeatureSource<? extends FeatureType, ? extends Feature> getFeatureSource() {
         return featureSource;

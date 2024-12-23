@@ -29,19 +29,17 @@ public class SVGTest extends WMSTestSupport {
     @Test
     public void testBasicSvgGenerator() throws Exception {
         getWMS().setSvgRenderer(WMS.SVG_SIMPLE);
-        Document doc =
-                getAsDOM(
-                        "wms?request=getmap&service=wms&version=1.1.1"
-                                + "&format="
-                                + SVG.MIME_TYPE
-                                + "&layers="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "&styles="
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
-                                + "&featureid=BasicPolygons.1107531493643");
+        Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1"
+                + "&format="
+                + SVG.MIME_TYPE
+                + "&layers="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&styles="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                + "&featureid=BasicPolygons.1107531493643");
 
         assertEquals(1, doc.getElementsByTagName("svg").getLength());
         assertEquals(1, doc.getElementsByTagName("g").getLength());
@@ -50,16 +48,14 @@ public class SVGTest extends WMSTestSupport {
     @Test
     public void testBasicSvgGeneratorMultipleFts() throws Exception {
         getWMS().setSvgRenderer(WMS.SVG_SIMPLE);
-        Document doc =
-                getAsDOM(
-                        "wms?request=getmap&service=wms&version=1.1.1"
-                                + "&format="
-                                + SVG.MIME_TYPE
-                                + "&layers="
-                                + getLayerId(MockData.BASIC_POLYGONS)
-                                + "&styles=multifts"
-                                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
-                                + "&featureid=BasicPolygons.1107531493643");
+        Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1"
+                + "&format="
+                + SVG.MIME_TYPE
+                + "&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles=multifts"
+                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                + "&featureid=BasicPolygons.1107531493643");
 
         assertEquals(1, doc.getElementsByTagName("svg").getLength());
         assertEquals(1, doc.getElementsByTagName("g").getLength());
@@ -70,17 +66,15 @@ public class SVGTest extends WMSTestSupport {
         Assume.assumeTrue(isw3OrgReachable());
 
         getWMS().setSvgRenderer(WMS.SVG_BATIK);
-        Document doc =
-                getAsDOM(
-                        "wms?request=getmap&service=wms&version=1.1.1"
-                                + "&format="
-                                + SVG.MIME_TYPE
-                                + "&layers="
-                                + getLayerId(MockData.BASIC_POLYGONS)
-                                + "&styles="
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
-                                + "&featureid=BasicPolygons.1107531493643");
+        Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1"
+                + "&format="
+                + SVG.MIME_TYPE
+                + "&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                + "&featureid=BasicPolygons.1107531493643");
 
         assertEquals(1, doc.getElementsByTagName("svg").getLength());
         assertTrue(doc.getElementsByTagName("g").getLength() > 1);
@@ -90,8 +84,7 @@ public class SVGTest extends WMSTestSupport {
         // batik includes DTD reference which forces us to be online, skip test
         // in offline case
         try {
-            HttpURLConnection connection =
-                    (HttpURLConnection) new URL("http://www.w3.org").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL("http://www.w3.org").openConnection();
             connection.setConnectTimeout(5000);
             connection.connect();
             connection.disconnect();
@@ -107,16 +100,14 @@ public class SVGTest extends WMSTestSupport {
         Assume.assumeTrue(isw3OrgReachable());
 
         getWMS().setSvgRenderer(WMS.SVG_BATIK);
-        Document doc =
-                getAsDOM(
-                        "wms?request=getmap&service=wms&version=1.1.1"
-                                + "&format="
-                                + SVG.MIME_TYPE
-                                + "&layers="
-                                + getLayerId(MockData.BASIC_POLYGONS)
-                                + "&styles=multifts"
-                                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
-                                + "&featureid=BasicPolygons.1107531493643");
+        Document doc = getAsDOM("wms?request=getmap&service=wms&version=1.1.1"
+                + "&format="
+                + SVG.MIME_TYPE
+                + "&layers="
+                + getLayerId(MockData.BASIC_POLYGONS)
+                + "&styles=multifts"
+                + "&height=1024&width=1024&bbox=-180,-90,180,90&srs=EPSG:4326"
+                + "&featureid=BasicPolygons.1107531493643");
 
         assertEquals(1, doc.getElementsByTagName("svg").getLength());
         assertTrue(doc.getElementsByTagName("g").getLength() > 1);

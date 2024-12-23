@@ -21,30 +21,27 @@ import org.geoserver.security.jwtheaders.JwtConfiguration;
 /**
  * This validates the signature of the JWT.
  *
- * <p>We cache to things (both for 1 hour) for performance reasons; 1. The JWKSet enpoint (set of
- * public keys we use to check the signature). 2. The validated token
+ * <p>We cache to things (both for 1 hour) for performance reasons; 1. The JWKSet enpoint (set of public keys we use to
+ * check the signature). 2. The validated token
  *
  * <p>This will ensure that the token hasn't been tampered with.
  */
 public class TokenSignatureValidator {
 
-    public static LoadingCache<String, JWKSet> jwks =
-            CacheBuilder.newBuilder()
-                    .maximumSize(50000)
-                    .expireAfterWrite(1, TimeUnit.HOURS)
-                    .build(
-                            new CacheLoader<String, JWKSet>() {
-                                public JWKSet load(String urlStr) throws Exception {
+    public static LoadingCache<String, JWKSet> jwks = CacheBuilder.newBuilder()
+            .maximumSize(50000)
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build(new CacheLoader<String, JWKSet>() {
+                public JWKSet load(String urlStr) throws Exception {
 
-                                    return loadJWKSet(urlStr);
-                                }
-                            });
+                    return loadJWKSet(urlStr);
+                }
+            });
 
-    public static Cache<Object, Object> validAccessKeys =
-            CacheBuilder.newBuilder()
-                    .maximumSize(50000)
-                    .expireAfterWrite(1, TimeUnit.HOURS)
-                    .build();
+    public static Cache<Object, Object> validAccessKeys = CacheBuilder.newBuilder()
+            .maximumSize(50000)
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
 
     JwtConfiguration jwtHeadersConfig;
 
@@ -60,8 +57,7 @@ public class TokenSignatureValidator {
     public void validate(String accessToken) throws Exception {
         if (!jwtHeadersConfig.isValidateTokenSignature()) return; // don't validate
 
-        if (validAccessKeys.getIfPresent(accessToken) != null)
-            return; // we already know this is a good accessToken
+        if (validAccessKeys.getIfPresent(accessToken) != null) return; // we already know this is a good accessToken
 
         JWSObject jwsToken = JWSObject.parse(accessToken);
         String keyId = jwsToken.getHeader().getKeyID();
@@ -76,8 +72,7 @@ public class TokenSignatureValidator {
     }
 
     /**
-     * Given a publickey and a (parsed) token, verify that the signature is correct. Throws if the
-     * signature is bad.
+     * Given a publickey and a (parsed) token, verify that the signature is correct. Throws if the signature is bad.
      *
      * @param rsaPublicKey Public key used to validate token signature
      * @param token three part token
@@ -89,8 +84,7 @@ public class TokenSignatureValidator {
 
         var valid = token.verify(verifier);
         if (!valid) {
-            throw new Exception(
-                    "Could not verify signature of the JWT with the given RSA Public Key");
+            throw new Exception("Could not verify signature of the JWT with the given RSA Public Key");
         }
     }
 }

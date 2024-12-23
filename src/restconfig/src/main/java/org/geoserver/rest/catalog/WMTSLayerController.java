@@ -71,8 +71,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(
         path = {
             RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/wmtslayers",
-            RestBaseController.ROOT_PATH
-                    + "/workspaces/{workspaceName}/wmtsstores/{storeName}/layers"
+            RestBaseController.ROOT_PATH + "/workspaces/{workspaceName}/wmtsstores/{storeName}/layers"
         })
 public class WMTSLayerController extends AbstractCatalogController {
 
@@ -84,11 +83,7 @@ public class WMTSLayerController extends AbstractCatalogController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public Object layersGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -96,35 +91,20 @@ public class WMTSLayerController extends AbstractCatalogController {
             @RequestParam(required = false, defaultValue = "configured") String list) {
         switch (list) {
             case "available":
-                LOGGER.fine(
-                        () ->
-                                logMessage(
-                                        "GET available WMTS layers from ",
-                                        workspaceName,
-                                        storeName,
-                                        null));
+                LOGGER.fine(() -> logMessage("GET available WMTS layers from ", workspaceName, storeName, null));
                 return new AvailableResources(
-                        getAvailableLayersInternal(workspaceName, storeName, quietOnNotFound),
-                        "wmtsLayerName");
+                        getAvailableLayersInternal(workspaceName, storeName, quietOnNotFound), "wmtsLayerName");
             case "configured":
-                LOGGER.fine(
-                        () ->
-                                logMessage(
-                                        "GET configured WMTS layers from ",
-                                        workspaceName,
-                                        storeName,
-                                        null));
+                LOGGER.fine(() -> logMessage("GET configured WMTS layers from ", workspaceName, storeName, null));
 
                 return wrapList(
-                        getConfiguredLayersInternal(workspaceName, storeName, quietOnNotFound),
-                        WMTSLayerInfo.class);
+                        getConfiguredLayersInternal(workspaceName, storeName, quietOnNotFound), WMTSLayerInfo.class);
             default:
                 throw new RestException("Unknown list type " + list, HttpStatus.NOT_IMPLEMENTED);
         }
     }
 
-    Collection<WMTSStoreInfo> getStoresInternal(
-            NamespaceInfo ns, String storeName, boolean quietOnNotFound) {
+    Collection<WMTSStoreInfo> getStoresInternal(NamespaceInfo ns, String storeName, boolean quietOnNotFound) {
         if (Objects.nonNull(storeName)) {
             return Collections.singleton(getStoreInternal(ns, storeName));
         } else {
@@ -132,45 +112,37 @@ public class WMTSLayerController extends AbstractCatalogController {
         }
     }
 
-    List<String> getAvailableLayersInternal(
-            String workspaceName, String storeName, boolean quietOnNotFound) {
+    List<String> getAvailableLayersInternal(String workspaceName, String storeName, boolean quietOnNotFound) {
         NamespaceInfo ns = getNamespaceInternal(workspaceName);
         Collection<WMTSStoreInfo> stores = getStoresInternal(ns, storeName, quietOnNotFound);
         return stores.stream()
-                .flatMap(
-                        store -> {
-                            WebMapTileServer ds;
-                            try {
-                                ds = store.getWebMapTileServer(null);
-                            } catch (IOException e) {
-                                throw new RestException(
-                                        "Could not load wmts store: " + storeName,
-                                        HttpStatus.INTERNAL_SERVER_ERROR,
-                                        e);
-                            }
-                            final List<WMTSLayer> layerList = ds.getCapabilities().getLayerList();
-                            return layerList.stream()
-                                    .map(Layer::getName)
-                                    .filter(Objects::nonNull)
-                                    .filter(name -> !name.isEmpty())
-                                    .filter(name -> !layerConfigured(store, name));
-                        })
+                .flatMap(store -> {
+                    WebMapTileServer ds;
+                    try {
+                        ds = store.getWebMapTileServer(null);
+                    } catch (IOException e) {
+                        throw new RestException(
+                                "Could not load wmts store: " + storeName, HttpStatus.INTERNAL_SERVER_ERROR, e);
+                    }
+                    final List<WMTSLayer> layerList = ds.getCapabilities().getLayerList();
+                    return layerList.stream()
+                            .map(Layer::getName)
+                            .filter(Objects::nonNull)
+                            .filter(name -> !name.isEmpty())
+                            .filter(name -> !layerConfigured(store, name));
+                })
                 .collect(Collectors.toList());
     }
 
     boolean layerConfigured(final WMTSStoreInfo store, final String nativeName) {
-        final Filter filter =
-                Predicates.and(
-                        Predicates.equal("store.name", store.getName()),
-                        Predicates.equal("nativeName", nativeName));
-        try (CloseableIterator<WMTSLayerInfo> it =
-                catalog.list(WMTSLayerInfo.class, filter, 0, 1, null)) {
+        final Filter filter = Predicates.and(
+                Predicates.equal("store.name", store.getName()), Predicates.equal("nativeName", nativeName));
+        try (CloseableIterator<WMTSLayerInfo> it = catalog.list(WMTSLayerInfo.class, filter, 0, 1, null)) {
             return it.hasNext();
         }
     }
 
-    List<WMTSLayerInfo> getConfiguredLayersInternal(
-            String workspaceName, String storeName, boolean quietOnNotFound) {
+    List<WMTSLayerInfo> getConfiguredLayersInternal(String workspaceName, String storeName, boolean quietOnNotFound) {
         NamespaceInfo ns = getNamespaceInternal(workspaceName);
         Collection<WMTSStoreInfo> stores = getStoresInternal(ns, storeName, quietOnNotFound);
         return stores.stream()
@@ -180,11 +152,7 @@ public class WMTSLayerController extends AbstractCatalogController {
 
     @GetMapping(
             value = "/{layerName}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<WMTSLayerInfo> layerGet(
             @PathVariable String workspaceName,
             @PathVariable(required = false) String storeName,
@@ -227,8 +195,7 @@ public class WMTSLayerController extends AbstractCatalogController {
         } else if (Objects.isNull(storeName)) {
             layer = catalog.getResourceByName(ns, layerName, WMTSLayerInfo.class);
             if (Objects.isNull(layer)) {
-                throw new ResourceNotFoundException(
-                        "No such cascaded wmts: " + workspaceName + "," + layerName);
+                throw new ResourceNotFoundException("No such cascaded wmts: " + workspaceName + "," + layerName);
             } else {
                 return layer;
             }
@@ -236,8 +203,7 @@ public class WMTSLayerController extends AbstractCatalogController {
             WMTSStoreInfo store = getStoreInternal(ns, storeName);
             layer = catalog.getResourceByStore(store, layerName, WMTSLayerInfo.class);
             if (Objects.isNull(layer)) {
-                throw new ResourceNotFoundException(
-                        "No such cascaded wmts: " + workspaceName + "," + layerName);
+                throw new ResourceNotFoundException("No such cascaded wmts: " + workspaceName + "," + layerName);
             } else {
                 return layer;
             }
@@ -313,13 +279,11 @@ public class WMTSLayerController extends AbstractCatalogController {
 
         String resourceName = handleObjectPost(resource, workspaceName, storeName);
         LOGGER.fine(() -> logMessage("POST", workspaceName, storeName, resourceName));
-        UriComponents uriComponents =
-                Objects.isNull(storeName)
-                        ? builder.path("/workspaces/{workspaceName}/wmtslayers/{wmtslayer}")
-                                .buildAndExpand(workspaceName, resourceName)
-                        : builder.path(
-                                        "/workspaces/{workspaceName}/wmtsstores/{storeName}/layers/{wmtslayer}")
-                                .buildAndExpand(workspaceName, storeName, resourceName);
+        UriComponents uriComponents = Objects.isNull(storeName)
+                ? builder.path("/workspaces/{workspaceName}/wmtslayers/{wmtslayer}")
+                        .buildAndExpand(workspaceName, resourceName)
+                : builder.path("/workspaces/{workspaceName}/wmtsstores/{storeName}/layers/{wmtslayer}")
+                        .buildAndExpand(workspaceName, storeName, resourceName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -338,8 +302,7 @@ public class WMTSLayerController extends AbstractCatalogController {
                 + workspaceName;
     }
 
-    private String handleObjectPost(WMTSLayerInfo resource, String workspaceName, String storeName)
-            throws Exception {
+    private String handleObjectPost(WMTSLayerInfo resource, String workspaceName, String storeName) throws Exception {
         NamespaceInfo ns = getNamespaceInternal(workspaceName);
         WMTSStoreInfo store;
 
@@ -377,11 +340,7 @@ public class WMTSLayerController extends AbstractCatalogController {
         NamespaceInfo foundns = resource.getNamespace();
         if (foundns != null && !foundns.getPrefix().equals(workspaceName)) {
             LOGGER.warning(
-                    "Namespace: "
-                            + ns.getPrefix()
-                            + " does not match workspace: "
-                            + workspaceName
-                            + ", overriding.");
+                    "Namespace: " + ns.getPrefix() + " does not match workspace: " + workspaceName + ", overriding.");
             foundns = null;
         }
 
@@ -408,66 +367,60 @@ public class WMTSLayerController extends AbstractCatalogController {
     // Works with the callback bellow to fix the enabled property
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return WMTSLayerInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<WMTSLayerInfo> getObjectClass() {
-                        return WMTSLayerInfo.class;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<WMTSLayerInfo> getObjectClass() {
+                return WMTSLayerInfo.class;
+            }
 
-                    // Tries to get the object so XStream can unmarshall over top of it.
-                    // A hack to avoid overwriting the enabled property on a PUT
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
+            // Tries to get the object so XStream can unmarshall over top of it.
+            // A hack to avoid overwriting the enabled property on a PUT
+            @Override
+            protected CatalogInfo getCatalogObject() {
 
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspaceName = uriTemplateVars.get("workspaceName");
-                        String storeName = uriTemplateVars.get("storeName");
-                        String layerName = uriTemplateVars.get("layerName");
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspaceName = uriTemplateVars.get("workspaceName");
+                String storeName = uriTemplateVars.get("storeName");
+                String layerName = uriTemplateVars.get("layerName");
 
-                        if (workspaceName == null || storeName == null || layerName == null) {
-                            return null;
-                        }
-                        WMTSStoreInfo store =
-                                catalog.getStoreByName(
-                                        workspaceName, storeName, WMTSStoreInfo.class);
-                        if (store == null) {
-                            return null;
-                        }
-                        return catalog.getResourceByStore(store, layerName, WMTSLayerInfo.class);
-                    }
+                if (workspaceName == null || storeName == null || layerName == null) {
+                    return null;
+                }
+                WMTSStoreInfo store = catalog.getStoreByName(workspaceName, storeName, WMTSStoreInfo.class);
+                if (store == null) {
+                    return null;
+                }
+                return catalog.getResourceByStore(store, layerName, WMTSLayerInfo.class);
+            }
 
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof NamespaceInfo) {
-                            NamespaceInfo ns = (NamespaceInfo) obj;
-                            converter.encodeLink(
-                                    "/namespaces/" + converter.encode(ns.getPrefix()), writer);
-                        }
-                        if (obj instanceof WMTSStoreInfo) {
-                            WMTSStoreInfo store = (WMTSStoreInfo) obj;
-                            converter.encodeLink(
-                                    "/workspaces/"
-                                            + converter.encode(store.getWorkspace().getName())
-                                            + "/wmtsstores/"
-                                            + converter.encode(store.getName()),
-                                    writer);
-                        }
-                    }
-                });
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof NamespaceInfo) {
+                    NamespaceInfo ns = (NamespaceInfo) obj;
+                    converter.encodeLink("/namespaces/" + converter.encode(ns.getPrefix()), writer);
+                }
+                if (obj instanceof WMTSStoreInfo) {
+                    WMTSStoreInfo store = (WMTSStoreInfo) obj;
+                    converter.encodeLink(
+                            "/workspaces/"
+                                    + converter.encode(store.getWorkspace().getName())
+                                    + "/wmtsstores/"
+                                    + converter.encode(store.getName()),
+                            writer);
+                }
+            }
+        });
     }
 
     @Override

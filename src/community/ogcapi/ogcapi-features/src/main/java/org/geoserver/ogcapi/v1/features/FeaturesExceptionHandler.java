@@ -32,8 +32,7 @@ public class FeaturesExceptionHandler extends AbstractAPIExceptionHandler {
     }
 
     @Override
-    protected void writeResponse(
-            HttpServletResponse response, Throwable t, String type, String title) {
+    protected void writeResponse(HttpServletResponse response, Throwable t, String type, String title) {
         Map<String, String> error = new LinkedHashMap<>();
         error.put("code", type);
         error.put("description", title);
@@ -42,10 +41,7 @@ public class FeaturesExceptionHandler extends AbstractAPIExceptionHandler {
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 }

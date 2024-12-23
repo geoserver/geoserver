@@ -7,8 +7,8 @@ package org.geoserver.opensearch.eo.store;
 import java.util.Objects;
 
 /**
- * In memory representation of the information stored in the index tracking table. It's the
- * persistent parallel to an {@link Indexable}.
+ * In memory representation of the information stored in the index tracking table. It's the persistent parallel to an
+ * {@link Indexable}.
  */
 class JDBCIndex {
 
@@ -70,7 +70,6 @@ class JDBCIndex {
 
     /** Checks whether this JDBCIndex matches the given queryable and indexed expression */
     public boolean matches(String queryable, String expression) {
-        return Objects.equals(this.queryable, queryable)
-                && Objects.equals(this.expression, expression);
+        return Objects.equals(this.queryable, queryable) && Objects.equals(this.expression, expression);
     }
 }

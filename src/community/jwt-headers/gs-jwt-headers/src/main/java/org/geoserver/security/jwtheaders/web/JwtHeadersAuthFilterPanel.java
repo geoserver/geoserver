@@ -26,8 +26,7 @@ import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
 import org.geoserver.web.wicket.HelpLink;
 
 /** Jwt Headers auth panel Wicket */
-public class JwtHeadersAuthFilterPanel
-        extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
+public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
 
     protected DropDownChoice<JwtConfiguration.UserNameHeaderFormat> userNameFormatChoice;
 
@@ -55,11 +54,10 @@ public class JwtHeadersAuthFilterPanel
         add(new TextField("validateTokenAudienceClaimName").setRequired(false));
         add(new TextField("validateTokenAudienceClaimValue").setRequired(false));
 
-        userNameFormatChoice =
-                new DropDownChoice(
-                        "userNameFormatChoice",
-                        Arrays.asList(JwtConfiguration.UserNameHeaderFormat.values()),
-                        new UserNameFormatChoiceRenderer());
+        userNameFormatChoice = new DropDownChoice(
+                "userNameFormatChoice",
+                Arrays.asList(JwtConfiguration.UserNameHeaderFormat.values()),
+                new UserNameFormatChoiceRenderer());
 
         add(userNameFormatChoice);
     }
@@ -67,13 +65,8 @@ public class JwtHeadersAuthFilterPanel
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
         List<RoleSource> sources =
-                new ArrayList<>(
-                        Arrays.asList(
-                                GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
-        sources.addAll(
-                Arrays.asList(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .values()));
+                new ArrayList<>(Arrays.asList(GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
+        sources.addAll(Arrays.asList(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.values()));
         return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
     }
 

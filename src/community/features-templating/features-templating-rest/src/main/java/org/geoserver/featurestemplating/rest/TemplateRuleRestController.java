@@ -74,9 +74,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return TemplateRule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -98,8 +96,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
             @PathVariable(name = "featuretype") String featuretype) {
         FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateLayerConfig layerConfig = checkRules(info);
-        return wrapObject(
-                new TemplateRuleList(layerConfig.getTemplateRules()), TemplateRuleList.class);
+        return wrapObject(new TemplateRuleList(layerConfig.getTemplateRules()), TemplateRuleList.class);
     }
 
     @GetMapping(
@@ -116,13 +113,11 @@ public class TemplateRuleRestController extends AbstractCatalogController {
             @PathVariable String identifier) {
         FeatureTypeInfo info = checkFeatureType(workspace, featuretype);
         TemplateLayerConfig layerConfig = checkRules(info);
-        Optional<TemplateRule> rule =
-                layerConfig.getTemplateRules().stream()
-                        .filter(r -> r.getRuleId().equals(identifier))
-                        .findFirst();
+        Optional<TemplateRule> rule = layerConfig.getTemplateRules().stream()
+                .filter(r -> r.getRuleId().equals(identifier))
+                .findFirst();
         if (!rule.isPresent()) {
-            throw new RestException(
-                    "Rule with id " + identifier + " not found", HttpStatus.NOT_FOUND);
+            throw new RestException("Rule with id " + identifier + " not found", HttpStatus.NOT_FOUND);
         }
         return wrapObject(rule.get(), TemplateRule.class);
     }
@@ -171,8 +166,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         TemplateRule toPatch = service.getRule(identifier);
         try {
             String rule = IOUtils.toString(request.getInputStream(), StandardCharsets.UTF_8.name());
-            PatchMergeHandler<TemplateRule> patchHandler =
-                    new PatchMergeHandler<>(TemplateRule.class);
+            PatchMergeHandler<TemplateRule> patchHandler = new PatchMergeHandler<>(TemplateRule.class);
             toPatch = patchHandler.applyPatch(rule.trim(), toPatch, contentType);
             validateRule(toPatch);
             service.replaceRule(toPatch);
@@ -206,8 +200,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         return new ResponseEntity<>(rule.getRuleId(), headers, HttpStatus.CREATED);
     }
 
-    @DeleteMapping(
-            value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}")
+    @DeleteMapping(value = "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{identifier}")
     public ResponseEntity<String> deleteRule(
             @PathVariable(name = "workspace") String workspace,
             @PathVariable(name = "featuretype") String featuretype,
@@ -216,8 +209,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         TemplateRuleService service = new TemplateRuleService(info);
         boolean removed = service.removeRule(identifier);
         if (!removed) {
-            throw new RestException(
-                    "Rule with id " + identifier + "not found", HttpStatus.NOT_FOUND);
+            throw new RestException("Rule with id " + identifier + "not found", HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(identifier, HttpStatus.NO_CONTENT);
     }
@@ -225,15 +217,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
     private void validateRule(TemplateRule rule) {
         if (rule.getTemplateName().equals(null) && rule.getTemplateIdentifier().equals(null)) {
             throw new RestException(
-                    "Either templateName or templateIdentifier needs to be specified",
-                    HttpStatus.BAD_REQUEST);
+                    "Either templateName or templateIdentifier needs to be specified", HttpStatus.BAD_REQUEST);
         } else if (rule.getOutputFormat() == null) {
             String cqlFilter = rule.getCqlFilter();
             boolean noMimeType = cqlFilter == null || !cqlFilter.contains("mimeType");
             if (noMimeType)
                 throw new RestException(
-                        "Template Rule must have an output format "
-                                + "or a CQLFilter using the mimeType function",
+                        "Template Rule must have an output format " + "or a CQLFilter using the mimeType function",
                         HttpStatus.BAD_REQUEST);
         }
         TemplateInfoDAO dao = TemplateInfoDAO.get();
@@ -245,26 +235,22 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         }
         if (info == null) {
             throw new RestException(
-                    "The template with name " + rule.getTemplateName() + " does not exist",
-                    HttpStatus.BAD_REQUEST);
+                    "The template with name " + rule.getTemplateName() + " does not exist", HttpStatus.BAD_REQUEST);
         }
         rule.setTemplateIdentifier(info.getIdentifier());
         rule.setTemplateName(info.getFullName());
     }
 
-    private URI getUri(
-            String ruleId, String workspace, String featureType, UriComponentsBuilder builder) {
+    private URI getUri(String ruleId, String workspace, String featureType, UriComponentsBuilder builder) {
         builder = builder.cloneBuilder();
-        UriComponents uriComponents =
-                builder.path(
-                                "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{id}")
-                        .buildAndExpand(workspace, featureType, ruleId);
+        UriComponents uriComponents = builder.path(
+                        "/workspaces/{workspace}/featuretypes/{featuretype}/templaterules/{id}")
+                .buildAndExpand(workspace, featureType, ruleId);
         return uriComponents.toUri();
     }
 
     private FeatureTypeInfo checkFeatureType(String workspaceName, String featureTypeName) {
-        FeatureTypeInfo featureType =
-                catalog.getFeatureTypeByName(new NameImpl(workspaceName, featureTypeName));
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(new NameImpl(workspaceName, featureTypeName));
         if (featureType == null) {
             throw new ResourceNotFoundException("Feature Type " + featureTypeName + " not found");
         }
@@ -275,15 +261,13 @@ public class TemplateRuleRestController extends AbstractCatalogController {
         TemplateLayerConfig layerConfig =
                 info.getMetadata().get(TemplateLayerConfig.METADATA_KEY, TemplateLayerConfig.class);
         if (layerConfig == null)
-            throw new ResourceNotFoundException(
-                    "There are no rules defined for Feature Type " + info.getName());
+            throw new ResourceNotFoundException("There are no rules defined for Feature Type " + info.getName());
         return layerConfig;
     }
 
     private TemplateRule checkRule(String ruleId, TemplateRuleService service) {
         TemplateRule rule = service.getRule(ruleId);
-        if (rule == null)
-            throw new ResourceNotFoundException("No rule with specified id " + ruleId);
+        if (rule == null) throw new ResourceNotFoundException("No rule with specified id " + ruleId);
         return rule;
     }
 
@@ -291,9 +275,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
 
         @Override
         public void marshal(
-                Object o,
-                HierarchicalStreamWriter hierarchicalStreamWriter,
-                MarshallingContext marshallingContext) {
+                Object o, HierarchicalStreamWriter hierarchicalStreamWriter, MarshallingContext marshallingContext) {
             if (o instanceof TemplateRuleList) {
                 TemplateRuleList list = (TemplateRuleList) o;
                 for (TemplateRule rule : list.getRules()) {
@@ -332,8 +314,7 @@ public class TemplateRuleRestController extends AbstractCatalogController {
 
         @Override
         public Object unmarshal(
-                HierarchicalStreamReader hierarchicalStreamReader,
-                UnmarshallingContext unmarshallingContext) {
+                HierarchicalStreamReader hierarchicalStreamReader, UnmarshallingContext unmarshallingContext) {
             return null;
         }
 

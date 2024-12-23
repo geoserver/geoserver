@@ -23,8 +23,7 @@ import org.junit.Test;
 
 public class DimensionEditorTest extends GeoServerWicketTestSupport {
 
-    private static final QName V_TIME_ELEVATION =
-            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+    private static final QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -45,12 +44,7 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
                 null,
                 null);
         setupNearestMatch(
-                V_TIME_ELEVATION,
-                ResourceInfo.TIME,
-                true,
-                "PT10M",
-                DimensionInfo.NearestFailBehavior.EXCEPTION,
-                false);
+                V_TIME_ELEVATION, ResourceInfo.TIME, true, "PT10M", DimensionInfo.NearestFailBehavior.EXCEPTION, false);
         setupVectorDimension(
                 V_TIME_ELEVATION.getLocalPart(),
                 ResourceInfo.ELEVATION,
@@ -66,9 +60,7 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
         FeatureTypeInfo ft = getCatalog().getFeatureTypeByName(getLayerId(V_TIME_ELEVATION));
         DimensionInfo time = ft.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         Model<DimensionInfo> timeModel = new Model<>(time);
-        tester.startPage(
-                new FormTestPage(
-                        id -> new DimensionEditor(id, timeModel, ft, Date.class, true, false)));
+        tester.startPage(new FormTestPage(id -> new DimensionEditor(id, timeModel, ft, Date.class, true, false)));
         print(tester.getLastRenderedPage(), true, true);
 
         // check the form
@@ -78,9 +70,7 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
         tester.assertModelValue(prefix + "presentation", DimensionPresentation.LIST);
         tester.assertInvisible(prefix + "resolutionContainer:resolutions");
         tester.assertModelValue(prefix + "nearestMatchContainer:nearestMatchEnabled", true);
-        tester.assertModelValue(
-                prefix + "nearestMatchContainer:acceptableIntervalEditor:acceptableInterval",
-                "PT10M");
+        tester.assertModelValue(prefix + "nearestMatchContainer:acceptableIntervalEditor:acceptableInterval", "PT10M");
         tester.assertModelValue(
                 prefix + "nearestMatchContainer:failedMatchBehaviorContainer:nearestFailBehavior",
                 DimensionInfo.NearestFailBehavior.EXCEPTION);
@@ -88,10 +78,7 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
         // try editing the nearest match fail mode
         FormTester form = tester.newFormTester("form");
         String formPrefix = "panel:configContainer:configs:";
-        form.select(
-                formPrefix
-                        + "nearestMatchContainer:failedMatchBehaviorContainer:nearestFailBehavior",
-                0);
+        form.select(formPrefix + "nearestMatchContainer:failedMatchBehaviorContainer:nearestFailBehavior", 0);
         form.submit();
 
         // check the edit worked
@@ -105,10 +92,7 @@ public class DimensionEditorTest extends GeoServerWicketTestSupport {
         Model<DimensionInfo> elevationModel = new Model<>(elevation);
         tester.startPage(
                 // elevation does not support nearest match yet, thus "false" at the end
-                new FormTestPage(
-                        id ->
-                                new DimensionEditor(
-                                        id, elevationModel, ft, Double.class, false, false)));
+                new FormTestPage(id -> new DimensionEditor(id, elevationModel, ft, Double.class, false, false)));
         print(tester.getLastRenderedPage(), true, true);
 
         // check the form

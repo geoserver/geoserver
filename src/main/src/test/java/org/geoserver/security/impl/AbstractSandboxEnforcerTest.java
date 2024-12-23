@@ -88,8 +88,7 @@ public abstract class AbstractSandboxEnforcerTest extends AbstractFileAccessTest
         //  an administrator should not be able to create a store in the test directory any longer
         loginAdmin();
         Catalog catalog = getCatalog();
-        SandboxException se =
-                assertThrows(SandboxException.class, () -> addStore(ADMIN_STORE, testDirectory));
+        SandboxException se = assertThrows(SandboxException.class, () -> addStore(ADMIN_STORE, testDirectory));
         assertThat(
                 se.getMessage(),
                 allOf(

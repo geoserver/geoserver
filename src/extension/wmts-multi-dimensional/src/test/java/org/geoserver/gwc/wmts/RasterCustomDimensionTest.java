@@ -25,8 +25,8 @@ import org.geotools.api.filter.Filter;
 import org.junit.Test;
 
 /**
- * This class contains tests that check that custom dimensions values are correctly extracted from
- * rasters. Custom dimensions are only supported in rasters.
+ * This class contains tests that check that custom dimensions values are correctly extracted from rasters. Custom
+ * dimensions are only supported in rasters.
  */
 public class RasterCustomDimensionTest extends TestsSupport {
 
@@ -38,24 +38,24 @@ public class RasterCustomDimensionTest extends TestsSupport {
         CoverageInfo rasterInfo = getCoverageInfo();
         rasterInfo
                 .getMetadata()
-                .put(
-                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
-                        dimensionInfo);
+                .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
         getCatalog().save(rasterInfo);
         // check that we correctly retrieve the custom dimension
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(1));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(1));
         // disable the custom dimension
         dimensionInfo.setEnabled(false);
         rasterInfo
                 .getMetadata()
-                .put(
-                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
-                        dimensionInfo);
+                .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
         getCatalog().save(rasterInfo);
         // no dimensions should be available
         assertThat(
-                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS).size(), is(0));
+                DimensionsUtils.extractDimensions(wms, getLayerInfo(), ALL_DOMAINS)
+                        .size(),
+                is(0));
     }
 
     @Test
@@ -75,13 +75,10 @@ public class RasterCustomDimensionTest extends TestsSupport {
     protected Dimension buildDimension(DimensionInfo dimensionInfo) {
         CoverageInfo rasterInfo = getCoverageInfo();
         Dimension dimension =
-                new RasterCustomDimension(
-                        wms, getLayerInfo(), CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
+                new RasterCustomDimension(wms, getLayerInfo(), CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
         rasterInfo
                 .getMetadata()
-                .put(
-                        ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME,
-                        dimensionInfo);
+                .put(ResourceInfo.CUSTOM_DIMENSION_PREFIX + CustomFormat.CUSTOM_DIMENSION_NAME, dimensionInfo);
         getCatalog().save(rasterInfo);
         return dimension;
     }

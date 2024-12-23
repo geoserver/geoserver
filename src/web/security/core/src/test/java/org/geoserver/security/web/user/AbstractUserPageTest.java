@@ -73,11 +73,13 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     }
 
     protected void assignRole(String roleName) throws Exception {
-        form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
         form.submit();
         tester.executeAjaxEvent("form:roles:palette:recorder", "change");
         newFormTester();
-        form.setValue("roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
+        form.setValue(
+                "roles:palette:recorder", gaService.getRoleByName(roleName).getAuthority());
     }
 
     protected void assignGroup(String groupName) throws Exception {
@@ -116,7 +118,6 @@ public abstract class AbstractUserPageTest extends AbstractSecurityWicketTestSup
     protected void assertCalculatedRoles(String[] roles) throws Exception {
         for (int i = 0; i < roles.length; i++)
             tester.assertModelValue(
-                    "form:calculatedRolesContainer:calculatedRoles:" + i,
-                    gaService.getRoleByName(roles[i]));
+                    "form:calculatedRolesContainer:calculatedRoles:" + i, gaService.getRoleByName(roles[i]));
     }
 }

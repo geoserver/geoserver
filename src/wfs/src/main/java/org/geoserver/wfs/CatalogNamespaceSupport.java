@@ -31,8 +31,7 @@ public class CatalogNamespaceSupport extends NamespaceSupport {
     @Override
     public Enumeration getPrefixes() {
         @SuppressWarnings("PMD.CloseResource") // best effort closing
-        final CloseableIterator<NamespaceInfo> it =
-                catalog.list(NamespaceInfo.class, Predicates.acceptAll());
+        final CloseableIterator<NamespaceInfo> it = catalog.list(NamespaceInfo.class, Predicates.acceptAll());
         return new Enumeration() {
             @Override
             public boolean hasMoreElements() {
@@ -89,17 +88,13 @@ public class CatalogNamespaceSupport extends NamespaceSupport {
 
     @Override
     public String getPrefix(String uri) {
-        NamespaceInfo ns =
-                "".equals(uri) ? catalog.getDefaultNamespace() : catalog.getNamespaceByURI(uri);
+        NamespaceInfo ns = "".equals(uri) ? catalog.getDefaultNamespace() : catalog.getNamespaceByURI(uri);
         return ns != null ? ns.getPrefix() : null;
     }
 
     @Override
     public String getURI(String prefix) {
-        NamespaceInfo ns =
-                "".equals(prefix)
-                        ? catalog.getDefaultNamespace()
-                        : catalog.getNamespaceByPrefix(prefix);
+        NamespaceInfo ns = "".equals(prefix) ? catalog.getDefaultNamespace() : catalog.getNamespaceByPrefix(prefix);
         return ns != null ? ns.getURI() : null;
     }
 

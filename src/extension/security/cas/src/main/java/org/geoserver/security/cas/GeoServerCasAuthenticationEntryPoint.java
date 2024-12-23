@@ -17,12 +17,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
 /**
- * Special CAS {@link AuthenticationEntryPoint} implementation. Clients sending requests with an
- * HTTP parameter {@link #CAS_REDIRECT} set to <code>true</code> can avoid the standard CAS
- * redirect. An unsuccessful authentication results in an HTTP 403 error. (Forbidden).
+ * Special CAS {@link AuthenticationEntryPoint} implementation. Clients sending requests with an HTTP parameter
+ * {@link #CAS_REDIRECT} set to <code>true</code> can avoid the standard CAS redirect. An unsuccessful authentication
+ * results in an HTTP 403 error. (Forbidden).
  *
- * <p>The {@link #CAS_REDIRECT} key value pair can also be sent as an HTTP requester header
- * attribute.
+ * <p>The {@link #CAS_REDIRECT} key value pair can also be sent as an HTTP requester header attribute.
  *
  * @author christian
  */
@@ -39,9 +38,7 @@ public class GeoServerCasAuthenticationEntryPoint implements AuthenticationEntry
 
     @Override
     public void commence(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException authException)
+            HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
 
         // check for http parameter

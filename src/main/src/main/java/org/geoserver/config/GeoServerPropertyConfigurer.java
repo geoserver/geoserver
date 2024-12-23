@@ -33,8 +33,7 @@ import org.springframework.core.io.Resource;
  *  &lt;/bean>
  * </pre>
  *
- * The location <tt>myDirectory/myFile.properties</tt> will be resolved relative to the data
- * directory.
+ * The location <tt>myDirectory/myFile.properties</tt> will be resolved relative to the data directory.
  *
  * <p>In the same spring context the configurer is used as follows:
  *
@@ -45,10 +44,9 @@ import org.springframework.core.io.Resource;
  *  &lt;/bean>
  * </pre>
  *
- * If the file <tt>myDirectory/myFile.properties</tt> exists then the property values will be loaded
- * from it, otherwise the defaults declared on the property configurer will be used. By default when
- * the resource is not found it will be copied out into the data directory. However {@link
- * #setCopyOutTemplate(boolean)} can be used to control this.
+ * If the file <tt>myDirectory/myFile.properties</tt> exists then the property values will be loaded from it, otherwise
+ * the defaults declared on the property configurer will be used. By default when the resource is not found it will be
+ * copied out into the data directory. However {@link #setCopyOutTemplate(boolean)} can be used to control this.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -112,10 +110,7 @@ public class GeoServerPropertyConfigurer extends PropertySourcesPlaceholderConfi
         }
     }
 
-    /**
-     * Force reloading the properties which may have been updated in the meanwhile; after a restore
-     * as an instance.
-     */
+    /** Force reloading the properties which may have been updated in the meanwhile; after a restore as an instance. */
     public void reload() throws IOException {
         if (localProperties != null) {
             for (Properties props : localProperties) {

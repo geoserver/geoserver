@@ -80,9 +80,7 @@ public class CatalogWriter {
      * @param namespaces map of id to namespace prefix map
      */
     public void dataStores(
-            Map /* <String,Map> */ dataStores,
-            Map /*<String,String>*/ namespaces,
-            Set /*<String>*/ disabled) {
+            Map /* <String,Map> */ dataStores, Map /*<String,String>*/ namespaces, Set /*<String>*/ disabled) {
         Element dataStoresElement = document.createElement("datastores");
         catalog.appendChild(dataStoresElement);
 

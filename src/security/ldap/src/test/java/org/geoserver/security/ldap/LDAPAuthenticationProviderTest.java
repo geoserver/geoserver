@@ -36,8 +36,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     }
 
     protected void createAuthenticationProvider() {
-        authProvider =
-                (LDAPAuthenticationProvider) securityProvider.createAuthenticationProvider(config);
+        authProvider = (LDAPAuthenticationProvider) securityProvider.createAuthenticationProvider(config);
     }
 
     @RunWith(FrameworkRunner.class)
@@ -51,8 +50,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     public static class LDAPAuthenticationProviderDataTest extends LDAPAuthenticationProviderTest {
 
         /**
-         * LdapTestUtils Test that bindBeforeGroupSearch correctly enables roles fetching on a
-         * server without anonymous access enabled.
+         * LdapTestUtils Test that bindBeforeGroupSearch correctly enables roles fetching on a server without anonymous
+         * access enabled.
          */
         @Test
         public void testBindBeforeGroupSearch() throws Exception {
@@ -69,8 +68,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         }
 
         /**
-         * Test that without bindBeforeGroupSearch we get an exception during roles fetching on a
-         * server without anonymous access enabled.
+         * Test that without bindBeforeGroupSearch we get an exception during roles fetching on a server without
+         * anonymous access enabled.
          */
         @Test
         public void testBindBeforeGroupSearchRequiredIfAnonymousDisabled() throws Exception {
@@ -93,18 +92,14 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             }
         }
 
-        /**
-         * Test that authentication can be done using the couple userFilter and userFormat instead
-         * of userDnPattern.
-         */
+        /** Test that authentication can be done using the couple userFilter and userFormat instead of userDnPattern. */
         @Test
         public void testUserFilterAndFormat() throws Exception {
             getService().setAllowAnonymousAccess(true);
             // filter to extract user data
             config.setUserFilter("(telephonenumber=1)");
             // username to bind to
-            ((LDAPSecurityServiceConfig) config)
-                    .setUserFormat("uid={0},ou=People,dc=example,dc=com");
+            ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
 
             createAuthenticationProvider();
 
@@ -113,8 +108,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
         }
 
         /**
-         * Test that authentication can be done using the couple userFilter and userFormat instead
-         * of userDnPattern, using placemarks in userFilter.
+         * Test that authentication can be done using the couple userFilter and userFormat instead of userDnPattern,
+         * using placemarks in userFilter.
          */
         @Test
         public void testUserFilterPlacemarks() throws Exception {
@@ -122,8 +117,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             // filter to extract user data
             config.setUserFilter("(givenName={1})");
             // username to bind to
-            ((LDAPSecurityServiceConfig) config)
-                    .setUserFormat("uid={0},ou=People,dc=example,dc=com");
+            ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
 
             createAuthenticationProvider();
 
@@ -133,8 +127,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             // filter to extract user data
             config.setUserFilter("(cn={0})");
             // username to bind to
-            ((LDAPSecurityServiceConfig) config)
-                    .setUserFormat("uid={0},ou=People,dc=example,dc=com");
+            ((LDAPSecurityServiceConfig) config).setUserFormat("uid={0},ou=People,dc=example,dc=com");
 
             createAuthenticationProvider();
 
@@ -219,12 +212,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertNotNull(result);
             assertEquals("nestedUser", result.getName());
             assertEquals(3, result.getAuthorities().size());
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
 
         /** Tests LDAP hierarchical nested groups search. */
@@ -243,12 +232,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertNotNull(result);
             assertEquals("nestedUser", result.getName());
             assertEquals(3, result.getAuthorities().size());
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().anyMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
 
         /** Tests LDAP hierarchical nested groups search disabled. */
@@ -266,12 +251,8 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
             assertNotNull(result);
             assertEquals("nestedUser", result.getName());
             assertEquals(2, result.getAuthorities().size());
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
-            assertTrue(
-                    result.getAuthorities().stream()
-                            .noneMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().anyMatch(x -> "ROLE_NESTED".equals(x.getAuthority())));
+            assertTrue(result.getAuthorities().stream().noneMatch(x -> "ROLE_EXTRA".equals(x.getAuthority())));
         }
     }
 
@@ -285,9 +266,7 @@ public class LDAPAuthenticationProviderTest extends LDAPBaseTest {
     @ApplyLdifFiles({"data3.ldif"})
     public static class LDAPAuthenticationProviderData3Test extends LDAPAuthenticationProviderTest {
 
-        /**
-         * Test that LDAPAuthenticationProvider finds roles even if there is a colon in the password
-         */
+        /** Test that LDAPAuthenticationProvider finds roles even if there is a colon in the password */
         @Test
         public void testColonPassword() throws Exception {
             getService().setAllowAnonymousAccess(true);

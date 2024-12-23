@@ -30,10 +30,9 @@ import org.geotools.data.store.MaxFeaturesFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * A simple implementation of {@link CatalogStore} geared towards test support. The store reads CSW
- * records from xml files located in the root folder, it is not meant to be fast or scalable, on the
- * contrary, to keep its implementation as simple as possible it is actually slow and occasionally
- * memory bound.
+ * A simple implementation of {@link CatalogStore} geared towards test support. The store reads CSW records from xml
+ * files located in the root folder, it is not meant to be fast or scalable, on the contrary, to keep its implementation
+ * as simple as possible it is actually slow and occasionally memory bound.
  *
  * <p>Do not use it for production purposes.
  *
@@ -50,20 +49,17 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
 
         if (root.getType() == Type.RESOURCE) {
             throw new IllegalArgumentException(
-                    "Got an existing reference on the file system, but it's not a directory: "
-                            + root.path());
+                    "Got an existing reference on the file system, but it's not a directory: " + root.path());
         }
     }
 
-    public FeatureCollection<FeatureType, Feature> getRecords(Query q, Transaction t)
-            throws IOException {
+    public FeatureCollection<FeatureType, Feature> getRecords(Query q, Transaction t) throws IOException {
         return getRecords(q, t, null);
     }
 
     @Override
     public FeatureCollection<FeatureType, Feature> getRecordsInternal(
-            RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t)
-            throws IOException {
+            RecordDescriptor rd, RecordDescriptor outputRd, Query q, Transaction t) throws IOException {
 
         Query pq = prepareQuery(q, rd, rd);
 
@@ -71,8 +67,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         if (q.getStartIndex() != null) {
             startIndex = q.getStartIndex();
         }
-        FeatureCollection<FeatureType, Feature> records =
-                new RecordsFeatureCollection(root, startIndex);
+        FeatureCollection<FeatureType, Feature> records = new RecordsFeatureCollection(root, startIndex);
 
         // filtering
         if (pq.getFilter() != null && pq.getFilter() != Filter.INCLUDE) {
@@ -86,8 +81,7 @@ public class SimpleCatalogStore extends AbstractCatalogStore {
         // sorting
         if (pq.getSortBy() != null && pq.getSortBy().length > 0) {
             Feature[] features = records.toArray(new Feature[records.size()]);
-            Comparator<Feature> comparator =
-                    ComplexComparatorFactory.buildComparator(pq.getSortBy());
+            Comparator<Feature> comparator = ComplexComparatorFactory.buildComparator(pq.getSortBy());
             Arrays.sort(features, comparator);
 
             records = new MemoryFeatureCollection(records.getSchema(), Arrays.asList(features));

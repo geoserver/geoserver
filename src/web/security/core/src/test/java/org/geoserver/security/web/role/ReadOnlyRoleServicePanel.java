@@ -11,8 +11,7 @@ import org.geoserver.security.config.impl.MemoryRoleServiceConfigImpl;
 /**
  * Configuration panel for {@link ReadOnlyRoleService}.
  *
- * <p>This service is only used for testing, it is only available when running from the development
- * environment.
+ * <p>This service is only used for testing, it is only available when running from the development environment.
  *
  * @author Justin Deoliveira, OpenGeo
  */

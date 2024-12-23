@@ -29,8 +29,8 @@ import org.springframework.security.core.userdetails.memory.UserAttributeEditor;
 import org.vfny.geoserver.global.ConfigurationException;
 
 /**
- * The EditableUserDAO class provides a UserDetailsService implementation that allows modifying user
- * information programmatically.
+ * The EditableUserDAO class provides a UserDetailsService implementation that allows modifying user information
+ * programmatically.
  *
  * @author David Winslow - <dwinslow@openplans.org>
  */
@@ -57,8 +57,7 @@ public class EditableUserDAO implements UserDetailsService {
     /**
      * Find the file that should provide the user information.
      *
-     * @throws ConfigurationException if the user configuration file does not exist and cannot be
-     *     created
+     * @throws ConfigurationException if the user configuration file does not exist and cannot be created
      * @throws IOException if an error occurs while opening the user configuration file
      */
     private Resource getUserFile() throws ConfigurationException, IOException {
@@ -91,13 +90,12 @@ public class EditableUserDAO implements UserDetailsService {
     }
 
     /**
-     * Generate the default geoserver administrator user. The administrator will be added directly
-     * to the in-memory storage of the user details, rather than returned by this method.
+     * Generate the default geoserver administrator user. The administrator will be added directly to the in-memory
+     * storage of the user details, rather than returned by this method.
      */
     private void createDefaultUser() {
         String name = (geoServer == null ? "admin" : geoServer.getGlobal().getAdminUsername());
-        String passwd =
-                (geoServer == null ? "geoserver" : geoServer.getGlobal().getAdminPassword());
+        String passwd = (geoServer == null ? "geoserver" : geoServer.getGlobal().getAdminPassword());
 
         Collection<GrantedAuthority> auths = new ArrayList<>();
         auths.add(new SimpleGrantedAuthority("ROLE_ADMINISTRATOR"));
@@ -117,30 +115,25 @@ public class EditableUserDAO implements UserDetailsService {
     }
 
     /**
-     * Create a user with the specified credentials and authority. The user will be automatically
-     * added to persistant storage. If the user already exists, the previously existing user will be
-     * overwritten.
+     * Create a user with the specified credentials and authority. The user will be automatically added to persistant
+     * storage. If the user already exists, the previously existing user will be overwritten.
      *
      * @param username the username for the user being added
      * @param details a UserAttribute containing the credentials and authorities for the user
-     * @throws ConfigurationException if the user configuration file does not exist and cannot be
-     *     created
+     * @throws ConfigurationException if the user configuration file does not exist and cannot be created
      * @throws IOException if an error occurs while opening the user configuration file
      */
-    public void setUserDetails(String username, UserAttribute details)
-            throws IOException, ConfigurationException {
+    public void setUserDetails(String username, UserAttribute details) throws IOException, ConfigurationException {
         update();
         myDetailStorage.put(username, makeUser(username, details));
         syncChanges();
     }
 
     /**
-     * Remove a user specified by name. If the username is not used by any known user, nothing
-     * happens.
+     * Remove a user specified by name. If the username is not used by any known user, nothing happens.
      *
      * @param username the name of the user to delete
-     * @throws ConfigurationException if the user configuration file does not exist and cannot be
-     *     created
+     * @throws ConfigurationException if the user configuration file does not exist and cannot be created
      * @throws IOException if an error occurs while opening the user configuration file
      */
     public void deleteUser(String username) throws IOException, ConfigurationException {
@@ -150,8 +143,8 @@ public class EditableUserDAO implements UserDetailsService {
     }
 
     /**
-     * Ensure the user data map matches the information in the user data file. This should be called
-     * automatically, so that no code outside of this class needs to access this method.
+     * Ensure the user data map matches the information in the user data file. This should be called automatically, so
+     * that no code outside of this class needs to access this method.
      */
     private void update() {
         try {
@@ -196,11 +189,10 @@ public class EditableUserDAO implements UserDetailsService {
     }
 
     /**
-     * Write the changes to persistant storage. This should happen automatically when changes are
-     * made, so no code outside of this class should need to call this method.
+     * Write the changes to persistant storage. This should happen automatically when changes are made, so no code
+     * outside of this class should need to call this method.
      *
-     * @throws ConfigurationException if the user configuration file does not exist and cannot be
-     *     created
+     * @throws ConfigurationException if the user configuration file does not exist and cannot be created
      * @throws IOException if an error occurs while opening the user configuration file
      */
     private void syncChanges() throws IOException, ConfigurationException {
@@ -219,9 +211,7 @@ public class EditableUserDAO implements UserDetailsService {
         }
 
         try (OutputStream os = new BufferedOutputStream(getUserFile().out())) {
-            prop.store(
-                    os,
-                    "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
+            prop.store(os, "Geoserver user data. Format is username=password,role1,role2,...[enabled|disabled]");
         }
     }
 

@@ -19,8 +19,8 @@ public class InformixDialectImpl extends DefaultDialectImpl {
     }
 
     /**
-     * Override because in a view informix returns the value of the underlying column definition of
-     * the table. Even when performing left join in the create view statement.
+     * Override because in a view informix returns the value of the underlying column definition of the table. Even when
+     * performing left join in the create view statement.
      */
     @Override
     public int isNullable(int nullable) {

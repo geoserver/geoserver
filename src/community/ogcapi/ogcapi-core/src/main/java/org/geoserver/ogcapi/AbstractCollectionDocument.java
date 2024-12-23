@@ -23,17 +23,16 @@ public class AbstractCollectionDocument<T> extends AbstractDocument {
     protected List<StyleDocument> styles = new ArrayList<>();
 
     /**
-     * Builds an abstract collection around the provided subject. Call with null if the collection
-     * happens to have none.
+     * Builds an abstract collection around the provided subject. Call with null if the collection happens to have none.
      */
     public AbstractCollectionDocument(T subject) {
         this.subject = subject;
     }
 
     /**
-     * Returns the subject around which the collection is build, might be a {@link
-     * org.geoserver.catalog.ResourceInfo}, a tiled layer, or anything else. Meant to be used by
-     * {@link DocumentCallback} to decide if acting on a collection, or not
+     * Returns the subject around which the collection is build, might be a {@link org.geoserver.catalog.ResourceInfo},
+     * a tiled layer, or anything else. Meant to be used by {@link DocumentCallback} to decide if acting on a
+     * collection, or not
      */
     @JsonIgnore
     public T getSubject() {

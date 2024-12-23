@@ -20,8 +20,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * AutopopulateTemplate class is used to load the properties from the file and store them in a map
- * for further use.
+ * AutopopulateTemplate class is used to load the properties from the file and store them in a map for further use.
  *
  * <p>It also provides the methods to get the properties and set the properties.
  *
@@ -63,8 +62,7 @@ public class AutopopulateTemplate {
                     try {
                         propertiesMap.put(key, getValue(expression));
                     } catch (CQLException e) {
-                        LOGGER.warning(
-                                "Unable to parse the following Expression" + e.getSyntaxError());
+                        LOGGER.warning("Unable to parse the following Expression" + e.getSyntaxError());
                     }
                 }
             }

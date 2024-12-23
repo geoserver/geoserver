@@ -47,17 +47,13 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
     @Override
     protected void build(IModel info, Form form) {
         // overview policy
-        form.add(
-                new DropDownChoice<>(
-                        "overviewPolicy",
-                        Arrays.asList(OverviewPolicy.values()),
-                        new OverviewPolicyRenderer()));
+        form.add(new DropDownChoice<>(
+                "overviewPolicy", Arrays.asList(OverviewPolicy.values()), new OverviewPolicyRenderer()));
         form.add(new CheckBox("subsamplingEnabled"));
 
         // limited srs list
         TextArea<List<String>> srsList =
-                new SRSListTextArea(
-                        "srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
+                new SRSListTextArea("srs", LiveCollectionModel.list(new PropertyModel<>(info, "sRS")));
         form.add(srsList);
 
         // resource limits
@@ -67,13 +63,11 @@ public class WCSAdminPage extends BaseServiceAdminPage<WCSInfo> {
         TextField<Integer> maxOutputMemory = new TextField<>("maxOutputMemory");
         maxOutputMemory.add(RangeValidator.minimum(0l));
         form.add(maxOutputMemory);
-        TextField<Integer> defaultDeflateCompressionLevel =
-                new TextField<>("defaultDeflateCompressionLevel");
+        TextField<Integer> defaultDeflateCompressionLevel = new TextField<>("defaultDeflateCompressionLevel");
         defaultDeflateCompressionLevel.add(RangeValidator.range(1, 9));
         form.add(defaultDeflateCompressionLevel);
         // max dimension values
-        TextField<Integer> maxRequestedDimensionValues =
-                new TextField<>("maxRequestedDimensionValues");
+        TextField<Integer> maxRequestedDimensionValues = new TextField<>("maxRequestedDimensionValues");
         maxRequestedDimensionValues.add(RangeValidator.minimum(0));
         form.add(maxRequestedDimensionValues);
 

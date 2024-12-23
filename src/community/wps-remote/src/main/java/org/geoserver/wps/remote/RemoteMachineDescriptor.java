@@ -25,11 +25,7 @@ public class RemoteMachineDescriptor {
 
     /** */
     public RemoteMachineDescriptor(
-            String nodeJID,
-            Name serviceName,
-            Boolean available,
-            Double memPercUsed,
-            Double loadAverage) {
+            String nodeJID, Name serviceName, Boolean available, Double memPercUsed, Double loadAverage) {
         super();
         this.nodeJID = nodeJID;
         this.serviceName = serviceName;

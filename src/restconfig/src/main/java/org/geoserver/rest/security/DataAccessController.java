@@ -42,17 +42,14 @@ public class DataAccessController extends AbstractAclController<DataAccessRule, 
 
         AccessMode accessMode = AccessMode.getByAlias(parts[2]);
 
-        return new DataAccessRule(
-                parts[0], parts[1], accessMode, parseRoles((String) entry.getValue()));
+        return new DataAccessRule(parts[0], parts[1], accessMode, parseRoles((String) entry.getValue()));
     }
 
     @Override
     protected String validateRuleKey(String ruleKey) {
         String[] elements = parseElements(ruleKey);
         if (elements.length != 3) {
-            return "Invalid rule "
-                    + ruleKey
-                    + ", the expected format is workspace.layer.mode=role1,role2,...";
+            return "Invalid rule " + ruleKey + ", the expected format is workspace.layer.mode=role1,role2,...";
         }
 
         String workspace = elements[0];
@@ -66,10 +63,7 @@ public class DataAccessController extends AbstractAclController<DataAccessRule, 
 
         if (ANY.equals(workspace)) {
             if (!ANY.equals(layerName)) {
-                return "Invalid rule "
-                        + ruleKey
-                        + ", when namespace "
-                        + "is * then also layer must be *.";
+                return "Invalid rule " + ruleKey + ", when namespace " + "is * then also layer must be *.";
             }
         }
         if (mode == AccessMode.ADMIN && !ANY.equals(layerName)) {

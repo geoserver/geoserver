@@ -160,15 +160,13 @@ public class MapMLHTMLOutput {
 
     private String buildViewerPath(HttpServletRequest request) {
         String base = ResponseUtils.baseURL(request);
-        return ResponseUtils.buildURL(
-                base, "/mapml/viewer/widget/mapml-viewer.js", null, URLMangler.URLType.RESOURCE);
+        return ResponseUtils.buildURL(base, "/mapml/viewer/widget/mapml-viewer.js", null, URLMangler.URLType.RESOURCE);
     }
 
     private int computeZoom(ProjType projType, ReferencedEnvelope projectedBbox) {
         TiledCRS tcrs = PREVIEW_TCRS_MAP.get(projType.value());
         boolean flipAxis =
-                CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem())
-                        .equals(CRS.AxisOrder.NORTH_EAST);
+                CRS.getAxisOrder(projectedBbox.getCoordinateReferenceSystem()).equals(CRS.AxisOrder.NORTH_EAST);
         double minX = flipAxis ? projectedBbox.getMinY() : projectedBbox.getMinX();
         double maxX = flipAxis ? projectedBbox.getMaxY() : projectedBbox.getMaxX();
         double minY = flipAxis ? projectedBbox.getMinX() : projectedBbox.getMinY();
@@ -177,9 +175,7 @@ public class MapMLHTMLOutput {
         // allowing for the data to be displayed at a certain size (WxH) in pixels,
         // figure out the zoom level at which the projected bounds fits into that,
         // in both dimensions
-        zoom =
-                tcrs.fitProjectedBoundsToDisplay(
-                        pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
+        zoom = tcrs.fitProjectedBoundsToDisplay(pb, MapMLConstants.DISPLAY_BOUNDS_DESKTOP_LANDSCAPE);
         return zoom;
     }
 }

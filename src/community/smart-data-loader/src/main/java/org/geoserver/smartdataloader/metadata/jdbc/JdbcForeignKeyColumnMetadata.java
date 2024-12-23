@@ -9,18 +9,14 @@ import java.util.Objects;
 import org.geoserver.smartdataloader.metadata.AttributeMetadata;
 
 /**
- * Class representing metadata for ForeignKeys in a JDBC DataStore. ForeignKeys columns are a
- * particular kind of Column, keeping a mapping with another related column (at same entity or
- * other)
+ * Class representing metadata for ForeignKeys in a JDBC DataStore. ForeignKeys columns are a particular kind of Column,
+ * keeping a mapping with another related column (at same entity or other)
  */
 public class JdbcForeignKeyColumnMetadata extends JdbcColumnMetadata {
     private final JdbcColumnMetadata relatedColumn;
 
     public JdbcForeignKeyColumnMetadata(
-            JdbcTableMetadata table,
-            String columnName,
-            String columnType,
-            JdbcColumnMetadata relatedColumn) {
+            JdbcTableMetadata table, String columnName, String columnType, JdbcColumnMetadata relatedColumn) {
         super(table, columnName, columnType, true);
         this.relatedColumn = relatedColumn;
     }

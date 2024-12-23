@@ -25,8 +25,7 @@ public class Util {
      *   <li>Statements may be preceded with "?" to signal that it is ok if the statement fails
      * </ul>
      */
-    public static void runScript(InputStream script, JdbcOperations jdbc, Logger logger)
-            throws IOException {
+    public static void runScript(InputStream script, JdbcOperations jdbc, Logger logger) throws IOException {
         List<String> lines = org.apache.commons.io.IOUtils.readLines(script);
 
         StringBuilder buf = new StringBuilder();

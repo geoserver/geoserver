@@ -28,16 +28,15 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
 
     public static final Property<Attribute> VALUE = new BeanProperty<Attribute>("value", "value");
 
-    public static final Property<Attribute> ACTIONS =
-            new AbstractProperty<Attribute>("actions") {
+    public static final Property<Attribute> ACTIONS = new AbstractProperty<Attribute>("actions") {
 
-                private static final long serialVersionUID = -978472501994535469L;
+        private static final long serialVersionUID = -978472501994535469L;
 
-                @Override
-                public Object getPropertyValue(Attribute item) {
-                    return null;
-                }
-            };
+        @Override
+        public Object getPropertyValue(Attribute item) {
+            return null;
+        }
+    };
 
     private IModel<Configuration> configurationModel;
 
@@ -59,8 +58,7 @@ public class AttributesModel extends GeoServerDataProvider<Attribute> {
         Set<String> taskAttNames = new LinkedHashSet<String>();
         for (Task task : configurationModel.getObject().getTasks().values()) {
             for (Parameter pam : task.getParameters().values()) {
-                String attName =
-                        TaskManagerBeans.get().getDataUtil().getAssociatedAttributeName(pam);
+                String attName = TaskManagerBeans.get().getDataUtil().getAssociatedAttributeName(pam);
                 if (attName != null) {
                     taskAttNames.add(attName);
                 }

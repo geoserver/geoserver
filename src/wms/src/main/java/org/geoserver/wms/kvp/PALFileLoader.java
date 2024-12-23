@@ -19,24 +19,23 @@ import org.geoserver.platform.resource.Resource.Type;
 /**
  * Loads a JASC Pal files into an {@link IndexColorModel}.
  *
- * <p>I made a real minor extension to the usual form of a JASC pal file which allows us to provide
- * values in the #ffffff or 0Xffffff hex form.
+ * <p>I made a real minor extension to the usual form of a JASC pal file which allows us to provide values in the
+ * #ffffff or 0Xffffff hex form.
  *
- * <p>Note that this kind of file does not support explicitly setting transparent pixel. However I
- * have implemented this workaround, if you use less than 256 colors in your paletteInverter I will
- * accordingly set the transparent pixel to the first available position in the paletteInverter,
- * which is palette_size. If you use 256 colors no transparency will be used for the image we
- * generate.
+ * <p>Note that this kind of file does not support explicitly setting transparent pixel. However I have implemented this
+ * workaround, if you use less than 256 colors in your paletteInverter I will accordingly set the transparent pixel to
+ * the first available position in the paletteInverter, which is palette_size. If you use 256 colors no transparency
+ * will be used for the image we generate.
  *
- * <p><strong>Be aware</strong> that IrfanView does not always report correctly the size of the
- * palette it exports. Be ready to manually correct the number of colors reported.
+ * <p><strong>Be aware</strong> that IrfanView does not always report correctly the size of the palette it exports. Be
+ * ready to manually correct the number of colors reported.
  *
  * <p>Here is an explanation of what a JASC pal file should look like:
  *
  * <p><a href="http://www.cryer.co.uk/filetypes/p/pal.htm">JASC PAL file</a>
  *
- * <p>and here is a list of other possible formats we could parse (in the future if we have time or
- * someone pays for it :-) )
+ * <p>and here is a list of other possible formats we could parse (in the future if we have time or someone pays for it
+ * :-) )
  *
  * <p><a href="http://www.pl32.com/forum/viewtopic.php?t=873">alternative PAL file formats</a>
  *
@@ -44,8 +43,7 @@ import org.geoserver.platform.resource.Resource.Type;
  */
 class PALFileLoader {
     protected static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    "it.geosolutions.inversecolormap.PALFileLoader");
+            org.geotools.util.logging.Logging.getLogger("it.geosolutions.inversecolormap.PALFileLoader");
 
     /** Size of the color map we'll use. */
     protected int mapsize;
@@ -56,15 +54,14 @@ class PALFileLoader {
     /**
      * {@link PALFileLoader} constructor that accept a resource.
      *
-     * <p>Note that the transparentIndex pixel should not exceed the last zero-based index available
-     * for the colormap we area going to create. If this happens we might get very bad behaviour.
-     * Note also that if we set this parameter to -1 we'll get an opaque {@link IndexColorModel}.
+     * <p>Note that the transparentIndex pixel should not exceed the last zero-based index available for the colormap we
+     * area going to create. If this happens we might get very bad behaviour. Note also that if we set this parameter to
+     * -1 we'll get an opaque {@link IndexColorModel}.
      *
      * @param file the palette file.
      */
     public PALFileLoader(Resource file) {
-        if (file.getType() != Type.RESOURCE)
-            throw new IllegalArgumentException("The provided file does not exist.");
+        if (file.getType() != Type.RESOURCE) throw new IllegalArgumentException("The provided file does not exist.");
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(file.in()))) {
             // header
             boolean loadNext = false;
@@ -111,12 +108,10 @@ class PALFileLoader {
                         if (numComponents >= 3)
                             throw new IllegalArgumentException(
                                     "The number of components in one the color is greater than 3!");
-                        colorMap[numComponents++][i] =
-                                (byte) Integer.parseInt(tokenizer.nextToken());
+                        colorMap[numComponents++][i] = (byte) Integer.parseInt(tokenizer.nextToken());
                     }
                     if (numComponents != 3)
-                        throw new IllegalArgumentException(
-                                "The number of components in one the color is invalid!");
+                        throw new IllegalArgumentException("The number of components in one the color is invalid!");
                 }
             }
 
@@ -128,11 +123,8 @@ class PALFileLoader {
             ////
             if (mapsize < 256)
                 this.indexColorModel =
-                        new IndexColorModel(
-                                8, mapsize + 1, colorMap[0], colorMap[1], colorMap[2], mapsize);
-            else
-                this.indexColorModel =
-                        new IndexColorModel(8, mapsize, colorMap[0], colorMap[1], colorMap[2]);
+                        new IndexColorModel(8, mapsize + 1, colorMap[0], colorMap[1], colorMap[2], mapsize);
+            else this.indexColorModel = new IndexColorModel(8, mapsize, colorMap[0], colorMap[1], colorMap[2]);
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getLocalizedMessage(), e);
         }

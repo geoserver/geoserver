@@ -18,8 +18,7 @@ public class TileJSONBuilderTest {
 
     @Test
     public void testMBTiles() throws Exception {
-        try (MockedStatic<APIRequestInfo> staticRequestInfos =
-                Mockito.mockStatic(APIRequestInfo.class)) {
+        try (MockedStatic<APIRequestInfo> staticRequestInfos = Mockito.mockStatic(APIRequestInfo.class)) {
             APIRequestInfo requestInfo = mock(APIRequestInfo.class);
             when(APIRequestInfo.get()).thenReturn(requestInfo);
             staticRequestInfos.when(APIRequestInfo::get).thenReturn(requestInfo);
@@ -44,20 +43,14 @@ public class TileJSONBuilderTest {
             when(mbTilesLayer.getTileJSON()).thenReturn(tileJSON);
 
             TileJSONBuilder tileJSONBuilder =
-                    new TileJSONBuilder(
-                            "countries",
-                            "application/vnd.mapbox-vector-tile",
-                            "EPSG:900913",
-                            mbTilesLayer);
+                    new TileJSONBuilder("countries", "application/vnd.mapbox-vector-tile", "EPSG:900913", mbTilesLayer);
             TileJSON actualJson = tileJSONBuilder.build();
 
             assertEquals("countries", actualJson.getName());
             assertEquals(
                     "http://localhost:8081/geoserver/ogc/tiles/v1/collections/countries/tiles/EPSG:900913/{z}/{y}/{x}?f=application%2Fvnd.mapbox-vector-tile",
                     actualJson.getTiles()[0]);
-            assertEquals(
-                    "Natural Earth Data with .shp data from  TileMill",
-                    actualJson.getDescription());
+            assertEquals("Natural Earth Data with .shp data from  TileMill", actualJson.getDescription());
             assertEquals("Natural Earth Data", tileJSON.getAttribution());
             assertEquals(0, tileJSON.getMinZoom().longValue());
             assertEquals(6, tileJSON.getMaxZoom().longValue());

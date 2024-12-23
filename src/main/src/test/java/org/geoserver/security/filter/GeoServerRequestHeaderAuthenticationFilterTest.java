@@ -43,14 +43,11 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
         SecurityContext sc = new SecurityContextImpl();
         sc.setAuthentication(new PreAuthenticatedAuthenticationToken("testadmin", null));
         SecurityContextHolder.setContext(sc);
-        GeoServerRequestHeaderAuthenticationFilter toTest =
-                new GeoServerRequestHeaderAuthenticationFilter();
+        GeoServerRequestHeaderAuthenticationFilter toTest = new GeoServerRequestHeaderAuthenticationFilter();
         toTest.setPrincipalHeaderAttribute("sec-username");
         request.addHeader("sec-username", "testuser");
-        toTest.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
-        toTest.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        toTest.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
         SecurityInterceptorFilterConfig filterCfg = new SecurityInterceptorFilterConfig();
         filterCfg.setName("custom");
         filterCfg.setClassName(AuthCapturingFilter.class.getName());
@@ -59,11 +56,13 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
 
         assertEquals(
                 "testuser",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString());
+                SecurityContextHolder.getContext()
+                        .getAuthentication()
+                        .getPrincipal()
+                        .toString());
     }
 
-    static class AuthCapturingFilter extends GeoServerSecurityFilter
-            implements GeoServerAuthenticationFilter {
+    static class AuthCapturingFilter extends GeoServerSecurityFilter implements GeoServerAuthenticationFilter {
         @Override
         public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
                 throws IOException, ServletException {
@@ -89,32 +88,28 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
         HttpServletResponse response = new MockHttpServletResponse();
         MockFilterChain filterChain = new MockFilterChain();
         GeoServerSecurityInterceptorFilter toTest2 = new GeoServerSecurityInterceptorFilter();
-        toTest2.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
-        toTest2.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest2.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest2.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
         SecurityInterceptorFilterConfig filterCfg = new SecurityInterceptorFilterConfig();
         filterCfg.setName("custom");
         filterCfg.setClassName(AuthCapturingFilter.class.getName());
         filterCfg.setSecurityMetadataSource("geoserverMetadataSource");
-        SecurityMetadataSource metadataSource =
-                new SecurityMetadataSource() {
-                    @Override
-                    public Collection<ConfigAttribute> getAttributes(Object object)
-                            throws IllegalArgumentException {
-                        return null;
-                    }
+        SecurityMetadataSource metadataSource = new SecurityMetadataSource() {
+            @Override
+            public Collection<ConfigAttribute> getAttributes(Object object) throws IllegalArgumentException {
+                return null;
+            }
 
-                    @Override
-                    public Collection<ConfigAttribute> getAllConfigAttributes() {
-                        return null;
-                    }
+            @Override
+            public Collection<ConfigAttribute> getAllConfigAttributes() {
+                return null;
+            }
 
-                    @Override
-                    public boolean supports(Class<?> clazz) {
-                        return false;
-                    }
-                };
+            @Override
+            public boolean supports(Class<?> clazz) {
+                return false;
+            }
+        };
         toTest2.initializeFromConfig(filterCfg, metadataSource);
         try {
             toTest2.doFilter(request, response, filterChain);
@@ -132,13 +127,10 @@ public class GeoServerRequestHeaderAuthenticationFilterTest {
         SecurityContext sc = new SecurityContextImpl();
         sc.setAuthentication(new PreAuthenticatedAuthenticationToken("testadmin", null));
         SecurityContextHolder.setContext(sc);
-        GeoServerRequestHeaderAuthenticationFilter toTest =
-                new GeoServerRequestHeaderAuthenticationFilter();
+        GeoServerRequestHeaderAuthenticationFilter toTest = new GeoServerRequestHeaderAuthenticationFilter();
         toTest.setPrincipalHeaderAttribute("sec-username");
-        toTest.setSecurityManager(
-                new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
-        toTest.setRoleSource(
-                PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
+        toTest.setSecurityManager(new GeoServerSecurityManager(new GeoServerDataDirectory(new File("/tmp"))));
+        toTest.setRoleSource(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.Header);
 
         toTest.doFilter(request, response, filterChain);
 

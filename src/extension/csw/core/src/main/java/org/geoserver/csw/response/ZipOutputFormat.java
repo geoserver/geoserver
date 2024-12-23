@@ -22,8 +22,7 @@ import org.geotools.util.logging.Logging;
 /**
  * This class returns a zip encoded results of the users's query.
  *
- * <p>Currently supported type of values are instances of {@link File} or {@link List} of {@link
- * File}.
+ * <p>Currently supported type of values are instances of {@link File} or {@link List} of {@link File}.
  */
 public class ZipOutputFormat extends Response {
 
@@ -39,8 +38,7 @@ public class ZipOutputFormat extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         File tempDir = IOUtils.createTempDirectory("ziptemp");
         if (value == null) {
@@ -62,10 +60,7 @@ public class ZipOutputFormat extends Response {
                 FileUtils.deleteDirectory(tempDir);
             } catch (IOException e) {
                 LOGGER.warning(
-                        "Could not delete temp directory: "
-                                + tempDir.getAbsolutePath()
-                                + " due to: "
-                                + e.getMessage());
+                        "Could not delete temp directory: " + tempDir.getAbsolutePath() + " due to: " + e.getMessage());
             }
         }
     }

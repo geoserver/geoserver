@@ -58,14 +58,6 @@ public class GeoPkgStyleSheet {
 
     @Override
     public String toString() {
-        return "GeoPkgStyleSheet{"
-                + "id="
-                + id
-                + ", style="
-                + style
-                + ", format='"
-                + format
-                + '\''
-                + '}';
+        return "GeoPkgStyleSheet{" + "id=" + id + ", style=" + style + ", format='" + format + '\'' + '}';
     }
 }

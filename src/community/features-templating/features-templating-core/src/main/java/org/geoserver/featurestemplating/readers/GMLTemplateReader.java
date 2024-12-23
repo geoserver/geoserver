@@ -33,13 +33,11 @@ public class GMLTemplateReader extends XMLRecursiveTemplateReader {
 
     private static final String WFS_MEMBER = "wfs:member";
 
-    public GMLTemplateReader(Resource resource, NamespaceSupport namespaceSupport)
-            throws IOException {
+    public GMLTemplateReader(Resource resource, NamespaceSupport namespaceSupport) throws IOException {
         super(resource, namespaceSupport);
     }
 
-    public GMLTemplateReader(
-            Resource resource, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
+    public GMLTemplateReader(Resource resource, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
             throws IOException {
         super(resource, parent, namespaceSupport);
     }
@@ -67,8 +65,7 @@ public class GMLTemplateReader extends XMLRecursiveTemplateReader {
                 QName name = attr.getName();
                 if (isNamespace(name)) namespaces.put(localPart(name), attr.getValue());
             }
-            if (!namespaces.isEmpty())
-                builder.addVendorOption(VendorOptions.NAMESPACES, namespaces);
+            if (!namespaces.isEmpty()) builder.addVendorOption(VendorOptions.NAMESPACES, namespaces);
         } else if (elementName.equals(SCHEMA_LOCATION_EL)) {
             Iterator<Attribute> attributeIterator = element.getAttributes();
             if (attributeIterator.hasNext()) {
@@ -82,12 +79,10 @@ public class GMLTemplateReader extends XMLRecursiveTemplateReader {
     }
 
     @Override
-    protected void handleStartElement(StartElement startElement, TemplateBuilder currentParent)
-            throws IOException {
+    protected void handleStartElement(StartElement startElement, TemplateBuilder currentParent) throws IOException {
 
         if (startElement.getName().toString().equals(FEATURE_COLL_ELEMENT)) {
-            currentParent =
-                    builderFromFeatureCollectionElement(startElement, (RootBuilder) currentParent);
+            currentParent = builderFromFeatureCollectionElement(startElement, (RootBuilder) currentParent);
             iterateReader(currentParent);
         } else {
             super.handleStartElement(startElement, currentParent);

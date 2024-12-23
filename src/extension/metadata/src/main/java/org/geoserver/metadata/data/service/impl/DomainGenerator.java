@@ -51,8 +51,8 @@ public class DomainGenerator implements ComplexAttributeGenerator {
             ComplexMetadataMap metadata,
             LayerInfo layerInfo,
             Object data) {
-        String attName =
-                metadata.get(String.class, MetadataConstants.FEATURE_ATTRIBUTE_NAME).getValue();
+        String attName = metadata.get(String.class, MetadataConstants.FEATURE_ATTRIBUTE_NAME)
+                .getValue();
 
         FeatureTypeInfo fti = (FeatureTypeInfo) layerInfo.getResource();
 
@@ -64,8 +64,7 @@ public class DomainGenerator implements ComplexAttributeGenerator {
                 Name tableName = (Name) map.get("tableName");
                 Name valueAttributeName = (Name) map.get("valueAttributeName");
                 Name defAttributeName = (Name) map.get("defAttributeName");
-                DataAccess<? extends FeatureType, ? extends Feature> dataAccess =
-                        getDataAccess(fti);
+                DataAccess<? extends FeatureType, ? extends Feature> dataAccess = getDataAccess(fti);
                 if (dataAccess == null) {
                     return;
                 }
@@ -76,12 +75,12 @@ public class DomainGenerator implements ComplexAttributeGenerator {
                         new FeatureVisitor() {
                             @Override
                             public void visit(Feature feature) {
-                                Object value = feature.getProperty(valueAttributeName).getValue();
-                                Object def = feature.getProperty(defAttributeName).getValue();
+                                Object value =
+                                        feature.getProperty(valueAttributeName).getValue();
+                                Object def =
+                                        feature.getProperty(defAttributeName).getValue();
                                 ComplexMetadataMap domainMap =
-                                        metadata.subMap(
-                                                attributeConfiguration.getKey(),
-                                                index.getAndIncrement());
+                                        metadata.subMap(attributeConfiguration.getKey(), index.getAndIncrement());
                                 domainMap
                                         .get(String.class, MetadataConstants.DOMAIN_ATT_VALUE)
                                         .setValue(Converters.convert(value, String.class));
@@ -100,16 +99,13 @@ public class DomainGenerator implements ComplexAttributeGenerator {
                 visitor.getUnique().stream()
                         .filter(value -> value != null)
                         .sorted()
-                        .forEach(
-                                value -> {
-                                    ComplexMetadataMap domainMap =
-                                            metadata.subMap(
-                                                    attributeConfiguration.getKey(),
-                                                    index.getAndIncrement());
-                                    domainMap
-                                            .get(String.class, MetadataConstants.DOMAIN_ATT_VALUE)
-                                            .setValue(Converters.convert(value, String.class));
-                                });
+                        .forEach(value -> {
+                            ComplexMetadataMap domainMap =
+                                    metadata.subMap(attributeConfiguration.getKey(), index.getAndIncrement());
+                            domainMap
+                                    .get(String.class, MetadataConstants.DOMAIN_ATT_VALUE)
+                                    .setValue(Converters.convert(value, String.class));
+                        });
             }
 
         } catch (IOException e) {
@@ -132,8 +128,7 @@ public class DomainGenerator implements ComplexAttributeGenerator {
         return 360;
     }
 
-    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(
-            FeatureTypeInfo fti) {
+    public static DataAccess<? extends FeatureType, ? extends Feature> getDataAccess(FeatureTypeInfo fti) {
         Map<String, Serializable> connectionParams =
                 new HashMap<>(fti.getStore().getConnectionParameters());
         connectionParams.put(JDBCDataStoreFactory.EXPOSE_PK.getName(), true);

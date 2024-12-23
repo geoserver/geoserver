@@ -44,8 +44,7 @@ public class GeoJSONWriter extends CommonJSONWriter {
      * @param method
      * @throws IOException
      */
-    public void writeLink(String href, String rel, String mimeType, String title, String method)
-            throws IOException {
+    public void writeLink(String href, String rel, String mimeType, String title, String method) throws IOException {
         if (href != null) {
             writeStartObject();
             if (title != null) {
@@ -138,10 +137,8 @@ public class GeoJSONWriter extends CommonJSONWriter {
         writeEndArray();
     }
 
-    public void writeStaticContent(String key, Object staticContent, String separator)
-            throws IOException {
-        if (separator == null || staticContent instanceof String)
-            super.writeStaticContent(key, staticContent, null);
+    public void writeStaticContent(String key, Object staticContent, String separator) throws IOException {
+        if (separator == null || staticContent instanceof String) super.writeStaticContent(key, staticContent, null);
         else {
             JsonNode jsonNode = (JsonNode) staticContent;
             if (jsonNode.isArray()) {
@@ -154,8 +151,7 @@ public class GeoJSONWriter extends CommonJSONWriter {
         }
     }
 
-    private void writeArrayNodeFlat(String nodeName, JsonNode arNode, String separator)
-            throws IOException {
+    private void writeArrayNodeFlat(String nodeName, JsonNode arNode, String separator) throws IOException {
         Iterator<JsonNode> arrayIterator = arNode.elements();
         int i = 1;
         while (arrayIterator.hasNext()) {
@@ -172,8 +168,7 @@ public class GeoJSONWriter extends CommonJSONWriter {
         }
     }
 
-    private void writeObjectNodeFlat(String superNodeName, JsonNode node, String separator)
-            throws IOException {
+    private void writeObjectNodeFlat(String superNodeName, JsonNode node, String separator) throws IOException {
         Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
         while (iterator.hasNext()) {
             Map.Entry<String, JsonNode> nodEntry = iterator.next();

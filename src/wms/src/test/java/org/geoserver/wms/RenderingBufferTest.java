@@ -31,8 +31,7 @@ import org.w3c.dom.Document;
  */
 public class RenderingBufferTest extends WMSTestSupport {
 
-    static final QName LINE_WIDTH_LAYER =
-            new QName(MockData.CITE_URI, "LineWidth", MockData.CITE_PREFIX);
+    static final QName LINE_WIDTH_LAYER = new QName(MockData.CITE_URI, "LineWidth", MockData.CITE_PREFIX);
 
     static final String LINE_WIDTH_STYLE = "linewidth";
 
@@ -42,8 +41,7 @@ public class RenderingBufferTest extends WMSTestSupport {
         testData.addStyle(LINE_WIDTH_STYLE, "linewidth.sld", getClass(), getCatalog());
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, LINE_WIDTH_STYLE);
-        testData.addVectorLayer(
-                LINE_WIDTH_LAYER, properties, "LineWidth.properties", getClass(), getCatalog());
+        testData.addVectorLayer(LINE_WIDTH_LAYER, properties, "LineWidth.properties", getClass(), getCatalog());
     }
 
     @Before
@@ -56,14 +54,13 @@ public class RenderingBufferTest extends WMSTestSupport {
 
     @Test
     public void testGetMapNoBuffer() throws Exception {
-        String request =
-                "cite/wms?request=getmap&service=wms"
-                        + "&layers="
-                        + getLayerId(LINE_WIDTH_LAYER)
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5";
+        String request = "cite/wms?request=getmap&service=wms"
+                + "&layers="
+                + getLayerId(LINE_WIDTH_LAYER)
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5";
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
 
@@ -75,30 +72,28 @@ public class RenderingBufferTest extends WMSTestSupport {
     @Test
     public void testGetFeatureInfoNoBuffer() throws Exception {
         final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request =
-                "cite/wms?request=getfeatureinfo&service=wms"
-                        + "&layers="
-                        + layerName
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                        + layerName
-                        + "&info_format=application/vnd.ogc.gml";
+        String request = "cite/wms?request=getfeatureinfo&service=wms"
+                + "&layers="
+                + layerName
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
+                + layerName
+                + "&info_format=application/vnd.ogc.gml";
         Document dom = getAsDOM(request);
         assertXpathEvaluatesTo("0", "count(//gml:featureMember)", dom);
     }
 
     @Test
     public void testGetMapExplicitBuffer() throws Exception {
-        String request =
-                "cite/wms?request=getmap&service=wms"
-                        + "&layers="
-                        + getLayerId(LINE_WIDTH_LAYER)
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5&buffer=30";
+        String request = "cite/wms?request=getmap&service=wms"
+                + "&layers="
+                + getLayerId(LINE_WIDTH_LAYER)
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5&buffer=30";
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
 
@@ -111,16 +106,15 @@ public class RenderingBufferTest extends WMSTestSupport {
     @Test
     public void testGetFeatureInfoExplicitBuffer() throws Exception {
         final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request =
-                "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
-                        + "&layers="
-                        + layerName
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                        + layerName
-                        + "&info_format=application/vnd.ogc.gml&buffer=30";
+        String request = "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
+                + "&layers="
+                + layerName
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
+                + layerName
+                + "&info_format=application/vnd.ogc.gml&buffer=30";
         Document dom = getAsDOM(request);
         // print(dom);
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
@@ -133,14 +127,13 @@ public class RenderingBufferTest extends WMSTestSupport {
         layer.getMetadata().put(LayerInfo.BUFFER, 30);
         catalog.save(layer);
 
-        String request =
-                "cite/wms?request=getmap&service=wms"
-                        + "&layers="
-                        + getLayerId(LINE_WIDTH_LAYER)
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5";
+        String request = "cite/wms?request=getmap&service=wms"
+                + "&layers="
+                + getLayerId(LINE_WIDTH_LAYER)
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5";
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals("image/png", response.getContentType());
 
@@ -157,16 +150,15 @@ public class RenderingBufferTest extends WMSTestSupport {
         catalog.save(layer);
 
         final String layerName = getLayerId(LINE_WIDTH_LAYER);
-        String request =
-                "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
-                        + "&layers="
-                        + layerName
-                        + "&styles="
-                        + LINE_WIDTH_STYLE
-                        + "&width=50&height=50&format=image/png"
-                        + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
-                        + layerName
-                        + "&info_format=application/vnd.ogc.gml";
+        String request = "cite/wms?version=1.1.1&request=getfeatureinfo&service=wms"
+                + "&layers="
+                + layerName
+                + "&styles="
+                + LINE_WIDTH_STYLE
+                + "&width=50&height=50&format=image/png"
+                + "&srs=epsg:4326&bbox=-6,0,-1,5&x=49&y=49&query_layers="
+                + layerName
+                + "&info_format=application/vnd.ogc.gml";
         Document dom = getAsDOM(request);
         assertXpathEvaluatesTo("1", "count(//gml:featureMember)", dom);
     }

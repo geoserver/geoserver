@@ -55,8 +55,7 @@ public abstract class Insert extends TransactionElement {
 
         @Override
         public boolean isIdGenUseExisting() {
-            return ((InsertElementType) adaptee).getIdgen()
-                    == IdentifierGenerationOptionType.USE_EXISTING_LITERAL;
+            return ((InsertElementType) adaptee).getIdgen() == IdentifierGenerationOptionType.USE_EXISTING_LITERAL;
         }
 
         @SuppressWarnings("unchecked")

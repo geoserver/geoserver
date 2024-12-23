@@ -81,8 +81,7 @@ public class Envelope extends Geometry {
         this.spatialReference = spatialReference;
     }
 
-    public Envelope(
-            double xmin, double ymin, double xmax, double ymax, SpatialReference spatialReference) {
+    public Envelope(double xmin, double ymin, double xmax, double ymax, SpatialReference spatialReference) {
         this.xmin = xmin;
         this.xmax = xmax;
         this.ymin = ymin;
@@ -98,8 +97,7 @@ public class Envelope extends Geometry {
         this.ymax = envelope.getMaxY();
 
         try {
-            this.spatialReference =
-                    SpatialReferences.fromCRS(envelope.getCoordinateReferenceSystem());
+            this.spatialReference = SpatialReferences.fromCRS(envelope.getCoordinateReferenceSystem());
         } catch (FactoryException e) {
             throw new RuntimeException(e);
         }

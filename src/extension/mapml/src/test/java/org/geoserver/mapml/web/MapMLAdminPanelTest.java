@@ -25,9 +25,7 @@ public class MapMLAdminPanelTest extends GeoServerWicketTestSupport {
         wms = getGeoServer().getService(WMSInfo.class);
         getGeoServer().save(wms);
 
-        tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLAdminPanel(id, new Model<>(wms))));
+        tester.startPage(new FormTestPage((ComponentBuilder) id -> new MapMLAdminPanel(id, new Model<>(wms))));
     }
 
     @Test
@@ -37,8 +35,6 @@ public class MapMLAdminPanelTest extends GeoServerWicketTestSupport {
         ft.submit();
 
         tester.assertModelValue("form:panel:multiextent", true);
-        assertTrue(
-                wms.getMetadata()
-                        .get(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class));
+        assertTrue(wms.getMetadata().get(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.class));
     }
 }

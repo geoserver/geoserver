@@ -94,9 +94,7 @@ public class XFrameOptionsFilterTest {
     @Test
     public void testFilterHttpsHstsEnabled() throws Exception {
         System.setProperty(XFrameOptionsFilter.GEOSERVER_HSTS_SHOULD_SET_POLICY, "true");
-        assertEquals(
-                "max-age=31536000 ; includeSubDomains",
-                getHeader(true, "Strict-Transport-Security"));
+        assertEquals("max-age=31536000 ; includeSubDomains", getHeader(true, "Strict-Transport-Security"));
     }
 
     @Test

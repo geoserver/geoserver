@@ -42,14 +42,13 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
         form.add(new EmptyRolesValidator());
 
         form.add(serviceChoice = new DropDownChoice<>("service", getServiceNames()));
-        serviceChoice.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        methodChoice.updateModel();
-                        target.add(methodChoice);
-                    }
-                });
+        serviceChoice.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                methodChoice.updateModel();
+                target.add(methodChoice);
+            }
+        });
         serviceChoice.setRequired(true);
 
         form.add(methodChoice = new DropDownChoice<>("method", new MethodsModel(rule)));
@@ -64,19 +63,16 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
         methodChoice.setOutputMarkupId(true);
         methodChoice.setRequired(true);
 
-        form.add(
-                rolesFormComponent =
-                        new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles")));
+        form.add(rolesFormComponent = new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles")));
         // new Model((Serializable)new ArrayList(rule.getRoles()))));
 
         // build the submit/cancel
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        onFormSubmit((ServiceAccessRule) getForm().getModelObject());
-                    }
-                });
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                onFormSubmit((ServiceAccessRule) getForm().getModelObject());
+            }
+        });
         form.add(new BookmarkablePageLink<>("cancel", ServiceAccessRulePage.class));
     }
 
@@ -111,8 +107,7 @@ public abstract class AbstractServiceAccessRulePage extends AbstractSecurityPage
             updateModels();
             String roleInputString =
                     rolesFormComponent.getPalette().getRecorderComponent().getInput();
-            if ((roleInputString == null || roleInputString.trim().isEmpty())
-                    && !rolesFormComponent.isHasAnyRole()) {
+            if ((roleInputString == null || roleInputString.trim().isEmpty()) && !rolesFormComponent.isHasAnyRole()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }

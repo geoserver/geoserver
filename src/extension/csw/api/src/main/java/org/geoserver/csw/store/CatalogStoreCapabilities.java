@@ -200,8 +200,8 @@ public class CatalogStoreCapabilities {
     }
 
     /**
-     * Returns the list of queriable properties supported by this implementation for the given type
-     * name (empty by default)
+     * Returns the list of queriable properties supported by this implementation for the given type name (empty by
+     * default)
      *
      * @param typeName Qualified name (with namespace)
      */

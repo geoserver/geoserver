@@ -20,15 +20,15 @@ import org.geotools.util.logging.Logging;
 /**
  * De/encode a workspace and a resource name into a single string.
  *
- * <p>Some external formats do not allow to use semicolons in some strings. This class offers
- * methods to encode and decode workspace and names into a single string without using semicolons.
+ * <p>Some external formats do not allow to use semicolons in some strings. This class offers methods to encode and
+ * decode workspace and names into a single string without using semicolons.
  *
- * <p>We simply use a "__" as separator. This should reduce the conflicts with existing underscores.
- * This encoding is not unique, so the {@link #decode(java.lang.String) decode} method return a list
- * of possible workspace,name combinations. You'll need to check which workspace is really existing.
+ * <p>We simply use a "__" as separator. This should reduce the conflicts with existing underscores. This encoding is
+ * not unique, so the {@link #decode(java.lang.String) decode} method return a list of possible workspace,name
+ * combinations. You'll need to check which workspace is really existing.
  *
- * <p>You may use the {@link #getLayer(org.geoserver.catalog.Catalog, java.lang.String) getLayer()}
- * method to just retrieve the matching layers.
+ * <p>You may use the {@link #getLayer(org.geoserver.catalog.Catalog, java.lang.String) getLayer()} method to just
+ * retrieve the matching layers.
  *
  * @author ETj (etj at geo-solutions.it)
  */
@@ -45,8 +45,7 @@ public class NCNameResourceCodec {
         return workspaceName + DELIMITER + resourceName;
     }
 
-    public static LayerInfo getCoverage(Catalog catalog, String encodedCoverageId)
-            throws WCS20Exception {
+    public static LayerInfo getCoverage(Catalog catalog, String encodedCoverageId) throws WCS20Exception {
         List<LayerInfo> layers = NCNameResourceCodec.getLayers(catalog, encodedCoverageId);
         if (layers == null) return null;
 
@@ -57,14 +56,13 @@ public class NCNameResourceCodec {
                 if (ret == null) {
                     ret = layer;
                 } else {
-                    LOGGER.warning(
-                            "Multiple coverages found for NSName '"
-                                    + encodedCoverageId
-                                    + "': "
-                                    + ret.prefixedName()
-                                    + " is selected, "
-                                    + layer.prefixedName()
-                                    + " will be ignored");
+                    LOGGER.warning("Multiple coverages found for NSName '"
+                            + encodedCoverageId
+                            + "': "
+                            + ret.prefixedName()
+                            + " is selected, "
+                            + layer.prefixedName()
+                            + " will be ignored");
                 }
             }
         }
@@ -77,8 +75,7 @@ public class NCNameResourceCodec {
      *
      * <p>
      *
-     * @return A possibly empty list of the matching layers, or null if the encoded id could not be
-     *     decoded.
+     * @return A possibly empty list of the matching layers, or null if the encoded id could not be decoded.
      */
     public static List<LayerInfo> getLayers(Catalog catalog, String encodedResourceId) {
         List<MapEntry<String, String>> decodedList = decode(encodedResourceId);
@@ -129,10 +126,7 @@ public class NCNameResourceCodec {
         return ret;
     }
 
-    /**
-     * @return a List of possible workspace/name pairs, possibly empty if the input could not be
-     *     decoded;
-     */
+    /** @return a List of possible workspace/name pairs, possibly empty if the input could not be decoded; */
     public static List<MapEntry<String, String>> decode(String qualifiedName) {
         int lastPos = qualifiedName.lastIndexOf(DELIMITER);
         List<MapEntry<String, String>> ret = new ArrayList<>();

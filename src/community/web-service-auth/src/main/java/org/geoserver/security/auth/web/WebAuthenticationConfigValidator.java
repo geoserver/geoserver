@@ -26,8 +26,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 
 public class WebAuthenticationConfigValidator extends SecurityConfigValidator {
 
-    private static Logger LOGGER =
-            Logger.getLogger(WebAuthenticationConfigValidator.class.getCanonicalName());
+    private static Logger LOGGER = Logger.getLogger(WebAuthenticationConfigValidator.class.getCanonicalName());
 
     Set<String> availableRoles;
 
@@ -59,8 +58,7 @@ public class WebAuthenticationConfigValidator extends SecurityConfigValidator {
             } else if (!availableRoles.contains(webAuthConfig.getRoleServiceName())) {
                 // check if Role Service is available
                 throw new WebAuthConfigException(
-                        ROLE_SERVICE_NOT_FOUND_$1,
-                        new Object[] {webAuthConfig.getRoleServiceName()});
+                        ROLE_SERVICE_NOT_FOUND_$1, new Object[] {webAuthConfig.getRoleServiceName()});
             }
         }
     }
@@ -86,20 +84,17 @@ public class WebAuthenticationConfigValidator extends SecurityConfigValidator {
         if (!config.isUseHeader()) {
             if (!(connectionURL.contains(WebAuthenticationConfig.URL_PLACEHOLDER_USER)
                     && connectionURL.contains(WebAuthenticationConfig.URL_PLACEHOLDER_PASSWORD))) {
-                throw new WebAuthConfigException(
-                        PLACE_HOLDERS_NOT_FOUND,
-                        new Object[] {
-                            connectionURL,
-                            WebAuthenticationConfig.URL_PLACEHOLDER_USER,
-                            WebAuthenticationConfig.URL_PLACEHOLDER_PASSWORD
-                        });
+                throw new WebAuthConfigException(PLACE_HOLDERS_NOT_FOUND, new Object[] {
+                    connectionURL,
+                    WebAuthenticationConfig.URL_PLACEHOLDER_USER,
+                    WebAuthenticationConfig.URL_PLACEHOLDER_PASSWORD
+                });
             }
         }
 
         // connection timeouts cannot be 0 or below
         if (config.getReadTimeoutOut() <= 0 || config.getConnectionTimeOut() <= 0)
-            throw new WebAuthConfigException(
-                    INVALID_TIMEOUT, new Object[] {config.getReadTimeoutOut()});
+            throw new WebAuthConfigException(INVALID_TIMEOUT, new Object[] {config.getReadTimeoutOut()});
     }
 
     // regex

@@ -53,11 +53,10 @@ public class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
 
     @Override
     public List<ProfileVertice> call() throws Exception {
-        Coordinate[] coords =
-                pvs.stream()
-                        .map(ProfileVertice::getCoordinate)
-                        .collect(Collectors.toList())
-                        .toArray(new Coordinate[pvs.size()]);
+        Coordinate[] coords = pvs.stream()
+                .map(ProfileVertice::getCoordinate)
+                .collect(Collectors.toList())
+                .toArray(new Coordinate[pvs.size()]);
         Geometry geometry = GEOMETRY_FACTORY.createLineString(coords);
 
         Map<Geometry, Double> adjGeomValues = new HashMap<>();
@@ -82,31 +81,26 @@ public class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             Double altCorrection = 0.0;
             for (Map.Entry<Geometry, Double> entry : adjGeomValues.entrySet()) {
                 if (entry.getKey()
-                        .intersects(
-                                new Point(
-                                        new CoordinateSequence2D(
-                                                pv.getCoordinate().x, pv.getCoordinate().y),
-                                        GEOMETRY_FACTORY))) {
+                        .intersects(new Point(
+                                new CoordinateSequence2D(pv.getCoordinate().x, pv.getCoordinate().y),
+                                GEOMETRY_FACTORY))) {
                     altCorrection = entry.getValue();
                     break;
                 }
             }
 
-            double altitude =
-                    getAltitude(
-                            gridCoverage2D,
-                            new Position2D(pv.getCoordinate().x, pv.getCoordinate().y),
-                            altitudeIndex);
+            double altitude = getAltitude(
+                    gridCoverage2D, new Position2D(pv.getCoordinate().x, pv.getCoordinate().y), altitudeIndex);
             pv.setAltitude(altitude - altCorrection);
         }
         return pvs;
     }
 
-    private static double getAltitude(
-            GridCoverage2D gridCoverage2D, Position2D position2D, int altitudeIndex) {
+    private static double getAltitude(GridCoverage2D gridCoverage2D, Position2D position2D, int altitudeIndex) {
         double altitude = calculateAltitude(gridCoverage2D.evaluate(position2D), altitudeIndex);
         // Round altitude
-        altitude = BigDecimal.valueOf(altitude).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        altitude =
+                BigDecimal.valueOf(altitude).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
         return altitude;
     }

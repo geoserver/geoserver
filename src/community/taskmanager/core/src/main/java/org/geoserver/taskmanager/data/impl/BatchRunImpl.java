@@ -41,11 +41,7 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @JoinColumn(name = "batch")
     private BatchImpl batch;
 
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            targetEntity = RunImpl.class,
-            mappedBy = "batchRun",
-            cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, targetEntity = RunImpl.class, mappedBy = "batchRun", cascade = CascadeType.ALL)
     @OrderBy("start")
     @Fetch(FetchMode.SUBSELECT)
     private List<Run> runs = new ArrayList<Run>();
@@ -53,7 +49,8 @@ public class BatchRunImpl extends BaseImpl implements BatchRun {
     @Column(nullable = false)
     private Boolean interruptMe = false;
 
-    @Column private String schedulerReference;
+    @Column
+    private String schedulerReference;
 
     @Override
     public Long getId() {

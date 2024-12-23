@@ -39,18 +39,15 @@ import javax.xml.bind.annotation.XmlType;
 public class Polygon {
 
     @XmlMixed
-    @XmlElementRef(
-            name = "map-coordinates",
-            type = Coordinates.class,
-            namespace = "http://www.w3.org/1999/xhtml")
+    @XmlElementRef(name = "map-coordinates", type = Coordinates.class, namespace = "http://www.w3.org/1999/xhtml")
     protected List<Coordinates> threeOrMoreCoordinatePairs;
 
     /**
      * Gets the value of the threeOrMoreCoordinatePairs property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the threeOrMoreCoordinatePairs property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the threeOrMoreCoordinatePairs property.
      *
      * <p>For example, to add a new item, do as follows:
      *
@@ -58,8 +55,8 @@ public class Polygon {
      *    getThreeOrMoreCoordinatePairs().add(newItem);
      * </pre>
      *
-     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code
-     * <}{@link List }{@code <}{@link String }{@code >}{@code >}
+     * <p>Objects of the following type(s) are allowed in the list {@link JAXBElement }{@code <}{@link List
+     * }{@code <}{@link String }{@code >}{@code >}
      */
     public List<Coordinates> getThreeOrMoreCoordinatePairs() {
         if (threeOrMoreCoordinatePairs == null) {

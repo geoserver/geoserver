@@ -39,8 +39,7 @@ import org.w3c.dom.Document;
 
 public class SearchTest extends OSEOTestSupport {
 
-    private static final String ENCODED_ATOM_MIME =
-            ResponseUtils.urlEncode(AtomSearchResponse.MIME);
+    private static final String ENCODED_ATOM_MIME = ResponseUtils.urlEncode(AtomSearchResponse.MIME);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
@@ -52,14 +51,11 @@ public class SearchTest extends OSEOTestSupport {
         copyTemplate("product-LANDSAT8.ftl");
         copyTemplate("collection-LANDSAT8.ftl");
 
-        GeoServerDataDirectory dd =
-                (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
+        GeoServerDataDirectory dd = (GeoServerDataDirectory) applicationContext.getBean("dataDirectory");
         File file = dd.getResourceLoader().createFile("/readAndEval.json");
-        File nestedFile =
-                dd.getResourceLoader().createFile("/workspaces/readAndEvalNestedDir.json");
+        File nestedFile = dd.getResourceLoader().createFile("/workspaces/readAndEvalNestedDir.json");
         dd.getResourceLoader().copyFromClassPath("readAndEval.json", file, getClass());
-        dd.getResourceLoader()
-                .copyFromClassPath("readAndEvalNestedDir.json", nestedFile, getClass());
+        dd.getResourceLoader().copyFromClassPath("readAndEvalNestedDir.json", nestedFile, getClass());
     }
 
     @Test
@@ -67,8 +63,7 @@ public class SearchTest extends OSEOTestSupport {
         // this test needs gml bound to GML 2
         namespaceContext.bindNamespaceUri("gml", "http://www.opengis.net/gml");
 
-        MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
+        MockHttpServletResponse response = getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -110,22 +105,15 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry[3]/at:id",
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/search?uid=SENTINEL2&httpAccept=application%2Fatom%2Bxml")));
-        assertThat(
-                dom, hasXPath("/at:feed/at:entry[3]/at:updated", equalTo("2016-02-26T10:20:21Z")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[3]/dc:date",
-                        equalTo("2015-07-01T10:20:21Z/2016-02-26T10:20:21Z")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/at:updated", equalTo("2016-02-26T10:20:21Z")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/dc:date", equalTo("2015-07-01T10:20:21Z/2016-02-26T10:20:21Z")));
         // ... mind the lat/lon order
         assertThat(
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[3]/georss:where/gml:Polygon/gml:exterior/gml:LinearRing/gml:posList",
                         equalTo("89 -179 89 179 -89 179 -89 -179 89 -179")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[3]/georss:box", equalTo("-89.0 -179.0 89.0 179.0")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/georss:box", equalTo("-89.0 -179.0 89.0 179.0")));
         // ... the links (self, metadata, search)
         assertThat(
                 dom,
@@ -145,8 +133,7 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry[3]/at:link[@rel='search' and @type='"
                                 + DescriptionResponse.OS_DESCRIPTION_MIME
                                 + "']/@href",
-                        equalTo(
-                                "http://localhost:8080/geoserver/oseo/description?parentId=SENTINEL2")));
+                        equalTo("http://localhost:8080/geoserver/oseo/description?parentId=SENTINEL2")));
 
         // check the html description (right one, and param substitution in links
         XPath xPath = getXPath();
@@ -173,20 +160,9 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry[3]/owc:offering/@code",
                         equalTo("http://www.opengis.net/spec/owc/1.0/req/atom/wms")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[3]/owc:offering/owc:operation/@code",
-                        equalTo("GetCapabilities")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[3]/owc:offering/owc:operation/@method", equalTo("GET")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[3]/owc:offering/owc:operation/@type",
-                        equalTo("application/xml")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/owc:offering/owc:operation/@code", equalTo("GetCapabilities")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/owc:offering/owc:operation/@method", equalTo("GET")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[3]/owc:offering/owc:operation/@type", equalTo("application/xml")));
         assertThat(
                 dom,
                 hasXPath(
@@ -200,8 +176,7 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testAllCollectionCountZero() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?count=0&httpAccept=" + ENCODED_ATOM_MIME);
+        MockHttpServletResponse response = getAsServletResponse("oseo/search?count=0&httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -232,13 +207,11 @@ public class SearchTest extends OSEOTestSupport {
         // remove one OGC link
         DataStore dataStore =
                 (DataStore) getCatalog().getDataStoreByName("oseo_jdbc").getDataStore(null);
-        SimpleFeatureStore store =
-                (SimpleFeatureStore) dataStore.getFeatureSource("collection_ogclink");
+        SimpleFeatureStore store = (SimpleFeatureStore) dataStore.getFeatureSource("collection_ogclink");
         store.removeFeatures(CQL.toFilter("href like '%landsat8%'"));
 
         // run request, we should get 3 feeds but only two links
-        MockHttpServletResponse response =
-                getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
+        MockHttpServletResponse response = getAsServletResponse("oseo/search?httpAccept=" + ENCODED_ATOM_MIME);
         assertEquals(AtomSearchResponse.MIME, response.getContentType());
         assertEquals(200, response.getStatus());
 
@@ -399,22 +372,15 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']"));
         assertThat(
                 dom,
-                hasXPath(
-                        "/at:feed/at:link[@rel='" + rel + "']/@href",
-                        containsString("startIndex=" + startIndex)));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:link[@rel='" + rel + "']/@href",
-                        containsString("count=" + count)));
+                hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("startIndex=" + startIndex)));
+        assertThat(dom, hasXPath("/at:feed/at:link[@rel='" + rel + "']/@href", containsString("count=" + count)));
     }
 
     @Test
     public void testProductById() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept="
-                                + ENCODED_ATOM_MIME);
+        Document dom = getAsDOM(
+                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04&httpAccept="
+                        + ENCODED_ATOM_MIME);
         // print(dom);
 
         // check that filtering worked and offerings have been properly grouped
@@ -423,8 +389,7 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:entry/at:id",
-                        containsString(
-                                "S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04")));
+                        containsString("S2A_OPER_MSI_L1C_TL_SGS__20160929T154211_A006640_T32TPP_N02.04")));
 
         assertThat(
                 dom,
@@ -451,10 +416,7 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testProductByIdDisabled() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=LANDSAT8&uid=LS8_TEST.DISABLED&httpAccept="
-                                + ENCODED_ATOM_MIME);
+        Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=LS8_TEST.DISABLED&httpAccept=" + ENCODED_ATOM_MIME);
         // no results, the product is there, but disabled
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("0")));
     }
@@ -471,19 +433,17 @@ public class SearchTest extends OSEOTestSupport {
     public void testAllSentinel2EmptyParams() throws Exception {
         // a URL generated by a client following the opensearch template to the letter (without
         // omitting the keys for missing params like OpenSearch for EO suggests to)
-        Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=SENTINEL2&searchTerms=&startIndex=&count=&uid=&box="
-                                + "&name=&lat=&lon=&radius=&geometry=&geoRelation="
-                                + "&timeStart=&timeEnd=&timeRelation=&illuminationAzimuthAngle="
-                                + "&illuminationZenithAngle=&illuminationElevationAngle=&resolution=&identifier="
-                                + "&productQualityDegradationStatus=&archivingCenter=&parentIdentifier="
-                                + "&productionStatus=&acquisitionSubtype=&acquisitionType=&productQualityStatus="
-                                + "&processorName=&orbitDirection=&processingCenter=&sensorMode=&processingMode="
-                                + "&swathIdentifier=&creationDate=&modificationDate=&processingDate="
-                                + "&availabilityTime=&acquisitionStation=&orbitNumber=&track=&frame="
-                                + "&startTimeFromAscendingNode=&completionTimeFromAscendingNode="
-                                + "&cloudCover=&snowCover=&httpAccept=atom");
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&searchTerms=&startIndex=&count=&uid=&box="
+                + "&name=&lat=&lon=&radius=&geometry=&geoRelation="
+                + "&timeStart=&timeEnd=&timeRelation=&illuminationAzimuthAngle="
+                + "&illuminationZenithAngle=&illuminationElevationAngle=&resolution=&identifier="
+                + "&productQualityDegradationStatus=&archivingCenter=&parentIdentifier="
+                + "&productionStatus=&acquisitionSubtype=&acquisitionType=&productQualityStatus="
+                + "&processorName=&orbitDirection=&processingCenter=&sensorMode=&processingMode="
+                + "&swathIdentifier=&creationDate=&modificationDate=&processingDate="
+                + "&availabilityTime=&acquisitionStation=&orbitNumber=&track=&frame="
+                + "&startTimeFromAscendingNode=&completionTimeFromAscendingNode="
+                + "&cloudCover=&snowCover=&httpAccept=atom");
         // print(dom);
 
         assertFirstPageSentinel2Products(dom);
@@ -500,8 +460,7 @@ public class SearchTest extends OSEOTestSupport {
                 dom,
                 hasXPath(
                         "/at:feed/at:link[@rel='search']/@href",
-                        equalTo(
-                                "http://localhost:8080/geoserver/oseo/search/description?parentId=SENTINEL2")));
+                        equalTo("http://localhost:8080/geoserver/oseo/search/description?parentId=SENTINEL2")));
 
         // there are two products only with links, verify, three offerings each
         assertThat(
@@ -540,14 +499,12 @@ public class SearchTest extends OSEOTestSupport {
                         equalTo("application/octet-stream"))); // this one has no type in the
         // database
         // just two enclosure links, the other products have nothing that can be downloaded
-        assertThat(
-                dom, hasXPath("count(/at:feed/at:entry/at:link[@rel='enclosure'])", equalTo("2")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/at:link[@rel='enclosure'])", equalTo("2")));
     }
 
     @Test
     public void testAllSentinel2ProductsCountZero() throws Exception {
-        Document dom =
-                getAsDOM("oseo/search?parentId=SENTINEL2&count=0&httpAccept=" + ENCODED_ATOM_MIME);
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&count=0&httpAccept=" + ENCODED_ATOM_MIME);
         // print(dom);
 
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("19")));
@@ -560,10 +517,9 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testSpecificProduct() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept="
-                                + ENCODED_ATOM_MIME);
+        Document dom = getAsDOM(
+                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04&httpAccept="
+                        + ENCODED_ATOM_MIME);
         // print(dom);
 
         // check basics
@@ -573,8 +529,7 @@ public class SearchTest extends OSEOTestSupport {
                 hasXPath(
                         "/at:feed/at:entry/at:title",
                         equalTo("S2A_OPER_MSI_L1C_TL_MTI__20170308T220244_A008933_T11SLT_N02.04")));
-        assertThat(
-                dom, hasXPath("/at:feed/at:entry/at:updated", equalTo("2017-03-08T18:54:21.026Z")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/at:updated", equalTo("2017-03-08T18:54:21.026Z")));
         assertThat(dom, hasXPath("/at:feed/at:entry/dc:date", equalTo("2017-03-08T18:54:21.026Z")));
 
         // ... the links (self, metadata)
@@ -708,8 +663,7 @@ public class SearchTest extends OSEOTestSupport {
     @Test
     public void testProductByTimeRange() throws Exception {
         // only LANDSAT matches
-        Document dom =
-                getAsDOM("oseo/search?parentId=SENTINEL2&timeStart=2017-03-08&timeEnd=2017-03-09");
+        Document dom = getAsDOM("oseo/search?parentId=SENTINEL2&timeStart=2017-03-08&timeEnd=2017-03-09");
         // print(dom);
 
         // basics
@@ -851,22 +805,15 @@ public class SearchTest extends OSEOTestSupport {
 
     @Test
     public void testDisabledProductQuicklook() throws Exception {
-        Document dom =
-                getAsOpenSearchException(
-                        "oseo/quicklook?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
+        Document dom = getAsOpenSearchException("oseo/quicklook?parentId=LANDSAT8&uid=LS8_TEST.DISABLED", 404);
         print(dom);
-        assertThat(
-                dom,
-                hasXPath(
-                        "/rss/channel/item/title",
-                        containsString("Could not locate the requested product")));
+        assertThat(dom, hasXPath("/rss/channel/item/title", containsString("Could not locate the requested product")));
     }
 
     @Test
     public void testQuicklookInAtom() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01");
+        Document dom = getAsDOM(
+                "oseo/search?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01");
 
         assertThat(
                 dom,
@@ -875,18 +822,9 @@ public class SearchTest extends OSEOTestSupport {
                         equalTo(
                                 "http://localhost:8080/geoserver/oseo/quicklook?parentId=SENTINEL2&uid=S2A_OPER_MSI_L1C_TL_SGS__20160117T141030_A002979_T33TWH_N02.01")));
         assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group)", equalTo("1")));
-        assertThat(
-                dom, hasXPath("count(/at:feed/at:entry/media:group/media:content)", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "count(/at:feed/at:entry/media:group/media:content/media:category)",
-                        equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry/media:group/media:content/media:category",
-                        equalTo("THUMBNAIL")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group/media:content)", equalTo("1")));
+        assertThat(dom, hasXPath("count(/at:feed/at:entry/media:group/media:content/media:category)", equalTo("1")));
+        assertThat(dom, hasXPath("/at:feed/at:entry/media:group/media:content/media:category", equalTo("THUMBNAIL")));
         assertThat(
                 dom,
                 hasXPath(
@@ -900,26 +838,18 @@ public class SearchTest extends OSEOTestSupport {
         // match 03, both have it
         Document dom = getAsDOM("oseo/search?parentId=SAS1&species=O3");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
 
         // match C02, only one has it
         dom = getAsDOM("oseo/search?parentId=SAS1&species=O3&species=CO2");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
 
         // match 03 and NO2, only one has it
         dom = getAsDOM("oseo/search?parentId=SAS1&species=O3&species=NO2");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
     }
 
     @Test
@@ -927,26 +857,18 @@ public class SearchTest extends OSEOTestSupport {
         // 1000 and above, both have it
         Document dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[1000");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("2")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[2]/dc:identifier", equalTo("SAS1_20180226102021.01")));
 
         // below 300, only the first has it
         dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=300]");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
 
         // between 300 and 700, only the second has it
         dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[300,700]");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180227102021.02")));
     }
 
     @Test
@@ -955,18 +877,13 @@ public class SearchTest extends OSEOTestSupport {
         Document dom = getAsDOM("oseo/search?parentId=SAS1&verticalRange=[1000&species=CO2");
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
         assertThat(dom, hasXPath("/at:feed/os:totalResults", equalTo("1")));
-        assertThat(
-                dom,
-                hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo("SAS1_20180226102021.01")));
     }
 
     @Test
     public void testSearchJSONInvalidParameter() throws Exception {
         JSONObject response =
-                (JSONObject)
-                        getAsJSON(
-                                "oseo/search?parentId=SENTINEL2&uid=123&timeStart=abcde&httpAccept=json",
-                                400);
+                (JSONObject) getAsJSON("oseo/search?parentId=SENTINEL2&uid=123&timeStart=abcde&httpAccept=json", 400);
         assertEquals("Exception", response.getString("type"));
         JSONObject exception = response.getJSONArray("exceptions").getJSONObject(0);
         assertEquals("InvalidParameterValue", exception.getString("exceptionCode"));
@@ -987,43 +904,22 @@ public class SearchTest extends OSEOTestSupport {
         // checking HTML bits
         String oseo = "http://localhost:8080/geoserver/oseo/";
         // self link, atom
-        summaryHasLink(
-                dom,
-                oseo
-                        + "search?parentId=SENTINEL2&uid="
-                        + uid
-                        + "&httpAccept=application%2Fatom%2Bxml");
+        summaryHasLink(dom, oseo + "search?parentId=SENTINEL2&uid=" + uid + "&httpAccept=application%2Fatom%2Bxml");
         // self link, json
-        summaryHasLink(
-                dom,
-                oseo
-                        + "search?parentId=SENTINEL2&uid="
-                        + uid
-                        + "&httpAccept=application%2Fgeo%2Bjson");
+        summaryHasLink(dom, oseo + "search?parentId=SENTINEL2&uid=" + uid + "&httpAccept=application%2Fgeo%2Bjson");
         // quicklook link and image
         assertThat(
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
-                        containsString(
-                                "<a href=\""
-                                        + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid)
-                                        + "\"")));
+                        containsString("<a href=\"" + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid) + "\"")));
         assertThat(
                 dom,
                 hasXPath(
                         "/at:feed/at:entry[1]/at:summary",
-                        containsString(
-                                "src=\""
-                                        + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid)
-                                        + "\"")));
+                        containsString("src=\"" + (oseo + "quicklook?parentId=SENTINEL2&uid=" + uid) + "\"")));
         // metadata link
-        summaryHasLink(
-                dom,
-                oseo
-                        + "metadata?parentId=SENTINEL2&uid="
-                        + uid
-                        + "&httpAccept=application%2Fgml%2Bxml");
+        summaryHasLink(dom, oseo + "metadata?parentId=SENTINEL2&uid=" + uid + "&httpAccept=application%2Fgml%2Bxml");
         // date range
         assertThat(
                 dom,
@@ -1031,8 +927,7 @@ public class SearchTest extends OSEOTestSupport {
                         "/at:feed/at:entry[1]/at:summary",
                         // the locale is set to "en", unclear why this is happening...
                         Matchers.anyOf(
-                                containsString("Jan 17, 2016, 10:10:30"),
-                                containsString("Jan 17, 2016 10:10:30"))));
+                                containsString("Jan 17, 2016, 10:10:30"), containsString("Jan 17, 2016 10:10:30"))));
     }
 
     @Test
@@ -1068,11 +963,7 @@ public class SearchTest extends OSEOTestSupport {
         assertThat(dom, hasXPath("/at:feed/at:entry[1]/dc:identifier", equalTo(uid)));
 
         // checking HTML bits, should have a customized title
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("This is the LS8 collection")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("This is the LS8 collection")));
     }
 
     @Test
@@ -1088,9 +979,7 @@ public class SearchTest extends OSEOTestSupport {
         String oseo = "http://localhost:8080/geoserver/oseo/";
         assertThat(
                 dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<h1>This is a LANDSAT product!</h1>")));
+                hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h1>This is a LANDSAT product!</h1>")));
     }
 
     @Test
@@ -1098,26 +987,10 @@ public class SearchTest extends OSEOTestSupport {
         String uid = "LS8_TEST.02";
         Document dom = getAsDOM("oseo/search?parentId=LANDSAT8&uid=" + uid);
 
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<h2>attribute1 => 1</h2>")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<h2>attribute2 => 2</h2>")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<h3>attribute4 => 4</h3>")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<h3>attribute3 => 3</h3>")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h2>attribute1 => 1</h2>")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h2>attribute2 => 2</h2>")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h3>attribute4 => 4</h3>")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<h3>attribute3 => 3</h3>")));
     }
 
     @Test
@@ -1131,10 +1004,6 @@ public class SearchTest extends OSEOTestSupport {
     }
 
     private void summaryHasLink(Document dom, String link) {
-        assertThat(
-                dom,
-                hasXPath(
-                        "/at:feed/at:entry[1]/at:summary",
-                        containsString("<a href=\"" + link + "\"")));
+        assertThat(dom, hasXPath("/at:feed/at:entry[1]/at:summary", containsString("<a href=\"" + link + "\"")));
     }
 }

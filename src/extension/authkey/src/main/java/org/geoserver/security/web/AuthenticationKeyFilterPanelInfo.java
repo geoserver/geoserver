@@ -15,8 +15,7 @@ import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
  * @author mcr
  */
 public class AuthenticationKeyFilterPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                AuthenticationKeyFilterConfig, AuthenticationKeyFilterPanel> {
+        extends AuthenticationFilterPanelInfo<AuthenticationKeyFilterConfig, AuthenticationKeyFilterPanel> {
 
     private static final long serialVersionUID = 1L;
 

@@ -19,14 +19,14 @@ public class NotificationConfiguration implements Serializable {
     private static final long serialVersionUID = 2029473095919663064L;
 
     /**
-     * The size of main queue used to store {@link Notification} after events generate it, but
-     * before the {@link MessageMultiplexer} elaborates it
+     * The size of main queue used to store {@link Notification} after events generate it, but before the
+     * {@link MessageMultiplexer} elaborates it
      */
     private Long queueSize;
 
     /**
-     * The configurations used by {@link MessageProcessor} used to store, filter and dispatch the
-     * {@link Notification} using the right {@link NotificationProcessor}
+     * The configurations used by {@link MessageProcessor} used to store, filter and dispatch the {@link Notification}
+     * using the right {@link NotificationProcessor}
      */
     private List<Notificator> notificators;
 

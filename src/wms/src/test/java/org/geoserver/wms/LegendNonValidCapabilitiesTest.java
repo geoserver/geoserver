@@ -24,14 +24,11 @@ import org.w3c.dom.Document;
 /** Test setup for GEOS-8982. Does a check on Style capabilities using a non valid LegendInfo. */
 public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
 
-    private static final String CAPABILITIES_REQUEST_1_3_0 =
-            "wms?request=getCapabilities&version=1.3.0";
-    private static final String CAPABILITIES_REQUEST_1_1_1 =
-            "wms?request=getCapabilities&version=1.1.1";
+    private static final String CAPABILITIES_REQUEST_1_3_0 = "wms?request=getCapabilities&version=1.3.0";
+    private static final String CAPABILITIES_REQUEST_1_1_1 = "wms?request=getCapabilities&version=1.1.1";
 
     private static final String LAYER_NAME = "watertemp";
-    private static final QName LAYER_QNAME =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_QNAME = new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
     private static final String STYLE_NAME = "temperature";
     private static final String STYLE_FILE = "temperature.sld";
@@ -61,8 +58,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
 
-        testData.addRasterLayer(
-                LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
 
         // For global set-up
         GeoServerInfo global = getGeoServer().getGlobal();
@@ -85,8 +81,7 @@ public class LegendNonValidCapabilitiesTest extends WMSTestSupport {
     public void testCapabilities_1_3_0() throws Exception {
         Document dom = dom(get(CAPABILITIES_REQUEST_1_3_0), false);
 
-        final String legendUrlPath =
-                "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
+        final String legendUrlPath = "//wms:Layer[wms:Name='gs:" + LAYER_NAME + "']/wms:Style/wms:LegendURL";
 
         // Ensure capabilities document reflects the specified legend info
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);

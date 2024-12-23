@@ -14,13 +14,12 @@ import org.geoserver.security.impl.GeoServerUserGroup;
 import org.geoserver.security.validation.PasswordPolicyException;
 
 /**
- * This is a wrapper class for a {@link GeoServerUserGroupStore} protected internal data structures
- * using read/write locks
+ * This is a wrapper class for a {@link GeoServerUserGroupStore} protected internal data structures using read/write
+ * locks
  *
  * @author christian
  */
-public class LockingUserGroupStore extends LockingUserGroupService
-        implements GeoServerUserGroupStore {
+public class LockingUserGroupStore extends LockingUserGroupService implements GeoServerUserGroupStore {
 
     /** Constructor for the locking wrapper */
     public LockingUserGroupStore(GeoServerUserGroupStore store) {
@@ -35,8 +34,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#addUser(org.geoserver.security.impl.GeoServerUser)
+     * @see org.geoserver.security.GeoServerUserGroupStore#addUser(org.geoserver.security.impl.GeoServerUser)
      */
     @Override
     public void addUser(GeoServerUser user) throws IOException, PasswordPolicyException {
@@ -51,8 +49,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#updateUser(org.geoserver.security.impl.GeoServerUser)
+     * @see org.geoserver.security.GeoServerUserGroupStore#updateUser(org.geoserver.security.impl.GeoServerUser)
      */
     @Override
     public void updateUser(GeoServerUser user) throws IOException, PasswordPolicyException {
@@ -67,8 +64,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#removeUser(org.geoserver.security.impl.GeoServerUser)
+     * @see org.geoserver.security.GeoServerUserGroupStore#removeUser(org.geoserver.security.impl.GeoServerUser)
      */
     @Override
     public boolean removeUser(GeoServerUser user) throws IOException {
@@ -83,8 +79,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#addGroup(org.geoserver.security.impl.GeoServerUserGroup)
+     * @see org.geoserver.security.GeoServerUserGroupStore#addGroup(org.geoserver.security.impl.GeoServerUserGroup)
      */
     @Override
     public void addGroup(GeoServerUserGroup group) throws IOException {
@@ -99,8 +94,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#updateGroup(org.geoserver.security.impl.GeoServerUserGroup)
+     * @see org.geoserver.security.GeoServerUserGroupStore#updateGroup(org.geoserver.security.impl.GeoServerUserGroup)
      */
     @Override
     public void updateGroup(GeoServerUserGroup group) throws IOException {
@@ -115,8 +109,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerUserGroupStore#removeGroup(org.geoserver.security.impl.GeoServerUserGroup)
+     * @see org.geoserver.security.GeoServerUserGroupStore#removeGroup(org.geoserver.security.impl.GeoServerUserGroup)
      */
     @Override
     public boolean removeGroup(GeoServerUserGroup group) throws IOException {
@@ -151,8 +144,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
      *     org.geoserver.security.impl.GeoServerUserGroup)
      */
     @Override
-    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         writeLock();
         try {
             getStore().associateUserToGroup(user, group);
@@ -169,8 +161,7 @@ public class LockingUserGroupStore extends LockingUserGroupService
      *     org.geoserver.security.impl.GeoServerUserGroup)
      */
     @Override
-    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         writeLock();
         try {
             getStore().disAssociateUserFromGroup(user, group);

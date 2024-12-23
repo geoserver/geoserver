@@ -42,7 +42,8 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     public void testGetAllAsXML() throws Exception {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/namespaces.xml", 200);
         assertEquals(
-                catalog.getNamespaces().size(), dom.getElementsByTagName("namespace").getLength());
+                catalog.getNamespaces().size(),
+                dom.getElementsByTagName("namespace").getLength());
     }
 
     @Test
@@ -50,8 +51,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/namespaces.json");
         assertTrue(json instanceof JSONObject);
 
-        JSONArray namespaces =
-                ((JSONObject) json).getJSONObject("namespaces").getJSONArray("namespace");
+        JSONArray namespaces = ((JSONObject) json).getJSONObject("namespaces").getJSONArray("namespace");
         assertNotNull(namespaces);
 
         assertEquals(catalog.getNamespaces().size(), namespaces.size());
@@ -78,14 +78,16 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     public void testPutAllUnauthorized() throws Exception {
         assertEquals(
                 405,
-                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces").getStatus());
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces")
+                        .getStatus());
     }
 
     @Test
     public void testDeleteAllUnauthorized() throws Exception {
         assertEquals(
                 405,
-                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces").getStatus());
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces")
+                        .getStatus());
     }
 
     @Test
@@ -104,14 +106,9 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     @Test
     public void testRoundTripXMLSerialization() throws Exception {
         removeNamespace("ian");
-        String xml =
-                "<namespace>"
-                        + "<prefix>ian</prefix>"
-                        + "<uri>http://ian.com</uri>"
-                        + "</namespace>";
+        String xml = "<namespace>" + "<prefix>ian</prefix>" + "<uri>http://ian.com</uri>" + "</namespace>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
@@ -174,14 +171,9 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostAsXML() throws Exception {
-        String xml =
-                "<namespace>"
-                        + "<prefix>foo</prefix>"
-                        + "<uri>http://foo.com</uri>"
-                        + "</namespace>";
+        String xml = "<namespace>" + "<prefix>foo</prefix>" + "<uri>http://foo.com</uri>" + "</namespace>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces", xml, "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
@@ -209,8 +201,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String json = "{'namespace':{ 'prefix':'foo', 'uri':'http://foo.com' }}";
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces", json, "text/json");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces", json, "text/json");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertNotNull(response.getHeader("Location"));
@@ -225,8 +216,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String xml = "<namespace>" + "<name>changed</name>" + "</namespace>";
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml");
         assertEquals(405, response.getStatus());
     }
 
@@ -240,11 +230,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
     @Test
     public void testDelete() throws Exception {
-        String xml =
-                "<namespace>"
-                        + "<prefix>foo</prefix>"
-                        + "<uri>http://foo.com</uri>"
-                        + "</namespace>";
+        String xml = "<namespace>" + "<prefix>foo</prefix>" + "<uri>http://foo.com</uri>" + "</namespace>";
         post(RestBaseController.ROOT_PATH + "/namespaces", xml);
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/namespaces/foo.xml");
@@ -278,8 +264,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String xml = "<namespace>" + "<uri>http://changed</uri>" + "</namespace>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/gs", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/namespaces/gs.xml");
@@ -291,8 +276,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         String xml = "<namespace>" + "<name>changed</name>" + "</namespace>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces/nonExistant", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/nonExistant", xml, "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -312,8 +296,7 @@ public class NamespaceTest extends CatalogRESTTestSupport {
 
         String json = "{'namespace':{ 'prefix':'sf' }}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/default", json, "text/json");
         assertEquals(200, response.getStatus());
 
         def = getCatalog().getDefaultNamespace();
@@ -323,16 +306,14 @@ public class NamespaceTest extends CatalogRESTTestSupport {
     @Test
     public void testIsolatedNamespacesHandling() throws Exception {
         // create an isolated namespace
-        String xmlPost =
-                "<namespace>"
-                        + "  <id>isolated_namespace</id>"
-                        + "  <prefix>isolated_prefix</prefix>"
-                        + "  <uri>http://www.isolated.org/1.0</uri>"
-                        + "  <isolated>true</isolated>"
-                        + "</namespace>";
+        String xmlPost = "<namespace>"
+                + "  <id>isolated_namespace</id>"
+                + "  <prefix>isolated_prefix</prefix>"
+                + "  <uri>http://www.isolated.org/1.0</uri>"
+                + "  <isolated>true</isolated>"
+                + "</namespace>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces.xml", xmlPost, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces.xml", xmlPost, "text/xml");
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         // check that the created namespace is isolated
@@ -344,18 +325,14 @@ public class NamespaceTest extends CatalogRESTTestSupport {
         assertThat(workspace, notNullValue());
         assertThat(workspace.isIsolated(), is(true));
         // make the namespace non isolated
-        String xmlPut =
-                "<namespace>"
-                        + "  <id>isolated_namespace</id>"
-                        + "  <prefix>isolated_prefix</prefix>"
-                        + "  <uri>http://www.isolated.org/1.0</uri>"
-                        + "  <isolated>false</isolated>"
-                        + "</namespace>";
+        String xmlPut = "<namespace>"
+                + "  <id>isolated_namespace</id>"
+                + "  <prefix>isolated_prefix</prefix>"
+                + "  <uri>http://www.isolated.org/1.0</uri>"
+                + "  <isolated>false</isolated>"
+                + "</namespace>";
         response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/namespaces/isolated_prefix",
-                        xmlPut,
-                        "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/namespaces/isolated_prefix", xmlPut, "text/xml");
         assertEquals(200, response.getStatus());
         // check that the namespace was correctly updated
         namespace = getCatalog().getNamespaceByPrefix("isolated_prefix");

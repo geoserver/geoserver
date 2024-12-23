@@ -8,8 +8,7 @@ package org.geoserver.wms.featureinfo;
 import org.geoserver.wfs.xml.GML3OutputFormat;
 
 /**
- * A GetFeatureInfo response handler specialized in producing GML 3.1.1 data for a GetFeatureInfo
- * request.
+ * A GetFeatureInfo response handler specialized in producing GML 3.1.1 data for a GetFeatureInfo request.
  *
  * <p>This class is an alternative to <code>GML3FeatureInfoOutputFormat</code>.
  *
@@ -20,8 +19,7 @@ public class XML311FeatureInfoOutputFormat extends GML3FeatureInfoOutputFormat {
 
     /**
      * The MIME type of the format this response produces: <code>"text/xml; subtype=gml/3.1.1"
-     * </code>. This is an alternative format for GML3: <code>"application/vnd.ogc.gml/3.1.1"</code>
-     * .
+     * </code>. This is an alternative format for GML3: <code>"application/vnd.ogc.gml/3.1.1"</code> .
      */
     public static final String FORMAT = "text/xml; subtype=gml/3.1.1";
 

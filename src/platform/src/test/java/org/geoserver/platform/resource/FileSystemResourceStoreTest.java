@@ -23,7 +23,8 @@ import org.junit.rules.TemporaryFolder;
 
 public class FileSystemResourceStoreTest {
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     private FileSystemResourceStore store;
 
@@ -109,35 +110,24 @@ public class FileSystemResourceStoreTest {
         final int nTasks = 4 * nThreads;
         final ExecutorService executorService = Executors.newFixedThreadPool(nThreads);
         try {
-            Collection<Callable<FileSystemWatcher>> tasks =
-                    IntStream.range(0, nTasks)
-                            .mapToObj(
-                                    i ->
-                                            (Callable<FileSystemWatcher>)
-                                                    () ->
-                                                            ((FileSystemWatcher)
-                                                                    store
-                                                                            .getResourceNotificationDispatcher()))
-                            .collect(Collectors.toList());
+            Collection<Callable<FileSystemWatcher>> tasks = IntStream.range(0, nTasks)
+                    .mapToObj(i -> (Callable<FileSystemWatcher>)
+                            () -> ((FileSystemWatcher) store.getResourceNotificationDispatcher()))
+                    .collect(Collectors.toList());
 
-            List<FileSystemWatcher> watchers =
-                    executorService.invokeAll(tasks).stream()
-                            .map(
-                                    completedFuture -> {
-                                        try {
-                                            return completedFuture.get();
-                                        } catch (InterruptedException | ExecutionException e) {
-                                            throw new RuntimeException(e);
-                                        }
-                                    })
-                            .collect(Collectors.toList());
+            List<FileSystemWatcher> watchers = executorService.invokeAll(tasks).stream()
+                    .map(completedFuture -> {
+                        try {
+                            return completedFuture.get();
+                        } catch (InterruptedException | ExecutionException e) {
+                            throw new RuntimeException(e);
+                        }
+                    })
+                    .collect(Collectors.toList());
 
             assertEquals(nTasks, watchers.size());
 
-            assertEquals(
-                    "FileSystemWatcher initialization wasn't lazy and atomic",
-                    1,
-                    new HashSet<>(watchers).size());
+            assertEquals("FileSystemWatcher initialization wasn't lazy and atomic", 1, new HashSet<>(watchers).size());
 
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

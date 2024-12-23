@@ -47,8 +47,7 @@ public class WFSConfiguration extends Configuration {
     /** Schema builder */
     protected FeatureTypeSchemaBuilder schemaBuilder;
 
-    public WFSConfiguration(
-            GeoServer geoServer, FeatureTypeSchemaBuilder schemaBuilder, final WFS wfs) {
+    public WFSConfiguration(GeoServer geoServer, FeatureTypeSchemaBuilder schemaBuilder, final WFS wfs) {
         super(wfs);
 
         this.catalog = geoServer.getCatalog();
@@ -81,79 +80,49 @@ public class WFSConfiguration extends Configuration {
         // Types
         container.registerComponentImplementation(WFS.ACTIONTYPE, ActionTypeBinding.class);
         container.registerComponentImplementation(WFS.ALLSOMETYPE, AllSomeTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.BASE_TYPENAMELISTTYPE, Base_TypeNameListTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.BASEREQUESTTYPE, BaseRequestTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.DELETEELEMENTTYPE, DeleteElementTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.DESCRIBEFEATURETYPETYPE, DescribeFeatureTypeTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.FEATURECOLLECTIONTYPE, FeatureCollectionTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.FEATURESLOCKEDTYPE, FeaturesLockedTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.FEATURESNOTLOCKEDTYPE, FeaturesNotLockedTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.FEATURETYPELISTTYPE, FeatureTypeListTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.FEATURETYPETYPE, FeatureTypeTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.GETCAPABILITIESTYPE, GetCapabilitiesTypeBinding.class);
+        container.registerComponentImplementation(WFS.BASE_TYPENAMELISTTYPE, Base_TypeNameListTypeBinding.class);
+        container.registerComponentImplementation(WFS.BASEREQUESTTYPE, BaseRequestTypeBinding.class);
+        container.registerComponentImplementation(WFS.DELETEELEMENTTYPE, DeleteElementTypeBinding.class);
+        container.registerComponentImplementation(WFS.DESCRIBEFEATURETYPETYPE, DescribeFeatureTypeTypeBinding.class);
+        container.registerComponentImplementation(WFS.FEATURECOLLECTIONTYPE, FeatureCollectionTypeBinding.class);
+        container.registerComponentImplementation(WFS.FEATURESLOCKEDTYPE, FeaturesLockedTypeBinding.class);
+        container.registerComponentImplementation(WFS.FEATURESNOTLOCKEDTYPE, FeaturesNotLockedTypeBinding.class);
+        container.registerComponentImplementation(WFS.FEATURETYPELISTTYPE, FeatureTypeListTypeBinding.class);
+        container.registerComponentImplementation(WFS.FEATURETYPETYPE, FeatureTypeTypeBinding.class);
+        container.registerComponentImplementation(WFS.GETCAPABILITIESTYPE, GetCapabilitiesTypeBinding.class);
         container.registerComponentImplementation(WFS.GETFEATURETYPE, GetFeatureTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.GETFEATUREWITHLOCKTYPE, GetFeatureWithLockTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.GETGMLOBJECTTYPE, GetGmlObjectTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.GMLOBJECTTYPELISTTYPE, GMLObjectTypeListTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.GMLOBJECTTYPETYPE, GMLObjectTypeTypeBinding.class);
+        container.registerComponentImplementation(WFS.GETFEATUREWITHLOCKTYPE, GetFeatureWithLockTypeBinding.class);
+        container.registerComponentImplementation(WFS.GETGMLOBJECTTYPE, GetGmlObjectTypeBinding.class);
+        container.registerComponentImplementation(WFS.GMLOBJECTTYPELISTTYPE, GMLObjectTypeListTypeBinding.class);
+        container.registerComponentImplementation(WFS.GMLOBJECTTYPETYPE, GMLObjectTypeTypeBinding.class);
         container.registerComponentImplementation(
                 WFS.IDENTIFIERGENERATIONOPTIONTYPE, IdentifierGenerationOptionTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.INSERTEDFEATURETYPE, InsertedFeatureTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.INSERTELEMENTTYPE, InsertElementTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.INSERTRESULTSTYPE, InsertResultTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.LOCKFEATURERESPONSETYPE, LockFeatureResponseTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.LOCKFEATURETYPE, LockFeatureTypeBinding.class);
+        container.registerComponentImplementation(WFS.INSERTEDFEATURETYPE, InsertedFeatureTypeBinding.class);
+        container.registerComponentImplementation(WFS.INSERTELEMENTTYPE, InsertElementTypeBinding.class);
+        container.registerComponentImplementation(WFS.INSERTRESULTSTYPE, InsertResultTypeBinding.class);
+        container.registerComponentImplementation(WFS.LOCKFEATURERESPONSETYPE, LockFeatureResponseTypeBinding.class);
+        container.registerComponentImplementation(WFS.LOCKFEATURETYPE, LockFeatureTypeBinding.class);
         container.registerComponentImplementation(WFS.LOCKTYPE, LockTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.METADATAURLTYPE, MetadataURLTypeBinding.class);
+        container.registerComponentImplementation(WFS.METADATAURLTYPE, MetadataURLTypeBinding.class);
         container.registerComponentImplementation(WFS.NATIVETYPE, NativeTypeBinding.class);
         container.registerComponentImplementation(WFS.OPERATIONSTYPE, OperationsTypeBinding.class);
         container.registerComponentImplementation(WFS.OPERATIONTYPE, OperationTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.OUTPUTFORMATLISTTYPE, OutputFormatListTypeBinding.class);
+        container.registerComponentImplementation(WFS.OUTPUTFORMATLISTTYPE, OutputFormatListTypeBinding.class);
         container.registerComponentImplementation(WFS.PROPERTYTYPE, PropertyTypeBinding.class);
         container.registerComponentImplementation(WFS.QUERYTYPE, QueryTypeBinding.class);
         container.registerComponentImplementation(WFS.RESULTTYPETYPE, ResultTypeTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.TRANSACTIONRESPONSETYPE, TransactionResponseTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.TRANSACTIONRESULTSTYPE, TransactionResultsTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.TRANSACTIONSUMMARYTYPE, TransactionSummaryTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.TRANSACTIONTYPE, TransactionTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.TYPENAMELISTTYPE, TypeNameListTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.UPDATEELEMENTTYPE, UpdateElementTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.WFS_CAPABILITIESTYPE, WFS_CapabilitiesTypeBinding.class);
-        container.registerComponentImplementation(
-                WFS.XLINKPROPERTYNAME, XlinkPropertyNameBinding.class);
+        container.registerComponentImplementation(WFS.TRANSACTIONRESPONSETYPE, TransactionResponseTypeBinding.class);
+        container.registerComponentImplementation(WFS.TRANSACTIONRESULTSTYPE, TransactionResultsTypeBinding.class);
+        container.registerComponentImplementation(WFS.TRANSACTIONSUMMARYTYPE, TransactionSummaryTypeBinding.class);
+        container.registerComponentImplementation(WFS.TRANSACTIONTYPE, TransactionTypeBinding.class);
+        container.registerComponentImplementation(WFS.TYPENAMELISTTYPE, TypeNameListTypeBinding.class);
+        container.registerComponentImplementation(WFS.UPDATEELEMENTTYPE, UpdateElementTypeBinding.class);
+        container.registerComponentImplementation(WFS.WFS_CAPABILITIESTYPE, WFS_CapabilitiesTypeBinding.class);
+        container.registerComponentImplementation(WFS.XLINKPROPERTYNAME, XlinkPropertyNameBinding.class);
 
         // cite specific bindings
         container.registerComponentImplementation(
-                FeatureReferenceTypeBinding.FeatureReferenceType,
-                FeatureReferenceTypeBinding.class);
+                FeatureReferenceTypeBinding.FeatureReferenceType, FeatureReferenceTypeBinding.class);
     }
 
     public Catalog getCatalog() {
@@ -177,8 +146,7 @@ public class WFSConfiguration extends Configuration {
         context.registerComponentInstance(getSrsSyntax());
 
         // seed the cache with entries from the catalog
-        context.registerComponentInstance(
-                FeatureTypeCache.class, new CatalogFeatureTypeCache(getCatalog()));
+        context.registerComponentInstance(FeatureTypeCache.class, new CatalogFeatureTypeCache(getCatalog()));
 
         context.registerComponentInstance(new CurvedGeometryFactory(Double.MAX_VALUE));
     }
@@ -200,12 +168,9 @@ public class WFSConfiguration extends Configuration {
         // that the setter property gets updated properly every time
         bindings.put(
                 OGC.BBOXType,
-                new SetterInjectionComponentAdapter(
-                        OGC.BBOXType,
-                        OGCBBOXTypeBinding.class,
-                        new Parameter[] {
-                            new OptionalComponentParameter(CoordinateReferenceSystem.class)
-                        }));
+                new SetterInjectionComponentAdapter(OGC.BBOXType, OGCBBOXTypeBinding.class, new Parameter[] {
+                    new OptionalComponentParameter(CoordinateReferenceSystem.class)
+                }));
 
         // override XSQName binding
         bindings.put(XS.QNAME, XSQNameBinding.class);

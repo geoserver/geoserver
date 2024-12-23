@@ -38,16 +38,15 @@ public class ExceptionReportBindingTest extends XMLTestSupport {
 
     @Test
     public void testParseServiceException() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<ows:ExceptionReport version=\"1.0.0\"\n"
-                        + "  xsi:schemaLocation=\"http://www.opengis.net/ows http://demo.opengeo.org/geoserver/schemas/ows/1.0.0/owsExceptionReport.xsd\"\n"
-                        + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows\">\n"
-                        + "  <ows:Exception exceptionCode=\"InvalidParameterValue\" locator=\"service\">\n"
-                        + "    <ows:ExceptionText>No service: ( madeUp )</ows:ExceptionText>\n"
-                        + "  </ows:Exception>\n"
-                        + "</ows:ExceptionReport>\n"
-                        + "";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<ows:ExceptionReport version=\"1.0.0\"\n"
+                + "  xsi:schemaLocation=\"http://www.opengis.net/ows http://demo.opengeo.org/geoserver/schemas/ows/1.0.0/owsExceptionReport.xsd\"\n"
+                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns:ows=\"http://www.opengis.net/ows\">\n"
+                + "  <ows:Exception exceptionCode=\"InvalidParameterValue\" locator=\"service\">\n"
+                + "    <ows:ExceptionText>No service: ( madeUp )</ows:ExceptionText>\n"
+                + "  </ows:Exception>\n"
+                + "</ows:ExceptionReport>\n"
+                + "";
 
         document = dom(xml);
         Object result = parse(OWS.EXCEPTIONREPORT);

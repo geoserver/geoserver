@@ -50,8 +50,7 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
     }
 
     @Override
-    public void modifyFeatures(String name, Object attributeValue, Filter filter)
-            throws IOException {
+    public void modifyFeatures(String name, Object attributeValue, Filter filter) throws IOException {
         modifyFeatures(new String[] {name}, new Object[] {attributeValue}, filter);
     }
 
@@ -62,8 +61,7 @@ public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeature
         if (writeQuery == Query.ALL) {
             ((SimpleFeatureStore) storeDelegate).modifyFeatures(names, values, filter);
             return;
-        } else if (writeQuery.getFilter() == Filter.EXCLUDE
-                || writeQuery.getPropertyNames() == Query.NO_NAMES) {
+        } else if (writeQuery.getFilter() == Filter.EXCLUDE || writeQuery.getPropertyNames() == Query.NO_NAMES) {
             throw unsupportedOperation();
         }
 

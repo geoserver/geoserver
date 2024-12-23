@@ -47,8 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.io.Resource;
 
 /**
- * Based on original {@link BoshEndpoint}, which uses an old version of jetty-server and
- * jetty-security.
+ * Based on original {@link BoshEndpoint}, which uses an old version of jetty-server and jetty-security.
  *
  * <p>Allows HTTP clients to communicate via the BOSH protocol with Vysper.
  *
@@ -113,13 +112,12 @@ public class XMPPBoshEndpoint implements Endpoint {
     /**
      * Configures the SSL keystore password.
      *
-     * <p>Required if SSL is enabled. Also, the keystore must be set using {@link
-     * #setSSLCertificateKeystore(String)} } The password is used both for accessing the keystore
-     * and for recovering the key from the keystore. The unique password is a limitation, you cannot
-     * use different passwords for the keystore and for the key.
+     * <p>Required if SSL is enabled. Also, the keystore must be set using {@link #setSSLCertificateKeystore(String)} }
+     * The password is used both for accessing the keystore and for recovering the key from the keystore. The unique
+     * password is a limitation, you cannot use different passwords for the keystore and for the key.
      *
-     * @param password the password used as the keystore password and also used when recovering the
-     *     key from the keystore
+     * @param password the password used as the keystore password and also used when recovering the key from the
+     *     keystore
      */
     public void setSSLCertificateKeystorePassword(String password) {
         sslKeystorePassword = password;
@@ -154,8 +152,8 @@ public class XMPPBoshEndpoint implements Endpoint {
     }
 
     /**
-     * Determines the context URI where the BOSH transport will be accessible. The default is as
-     * 'root context' under '/'.
+     * Determines the context URI where the BOSH transport will be accessible. The default is as 'root context' under
+     * '/'.
      */
     public void setContextPath(String contextPath) {
         if (contextPath == null) contextPath = "/";
@@ -163,8 +161,8 @@ public class XMPPBoshEndpoint implements Endpoint {
     }
 
     /**
-     * create a basic Jetty server including a connector on the configured port override in subclass
-     * to create a different kind of setup or to reuse an existing instance
+     * create a basic Jetty server including a connector on the configured port override in subclass to create a
+     * different kind of setup or to reuse an existing instance
      */
     protected Server createJettyServer() {
         Server server = new Server();
@@ -210,12 +208,10 @@ public class XMPPBoshEndpoint implements Endpoint {
             // We create a second ServerConnector, passing in the http configuration
             // we just made along with the previously created ssl context factory.
             // Next we set the port and a longer idle timeout.
-            connector =
-                    new ServerConnector(
-                            server,
-                            new SslConnectionFactory(
-                                    sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-                            new HttpConnectionFactory(https_config));
+            connector = new ServerConnector(
+                    server,
+                    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+                    new HttpConnectionFactory(https_config));
             connector.setIdleTimeout(500000);
         } else {
             connector = new ServerConnector(server, new HttpConnectionFactory(http_config));
@@ -227,13 +223,11 @@ public class XMPPBoshEndpoint implements Endpoint {
     }
 
     /**
-     * create handler for BOSH. for a different handler setup, override in a subclass. for more than
-     * one handler, add them to a org.eclipse.jetty.server.handler.ContextHandlerCollection and
-     * return the collection
+     * create handler for BOSH. for a different handler setup, override in a subclass. for more than one handler, add
+     * them to a org.eclipse.jetty.server.handler.ContextHandlerCollection and return the collection
      */
     protected Handler createHandler() {
-        ServletContextHandler boshContext =
-                new ServletContextHandler(ServletContextHandler.SESSIONS);
+        ServletContextHandler boshContext = new ServletContextHandler(ServletContextHandler.SESSIONS);
         boshContext.setContextPath(contextPath);
         BoshServlet boshServlet = new BoshServlet();
         boshServlet.setServerRuntimeContext(serverRuntimeContext);
@@ -243,8 +237,7 @@ public class XMPPBoshEndpoint implements Endpoint {
     }
 
     /**
-     * @throws RuntimeException a wrapper of the possible {@link java.lang.Exception} that Jetty can
-     *     throw at start-up
+     * @throws RuntimeException a wrapper of the possible {@link java.lang.Exception} that Jetty can throw at start-up
      */
     @Override
     public void start() throws IOException {

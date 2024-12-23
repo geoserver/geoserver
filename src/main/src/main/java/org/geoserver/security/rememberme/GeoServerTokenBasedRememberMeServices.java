@@ -22,15 +22,14 @@ import org.springframework.security.web.authentication.rememberme.TokenBasedReme
 /**
  * Token based remember me services that appends a user group service name to generated tokens.
  *
- * <p>The user group service name is used by {@link RememberMeUserDetailsService} in order to
- * delegate to the proper user group service.
+ * <p>The user group service name is used by {@link RememberMeUserDetailsService} in order to delegate to the proper
+ * user group service.
  *
  * @author Justin Deoliveira, OpenGeo
  */
 public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeServices {
 
-    public GeoServerTokenBasedRememberMeServices(
-            String key, UserDetailsService userDetailsService) {
+    public GeoServerTokenBasedRememberMeServices(String key, UserDetailsService userDetailsService) {
         super(key, userDetailsService);
     }
 
@@ -54,13 +53,13 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     protected String retrieveUserName(Authentication authentication) {
         if (authentication.getDetails() instanceof GeoServerWebAuthenticationDetails) {
             String userGroupServiceName =
-                    ((GeoServerWebAuthenticationDetails) authentication.getDetails())
-                            .getUserGroupServiceName();
+                    ((GeoServerWebAuthenticationDetails) authentication.getDetails()).getUserGroupServiceName();
             if (userGroupServiceName == null || userGroupServiceName.trim().length() == 0)
                 return ""; // no service specified --> no remember me
             return encode(super.retrieveUserName(authentication), userGroupServiceName);
         } else return ""; // no remember me feature without a user group service name
-    };
+    }
+    ;
 
     String encode(String username, String userGroupServiceName) {
         if (userGroupServiceName == null) {
@@ -75,10 +74,8 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
     }
 
     @Override
-    protected Authentication createSuccessfulAuthentication(
-            HttpServletRequest request, UserDetails user) {
-        if (user instanceof RememberMeUserDetails)
-            user = ((RememberMeUserDetails) user).getWrappedObject();
+    protected Authentication createSuccessfulAuthentication(HttpServletRequest request, UserDetails user) {
+        if (user instanceof RememberMeUserDetails) user = ((RememberMeUserDetails) user).getWrappedObject();
 
         Collection<GrantedAuthority> roles = new HashSet<>();
         if (user.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {
@@ -88,8 +85,7 @@ public class GeoServerTokenBasedRememberMeServices extends TokenBasedRememberMeS
             roles.addAll(user.getAuthorities());
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
         }
-        RememberMeAuthenticationToken auth =
-                new RememberMeAuthenticationToken(getKey(), user, roles);
+        RememberMeAuthenticationToken auth = new RememberMeAuthenticationToken(getKey(), user, roles);
         auth.setDetails(getAuthenticationDetailsSource().buildDetails(request));
         return auth;
     }

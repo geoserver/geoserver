@@ -23,8 +23,7 @@ import org.junit.Test;
 public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends ResourceInfo>
         extends GeoServerSystemTestSupport {
 
-    protected final WrapperPolicy policy =
-            WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
+    protected final WrapperPolicy policy = WrapperPolicy.readOnlyHide(new AccessLimits(CatalogMode.HIDE));
 
     /**
      * Creates an instance of a non-secure wrapped ResourceInfo.
@@ -56,33 +55,29 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
     abstract Class<?> getSecuredDecoratorClass();
 
     /**
-     * Retrieves the Class of the secure wrapped StoreInfo type associated with the secure wrapped
-     * ResourceInfo type.
+     * Retrieves the Class of the secure wrapped StoreInfo type associated with the secure wrapped ResourceInfo type.
      *
-     * @return the Class of the secure wrapped StoreInfo type associated with the secure wrapped
-     *     ResourceInfo type.
+     * @return the Class of the secure wrapped StoreInfo type associated with the secure wrapped ResourceInfo type.
      */
     abstract Class<?> getSecuredStoreInfoClass();
 
     /**
-     * Retrieves the minimum number of times a secure {@link Wrapper} needs to re-wrap an object to
-     * cause a {@link java.lang.StackOverflowError} when setting a StoreInfo on a ResourceInfo, or
-     * when unwrapping nested {@link Wrapper}s.
+     * Retrieves the minimum number of times a secure {@link Wrapper} needs to re-wrap an object to cause a
+     * {@link java.lang.StackOverflowError} when setting a StoreInfo on a ResourceInfo, or when unwrapping nested
+     * {@link Wrapper}s.
      *
      * @return the number of nestings required to cause a {@link java.lang.StackOverflowError}.
      */
     abstract int getStackOverflowCount();
 
     /**
-     * Creates a Thread that will repeatedly set the StoreInfo on the target ResourceInfo with the
-     * StoreInfo retrieved from the source ResourceInfo. When the source ResourceInfo is a
-     * secure-wrapped instance, this process should not continually nest secure {@link Wrapper}s
-     * around the StoreInfo instance. If it does, a {@link java.lang.StackOverflowError} could
-     * result.
+     * Creates a Thread that will repeatedly set the StoreInfo on the target ResourceInfo with the StoreInfo retrieved
+     * from the source ResourceInfo. When the source ResourceInfo is a secure-wrapped instance, this process should not
+     * continually nest secure {@link Wrapper}s around the StoreInfo instance. If it does, a
+     * {@link java.lang.StackOverflowError} could result.
      *
      * @param source A secure wrapped ResourceInfo instance with a non-null StoreInfo attribute.
-     * @param target A secure wrapped ResourceInfo instance in which to store the StoreInfo
-     *     retrieved from the source.
+     * @param target A secure wrapped ResourceInfo instance in which to store the StoreInfo retrieved from the source.
      * @return A Thread instance that will repeated call target.setStore(source.getStore());
      */
     @SuppressWarnings("PMD.AvoidThreadGroup")
@@ -92,12 +87,11 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
         // If the info is secured, and the copy causes nested Secure wrappings of the data or its
         // attributes, this will
         // eventually throw a StackOverflowError.
-        final Runnable runnable =
-                () -> {
-                    for (int i = 0; i < getStackOverflowCount(); ++i) {
-                        target.setStore(source.getStore());
-                    }
-                };
+        final Runnable runnable = () -> {
+            for (int i = 0; i < getStackOverflowCount(); ++i) {
+                target.setStore(source.getStore());
+            }
+        };
         // use a very small stack size so the stack overflow happens quickly if it's going to
         // happen.
         // this may not fail on all platforms if set/get is broken however, as some platforms may
@@ -111,9 +105,7 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
         final D delegate = createDelegate();
         // secure it
         Object secure = SecuredObjects.secure(delegate, policy);
-        assertTrue(
-                "Unable to secure ResourceInfo",
-                getSecuredDecoratorClass().isAssignableFrom(secure.getClass()));
+        assertTrue("Unable to secure ResourceInfo", getSecuredDecoratorClass().isAssignableFrom(secure.getClass()));
     }
 
     @Test
@@ -151,11 +143,10 @@ public abstract class SecuredResourceInfoTest<D extends ResourceInfo, S extends 
         Thread roundTripThread = getRoundTripThread(secured, secured);
         // catch Errors
         final StringWriter sw = new StringWriter();
-        roundTripThread.setUncaughtExceptionHandler(
-                (t, e) -> {
-                    // print the stack to the StringWriter
-                    e.printStackTrace(new PrintWriter(sw, true));
-                });
+        roundTripThread.setUncaughtExceptionHandler((t, e) -> {
+            // print the stack to the StringWriter
+            e.printStackTrace(new PrintWriter(sw, true));
+        });
         // start the thread and wait for it to finish
         roundTripThread.start();
         roundTripThread.join();

@@ -22,8 +22,8 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * Utility class for aggregating several dimensions. All the dimensions will share the same spatial
- * domain (bounding box), restrictions (filter) and resource.
+ * Utility class for aggregating several dimensions. All the dimensions will share the same spatial domain (bounding
+ * box), restrictions (filter) and resource.
  */
 public class Domains {
 
@@ -40,11 +40,7 @@ public class Domains {
     private String resolution;
     private String fromValue;
 
-    public Domains(
-            List<Dimension> dimensions,
-            LayerInfo layerInfo,
-            ReferencedEnvelope boundingBox,
-            Filter filter) {
+    public Domains(List<Dimension> dimensions, LayerInfo layerInfo, ReferencedEnvelope boundingBox, Filter filter) {
         this.dimensions = dimensions;
         this.layerInfo = layerInfo;
         this.spatialDomain = boundingBox;
@@ -134,18 +130,15 @@ public class Domains {
             return getFeatureCollection((CoverageInfo) resourceInfo);
         } catch (IOException exception) {
             throw new RuntimeException(
-                    String.format("Error getting features of layer '%s'.", layerInfo.getName()),
-                    exception);
+                    String.format("Error getting features of layer '%s'.", layerInfo.getName()), exception);
         }
     }
 
     /** Helper method that just gets a feature collection from a raster. */
     private FeatureCollection getFeatureCollection(CoverageInfo typeInfo) throws IOException {
-        GridCoverage2DReader reader =
-                (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
+        GridCoverage2DReader reader = (GridCoverage2DReader) typeInfo.getGridCoverageReader(null, null);
         if (!(reader instanceof StructuredGridCoverage2DReader)) {
-            throw new RuntimeException(
-                    "Is not possible to obtain a feature collection from a non structured reader.");
+            throw new RuntimeException("Is not possible to obtain a feature collection from a non structured reader.");
         }
         StructuredGridCoverage2DReader structuredReader = (StructuredGridCoverage2DReader) reader;
         String coverageName = structuredReader.getGridCoverageNames()[0];

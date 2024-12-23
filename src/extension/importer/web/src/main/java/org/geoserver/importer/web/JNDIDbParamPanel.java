@@ -23,9 +23,7 @@ class JNDIDbParamPanel extends Panel {
         super(id);
         this.jndiReferenceName = jndiReferenceName;
 
-        add(
-                new TextField<>("jndiReferenceName", new PropertyModel<>(this, "jndiReferenceName"))
-                        .setRequired(true));
+        add(new TextField<>("jndiReferenceName", new PropertyModel<>(this, "jndiReferenceName")).setRequired(true));
         add(new TextField<>("schema", new PropertyModel<>(this, "schema")));
     }
 }

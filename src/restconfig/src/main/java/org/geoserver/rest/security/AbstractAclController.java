@@ -34,8 +34,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-public abstract class AbstractAclController<
-                R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>>
+public abstract class AbstractAclController<R extends Comparable<R>, DAO extends AbstractAccessRuleDAO<R>>
         implements SequentialExecutionController {
 
     public static final String ANY = "*";

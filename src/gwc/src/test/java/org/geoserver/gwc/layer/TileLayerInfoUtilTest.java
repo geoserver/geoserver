@@ -55,8 +55,7 @@ public class TileLayerInfoUtilTest {
     @Test
     public void testCreateLayerGroupInfo() {
         LayerGroupInfoImpl group =
-                mockGroup(
-                        "testGroup", mockLayer("testLayer", new String[] {}, PublishedType.RASTER));
+                mockGroup("testGroup", mockLayer("testLayer", new String[] {}, PublishedType.RASTER));
 
         defaults.getDefaultOtherCacheFormats().clear();
         defaults.getDefaultOtherCacheFormats().add("image/png8");
@@ -78,8 +77,7 @@ public class TileLayerInfoUtilTest {
 
         defaults.setCacheNonDefaultStyles(true);
 
-        LayerInfoImpl layer =
-                mockLayer("testLayer", new String[] {"style1", "style2"}, PublishedType.RASTER);
+        LayerInfoImpl layer = mockLayer("testLayer", new String[] {"style1", "style2"}, PublishedType.RASTER);
 
         GeoServerTileLayerInfo actual = TileLayerInfoUtil.loadOrCreate(layer, defaults);
 
@@ -96,11 +94,10 @@ public class TileLayerInfoUtilTest {
 
     @Test
     public void testCreateLayerGroup() {
-        LayerGroupInfoImpl lg =
-                mockGroup(
-                        "tesGroup",
-                        mockLayer("L1", new String[] {}, PublishedType.RASTER),
-                        mockLayer("L2", new String[] {}, PublishedType.RASTER));
+        LayerGroupInfoImpl lg = mockGroup(
+                "tesGroup",
+                mockLayer("L1", new String[] {}, PublishedType.RASTER),
+                mockLayer("L2", new String[] {}, PublishedType.RASTER));
 
         GeoServerTileLayerInfo info = defaultVectorInfo;
         info.setId(lg.getId());
@@ -168,8 +165,7 @@ public class TileLayerInfoUtilTest {
     }
 
     /** Find a parameter filter by key from a set of filters. */
-    private static ParameterFilter findParameterFilter(
-            final String paramName, Set<ParameterFilter> parameterFilters) {
+    private static ParameterFilter findParameterFilter(final String paramName, Set<ParameterFilter> parameterFilters) {
 
         if (parameterFilters == null || parameterFilters.isEmpty()) {
             return null;

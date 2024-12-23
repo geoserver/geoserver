@@ -48,17 +48,16 @@ public interface CatalogFacade {
      * Persists any modifications to a store to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(StoreInfo store);
 
     /**
      * Detaches a store from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(StoreInfo)
      */
@@ -67,9 +66,9 @@ public interface CatalogFacade {
     /**
      * Loads a store from persistent storage by specifying its identifier.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type
-     * of store. If the type of store is unknown the client may simply specify StoreInfo.class. The
-     * dao should still create the correct type of store.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type of store. If the
+     * type of store is unknown the client may simply specify StoreInfo.class. The dao should still create the correct
+     * type of store.
      *
      * @param id The unique identifier of the store
      * @param clazz The class of the store.
@@ -80,9 +79,9 @@ public interface CatalogFacade {
     /**
      * Loads a store from persistent storage by specifying its name and containing workspace.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type
-     * of store. If the type of store is unknown the client may simply specify StoreInfo.class. The
-     * dao should still create the correct type of store.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type of store. If the
+     * type of store is unknown the client may simply specify StoreInfo.class. The dao should still create the correct
+     * type of store.
      *
      * @param workspace THe containing workspace of the store.
      * @param name The name of the store.
@@ -94,8 +93,8 @@ public interface CatalogFacade {
     /**
      * Loads all stores from persistent storage in the specified workspace.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a
-     * specific type of store. Specifying StoreInfo.class will return all types of stores.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a specific type of store.
+     * Specifying StoreInfo.class will return all types of stores.
      *
      * @param workspace The containing workspace.
      * @param clazz The class of the stores to return.
@@ -106,8 +105,8 @@ public interface CatalogFacade {
     /**
      * Loads all stores from persistent storage.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a
-     * specific type of store. Specifying StoreInfo.class will return all types of stores.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a specific type of store.
+     * Specifying StoreInfo.class will return all types of stores.
      *
      * @param clazz The class of the stores to return.
      * @return A list of stores, possibly empty.
@@ -126,9 +125,8 @@ public interface CatalogFacade {
      * Sets the default data store for the specified workspace.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the
-     * workspace itself and changed property is "defaultDataStore". The changed old/new values
-     * should the old/new datastores respectively.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the workspace itself and
+     * changed property is "defaultDataStore". The changed old/new values should the old/new datastores respectively.
      *
      * @param workspace The workspace.
      * @param store The default data store.
@@ -148,17 +146,16 @@ public interface CatalogFacade {
      * Persists any modifications to a resource to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(ResourceInfo resource);
 
     /**
      * Detaches a resource from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(ResourceInfo)
      */
@@ -167,9 +164,9 @@ public interface CatalogFacade {
     /**
      * Loads a resource from persistent storage by specifying its identifier.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type
-     * of resource. If the type of resource is unknown the client may simply specify
-     * ResourceInfo.class. The dao should still create the correct type of resource.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type of resource. If the
+     * type of resource is unknown the client may simply specify ResourceInfo.class. The dao should still create the
+     * correct type of resource.
      *
      * @param id The unique identifier of the resource
      * @param clazz The class of the resource.
@@ -180,23 +177,22 @@ public interface CatalogFacade {
     /**
      * Loads a resource from persistent storage by specifying its qualified name.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type
-     * of resource. If the type of resource is unknown the client may simply specify
-     * ResourceInfo.class. The dao should still create the correct type of resource.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type of resource. If the
+     * type of resource is unknown the client may simply specify ResourceInfo.class. The dao should still create the
+     * correct type of resource.
      *
      * @param namespace The namespace of the resource
      * @param name The local name of the resource
      * @param clazz The class of the resource
      * @return The resource, or <code>null</code> if no such store exists.
      */
-    <T extends ResourceInfo> T getResourceByName(
-            NamespaceInfo namespace, String name, Class<T> clazz);
+    <T extends ResourceInfo> T getResourceByName(NamespaceInfo namespace, String name, Class<T> clazz);
 
     /**
      * Loads all resources from persistent storage.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a
-     * specific type of store. Specifying StoreInfo.class will return all types of stores.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a specific type of store.
+     * Specifying StoreInfo.class will return all types of stores.
      *
      * @param clazz The class of the resources to return.
      * @return A list of resources, possibly empty.
@@ -206,22 +202,21 @@ public interface CatalogFacade {
     /**
      * Loads all resources from persistent storage contained with a specified namespace.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a
-     * specific type of store. Specifying StoreInfo.class will return all types of stores.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a specific type of store.
+     * Specifying StoreInfo.class will return all types of stores.
      *
      * @param namespace The namespace of resources
      * @param clazz The class of the resources to return.
      * @return A list of resources, possibly empty.
      */
-    <T extends ResourceInfo> List<T> getResourcesByNamespace(
-            NamespaceInfo namespace, Class<T> clazz);
+    <T extends ResourceInfo> List<T> getResourcesByNamespace(NamespaceInfo namespace, Class<T> clazz);
 
     /**
      * Loads a resource from persistent storage by specifying its name and containing store.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type
-     * of resource. If the type of resource is unknown the client may simply specify
-     * ResourceInfo.class. The dao should still create the correct type of resource.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow the returned object to a specific type of resource. If the
+     * type of resource is unknown the client may simply specify ResourceInfo.class. The dao should still create the
+     * correct type of resource.
      *
      * @param store The containing store
      * @param name The local name of the resource
@@ -233,8 +228,8 @@ public interface CatalogFacade {
     /**
      * Loads all resources from persistent storage that are contained within a specified store.
      *
-     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a
-     * specific type of store. Specifying StoreInfo.class will return all types of stores.
+     * <p>The <tt>clazz</tt> parameter is used to type narrow/filter the returned objects to a specific type of store.
+     * Specifying StoreInfo.class will return all types of stores.
      *
      * @param store The containing store
      * @param clazz The class of the resources to return
@@ -255,17 +250,16 @@ public interface CatalogFacade {
      * Persists any modifications to a layer to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(LayerInfo layer);
 
     /**
      * Detaches a layer from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(LayerInfo)
      */
@@ -323,17 +317,16 @@ public interface CatalogFacade {
      * Persists any modifications to a map to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(MapInfo map);
 
     /**
      * Detaches a map from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(MapInfo)
      */
@@ -375,17 +368,16 @@ public interface CatalogFacade {
      * Persists any modifications to a layer group to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(LayerGroupInfo layerGroup);
 
     /**
      * Detaches a layer group from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(LayerGroupInfo)
      */
@@ -412,9 +404,9 @@ public interface CatalogFacade {
      * Returns the layer group matching a particular name in the specified workspace, or <code>null
      * </code> if no such layer group could be found.
      *
-     * @param workspace The workspace containing the layer group. Not {@code null}, use {@link
-     *     DefaultCatalogFacade#NO_WORKSPACE} or {@link DefaultCatalogFacade#ANY_WORKSPACE} to be
-     *     explicit about what you're looking for.
+     * @param workspace The workspace containing the layer group. Not {@code null}, use
+     *     {@link DefaultCatalogFacade#NO_WORKSPACE} or {@link DefaultCatalogFacade#ANY_WORKSPACE} to be explicit about
+     *     what you're looking for.
      * @param name The name of the layer group to return.
      */
     LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name);
@@ -446,17 +438,16 @@ public interface CatalogFacade {
      * Persists any modifications to a namespace to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(NamespaceInfo namespace);
 
     /**
      * Detaches a namespace from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(NamespaceInfo)
      */
@@ -473,9 +464,8 @@ public interface CatalogFacade {
      * Sets the default namespace.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the
-     * catalog itself and changed property is "defaultNamespace". The changed old/new values should
-     * the old/new namespaces respectively.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the catalog itself and
+     * changed property is "defaultNamespace". The changed old/new values should the old/new namespaces respectively.
      */
     void setDefaultNamespace(NamespaceInfo defaultNamespace);
 
@@ -535,17 +525,16 @@ public interface CatalogFacade {
      * Persists any modifications to a workspace to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(WorkspaceInfo workspace);
 
     /**
      * Detaches a workspace from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(WorkspaceInfo)
      */
@@ -562,9 +551,8 @@ public interface CatalogFacade {
      * Sets the default workspace.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the
-     * catalog itself and changed property is "defaultWorkspace". The changed old/new values should
-     * the old/new workspaces respectively.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. The source of the event is the catalog itself and
+     * changed property is "defaultWorkspace". The changed old/new values should the old/new workspaces respectively.
      */
     void setDefaultWorkspace(WorkspaceInfo workspace);
 
@@ -604,17 +592,16 @@ public interface CatalogFacade {
      * Persists any modifications to a style to persistent storage.
      *
      * <p>DAO implementations are responsible for triggering a {@link CatalogModifyEvent} by calling
-     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of
-     * the dao because it is best suited to knowing and tracking which attributes of the object have
-     * changed.
+     * {@link Catalog#fireModified(CatalogInfo, List, List, List)}. This is the responsibility of the dao because it is
+     * best suited to knowing and tracking which attributes of the object have changed.
      */
     void save(StyleInfo style);
 
     /**
      * Detaches a style from the underlying persistence layer.
      *
-     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is
-     * detached any proxies or uninitialized state of the object should be resolved.
+     * <p>"Detaching" is specific to the underlying storage engine. But in general when an object is detached any
+     * proxies or uninitialized state of the object should be resolved.
      *
      * @see Catalog#detach(StyleInfo)
      */
@@ -639,11 +626,11 @@ public interface CatalogFacade {
     StyleInfo getStyleByName(String name);
 
     /**
-     * Returns the style matching a particular name in the specified workspace, or <code>null</code>
-     * if no such style could be found.
+     * Returns the style matching a particular name in the specified workspace, or <code>null</code> if no such style
+     * could be found.
      *
-     * @param workspace The workspace containing the style; non {@code null}, use {@value
-     *     #ANY_WORKSPACE} or {@link #NO_WORKSPACE} as appropriate.
+     * @param workspace The workspace containing the style; non {@code null}, use {@value #ANY_WORKSPACE} or
+     *     {@link #NO_WORKSPACE} as appropriate.
      * @param name The name of the style to return.
      */
     StyleInfo getStyleByName(WorkspaceInfo workspace, String name);
@@ -672,8 +659,8 @@ public interface CatalogFacade {
     /**
      * Called after the catalog has been initially started/loaded.
      *
-     * <p>This method gives the dao a chance to resolve any proxies or uninitialized state that are
-     * created during the loading process.
+     * <p>This method gives the dao a chance to resolve any proxies or uninitialized state that are created during the
+     * loading process.
      */
     void resolve();
 
@@ -684,15 +671,12 @@ public interface CatalogFacade {
     public <T extends CatalogInfo> int count(final Class<T> of, final Filter filter);
 
     /**
-     * @return {@code true} if {@link #list} can sort objects of the given type by the given
-     *     property name, {@code false} otherwise
+     * @return {@code true} if {@link #list} can sort objects of the given type by the given property name,
+     *     {@code false} otherwise
      */
     public boolean canSort(Class<? extends CatalogInfo> type, String propertyName);
 
-    /**
-     * @return an iterator over the catalog objects of the requested type that match the given
-     *     filter
-     */
+    /** @return an iterator over the catalog objects of the requested type that match the given filter */
     public <T extends CatalogInfo> CloseableIterator<T> list(
             final Class<T> of,
             final Filter filter,
@@ -720,10 +704,7 @@ public interface CatalogFacade {
     static <T extends CatalogInfo> T any(Class<T> clazz) {
         try {
             return (T)
-                    Proxy.newProxyInstance(
-                            clazz.getClassLoader(),
-                            new Class[] {clazz},
-                            (proxy, method, args) -> null);
+                    Proxy.newProxyInstance(clazz.getClassLoader(), new Class[] {clazz}, (proxy, method, args) -> null);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

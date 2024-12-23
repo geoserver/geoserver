@@ -50,22 +50,21 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        GeoServerUserGroupStore ugStore =
-                getSecurityManager()
-                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
-                        .createStore();
+        GeoServerUserGroupStore ugStore = getSecurityManager()
+                .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                .createStore();
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
         ugStore.store();
 
-        GeoServerRoleStore roleStore = getSecurityManager().getActiveRoleService().createStore();
+        GeoServerRoleStore roleStore =
+                getSecurityManager().getActiveRoleService().createStore();
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
@@ -81,9 +80,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
                 (TestResourceAccessManager) applicationContext.getBean("testResourceAccessManager");
 
         tam.putLimits(
-                "cite",
-                catalog.getWorkspaceByName("cite"),
-                new WorkspaceAccessLimits(CatalogMode.MIXED, false, false));
+                "cite", catalog.getWorkspaceByName("cite"), new WorkspaceAccessLimits(CatalogMode.MIXED, false, false));
     }
 
     @Test

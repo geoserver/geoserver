@@ -18,11 +18,8 @@ public class FilePathsTest {
     @Test
     public void isAbsolutePath() {
         assertFalse("data directory relative", FilePaths.isAbsolute("data/tasmania/roads.shp"));
-        assertTrue(
-                "linux absolute", FilePaths.isAbsolute("/srv/gis/cadaster/district.geopkg", false));
-        assertTrue(
-                "windows drive absolute",
-                FilePaths.isAbsolute("D:/gis/cadaster/district.geopkg", true));
+        assertTrue("linux absolute", FilePaths.isAbsolute("/srv/gis/cadaster/district.geopkg", false));
+        assertTrue("windows drive absolute", FilePaths.isAbsolute("D:/gis/cadaster/district.geopkg", true));
         assertFalse("windows drive relative", FilePaths.isAbsolute("D:fail.shp", true));
     }
 

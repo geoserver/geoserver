@@ -15,10 +15,8 @@ class URLCheckProvider extends GeoServerDataProvider<AbstractURLCheck> {
     private static final long serialVersionUID = 1L;
 
     public static Property<AbstractURLCheck> NAME = new BeanProperty<>("name", "name");
-    public static Property<AbstractURLCheck> DESCRIPTION =
-            new BeanProperty<>("description", "description");
-    public static Property<AbstractURLCheck> CONFIGURATION =
-            new BeanProperty<>("configuration", "configuration");
+    public static Property<AbstractURLCheck> DESCRIPTION = new BeanProperty<>("description", "description");
+    public static Property<AbstractURLCheck> CONFIGURATION = new BeanProperty<>("configuration", "configuration");
     public static Property<AbstractURLCheck> ENABLED = new BeanProperty<>("enabled", "enabled");
 
     List<AbstractURLCheck> checks;

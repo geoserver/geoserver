@@ -9,11 +9,11 @@ import org.geoserver.config.GeoServer;
 import org.geotools.xsd.Configuration;
 
 /**
- * Parses a {@code FILTER} parameter assuming the filters sent are encoded as per the OGC Filter
- * Encoding v1.0.0 specification.
+ * Parses a {@code FILTER} parameter assuming the filters sent are encoded as per the OGC Filter Encoding v1.0.0
+ * specification.
  *
- * <p>This kvp parser is meant to be configured in the spring context to parse filters when a
- * GetFeature request is sent conforming to the WFS 1.1 spec.
+ * <p>This kvp parser is meant to be configured in the spring context to parse filters when a GetFeature request is sent
+ * conforming to the WFS 1.1 spec.
  *
  * @author Gabriel Roldan
  */

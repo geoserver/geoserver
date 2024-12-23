@@ -43,8 +43,7 @@ import org.geotools.util.logging.Logging;
  *
  * <ul>
  *   <li>Avoid cloning ModificationProxy proxies, as well as any CatalogInfo object
- *   <li>Avoid cloning at all well known objects that are known to be immutable (several classes in
- *       java.lang)
+ *   <li>Avoid cloning at all well known objects that are known to be immutable (several classes in java.lang)
  *   <li>Wrap in ModificatinoProxy any object that is a CatalogInfo
  *   <li>Using {@link Cloneable} if available
  *   <li>Using copy constructors if available
@@ -54,23 +53,21 @@ import org.geotools.util.logging.Logging;
  */
 class ModificationProxyCloner {
 
-    private static final XStreamPersisterFactory XSTREAM_PERSISTER_FACTORY =
-            new XStreamPersisterFactory();
+    private static final XStreamPersisterFactory XSTREAM_PERSISTER_FACTORY = new XStreamPersisterFactory();
 
     static final Logger LOGGER = Logging.getLogger(ModificationProxyCloner.class);
 
-    static final Map<Class<? extends CatalogInfo>, Class<? extends CatalogInfo>>
-            CATALOGINFO_INTERFACE_CACHE = new ConcurrentHashMap<>();
+    static final Map<Class<? extends CatalogInfo>, Class<? extends CatalogInfo>> CATALOGINFO_INTERFACE_CACHE =
+            new ConcurrentHashMap<>();
 
     /**
-     * Best effort object cloning utility, tries different lightweight strategies, then falls back
-     * on copy by XStream serialization (we use that one as we have a number of hooks to avoid deep
-     * copying the catalog, and re-attaching to it, in there)
+     * Best effort object cloning utility, tries different lightweight strategies, then falls back on copy by XStream
+     * serialization (we use that one as we have a number of hooks to avoid deep copying the catalog, and re-attaching
+     * to it, in there)
      */
     @SuppressWarnings("unchecked") // too many casts to (T)
     static <T> T clone(T source)
-            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
-                    InvocationTargetException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         // null?
         if (source == null) {
             return null;
@@ -123,8 +120,7 @@ class ModificationProxyCloner {
                 // methodutils does not seem to work against "clone()"...
                 // return (T) MethodUtils.invokeExactMethod(source, "clone", null, null);
                 Method method = source.getClass().getDeclaredMethod("clone");
-                if (Modifier.isPublic(method.getModifiers())
-                        && method.getParameterTypes().length == 0) {
+                if (Modifier.isPublic(method.getModifiers()) && method.getParameterTypes().length == 0) {
                     return (T) method.invoke(source);
                 }
             }
@@ -142,10 +138,7 @@ class ModificationProxyCloner {
             try {
                 return (T) copyConstructor.newInstance(source);
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.FINE,
-                        "Source has a copy constructor, but it failed, skipping to XStream",
-                        e);
+                LOGGER.log(Level.FINE, "Source has a copy constructor, but it failed, skipping to XStream", e);
             }
         }
 
@@ -162,8 +155,7 @@ class ModificationProxyCloner {
 
     static <T extends Serializable> T cloneSerializable(T source) {
         byte[] bytes = SerializationUtils.serialize(source);
-        try (ObjectInputStream input =
-                new ModProxyObjectInputStream(new ByteArrayInputStream(bytes))) {
+        try (ObjectInputStream input = new ModProxyObjectInputStream(new ByteArrayInputStream(bytes))) {
             @SuppressWarnings("unchecked")
             T copy = (T) input.readObject();
             return copy;
@@ -191,18 +183,15 @@ class ModificationProxyCloner {
             } else if (cis.size() == 1) {
                 result = cis.get(0);
             } else {
-                Collections.sort(
-                        cis,
-                        (Comparator<Class<?>>)
-                                (c1, c2) -> {
-                                    if (c1.isAssignableFrom(c2)) {
-                                        return 1;
-                                    } else if (c2.isAssignableFrom(c1)) {
-                                        return -1;
-                                    } else {
-                                        return 0;
-                                    }
-                                });
+                Collections.sort(cis, (Comparator<Class<?>>) (c1, c2) -> {
+                    if (c1.isAssignableFrom(c2)) {
+                        return 1;
+                    } else if (c2.isAssignableFrom(c1)) {
+                        return -1;
+                    } else {
+                        return 0;
+                    }
+                });
 
                 result = cis.get(0);
             }
@@ -216,12 +205,11 @@ class ModificationProxyCloner {
     /**
      * Shallow or deep copies the provided collection
      *
-     * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
-     *     contain the exact same objects as the source
+     * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will contain the exact same
+     *     objects as the source
      */
     public static <T> Collection<T> cloneCollection(Collection<T> source, boolean deepCopy)
-            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
-                    InvocationTargetException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (source == null) {
             // nothing to copy
             return null;
@@ -256,12 +244,11 @@ class ModificationProxyCloner {
      *
      * @param <K>
      * @param <V>
-     * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will
-     *     contain the exact same objects as the source
+     * @param deepCopy If true, a deep copy will be done, otherwise the cloned collection will contain the exact same
+     *     objects as the source
      */
     public static <K, V> Map<K, V> cloneMap(Map<K, V> source, boolean deepCopy)
-            throws InstantiationException, IllegalAccessException, NoSuchMethodException,
-                    InvocationTargetException {
+            throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         if (source == null) {
             // nothing to copy
             return null;
@@ -292,8 +279,7 @@ class ModificationProxyCloner {
         }
 
         @Override
-        protected Class<?> resolveClass(ObjectStreamClass desc)
-                throws IOException, ClassNotFoundException {
+        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
             String name = desc.getName();
             try {
                 return Class.forName(name, false, classLoader);

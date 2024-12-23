@@ -78,10 +78,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
             }
         } catch (IOException e) {
             if (LOGGER.isLoggable(Level.SEVERE)) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "Unable to configure some of the GeorectifyCoverage process properties.",
-                        e);
+                LOGGER.log(Level.SEVERE, "Unable to configure some of the GeorectifyCoverage process properties.", e);
             }
         }
     }
@@ -123,24 +120,20 @@ public class GeorectifyConfiguration implements ApplicationListener {
     private String gdalTranslateParameters = GRDefaults.GDAL_TRANSLATE_PARAMETERS;
 
     /**
-     * The name of the warping command. It could be either a simple command name like "gdalwarp"
-     * (provided it can be found in the PATH) or the full command path.
+     * The name of the warping command. It could be either a simple command name like "gdalwarp" (provided it can be
+     * found in the PATH) or the full command path.
      */
     private String warpingCommand = GRDefaults.GDAL_WARP_COMMAND;
 
     /**
-     * The name of the gdal translate command. It could be either a simple command name like
-     * "gdal_translate" (provided it can be found in the PATH) or the full command path.
+     * The name of the gdal translate command. It could be either a simple command name like "gdal_translate" (provided
+     * it can be found in the PATH) or the full command path.
      */
     private String translateCommand = GRDefaults.GDAL_TRANSLATE_COMMAND;
 
-    /**
-     * Load the configured parameters through the properties file. TODO: Move to XML instead of
-     * properties file
-     */
+    /** Load the configured parameters through the properties file. TODO: Move to XML instead of properties file */
     private void loadConfig() throws IOException {
-        final boolean hasPropertiesFile =
-                configFile != null && configFile.getType() == Type.RESOURCE;
+        final boolean hasPropertiesFile = configFile != null && configFile.getType() == Type.RESOURCE;
 
         if (hasPropertiesFile) {
             Properties props = new Properties();
@@ -162,8 +155,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             if (LOGGER.isLoggable(Level.WARNING)) {
                                 LOGGER.log(
                                         Level.WARNING,
-                                        "Unable to parse the specified property as a number: "
-                                                + cacheMax,
+                                        "Unable to parse the specified property as a number: " + cacheMax,
                                         nfe);
                             }
                         }
@@ -176,8 +168,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             final File directory = new File(path);
                             if (directory.exists()
                                     && directory.isDirectory()
-                                    && ((key.equalsIgnoreCase(GRKeys.GDAL_DATA)
-                                                    && directory.canRead())
+                                    && ((key.equalsIgnoreCase(GRKeys.GDAL_DATA) && directory.canRead())
                                             || directory.canWrite())) {
                                 envVariables.put(key, path);
                             } else {
@@ -206,8 +197,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
                             if (LOGGER.isLoggable(Level.WARNING)) {
                                 LOGGER.log(
                                         Level.WARNING,
-                                        "Unable to parse the specified property as a number: "
-                                                + timeout,
+                                        "Unable to parse the specified property as a number: " + timeout,
                                         nfe);
                             }
                         }
@@ -233,10 +223,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
 
             } catch (IOException e) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Unable to parse the config file: " + configFile.path(),
-                            e);
+                    LOGGER.log(Level.WARNING, "Unable to parse the config file: " + configFile.path(), e);
                 }
             }
         }
@@ -251,11 +238,10 @@ public class GeorectifyConfiguration implements ApplicationListener {
                 createdFolder = tempFolder.mkdir();
             } catch (SecurityException se) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
-                    LOGGER.warning(
-                            "Unable to create the specified folder: "
-                                    + folderPath
-                                    + "\nProceeding with using the System temp folder: "
-                                    + SYSTEM_TEMP_DIR);
+                    LOGGER.warning("Unable to create the specified folder: "
+                            + folderPath
+                            + "\nProceeding with using the System temp folder: "
+                            + SYSTEM_TEMP_DIR);
                 }
             }
             if (!createdFolder) {
@@ -263,8 +249,7 @@ public class GeorectifyConfiguration implements ApplicationListener {
             }
         }
         if (!tempFolder.exists() || !tempFolder.canWrite()) {
-            throw new IOException(
-                    "Unable to write on the specified folder: " + tempFolder.getAbsolutePath());
+            throw new IOException("Unable to write on the specified folder: " + tempFolder.getAbsolutePath());
         }
         return tempFolder;
     }

@@ -23,8 +23,8 @@ import org.geotools.util.logging.Logging;
 
 /**
  * @author Imran Rajjad
- *     <p>This listener maintains creation/modfication timestamps for following catalog elements
- *     Layers Layer Groups Styles, Stores, Workspacses
+ *     <p>This listener maintains creation/modfication timestamps for following catalog elements Layers Layer Groups
+ *     Styles, Stores, Workspacses
  */
 public class CatalogTimeStampUpdater implements CatalogListener {
 

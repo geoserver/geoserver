@@ -35,15 +35,10 @@ public class EditorFactory {
     }
 
     public <T extends Serializable> Component create(
-            AttributeConfiguration configuration,
-            String id,
-            ComplexMetadataMap metadataMap,
-            ResourceInfo rInfo) {
-        IModel<T> model =
-                new ComplexMetadataAttributeModel<>(
-                        metadataMap.get(getItemClass(configuration), configuration.getKey()));
-        return create(
-                configuration, id, model, metadataMap.subMap(configuration.getKey()), null, rInfo);
+            AttributeConfiguration configuration, String id, ComplexMetadataMap metadataMap, ResourceInfo rInfo) {
+        IModel<T> model = new ComplexMetadataAttributeModel<>(
+                metadataMap.get(getItemClass(configuration), configuration.getKey()));
+        return create(configuration, id, model, metadataMap.subMap(configuration.getKey()), null, rInfo);
     }
 
     public <T extends Serializable> Component create(
@@ -88,11 +83,7 @@ public class EditorFactory {
                 return new CheckBoxPanel(id, (IModel<Boolean>) model);
             case DROPDOWN:
                 return new DropDownPanel(
-                        id,
-                        configuration.getKey(),
-                        (IModel<String>) model,
-                        configuration.getValues(),
-                        selection);
+                        id, configuration.getKey(), (IModel<String>) model, configuration.getValues(), selection);
             case TEXT_AREA:
                 return new TextAreaPanel(id, (IModel<String>) model);
             case DATE:
@@ -103,20 +94,10 @@ public class EditorFactory {
                 return new UUIDFieldPanel(id, (IModel<String>) model);
             case SUGGESTBOX:
                 return new AutoCompletePanel(
-                        id,
-                        (IModel<String>) model,
-                        configuration.getValues(),
-                        false,
-                        configuration,
-                        selection);
+                        id, (IModel<String>) model, configuration.getValues(), false, configuration, selection);
             case REQUIREBOX:
                 return new AutoCompletePanel(
-                        id,
-                        (IModel<String>) model,
-                        configuration.getValues(),
-                        true,
-                        configuration,
-                        selection);
+                        id, (IModel<String>) model, configuration.getValues(), true, configuration, selection);
             case COMPLEX:
                 return new AttributesTablePanel(
                         id,
@@ -131,8 +112,7 @@ public class EditorFactory {
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends Serializable> Class<T> getItemClass(
-            AttributeConfiguration attributeConfiguration) {
+    public <T extends Serializable> Class<T> getItemClass(AttributeConfiguration attributeConfiguration) {
         switch (attributeConfiguration.getFieldType()) {
             case NUMBER:
                 return (Class<T>) Integer.class;

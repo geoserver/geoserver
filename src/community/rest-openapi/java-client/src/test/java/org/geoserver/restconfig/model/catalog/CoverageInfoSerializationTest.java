@@ -40,8 +40,7 @@ public class CoverageInfoSerializationTest extends SerializationTest {
         assertThat(cr.getNativeCRS(), StringStartsWith.startsWith("PROJCS[\"NAD27 "));
         assertEquals("EPSG:26713", cr.getSrs());
 
-        assertResponseBounds(
-                cr.getNativeBoundingBox(), 589980, 609000, 4913700, 4928010, "EPSG:26713");
+        assertResponseBounds(cr.getNativeBoundingBox(), 589980, 609000, 4913700, 4928010, "EPSG:26713");
         assertResponseBounds(
                 cr.getLatLonBoundingBox(),
                 -103.87108701853181,
@@ -79,9 +78,7 @@ public class CoverageInfoSerializationTest extends SerializationTest {
                 cr.getSupportedFormats());
 
         assertNotNull(cr.getInterpolationMethods());
-        assertEquals(
-                Arrays.asList("nearest neighbor", "bilinear", "bicubic"),
-                cr.getInterpolationMethods());
+        assertEquals(Arrays.asList("nearest neighbor", "bilinear", "bicubic"), cr.getInterpolationMethods());
         assertEquals("nearest neighbor", cr.getDefaultInterpolationMethod());
 
         assertNotNull(cr.getDimensions());

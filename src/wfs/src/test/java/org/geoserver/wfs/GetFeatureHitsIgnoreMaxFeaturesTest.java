@@ -25,9 +25,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         getGeoServer().save(wfs);
 
         Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename=cdf:Fifteen"
-                                + "&version=1.1.0&service=wfs&resultType=hits");
+                getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" + "&version=1.1.0&service=wfs&resultType=hits");
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals(
                 "15",
@@ -37,8 +35,8 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
     }
 
     /**
-     * Test that doing a GetFeature request for data instead of hits still respects max features
-     * with the hitsIgnoreMaxFeatures flag active
+     * Test that doing a GetFeature request for data instead of hits still respects max features with the
+     * hitsIgnoreMaxFeatures flag active
      */
     @Test
     public void testGetFeatureRespectsMaxFeatures() throws Exception {
@@ -47,10 +45,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         wfs.setHitsIgnoreMaxFeatures(true);
         getGeoServer().save(wfs);
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename=cdf:Fifteen"
-                                + "&version=1.1.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" + "&version=1.1.0&service=wfs");
 
         // check we get a feature collection
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -69,9 +64,7 @@ public class GetFeatureHitsIgnoreMaxFeaturesTest extends WFSTestSupport {
         getGeoServer().save(wfs);
 
         Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename=cdf:Fifteen"
-                                + "&version=1.1.0&service=wfs&resultType=hits");
+                getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen" + "&version=1.1.0&service=wfs&resultType=hits");
         // check it's a feature collection
         XpathEngine xpath = XMLUnit.newXpathEngine();
         assertEquals(

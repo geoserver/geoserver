@@ -29,24 +29,19 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     /** standard logger */
     protected static final Logger LOGGER = Logging.getLogger(KMLMapOutputFormat.class);
 
-    static final MapProducerCapabilities KML_CAPABILITIES =
-            new MapProducerCapabilities(false, true, true);
+    static final MapProducerCapabilities KML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
 
     /** Official KML mime type */
     public static final String MIME_TYPE = "application/vnd.google-earth.kml+xml";
 
     /** Format tweaked to force the generation of per layer network links */
-    public static final String NL_KML_MIME_TYPE =
-            KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
+    public static final String NL_KML_MIME_TYPE = KMLMapOutputFormat.MIME_TYPE + ";mode=networklink";
 
-    private Set<String> OUTPUT_FORMATS =
-            Collections.unmodifiableSet(
-                    new HashSet<>(
-                            Arrays.asList(
-                                    MIME_TYPE, /* NL_KML_MIME_TYPE, */
-                                    "application/vnd.google-earth.kml",
-                                    "kml",
-                                    "application/vnd.google-earth.kml xml")));
+    private Set<String> OUTPUT_FORMATS = Collections.unmodifiableSet(new HashSet<>(Arrays.asList(
+            MIME_TYPE, /* NL_KML_MIME_TYPE, */
+            "application/vnd.google-earth.kml",
+            "kml",
+            "application/vnd.google-earth.kml xml")));
 
     private WMS wms;
 
@@ -74,8 +69,8 @@ public class KMLMapOutputFormat implements GetMapOutputFormat {
     /**
      * Produce the actual map ready for output.
      *
-     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to
-     *     be used when producing the map.
+     * @param mapContent WMSMapContext describing what layers, styles, area of interest etc are to be used when
+     *     producing the map.
      * @see GetMapOutputFormat#produceMap(WMSMapContent)
      */
     @Override

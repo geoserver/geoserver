@@ -77,17 +77,11 @@ public class StylesClient {
     public String getBody(@NonNull StyleInfo style) {
         switch (style.getFormat()) {
             case MBSTYLE:
-                if (null == style.getWorkspace())
-                    return getBody(style.getName(), StyleFormat.MAPBOX);
-                else
-                    return getBody(
-                            style.getWorkspace().getName(), style.getName(), StyleFormat.MAPBOX);
+                if (null == style.getWorkspace()) return getBody(style.getName(), StyleFormat.MAPBOX);
+                else return getBody(style.getWorkspace().getName(), style.getName(), StyleFormat.MAPBOX);
             case SLD:
-                if (null == style.getWorkspace())
-                    return getBody(style.getName(), StyleFormat.SLD_1_0_0);
-                else
-                    return getBody(
-                            style.getWorkspace().getName(), style.getName(), StyleFormat.SLD_1_0_0);
+                if (null == style.getWorkspace()) return getBody(style.getName(), StyleFormat.SLD_1_0_0);
+                else return getBody(style.getWorkspace().getName(), style.getName(), StyleFormat.SLD_1_0_0);
             default:
                 throw new UnsupportedOperationException(
                         "Unknown or unsupported style output format: " + style.getFormat());
@@ -105,8 +99,7 @@ public class StylesClient {
             case SLD_1_1_0:
             case YSLD:
             default:
-                throw new UnsupportedOperationException(
-                        "Unknown or unsupported style output format: " + format);
+                throw new UnsupportedOperationException("Unknown or unsupported style output format: " + format);
         }
     }
 
@@ -116,8 +109,7 @@ public class StylesClient {
     }
 
     /** @return the contents of the requested style on the specified workspace */
-    public String getBody(
-            @NonNull String workspaceName, @NonNull String styleName, @NonNull StyleFormat format) {
+    public String getBody(@NonNull String workspaceName, @NonNull String styleName, @NonNull StyleFormat format) {
         switch (format) {
             case MAPBOX:
                 return api().getStyleBodyMapbox(workspaceName, styleName);
@@ -127,23 +119,20 @@ public class StylesClient {
             case SLD_1_1_0:
             case YSLD:
             default:
-                throw new UnsupportedOperationException(
-                        "Unknown or unsupported style output format: " + format);
+                throw new UnsupportedOperationException("Unknown or unsupported style output format: " + format);
         }
     }
 
     /**
      * Creating a new style is a two step process, first the {@link StyleInfo} is created through
-     * {@link StylesApi#createGlobalStyle} or {@link StylesApi#createStyle}, and then the actual
-     * style document is uploaded through {@link StylesApi#putStyle}.
+     * {@link StylesApi#createGlobalStyle} or {@link StylesApi#createStyle}, and then the actual style document is
+     * uploaded through {@link StylesApi#putStyle}.
      *
-     * <p>This method makes sure to roll back the {@code StyleInfo} creation in case the upload
-     * fails.
+     * <p>This method makes sure to roll back the {@code StyleInfo} creation in case the upload fails.
      */
     public StyleInfo createMapboxStyle(@NonNull String name, @NonNull String requestBody) {
         requestBody = validateMapboxStyle(requestBody);
-        StyleInfo info =
-                new StyleInfo().name(name).filename(name + ".json").format(FormatEnum.MBSTYLE);
+        StyleInfo info = new StyleInfo().name(name).filename(name + ".json").format(FormatEnum.MBSTYLE);
         info = createStyleInfo(info);
         api().uploadStyleMapbox(info.getName(), requestBody.getBytes(UTF_8), false);
         return info;
@@ -160,25 +149,22 @@ public class StylesClient {
             @NonNull String workspaceName, @NonNull String name, @NonNull String requestBody) {
 
         requestBody = validateMapboxStyle(requestBody);
-        StyleInfo info =
-                new StyleInfo()
-                        .name(name)
-                        .filename(name + ".json")
-                        .format(FormatEnum.MBSTYLE)
-                        .workspace(new WorkspaceInfo().name(workspaceName));
+        StyleInfo info = new StyleInfo()
+                .name(name)
+                .filename(name + ".json")
+                .format(FormatEnum.MBSTYLE)
+                .workspace(new WorkspaceInfo().name(workspaceName));
         info = createStyleInfo(info);
         api().uploadStyleMapbox(workspaceName, name, requestBody.getBytes(UTF_8), false);
         return info;
     }
 
-    public StyleInfo createSLDStyle(
-            @NonNull String workspaceName, @NonNull String name, @NonNull String requestBody) {
-        StyleInfo info =
-                new StyleInfo()
-                        .name(name)
-                        .filename(name + ".sld")
-                        .format(FormatEnum.SLD)
-                        .workspace(new WorkspaceInfo().name(workspaceName));
+    public StyleInfo createSLDStyle(@NonNull String workspaceName, @NonNull String name, @NonNull String requestBody) {
+        StyleInfo info = new StyleInfo()
+                .name(name)
+                .filename(name + ".sld")
+                .format(FormatEnum.SLD)
+                .workspace(new WorkspaceInfo().name(workspaceName));
         info = createStyleInfo(info);
         api().uploadStyleSLD(workspaceName, name, requestBody.getBytes(UTF_8), false);
         return info;
@@ -199,10 +185,7 @@ public class StylesClient {
                     api.uploadStyleMapbox(info.getName(), requestBody.getBytes(UTF_8), false);
                 } else {
                     api.uploadStyleMapbox(
-                            info.getWorkspace().getName(),
-                            info.getName(),
-                            requestBody.getBytes(UTF_8),
-                            false);
+                            info.getWorkspace().getName(), info.getName(), requestBody.getBytes(UTF_8), false);
                 }
                 break;
             case SLD:
@@ -210,10 +193,7 @@ public class StylesClient {
                     api.uploadStyleSLD(info.getName(), requestBody.getBytes(UTF_8), false);
                 } else {
                     api.uploadStyleSLD(
-                            info.getWorkspace().getName(),
-                            info.getName(),
-                            requestBody.getBytes(UTF_8),
-                            false);
+                            info.getWorkspace().getName(), info.getName(), requestBody.getBytes(UTF_8), false);
                 }
                 break;
             default:
@@ -234,20 +214,18 @@ public class StylesClient {
         JsonNode atLayers = doc.at("/layers");
         if (!atLayers.isMissingNode()) {
             if (!(atLayers instanceof ArrayNode)) {
-                throw new IllegalArgumentException(
-                        "layers should be a JSON array, got " + atLayers);
+                throw new IllegalArgumentException("layers should be a JSON array, got " + atLayers);
             }
             ArrayNode layers = (ArrayNode) atLayers;
             if (layers.size() > 1) {
-                layers.forEach(
-                        layerNode -> {
-                            JsonNode sourceLayer = layerNode.get("source-layer");
-                            if (!(sourceLayer instanceof TextNode)
-                                    || ((TextNode) sourceLayer).asText().isEmpty()) {
-                                throw new IllegalArgumentException(
-                                        "Every layer on a multi-layer style must contain a source-layer property");
-                            }
-                        });
+                layers.forEach(layerNode -> {
+                    JsonNode sourceLayer = layerNode.get("source-layer");
+                    if (!(sourceLayer instanceof TextNode)
+                            || ((TextNode) sourceLayer).asText().isEmpty()) {
+                        throw new IllegalArgumentException(
+                                "Every layer on a multi-layer style must contain a source-layer property");
+                    }
+                });
             }
         }
         return requestBody;
@@ -271,8 +249,7 @@ public class StylesClient {
         }
         try {
             // passing null as name, it's taken from the StyleInfo itself
-            String plainTextResponse =
-                    api().createStyle(new StyleInfoWrapper().style(info), (String) null);
+            String plainTextResponse = api().createStyle(new StyleInfoWrapper().style(info), (String) null);
             log.debug("Created style {}. Response: {}", info.getName(), plainTextResponse);
         } catch (ServerException.InternalServerError ex) {
             throw ex;
@@ -284,8 +261,8 @@ public class StylesClient {
     }
 
     /**
-     * Deletes a style; the accompanying style body file is deleted from the filesystem and the
-     * style reference removed from any layer that points to it
+     * Deletes a style; the accompanying style body file is deleted from the filesystem and the style reference removed
+     * from any layer that points to it
      *
      * @param name Name of the style to delete
      */
@@ -294,8 +271,8 @@ public class StylesClient {
     }
 
     /**
-     * Deletes a style from a workspace; the accompanying style body file is deleted from the
-     * filesystem and the style reference removed from any layer that points to it
+     * Deletes a style from a workspace; the accompanying style body file is deleted from the filesystem and the style
+     * reference removed from any layer that points to it
      *
      * @param workspace Name of the workspace containing the style
      * @param name Name of the style to delete
@@ -308,10 +285,9 @@ public class StylesClient {
      * Delete a style on a Workspace.
      *
      * @param style Name of the style to delete
-     * @param deleteFile Specifies whether the underlying file containing the style should be
-     *     deleted on disk. (optional, default to false)
-     * @param recurse Removes references to the specified style in existing layers. (optional,
-     *     default to false)
+     * @param deleteFile Specifies whether the underlying file containing the style should be deleted on disk.
+     *     (optional, default to false)
+     * @param recurse Removes references to the specified style in existing layers. (optional, default to false)
      */
     public void delete(@NonNull String name, Boolean deleteFile, Boolean recurse) {
         api().deleteStyle(name, deleteFile, recurse);
@@ -322,13 +298,11 @@ public class StylesClient {
      *
      * @param workspace Name of the workspace containing the style
      * @param style Name of the style to delete
-     * @param deleteFile Specifies whether the underlying file containing the style should be
-     *     deleted on disk. (optional, default to false)
-     * @param recurse Removes references to the specified style in existing layers. (optional,
-     *     default to false)
+     * @param deleteFile Specifies whether the underlying file containing the style should be deleted on disk.
+     *     (optional, default to false)
+     * @param recurse Removes references to the specified style in existing layers. (optional, default to false)
      */
-    public void delete(
-            @NonNull String workspace, @NonNull String name, Boolean deleteFile, Boolean recurse) {
+    public void delete(@NonNull String workspace, @NonNull String name, Boolean deleteFile, Boolean recurse) {
         api().deleteStyleByWorkspace(workspace, name, deleteFile, recurse);
     }
 
@@ -348,22 +322,14 @@ public class StylesClient {
                 if (null == style.getWorkspace()) {
                     api.uploadStyleMapbox(style.getName(), body.getBytes(UTF_8), false);
                 } else {
-                    api.uploadStyleMapbox(
-                            style.getWorkspace().getName(),
-                            style.getName(),
-                            body.getBytes(UTF_8),
-                            false);
+                    api.uploadStyleMapbox(style.getWorkspace().getName(), style.getName(), body.getBytes(UTF_8), false);
                 }
                 break;
             case SLD:
                 if (null == style.getWorkspace()) {
                     api.uploadStyleSLD(style.getName(), body.getBytes(UTF_8), false);
                 } else {
-                    api.uploadStyleSLD(
-                            style.getWorkspace().getName(),
-                            style.getName(),
-                            body.getBytes(UTF_8),
-                            false);
+                    api.uploadStyleSLD(style.getWorkspace().getName(), style.getName(), body.getBytes(UTF_8), false);
                 }
                 break;
             default:

@@ -107,11 +107,7 @@ public class WCSEOCoverageMetadataProvider implements WCS20CoverageMetadataProvi
             return new String[0];
         }
         String schemaLocation =
-                ResponseUtils.buildURL(
-                        schemaBaseURL,
-                        "schemas/wcseo/1.0/wcsEOCoverage.xsd",
-                        null,
-                        URLType.RESOURCE);
+                ResponseUtils.buildURL(schemaBaseURL, "schemas/wcseo/1.0/wcsEOCoverage.xsd", null, URLType.RESOURCE);
         return new String[] {WCSEOMetadata.NAMESPACE, schemaLocation};
     }
 

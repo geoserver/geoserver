@@ -24,8 +24,7 @@ import org.geotools.util.Converters;
 /**
  * Holds the parsed parameters for a GetLegendGraphic WMS request.
  *
- * <p>The GET parameters of the GetLegendGraphic operation are defined as follows (from SLD 1.0
- * spec, ch.12):<br>
+ * <p>The GET parameters of the GetLegendGraphic operation are defined as follows (from SLD 1.0 spec, ch.12):<br>
  *
  * <pre>
  * <table>
@@ -48,23 +47,22 @@ import org.geotools.util.Converters;
  *  </table>
  * </pre>
  *
- * <p>There's also a custom {@code STRICT} parameter that defaults to {@code true} and controls
- * whether the mandatory parameters are to be checked. This is useful mainly to be able of
- * requesting a legend graphic for no layer in particular, so the LAYER parameter can be omitted.
+ * <p>There's also a custom {@code STRICT} parameter that defaults to {@code true} and controls whether the mandatory
+ * parameters are to be checked. This is useful mainly to be able of requesting a legend graphic for no layer in
+ * particular, so the LAYER parameter can be omitted.
  *
- * <p>The GetLegendGraphic operation itself is optional for an SLD-enabled WMS. It provides a
- * general mechanism for acquiring legend symbols, beyond the LegendURL reference of WMS
- * Capabilities. Servers supporting the GetLegendGraphic call might code LegendURL references as
- * GetLegendGraphic for interface consistency. Vendorspecific parameters may be added to
- * GetLegendGraphic requests and all of the usual OGC-interface options and rules apply. No XML-POST
- * method for GetLegendGraphic is presently defined.
+ * <p>The GetLegendGraphic operation itself is optional for an SLD-enabled WMS. It provides a general mechanism for
+ * acquiring legend symbols, beyond the LegendURL reference of WMS Capabilities. Servers supporting the GetLegendGraphic
+ * call might code LegendURL references as GetLegendGraphic for interface consistency. Vendorspecific parameters may be
+ * added to GetLegendGraphic requests and all of the usual OGC-interface options and rules apply. No XML-POST method for
+ * GetLegendGraphic is presently defined.
  *
- * <p>In addition to the official parameters {@link #getLegendOptions()} is used to refining the
- * appearance of of the generated legend.
+ * <p>In addition to the official parameters {@link #getLegendOptions()} is used to refining the appearance of of the
+ * generated legend.
  *
- * <p>Finally as a data structure {@link GetLegendGraphic} is used to collect additional context.
- * Rendering environment {@link #getEnv()} and {@link #locale}. LayerInfo configuration settings are
- * available using methods like {@link #getTitle(Name)}.
+ * <p>Finally as a data structure {@link GetLegendGraphic} is used to collect additional context. Rendering environment
+ * {@link #getEnv()} and {@link #locale}. LayerInfo configuration settings are available using methods like
+ * {@link #getTitle(Name)}.
  *
  * @author Gabriel Roldan
  * @version $Id$
@@ -78,18 +76,15 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public static final String HIDE_EMPTY_RULES = "hideEmptyRules";
 
     /**
-     * Details collected for an individual LegendGraphic including layer, title, style and optional
-     * legend graphic.
+     * Details collected for an individual LegendGraphic including layer, title, style and optional legend graphic.
      *
-     * <p>This information is parsed from the GetLegendGraphicRequest and supplemented with layer
-     * and style configuration as required. This information is provided as a data structure in
-     * order to avoid duplicating logic in GetLegendGraphicKvpReader and
-     * BufferedImageLegendGraphicBuild.
+     * <p>This information is parsed from the GetLegendGraphicRequest and supplemented with layer and style
+     * configuration as required. This information is provided as a data structure in order to avoid duplicating logic
+     * in GetLegendGraphicKvpReader and BufferedImageLegendGraphicBuild.
      *
-     * <p>LegendRequest acts as simple data object with equality derived from layer name (enought to
-     * allow it to behave well in a List). Note that LegendRequest is specific to a single {@link
-     * GetLegendGraphicRequest} and should not be cached. It represents the state of the system at
-     * the time of parsing.
+     * <p>LegendRequest acts as simple data object with equality derived from layer name (enought to allow it to behave
+     * well in a List). Note that LegendRequest is specific to a single {@link GetLegendGraphicRequest} and should not
+     * be cached. It represents the state of the system at the time of parsing.
      *
      * @author Jody Garnett (Boundless)
      */
@@ -122,10 +117,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
             this.layerName = new NameImpl("");
         }
 
-        /**
-         * LegendRequest for a feature type, additional details (title and legend graphic) provided
-         * by MapLayerInfo.
-         */
+        /** LegendRequest for a feature type, additional details (title and legend graphic) provided by MapLayerInfo. */
         public LegendRequest(FeatureType featureType) {
             if (featureType == null) {
                 throw new NullPointerException("FeatureType required for LegendRequest");
@@ -135,8 +127,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
         }
 
         /**
-         * LegendRequest for a feature type, additional details (title and legend graphic) provided
-         * by MapLayerInfo.
+         * LegendRequest for a feature type, additional details (title and legend graphic) provided by MapLayerInfo.
          *
          * @param layerName layerName distinct to featureType name
          */
@@ -234,10 +225,10 @@ public class GetLegendGraphicRequest extends WMSRequest {
             this.title = title;
         }
         /**
-         * The Style object(s) for styling the legend graphic, or layer's default if not provided.
-         * This style can be acquired by evaluating the STYLE parameter, which provides one of the
-         * layer's named styles, the SLD parameter, which provides a URL for an external SLD
-         * document, or the SLD_BODY parameter, which provides the SLD body in the request body.
+         * The Style object(s) for styling the legend graphic, or layer's default if not provided. This style can be
+         * acquired by evaluating the STYLE parameter, which provides one of the layer's named styles, the SLD
+         * parameter, which provides a URL for an external SLD document, or the SLD_BODY parameter, which provides the
+         * SLD body in the request body.
          */
         public Style getStyle() {
             return style;
@@ -281,9 +272,9 @@ public class GetLegendGraphicRequest extends WMSRequest {
     public static final int DEFAULT_HEIGHT = 20;
 
     /**
-     * The default image format in which to produce a legend graphic. Not really used when
-     * performing user requests, since FORMAT is a mandatory parameter, but by now serves as a
-     * default for expressing LegendURL layer attribute in GetCapabilities.
+     * The default image format in which to produce a legend graphic. Not really used when performing user requests,
+     * since FORMAT is a mandatory parameter, but by now serves as a default for expressing LegendURL layer attribute in
+     * GetCapabilities.
      */
     public static final String DEFAULT_FORMAT = "image/png";
 
@@ -291,9 +282,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
     private List<LegendRequest> legends = new ArrayList<>();
 
     /**
-     * should hold FEATURETYPE parameter value, though not used by now, since GeoServer WMS still
-     * does not supports nested layers and layers has only a single feature type. This should change
-     * in the future.
+     * should hold FEATURETYPE parameter value, though not used by now, since GeoServer WMS still does not supports
+     * nested layers and layers has only a single feature type. This should change in the future.
      */
     private String featureType;
 
@@ -304,27 +294,23 @@ public class GetLegendGraphicRequest extends WMSRequest {
     private double scale = -1d;
 
     /**
-     * the mime type of the file format in which to return the legend graphic, as requested by the
-     * FORMAT request parameter value.
+     * the mime type of the file format in which to return the legend graphic, as requested by the FORMAT request
+     * parameter value.
      */
     private String format;
 
-    /**
-     * the width in pixels of the returned graphic, or <code>DEFAULT_WIDTH</code> if not provided
-     */
+    /** the width in pixels of the returned graphic, or <code>DEFAULT_WIDTH</code> if not provided */
     private int width = DEFAULT_WIDTH;
 
-    /**
-     * the height in pixels of the returned graphic, or <code>DEFAULT_HEIGHT</code> if not provided
-     */
+    /** the height in pixels of the returned graphic, or <code>DEFAULT_HEIGHT</code> if not provided */
     private int height = DEFAULT_HEIGHT;
 
     /** mime type of the format in which to return exceptions information. */
     private String exceptionsFormat = GetMapRequest.SE_XML;
 
     /**
-     * holds the geoserver-specific getLegendGraphic options for controlling things like the label
-     * font, label font style, label font antialiasing, etc.
+     * holds the geoserver-specific getLegendGraphic options for controlling things like the label font, label font
+     * style, label font antialiasing, etc.
      */
     private Map<String, Object> legendOptions;
 
@@ -397,8 +383,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /**
-     * List of layer FeatureType in order requested. Helper for the monitoring module, which has to
-     * work using reflection.
+     * List of layer FeatureType in order requested. Helper for the monitoring module, which has to work using
+     * reflection.
      *
      * @return layer FeatureType in order requested
      */
@@ -469,8 +455,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /**
-     * Returns the possibly empty set of key/value pair parameters to control some aspects of legend
-     * generation.
+     * Returns the possibly empty set of key/value pair parameters to control some aspects of legend generation.
      *
      * <p>These parameters are meant to be passed as the request parameter <code>"LEGEND_OPTIONS"
      * </code> with the format <code>LEGEND_OPTIONS=multiKey:val1,val2,val3;singleKey:val</code>.
@@ -478,31 +463,24 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * <p>The known options, all optional, are:
      *
      * <ul>
-     *   <li><code>fontName</code>: name of the system font used for legend rule names. Defaults to
-     *       "Sans-Serif"
+     *   <li><code>fontName</code>: name of the system font used for legend rule names. Defaults to "Sans-Serif"
      *   <li><code>fontStyle</code>: one of "plain", "italic" or "bold"
      *   <li><code>fontSize</code>: integer for the font size in pixels
-     *   <li><code>fontColor</code>: a <code>String</code> that represents an opaque color as a
-     *       24-bit integer
+     *   <li><code>fontColor</code>: a <code>String</code> that represents an opaque color as a 24-bit integer
      *   <li><code>bgColor</code>: allows to override the legend background color
-     *   <li><code>fontAntiAliasing</code>: a boolean indicating whether to use antia aliasing in
-     *       font rendering. Anything of the following works: "yes", "true", "1". Anything else
-     *       means false.
-     *   <li><code>forceLabels</code>: "on" means labels will always be drawn, even if only one rule
-     *       is available. "off" means labels will never be drawn, even if multiple rules are
-     *       available.
-     *   <li><code>forceTitles</code>: "off" means titles will never be drawn, even if multiple
-     *       layers are available.
-     *   <li><code>minSymbolSize</code>: a number defining the minimum size to be rendered for a
-     *       symbol (defaults to 3).
+     *   <li><code>fontAntiAliasing</code>: a boolean indicating whether to use antia aliasing in font rendering.
+     *       Anything of the following works: "yes", "true", "1". Anything else means false.
+     *   <li><code>forceLabels</code>: "on" means labels will always be drawn, even if only one rule is available. "off"
+     *       means labels will never be drawn, even if multiple rules are available.
+     *   <li><code>forceTitles</code>: "off" means titles will never be drawn, even if multiple layers are available.
+     *   <li><code>minSymbolSize</code>: a number defining the minimum size to be rendered for a symbol (defaults to 3).
      * </ul>
      *
      * @return Map<String,Object>
      */
     @SuppressWarnings("unchecked")
     public Map<String, Object> getLegendOptions() {
-        return (Map<String, Object>)
-                (legendOptions == null ? Collections.emptyMap() : legendOptions);
+        return (Map<String, Object>) (legendOptions == null ? Collections.emptyMap() : legendOptions);
     }
 
     /**
@@ -520,20 +498,18 @@ public class GetLegendGraphicRequest extends WMSRequest {
      * Sets the value of the background transparency flag depending on the value of the <code>
      * TRANSPARENT</code> request parameter.
      *
-     * @param transparentBackground whether the legend graphic background shall be transparent or
-     *     not
+     * @param transparentBackground whether the legend graphic background shall be transparent or not
      */
     public void setTransparent(boolean transparentBackground) {
         this.transparent = transparentBackground;
     }
 
     /**
-     * Returns the value of the optional request parameter <code>TRANSPARENT</code>, which might be
-     * either the literal <code>true</code> or <code>false</code> and specifies if the background of
-     * the legend graphic to return shall be transparent or not.
+     * Returns the value of the optional request parameter <code>TRANSPARENT</code>, which might be either the literal
+     * <code>true</code> or <code>false</code> and specifies if the background of the legend graphic to return shall be
+     * transparent or not.
      *
-     * <p>If the <code>TRANSPARENT</code> parameter is not specified, this property defaults to
-     * <code>false</code>.
+     * <p>If the <code>TRANSPARENT</code> parameter is not specified, this property defaults to <code>false</code>.
      *
      * @return whether the legend graphic background shall be transparent or not
      */
@@ -542,8 +518,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /**
-     * Returns the value for the legacy {@code STRICT} parameter that controls whether LAYER is
-     * actually required (if not, STYLE shall be provided)
+     * Returns the value for the legacy {@code STRICT} parameter that controls whether LAYER is actually required (if
+     * not, STYLE shall be provided)
      *
      * @return {@code true} by default, the value set thru {@link #setStrict(boolean)} otherwise
      */
@@ -584,8 +560,8 @@ public class GetLegendGraphicRequest extends WMSRequest {
     }
 
     /**
-     * Parses and returns a legend option to a given type, if a value is present but cannot be
-     * converted to the target type an exception will be thrown
+     * Parses and returns a legend option to a given type, if a value is present but cannot be converted to the target
+     * type an exception will be thrown
      */
     public <T> T getLegendOption(String key, Class<T> optionClass) {
         if (legendOptions == null) {
@@ -600,10 +576,7 @@ public class GetLegendGraphicRequest extends WMSRequest {
         T converted = Converters.convert(value, optionClass);
         if (converted == null) {
             throw new ServiceException(
-                    "Invalid syntax for option "
-                            + key
-                            + ", cannot be convered to a "
-                            + optionClass.getSimpleName());
+                    "Invalid syntax for option " + key + ", cannot be convered to a " + optionClass.getSimpleName());
         }
         return converted;
     }

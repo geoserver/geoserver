@@ -18,15 +18,14 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.MultiValuedFilter.MatchAction;
 
 /**
- * Visits the specified objects cascading down to contained/related objects, and collects
- * information about which objects will be removed or modified once the root objects are cascade
- * deleted with {@link CascadeDeleteVisitor}
+ * Visits the specified objects cascading down to contained/related objects, and collects information about which
+ * objects will be removed or modified once the root objects are cascade deleted with {@link CascadeDeleteVisitor}
  */
 public class CascadeRemovalReporter implements CatalogVisitor {
 
     /**
-     * The various types of modifications a catalog object can be subjected to in case of cascade
-     * removal. They are ordered from stronger to weaker.
+     * The various types of modifications a catalog object can be subjected to in case of cascade removal. They are
+     * ordered from stronger to weaker.
      */
     public enum ModificationType {
         DELETE,
@@ -42,8 +41,8 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     Map<CatalogInfo, ModificationType> objects;
 
     /**
-     * Used to track which layers are going to be removed from a group, if we remove them all the
-     * group will have to be removed as well
+     * Used to track which layers are going to be removed from a group, if we remove them all the group will have to be
+     * removed as well
      */
     Map<LayerGroupInfo, Set<LayerInfo>> groups;
 
@@ -62,21 +61,18 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     }
 
     /**
-     * Returns the objects that will be affected by the removal, filtering them by type and by kind
-     * of modification they will sustain as a consequence of the removal
+     * Returns the objects that will be affected by the removal, filtering them by type and by kind of modification they
+     * will sustain as a consequence of the removal
      *
      * @param <T>
-     * @param catalogClass The type of object to be searched for, or null if no type filtering is
+     * @param catalogClass The type of object to be searched for, or null if no type filtering is desired
+     * @param modifications The kind of modification to be searched for, or null if no modification type filtering is
      *     desired
-     * @param modifications The kind of modification to be searched for, or null if no modification
-     *     type filtering is desired
      */
     public <T> List<T> getObjects(Class<T> catalogClass, ModificationType... modifications) {
         List<T> result = new ArrayList<>();
         List<ModificationType> mods =
-                (modifications == null || modifications.length == 0)
-                        ? null
-                        : Arrays.asList(modifications);
+                (modifications == null || modifications.length == 0) ? null : Arrays.asList(modifications);
         for (CatalogInfo ci : objects.keySet()) {
             if (catalogClass == null || catalogClass.isAssignableFrom(ci.getClass())) {
                 if (mods == null || mods.contains(objects.get(ci))) {
@@ -90,8 +86,8 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     }
 
     /**
-     * Allows removal of the specified objects from the reachable set (usually, the user will not
-     * want the roots to be part of the set)
+     * Allows removal of the specified objects from the reachable set (usually, the user will not want the roots to be
+     * part of the set)
      */
     public void removeAll(Collection<? extends CatalogInfo> objects) {
         for (CatalogInfo ci : objects) {
@@ -100,8 +96,8 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     }
 
     /**
-     * Adds a CatalogInfo into the objects map, eventually overriding the type if the modification
-     * is stronger that the one already registered
+     * Adds a CatalogInfo into the objects map, eventually overriding the type if the modification is stronger that the
+     * one already registered
      */
     void add(CatalogInfo ci, ModificationType type) {
         ModificationType oldType = objects.get(ci);
@@ -205,8 +201,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
         // scan the layer groups and find those that do use the
         // current layer
         Filter groupContainsLayer = Predicates.equal("layers", layer, MatchAction.ANY);
-        try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, groupContainsLayer)) {
+        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, groupContainsLayer)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 // mark the layer as one that will be removed
@@ -240,15 +235,13 @@ public class CascadeRemovalReporter implements CatalogVisitor {
             while (it.hasNext()) {
                 LayerInfo li = it.next();
                 if (style.equals(li.getDefaultStyle())) add(li, ModificationType.STYLE_RESET);
-                else if (li.getStyles().contains(style))
-                    add(li, ModificationType.EXTRA_STYLE_REMOVED);
+                else if (li.getStyles().contains(style)) add(li, ModificationType.EXTRA_STYLE_REMOVED);
             }
         }
         // groups can also refer to style, reset each reference to the
         // associated layer default style
         Filter groupAssociated = Predicates.or(Predicates.equal("rootLayerStyle", style), anyStyle);
-        try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, groupAssociated)) {
+        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, groupAssociated)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 if (style.equals(group.getRootLayerStyle())) {
@@ -268,8 +261,7 @@ public class CascadeRemovalReporter implements CatalogVisitor {
     @Override
     public void visit(LayerGroupInfo layerGroupToRemove) {
         Filter associatedTo = Predicates.equal("layers", layerGroupToRemove, MatchAction.ANY);
-        try (CloseableIterator<LayerGroupInfo> it =
-                catalog.list(LayerGroupInfo.class, associatedTo)) {
+        try (CloseableIterator<LayerGroupInfo> it = catalog.list(LayerGroupInfo.class, associatedTo)) {
             while (it.hasNext()) {
                 LayerGroupInfo group = it.next();
                 if (group.getLayers().contains(layerGroupToRemove)) {

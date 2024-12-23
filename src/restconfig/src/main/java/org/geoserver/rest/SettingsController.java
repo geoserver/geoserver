@@ -45,11 +45,7 @@ public class SettingsController extends AbstractGeoServerController {
     }
 
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<GeoServerInfo> settingsGet() {
         return wrapObject(geoServer.getGlobal(), GeoServerInfo.class);
     }
@@ -69,11 +65,7 @@ public class SettingsController extends AbstractGeoServerController {
 
     @GetMapping(
             value = "/contact",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<ContactInfo> contactGet() {
         if (geoServer.getSettings().getContact() == null) {
             throw new ResourceNotFoundException("No contact information available");
@@ -98,17 +90,14 @@ public class SettingsController extends AbstractGeoServerController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ContactInfo.class.isAssignableFrom(methodParameter.getParameterType())
                 || GeoServerInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     protected <T> ObjectWrapper createObjectWrapper(Class<T> clazz) {
-        return new ObjectToMapWrapper<>(
-                clazz, Arrays.asList(JAIInfo.class, CoverageAccessInfo.class));
+        return new ObjectToMapWrapper<>(clazz, Arrays.asList(JAIInfo.class, CoverageAccessInfo.class));
     }
 
     @Override

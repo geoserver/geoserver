@@ -19,8 +19,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * Tests parsing of the property file into a security tree, and the functionality of the tree as
- * well (building the tree by hand is tedious)
+ * Tests parsing of the property file into a security tree, and the functionality of the tree as well (building the tree
+ * by hand is tedious)
  *
  * @author Andrea Aime - TOPP
  */
@@ -34,9 +34,7 @@ public class DefaultDataAccessManagerTreeTest extends AbstractAuthorizationTest 
     private SecureTreeNode buildTree(String propertyFile) throws Exception {
         Properties props = new Properties();
         props.load(getClass().getResourceAsStream(propertyFile));
-        return new DefaultResourceAccessManager(
-                        new MemoryDataAccessRuleDAO(catalog, props), catalog)
-                .root;
+        return new DefaultResourceAccessManager(new MemoryDataAccessRuleDAO(catalog, props), catalog).root;
     }
 
     @Test

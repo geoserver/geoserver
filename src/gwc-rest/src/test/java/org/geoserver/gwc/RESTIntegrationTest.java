@@ -93,10 +93,9 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
             String xpath = "//layers/layer/name[text() = '" + name + "']";
             assertXpathExists(xpath, dom);
 
-            xpath =
-                    "//layers/layer/atom:link[@href = 'http://localhost:8080/geoserver/gwc/rest/layers/"
-                            + name
-                            + ".xml']";
+            xpath = "//layers/layer/atom:link[@href = 'http://localhost:8080/geoserver/gwc/rest/layers/"
+                    + name
+                    + ".xml']";
             assertXpathExists(xpath, dom);
         }
     }
@@ -127,9 +126,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertXpathNotExists("/GeoServerLayer/autoCacheStyles", dom);
     }
 
-    /**
-     * PUT creates a new layer, shall fail if the layer id is provided and not found in the catalog
-     */
+    /** PUT creates a new layer, shall fail if the layer id is provided and not found in the catalog */
     @Test
     public void testPutBadId() throws Exception {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
@@ -141,14 +138,13 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(
                 response,
                 hasProperty(
-                        "contentAsString",
-                        containsString("No GeoServer Layer or LayerGroup exists with id 'badId'")));
+                        "contentAsString", containsString("No GeoServer Layer or LayerGroup exists with id 'badId'")));
         assertThat(response, hasProperty("contentType", startsWith("text/plain")));
     }
 
     /**
-     * PUT creates a new layer, shall fail if the layer id is not provided, the layer name is, but
-     * no such layer is found in the {@link Catalog}
+     * PUT creates a new layer, shall fail if the layer id is not provided, the layer name is, but no such layer is
+     * found in the {@link Catalog}
      */
     @Test
     public void testPutNoIdBadLayerName() throws Exception {
@@ -160,8 +156,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(
                 response,
                 hasProperty(
-                        "contentAsString",
-                        containsString("GeoServer Layer or LayerGroup 'badLayerName' not found")));
+                        "contentAsString", containsString("GeoServer Layer or LayerGroup 'badLayerName' not found")));
         assertThat(response, hasProperty("contentType", startsWith("text/plain")));
     }
 
@@ -176,11 +171,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = putLayer(url, id, "badLayerName");
 
         String expected =
-                "Layer with id '"
-                        + id
-                        + "' found but name does not match: 'badLayerName'/'"
-                        + layerName
-                        + "'";
+                "Layer with id '" + id + "' found but name does not match: 'badLayerName'/'" + layerName + "'";
         assertThat(response, hasProperty("status", equalTo(HttpServletResponse.SC_BAD_REQUEST)));
         assertThat(response, hasProperty("contentAsString", containsString(expected)));
         assertThat(response, hasProperty("contentType", startsWith("text/plain")));
@@ -198,9 +189,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         MockHttpServletResponse response = putLayer(url, id, "");
 
         assertThat(response, hasProperty("status", equalTo(HttpServletResponse.SC_BAD_REQUEST)));
-        assertThat(
-                response,
-                hasProperty("contentAsString", containsString("Layer name not provided")));
+        assertThat(response, hasProperty("contentAsString", containsString("Layer name not provided")));
         assertThat(response, hasProperty("contentType", startsWith("text/plain")));
     }
 
@@ -266,40 +255,39 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         mediator.removeTileLayers(Lists.newArrayList(layerName));
         assertFalse(mediator.tileLayerExists(layerName));
 
-        final String xml =
-                "<GeoServerLayer>" //
-                        + " <enabled>true</enabled>" //
-                        + " <name>"
-                        + layerName
-                        + "</name>" //
-                        + " <mimeFormats><string>image/png8</string></mimeFormats>" //
-                        + " <gridSubsets>" //
-                        + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
-                        + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
-                        + " </gridSubsets>" //
-                        + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
-                        + " <parameterFilters>" //
-                        + "  <stringParameterFilter>" //
-                        + "   <key>BGCOLOR</key>" //
-                        + "   <defaultValue>0xFFFFFF</defaultValue>" //
-                        + "   <values><string>0x000000</string><string>0x888888</string></values>" //
-                        + "  </stringParameterFilter>" //
-                        + "  <styleParameterFilter>" //
-                        + "   <key>STYLES</key>" //
-                        + "   <defaultValue>capital</defaultValue>" //
-                        + "   <allowedStyles><string>point</string><string>burg</string></allowedStyles>" //
-                        + "  </styleParameterFilter>" //
-                        + "  <floatParameterFilter>" //
-                        + "   <key>ELEVATION</key>" //
-                        + "   <defaultValue>10.1</defaultValue>" //
-                        + "    <values>" //
-                        + "     <float>10.1</float><float>10.2</float><float>10.3</float>" //
-                        + "    </values>" //
-                        + "   <threshold>1.0E-2</threshold>" //
-                        + "  </floatParameterFilter>" //
-                        + " </parameterFilters>" //
-                        + " <gutter>20</gutter>" //
-                        + "</GeoServerLayer>";
+        final String xml = "<GeoServerLayer>" //
+                + " <enabled>true</enabled>" //
+                + " <name>"
+                + layerName
+                + "</name>" //
+                + " <mimeFormats><string>image/png8</string></mimeFormats>" //
+                + " <gridSubsets>" //
+                + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
+                + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
+                + " </gridSubsets>" //
+                + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
+                + " <parameterFilters>" //
+                + "  <stringParameterFilter>" //
+                + "   <key>BGCOLOR</key>" //
+                + "   <defaultValue>0xFFFFFF</defaultValue>" //
+                + "   <values><string>0x000000</string><string>0x888888</string></values>" //
+                + "  </stringParameterFilter>" //
+                + "  <styleParameterFilter>" //
+                + "   <key>STYLES</key>" //
+                + "   <defaultValue>capital</defaultValue>" //
+                + "   <allowedStyles><string>point</string><string>burg</string></allowedStyles>" //
+                + "  </styleParameterFilter>" //
+                + "  <floatParameterFilter>" //
+                + "   <key>ELEVATION</key>" //
+                + "   <defaultValue>10.1</defaultValue>" //
+                + "    <values>" //
+                + "     <float>10.1</float><float>10.2</float><float>10.3</float>" //
+                + "    </values>" //
+                + "   <threshold>1.0E-2</threshold>" //
+                + "  </floatParameterFilter>" //
+                + " </parameterFilters>" //
+                + " <gutter>20</gutter>" //
+                + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
 
@@ -328,8 +316,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         for (ParameterFilter filter : filters) {
             if (filter instanceof FloatParameterFilter) floatFilter = (FloatParameterFilter) filter;
-            if (filter instanceof StringParameterFilter)
-                stringFilter = (StringParameterFilter) filter;
+            if (filter instanceof StringParameterFilter) stringFilter = (StringParameterFilter) filter;
             if (filter instanceof StyleParameterFilter) styleFilter = (StyleParameterFilter) filter;
         }
 
@@ -360,27 +347,26 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         mediator.removeTileLayers(Lists.newArrayList(layerName));
         assertFalse(mediator.tileLayerExists(layerName));
 
-        final String xml =
-                "<GeoServerLayer>" //
-                        + " <enabled>true</enabled>" //
-                        + " <name>"
-                        + layerName
-                        + "</name>" //
-                        + " <mimeFormats><string>image/png8</string></mimeFormats>" //
-                        + " <gridSubsets>" //
-                        + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
-                        + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
-                        + " </gridSubsets>" //
-                        + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
-                        + " <parameterFilters>" //
-                        + "  <styleParameterFilter>" //
-                        + "   <key>STYLES</key>" //
-                        + "   <defaultValue>capitals</defaultValue>" //
-                        + "   <allowedStyles><string>points</string><string>bergs</string></allowedStyles>" //
-                        + "  </styleParameterFilter>" //
-                        + " </parameterFilters>" //
-                        + " <gutter>20</gutter>" //
-                        + "</GeoServerLayer>";
+        final String xml = "<GeoServerLayer>" //
+                + " <enabled>true</enabled>" //
+                + " <name>"
+                + layerName
+                + "</name>" //
+                + " <mimeFormats><string>image/png8</string></mimeFormats>" //
+                + " <gridSubsets>" //
+                + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
+                + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
+                + " </gridSubsets>" //
+                + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
+                + " <parameterFilters>" //
+                + "  <styleParameterFilter>" //
+                + "   <key>STYLES</key>" //
+                + "   <defaultValue>capitals</defaultValue>" //
+                + "   <allowedStyles><string>points</string><string>bergs</string></allowedStyles>" //
+                + "  </styleParameterFilter>" //
+                + " </parameterFilters>" //
+                + " <gutter>20</gutter>" //
+                + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
 
@@ -410,32 +396,31 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private MockHttpServletResponse putLayer(String url, String id, String name) throws Exception {
-        String xml =
-                "<GeoServerLayer>" //
-                        + "  <id>"
-                        + id
-                        + "</id>" //
-                        + "  <enabled>true</enabled>" //
-                        + "  <name>"
-                        + name
-                        + "</name>" //
-                        + "  <mimeFormats>" //
-                        + "    <string>image/jpeg</string>" //
-                        + "  </mimeFormats>" //
-                        + "  <gridSubsets>" //
-                        + "    <gridSubset>" //
-                        + "     <gridSetName>EPSG:900913</gridSetName>" //
-                        + "    </gridSubset>" //
-                        + "    <gridSubset>" //
-                        + "     <gridSetName>EPSG:4326</gridSetName>" //
-                        + "    </gridSubset>" //
-                        + "  </gridSubsets>" //
-                        + "  <metaWidthHeight>" //
-                        + "    <int>4</int>" //
-                        + "    <int>4</int>" //
-                        + "  </metaWidthHeight>" //
-                        + "  <autoCacheStyles>true</autoCacheStyles>" //
-                        + "</GeoServerLayer>";
+        String xml = "<GeoServerLayer>" //
+                + "  <id>"
+                + id
+                + "</id>" //
+                + "  <enabled>true</enabled>" //
+                + "  <name>"
+                + name
+                + "</name>" //
+                + "  <mimeFormats>" //
+                + "    <string>image/jpeg</string>" //
+                + "  </mimeFormats>" //
+                + "  <gridSubsets>" //
+                + "    <gridSubset>" //
+                + "     <gridSetName>EPSG:900913</gridSetName>" //
+                + "    </gridSubset>" //
+                + "    <gridSubset>" //
+                + "     <gridSetName>EPSG:4326</gridSetName>" //
+                + "    </gridSubset>" //
+                + "  </gridSubsets>" //
+                + "  <metaWidthHeight>" //
+                + "    <int>4</int>" //
+                + "    <int>4</int>" //
+                + "  </metaWidthHeight>" //
+                + "  <autoCacheStyles>true</autoCacheStyles>" //
+                + "</GeoServerLayer>";
 
         final String contentType = "text/xml";
         MockHttpServletResponse response = super.putAsServletResponse(url, xml, contentType);
@@ -472,35 +457,34 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         final GWC mediator = GWC.get();
         assertTrue(mediator.tileLayerExists(layerName));
 
-        final String xml =
-                "<GeoServerLayer>" //
-                        + " <enabled>true</enabled>" //
-                        + " <name>"
-                        + layerName
-                        + "</name>" //
-                        + " <mimeFormats><string>image/png8</string></mimeFormats>" //
-                        + " <gridSubsets>" //
-                        + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
-                        + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
-                        + " </gridSubsets>" //
-                        + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
-                        + " <parameterFilters>" //
-                        + "  <styleParameterFilter>" //
-                        + "   <key>STYLES</key>" //
-                        + "   <defaultValue>capitals</defaultValue>" //
-                        + "   <allowedStyles><string>burg</string><string>point</string></allowedStyles>" //
-                        + "  </styleParameterFilter>" //
-                        + "  <floatParameterFilter>" //
-                        + "   <key>ELEVATION</key>" //
-                        + "   <defaultValue>10.1</defaultValue>" //
-                        + "    <values>" //
-                        + "     <float>10.1</float><float>10.2</float><float>10.3</float>" //
-                        + "    </values>" //
-                        + "   <threshold>1.0E-2</threshold>" //
-                        + "  </floatParameterFilter>" //
-                        + " </parameterFilters>" //
-                        + " <gutter>20</gutter>" //
-                        + "</GeoServerLayer>";
+        final String xml = "<GeoServerLayer>" //
+                + " <enabled>true</enabled>" //
+                + " <name>"
+                + layerName
+                + "</name>" //
+                + " <mimeFormats><string>image/png8</string></mimeFormats>" //
+                + " <gridSubsets>" //
+                + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
+                + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
+                + " </gridSubsets>" //
+                + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
+                + " <parameterFilters>" //
+                + "  <styleParameterFilter>" //
+                + "   <key>STYLES</key>" //
+                + "   <defaultValue>capitals</defaultValue>" //
+                + "   <allowedStyles><string>burg</string><string>point</string></allowedStyles>" //
+                + "  </styleParameterFilter>" //
+                + "  <floatParameterFilter>" //
+                + "   <key>ELEVATION</key>" //
+                + "   <defaultValue>10.1</defaultValue>" //
+                + "    <values>" //
+                + "     <float>10.1</float><float>10.2</float><float>10.3</float>" //
+                + "    </values>" //
+                + "   <threshold>1.0E-2</threshold>" //
+                + "  </floatParameterFilter>" //
+                + " </parameterFilters>" //
+                + " <gutter>20</gutter>" //
+                + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
 
@@ -554,59 +538,48 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
         {
-            final String xml =
-                    "<GeoServerLayer>" //
-                            + " <name>"
-                            + layerName
-                            + "</name>" //
-                            + " <autoCacheStyles>true</autoCacheStyles>"
-                            + "</GeoServerLayer>";
+            final String xml = "<GeoServerLayer>" //
+                    + " <name>"
+                    + layerName
+                    + "</name>" //
+                    + " <autoCacheStyles>true</autoCacheStyles>"
+                    + "</GeoServerLayer>";
 
             MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
 
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
-            GeoServerTileLayer tileLayer =
-                    (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
+            GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
             GeoServerTileLayerInfo info = tileLayer.getInfo();
 
             List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
             assertThat(
                     filters,
-                    contains(
-                            allOf(
-                                    Matchers.hasProperty("key", is("STYLES")),
-                                    isA(
-                                            StyleParameterFilter.class.asSubclass(
-                                                    ParameterFilter.class)))));
+                    contains(allOf(
+                            Matchers.hasProperty("key", is("STYLES")),
+                            isA(StyleParameterFilter.class.asSubclass(ParameterFilter.class)))));
         }
         {
-            final String xml =
-                    "<GeoServerLayer>" //
-                            + " <name>"
-                            + layerName
-                            + "</name>" //
-                            + " <autoCacheStyles>false</autoCacheStyles>"
-                            + "</GeoServerLayer>";
+            final String xml = "<GeoServerLayer>" //
+                    + " <name>"
+                    + layerName
+                    + "</name>" //
+                    + " <autoCacheStyles>false</autoCacheStyles>"
+                    + "</GeoServerLayer>";
 
             MockHttpServletResponse response = super.postAsServletResponse(url, xml, "text/xml");
 
             assertEquals(HttpServletResponse.SC_OK, response.getStatus());
 
-            GeoServerTileLayer tileLayer =
-                    (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
+            GeoServerTileLayer tileLayer = (GeoServerTileLayer) mediator.getTileLayerByName(layerName);
             GeoServerTileLayerInfo info = tileLayer.getInfo();
 
             List<ParameterFilter> filters = Lists.newArrayList(info.getParameterFilters());
             assertThat(
                     filters,
-                    not(
-                            contains(
-                                    allOf(
-                                            Matchers.hasProperty("key", is("STYLES")),
-                                            isA(
-                                                    StyleParameterFilter.class.asSubclass(
-                                                            ParameterFilter.class))))));
+                    not(contains(allOf(
+                            Matchers.hasProperty("key", is("STYLES")),
+                            isA(StyleParameterFilter.class.asSubclass(ParameterFilter.class))))));
         }
     }
 
@@ -635,8 +608,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         request.setContentType("application/x-www-form-urlencoded");
         request.setContent(formData.getBytes(UTF_8));
 
-        BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
+        BufferedRequestWrapper wrapper = new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
 
         MockHttpServletResponse sr = dispatch(wrapper);
 
@@ -661,19 +633,18 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".xml";
 
-        final String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<seedRequest>\n"
-                        + "  <name>"
-                        + layerName
-                        + "</name>\n"
-                        + "  <gridSetId>EPSG:4326</gridSetId>\n"
-                        + "  <zoomStart>0</zoomStart>\n"
-                        + "  <zoomStop>12</zoomStop>\n"
-                        + "  <format>image/png</format>\n"
-                        + "  <type>seed</type>\n"
-                        + "  <threadCount>1</threadCount>\n"
-                        + "</seedRequest>";
+        final String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<seedRequest>\n"
+                + "  <name>"
+                + layerName
+                + "</name>\n"
+                + "  <gridSetId>EPSG:4326</gridSetId>\n"
+                + "  <zoomStart>0</zoomStart>\n"
+                + "  <zoomStop>12</zoomStop>\n"
+                + "  <format>image/png</format>\n"
+                + "  <type>seed</type>\n"
+                + "  <threadCount>1</threadCount>\n"
+                + "</seedRequest>";
 
         MockHttpServletResponse sr = postAsServletResponse(url, xml);
         assertEquals(200, sr.getStatus());
@@ -685,17 +656,16 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         final String layerName = getLayerId(MockData.BASIC_POLYGONS);
         final String url = "gwc/rest/seed/" + layerName + ".json";
 
-        final String json =
-                "{ \"seedRequest\": {\n"
-                        + "  \"name\": \""
-                        + layerName
-                        + "\",\n"
-                        + "  \"gridSetId\": \"EPSG:4326\",\n"
-                        + "  \"zoomStart\": 0,\n"
-                        + "  \"zoomStop\": 12,\n"
-                        + "  \"type\": \"seed\",\n"
-                        + "  \"threadCount\": 1,\n"
-                        + "}}";
+        final String json = "{ \"seedRequest\": {\n"
+                + "  \"name\": \""
+                + layerName
+                + "\",\n"
+                + "  \"gridSetId\": \"EPSG:4326\",\n"
+                + "  \"zoomStart\": 0,\n"
+                + "  \"zoomStop\": 12,\n"
+                + "  \"type\": \"seed\",\n"
+                + "  \"threadCount\": 1,\n"
+                + "}}";
 
         MockHttpServletResponse sr = postAsServletResponse(url, json);
         assertEquals(200, sr.getStatus());
@@ -728,8 +698,7 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         request.setContentType("application/x-www-form-urlencoded");
         request.setContent(formData.getBytes(UTF_8));
 
-        BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
+        BufferedRequestWrapper wrapper = new BufferedRequestWrapper(request, "UTF-8", formData.getBytes(UTF_8));
 
         MockHttpServletResponse sr = dispatch(wrapper);
 
@@ -745,23 +714,22 @@ public class RESTIntegrationTest extends GeoServerSystemTestSupport {
         mediator.removeTileLayers(Lists.newArrayList(layerName));
         assertFalse(mediator.tileLayerExists(layerName));
 
-        final String xml =
-                "<GeoServerLayer>" //
-                        + " <enabled>true</enabled>" //
-                        + " <name>"
-                        + layerName
-                        + "</name>" //
-                        + " <mimeFormats><string>image/png8</string></mimeFormats>" //
-                        + " <gridSubsets>" //
-                        + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
-                        + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
-                        + " </gridSubsets>" //
-                        + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
-                        + " <cacheWarningSkips>\n"
-                        + "   <warning>Default</warning>\n"
-                        + "   <warning>FailedNearest</warning>\n"
-                        + " </cacheWarningSkips>"
-                        + "</GeoServerLayer>";
+        final String xml = "<GeoServerLayer>" //
+                + " <enabled>true</enabled>" //
+                + " <name>"
+                + layerName
+                + "</name>" //
+                + " <mimeFormats><string>image/png8</string></mimeFormats>" //
+                + " <gridSubsets>" //
+                + "  <gridSubset><gridSetName>GoogleCRS84Quad</gridSetName></gridSubset>" //
+                + "  <gridSubset><gridSetName>EPSG:4326</gridSetName></gridSubset>" //
+                + " </gridSubsets>" //
+                + " <metaWidthHeight><int>9</int><int>6</int></metaWidthHeight>" //
+                + " <cacheWarningSkips>\n"
+                + "   <warning>Default</warning>\n"
+                + "   <warning>FailedNearest</warning>\n"
+                + " </cacheWarningSkips>"
+                + "</GeoServerLayer>";
 
         final String url = "gwc/rest/layers/" + layerName + ".xml";
 

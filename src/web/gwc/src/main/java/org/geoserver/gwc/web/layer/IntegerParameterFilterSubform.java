@@ -25,77 +25,73 @@ import org.geowebcache.filter.parameters.IntegerParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public class IntegerParameterFilterSubform
-        extends AbstractParameterFilterSubform<IntegerParameterFilter> {
+public class IntegerParameterFilterSubform extends AbstractParameterFilterSubform<IntegerParameterFilter> {
 
     private static final long serialVersionUID = 4625052381807389891L;
 
-    private static final IConverter<Integer> INTEGER =
-            new IConverter<Integer>() {
+    private static final IConverter<Integer> INTEGER = new IConverter<Integer>() {
 
-                private static final long serialVersionUID = -998131942023964739L;
+        private static final long serialVersionUID = -998131942023964739L;
 
-                @Override
-                public Integer convertToObject(String value, Locale locale) {
-                    if (value == null || value.isEmpty()) return null;
-                    try {
-                        return Integer.parseInt(value);
-                    } catch (NumberFormatException ex) {
-                        throw new ConversionException(ex)
-                                .setConverter(this)
-                                .setLocale(locale)
-                                .setTargetType(Integer.class)
-                                .setSourceValue(value)
-                                .setResourceKey("notAValidNumber");
-                    }
+        @Override
+        public Integer convertToObject(String value, Locale locale) {
+            if (value == null || value.isEmpty()) return null;
+            try {
+                return Integer.parseInt(value);
+            } catch (NumberFormatException ex) {
+                throw new ConversionException(ex)
+                        .setConverter(this)
+                        .setLocale(locale)
+                        .setTargetType(Integer.class)
+                        .setSourceValue(value)
+                        .setResourceKey("notAValidNumber");
+            }
+        }
+
+        @Override
+        public String convertToString(Integer value, Locale locale) {
+            return Integer.toString(value);
+        }
+    };
+
+    private static final IConverter<List<Integer>> CONVERT = new IConverter<List<Integer>>() {
+        /** serialVersionUID */
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public List<Integer> convertToObject(String value, Locale locale) {
+            if (value == null) {
+                return null;
+            } else {
+                String[] strings = StringUtils.split(value, "\r\n");
+                List<Integer> floats = new ArrayList<>(strings.length);
+
+                for (String s : strings) {
+                    floats.add(INTEGER.convertToObject(s, locale));
                 }
+                return floats;
+            }
+        }
 
-                @Override
-                public String convertToString(Integer value, Locale locale) {
-                    return Integer.toString(value);
-                }
-            };
-
-    private static final IConverter<List<Integer>> CONVERT =
-            new IConverter<List<Integer>>() {
-                /** serialVersionUID */
-                private static final long serialVersionUID = 1L;
-
-                @Override
-                public List<Integer> convertToObject(String value, Locale locale) {
-                    if (value == null) {
-                        return null;
-                    } else {
-                        String[] strings = StringUtils.split(value, "\r\n");
-                        List<Integer> floats = new ArrayList<>(strings.length);
-
-                        for (String s : strings) {
-                            floats.add(INTEGER.convertToObject(s, locale));
-                        }
-                        return floats;
-                    }
-                }
-
-                @Override
-                public String convertToString(List<Integer> value, Locale locale) {
-                    Iterator<Integer> i = value.iterator();
-                    StringBuilder sb = new StringBuilder();
-                    if (i.hasNext()) {
-                        sb.append(INTEGER.convertToString(i.next(), locale));
-                    }
-                    while (i.hasNext()) {
-                        sb.append("\r\n");
-                        sb.append(INTEGER.convertToString(i.next(), locale));
-                    }
-                    return sb.toString();
-                }
-            };
+        @Override
+        public String convertToString(List<Integer> value, Locale locale) {
+            Iterator<Integer> i = value.iterator();
+            StringBuilder sb = new StringBuilder();
+            if (i.hasNext()) {
+                sb.append(INTEGER.convertToString(i.next(), locale));
+            }
+            while (i.hasNext()) {
+                sb.append("\r\n");
+                sb.append(INTEGER.convertToString(i.next(), locale));
+            }
+            return sb.toString();
+        }
+    };
 
     public IntegerParameterFilterSubform(String id, IModel<IntegerParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue =
-                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final TextArea<List<Integer>> values =
@@ -114,19 +110,18 @@ public class IntegerParameterFilterSubform
         values.setConvertEmptyInputStringToNull(false);
         add(values);
 
-        final Component threshold =
-                new TextField<Integer>("threshold", new PropertyModel<>(model, "threshold")) {
-                    private static final long serialVersionUID = -3975284862791672686L;
+        final Component threshold = new TextField<Integer>("threshold", new PropertyModel<>(model, "threshold")) {
+            private static final long serialVersionUID = -3975284862791672686L;
 
-                    @SuppressWarnings("unchecked")
-                    @Override
-                    public <S> IConverter<S> getConverter(Class<S> type) {
-                        if (Integer.class.isAssignableFrom(type)) {
-                            return (IConverter<S>) INTEGER;
-                        }
-                        return super.getConverter(type);
-                    }
-                };
+            @SuppressWarnings("unchecked")
+            @Override
+            public <S> IConverter<S> getConverter(Class<S> type) {
+                if (Integer.class.isAssignableFrom(type)) {
+                    return (IConverter<S>) INTEGER;
+                }
+                return super.getConverter(type);
+            }
+        };
         add(threshold);
     }
 }

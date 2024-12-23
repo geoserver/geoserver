@@ -52,17 +52,16 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             this.items = items;
             // make sure we don't serialize the list, but get it fresh from the dataProvider,
             // to avoid serialization issues seen in GEOS-8273
-            this.properties =
-                    new LoadableDetachableModel<List<Property<T>>>() {
+            this.properties = new LoadableDetachableModel<List<Property<T>>>() {
 
-                        @Override
-                        protected List<Property<T>> load() {
-                            List result = new ArrayList<>(properties.getObject());
-                            result.add(0, POSITION);
-                            result.add(0, RENDERING_ORDER);
-                            return result;
-                        }
-                    };
+                @Override
+                protected List<Property<T>> load() {
+                    List result = new ArrayList<>(properties.getObject());
+                    result.add(0, POSITION);
+                    result.add(0, RENDERING_ORDER);
+                    return result;
+                }
+            };
         }
 
         @Override
@@ -77,8 +76,8 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     }
 
     /**
-     * Cannot declare these non static, because they would be initialized too late, and as static,
-     * they cannot have the right type argument
+     * Cannot declare these non static, because they would be initialized too late, and as static, they cannot have the
+     * right type argument
      */
     static Property<?> POSITION = new PropertyPlaceholder<>("position");
 
@@ -86,10 +85,7 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
 
     @SuppressWarnings("serial")
     public ReorderableTablePanel(
-            String id,
-            Class<T> contentsClass,
-            List<T> items,
-            IModel<List<Property<T>>> properties) {
+            String id, Class<T> contentsClass, List<T> items, IModel<List<Property<T>>> properties) {
         super(id, new ReorderableDataProvider<>(items, properties));
         this.items = items;
         this.setOutputMarkupId(true);
@@ -100,16 +96,17 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
                 new DropTarget(Operation.MOVE) {
 
                     @Override
-                    public void onDrop(
-                            AjaxRequestTarget target, Transfer transfer, Location location) {
+                    public void onDrop(AjaxRequestTarget target, Transfer transfer, Location location) {
                         if (location == null
-                                || !(contentsClass.isInstance(
-                                        location.getComponent().getDefaultModel().getObject()))) {
+                                || !(contentsClass.isInstance(location.getComponent()
+                                        .getDefaultModel()
+                                        .getObject()))) {
                             return;
                         }
                         T movedItem = transfer.getData();
                         @SuppressWarnings("unchecked")
-                        T targetItem = (T) location.getComponent().getDefaultModel().getObject();
+                        T targetItem =
+                                (T) location.getComponent().getDefaultModel().getObject();
                         if (movedItem.equals(targetItem)) {
                             return;
                         }
@@ -126,67 +123,61 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
     }
 
     @Override
-    protected void buildRowListView(
-            GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
+    protected void buildRowListView(GeoServerDataProvider<T> dataProvider, Item<T> item, IModel<T> itemModel) {
         // create one component per viewable property
-        IModel<List<Property<T>>> propertyList =
-                new LoadableDetachableModel<List<Property<T>>>() {
+        IModel<List<Property<T>>> propertyList = new LoadableDetachableModel<List<Property<T>>>() {
 
-                    @Override
-                    protected List<Property<T>> load() {
-                        return dataProvider.getVisibleProperties();
-                    }
-                };
-        ListView<Property<T>> items =
-                new ListView<Property<T>>("itemProperties", propertyList) {
+            @Override
+            protected List<Property<T>> load() {
+                return dataProvider.getVisibleProperties();
+            }
+        };
+        ListView<Property<T>> items = new ListView<Property<T>>("itemProperties", propertyList) {
 
-                    private static final long serialVersionUID = -7089826211241039856L;
+            private static final long serialVersionUID = -7089826211241039856L;
 
-                    @Override
-                    protected void populateItem(ListItem<Property<T>> item) {
-                        Property<T> property = item.getModelObject();
+            @Override
+            protected void populateItem(ListItem<Property<T>> item) {
+                Property<T> property = item.getModelObject();
 
-                        Component component = null;
-                        if (property == POSITION) {
-                            ParamResourceModel upTitle = new ParamResourceModel("moveToTop", this);
-                            ParamResourceModel downTitle =
-                                    new ParamResourceModel("moveToBottom", this);
-                            component =
-                                    new UpDownPanel<>(
-                                            "component",
-                                            itemModel.getObject(),
-                                            dataProvider.getItems(),
-                                            ReorderableTablePanel.this,
-                                            upTitle,
-                                            downTitle);
+                Component component = null;
+                if (property == POSITION) {
+                    ParamResourceModel upTitle = new ParamResourceModel("moveToTop", this);
+                    ParamResourceModel downTitle = new ParamResourceModel("moveToBottom", this);
+                    component = new UpDownPanel<>(
+                            "component",
+                            itemModel.getObject(),
+                            dataProvider.getItems(),
+                            ReorderableTablePanel.this,
+                            upTitle,
+                            downTitle);
 
-                        } else if (property == RENDERING_ORDER) {
-                            component = new Label("component", new Model<String>());
-                        } else {
-                            component = getComponentForProperty("component", itemModel, property);
-                        }
+                } else if (property == RENDERING_ORDER) {
+                    component = new Label("component", new Model<String>());
+                } else {
+                    component = getComponentForProperty("component", itemModel, property);
+                }
 
-                        if (component == null) {
-                            // show a plain label if the subclass did not create any component
-                            component = new Label("component", property.getModel(itemModel));
-                        } else if (!"component".equals(component.getId())) {
-                            // add some checks for the id, the error message
-                            // that wicket returns in case of mismatch is not
-                            // that helpful
-                            throw new IllegalArgumentException(
-                                    "getComponentForProperty asked "
-                                            + "to build a component "
-                                            + "with id = 'component' "
-                                            + "for property '"
-                                            + property.getName()
-                                            + "', but got '"
-                                            + component.getId()
-                                            + "' instead");
-                        }
-                        item.add(component);
-                        onPopulateItem(property, item);
-                    }
-                };
+                if (component == null) {
+                    // show a plain label if the subclass did not create any component
+                    component = new Label("component", property.getModel(itemModel));
+                } else if (!"component".equals(component.getId())) {
+                    // add some checks for the id, the error message
+                    // that wicket returns in case of mismatch is not
+                    // that helpful
+                    throw new IllegalArgumentException("getComponentForProperty asked "
+                            + "to build a component "
+                            + "with id = 'component' "
+                            + "for property '"
+                            + property.getName()
+                            + "', but got '"
+                            + component.getId()
+                            + "' instead");
+                }
+                item.add(component);
+                onPopulateItem(property, item);
+            }
+        };
         items.setReuseItems(true);
         item.add(items);
 
@@ -200,16 +191,15 @@ public abstract class ReorderableTablePanel<T> extends GeoServerTablePanel<T> {
             @SuppressWarnings("unchecked")
             OddEvenItem<T> rowContainer = (OddEvenItem<T>) item.getParent().getParent();
             label.setDefaultModel(new Model<>(rowContainer.getIndex() + 1));
-            item.add(
-                    new Behavior() {
+            item.add(new Behavior() {
 
-                        private static final long serialVersionUID = 8429550827543813897L;
+                private static final long serialVersionUID = 8429550827543813897L;
 
-                        @Override
-                        public void onComponentTag(Component component, ComponentTag tag) {
-                            tag.put("style", "width:1%");
-                        }
-                    });
+                @Override
+                public void onComponentTag(Component component, ComponentTag tag) {
+                    tag.put("style", "width:1%");
+                }
+            });
         }
     }
 

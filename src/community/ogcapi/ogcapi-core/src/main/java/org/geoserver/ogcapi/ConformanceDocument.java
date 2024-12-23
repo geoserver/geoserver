@@ -21,9 +21,7 @@ public class ConformanceDocument extends AbstractDocument {
         // keep it editable, regardless of how the source has been provided
         this.conformsTo = new ArrayList<>(conformsTo);
 
-        addSelfLinks(
-                ResponseUtils.appendPath(
-                        APIRequestInfo.get().getServiceLandingPage(), "conformance"));
+        addSelfLinks(ResponseUtils.appendPath(APIRequestInfo.get().getServiceLandingPage(), "conformance"));
     }
 
     /**

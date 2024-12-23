@@ -10,8 +10,7 @@ import java.io.IOException;
 import javax.imageio.stream.ImageOutputStream;
 
 /**
- * An image output stream, which limits its data size. This stream is used if the content length is
- * unknown.
+ * An image output stream, which limits its data size. This stream is used if the content length is unknown.
  *
  * @author "Alessio Fabiani - alessio.fabiani@geo-solutions.it"
  */
@@ -29,8 +28,7 @@ abstract class LimitedImageOutputStream extends FilterImageOutputStream {
      * Creates a new instance.
      *
      * @param pOut The input stream, which shall be limited.
-     * @param pSizeMax The limit; no more than this number of bytes shall be returned by the source
-     *     stream.
+     * @param pSizeMax The limit; no more than this number of bytes shall be returned by the source stream.
      */
     public LimitedImageOutputStream(ImageOutputStream pOut, long pSizeMax) {
         super(pOut);
@@ -68,8 +66,8 @@ abstract class LimitedImageOutputStream extends FilterImageOutputStream {
     }
 
     /**
-     * Closes this input stream and releases any system resources associated with the stream. This
-     * method simply performs <code>in.close()</code>.
+     * Closes this input stream and releases any system resources associated with the stream. This method simply
+     * performs <code>in.close()</code>.
      *
      * @throws IOException if an I/O error occurs.
      * @see java.io.FilterInputStream#in

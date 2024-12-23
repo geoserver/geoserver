@@ -60,8 +60,7 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testPutAsJSON() throws Exception {
         String json = "{'wfs': {'id':'wfs','enabled':'false','name':'WFS'}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/settings", json, "text/json");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings", json, "text/json");
         assertEquals(200, response.getStatus());
         JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
@@ -73,16 +72,14 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml =
-                "<wfs>"
-                        + "<id>wfs</id>"
-                        + "<enabled>disabled</enabled>"
-                        + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wfs>";
+        String xml = "<wfs>"
+                + "<id>wfs</id>"
+                + "<enabled>disabled</enabled>"
+                + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wfs>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
@@ -94,15 +91,13 @@ public class WFSSettingsControllerTest extends CatalogRESTTestSupport {
         GeoServer geoServer = getGeoServer();
         WFSInfo i = geoServer.getService(WFSInfo.class);
         i.setEnabled(true);
-        String xml =
-                "<wfs>"
-                        + "<id>wfs</id>"
-                        + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
-                        + "<maintainer>http://geoserver.org/comm</maintainer>"
-                        + "</wfs>";
+        String xml = "<wfs>"
+                + "<id>wfs</id>"
+                + "<name>WFS</name><title>GeoServer Web Feature Service</title>"
+                + "<maintainer>http://geoserver.org/comm</maintainer>"
+                + "</wfs>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/settings", xml, "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/settings.xml");
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);

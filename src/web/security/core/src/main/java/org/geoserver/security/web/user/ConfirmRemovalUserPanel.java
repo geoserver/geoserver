@@ -30,11 +30,10 @@ public class ConfirmRemovalUserPanel extends AbstractConfirmRemovalPanel<GeoServ
     protected String getConfirmationMessage(GeoServerUser object) throws Exception {
         StringBuffer buffer = new StringBuffer(OwsUtils.property(object, "username", String.class));
         if ((Boolean) getDefaultModelObject()) {
-            SortedSet<GeoServerRole> roles =
-                    GeoServerApplication.get()
-                            .getSecurityManager()
-                            .getActiveRoleService()
-                            .getRolesForUser(object.getUsername());
+            SortedSet<GeoServerRole> roles = GeoServerApplication.get()
+                    .getSecurityManager()
+                    .getActiveRoleService()
+                    .getRolesForUser(object.getUsername());
             buffer.append(" [");
             for (GeoServerRole role : roles) {
                 buffer.append(role.getAuthority());

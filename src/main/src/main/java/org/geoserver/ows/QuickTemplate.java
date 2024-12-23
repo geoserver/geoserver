@@ -7,17 +7,17 @@ package org.geoserver.ows;
 import java.util.Map;
 
 /**
- * Simpleton but fast template engine, replaces variables following the "${varName}" syntax into a
- * string. No escaping, no extras, but avoids building lots of strings to do its work and the
- * overhead of template instantiation of a true template engine.
+ * Simpleton but fast template engine, replaces variables following the "${varName}" syntax into a string. No escaping,
+ * no extras, but avoids building lots of strings to do its work and the overhead of template instantiation of a true
+ * template engine.
  *
  * @author Andrea Aime - GeoSolutions
  */
 class QuickTemplate {
 
     /**
-     * Simple replacement of a set of variables in a string with their values. The variable names to
-     * expand are case-insensitive.
+     * Simple replacement of a set of variables in a string with their values. The variable names to expand are
+     * case-insensitive.
      */
     static String replaceVariables(CharSequence template, Map<String, String> variables) {
         StringBuilder sb = new StringBuilder(template.toString().toLowerCase());

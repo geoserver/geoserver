@@ -73,26 +73,25 @@ public class DbMappings {
     private BiMap<Class<?>, Integer> typeIds;
 
     /**
-     * Per type oid property types. Keys are {@link #getTypeId(Class) type ids}, values are a map of
-     * property name to property type for that type of object.
+     * Per type oid property types. Keys are {@link #getTypeId(Class) type ids}, values are a map of property name to
+     * property type for that type of object.
      */
     private Map<Integer, Map<String, PropertyType>> propertyTypes;
 
     @SuppressWarnings("unchecked")
-    private static final Set<Class<? extends Serializable>> INDEXABLE_TYPES =
-            ImmutableSet.of( //
-                    String.class, //
-                    Boolean.class, //
-                    Number.class, //
-                    BigInteger.class, //
-                    BigDecimal.class, //
-                    Byte.class, //
-                    Short.class, //
-                    Integer.class, //
-                    Long.class, //
-                    Float.class, //
-                    Double.class //
-                    );
+    private static final Set<Class<? extends Serializable>> INDEXABLE_TYPES = ImmutableSet.of( //
+            String.class, //
+            Boolean.class, //
+            Number.class, //
+            BigInteger.class, //
+            BigDecimal.class, //
+            Byte.class, //
+            Short.class, //
+            Integer.class, //
+            Long.class, //
+            Float.class, //
+            Double.class //
+            );
 
     public DbMappings(Dialect dialect) {
         this.dialect = dialect;
@@ -138,8 +137,7 @@ public class DbMappings {
 
         // create all nested and/or collection properties, both self and related to other objects,
         // as defined nested_properties.properties
-        final Multimap<Class<?>, PropertyTypeDef> nestedPropertyTypeDefs =
-                loadNestedPropertyTypeDefs();
+        final Multimap<Class<?>, PropertyTypeDef> nestedPropertyTypeDefs = loadNestedPropertyTypeDefs();
 
         for (ClassMappings cm : classMsappings) {
             Class<? extends Info> clazz = cm.getInterface();
@@ -157,13 +155,17 @@ public class DbMappings {
 
         final String propertyName;
 
-        @Nullable final Class<?> targetPropertyOf;
+        @Nullable
+        final Class<?> targetPropertyOf;
 
-        @Nullable final String targetPropertyName;
+        @Nullable
+        final String targetPropertyName;
 
-        @Nullable final boolean isCollection;
+        @Nullable
+        final boolean isCollection;
 
-        @Nullable final Boolean isText;
+        @Nullable
+        final Boolean isText;
 
         public PropertyTypeDef(
                 Class<?> propertyOf,
@@ -222,12 +224,9 @@ public class DbMappings {
                 }
                 String colType = propTarget.length > 1 ? propTarget[1] : null;
                 String textType =
-                        propTarget.length > 1
-                                ? (propTarget.length > 2 ? propTarget[2] : propTarget[1])
-                                : null;
+                        propTarget.length > 1 ? (propTarget.length > 2 ? propTarget[2] : propTarget[1]) : null;
 
-                collectionProperty =
-                        "list".equalsIgnoreCase(colType) || "set".equalsIgnoreCase(colType);
+                collectionProperty = "list".equalsIgnoreCase(colType) || "set".equalsIgnoreCase(colType);
                 if ("text".equalsIgnoreCase(textType)) {
                     textProperty = Boolean.TRUE;
                 } else {
@@ -235,14 +234,8 @@ public class DbMappings {
                 }
             }
 
-            PropertyTypeDef ptd =
-                    new PropertyTypeDef(
-                            objectType,
-                            propertyName,
-                            targetObjectType,
-                            targetPropertyName,
-                            collectionProperty,
-                            textProperty);
+            PropertyTypeDef ptd = new PropertyTypeDef(
+                    objectType, propertyName, targetObjectType, targetPropertyName, collectionProperty, textProperty);
 
             byTypePropDefs.put(objectType, ptd);
         }
@@ -277,37 +270,33 @@ public class DbMappings {
         throw new IllegalArgumentException("Unknown type: '" + simpleClassName + "'");
     }
 
-    private Map<Integer, Map<String, PropertyType>> loadPropertyTypes(
-            NamedParameterJdbcOperations template) {
-        final String query =
-                "SELECT oid, target_property, type_id, name, collection, text FROM property_type";
-        RowMapper<PropertyType> rowMapper =
-                new RowMapper<PropertyType>() {
-                    @Override
-                    public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
-                        Integer oid = rs.getInt(1);
-                        // cannot use getInteger and we might get BigDecimal or Integer
-                        Number targetPropertyOid = (Number) rs.getObject(2);
-                        Integer objectTypeOid = rs.getInt(3);
-                        String propertyName = rs.getString(4);
-                        Boolean collectionProperty = rs.getBoolean(5);
-                        Boolean textProperty = rs.getBoolean(6);
+    private Map<Integer, Map<String, PropertyType>> loadPropertyTypes(NamedParameterJdbcOperations template) {
+        final String query = "SELECT oid, target_property, type_id, name, collection, text FROM property_type";
+        RowMapper<PropertyType> rowMapper = new RowMapper<PropertyType>() {
+            @Override
+            public PropertyType mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer oid = rs.getInt(1);
+                // cannot use getInteger and we might get BigDecimal or Integer
+                Number targetPropertyOid = (Number) rs.getObject(2);
+                Integer objectTypeOid = rs.getInt(3);
+                String propertyName = rs.getString(4);
+                Boolean collectionProperty = rs.getBoolean(5);
+                Boolean textProperty = rs.getBoolean(6);
 
-                        if (targetPropertyOid != null) {
-                            targetPropertyOid = targetPropertyOid.intValue();
-                        }
-                        PropertyType pt =
-                                new PropertyType(
-                                        oid,
-                                        (Integer) targetPropertyOid,
-                                        objectTypeOid,
-                                        propertyName,
-                                        collectionProperty,
-                                        textProperty);
+                if (targetPropertyOid != null) {
+                    targetPropertyOid = targetPropertyOid.intValue();
+                }
+                PropertyType pt = new PropertyType(
+                        oid,
+                        (Integer) targetPropertyOid,
+                        objectTypeOid,
+                        propertyName,
+                        collectionProperty,
+                        textProperty);
 
-                        return pt;
-                    }
-                };
+                return pt;
+            }
+        };
 
         logStatement(query, null);
         List<PropertyType> propertyTypes = template.query(query, rowMapper);
@@ -351,9 +340,7 @@ public class DbMappings {
 
         final String typeName = clazz.getName();
         String sql =
-                String.format(
-                        "INSERT INTO type (typename, oid) VALUES (:typeName, %s)",
-                        dialect.nextVal("seq_TYPE"));
+                String.format("INSERT INTO type (typename, oid) VALUES (:typeName, %s)", dialect.nextVal("seq_TYPE"));
         Map<String, ?> params = params("typeName", typeName);
         logStatement(sql, params);
         int update = template.update(sql, params);
@@ -381,15 +368,10 @@ public class DbMappings {
 
             Class<?> returnType = getter.getReturnType();
 
-            if (returnType.isPrimitive()
-                    || returnType.isEnum()
-                    || INDEXABLE_TYPES.contains(returnType)) {
+            if (returnType.isPrimitive() || returnType.isEnum() || INDEXABLE_TYPES.contains(returnType)) {
 
-                final Class<?> componentType =
-                        returnType.isArray() ? returnType.getComponentType() : returnType;
-                boolean isText =
-                        componentType.isEnum()
-                                || CharSequence.class.isAssignableFrom(componentType);
+                final Class<?> componentType = returnType.isArray() ? returnType.getComponentType() : returnType;
+                boolean isText = componentType.isEnum() || CharSequence.class.isAssignableFrom(componentType);
 
                 isText &= !"id".equals(propertyName); // id is not on the full text search list of
                 // properties
@@ -404,8 +386,7 @@ public class DbMappings {
 
     /** */
     private void addNestedPropertyTypes(
-            final NamedParameterJdbcOperations template,
-            Collection<PropertyTypeDef> nestedPropDefs) {
+            final NamedParameterJdbcOperations template, Collection<PropertyTypeDef> nestedPropDefs) {
 
         for (PropertyTypeDef ptd : nestedPropDefs) {
             final Class<?> propertyOf = ptd.propertyOf;
@@ -447,8 +428,7 @@ public class DbMappings {
                 checkState(targetPropertyType != null);
             }
             boolean text = isText == null ? false : isText.booleanValue();
-            addPropertyType(
-                    template, propertyOf, propertyName, targetPropertyType, isCollection, text);
+            addPropertyType(template, propertyOf, propertyName, targetPropertyType, isCollection, text);
         }
     }
 
@@ -464,8 +444,7 @@ public class DbMappings {
     }
 
     /**
-     * @return the newly added property type, or {@code null} if it was not added to the database
-     *     (i.e. already exists)
+     * @return the newly added property type, or {@code null} if it was not added to the database (i.e. already exists)
      */
     private PropertyType addPropertyType(
             final NamedParameterJdbcOperations template,
@@ -486,9 +465,7 @@ public class DbMappings {
         Map<String, ?> params;
 
         log("Checking for ", propertyName);
-        String query =
-                "SELECT COUNT(*) FROM property_type "
-                        + "WHERE type_id = :objectType AND name = :propName";
+        String query = "SELECT COUNT(*) FROM property_type " + "WHERE type_id = :objectType AND name = :propName";
         params = params("objectType", typeId, "propName", propertyName);
         logStatement(query, params);
         final int exists = template.queryForObject(query, params, Integer.class);
@@ -500,49 +477,35 @@ public class DbMappings {
 
             Integer targetPropertyOid = targetProperty == null ? null : targetProperty.getOid();
 
-            String insert =
-                    String.format(
-                            "INSERT INTO property_type (oid, target_property, type_id, name, collection, text) "
-                                    + "VALUES (%s, :target, :type, :name, :collection, :isText)",
-                            dialect.nextVal("seq_PROPERTY_TYPE"));
+            String insert = String.format(
+                    "INSERT INTO property_type (oid, target_property, type_id, name, collection, text) "
+                            + "VALUES (%s, :target, :type, :name, :collection, :isText)",
+                    dialect.nextVal("seq_PROPERTY_TYPE"));
 
-            params =
-                    params(
-                            "target",
-                            targetPropertyOid,
-                            "type",
-                            typeId,
-                            "name",
-                            propertyName,
-                            "collection",
-                            isCollection,
-                            "isText",
-                            isText);
+            params = params(
+                    "target",
+                    targetPropertyOid,
+                    "type",
+                    typeId,
+                    "name",
+                    propertyName,
+                    "collection",
+                    isCollection,
+                    "isText",
+                    isText);
             logStatement(insert, params);
             KeyHolder keyHolder = new GeneratedKeyHolder();
-            template.update(
-                    insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
+            template.update(insert, new MapSqlParameterSource(params), keyHolder, new String[] {"oid"});
 
             // looks like some db's return the pk different than others, so lets try both ways
             Number pTypeKey = (Number) keyHolder.getKeys().get("oid");
             if (pTypeKey == null) {
                 pTypeKey = keyHolder.getKey();
             }
-            pType =
-                    new PropertyType(
-                            pTypeKey.intValue(),
-                            targetPropertyOid,
-                            typeId,
-                            propertyName,
-                            isCollection,
-                            isText);
+            pType = new PropertyType(
+                    pTypeKey.intValue(), targetPropertyOid, typeId, propertyName, isCollection, isText);
         } else {
-            log(
-                    "Not adding property type ",
-                    infoClazz.getSimpleName(),
-                    ".",
-                    propertyName,
-                    " as it already exists");
+            log("Not adding property type ", infoClazz.getSimpleName(), ".", propertyName, " as it already exists");
             pType = null;
         }
 
@@ -691,8 +654,7 @@ public class DbMappings {
                 // HACK for derived property, ModificationProxy evaluates it to old value. Remove
                 // when layer name is decoupled from resource name
                 value = ((LayerInfo) object).getResource().getTitle();
-            } else if (object instanceof PublishedInfo
-                    && "prefixedName".equalsIgnoreCase(propertyName)) {
+            } else if (object instanceof PublishedInfo && "prefixedName".equalsIgnoreCase(propertyName)) {
                 // HACK for derived property, it is not a regular javabean property
                 value = ((PublishedInfo) object).prefixedName();
             } else {

@@ -34,16 +34,14 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testFullRequest() throws Exception {
 
-        MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsmlp:BoreholeView&outputFormat=csv");
+        MockHttpServletResponse resp = getAsServletResponse(
+                "wfs?service=WFS&version=1.1.0&request=GetFeature&typename=gsmlp:BoreholeView&outputFormat=csv");
 
         // check the mime type
         assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
 
         // check the content disposition
-        assertEquals(
-                "attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
         List<String[]> lines = readLines(resp.getContentAsString());
@@ -83,33 +81,30 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     public void testFilter() throws Exception {
         String IDENTIFIER = "borehole.GA.17338";
 
-        String xml =
-                "<wfs:GetFeature service=\"WFS\" " //
-                        + "version=\"1.1.0\" " //
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
-                        + "xmlns:gsmlp=\"http://xmlns.geosciml.org/geosciml-portrayal/2.0\" >" //
-                        + "    <wfs:Query typeName=\"gsmlp:BoreholeView\" outputFormat=\"csv\">" //
-                        + "        <ogc:Filter>" //
-                        + "            <ogc:PropertyIsEqualTo>" //
-                        + "                <ogc:Literal>"
-                        + IDENTIFIER
-                        + "</ogc:Literal>" //
-                        + "                <ogc:PropertyName>gsmlp:identifier</ogc:PropertyName>" //
-                        + "            </ogc:PropertyIsEqualTo>" //
-                        + "        </ogc:Filter>" //
-                        + "    </wfs:Query> " //
-                        + "</wfs:GetFeature>";
-        MockHttpServletResponse resp =
-                postAsServletResponse(
-                        "wfs?service=WFS&request=GetFeature&version=1.1.0&typeName=gsmlp:BoreholeView&outputFormat=csv",
-                        xml,
-                        "text/csv");
+        String xml = "<wfs:GetFeature service=\"WFS\" " //
+                + "version=\"1.1.0\" " //
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" " //
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" " //
+                + "xmlns:gsmlp=\"http://xmlns.geosciml.org/geosciml-portrayal/2.0\" >" //
+                + "    <wfs:Query typeName=\"gsmlp:BoreholeView\" outputFormat=\"csv\">" //
+                + "        <ogc:Filter>" //
+                + "            <ogc:PropertyIsEqualTo>" //
+                + "                <ogc:Literal>"
+                + IDENTIFIER
+                + "</ogc:Literal>" //
+                + "                <ogc:PropertyName>gsmlp:identifier</ogc:PropertyName>" //
+                + "            </ogc:PropertyIsEqualTo>" //
+                + "        </ogc:Filter>" //
+                + "    </wfs:Query> " //
+                + "</wfs:GetFeature>";
+        MockHttpServletResponse resp = postAsServletResponse(
+                "wfs?service=WFS&request=GetFeature&version=1.1.0&typeName=gsmlp:BoreholeView&outputFormat=csv",
+                xml,
+                "text/csv");
         // check the mime type
         assertEquals("text/csv", getBaseMimeType(resp.getContentType()));
         // check the content disposition
-        assertEquals(
-                "attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=BoreholeView.csv", resp.getHeader("Content-Disposition"));
 
         // read the response back with a parser that can handle escaping, newlines and what not
         List<String[]> lines = readLines(resp.getContentAsString());
@@ -180,10 +175,7 @@ public class CSVOutputFormatTest extends AbstractAppSchemaTestSupport {
     //
     //    }
 
-    /**
-     * Convenience to read the csv content . Copied from {@link
-     * org.geoserver.wfs.response.CSVOutputFormatTest}
-     */
+    /** Convenience to read the csv content . Copied from {@link org.geoserver.wfs.response.CSVOutputFormatTest} */
     static List<String[]> readLines(String csvContent) throws IOException {
         CSVReader reader = new CSVReader(new StringReader(csvContent));
 

@@ -25,38 +25,32 @@ public class TemplateUtils {
     public static Version FM_VERSION = Configuration.VERSION_2_3_0;
 
     /** Classes that should not be resolved in Freemarker templates */
-    private static final Collection<String> ILLEGAL_FREEMARKER_CLASSES =
-            Arrays.asList(
-                    freemarker.template.utility.ObjectConstructor.class.getName(),
-                    freemarker.template.utility.Execute.class.getName(),
-                    "freemarker.template.utility.JythonRuntime");
+    private static final Collection<String> ILLEGAL_FREEMARKER_CLASSES = Arrays.asList(
+            freemarker.template.utility.ObjectConstructor.class.getName(),
+            freemarker.template.utility.Execute.class.getName(),
+            "freemarker.template.utility.JythonRuntime");
 
-    /**
-     * Classes that should be resolved in Freemarker templates, even if they would not be by default
-     */
+    /** Classes that should be resolved in Freemarker templates, even if they would not be by default */
     private static final Collection<String> LEGAL_FREEMARKER_CLASSES = Arrays.asList();
 
     /** Get a Freemarker configuration that is safe against malicious templates */
     public static Configuration getSafeConfiguration() {
         Configuration config = new Configuration(DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
-        config.setNewBuiltinClassResolver(
-                (name, env, template) -> {
-                    if (ILLEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
-                        throw new TemplateException(
-                                String.format(
-                                        "Class %s is not allowed in Freemarker templates", name),
-                                env);
-                    }
-                    if (LEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
-                        try {
-                            ClassUtil.forName(name);
-                        } catch (ClassNotFoundException e) {
-                            throw new TemplateException(e, env);
-                        }
-                    }
+        config.setNewBuiltinClassResolver((name, env, template) -> {
+            if (ILLEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
+                throw new TemplateException(
+                        String.format("Class %s is not allowed in Freemarker templates", name), env);
+            }
+            if (LEGAL_FREEMARKER_CLASSES.stream().anyMatch(name::equals)) {
+                try {
+                    ClassUtil.forName(name);
+                } catch (ClassNotFoundException e) {
+                    throw new TemplateException(e, env);
+                }
+            }
 
-                    return TemplateClassResolver.SAFER_RESOLVER.resolve(name, env, template);
-                });
+            return TemplateClassResolver.SAFER_RESOLVER.resolve(name, env, template);
+        });
         return config;
     }
 }

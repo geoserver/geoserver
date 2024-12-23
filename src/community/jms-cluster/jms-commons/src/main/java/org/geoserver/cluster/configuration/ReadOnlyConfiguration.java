@@ -16,8 +16,7 @@ public final class ReadOnlyConfiguration implements JMSConfigurationExt {
 
     public static final String READ_ONLY_KEY = "readOnly";
 
-    public static final String DEFAULT_READ_ONLY_VALUE =
-            ReadOnlyConfigurationStatus.disabled.toString();
+    public static final String DEFAULT_READ_ONLY_VALUE = ReadOnlyConfigurationStatus.disabled.toString();
 
     public static enum ReadOnlyConfigurationStatus {
         enabled,
@@ -39,7 +38,6 @@ public final class ReadOnlyConfiguration implements JMSConfigurationExt {
         if (statusObj == null) {
             statusObj = ReadOnlyConfiguration.DEFAULT_READ_ONLY_VALUE;
         }
-        return ReadOnlyConfigurationStatus.valueOf(statusObj.toString())
-                .equals(ReadOnlyConfigurationStatus.enabled);
+        return ReadOnlyConfigurationStatus.valueOf(statusObj.toString()).equals(ReadOnlyConfigurationStatus.enabled);
     }
 }

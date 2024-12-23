@@ -86,8 +86,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         return result;
     }
 
-    private void findAndReplace(
-            JsonNode result, List<JsonNode> replaced, List<JsonNode> replacements) {
+    private void findAndReplace(JsonNode result, List<JsonNode> replaced, List<JsonNode> replacements) {
         if (result.isObject()) {
             ObjectNode objectNode = (ObjectNode) result;
             findAndReplaceInObj(objectNode, replaced, replacements);
@@ -97,8 +96,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         }
     }
 
-    private void findAndReplaceInObj(
-            ObjectNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
+    private void findAndReplaceInObj(ObjectNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
         Iterator<String> names = currNode.fieldNames();
         while (names.hasNext()) {
             String name = names.next();
@@ -114,8 +112,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
         }
     }
 
-    private void findAndReplaceInArray(
-            ArrayNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
+    private void findAndReplaceInArray(ArrayNode currNode, List<JsonNode> replaced, List<JsonNode> replacements) {
         for (int i = 0; i < currNode.size(); i++) {
             JsonNode node = currNode.get(i);
             int index = replaced.indexOf(node);
@@ -137,8 +134,7 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                     MERGE_KEY + " property must have a string value, pointing to a base template");
         Resource mergeResource = getResource(this.resource, mergeValue.textValue());
         if (mergeResource.getType() != Resource.Type.RESOURCE)
-            throw new IllegalArgumentException(
-                    MERGE_KEY + " resource " + mergeResource.path() + " could not be found");
+            throw new IllegalArgumentException(MERGE_KEY + " resource " + mergeResource.path() + " could not be found");
 
         // load the other template, using the recursive loading
         RecursiveJSONParser delegate = new RecursiveJSONParser(this, mergeResource);
@@ -168,16 +164,13 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
             JsonNode node = input.get(name);
             // each if here handles a case and "exits" to the next loop iteration
             if (name.equals(INCLUDE_KEY)) {
-                throw new IllegalArgumentException(
-                        "Cannot have an include directive as the key in an object, "
-                                + "only $includeFlat can be used here");
+                throw new IllegalArgumentException("Cannot have an include directive as the key in an object, "
+                        + "only $includeFlat can be used here");
             }
             if (name.equals(INCLUDE_FLAT_KEY)) {
                 if (!node.isTextual()) {
                     throw new IllegalArgumentException(
-                            "The value of a "
-                                    + INCLUDE_FLAT_KEY
-                                    + " key must be the path of the file being included");
+                            "The value of a " + INCLUDE_FLAT_KEY + " key must be the path of the file being included");
                 }
                 if (!isDynamicIncludeFlat(node)) {
                     // ok we need to include a json file
@@ -244,10 +237,9 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
                     } else if (processed.isValueNode()) {
                         result.add(processed);
                     } else {
-                        throw new IllegalArgumentException(
-                                "This include flat is in an array, "
-                                        + "the included object can only be another array or a value, but it's not: "
-                                        + txt);
+                        throw new IllegalArgumentException("This include flat is in an array, "
+                                + "the included object can only be another array or a value, but it's not: "
+                                + txt);
                     }
                     continue;
                 }
@@ -260,8 +252,8 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     }
 
     /**
-     * Check is the provided text is an inclusion directive if so, extracts the inclusion, parses
-     * it, and provides the result to the consumer
+     * Check is the provided text is an inclusion directive if so, extracts the inclusion, parses it, and provides the
+     * result to the consumer
      *
      * @param value The JsonNode value that might contain the directive
      * @param directive The directive (INCLUDE_KEY or INCLUDE_FLAT_KEY)
@@ -277,8 +269,8 @@ public class RecursiveJSONParser extends RecursiveTemplateResourceParser {
     }
 
     /**
-     * Check is the provided text is an inclusion directive if so, extracts the inclusion, parses
-     * it, and provides the result to the consumer
+     * Check is the provided text is an inclusion directive if so, extracts the inclusion, parses it, and provides the
+     * result to the consumer
      *
      * @param value The text value that might contain the directive
      * @param directive The directive (INCLUDE_KEY or INCLUDE_FLAT_KEY)

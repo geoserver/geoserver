@@ -51,19 +51,16 @@ public class AzureBlobStorePageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible("blobConfigContainer:blobStoreForm");
 
         DropDownChoice typeOfBlobStore =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
         assertEquals(2, typeOfBlobStore.getChoices().size());
         assertEquals("Azure BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(1).toString());
 
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", AzureBlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", AzureBlobStorePanel.class);
 
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
         tester.assertVisible("blobConfigContainer:blobStoreForm");
     }
 
@@ -92,9 +89,7 @@ public class AzureBlobStorePageTest extends GeoServerWicketTestSupport {
         assertEquals("myContainer", azureConfig.getContainer());
         assertEquals("myAccountName", azureConfig.getAccountName());
         assertEquals("myAccountKey", azureConfig.getAccountKey());
-        assertEquals(
-                String.valueOf(AzureBlobStoreInfo.DEFAULT_CONNECTIONS),
-                azureConfig.getMaxConnections());
+        assertEquals(String.valueOf(AzureBlobStoreInfo.DEFAULT_CONNECTIONS), azureConfig.getMaxConnections());
 
         GWC.get().removeBlobStores(Collections.singleton("myblobstore"));
     }
@@ -118,8 +113,7 @@ public class AzureBlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         tester.assertVisible("blobConfigContainer:blobStoreForm");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", AzureBlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", AzureBlobStorePanel.class);
 
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "yourblobstore");

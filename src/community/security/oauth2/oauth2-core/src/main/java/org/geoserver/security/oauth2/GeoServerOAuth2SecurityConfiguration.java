@@ -24,14 +24,14 @@ import org.springframework.security.oauth2.client.token.grant.password.ResourceO
 import org.springframework.security.oauth2.common.AuthenticationScheme;
 
 /**
- * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must implement its own {@link
- * OAuth2RestTemplate}
+ * Base OAuth2 Configuration Class. Each OAuth2 specific Extension must implement its own {@link OAuth2RestTemplate}
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
 public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2SecurityConfiguration {
 
-    @Autowired protected Environment env;
+    @Autowired
+    protected Environment env;
 
     @Resource
     @Qualifier("accessTokenRequest")
@@ -73,24 +73,21 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     }
 
     /**
-     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of
-     * the provided resource.
+     * Rest template that is able to make OAuth2-authenticated REST requests with the credentials of the provided
+     * resource.
      */
     @Override
     public OAuth2RestTemplate geoServerOauth2RestTemplate() {
 
         OAuth2RestTemplate oAuth2RestTemplate = getOAuth2RestTemplate();
 
-        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider =
-                authorizationAccessTokenProvider();
+        AuthorizationCodeAccessTokenProvider authorizationCodeAccessTokenProvider = authorizationAccessTokenProvider();
 
-        AccessTokenProvider accessTokenProviderChain =
-                new AccessTokenProviderChain(
-                        Arrays.<AccessTokenProvider>asList(
-                                authorizationCodeAccessTokenProvider,
-                                new ImplicitAccessTokenProvider(),
-                                new ResourceOwnerPasswordAccessTokenProvider(),
-                                new ClientCredentialsAccessTokenProvider()));
+        AccessTokenProvider accessTokenProviderChain = new AccessTokenProviderChain(Arrays.<AccessTokenProvider>asList(
+                authorizationCodeAccessTokenProvider,
+                new ImplicitAccessTokenProvider(),
+                new ResourceOwnerPasswordAccessTokenProvider(),
+                new ClientCredentialsAccessTokenProvider()));
 
         oAuth2RestTemplate.setAccessTokenProvider(accessTokenProviderChain);
 
@@ -116,13 +113,13 @@ public abstract class GeoServerOAuth2SecurityConfiguration implements OAuth2Secu
     }
 
     /** Custom {@link AuthorizationCodeResourceDetails} */
-    protected static class GeoServerAuthorizationCodeResourceDetails
-            extends AuthorizationCodeResourceDetails {
+    protected static class GeoServerAuthorizationCodeResourceDetails extends AuthorizationCodeResourceDetails {
 
         /** @return true if the client is only a client and does not have any user related */
         @Override
         public boolean isClientOnly() {
             return true;
         }
-    };
+    }
+    ;
 }

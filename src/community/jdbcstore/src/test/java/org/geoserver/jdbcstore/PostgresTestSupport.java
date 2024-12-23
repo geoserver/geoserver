@@ -35,9 +35,8 @@ public class PostgresTestSupport implements DatabaseTestSupport {
         ds = createTestDataSource();
         conn = ds.getConnection();
         try {
-            insert =
-                    conn.prepareStatement(
-                            "INSERT INTO resources (name, parent, content) VALUES (?, ?, ?) RETURNING oid;");
+            insert = conn.prepareStatement(
+                    "INSERT INTO resources (name, parent, content) VALUES (?, ?, ?) RETURNING oid;");
         } finally {
             if (insert == null) conn.close();
         }
@@ -69,28 +68,22 @@ public class PostgresTestSupport implements DatabaseTestSupport {
     @Override
     public void stubConfig(JDBCResourceStoreProperties config) {
         expect(config.getInitScript())
-                .andStubReturn(
-                        URIs.asResource(
-                                JDBCResourceStoreProperties.class.getResource(
-                                        "init.postgres.sql")));
-        expect(config.getJdbcUrl())
-                .andStubReturn(Optional.of("jdbc:postgresql://localhost:5432/jdbcstoretest"));
+                .andStubReturn(URIs.asResource(JDBCResourceStoreProperties.class.getResource("init.postgres.sql")));
+        expect(config.getJdbcUrl()).andStubReturn(Optional.of("jdbc:postgresql://localhost:5432/jdbcstoretest"));
         expect(config.getJndiName()).andStubReturn(Optional.<String>absent());
         expect(config.getProperty(eq("username"))).andStubReturn("jdbcstore");
         expect(config.getProperty(eq("username"), (String) anyObject())).andStubReturn("jdbcstore");
         expect(config.getProperty(eq("password"))).andStubReturn("jdbcstore");
         expect(config.getProperty(eq("password"), (String) anyObject())).andStubReturn("jdbcstore");
         expect(config.getProperty(eq("driverClassName"))).andStubReturn("org.postgresql.Driver");
-        expect(config.getProperty(eq("driverClassName"), (String) anyObject()))
-                .andStubReturn("org.postgresql.Driver");
+        expect(config.getProperty(eq("driverClassName"), (String) anyObject())).andStubReturn("org.postgresql.Driver");
     }
 
     @Override
     public void initialize() throws Exception {
         NamedParameterJdbcTemplate template = new NamedParameterJdbcTemplate(ds);
 
-        try (InputStream in =
-                JDBCResourceStoreProperties.class.getResourceAsStream("init.postgres.sql")) {
+        try (InputStream in = JDBCResourceStoreProperties.class.getResourceAsStream("init.postgres.sql")) {
             Util.runScript(in, template.getJdbcOperations(), null);
         }
     }

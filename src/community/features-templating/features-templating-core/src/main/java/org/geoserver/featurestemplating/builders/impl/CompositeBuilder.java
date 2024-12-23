@@ -15,8 +15,8 @@ import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Groups {@link StaticBuilder} and {@link DynamicValueBuilder}, invoke them and set, if found, the
- * context from them, according to $source value in template file.
+ * Groups {@link StaticBuilder} and {@link DynamicValueBuilder}, invoke them and set, if found, the context from them,
+ * according to $source value in template file.
  */
 public class CompositeBuilder extends SourceBuilder {
 
@@ -29,8 +29,7 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         addSkipObjectEncodingHint(context);
         context = evaluateSource(context);
         Object o = context.getCurrentObj();
@@ -46,8 +45,7 @@ public class CompositeBuilder extends SourceBuilder {
      * @param context the context to be passed to the children
      * @throws IOException
      */
-    protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    protected void evaluateChildren(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (ownOutput) writer.startObject(getKey(context), encodingHints);
         for (TemplateBuilder jb : children) {
             jb.evaluate(writer, context);
@@ -56,18 +54,17 @@ public class CompositeBuilder extends SourceBuilder {
     }
 
     /**
-     * Check if it is possible to write its content to the output. By default, returns true if at
-     * least one of the child builders has a non null value
+     * Check if it is possible to write its content to the output. By default, returns true if at least one of the child
+     * builders has a non null value
      *
      * @param context the current context
      * @return true if can write the output, else false
      */
     @Override
     public boolean canWrite(TemplateBuilderContext context) {
-        List<TemplateBuilder> filtered =
-                children.stream()
-                        .filter(b -> b instanceof DynamicValueBuilder || b instanceof SourceBuilder)
-                        .collect(Collectors.toList());
+        List<TemplateBuilder> filtered = children.stream()
+                .filter(b -> b instanceof DynamicValueBuilder || b instanceof SourceBuilder)
+                .collect(Collectors.toList());
         if (filtered.size() == children.size()) {
             int falseCounter = 0;
             for (TemplateBuilder b : filtered) {

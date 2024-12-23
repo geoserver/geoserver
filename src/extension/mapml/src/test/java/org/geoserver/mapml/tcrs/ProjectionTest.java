@@ -17,13 +17,11 @@ public class ProjectionTest {
     private Projection proj;
 
     // this is necessary to avoid warnings during tests
-    protected static final ApplicationContext APPLICATION_CONTEXT =
-            new FileSystemXmlApplicationContext(
-                    "file:"
-                            + ProjectionTest.class
-                                    .getClassLoader()
-                                    .getResource("applicationContext.xml")
-                                    .getFile());
+    protected static final ApplicationContext APPLICATION_CONTEXT = new FileSystemXmlApplicationContext("file:"
+            + ProjectionTest.class
+                    .getClassLoader()
+                    .getResource("applicationContext.xml")
+                    .getFile());
 
     public ProjectionTest() {}
 

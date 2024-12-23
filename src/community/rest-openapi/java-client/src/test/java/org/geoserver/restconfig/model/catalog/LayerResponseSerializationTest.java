@@ -17,8 +17,7 @@ import org.junit.Test;
 public class LayerResponseSerializationTest extends SerializationTest {
 
     public @Test void testLayerResponseCoverage() throws IOException {
-        LayerResponse lrw =
-                decode("LayerResponse_Coverage.json", LayerInfo.class, LayerResponse.class);
+        LayerResponse lrw = decode("LayerResponse_Coverage.json", LayerInfo.class, LayerResponse.class);
         assertNotNull(lrw);
 
         Layer response = lrw.getLayer();
@@ -45,8 +44,7 @@ public class LayerResponseSerializationTest extends SerializationTest {
     }
 
     public @Test void testLayerResponseFeatureType() throws IOException {
-        LayerResponse lrw =
-                decode("LayerResponse_FeatureType.json", LayerInfo.class, LayerResponse.class);
+        LayerResponse lrw = decode("LayerResponse_FeatureType.json", LayerInfo.class, LayerResponse.class);
         assertNotNull(lrw);
 
         Layer response = lrw.getLayer();

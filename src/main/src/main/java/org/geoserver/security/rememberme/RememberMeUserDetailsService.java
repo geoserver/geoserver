@@ -20,8 +20,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
  * User details implementation for remember me services that handles usernames of the form
  * &lt;actualUserName>@&lt;userGroupServiceName>.
  *
- * <p>The user group component is used to load the appropriate {@link GeoServerUserGroupService} to
- * look up the user name against.
+ * <p>The user group component is used to load the appropriate {@link GeoServerUserGroupService} to look up the user
+ * name against.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -53,8 +53,7 @@ public class RememberMeUserDetailsService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException, DataAccessException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         Matcher m = TOKEN_PATTERN.matcher(username);
         if (!m.matches()) {
             throw new UsernameNotFoundException("No delimiter '@' found in username: " + username);

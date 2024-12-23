@@ -28,8 +28,7 @@ public class StylesTestSupport extends OGCApiTestSupport {
 
         // fix the bbox of the layers to get a good thumbnail
         CatalogBuilder cb = new CatalogBuilder(catalog);
-        for (FeatureTypeInfo ft :
-                catalog.getResourcesByNamespace(CiteTestData.CITE_URI, FeatureTypeInfo.class)) {
+        for (FeatureTypeInfo ft : catalog.getResourcesByNamespace(CiteTestData.CITE_URI, FeatureTypeInfo.class)) {
             cb.setupBounds(ft);
             catalog.save(ft);
         }
@@ -51,10 +50,7 @@ public class StylesTestSupport extends OGCApiTestSupport {
 
         // add a style groupd
         testData.addStyle(
-                "BasicStyleGroupStyle",
-                "BasicStyleGroup.sld",
-                CollectionCallbackIntegrationTest.class,
-                getCatalog());
+                "BasicStyleGroupStyle", "BasicStyleGroup.sld", CollectionCallbackIntegrationTest.class, getCatalog());
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         StyleInfo s = catalog.getStyleByName("BasicStyleGroupStyle");
 

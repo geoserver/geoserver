@@ -24,36 +24,35 @@ import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
 /**
- * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a
- * <code>ServiceExceptionReport</code> document.
+ * An implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
+ * ServiceExceptionReport</code> document.
  *
- * <p>This handler is referred to as "legacy" as newer services move to the ows style exception
- * report. See {@link org.geoserver.ows.OWS10ServiceExceptionHandler}.
+ * <p>This handler is referred to as "legacy" as newer services move to the ows style exception report. See
+ * {@link org.geoserver.ows.OWS10ServiceExceptionHandler}.
  *
  * <p>
  *
  * <h3>Version</h3>
  *
- * By default this exception handler will output a <code>ServiceExceptionReport</code> which is of
- * version <code>1.2.0</code>. This may be overriden with {@link #setVersion(String)}.
+ * By default this exception handler will output a <code>ServiceExceptionReport</code> which is of version <code>1.2.0
+ * </code>. This may be overriden with {@link #setVersion(String)}.
  *
  * <p>
  *
  * <h3>DTD and Schema</h3>
  *
- * By default, no DTD or XML Schema reference will be included in the document. The methods {@link
- * #setDTDLocation(String)} and {@link #setSchemaLocation(String)} can be used to override this
- * behaviour. Only one of these methods should be set per instance of this class.
+ * By default, no DTD or XML Schema reference will be included in the document. The methods
+ * {@link #setDTDLocation(String)} and {@link #setSchemaLocation(String)} can be used to override this behaviour. Only
+ * one of these methods should be set per instance of this class.
  *
- * <p>The supplied value should be relative, and will be appended to the result of {@link
- * OWS#getSchemaBaseURL()}.
+ * <p>The supplied value should be relative, and will be appended to the result of {@link OWS#getSchemaBaseURL()}.
  *
  * <p>
  *
  * <h3>Content Type</h3>
  *
- * The default content type for the created document is <code>text/xml</code>, this can be
- * overridden with {@link #setContentType(String)}.
+ * The default content type for the created document is <code>text/xml</code>, this can be overridden with
+ * {@link #setContentType(String)}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -125,13 +124,11 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
 
         // xml schema location
         if ((schemaLocation != null) && (dtdLocation == null)) {
-            String fullSchemaLocation =
-                    buildSchemaURL(baseURL(request.getHttpRequest()), schemaLocation);
+            String fullSchemaLocation = buildSchemaURL(baseURL(request.getHttpRequest()), schemaLocation);
 
             sb.append("xmlns=\"http://www.opengis.net/ogc\" ");
             sb.append("xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" ");
-            sb.append(
-                    "xsi:schemaLocation=\"http://www.opengis.net/ogc " + fullSchemaLocation + "\"");
+            sb.append("xsi:schemaLocation=\"http://www.opengis.net/ogc " + fullSchemaLocation + "\"");
         }
 
         sb.append(">");
@@ -181,8 +178,7 @@ public class LegacyServiceExceptionHandler extends ServiceExceptionHandler {
             // throw new RuntimeException(e);
             // Hmm, not much we can do here.  I guess log the fact that we couldn't write out the
             // exception and be done with it...
-            LOGGER.log(
-                    Level.INFO, "Problem writing exception information back to calling client:", e);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", e);
         }
     }
 }

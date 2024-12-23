@@ -38,11 +38,14 @@ public class TaskManagerDataUtil {
 
     private static Pattern PATTERN_ATTRIBUTEREF = Pattern.compile("^\\$\\{(.*)\\}$");
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
     // -------------------------
     // Non-transactional methods
@@ -73,8 +76,7 @@ public class TaskManagerDataUtil {
      * @param name the parameter name.
      * @param attName the attribute name.
      */
-    public void setTaskParameterToAttribute(
-            final Task task, final String name, final String attName) {
+    public void setTaskParameterToAttribute(final Task task, final String name, final String attName) {
         setTaskParameter(task, name, "${" + attName + "}");
     }
 
@@ -85,8 +87,7 @@ public class TaskManagerDataUtil {
      * @param name the attribute name.
      * @param value the attribute value.
      */
-    public void setConfigurationAttribute(
-            final Configuration config, final String name, final String value) {
+    public void setConfigurationAttribute(final Configuration config, final String name, final String value) {
         Attribute att = config.getAttributes().get(name);
         if (att == null) {
             att = fac.createAttribute();
@@ -126,9 +127,9 @@ public class TaskManagerDataUtil {
     }
 
     /**
-     * Add a batch element to a batch at the end of the batch. If a batch element with this
-     * combination batch/task already exists, (even if it has been soft removed) this batch element
-     * will be activated if necessary and returned.
+     * Add a batch element to a batch at the end of the batch. If a batch element with this combination batch/task
+     * already exists, (even if it has been soft removed) this batch element will be activated if necessary and
+     * returned.
      *
      * @param batch the batch.
      * @param task the task.
@@ -148,9 +149,9 @@ public class TaskManagerDataUtil {
     }
 
     /**
-     * Add a batch element to a batch on a particular position. If a batch element with this
-     * combination batch/task already exists, (even if it has been soft removed) this batch element
-     * will be activated if necessary and returned.
+     * Add a batch element to a batch on a particular position. If a batch element with this combination batch/task
+     * already exists, (even if it has been soft removed) this batch element will be activated if necessary and
+     * returned.
      *
      * @param batch the batch.
      * @param task the task.
@@ -311,10 +312,7 @@ public class TaskManagerDataUtil {
         }
     }
 
-    /**
-     * Close a batch run (do this when the batch run is no longer running, but its status suggests
-     * it is.)
-     */
+    /** Close a batch run (do this when the batch run is no longer running, but its status suggests it is.) */
     @Transactional("tmTransactionManager")
     public BatchRun closeBatchRun(BatchRun br, String message) {
         for (Run run : br.getRuns()) {

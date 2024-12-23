@@ -44,13 +44,8 @@ public class CollectionsTest extends CoveragesTestSupport {
     @Before
     public void revertChanges() throws IOException {
         CoverageInfo c = getCatalog().getCoverageByName("rs", "BlueMarble");
-        ReferencedEnvelope blueMarbleExtent =
-                new ReferencedEnvelope(
-                        146.49999999999477,
-                        147.99999999999474,
-                        -44.49999999999785,
-                        -42.99999999999787,
-                        c.getCRS());
+        ReferencedEnvelope blueMarbleExtent = new ReferencedEnvelope(
+                146.49999999999477, 147.99999999999474, -44.49999999999785, -42.99999999999787, c.getCRS());
         c.setLatLonBoundingBox(blueMarbleExtent);
         getCatalog().save(c);
     }
@@ -86,12 +81,9 @@ public class CollectionsTest extends CoveragesTestSupport {
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
 
         // check we have the expected number of links and they all use the right "rel"
-        Collection<MediaType> formats =
-                GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
-                        .getProducibleMediaTypes(CoveragesResponse.class, false);
-        assertThat(
-                formats.size(),
-                lessThanOrEqualTo(json.read("collections[0].links.length()", Integer.class)));
+        Collection<MediaType> formats = GeoServerExtensions.bean(APIDispatcher.class, applicationContext)
+                .getProducibleMediaTypes(CoveragesResponse.class, false);
+        assertThat(formats.size(), lessThanOrEqualTo(json.read("collections[0].links.length()", Integer.class)));
         for (MediaType format : formats) {
             // check rel.
             List items = json.read("collections[0].links[?(@.type=='" + format + "')]", List.class);
@@ -101,10 +93,7 @@ public class CollectionsTest extends CoveragesTestSupport {
 
         // check the global crs list
         List<String> crs = json.read("crs");
-        assertThat(
-                crs.size(),
-                Matchers.greaterThan(
-                        5000)); // lots... the list is growing, hopefully will stay above 5k
+        assertThat(crs.size(), Matchers.greaterThan(5000)); // lots... the list is growing, hopefully will stay above 5k
         assertThat(
                 crs,
                 hasItems(
@@ -122,41 +111,36 @@ public class CollectionsTest extends CoveragesTestSupport {
         // check a coverage with default CRSs
         assertThat(
                 json.read("collections[?(@.id=='rs:BlueMarble')].crs"),
-                contains(
-                        Arrays.asList(
-                                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                                "http://www.opengis.net/def/crs/EPSG/0/4326")));
+                contains(Arrays.asList(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84", "http://www.opengis.net/def/crs/EPSG/0/4326")));
 
         // a SRS list that has been customized in #onSetup
         // assignign to a variable makes the library return a List rather than a JSONContext
         List<String> rsDemCRSList = json.read("collections[?(@.id=='rs:DEM')].crs");
         assertThat(
                 rsDemCRSList,
-                contains(
-                        Arrays.asList(
-                                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                                "http://www.opengis.net/def/crs/EPSG/0/4326",
-                                "http://www.opengis.net/def/crs/EPSG/0/3857",
-                                "http://www.opengis.net/def/crs/EPSG/0/3003")));
+                contains(Arrays.asList(
+                        "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
+                        "http://www.opengis.net/def/crs/EPSG/0/4326",
+                        "http://www.opengis.net/def/crs/EPSG/0/3857",
+                        "http://www.opengis.net/def/crs/EPSG/0/3003")));
     }
 
     @Test
     public void testCollectionsWorkspaceSpecificJson() throws Exception {
         DocumentContext json = getAsJSONPath("rs/ogc/coverages/v1/collections", 200);
-        long expected =
-                getCatalog().getCoverages().stream()
-                        .filter(ci -> "rs".equals(ci.getStore().getWorkspace().getName()))
-                        .count();
+        long expected = getCatalog().getCoverages().stream()
+                .filter(ci -> "rs".equals(ci.getStore().getWorkspace().getName()))
+                .count();
         // check the filtering
         assertEquals(expected, (int) json.read("collections.length()", Integer.class));
         // check the workspace prefixes have been removed
         assertThat(json.read("collections[?(@.id=='BlueMarble')]"), not(empty()));
         assertThat(json.read("collections[?(@.id=='rs:BlueMarble')]"), empty());
         // check the url points to a ws qualified url
-        final String bmHrefPath =
-                "collections[?(@.id=='BlueMarble')].links[?(@.rel=='"
-                        + CollectionDocument.REL_COVERAGE
-                        + "' && @.type=='image/geotiff')].href";
+        final String bmHrefPath = "collections[?(@.id=='BlueMarble')].links[?(@.rel=='"
+                + CollectionDocument.REL_COVERAGE
+                + "' && @.type=='image/geotiff')].href";
         assertEquals(
                 "http://localhost:8080/geoserver/rs/ogc/coverages/v1/collections/BlueMarble/coverage?f=image%2Fgeotiff",
                 ((JSONArray) json.read(bmHrefPath)).get(0));
@@ -189,9 +173,11 @@ public class CollectionsTest extends CoveragesTestSupport {
         CoverageInfo coverage = getCatalog().getCoverageByName("rs:DEM");
         String tazDemName = coverage.prefixedName();
         String tazDemHtmlId = tazDemName.replace(":", "__");
-        assertEquals(TAZDEM_TITLE, document.select("#" + tazDemHtmlId + "_title").text());
         assertEquals(
-                TAZDEM_DESCRIPTION, document.select("#" + tazDemHtmlId + "_description").text());
+                TAZDEM_TITLE, document.select("#" + tazDemHtmlId + "_title").text());
+        assertEquals(
+                TAZDEM_DESCRIPTION,
+                document.select("#" + tazDemHtmlId + "_description").text());
     }
 
     @Test

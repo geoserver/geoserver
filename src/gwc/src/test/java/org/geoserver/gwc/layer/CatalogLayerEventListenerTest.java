@@ -80,8 +80,7 @@ public class CatalogLayerEventListenerTest {
         mockMediator = mock(GWC.class);
         when(mockMediator.getConfig()).thenReturn(configDefaults);
 
-        GridSetBroker gridsets =
-                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
+        GridSetBroker gridsets = new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
         when(mockMediator.getGridSetBroker()).thenReturn(gridsets);
 
         mockLayerInfo = mock(LayerInfo.class);
@@ -156,8 +155,7 @@ public class CatalogLayerEventListenerTest {
         when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
         listener.handleRemoveEvent(event);
 
-        verify(mockMediator)
-                .removeTileLayers(eq(Arrays.asList(GWC.tileLayerName(mockLayerGroupInfo))));
+        verify(mockMediator).removeTileLayers(eq(Arrays.asList(GWC.tileLayerName(mockLayerGroupInfo))));
     }
 
     @Test
@@ -177,8 +175,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getOldValues()).thenReturn(Arrays.asList(RESOURCE_NAME));
         when(modifyEvent.getNewValues()).thenReturn(Arrays.asList(renamedResouceName));
 
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
         when(tileLayer.getInfo()).thenReturn(info);
@@ -217,8 +214,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getOldValues()).thenReturn(Arrays.asList((Object) null));
         when(modifyEvent.getNewValues()).thenReturn(Arrays.asList(cqlFilter));
 
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(mockMediator.hasTileLayer(same(mockResourceInfo))).thenReturn(true);
         when(tileLayer.getInfo()).thenReturn(info);
@@ -251,8 +247,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getOldValues()).thenReturn(Arrays.asList(LAYER_GROUP_NAME));
         when(modifyEvent.getNewValues()).thenReturn(Arrays.asList(renamedGroupName));
 
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
         when(tileLayer.getPublishedInfo()).thenReturn(mockLayerGroupInfo);
@@ -296,8 +291,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getOldValues()).thenReturn(Arrays.asList((Object) null));
         when(modifyEvent.getNewValues()).thenReturn(Arrays.asList(workspace));
 
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
 
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
@@ -353,8 +347,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getOldValues()).thenReturn(Arrays.asList(mockNamespaceInfo));
         when(modifyEvent.getNewValues()).thenReturn(Arrays.asList(newNamespace));
 
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
         when(tileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
@@ -396,10 +389,8 @@ public class CatalogLayerEventListenerTest {
         GeoServerTileLayerInfo tileLayerInfo =
                 TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, mockMediator.getConfig());
 
-        GridSetBroker gridsets =
-                new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
-        GeoServerTileLayer tileLayer =
-                new GeoServerTileLayer(mockLayerGroupInfo, gridsets, tileLayerInfo);
+        GridSetBroker gridsets = new GridSetBroker(Collections.singletonList(new DefaultGridsets(true, true)));
+        GeoServerTileLayer tileLayer = new GeoServerTileLayer(mockLayerGroupInfo, gridsets, tileLayerInfo);
 
         when(mockMediator.hasTileLayer(same(mockLayerGroupInfo))).thenReturn(true);
         when(mockMediator.getTileLayer(same(mockLayerGroupInfo))).thenReturn(tileLayer);
@@ -427,8 +418,7 @@ public class CatalogLayerEventListenerTest {
         when(modifyEvent.getNewValues()).thenReturn(Collections.singletonList(newStyles));
 
         // the tile layer must exist on the layer metadata otherwise the event will be ignored
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerGroupInfo, GWCConfig.getOldDefaults());
         GeoServerTileLayer tileLayer = mock(GeoServerTileLayer.class);
         when(tileLayer.getInfo()).thenReturn(info);
 
@@ -469,8 +459,7 @@ public class CatalogLayerEventListenerTest {
         when(mockMediator.getTileLayer(mockLayerGroupInfo)).thenReturn(lgTileLayer);
 
         // the tile layer must exist on the layer metadata otherwise the event will be ignored
-        GeoServerTileLayerInfo info =
-                TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
+        GeoServerTileLayerInfo info = TileLayerInfoUtil.loadOrCreate(mockLayerInfo, GWCConfig.getOldDefaults());
         when(tileLayer.getInfo()).thenReturn(info);
 
         // same goes for the group layer
@@ -539,26 +528,22 @@ public class CatalogLayerEventListenerTest {
         listener.handlePostModifyEvent(postModifyEvent);
 
         // check removedStyleName was truncated
-        verify(mockMediator)
-                .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq("removedStyleName"));
+        verify(mockMediator).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq("removedStyleName"));
         // check no other style was truncated
         verify(mockMediator, atMost(1)).truncateByLayerAndStyle(anyString(), anyString());
         // verify only got modified
-        verify(mockMediator)
-                .save(
-                        argThat(
-                                new BaseMatcher<GeoServerTileLayer>() {
+        verify(mockMediator).save(argThat(new BaseMatcher<GeoServerTileLayer>() {
 
-                                    @Override
-                                    public boolean matches(Object item) {
-                                        GeoServerTileLayer tl = (GeoServerTileLayer) item;
-                                        return tl.getPublishedInfo() == mockLayerInfo;
-                                    }
+            @Override
+            public boolean matches(Object item) {
+                GeoServerTileLayer tl = (GeoServerTileLayer) item;
+                return tl.getPublishedInfo() == mockLayerInfo;
+            }
 
-                                    @Override
-                                    public void describeTo(Description description) {
-                                        // TODO Auto-generated method stub
-                                    }
-                                }));
+            @Override
+            public void describeTo(Description description) {
+                // TODO Auto-generated method stub
+            }
+        }));
     }
 }

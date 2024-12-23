@@ -51,79 +51,67 @@ public abstract class LayerListPanel extends GeoServerTablePanel<LayerInfo> {
 
     static Property<LayerInfo> STORE = new BeanProperty<>("store", "resource.store.name");
 
-    static Property<LayerInfo> WORKSPACE =
-            new BeanProperty<>("workspace", "resource.store.workspace.name");
+    static Property<LayerInfo> WORKSPACE = new BeanProperty<>("workspace", "resource.store.workspace.name");
 
     public LayerListPanel(String id, final WorkspaceInfo workspace) {
-        this(
-                id,
-                new LayerListProvider() {
+        this(id, new LayerListProvider() {
 
-                    private static final long serialVersionUID = 426375054014475107L;
+            private static final long serialVersionUID = 426375054014475107L;
 
-                    @Override
-                    @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
-                    public Iterator<LayerInfo> iterator(final long first, final long count) {
-                        Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
-                        if (iterator instanceof CloseableIterator) {
-                            // don't know how to force wicket to close the iterator, lets return
-                            // a copy. Shouldn't be much overhead as we're paging
-                            try {
-                                return Lists.newArrayList(iterator).iterator();
-                            } finally {
-                                CloseableIteratorAdapter.close(iterator);
-                            }
-                        } else {
-                            return iterator;
-                        }
+            @Override
+            @SuppressWarnings("PMD.UseTryWithResources") // iterator needs to be tested
+            public Iterator<LayerInfo> iterator(final long first, final long count) {
+                Iterator<LayerInfo> iterator = filteredItems((int) first, (int) count);
+                if (iterator instanceof CloseableIterator) {
+                    // don't know how to force wicket to close the iterator, lets return
+                    // a copy. Shouldn't be much overhead as we're paging
+                    try {
+                        return Lists.newArrayList(iterator).iterator();
+                    } finally {
+                        CloseableIteratorAdapter.close(iterator);
                     }
+                } else {
+                    return iterator;
+                }
+            }
 
-                    @Override
-                    protected Filter getFilter() {
-                        FilterFactory ff = CommonFactoryFinder.getFilterFactory();
-                        final Filter filter;
-                        if (workspace == null) {
-                            filter = super.getFilter();
-                        } else {
-                            filter =
-                                    ff.and(
-                                            super.getFilter(),
-                                            ff.equal(
-                                                    ff.property("resource.store.workspace.id"),
-                                                    ff.literal(workspace.getId()),
-                                                    true));
-                        }
-                        return filter;
+            @Override
+            protected Filter getFilter() {
+                FilterFactory ff = CommonFactoryFinder.getFilterFactory();
+                final Filter filter;
+                if (workspace == null) {
+                    filter = super.getFilter();
+                } else {
+                    filter = ff.and(
+                            super.getFilter(),
+                            ff.equal(ff.property("resource.store.workspace.id"), ff.literal(workspace.getId()), true));
+                }
+                return filter;
+            }
+
+            /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
+            private Iterator<LayerInfo> filteredItems(Integer first, Integer count) {
+                final Catalog catalog = getCatalog();
+
+                // global sorting
+                final SortParam<?> sort = getSort();
+                final Property<LayerInfo> property = getProperty(sort);
+
+                SortBy sortOrder = null;
+                if (sort != null) {
+                    if (property instanceof BeanProperty) {
+                        final String sortProperty = ((BeanProperty<LayerInfo>) property).getPropertyPath();
+                        sortOrder = sortBy(sortProperty, sort.isAscending());
                     }
+                }
 
-                    /**
-                     * Returns the requested page of layer objects after applying any keyword
-                     * filtering set on the page
-                     */
-                    private Iterator<LayerInfo> filteredItems(Integer first, Integer count) {
-                        final Catalog catalog = getCatalog();
+                final Filter filter = getFilter();
+                // our already filtered and closeable iterator
+                Iterator<LayerInfo> items = catalog.list(LayerInfo.class, filter, first, count, sortOrder);
 
-                        // global sorting
-                        final SortParam<?> sort = getSort();
-                        final Property<LayerInfo> property = getProperty(sort);
-
-                        SortBy sortOrder = null;
-                        if (sort != null) {
-                            if (property instanceof BeanProperty) {
-                                final String sortProperty =
-                                        ((BeanProperty<LayerInfo>) property).getPropertyPath();
-                                sortOrder = sortBy(sortProperty, sort.isAscending());
-                            }
-                        }
-
-                        final Filter filter = getFilter();
-                        // our already filtered and closeable iterator
-                        Iterator<LayerInfo> items =
-                                catalog.list(LayerInfo.class, filter, first, count, sortOrder);
-
-                        return items;
-                    }
-                });
+                return items;
+            }
+        });
     }
 
     protected LayerListPanel(String id, GeoServerDataProvider<LayerInfo> provider) {

@@ -19,8 +19,7 @@ class PureVectorRenderer extends StreamingRenderer {
         return new PureVectorRenderingBlockingQueue(10000);
     }
 
-    protected class PureVectorRenderingBlockingQueue
-            extends StreamingRenderer.RenderingBlockingQueue {
+    protected class PureVectorRenderingBlockingQueue extends StreamingRenderer.RenderingBlockingQueue {
         private static final long serialVersionUID = -1769980899098830523L;
 
         public PureVectorRenderingBlockingQueue(int capacity) {

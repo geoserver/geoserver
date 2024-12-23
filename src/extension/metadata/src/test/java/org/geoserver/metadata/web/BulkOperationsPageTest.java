@@ -43,8 +43,7 @@ public class BulkOperationsPageTest extends AbstractWicketMetadataTest {
     public void testFixAll() {
         tester.clickLink("fix");
         tester.assertModelValue(
-                "dialog:dialog:content:form:userPanel",
-                "This will update 1 layers and might take a while.");
+                "dialog:dialog:content:form:userPanel", "This will update 1 layers and might take a while.");
     }
 
     @Test

@@ -118,8 +118,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         originAddr = addressString(socketAddress);
                     }
                 }
-                LOGGER.finer(
-                        format("%s - Got ack on event %s from %s", nodeId(), eventId, originAddr));
+                LOGGER.finer(format("%s - Got ack on event %s from %s", nodeId(), eventId, originAddr));
             }
         }
     }
@@ -150,10 +149,8 @@ public class EventHzSynchronizer extends HzSynchronizer {
                     return;
                 }
             }
-            LOGGER.warning(
-                    format(
-                            "%s - After %dms, %d acks missing for event %s",
-                            nodeId(), maxWaitMillis, countDown.get(), event));
+            LOGGER.warning(format(
+                    "%s - After %dms, %d acks missing for event %s", nodeId(), maxWaitMillis, countDown.get(), event));
         } finally {
             ackListener.expectedAckCounters.remove(evendId);
         }
@@ -182,8 +179,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
         return null;
     }
 
-    private void processCatalogEvent(final ConfigChangeEvent event)
-            throws NoSuchMethodException, SecurityException {
+    private void processCatalogEvent(final ConfigChangeEvent event) throws NoSuchMethodException, SecurityException {
 
         Class<? extends Info> clazz = event.getObjectInterface();
         final Type t = event.getChangeType();
@@ -200,39 +196,28 @@ public class EventHzSynchronizer extends HzSynchronizer {
         switch (t) {
             case ADD:
                 subj = getCatalogInfo(cat, id, clazz);
-                notifyMethod =
-                        CatalogListener.class.getMethod("handleAddEvent", CatalogAddEvent.class);
+                notifyMethod = CatalogListener.class.getMethod("handleAddEvent", CatalogAddEvent.class);
                 evt = new CatalogAddEventImpl();
                 break;
             case MODIFY:
                 subj = getCatalogInfo(cat, id, clazz);
-                notifyMethod =
-                        CatalogListener.class.getMethod(
-                                "handleModifyEvent", CatalogModifyEvent.class);
+                notifyMethod = CatalogListener.class.getMethod("handleModifyEvent", CatalogModifyEvent.class);
                 evt = new CatalogModifyEventImpl();
                 break;
             case POST_MODIFY:
                 subj = getCatalogInfo(cat, id, clazz);
-                notifyMethod =
-                        CatalogListener.class.getMethod(
-                                "handlePostModifyEvent", CatalogPostModifyEvent.class);
+                notifyMethod = CatalogListener.class.getMethod("handlePostModifyEvent", CatalogPostModifyEvent.class);
                 evt = new CatalogPostModifyEventImpl();
                 break;
             case REMOVE:
-                notifyMethod =
-                        CatalogListener.class.getMethod(
-                                "handleRemoveEvent", CatalogRemoveEvent.class);
+                notifyMethod = CatalogListener.class.getMethod("handleRemoveEvent", CatalogRemoveEvent.class);
                 evt = new CatalogRemoveEventImpl();
                 RemovedObjectProxy proxy = new RemovedObjectProxy(id, name, clazz, nativeName);
 
                 if (ResourceInfo.class.isAssignableFrom(clazz) && event.getStoreId() != null) {
-                    proxy.addCatalogCollaborator(
-                            "store", cat.getStore(event.getStoreId(), StoreInfo.class));
+                    proxy.addCatalogCollaborator("store", cat.getStore(event.getStoreId(), StoreInfo.class));
                 }
-                subj =
-                        (CatalogInfo)
-                                Proxy.newProxyInstance(
-                                        getClass().getClassLoader(), new Class[] {clazz}, proxy);
+                subj = (CatalogInfo) Proxy.newProxyInstance(getClass().getClassLoader(), new Class[] {clazz}, proxy);
 
                 break;
             default:
@@ -241,10 +226,7 @@ public class EventHzSynchronizer extends HzSynchronizer {
 
         if (subj == null) { // can't happen if type == DELETE
             if (subj == null) {
-                String message =
-                        format(
-                                "%s - Error processing event %s: object not found in catalog",
-                                nodeId(), event);
+                String message = format("%s - Error processing event %s: object not found in catalog", nodeId(), event);
                 LOGGER.warning(message);
                 return;
             }
@@ -264,13 +246,11 @@ public class EventHzSynchronizer extends HzSynchronizer {
                 }
             }
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), event), ex);
+            LOGGER.log(Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), event), ex);
         }
     }
 
-    private void processGeoServerConfigEvent(ConfigChangeEvent ce)
-            throws NoSuchMethodException, SecurityException {
+    private void processGeoServerConfigEvent(ConfigChangeEvent ce) throws NoSuchMethodException, SecurityException {
 
         final Class<? extends Info> clazz = ce.getObjectInterface();
         final String id = ce.getObjectId();
@@ -284,86 +264,54 @@ public class EventHzSynchronizer extends HzSynchronizer {
             subj = gs.getGlobal();
             switch (ce.getChangeType()) {
                 case MODIFY:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleGlobalChange",
-                                    GeoServerInfo.class,
-                                    List.class,
-                                    List.class,
-                                    List.class);
+                    notifyMethod = ConfigurationListener.class.getMethod(
+                            "handleGlobalChange", GeoServerInfo.class, List.class, List.class, List.class);
                     extraArguments = true;
                     break;
                 default:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handlePostGlobalChange", GeoServerInfo.class);
+                    notifyMethod = ConfigurationListener.class.getMethod("handlePostGlobalChange", GeoServerInfo.class);
             }
         } else if (SettingsInfo.class.isAssignableFrom(clazz)) {
-            WorkspaceInfo ws =
-                    ce.getWorkspaceId() != null ? cat.getWorkspace(ce.getWorkspaceId()) : null;
+            WorkspaceInfo ws = ce.getWorkspaceId() != null ? cat.getWorkspace(ce.getWorkspaceId()) : null;
             subj = ws != null ? gs.getSettings(ws) : gs.getSettings();
             switch (ce.getChangeType()) {
                 case MODIFY:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleSettingsModified",
-                                    SettingsInfo.class,
-                                    List.class,
-                                    List.class,
-                                    List.class);
+                    notifyMethod = ConfigurationListener.class.getMethod(
+                            "handleSettingsModified", SettingsInfo.class, List.class, List.class, List.class);
                     extraArguments = true;
                     break;
                 case REMOVE:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleSettingsRemoved", SettingsInfo.class);
+                    notifyMethod = ConfigurationListener.class.getMethod("handleSettingsRemoved", SettingsInfo.class);
                     break;
 
                 case ADD:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleSettingsAdded", SettingsInfo.class);
+                    notifyMethod = ConfigurationListener.class.getMethod("handleSettingsAdded", SettingsInfo.class);
                     break;
                 default:
                     notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleSettingsPostModified", SettingsInfo.class);
+                            ConfigurationListener.class.getMethod("handleSettingsPostModified", SettingsInfo.class);
             }
         } else if (LoggingInfo.class.isAssignableFrom(clazz)) {
             subj = gs.getLogging();
             switch (ce.getChangeType()) {
                 case MODIFY:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleLoggingChange",
-                                    LoggingInfo.class,
-                                    List.class,
-                                    List.class,
-                                    List.class);
+                    notifyMethod = ConfigurationListener.class.getMethod(
+                            "handleLoggingChange", LoggingInfo.class, List.class, List.class, List.class);
                     extraArguments = true;
                     break;
                 default:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handlePostLoggingChange", LoggingInfo.class);
+                    notifyMethod = ConfigurationListener.class.getMethod("handlePostLoggingChange", LoggingInfo.class);
             }
         } else if (ServiceInfo.class.isAssignableFrom(clazz)) {
             subj = gs.getService(id, (Class<ServiceInfo>) clazz);
             switch (ce.getChangeType()) {
                 case MODIFY:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handleServiceChange",
-                                    ServiceInfo.class,
-                                    List.class,
-                                    List.class,
-                                    List.class);
+                    notifyMethod = ConfigurationListener.class.getMethod(
+                            "handleServiceChange", ServiceInfo.class, List.class, List.class, List.class);
                     extraArguments = true;
                     break;
                 default:
-                    notifyMethod =
-                            ConfigurationListener.class.getMethod(
-                                    "handlePostServiceChange", ServiceInfo.class);
+                    notifyMethod = ConfigurationListener.class.getMethod("handlePostServiceChange", ServiceInfo.class);
             }
         } else {
             throw new IllegalStateException("Unknown event type " + clazz);
@@ -376,19 +324,13 @@ public class EventHzSynchronizer extends HzSynchronizer {
                         !"org.geoserver.config.UpdateSequenceListener"
                                 .equals(l.getClass().getCanonicalName())) {
                     if (extraArguments) {
-                        notifyMethod.invoke(
-                                l,
-                                subj,
-                                ce.getPropertyNames(),
-                                ce.getOldValues(),
-                                ce.getNewValues());
+                        notifyMethod.invoke(l, subj, ce.getPropertyNames(), ce.getOldValues(), ce.getNewValues());
                     } else {
                         notifyMethod.invoke(l, subj);
                     }
                 }
             } catch (Exception ex) {
-                LOGGER.log(
-                        Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), ce), ex);
+                LOGGER.log(Level.WARNING, format("%s - Event dispatch failed: %s", nodeId(), ce), ex);
             }
         }
     }

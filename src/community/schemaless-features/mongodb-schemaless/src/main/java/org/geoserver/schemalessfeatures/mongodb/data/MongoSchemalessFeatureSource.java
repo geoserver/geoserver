@@ -93,8 +93,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
         List<Filter> postFilterList = new ArrayList<>();
         FeatureReader<FeatureType, Feature> reader =
                 new MongoComplexReader(toCursor(query, postFilterList), this, query);
-        if (!postFilterList.isEmpty())
-            return new FilteringFeatureReader<>(reader, postFilterList.get(0));
+        if (!postFilterList.isEmpty()) return new FilteringFeatureReader<>(reader, postFilterList.get(0));
         return reader;
     }
 
@@ -205,8 +204,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                         Expression expression2 = filter.getExpression2();
                         if (expression1 instanceof PropertyName && expression2 instanceof Literal) {
                             preStack.push(filter);
-                        } else if (expression2 instanceof PropertyName
-                                && expression1 instanceof Literal) {
+                        } else if (expression2 instanceof PropertyName && expression1 instanceof Literal) {
                             preStack.push(filter);
                         } else {
                             super.visitBinaryComparisonOperator(filter);
@@ -223,7 +221,8 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
             Document key = (Document) doc.get("key");
             if (key != null) {
                 for (Map.Entry indexData : key.entrySet()) {
-                    indexes.put(indexData.getKey().toString(), indexData.getValue().toString());
+                    indexes.put(
+                            indexData.getKey().toString(), indexData.getValue().toString());
                 }
             }
         }
@@ -232,18 +231,17 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
 
     @Override
     public QueryCapabilities getQueryCapabilities() {
-        QueryCapabilities capabilities =
-                new QueryCapabilities() {
-                    @Override
-                    public boolean isOffsetSupported() {
-                        return true;
-                    }
+        QueryCapabilities capabilities = new QueryCapabilities() {
+            @Override
+            public boolean isOffsetSupported() {
+                return true;
+            }
 
-                    @Override
-                    public boolean supportsSorting(SortBy... sortAttributes) {
-                        return true;
-                    }
-                };
+            @Override
+            public boolean supportsSorting(SortBy... sortAttributes) {
+                return true;
+            }
+        };
         return capabilities;
     }
 
@@ -276,13 +274,8 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                 CoordinateReferenceSystem crs = JTS.getCRS(geom);
                 if (crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
                     try {
-                        geom =
-                                JTS.transform(
-                                        geom,
-                                        CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
-                    } catch (MismatchedDimensionException
-                            | TransformException
-                            | FactoryException e) {
+                        geom = JTS.transform(geom, CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
+                    } catch (MismatchedDimensionException | TransformException | FactoryException e) {
                         throw new RuntimeException(e);
                     }
                 }
@@ -293,9 +286,7 @@ public class MongoSchemalessFeatureSource extends SchemalessFeatureSource {
                 if (crs != null && !CRS.equalsIgnoreMetadata(crs, DefaultGeographicCRS.WGS84)) {
                     try {
                         Envelope transformedEnv =
-                                JTS.transform(
-                                        env,
-                                        CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
+                                JTS.transform(env, CRS.findMathTransform(crs, DefaultGeographicCRS.WGS84));
                         env = new ReferencedEnvelope(transformedEnv, DefaultGeographicCRS.WGS84);
                     } catch (TransformException e) {
                         throw new RuntimeException(e);

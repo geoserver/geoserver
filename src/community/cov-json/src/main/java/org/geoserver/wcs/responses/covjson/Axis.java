@@ -14,13 +14,17 @@ public class Axis {
 
     List<String> coordinates;
 
-    @JsonProperty List<?> values;
+    @JsonProperty
+    List<?> values;
 
-    @JsonIgnore String key;
+    @JsonIgnore
+    String key;
 
-    @JsonProperty Integer num;
+    @JsonProperty
+    Integer num;
 
-    @JsonProperty Double start;
+    @JsonProperty
+    Double start;
 
     public Integer getNum() {
         return num;
@@ -51,7 +55,8 @@ public class Axis {
         this.stop = stop;
     }
 
-    @JsonProperty Double stop;
+    @JsonProperty
+    Double stop;
 
     public String getKey() {
         return key;

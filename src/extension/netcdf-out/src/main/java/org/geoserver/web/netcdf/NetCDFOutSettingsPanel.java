@@ -22,10 +22,7 @@ public class NetCDFOutSettingsPanel extends SettingsPluginPanel {
 
         // Getting the NetcdfSettingsContainer model from MetadataMap
         IModel<NetCDFSettingsContainer> netcdfModel =
-                new MetadataMapModel<>(
-                        metadata,
-                        NetCDFSettingsContainer.NETCDFOUT_KEY,
-                        NetCDFSettingsContainer.class);
+                new MetadataMapModel<>(metadata, NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFSettingsContainer.class);
 
         // New Container
         // container for ajax updates

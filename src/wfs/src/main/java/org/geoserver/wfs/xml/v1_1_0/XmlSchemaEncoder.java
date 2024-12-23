@@ -43,8 +43,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         this.schemaBuilder = schemaBuilder;
     }
 
-    public XmlSchemaEncoder(
-            Set<String> mimeTypes, GeoServer gs, FeatureTypeSchemaBuilder schemaBuilder) {
+    public XmlSchemaEncoder(Set<String> mimeTypes, GeoServer gs, FeatureTypeSchemaBuilder schemaBuilder) {
         super(gs, mimeTypes);
 
         this.catalog = gs.getCatalog();
@@ -54,7 +53,9 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
+        return getOutputFormats().isEmpty()
+                ? null
+                : getOutputFormats().iterator().next();
         // return "text/xml; subtype=gml/3.1.1";
     }
 
@@ -63,17 +64,14 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
     }
 
     @Override
-    protected void write(
-            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
+    protected void write(FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
 
         // hack for SOAP request, when encoding as SOAP response the schema is actually required
         // to be encoded in base64
         if (Dispatcher.REQUEST.get() != null && Dispatcher.REQUEST.get().isSOAP()) {
 
-            output.write(
-                    ("<wfs:DescribeFeatureTypeResponse xmlns:wfs='" + getWFSNamespaceURI() + "'>")
-                            .getBytes());
+            output.write(("<wfs:DescribeFeatureTypeResponse xmlns:wfs='" + getWFSNamespaceURI() + "'>").getBytes());
 
             ByteArrayOutputStream bout = new ByteArrayOutputStream();
             doWrite(featureTypeInfos, bout, describeFeatureType);
@@ -86,8 +84,7 @@ public class XmlSchemaEncoder extends WFSDescribeFeatureTypeOutputFormat {
         }
     }
 
-    protected void doWrite(
-            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
+    protected void doWrite(FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
 
         // create the schema

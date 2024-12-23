@@ -121,8 +121,7 @@ public class DynamicSizeStyleExtractorTest {
 
     @Test
     public void testDynamicSymbolizerStrokeLineSymbolizer() {
-        ExternalGraphic dynamicSymbolizer =
-                sb.createExternalGraphic("file://./${myAttribute}.jpeg", "image/jpeg");
+        ExternalGraphic dynamicSymbolizer = sb.createExternalGraphic("file://./${myAttribute}.jpeg", "image/jpeg");
         Graphic graphic = sb.createGraphic(dynamicSymbolizer, null, null);
         LineSymbolizer ls = sb.createLineSymbolizer();
         ls.getStroke().setGraphicStroke(graphic);
@@ -134,8 +133,7 @@ public class DynamicSizeStyleExtractorTest {
 
     @Test
     public void testStaticGraphicLineSymbolizer() {
-        ExternalGraphic dynamicSymbolizer =
-                sb.createExternalGraphic("file://./hello.jpeg", "image/jpeg");
+        ExternalGraphic dynamicSymbolizer = sb.createExternalGraphic("file://./hello.jpeg", "image/jpeg");
         Graphic graphic = sb.createGraphic(dynamicSymbolizer, null, null);
         LineSymbolizer ls = sb.createLineSymbolizer();
         ls.getStroke().setGraphicStroke(graphic);

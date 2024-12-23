@@ -74,9 +74,9 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.util.factory.GeoTools;
 
 /**
- * This Filter Visitor will replace queryables by their mapped XPaths. In the case that queryables
- * are mapped to more than one XPath, the visitor will automatically multiply the relevant part of
- * the filter and combine them with the logical "OR" operator.
+ * This Filter Visitor will replace queryables by their mapped XPaths. In the case that queryables are mapped to more
+ * than one XPath, the visitor will automatically multiply the relevant part of the filter and combine them with the
+ * logical "OR" operator.
  */
 public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionVisitor {
 
@@ -87,18 +87,12 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     protected Map<String, List<PropertyName>> queryableMapping;
 
     public QueryableMappingFilterVisitor(
-            AttributeDescriptor featureDescriptor,
-            Map<String, List<PropertyName>> queryableMapping) {
-        this(
-                CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints()),
-                featureDescriptor,
-                queryableMapping);
+            AttributeDescriptor featureDescriptor, Map<String, List<PropertyName>> queryableMapping) {
+        this(CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints()), featureDescriptor, queryableMapping);
     }
 
     public QueryableMappingFilterVisitor(
-            FilterFactory ff,
-            AttributeDescriptor featureDescriptor,
-            Map<String, List<PropertyName>> queryableMapping) {
+            FilterFactory ff, AttributeDescriptor featureDescriptor, Map<String, List<PropertyName>> queryableMapping) {
         this.ff = ff;
         this.featureDescriptor = featureDescriptor;
         this.queryableMapping = queryableMapping;
@@ -111,8 +105,8 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     }
 
     /**
-     * This interface is in support of a generic function (combine) that gets rid of the
-     * multi-valued literals, with any type of filter that takes two expressions.
+     * This interface is in support of a generic function (combine) that gets rid of the multi-valued literals, with any
+     * type of filter that takes two expressions.
      */
     protected static interface FilterReplacer<F extends Filter> {
 
@@ -125,8 +119,8 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     }
 
     /**
-     * This interface is in support of a generic function (combine) that gets rid of the
-     * multi-valued literals, with any type of filter that takes two expressions.
+     * This interface is in support of a generic function (combine) that gets rid of the multi-valued literals, with any
+     * type of filter that takes two expressions.
      */
     protected static interface ExpressionReplacer<E extends Expression> {
 
@@ -135,30 +129,21 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         public Expression getExpression2(E expr);
 
         /** Replace the expressions in a filter */
-        public Expression replaceExpressions(
-                E expression, Expression expression1, Expression expression2);
+        public Expression replaceExpressions(E expression, Expression expression1, Expression expression2);
     }
 
     /**
-     * An implementation for Binary Comparison Operators Takes the method name in the FilterFactory
-     * to create the filter
+     * An implementation for Binary Comparison Operators Takes the method name in the FilterFactory to create the filter
      */
-    protected class BinaryComparisonOperatorReplacer
-            implements FilterReplacer<BinaryComparisonOperator> {
+    protected class BinaryComparisonOperatorReplacer implements FilterReplacer<BinaryComparisonOperator> {
 
         protected Method method;
 
         public BinaryComparisonOperatorReplacer(String methodName) {
 
             try {
-                method =
-                        ff.getClass()
-                                .getMethod(
-                                        methodName,
-                                        Expression.class,
-                                        Expression.class,
-                                        boolean.class,
-                                        MatchAction.class);
+                method = ff.getClass()
+                        .getMethod(methodName, Expression.class, Expression.class, boolean.class, MatchAction.class);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -179,12 +164,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
                 BinaryComparisonOperator filter, Expression expression1, Expression expression2) {
             try {
                 return (Filter)
-                        method.invoke(
-                                ff,
-                                expression1,
-                                expression2,
-                                filter.isMatchingCase(),
-                                filter.getMatchAction());
+                        method.invoke(ff, expression1, expression2, filter.isMatchingCase(), filter.getMatchAction());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -192,8 +172,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     }
 
     /**
-     * An implementation for Binary Spatial Operators Takes the method name in the FilterFactory to
-     * create the filter
+     * An implementation for Binary Spatial Operators Takes the method name in the FilterFactory to create the filter
      */
     protected class BinarySpatialOperatorReplacer implements FilterReplacer<BinarySpatialOperator> {
 
@@ -202,13 +181,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         public BinarySpatialOperatorReplacer(String methodName) {
 
             try {
-                method =
-                        ff.getClass()
-                                .getMethod(
-                                        methodName,
-                                        Expression.class,
-                                        Expression.class,
-                                        MatchAction.class);
+                method = ff.getClass().getMethod(methodName, Expression.class, Expression.class, MatchAction.class);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -225,35 +198,24 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         }
 
         @Override
-        public Filter replaceExpressions(
-                BinarySpatialOperator filter, Expression expression1, Expression expression2) {
+        public Filter replaceExpressions(BinarySpatialOperator filter, Expression expression1, Expression expression2) {
             try {
-                return (Filter)
-                        method.invoke(ff, expression1, expression2, filter.getMatchAction());
+                return (Filter) method.invoke(ff, expression1, expression2, filter.getMatchAction());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    /**
-     * An implementation for Binary Expression takes the method name in the FilterFactory to create
-     * the filter
-     */
+    /** An implementation for Binary Expression takes the method name in the FilterFactory to create the filter */
     protected class BinaryExpressionReplacer implements ExpressionReplacer<BinaryExpression> {
 
         protected Method method;
 
         public BinaryExpressionReplacer(String methodName) {
             try {
-                method =
-                        ff.getClass()
-                                .getMethod(
-                                        methodName,
-                                        Expression.class,
-                                        Expression.class,
-                                        boolean.class,
-                                        MatchAction.class);
+                method = ff.getClass()
+                        .getMethod(methodName, Expression.class, Expression.class, boolean.class, MatchAction.class);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -270,8 +232,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         }
 
         @Override
-        public Expression replaceExpressions(
-                BinaryExpression expr, Expression expression1, Expression expression2) {
+        public Expression replaceExpressions(BinaryExpression expr, Expression expression1, Expression expression2) {
             try {
                 return (Expression) method.invoke(ff, expression1, expression2);
             } catch (Exception e) {
@@ -281,24 +242,16 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     }
 
     /**
-     * An implementation for Binary Temporal Operators Takes the method name in the FilterFactory to
-     * create the filter
+     * An implementation for Binary Temporal Operators Takes the method name in the FilterFactory to create the filter
      */
-    protected class BinaryTemporalOperatorReplacer
-            implements FilterReplacer<BinaryTemporalOperator> {
+    protected class BinaryTemporalOperatorReplacer implements FilterReplacer<BinaryTemporalOperator> {
 
         protected Method method;
 
         public BinaryTemporalOperatorReplacer(String methodName) {
 
             try {
-                method =
-                        ff.getClass()
-                                .getMethod(
-                                        methodName,
-                                        Expression.class,
-                                        Expression.class,
-                                        MatchAction.class);
+                method = ff.getClass().getMethod(methodName, Expression.class, Expression.class, MatchAction.class);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -318,8 +271,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
         public Filter replaceExpressions(
                 BinaryTemporalOperator filter, Expression expression1, Expression expression2) {
             try {
-                return (Filter)
-                        method.invoke(ff, expression1, expression2, filter.getMatchAction());
+                return (Filter) method.invoke(ff, expression1, expression2, filter.getMatchAction());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -333,8 +285,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
      * @param replacer The filter replacer
      * @return the new filter
      */
-    protected <T extends Filter> Filter combine(
-            T filter, FilterReplacer<T> replacer, Object extraData) {
+    protected <T extends Filter> Filter combine(T filter, FilterReplacer<T> replacer, Object extraData) {
 
         Expression one = replacer.getExpression1(filter);
         Expression two = replacer.getExpression2(filter);
@@ -445,8 +396,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     public Object visit(Beyond filter, Object extraData) {
         return combine(
                 filter,
-                new FilterReplacer<
-                        Beyond>() { // beyond filter takes extra properties, therefore needs its own
+                new FilterReplacer<Beyond>() { // beyond filter takes extra properties, therefore needs its own
                     // filterreplacer
 
                     @Override
@@ -460,8 +410,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
                     }
 
                     @Override
-                    public Filter replaceExpressions(
-                            Beyond filter, Expression expression1, Expression expression2) {
+                    public Filter replaceExpressions(Beyond filter, Expression expression1, Expression expression2) {
                         return ff.beyond(
                                 expression1,
                                 expression2,
@@ -492,8 +441,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     public Object visit(DWithin filter, Object extraData) {
         return combine(
                 filter,
-                new FilterReplacer<
-                        DWithin>() { // DWithin filter takes extra properties, therefore needs its
+                new FilterReplacer<DWithin>() { // DWithin filter takes extra properties, therefore needs its
                     // own filterreplacer
 
                     @Override
@@ -507,8 +455,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
                     }
 
                     @Override
-                    public Filter replaceExpressions(
-                            DWithin filter, Expression expression1, Expression expression2) {
+                    public Filter replaceExpressions(DWithin filter, Expression expression1, Expression expression2) {
                         return ff.dwithin(
                                 expression1,
                                 expression2,
@@ -669,20 +616,18 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     @Override
     public Object visit(PropertyIsLike filter, Object extraData) {
         @SuppressWarnings("unchecked")
-        List<Expression> repExpr =
-                (List<Expression>) filter.getExpression().accept(this, extraData);
+        List<Expression> repExpr = (List<Expression>) filter.getExpression().accept(this, extraData);
 
         List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
-            filters.add(
-                    ff.like(
-                            expr,
-                            filter.getLiteral(),
-                            filter.getWildCard(),
-                            filter.getSingleChar(),
-                            filter.getEscape(),
-                            filter.isMatchingCase(),
-                            filter.getMatchAction()));
+            filters.add(ff.like(
+                    expr,
+                    filter.getLiteral(),
+                    filter.getWildCard(),
+                    filter.getSingleChar(),
+                    filter.getEscape(),
+                    filter.isMatchingCase(),
+                    filter.getMatchAction()));
         }
         return ff.or(filters);
     }
@@ -690,8 +635,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     @Override
     public Object visit(PropertyIsNull filter, Object extraData) {
         @SuppressWarnings("unchecked")
-        List<Expression> repExpr =
-                (List<Expression>) filter.getExpression().accept(this, extraData);
+        List<Expression> repExpr = (List<Expression>) filter.getExpression().accept(this, extraData);
 
         List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
@@ -703,8 +647,7 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     @Override
     public Object visit(PropertyIsNil filter, Object extraData) {
         @SuppressWarnings("unchecked")
-        List<Expression> repExpr =
-                (List<Expression>) filter.getExpression().accept(this, extraData);
+        List<Expression> repExpr = (List<Expression>) filter.getExpression().accept(this, extraData);
 
         List<Filter> filters = new ArrayList<>(); // list of all filters
         for (Expression expr : repExpr) {
@@ -770,16 +713,10 @@ public class QueryableMappingFilterVisitor implements FilterVisitor, ExpressionV
     @Override
     public Object visit(PropertyName expression, Object extraData) {
         XPathUtil.StepList steps =
-                XPathUtil.steps(
-                        featureDescriptor,
-                        expression.getPropertyName(),
-                        MetaDataDescriptor.NAMESPACES);
+                XPathUtil.steps(featureDescriptor, expression.getPropertyName(), MetaDataDescriptor.NAMESPACES);
 
         if (steps.size() == 1 && steps.get(0).getName().getNamespaceURI() == null
-                || steps.get(0)
-                        .getName()
-                        .getNamespaceURI()
-                        .equals(MetaDataDescriptor.NAMESPACE_APISO)) {
+                || steps.get(0).getName().getNamespaceURI().equals(MetaDataDescriptor.NAMESPACE_APISO)) {
             List<PropertyName> fullPath =
                     queryableMapping.get(steps.get(0).getName().getLocalPart());
             if (fullPath != null) {

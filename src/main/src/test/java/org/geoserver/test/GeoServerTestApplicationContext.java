@@ -31,8 +31,7 @@ import org.w3c.dom.Element;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
-public class GeoServerTestApplicationContext extends ClassPathXmlApplicationContext
-        implements WebApplicationContext {
+public class GeoServerTestApplicationContext extends ClassPathXmlApplicationContext implements WebApplicationContext {
     ServletContext servletContext;
 
     boolean useLegacyGeoServerLoader = true;
@@ -70,8 +69,7 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
      * directory, so we need to force the legacy data directory loader to engage.
      */
     @Override
-    protected void loadBeanDefinitions(XmlBeanDefinitionReader reader)
-            throws BeansException, IOException {
+    protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
         super.loadBeanDefinitions(reader);
 
         if (useLegacyGeoServerLoader) {
@@ -107,12 +105,9 @@ public class GeoServerTestApplicationContext extends ClassPathXmlApplicationCont
 
         @Override
         protected BeanDefinitionParserDelegate createDelegate(
-                XmlReaderContext readerContext,
-                Element root,
-                BeanDefinitionParserDelegate parentDelegate) {
+                XmlReaderContext readerContext, Element root, BeanDefinitionParserDelegate parentDelegate) {
             root.setAttribute("default-lazy-init", "true");
-            BeanDefinitionParserDelegate delegate =
-                    super.createDelegate(readerContext, root, parentDelegate);
+            BeanDefinitionParserDelegate delegate = super.createDelegate(readerContext, root, parentDelegate);
             return delegate;
         }
     }

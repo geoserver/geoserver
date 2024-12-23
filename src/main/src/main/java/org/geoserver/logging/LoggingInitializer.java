@@ -26,8 +26,7 @@ import org.springframework.web.context.WebApplicationContext;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-public class LoggingInitializer
-        implements GeoServerInitializer, ApplicationContextAware, GeoServerLifecycleHandler {
+public class LoggingInitializer implements GeoServerInitializer, ApplicationContextAware, GeoServerLifecycleHandler {
 
     @Override
     public void onReset() {}
@@ -47,15 +46,10 @@ public class LoggingInitializer
         if (previousLogging != null && !previousLogging.equals(newLogging)) {
             // No need to re-init logging when nothing changed
             try {
-                String logLocation =
-                        LoggingUtils.getLogFileLocation(newLogging.getLocation(), servletContext);
+                String logLocation = LoggingUtils.getLogFileLocation(newLogging.getLocation(), servletContext);
 
                 LoggingUtils.initLogging(
-                        resourceLoader,
-                        newLogging.getLevel(),
-                        !newLogging.isStdOutLogging(),
-                        false,
-                        logLocation);
+                        resourceLoader, newLogging.getLevel(), !newLogging.isStdOutLogging(), false, logLocation);
 
                 newLogging.setLocation(logLocation);
                 listener.setCurrentLogging(newLogging);
@@ -71,8 +65,7 @@ public class LoggingInitializer
         private LoggingInfo currentLogging = new LoggingInfoImpl();
         private ServletContext servletContext;
 
-        public LoggingListener(
-                GeoServerResourceLoader resourceLoader, ServletContext servletContext) {
+        public LoggingListener(GeoServerResourceLoader resourceLoader, ServletContext servletContext) {
             super();
             this.resourceLoader = resourceLoader;
             this.servletContext = servletContext;
@@ -98,10 +91,7 @@ public class LoggingInitializer
 
         @Override
         public void handleLoggingChange(
-                LoggingInfo logging,
-                List<String> propertyNames,
-                List<Object> oldValues,
-                List<Object> newValues) {
+                LoggingInfo logging, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
             this.currentLogging = logging;
 
@@ -129,8 +119,7 @@ public class LoggingInitializer
 
             if (reload) {
                 try {
-                    LoggingUtils.initLogging(
-                            resourceLoader, loggingProfile, !stdOutLogging, false, loggingLocation);
+                    LoggingUtils.initLogging(resourceLoader, loggingProfile, !stdOutLogging, false, loggingLocation);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }

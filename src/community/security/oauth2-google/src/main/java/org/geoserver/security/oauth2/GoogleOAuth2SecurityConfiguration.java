@@ -21,8 +21,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *
  * <p>The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
  *
- * <p>Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer
- * instances <br>
+ * <p>Also the user must specify the <b>Authorized redirect URIs</b> pointing to the GeoServer instances <br>
  * Example:
  *
  * <ul>
@@ -30,8 +29,8 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *   <li>http://localhost:8080/geoserver/
  * </ul>
  *
- * <p>The Google OAuth2 Filter Endpoint will automatically redirect the users to an URL like the
- * following one at first login <br>
+ * <p>The Google OAuth2 Filter Endpoint will automatically redirect the users to an URL like the following one at first
+ * login <br>
  * <br>
  * <code>
  * https://accounts.google.com/o/oauth2/auth?response_type=code&client_id=my_client_id&redirect_uri=http://localhost:8080/geoserver&scope=https://www.googleapis.com/auth/userinfo.email%20https://www.googleapis.com/auth/userinfo.profile
@@ -47,8 +46,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *   <li>Redirect URI: <b>http://localhost:8080/geoserver</b>
  *   <li>Check Token Endpoint URL: <b>https://www.googleapis.com/oauth2/v1/tokeninfo</b>
  *   <li>Logout URI: <b>https://accounts.google.com/logout</b>
- *   <li>Scopes:
- *       <b>https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile</b>
+ *   <li>Scopes: <b>https://www.googleapis.com/auth/userinfo.email,https://www.googleapis.com/auth/userinfo.profile</b>
  * </ul>
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
@@ -60,8 +58,7 @@ class GoogleOAuth2SecurityConfiguration extends GeoServerOAuth2SecurityConfigura
     @Override
     @Bean(name = "googleOAuth2Resource")
     public OAuth2ProtectedResourceDetails geoServerOAuth2Resource() {
-        AuthorizationCodeResourceDetails details =
-                (AuthorizationCodeResourceDetails) super.geoServerOAuth2Resource();
+        AuthorizationCodeResourceDetails details = (AuthorizationCodeResourceDetails) super.geoServerOAuth2Resource();
         details.setTokenName("authorization_code");
 
         return details;

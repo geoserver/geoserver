@@ -43,8 +43,7 @@ public class QueryablesTest extends STACTestSupport {
     public void testCollectionQueryables() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/queryables", 200);
         assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/queryables",
-                json.read("$.$id"));
+                "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/queryables", json.read("$.$id"));
 
         // check a couple properties, more in depth tests are found in STACQueryablesBuilderTest
         checkQueryableProperties(json);
@@ -77,11 +76,9 @@ public class QueryablesTest extends STACTestSupport {
         gs.save(oseo);
 
         try {
-            DocumentContext json =
-                    getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/queryables", 200);
+            DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/SENTINEL2/queryables", 200);
             assertEquals(
-                    "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/queryables",
-                    json.read("$.$id"));
+                    "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/queryables", json.read("$.$id"));
 
             // check a couple properties, more in depth tests are found in STACQueryablesBuilderTest
             checkQueryableProperties(json);
@@ -132,9 +129,7 @@ public class QueryablesTest extends STACTestSupport {
     @Test
     public void testLandsat8Queryables() throws Exception {
         DocumentContext json = getAsJSONPath("ogc/stac/v1/collections/LANDSAT8/queryables", 200);
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/v1/collections/LANDSAT8/queryables",
-                json.read("$.$id"));
+        assertEquals("http://localhost:8080/geoserver/ogc/stac/v1/collections/LANDSAT8/queryables", json.read("$.$id"));
 
         // checks the common properties
         checkQueryableProperties(json);
@@ -197,9 +192,7 @@ public class QueryablesTest extends STACTestSupport {
 
     private void checkQueryableProperties(DocumentContext json) {
         // check a couple properties, more in depth tests are found in STACQueryablesBuilderTest
-        assertEquals(
-                STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, json.read("properties.geometry.$ref"));
-        assertEquals(
-                STACQueryablesBuilder.DATETIME_SCHEMA_REF, json.read("properties.datetime.$ref"));
+        assertEquals(STACQueryablesBuilder.GEOMETRY_SCHEMA_REF, json.read("properties.geometry.$ref"));
+        assertEquals(STACQueryablesBuilder.DATETIME_SCHEMA_REF, json.read("properties.datetime.$ref"));
     }
 }

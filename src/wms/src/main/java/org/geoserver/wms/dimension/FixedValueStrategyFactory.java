@@ -6,8 +6,7 @@
 package org.geoserver.wms.dimension;
 
 /**
- * Implementations return instances of the DimensionDefaultValueStrategy selected using a fixed
- * value.
+ * Implementations return instances of the DimensionDefaultValueStrategy selected using a fixed value.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
@@ -22,6 +21,5 @@ public interface FixedValueStrategyFactory {
      * @param value The value
      * @param fixedCapabilitiesValue Its capabilities representation
      */
-    public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(
-            Object value, String fixedCapabilitiesValue);
+    public DimensionDefaultValueSelectionStrategy createFixedValueStrategy(Object value, String fixedCapabilitiesValue);
 }

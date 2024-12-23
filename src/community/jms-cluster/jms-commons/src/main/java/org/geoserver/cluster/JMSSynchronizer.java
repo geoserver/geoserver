@@ -37,8 +37,7 @@ public class JMSSynchronizer {
             final JMSEventHandler<S, O> handler = jmsManager.getHandler(event);
             // if handler is not found
             if (handler == null) {
-                throw new IllegalArgumentException(
-                        "Unable to locate a valid handler for the incoming event: " + event);
+                throw new IllegalArgumentException("Unable to locate a valid handler for the incoming event: " + event);
             }
             // else try to synchronize event using the obtained handler
             handler.synchronize(event);

@@ -138,17 +138,16 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         final PropertyModel<Boolean> enabledModel = new PropertyModel<>(model, "enabled");
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
-        enabled.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
+        enabled.add(new AjaxFormComponentUpdatingBehavior("click") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean visile = enabled.getModelObject();
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Boolean visile = enabled.getModelObject();
 
-                        configs.setVisible(visile);
-                        target.add(configsContainer);
-                    }
-                });
+                configs.setVisible(visile);
+                target.add(configsContainer);
+            }
+        });
 
         // error message label
         Label noAttributeMessage = new Label("noAttributeMsg", "");
@@ -160,29 +159,24 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
         // check the attributes and show a dropdown
         List<String> attributes = getAttributesOfType(resource, type);
-        attribute =
-                new DropDownChoice<>(
-                        "attribute", new PropertyModel<>(model, "attribute"), attributes);
+        attribute = new DropDownChoice<>("attribute", new PropertyModel<>(model, "attribute"), attributes);
         attribute.setOutputMarkupId(true);
         attribute.setRequired(true);
         attContainer.add(attribute);
-        attribute.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        attribute.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        DimensionEditorBase.this.presentation.setChoices(getPresentationModes());
-                        updateTypeDependentStates();
-                        target.add(DimensionEditorBase.this.resolutions);
-                        target.add(DimensionEditorBase.this.presentation);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                DimensionEditorBase.this.presentation.setChoices(getPresentationModes());
+                updateTypeDependentStates();
+                target.add(DimensionEditorBase.this.resolutions);
+                target.add(DimensionEditorBase.this.presentation);
+            }
+        });
 
         List<String> endAttributes = new ArrayList<>(attributes);
         initializeEndAttributesValues(endAttributes);
-        endAttribute =
-                new DropDownChoice<>(
-                        "endAttribute", new PropertyModel<>(model, "endAttribute"), endAttributes);
+        endAttribute = new DropDownChoice<>("endAttribute", new PropertyModel<>(model, "endAttribute"), endAttributes);
         endAttribute.setOutputMarkupId(true);
         endAttribute.setRequired(false);
         attContainer.add(endAttribute);
@@ -198,11 +192,9 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             attContainer.setVisible(false);
             attribute.setRequired(false);
             try {
-                GridCoverageReader reader =
-                        ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                GridCoverageReader reader = ((CoverageInfo) resource).getGridCoverageReader(null, null);
                 if (Number.class.isAssignableFrom(getAttributeType())) {
-                    String elev =
-                            reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
+                    String elev = reader.getMetadataValue(GridCoverage2DReader.HAS_ELEVATION_DOMAIN);
                     if (!Boolean.parseBoolean(elev)) {
                         disableDimension(getAttributeType(), configs, noAttributeMessage);
                     }
@@ -237,51 +229,41 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         resContainer.setOutputMarkupId(true);
         configs.add(resContainer);
         resolutions = new WebMarkupContainer("resolutions");
-        resolutions.setVisible(
-                model.getObject().getPresentation() == DimensionPresentation.DISCRETE_INTERVAL);
+        resolutions.setVisible(model.getObject().getPresentation() == DimensionPresentation.DISCRETE_INTERVAL);
         resolutions.setOutputMarkupId(true);
         resContainer.add(resolutions);
 
         presentationModes = getPresentationModes();
-        presentation =
-                new DropDownChoice<>(
-                        "presentation",
-                        new PropertyModel<>(model, "presentation"),
-                        presentationModes,
-                        new PresentationModeRenderer());
+        presentation = new DropDownChoice<>(
+                "presentation",
+                new PropertyModel<>(model, "presentation"),
+                presentationModes,
+                new PresentationModeRenderer());
         configs.add(presentation);
         presentation.setOutputMarkupId(true);
         presentation.setRequired(true);
-        presentation.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        presentation.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        boolean visible =
-                                presentation.getModelObject()
-                                        == DimensionPresentation.DISCRETE_INTERVAL;
-                        resolutions.setVisible(visible);
-                        target.add(resContainer);
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean visible = presentation.getModelObject() == DimensionPresentation.DISCRETE_INTERVAL;
+                resolutions.setVisible(visible);
+                target.add(resContainer);
 
-                        boolean listSelected =
-                                presentation.getModelObject() == DimensionPresentation.LIST;
-                        String containerVisible = listSelected ? "none" : "initial";
-                        startField
-                                .getParent()
-                                .add(
-                                        new AttributeModifier(
-                                                "style", "display:" + containerVisible + ";"));
-                        if (listSelected) {
-                            startField.setModelValue(new String[0]);
-                            startField.setRequired(false);
-                            endField.setModelValue(new String[0]);
-                            endField.setRequired(false);
-                        }
-                        startField.setVisible(!listSelected);
-                        endField.setVisible(!listSelected);
-                        target.add(startField.getParent());
-                    }
-                });
+                boolean listSelected = presentation.getModelObject() == DimensionPresentation.LIST;
+                String containerVisible = listSelected ? "none" : "initial";
+                startField.getParent().add(new AttributeModifier("style", "display:" + containerVisible + ";"));
+                if (listSelected) {
+                    startField.setModelValue(new String[0]);
+                    startField.setRequired(false);
+                    endField.setModelValue(new String[0]);
+                    endField.setRequired(false);
+                }
+                startField.setVisible(!listSelected);
+                endField.setVisible(!listSelected);
+                target.add(startField.getParent());
+            }
+        });
 
         IModel<BigDecimal> rmodel = new PropertyModel<>(model, "resolution");
         resTime = new PeriodEditor("resTime", rmodel);
@@ -296,71 +278,58 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
             defValueSetting = new DimensionDefaultValueSetting();
             model.getObject().setDefaultValue(defValueSetting);
         }
-        final WebMarkupContainer defValueContainer =
-                new WebMarkupContainer("defaultValueContainer");
+        final WebMarkupContainer defValueContainer = new WebMarkupContainer("defaultValueContainer");
         defValueContainer.setOutputMarkupId(true);
         configs.add(defValueContainer);
-        final WebMarkupContainer referenceValueContainer =
-                new WebMarkupContainer("referenceValueContainer");
+        final WebMarkupContainer referenceValueContainer = new WebMarkupContainer("referenceValueContainer");
         referenceValueContainer.setOutputMarkupId(true);
-        referenceValueContainer.setVisible(
-                (defValueSetting.getStrategyType() == Strategy.FIXED)
-                        || (defValueSetting.getStrategyType() == Strategy.NEAREST));
+        referenceValueContainer.setVisible((defValueSetting.getStrategyType() == Strategy.FIXED)
+                || (defValueSetting.getStrategyType() == Strategy.NEAREST));
         defValueContainer.add(referenceValueContainer);
 
-        defaultValueStrategies =
-                new ArrayList<>(Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
+        defaultValueStrategies = new ArrayList<>(Arrays.asList(DimensionDefaultValueSetting.Strategy.values()));
         IModel<DimensionDefaultValueSetting.Strategy> strategyModel =
                 new PropertyModel<>(model.getObject().getDefaultValue(), "strategy");
-        defaultValueStrategy =
-                new DropDownChoice<>(
-                        "strategy",
-                        strategyModel,
-                        defaultValueStrategies,
-                        new DefaultValueStrategyRenderer());
+        defaultValueStrategy = new DropDownChoice<>(
+                "strategy", strategyModel, defaultValueStrategies, new DefaultValueStrategyRenderer());
         configs.add(defaultValueStrategy);
-        defaultValueStrategy.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        defaultValueStrategy.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        boolean visible =
-                                (defaultValueStrategy.getModelObject() == Strategy.FIXED)
-                                        || (defaultValueStrategy.getModelObject()
-                                                == Strategy.NEAREST);
-                        referenceValueContainer.setVisible(visible);
-                        target.add(defValueContainer);
-                    }
-                });
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean visible = (defaultValueStrategy.getModelObject() == Strategy.FIXED)
+                        || (defaultValueStrategy.getModelObject() == Strategy.NEAREST);
+                referenceValueContainer.setVisible(visible);
+                target.add(defValueContainer);
+            }
+        });
         defValueContainer.add(defaultValueStrategy);
 
         final Label refValueValidationMessage = new Label("refValueValidationMsg", "");
         refValueValidationMessage.setVisible(false);
 
-        IModel<String> refValueModel =
-                new PropertyModel<>(model.getObject().getDefaultValue(), "referenceValue");
+        IModel<String> refValueModel = new PropertyModel<>(model.getObject().getDefaultValue(), "referenceValue");
         referenceValue = new TextField<>("referenceValue", refValueModel);
-        referenceValue.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        referenceValue.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        refValueValidationMessage.setDefaultModelObject(null);
-                        refValueValidationMessage.setVisible(false);
-                        target.add(referenceValueContainer);
-                    }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                refValueValidationMessage.setDefaultModelObject(null);
+                refValueValidationMessage.setVisible(false);
+                target.add(referenceValueContainer);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        super.onError(target, e);
-                        if (referenceValue.hasErrorMessage()) {
-                            refValueValidationMessage.setDefaultModelObject(
-                                    referenceValue.getFeedbackMessages().first());
-                            refValueValidationMessage.setVisible(true);
-                        }
-                        target.add(referenceValueContainer);
-                    }
-                });
+            @Override
+            protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                super.onError(target, e);
+                if (referenceValue.hasErrorMessage()) {
+                    refValueValidationMessage.setDefaultModelObject(
+                            referenceValue.getFeedbackMessages().first());
+                    refValueValidationMessage.setVisible(true);
+                }
+                target.add(referenceValueContainer);
+            }
+        });
         referenceValue.add(new ReferenceValueValidator(id, strategyModel));
 
         referenceValueContainer.add(referenceValue);
@@ -368,36 +337,26 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
         // set "current" for reference value if dimension is time, strategy is NEAREST and value has
         // never been set
-        if ("time".equals(id)
-                && refValueModel.getObject() == null
-                && strategyModel.getObject() == Strategy.NEAREST) {
+        if ("time".equals(id) && refValueModel.getObject() == null && strategyModel.getObject() == Strategy.NEAREST) {
             refValueModel.setObject(DimensionDefaultValueSetting.TIME_CURRENT);
         }
 
         // add support for nearest match specification
-        final WebMarkupContainer nearestMatchContainer =
-                new WebMarkupContainer("nearestMatchContainer");
+        final WebMarkupContainer nearestMatchContainer = new WebMarkupContainer("nearestMatchContainer");
         configs.add(nearestMatchContainer);
         nearestMatchContainer.setVisible(editNearestMatch);
-        nearestMatch =
-                new CheckBox(
-                        "nearestMatchEnabled", new PropertyModel<>(model, "nearestMatchEnabled"));
+        nearestMatch = new CheckBox("nearestMatchEnabled", new PropertyModel<>(model, "nearestMatchEnabled"));
         nearestMatchContainer.add(nearestMatch);
         boolean isNearestMatchEnabled = model.getObject().isNearestMatchEnabled();
 
         // Need to use a container to hide the label too
         WebMarkupContainer rawNearestMatchContainer = new WebMarkupContainer("rawNearestMatch");
-        rawNearestMatch =
-                new CheckBox(
-                        "rawNearestMatchEnabled",
-                        new PropertyModel<>(model, "rawNearestMatchEnabled"));
+        rawNearestMatch = new CheckBox("rawNearestMatchEnabled", new PropertyModel<>(model, "rawNearestMatchEnabled"));
         rawNearestMatchContainer.add(rawNearestMatch);
         nearestMatchContainer.add(rawNearestMatchContainer);
-        WebMarkupContainer acceptableIntervalEditor =
-                new WebMarkupContainer("acceptableIntervalEditor");
+        WebMarkupContainer acceptableIntervalEditor = new WebMarkupContainer("acceptableIntervalEditor");
         acceptableIntervalEditor.setVisible(isNearestMatchEnabled);
-        WebMarkupContainer failedMatchBehaviorContainer =
-                new WebMarkupContainer("failedMatchBehaviorContainer");
+        WebMarkupContainer failedMatchBehaviorContainer = new WebMarkupContainer("failedMatchBehaviorContainer");
         failedMatchBehaviorContainer.setVisible(isNearestMatchEnabled);
         nearestMatchContainer.add(failedMatchBehaviorContainer);
 
@@ -411,57 +370,46 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         }
 
         nearestMatchContainer.add(acceptableIntervalEditor);
-        nearestMatch.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
+        nearestMatch.add(new AjaxFormComponentUpdatingBehavior("click") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateAccetptedInterval(
-                                target,
-                                acceptableIntervalEditor,
-                                failedMatchBehaviorContainer,
-                                configsContainer,
-                                rawNearestIsSupported);
-                    }
-                });
-        rawNearestMatch.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateAccetptedInterval(
+                        target,
+                        acceptableIntervalEditor,
+                        failedMatchBehaviorContainer,
+                        configsContainer,
+                        rawNearestIsSupported);
+            }
+        });
+        rawNearestMatch.add(new AjaxFormComponentUpdatingBehavior("click") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateAccetptedInterval(
-                                target,
-                                acceptableIntervalEditor,
-                                failedMatchBehaviorContainer,
-                                configsContainer,
-                                rawNearestIsSupported);
-                    }
-                });
-        acceptableInterval =
-                new TextField<>(
-                        "acceptableInterval", new PropertyModel<>(model, "acceptableInterval"));
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateAccetptedInterval(
+                        target,
+                        acceptableIntervalEditor,
+                        failedMatchBehaviorContainer,
+                        configsContainer,
+                        rawNearestIsSupported);
+            }
+        });
+        acceptableInterval = new TextField<>("acceptableInterval", new PropertyModel<>(model, "acceptableInterval"));
         acceptableIntervalEditor.add(acceptableInterval);
-        acceptableInterval.add(
-                (IValidator<String>)
-                        validatable -> {
-                            try {
-                                AcceptableRange.getAcceptableRange(
-                                        validatable.getValue(), getAttributeType());
-                            } catch (Exception e) {
-                                String messageKey = "invalidAcceptableInterval";
-                                validatable.error(
-                                        new ValidationError(messageKey)
-                                                .addKey(messageKey)
-                                                .setVariable("actual", validatable.getValue()));
-                            }
-                        });
+        acceptableInterval.add((IValidator<String>) validatable -> {
+            try {
+                AcceptableRange.getAcceptableRange(validatable.getValue(), getAttributeType());
+            } catch (Exception e) {
+                String messageKey = "invalidAcceptableInterval";
+                validatable.error(new ValidationError(messageKey)
+                        .addKey(messageKey)
+                        .setVariable("actual", validatable.getValue()));
+            }
+        });
 
         List<NearestFailBehavior> nearestFailBehaviorList = Arrays.asList(IGNORE, EXCEPTION);
-        nearestFailBehavior =
-                new DropDownChoice<>(
-                        "nearestFailBehavior",
-                        new PropertyModel<>(model, "nearestFailBehavior"),
-                        nearestFailBehaviorList);
+        nearestFailBehavior = new DropDownChoice<>(
+                "nearestFailBehavior", new PropertyModel<>(model, "nearestFailBehavior"), nearestFailBehaviorList);
         nearestFailBehavior.setChoiceRenderer(new EnumChoiceRenderer(nearestFailBehavior));
         nearestFailBehavior.setNullValid(true);
         failedMatchBehaviorContainer.add(nearestFailBehavior);
@@ -469,10 +417,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         // add container for defining start and end data range values
         final WebMarkupContainer startEndContainer = new WebMarkupContainer("startEndContainer");
         startEndContainer.setOutputMarkupId(true);
-        String containerVisibility =
-                presentation.getModelObject() == DimensionPresentation.LIST ? "none" : "initial";
-        startEndContainer.add(
-                new AttributeModifier("style", "display:" + containerVisibility + ";"));
+        String containerVisibility = presentation.getModelObject() == DimensionPresentation.LIST ? "none" : "initial";
+        startEndContainer.add(new AttributeModifier("style", "display:" + containerVisibility + ";"));
         configs.add(startEndContainer);
 
         IModel<String> sfModel = new PropertyModel<>(model, "startValue");
@@ -487,75 +433,73 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         final Label endValueValidationMessage = new Label("endValueValidationMsg", "");
         endValueValidationMessage.setVisible(false);
 
-        startField.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        startField.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        boolean isEmpty = startField.getValue().isEmpty();
-                        endField.setRequired(!isEmpty);
-                        startValueValidationMessage.setDefaultModelObject(null);
-                        startValueValidationMessage.setVisible(false);
-                        if (isEmpty) {
-                            endField.getFeedbackMessages().clear();
-                            endValueValidationMessage.setDefaultModelObject(null);
-                            endValueValidationMessage.setVisible(false);
-                        }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                boolean isEmpty = startField.getValue().isEmpty();
+                endField.setRequired(!isEmpty);
+                startValueValidationMessage.setDefaultModelObject(null);
+                startValueValidationMessage.setVisible(false);
+                if (isEmpty) {
+                    endField.getFeedbackMessages().clear();
+                    endValueValidationMessage.setDefaultModelObject(null);
+                    endValueValidationMessage.setVisible(false);
+                }
 
-                        target.add(startEndContainer);
+                target.add(startEndContainer);
+            }
+
+            @Override
+            protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                if (startField.getValue().isEmpty() && endField.getValue().isEmpty()) {
+                    startField.setRequired(false);
+                    endField.setRequired(false);
+                    startField.getFeedbackMessages().clear();
+                    endField.getFeedbackMessages().clear();
+                } else {
+                    super.onError(target, e);
+                    if (startField.hasErrorMessage()) {
+                        startValueValidationMessage.setDefaultModelObject(
+                                startField.getFeedbackMessages().first());
+                        startValueValidationMessage.setVisible(true);
                     }
-
-                    @Override
-                    protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        if (startField.getValue().isEmpty() && endField.getValue().isEmpty()) {
-                            startField.setRequired(false);
-                            endField.setRequired(false);
-                            startField.getFeedbackMessages().clear();
-                            endField.getFeedbackMessages().clear();
-                        } else {
-                            super.onError(target, e);
-                            if (startField.hasErrorMessage()) {
-                                startValueValidationMessage.setDefaultModelObject(
-                                        startField.getFeedbackMessages().first());
-                                startValueValidationMessage.setVisible(true);
-                            }
-                        }
-                        target.add(startEndContainer);
-                    }
-                });
+                }
+                target.add(startEndContainer);
+            }
+        });
         startField.add(new StartEndValueValidator(id));
         startEndContainer.add(startField);
         startEndContainer.add(startValueValidationMessage);
 
-        endField.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        endField.add(new AjaxFormComponentUpdatingBehavior("change") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        startField.setRequired(!endField.getValue().isEmpty());
-                        endValueValidationMessage.setDefaultModelObject(null);
-                        endValueValidationMessage.setVisible(false);
-                        target.add(startEndContainer);
-                    }
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                startField.setRequired(!endField.getValue().isEmpty());
+                endValueValidationMessage.setDefaultModelObject(null);
+                endValueValidationMessage.setVisible(false);
+                target.add(startEndContainer);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target, RuntimeException e) {
-                        if (startField.getValue().isEmpty() && endField.getValue().isEmpty()) {
-                            startField.setRequired(false);
-                            endField.setRequired(false);
-                            startField.getFeedbackMessages().clear();
-                            endField.getFeedbackMessages().clear();
-                        } else {
-                            super.onError(target, e);
-                            if (endField.hasErrorMessage()) {
-                                endValueValidationMessage.setDefaultModelObject(
-                                        endField.getFeedbackMessages().first());
-                                endValueValidationMessage.setVisible(true);
-                            }
-                        }
-                        target.add(startEndContainer);
+            @Override
+            protected void onError(AjaxRequestTarget target, RuntimeException e) {
+                if (startField.getValue().isEmpty() && endField.getValue().isEmpty()) {
+                    startField.setRequired(false);
+                    endField.setRequired(false);
+                    startField.getFeedbackMessages().clear();
+                    endField.getFeedbackMessages().clear();
+                } else {
+                    super.onError(target, e);
+                    if (endField.hasErrorMessage()) {
+                        endValueValidationMessage.setDefaultModelObject(
+                                endField.getFeedbackMessages().first());
+                        endValueValidationMessage.setVisible(true);
                     }
-                });
+                }
+                target.add(startEndContainer);
+            }
+        });
 
         endField.add(new StartEndValueValidator(id));
         startEndContainer.add(endField);
@@ -606,8 +550,8 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
     }
 
     /**
-     * Allows to remove presentation modes from the editor. If only a single presentation mode is
-     * left the editor will setup in non enabled mode and will return that fixed value
+     * Allows to remove presentation modes from the editor. If only a single presentation mode is left the editor will
+     * setup in non enabled mode and will return that fixed value
      */
     public void disablePresentationMode(DimensionPresentation mode) {
         presentationModes.remove(mode);
@@ -617,16 +561,13 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         }
     }
 
-    private void disableDimension(
-            Class<?> type, final WebMarkupContainer configs, Label noAttributeMessage) {
+    private void disableDimension(Class<?> type, final WebMarkupContainer configs, Label noAttributeMessage) {
         // no attributes of the required type, no party
         enabled.setEnabled(false);
         enabled.setModelObject(false);
         configs.setVisible(false);
-        ParamResourceModel typeName =
-                new ParamResourceModel("AttributeType." + type.getSimpleName(), null);
-        ParamResourceModel error =
-                new ParamResourceModel("missingAttribute", this, typeName.getString());
+        ParamResourceModel typeName = new ParamResourceModel("AttributeType." + type.getSimpleName(), null);
+        ParamResourceModel error = new ParamResourceModel("missingAttribute", this, typeName.getString());
         noAttributeMessage.setDefaultModelObject(error.getString());
     }
 
@@ -689,9 +630,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                 || defValueSetting.getStrategyType() == Strategy.NEAREST) {
             referenceValue.processInput();
             if (referenceValue.hasErrorMessage()) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "About to accept erroneous value " + referenceValue.getModelObject());
+                LOGGER.log(Level.SEVERE, "About to accept erroneous value " + referenceValue.getModelObject());
             }
             defValueSetting.setReferenceValue(referenceValue.getModelObject());
         }
@@ -790,8 +729,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
 
     List<DimensionPresentation> getPresentationModes() {
         presentationModes = new ArrayList<>(Arrays.asList(DimensionPresentation.values()));
-        if (String.class.isAssignableFrom(getAttributeType())
-                || Boolean.class.isAssignableFrom(getAttributeType())) {
+        if (String.class.isAssignableFrom(getAttributeType()) || Boolean.class.isAssignableFrom(getAttributeType())) {
             presentationModes.remove(DimensionPresentation.DISCRETE_INTERVAL);
             presentationModes.remove(DimensionPresentation.CONTINUOUS_INTERVAL);
         }
@@ -837,8 +775,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
      *
      * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
      */
-    public class DefaultValueStrategyRenderer
-            extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
+    public class DefaultValueStrategyRenderer extends ChoiceRenderer<DimensionDefaultValueSetting.Strategy> {
 
         public DefaultValueStrategyRenderer() {
             super();
@@ -873,25 +810,21 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
         @Override
         public void validate(IValidatable<String> value) {
             String stringValue = value.getValue();
-            if (((strategyModel.getObject() == Strategy.FIXED)
-                            || (strategyModel.getObject() == Strategy.NEAREST))
+            if (((strategyModel.getObject() == Strategy.FIXED) || (strategyModel.getObject() == Strategy.NEAREST))
                     && stringValue == null) {
-                value.error(
-                        new ValidationError("emptyReferenceValue").addKey("emptyReferenceValue"));
+                value.error(new ValidationError("emptyReferenceValue").addKey("emptyReferenceValue"));
             } else if (dimension.equals("time")) {
                 if (!isValidTimeReference(stringValue, strategyModel.getObject())) {
-                    String messageKey =
-                            strategyModel.getObject() == Strategy.NEAREST
-                                    ? "invalidNearestTimeReferenceValue"
-                                    : "invalidTimeReferenceValue";
+                    String messageKey = strategyModel.getObject() == Strategy.NEAREST
+                            ? "invalidNearestTimeReferenceValue"
+                            : "invalidTimeReferenceValue";
                     value.error(new ValidationError(messageKey).addKey(messageKey));
                 }
 
             } else if (dimension.equals("elevation")) {
                 if (!isValidElevationReference(stringValue)) {
-                    value.error(
-                            new ValidationError("invalidElevationReferenceValue")
-                                    .addKey("invalidElevationReferenceValue"));
+                    value.error(new ValidationError("invalidElevationReferenceValue")
+                            .addKey("invalidElevationReferenceValue"));
                 }
             }
         }
@@ -954,10 +887,7 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                 try {
                     date = (Date) ((List) dateTimeParser.parse(timeValue)).get(0);
                 } catch (ParseException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Failed to parse the datetime string. The value is possibly invalid",
-                            e);
+                    LOGGER.log(Level.WARNING, "Failed to parse the datetime string. The value is possibly invalid", e);
                 }
 
                 if (date != null || timeValue.equalsIgnoreCase("present")) {
@@ -1002,10 +932,9 @@ public abstract class DimensionEditorBase<T extends DimensionInfo> extends FormC
                 PropertyModel pModel = ((PropertyModel<String>) value.getModel());
                 String propertyExpression = pModel.getPropertyExpression();
                 String valuePrefix = propertyExpression.split("Value")[0];
-                value.error(
-                        new ValidationError(errorKey)
-                                .addKey(errorKey)
-                                .setVariable("valuePrefix", StringUtils.capitalize(valuePrefix)));
+                value.error(new ValidationError(errorKey)
+                        .addKey(errorKey)
+                        .setVariable("valuePrefix", StringUtils.capitalize(valuePrefix)));
             }
         }
     }

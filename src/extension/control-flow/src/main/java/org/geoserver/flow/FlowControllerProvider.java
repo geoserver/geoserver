@@ -15,10 +15,9 @@ import org.geoserver.ows.Request;
 public interface FlowControllerProvider {
 
     /**
-     * Returns the set of flow controllers to be used in the {@link ControlFlowCallback}, for the
-     * given request. It is up to the FlowControllerProvider to manage the lifecycle of flow
-     * controllers, and make sure they are not getting re-created on a request per request basis.
-     * The flow controllers will be applied in the order they are returned
+     * Returns the set of flow controllers to be used in the {@link ControlFlowCallback}, for the given request. It is
+     * up to the FlowControllerProvider to manage the lifecycle of flow controllers, and make sure they are not getting
+     * re-created on a request per request basis. The flow controllers will be applied in the order they are returned
      */
     List<FlowController> getFlowControllers(Request request) throws Exception;
 

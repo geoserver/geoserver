@@ -14,8 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class AuthenticationKeyMangler implements URLMangler {
 
     @Override
-    public void mangleURL(
-            StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
+    public void mangleURL(StringBuilder baseURL, StringBuilder path, Map<String, String> kvp, URLType type) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication instanceof KeyAuthenticationToken) {
             KeyAuthenticationToken kat = (KeyAuthenticationToken) authentication;

@@ -54,9 +54,9 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
         LookAtOptions lookAtOptions = new LookAtOptions(formatOptions);
 
         // compute the layer bounds and the total bounds
-        List<ReferencedEnvelope> layerBounds = new ArrayList<>(mapContent.layers().size());
-        ReferencedEnvelope aggregatedBounds =
-                computePerLayerQueryBounds(mapContent, layerBounds, null);
+        List<ReferencedEnvelope> layerBounds =
+                new ArrayList<>(mapContent.layers().size());
+        ReferencedEnvelope aggregatedBounds = computePerLayerQueryBounds(mapContent, layerBounds, null);
         if (aggregatedBounds != null) {
             LookAt la = lookAtFactory.buildLookAt(aggregatedBounds, lookAtOptions, false);
             container.setAbstractView(la);
@@ -75,7 +75,8 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             // Allow for all layers to be disabled by default.  This can be advantageous with
             // multiple large data-sets.
             if (formatOptions.get(VISIBLE_KEY) != null) {
-                boolean visible = Boolean.parseBoolean(formatOptions.get(VISIBLE_KEY).toString());
+                boolean visible =
+                        Boolean.parseBoolean(formatOptions.get(VISIBLE_KEY).toString());
                 nl.setVisibility(visible);
             } else {
                 nl.setVisibility(true);
@@ -96,9 +97,7 @@ public class SimpleNetworkLinkBuilder extends AbstractNetworkLinkBuilder {
             requestCopy.setBbox(null);
 
             String style = i < styles.size() ? styles.get(i).getName() : null;
-            String href =
-                    WMSRequests.getGetMapUrl(
-                            requestCopy, layers.get(i).getName(), i, style, null, null);
+            String href = WMSRequests.getGetMapUrl(requestCopy, layers.get(i).getName(), i, style, null, null);
             try {
                 // WMSRequests.getGetMapUrl returns a URL encoded query string, but GoogleEarth
                 // 6 doesn't like URL encoded parameters. See GEOS-4483

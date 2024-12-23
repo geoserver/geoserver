@@ -52,8 +52,7 @@ public class SpatialReferenceEncoder {
         if (json.containsKey("uri")) {
             // TODO: I'm not sure how to look these up - need to check out how GeoServer does this
             // for WFS requests.
-            throw new RuntimeException(
-                    "Spatial reference specified as URI - decoding these is not yet implemented.");
+            throw new RuntimeException("Spatial reference specified as URI - decoding these is not yet implemented.");
         }
 
         throw new JSONException("Could not determine spatial reference from JSON: " + json);
@@ -67,8 +66,7 @@ public class SpatialReferenceEncoder {
      */
     public static CoordinateReferenceSystem coordinateReferenceSystemFromJSON(JSON json) {
         if (!(json instanceof JSONObject)) {
-            throw new JSONException(
-                    "Spatial Reference must be encoded as JSON Object: was " + json);
+            throw new JSONException("Spatial Reference must be encoded as JSON Object: was " + json);
         }
         JSONObject obj = (JSONObject) json;
         return coordinateReferenceSystemFromSpatialReference(fromJson(obj));
@@ -80,8 +78,7 @@ public class SpatialReferenceEncoder {
      * @param sr the spatial reference
      * @return the coordinate reference system
      */
-    public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(
-            SpatialReference sr) {
+    public static CoordinateReferenceSystem coordinateReferenceSystemFromSpatialReference(SpatialReference sr) {
 
         if (sr instanceof SpatialReferenceWKID) {
             int wkid = ((SpatialReferenceWKID) sr).getWkid();
@@ -99,8 +96,7 @@ public class SpatialReferenceEncoder {
             try {
                 return CRS.parseWKT(wkt);
             } catch (FactoryException e) {
-                throw new IllegalArgumentException(
-                        "wkt value (" + wkt + ") is not valid well-known text", e);
+                throw new IllegalArgumentException("wkt value (" + wkt + ") is not valid well-known text", e);
             }
         }
         throw new IllegalArgumentException(

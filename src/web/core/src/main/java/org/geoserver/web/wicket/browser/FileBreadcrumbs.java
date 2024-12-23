@@ -19,8 +19,8 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 /**
- * A panel showing the path between the root directory and the current directory as a set of links
- * separated by "/", much like breadcrumbs in a web site.
+ * A panel showing the path between the root directory and the current directory as a set of links separated by "/",
+ * much like breadcrumbs in a web site.
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -33,35 +33,31 @@ public abstract class FileBreadcrumbs extends Panel {
         super(id, currentFile);
 
         this.rootFile = rootFile;
-        add(
-                new ListView<File>("path", new BreadcrumbModel(rootFile, currentFile)) {
+        add(new ListView<File>("path", new BreadcrumbModel(rootFile, currentFile)) {
 
-                    private static final long serialVersionUID = -855582301247703291L;
+            private static final long serialVersionUID = -855582301247703291L;
+
+            @Override
+            protected void populateItem(ListItem<File> item) {
+                File file = item.getModelObject();
+                boolean last = item.getIndex() == getList().size() - 1;
+
+                // the link to the current path item
+                Label name = new Label("pathItem", file.getName() + "/");
+                Link<File> link = new IndicatingAjaxFallbackLink<File>("pathItemLink", item.getModel()) {
+
+                    private static final long serialVersionUID = 4295991386838610752L;
 
                     @Override
-                    protected void populateItem(ListItem<File> item) {
-                        File file = item.getModelObject();
-                        boolean last = item.getIndex() == getList().size() - 1;
-
-                        // the link to the current path item
-                        Label name = new Label("pathItem", file.getName() + "/");
-                        Link<File> link =
-                                new IndicatingAjaxFallbackLink<File>(
-                                        "pathItemLink", item.getModel()) {
-
-                                    private static final long serialVersionUID =
-                                            4295991386838610752L;
-
-                                    @Override
-                                    public void onClick(AjaxRequestTarget target) {
-                                        pathItemClicked(getModelObject(), target);
-                                    }
-                                };
-                        link.add(name);
-                        item.add(link);
-                        link.setEnabled(!last);
+                    public void onClick(AjaxRequestTarget target) {
+                        pathItemClicked(getModelObject(), target);
                     }
-                });
+                };
+                link.add(name);
+                item.add(link);
+                link.setEnabled(!last);
+            }
+        });
     }
 
     public void setRootFile(File root) {

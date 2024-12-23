@@ -9,8 +9,8 @@ import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 
 /**
- * String join aggregate operation. It accept a param to specify a separator to be used in the
- * joining. If no param is passed default is white space.
+ * String join aggregate operation. It accept a param to specify a separator to be used in the joining. If no param is
+ * passed default is white space.
  */
 class JoinOp extends AggregationOp {
 

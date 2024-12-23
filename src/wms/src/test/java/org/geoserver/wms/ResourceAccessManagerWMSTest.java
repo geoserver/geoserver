@@ -60,44 +60,40 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
 
     static final Logger LOGGER = Logging.getLogger(ResourceAccessManagerWMSTest.class);
 
-    static final String BASE =
-            "wms?"
-                    + //
-                    "SERVICE=WMS&VERSION=1.1.1"
-                    + "&HEIGHT=330&WIDTH=780"
-                    + //
-                    "&LAYERS=rstates&STYLES="
-                    + //
-                    "&FORMAT=image%2Fpng"
-                    + //
-                    "&SRS=EPSG%3A4326"
-                    + //
-                    "&BBOX=-139.84813671875,18.549615234375,-51.85286328125,55.778384765625";
+    static final String BASE = "wms?"
+            + //
+            "SERVICE=WMS&VERSION=1.1.1"
+            + "&HEIGHT=330&WIDTH=780"
+            + //
+            "&LAYERS=rstates&STYLES="
+            + //
+            "&FORMAT=image%2Fpng"
+            + //
+            "&SRS=EPSG%3A4326"
+            + //
+            "&BBOX=-139.84813671875,18.549615234375,-51.85286328125,55.778384765625";
 
     static final String GET_MAP = BASE + "&REQUEST=GetMap";
 
-    static final String BASE_GET_FEATURE_INFO =
-            BASE
-                    + //
-                    "&REQUEST=GetFeatureInfo"
-                    + //
-                    "&QUERY_LAYERS=rstates"
-                    + //
-                    "&INFO_FORMAT=text/plain";
+    static final String BASE_GET_FEATURE_INFO = BASE
+            + //
+            "&REQUEST=GetFeatureInfo"
+            + //
+            "&QUERY_LAYERS=rstates"
+            + //
+            "&INFO_FORMAT=text/plain";
 
-    static final String GET_FEATURE_INFO_CALIFORNIA =
-            BASE_GET_FEATURE_INFO
-                    + //
-                    "&X=191"
-                    + //
-                    "&Y=178";
+    static final String GET_FEATURE_INFO_CALIFORNIA = BASE_GET_FEATURE_INFO
+            + //
+            "&X=191"
+            + //
+            "&Y=178";
 
-    static final String GET_FEATURE_INFO_TEXAS =
-            BASE_GET_FEATURE_INFO
-                    + //
-                    "&X=368"
-                    + //
-                    "&Y=227";
+    static final String GET_FEATURE_INFO_TEXAS = BASE_GET_FEATURE_INFO
+            + //
+            "&X=368"
+            + //
+            "&Y=227";
 
     /** Add the test resource access manager in the spring context */
     @Override
@@ -108,8 +104,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     /** Enable the Spring Security auth filters */
     @Override
     protected List<javax.servlet.Filter> getFilters() {
-        return Collections.singletonList(
-                (javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
+        return Collections.singletonList((javax.servlet.Filter) GeoServerExtensions.bean("filterChainProxy"));
     }
 
     @Override
@@ -126,10 +121,9 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
                 SystemTestData.class,
                 getCatalog());
 
-        GeoServerUserGroupStore ugStore =
-                getSecurityManager()
-                        .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
-                        .createStore();
+        GeoServerUserGroupStore ugStore = getSecurityManager()
+                .loadUserGroupService(AbstractUserGroupService.DEFAULT_NAME)
+                .createStore();
 
         ugStore.addUser(ugStore.createUserObject("cite", "cite", true));
         ugStore.addUser(ugStore.createUserObject("cite_noinfo", "cite", true));
@@ -139,7 +133,8 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         ugStore.addUser(ugStore.createUserObject("cite_mosaic2", "cite", true));
         ugStore.store();
 
-        GeoServerRoleStore roleStore = getSecurityManager().getActiveRoleService().createStore();
+        GeoServerRoleStore roleStore =
+                getSecurityManager().getActiveRoleService().createStore();
         GeoServerRole role = roleStore.createRoleObject("ROLE_DUMMY");
         roleStore.addRole(role);
         roleStore.associateRoleToUser(role, "cite");
@@ -163,19 +158,12 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // tile filtering setup
         CoverageInfo coverage = catalog.getCoverageByName("sf:mosaic");
         Filter green = CQL.toFilter("location like 'green%'");
-        tam.putLimits(
-                "cite_mosaic1",
-                coverage,
-                new CoverageAccessLimits(CatalogMode.HIDE, green, null, null));
+        tam.putLimits("cite_mosaic1", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, null, null));
 
         // image cropping setup
         WKTReader wkt = new WKTReader();
-        MultiPolygon cropper =
-                (MultiPolygon) wkt.read("MULTIPOLYGON(((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0)))");
-        tam.putLimits(
-                "cite_mosaic2",
-                coverage,
-                new CoverageAccessLimits(CatalogMode.HIDE, green, cropper, null));
+        MultiPolygon cropper = (MultiPolygon) wkt.read("MULTIPOLYGON(((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0)))");
+        tam.putLimits("cite_mosaic2", coverage, new CoverageAccessLimits(CatalogMode.HIDE, green, cropper, null));
 
         // add a wms store too, if possible
         if (!RemoteOWSTestSupport.isRemoteWMSStatesAvailable(LOGGER)) {
@@ -185,8 +173,7 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         // setup the wms store, resource and layer
         CatalogBuilder cb = new CatalogBuilder(catalog);
         WMSStoreInfo wms = cb.buildWMSStore("demo");
-        wms.setCapabilitiesURL(
-                RemoteOWSTestSupport.WMS_SERVER_URL + "service=WMS&request=GetCapabilities");
+        wms.setCapabilitiesURL(RemoteOWSTestSupport.WMS_SERVER_URL + "service=WMS&request=GetCapabilities");
         catalog.save(wms);
         cb.setStore(wms);
         WMSLayerInfo states = cb.buildWMSLayer("topp:states");
@@ -196,20 +183,13 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
         catalog.add(layer);
 
         // hide the layer to cite_nostates
-        tam.putLimits(
-                "cite_nostates",
-                states,
-                new WMSAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, false));
+        tam.putLimits("cite_nostates", states, new WMSAccessLimits(CatalogMode.HIDE, Filter.EXCLUDE, null, false));
         // disallow getfeatureinfo on the states layer
-        tam.putLimits(
-                "cite_noinfo",
-                states,
-                new WMSAccessLimits(CatalogMode.HIDE, Filter.INCLUDE, null, false));
+        tam.putLimits("cite_noinfo", states, new WMSAccessLimits(CatalogMode.HIDE, Filter.INCLUDE, null, false));
         // cascade CQL filter, allow feature info
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         Filter texas = ff.equal(ff.property("STATE_NAME"), ff.literal("Texas"), false);
-        tam.putLimits(
-                "cite_texas", states, new WMSAccessLimits(CatalogMode.HIDE, texas, null, true));
+        tam.putLimits("cite_texas", states, new WMSAccessLimits(CatalogMode.HIDE, texas, null, true));
     }
 
     @Test
@@ -346,9 +326,8 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     @Test
     public void testDoubleMosaic() throws Exception {
         setRequestAuth("cite_mosaic1", "cite");
-        String path =
-                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false";
+        String path = "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false";
         MockHttpServletResponse response = getAsServletResponse(path);
         assertEquals("image/png", response.getContentType());
         // this one would fail due to the wrapper finalizer dispose of the coverage reader
@@ -360,10 +339,9 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     public void testRasterFilterGreen() throws Exception {
         // no cql filter, the security one should do
         setRequestAuth("cite_mosaic1", "cite");
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
 
         assertEquals("image/png", response.getContentType());
 
@@ -379,10 +357,9 @@ public class ResourceAccessManagerWMSTest extends WMSTestSupport {
     public void testRasterCrop() throws Exception {
         // this time we should get a cropped image
         setRequestAuth("cite_mosaic2", "cite");
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
-                                + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?bgcolor=0x000000&LAYERS=sf:mosaic&STYLES=&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1"
+                        + "&REQUEST=GetMap&SRS=EPSG:4326&BBOX=0,0,1,1&WIDTH=150&HEIGHT=150&transparent=false");
 
         assertEquals("image/png", response.getContentType());
 

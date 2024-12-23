@@ -18,12 +18,9 @@ public class GetCapabilitiesTest extends WCSEOTestSupport {
         // print(dom);
 
         // operations metadata checks
-        assertEquals(
-                "1", xpath.evaluate("count(//ows:Operation[@name='DescribeEOCoverageSet'])", dom));
+        assertEquals("1", xpath.evaluate("count(//ows:Operation[@name='DescribeEOCoverageSet'])", dom));
         assertEquals("1", xpath.evaluate("count(//ows:Constraint[@name='CountDefault'])", dom));
-        assertEquals(
-                "20",
-                xpath.evaluate("//ows:Constraint[@name='CountDefault']/ows:DefaultValue", dom));
+        assertEquals("20", xpath.evaluate("//ows:Constraint[@name='CountDefault']/ows:DefaultValue", dom));
 
         // dataset series checks
         assertEquals("4", xpath.evaluate("count(//wcs:Extension/wcseo:DatasetSeriesSummary)", dom));
@@ -80,8 +77,7 @@ public class GetCapabilitiesTest extends WCSEOTestSupport {
 
         Document dom = getAsDOM("wcs?request=GetCapabilities&version=2.0.1&service=WCS");
 
-        assertEquals(
-                "0", xpath.evaluate("count(//ows:Operation[@name='DescribeEOCoverageSet'])", dom));
+        assertEquals("0", xpath.evaluate("count(//ows:Operation[@name='DescribeEOCoverageSet'])", dom));
         assertEquals("0", xpath.evaluate("count(//ows:Constraint[@name='CountDefault'])", dom));
         assertEquals("0", xpath.evaluate("count(//wcs:Extension/wcseo:DatasetSeriesSummary)", dom));
     }

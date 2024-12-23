@@ -85,9 +85,7 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(MBStyleHandler.MIME_TYPE, response.getContentType());
         String responseContent = response.getContentAsString();
         String expected =
-                IOUtils.toString(
-                        this.getClass().getResourceAsStream("teststyle.json"),
-                        StandardCharsets.UTF_8);
+                IOUtils.toString(this.getClass().getResourceAsStream("teststyle.json"), StandardCharsets.UTF_8);
         assertEquals(expected, responseContent);
     }
 
@@ -136,18 +134,8 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         Document dom = dom(new ByteArrayInputStream(response.getContentAsByteArray()));
         // two named layers have been generated, they both show up in output
-        assertThat(
-                dom,
-                hasXPath(
-                        "//sld:NamedLayer[1]/sld:Name",
-                        namespaceContext,
-                        equalTo("test-source-layer1")));
-        assertThat(
-                dom,
-                hasXPath(
-                        "//sld:NamedLayer[2]/sld:Name",
-                        namespaceContext,
-                        equalTo("test-source-layer2")));
+        assertThat(dom, hasXPath("//sld:NamedLayer[1]/sld:Name", namespaceContext, equalTo("test-source-layer1")));
+        assertThat(dom, hasXPath("//sld:NamedLayer[2]/sld:Name", namespaceContext, equalTo("test-source-layer2")));
     }
 
     @Test
@@ -156,27 +144,24 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         assertEquals(200, response.getStatus());
         assertEquals(MediaType.TEXT_HTML_VALUE, response.getContentType());
         String content = response.getContentAsString();
-        assertTrue(
-                content.contains(
-                        "<a href=\"http://localhost:8080/geoserver/rest/styles/teststyle"));
+        assertTrue(content.contains("<a href=\"http://localhost:8080/geoserver/rest/styles/teststyle"));
     }
 
     public String newMbStyle() {
-        String jsonBody =
-                "{"
-                        + "    \"layers\": ["
-                        + "        {"
-                        + "            \"id\": \"foo\","
-                        + "            \"type\": \"circle\","
-                        + "            \"layout\": {"
-                        + "                \"visibility\": \"visible\""
-                        + "            },"
-                        + "            \"paint\": {"
-                        + "                \"circle-color\": \"#FFFFFF\""
-                        + "            }"
-                        + "        }"
-                        + "    ]"
-                        + "}";
+        String jsonBody = "{"
+                + "    \"layers\": ["
+                + "        {"
+                + "            \"id\": \"foo\","
+                + "            \"type\": \"circle\","
+                + "            \"layout\": {"
+                + "                \"visibility\": \"visible\""
+                + "            },"
+                + "            \"paint\": {"
+                + "                \"circle-color\": \"#FFFFFF\""
+                + "            }"
+                + "        }"
+                + "    ]"
+                + "}";
         return jsonBody;
     }
 
@@ -186,22 +171,19 @@ public class MBStyleControllerTest extends GeoServerSystemTestSupport {
         Catalog cat = getCatalog();
         assertNull("foo not available", cat.getStyleByName("foo"));
 
-        String xml =
-                "<style>"
-                        + "<name>foo</name>"
-                        + "<format>"
-                        + MBStyleHandler.FORMAT
-                        + "</format>"
-                        + "<filename>foo.json</filename>"
-                        + "</style>";
+        String xml = "<style>"
+                + "<name>foo</name>"
+                + "<format>"
+                + MBStyleHandler.FORMAT
+                + "</format>"
+                + "<filename>foo.json</filename>"
+                + "</style>";
         MockHttpServletResponse response = postAsServletResponse("/rest/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("foo"));
 
         // step 2 define mbstyle json
-        response =
-                putAsServletResponse(
-                        "/rest/styles/foo?raw=true", jsonBody, MBStyleHandler.MIME_TYPE);
+        response = putAsServletResponse("/rest/styles/foo?raw=true", jsonBody, MBStyleHandler.MIME_TYPE);
         assertEquals(200, response.getStatus());
 
         GeoServerResourceLoader resources = catalog.getResourceLoader();

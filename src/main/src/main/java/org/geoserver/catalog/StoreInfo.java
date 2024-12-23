@@ -55,8 +55,8 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * The store type.
      *
-     * <p>This value is a well known string representing the nature of the store. Examples include
-     * "Shapefile", "Postgis", "GeoTIFF", etc...
+     * <p>This value is a well known string representing the nature of the store. Examples include "Shapefile",
+     * "Postgis", "GeoTIFF", etc...
      */
     String getType();
 
@@ -66,11 +66,9 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * Map of persistent properties associated with the store.
      *
-     * <p>The intent of this map is for services to associate data with a particular store which
-     * must be persisted.
+     * <p>The intent of this map is for services to associate data with a particular store which must be persisted.
      *
-     * <p>Key values in this map are of type {@link String}, and values are of type {@link
-     * Serializable}.
+     * <p>Key values in this map are of type {@link String}, and values are of type {@link Serializable}.
      *
      * @uml.property name="metadata"
      */
@@ -93,8 +91,8 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * The namespace the store is part of.
      *
-     * <p>This value is often used to set the namespace of {@link ResourceInfo}objects which are
-     * associated to the store.
+     * <p>This value is often used to set the namespace of {@link ResourceInfo}objects which are associated to the
+     * store.
      *
      * @uml.property name="namespace"
      * @uml.associationEnd inverse="storeInfo:org.geoserver.catalog.NamespaceInfo"
@@ -117,8 +115,7 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * The map of connection paramters specific to the store.
      *
-     * <p>Key values in this map are of type {@link String}, and values are of type {@link
-     * Serializable}.
+     * <p>Key values in this map are of type {@link String}, and values are of type {@link Serializable}.
      *
      * @uml.property name="connectionParameters"
      */
@@ -127,8 +124,8 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * An error associated with the store.
      *
-     * <p>This value is used to store a problem that occured while attemping to connect to the
-     * underlying resource of the store. It returns <code>null</code> if no such error exists.
+     * <p>This value is used to store a problem that occured while attemping to connect to the underlying resource of
+     * the store. It returns <code>null</code> if no such error exists.
      *
      * <p>This is a transient property of the store.
      */
@@ -155,27 +152,26 @@ public interface StoreInfo extends CatalogInfo {
     /**
      * @return Returns a resource with the specified name that is provided by the store, or <code>
      *     null</code> if no such resource exists.
-     *     <p>The monitor is used to report the progress of loading resoures and report any warnings
-     *     / errors that occur in doing so. Monitor may also be null.
+     *     <p>The monitor is used to report the progress of loading resoures and report any warnings / errors that occur
+     *     in doing so. Monitor may also be null.
      */
     // <T extends Resource> T getResource( String name, ProgressListener monitor)
     //    throws IOException;
 
     /**
      * @return Returns the resources provided by this store.
-     *     <p>The monitor is used to report the progress of loading resoures and report any warnings
-     *     / errors that occur in doing so. Monitor may also be null.
+     *     <p>The monitor is used to report the progress of loading resoures and report any warnings / errors that occur
+     *     in doing so. Monitor may also be null.
      * @uml.property name="resources"
      * @uml.associationEnd multiplicity="(0 -1)" inverse="storeInfo:org.geoserver.catalog.Resource"
      */
     // <T extends Resource> Iterator<T> getResources(ProgressListener monitor) throws IOException;
 
     /**
-     * When true, the {@link ResourcePool} will automatically disable the store on connection
-     * failure. Defaults to false.
+     * When true, the {@link ResourcePool} will automatically disable the store on connection failure. Defaults to
+     * false.
      *
-     * @return true if the store should be disabled when a connection error happens. False
-     *     otherwise.
+     * @return true if the store should be disabled when a connection error happens. False otherwise.
      */
     boolean isDisableOnConnFailure();
 

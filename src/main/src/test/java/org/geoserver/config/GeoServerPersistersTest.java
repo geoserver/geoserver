@@ -136,8 +136,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         ds.getConnectionParameters().put("foo", "bar");
         catalog.save(ds);
 
-        File f =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/datastore.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/datastore.xml");
         Document dom = dom(f);
         assertXpathExists("/dataStore/connectionParameters/entry[@key='foo']", dom);
     }
@@ -145,8 +144,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     @Test
     public void testChangeDataStoreWorkspace() throws Exception {
         testAddDataStore();
-        File f1 =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/datastore.xml");
+        File f1 = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/datastore.xml");
         assertTrue(f1.exists());
 
         WorkspaceInfo nws = catalog.getFactory().createWorkspace();
@@ -158,8 +156,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         catalog.save(ds);
 
         assertFalse(f1.exists());
-        File f2 =
-                new File(testData.getDataDirectoryRoot(), "workspaces/topp/foostore/datastore.xml");
+        File f2 = new File(testData.getDataDirectoryRoot(), "workspaces/topp/foostore/datastore.xml");
         assertTrue(f2.exists());
     }
 
@@ -200,10 +197,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     public void testChangeFeatureTypeStore() throws Exception {
         testAddFeatureType();
 
-        File f1 =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/foostore/foo/featuretype.xml");
+        File f1 = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/featuretype.xml");
         assertTrue(f1.exists());
 
         DataStoreInfo ds = catalog.getFactory().createDataStore();
@@ -216,10 +210,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         catalog.save(ft);
 
         assertFalse(f1.exists());
-        File f2 =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/barstore/foo/featuretype.xml");
+        File f2 = new File(testData.getDataDirectoryRoot(), "workspaces/acme/barstore/foo/featuretype.xml");
         assertTrue(f2.exists());
     }
 
@@ -231,10 +222,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         ft.setTitle("fooTitle");
         catalog.save(ft);
 
-        File f =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/foostore/foo/featuretype.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/featuretype.xml");
         Document dom = dom(f);
 
         assertXpathEvaluatesTo("fooTitle", "/featureType/title", dom);
@@ -279,10 +267,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         cs.setURL("file:data/foo.tiff");
         catalog.save(cs);
 
-        File f =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/foostore/coveragestore.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/coveragestore.xml");
         Document dom = dom(f);
         assertXpathEvaluatesTo("file:data/foo.tiff", "/coverageStore/url/text()", dom);
     }
@@ -328,10 +313,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         ft.setTitle("fooTitle");
         catalog.save(ft);
 
-        File f =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/foostore/foo/coverage.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/coverage.xml");
         Document dom = dom(f);
 
         assertXpathEvaluatesTo("fooTitle", "/coverage/title", dom);
@@ -373,8 +355,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         WMSStoreInfo wms = catalog.getStoreByName("acme", "demowms", WMSStoreInfo.class);
         assertNull(wms.getCapabilitiesURL());
 
-        String capsURL =
-                "http://demo.opengeo.org:8080/geoserver/wms?request=GetCapabilites&service=WMS";
+        String capsURL = "http://demo.opengeo.org:8080/geoserver/wms?request=GetCapabilites&service=WMS";
         wms.setCapabilitiesURL(capsURL);
         catalog.save(wms);
 
@@ -425,10 +406,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         wli.setTitle("fooTitle");
         catalog.save(wli);
 
-        File f =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/demowms/foo/wmslayer.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/demowms/foo/wmslayer.xml");
         Document dom = dom(f);
 
         assertXpathEvaluatesTo("fooTitle", "/wmsLayer/title", dom);
@@ -470,13 +448,11 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         WMTSStoreInfo wmts = catalog.getStoreByName("acme", "demowmts", WMTSStoreInfo.class);
         assertNull(wmts.getCapabilitiesURL());
 
-        String capsURL =
-                "http://demo.opengeo.org:8080/geoserver/gwc?request=GetCapabilites&service=WMTS";
+        String capsURL = "http://demo.opengeo.org:8080/geoserver/gwc?request=GetCapabilites&service=WMTS";
         wmts.setCapabilitiesURL(capsURL);
         catalog.save(wmts);
 
-        File f =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/wmtsstore.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/wmtsstore.xml");
         Document dom = dom(f);
         assertXpathEvaluatesTo(capsURL, "/wmtsStore/capabilitiesURL/text()", dom);
     }
@@ -523,10 +499,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         wli.setTitle("fooTitle");
         catalog.save(wli);
 
-        File f =
-                new File(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/demowmts/foo_wmts/wmtslayer.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/demowmts/foo_wmts/wmtslayer.xml");
         Document dom = dom(f);
 
         assertXpathEvaluatesTo("fooTitle", "/wmtsLayer/title", dom);
@@ -550,8 +523,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         testAddFeatureType();
         testAddStyle();
 
-        File f =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
         assertFalse(f.exists());
 
         LayerInfo l = catalog.getFactory().createLayer();
@@ -573,8 +545,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         l.setPath("/foo/bar");
         catalog.save(l);
 
-        File f =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
         Document dom = dom(f);
 
         assertXpathEvaluatesTo("/foo/bar", "/layer/path", dom);
@@ -584,8 +555,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
     public void testRemoveLayer() throws Exception {
         testAddLayer();
 
-        File f =
-                new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
+        File f = new File(testData.getDataDirectoryRoot(), "workspaces/acme/foostore/foo/layer.xml");
         assertTrue(f.exists());
 
         LayerInfo l = catalog.getLayerByName("foo");
@@ -788,12 +758,8 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertFalse(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
         assertFalse(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
 
-        assertTrue(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml")
-                        .exists());
-        assertTrue(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld")
-                        .exists());
+        assertTrue(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
     }
 
     @Test
@@ -805,12 +771,8 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
                 getClass().getResource("default_line.sld"),
                 new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"));
 
-        assertTrue(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml")
-                        .exists());
-        assertTrue(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld")
-                        .exists());
+        assertTrue(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertTrue(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
 
         StyleInfo s = catalog.getStyleByName("foostyle");
         s.setWorkspace(null);
@@ -819,12 +781,8 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertTrue(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml").exists());
         assertTrue(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld").exists());
 
-        assertFalse(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml")
-                        .exists());
-        assertFalse(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld")
-                        .exists());
+        assertFalse(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml").exists());
+        assertFalse(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld").exists());
     }
 
     @Test
@@ -833,11 +791,9 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
 
         // copy an sld with its resource into place
         FileUtils.copyURLToFile(
-                getClass().getResource("burg.sld"),
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
+                getClass().getResource("burg.sld"), new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
         FileUtils.copyURLToFile(
-                getClass().getResource("burg02.svg"),
-                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+                getClass().getResource("burg02.svg"), new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
 
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
@@ -847,23 +803,13 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         s.setWorkspace(catalog.getDefaultWorkspace());
         catalog.save(s);
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"),
-                not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"),
-                fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
     }
 
     @Test
@@ -878,11 +824,9 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
                 getClass().getResource("burgParentReference.sld"),
                 new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"));
         FileUtils.copyURLToFile(
-                getClass().getResource("burg02.svg"),
-                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+                getClass().getResource("burg02.svg"), new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
         FileUtils.copyURLToFile(
-                getClass().getResource("burg02.svg"),
-                new File(testData.getDataDirectoryRoot(), "burg03.svg"));
+                getClass().getResource("burg02.svg"), new File(testData.getDataDirectoryRoot(), "burg03.svg"));
 
         new File(testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
 
@@ -890,38 +834,23 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "burg03.svg"), fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
 
         StyleInfo s = catalog.getStyleByName("foostyle");
 
         s.setWorkspace(catalog.getDefaultWorkspace());
         catalog.save(s);
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"),
-                not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
         assertThat(new File(testData.getDataDirectoryRoot(), "burg03.svg"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"),
-                fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
     }
 
     @Test
@@ -934,8 +863,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         File styleFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
         FileUtils.copyURLToFile(getClass().getResource("burgParentReference.sld"), styleFile);
         FileUtils.copyURLToFile(
-                getClass().getResource("burg02.svg"),
-                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+                getClass().getResource("burg02.svg"), new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
         File target = new File(testData.getDataDirectoryRoot(), "burg03.svg");
         FileUtils.copyURLToFile(getClass().getResource("burg02.svg"), target);
 
@@ -949,45 +877,27 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
         assertThat(target, fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
 
         StyleInfo s = catalog.getStyleByName("foostyle");
 
         s.setWorkspace(catalog.getDefaultWorkspace());
         catalog.save(s);
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"),
-                not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
         assertThat(target, fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
 
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs" + target.getPath()), not(fileExists()));
         assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"),
+                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles" + target.getPath()),
                 not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs" + target.getPath()),
-                not(fileExists()));
-        assertThat(
-                new File(
-                        testData.getDataDirectoryRoot(), "workspaces/gs/styles" + target.getPath()),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"),
-                fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
     }
 
     @Test
@@ -1000,8 +910,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         File styleFile = new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld");
         FileUtils.copyURLToFile(getClass().getResource("burgRemoteReference.sld"), styleFile);
         FileUtils.copyURLToFile(
-                getClass().getResource("burg02.svg"),
-                new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
+                getClass().getResource("burg02.svg"), new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"));
 
         new File(testData.getDataDirectoryRoot(), "styles/burg03.svg").delete();
         new File(testData.getDataDirectoryRoot(), "burg03.svg").delete();
@@ -1009,8 +918,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), fileExists());
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg03.svg"), not(fileExists()));
         assertThat(new File(testData.getDataDirectoryRoot(), "burg03.svg"), not(fileExists()));
 
         StyleInfo s = catalog.getStyleByName("foostyle");
@@ -1018,32 +926,17 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         s.setWorkspace(catalog.getDefaultWorkspace());
         catalog.save(s);
 
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"),
-                not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.xml"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "styles/foostyle.sld"), not(fileExists()));
         assertThat(new File(testData.getDataDirectoryRoot(), "styles/burg02.svg"), fileExists());
 
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"), fileExists());
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"), not(fileExists()));
         assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.xml"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/foostyle.sld"),
-                fileExists());
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/example.com/burg03.svg"),
-                not(fileExists()));
-        assertThat(
-                new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"),
-                fileExists());
+                new File(testData.getDataDirectoryRoot(), "workspaces/gs/example.com/burg03.svg"), not(fileExists()));
+        assertThat(new File(testData.getDataDirectoryRoot(), "workspaces/gs/styles/burg02.svg"), fileExists());
     }
 
     @Test
@@ -1155,10 +1048,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testAddLayerGroupWithWorkspace() throws Exception {
-        File f =
-                file(
-                        testData.getDataDirectoryRoot(),
-                        "workspaces/acme/layergroups/foolayergroup.xml");
+        File f = file(testData.getDataDirectoryRoot(), "workspaces/acme/layergroups/foolayergroup.xml");
         assertFalse(f.exists());
 
         testAddLayer();
@@ -1173,8 +1063,7 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         assertTrue(f.exists());
 
         Document dom = dom(f);
-        assertXpathEvaluatesTo(
-                catalog.getWorkspaceByName("acme").getId(), "/layerGroup/workspace/id", dom);
+        assertXpathEvaluatesTo(catalog.getWorkspaceByName("acme").getId(), "/layerGroup/workspace/id", dom);
     }
 
     @Test
@@ -1341,11 +1230,10 @@ public class GeoServerPersistersTest extends GeoServerSystemTestSupport {
         }
         getGeoServer().reload();
         LoggingInitializer.LoggingListener listener =
-                (LoggingInitializer.LoggingListener)
-                        getGeoServer().getListeners().stream()
-                                .filter(l -> l instanceof LoggingInitializer.LoggingListener)
-                                .findAny()
-                                .get();
+                (LoggingInitializer.LoggingListener) getGeoServer().getListeners().stream()
+                        .filter(l -> l instanceof LoggingInitializer.LoggingListener)
+                        .findAny()
+                        .get();
         LoggingInfo newLogging = listener.getCurrentLogging();
         assertEquals(newLogging.getLevel(), newLevel);
     }

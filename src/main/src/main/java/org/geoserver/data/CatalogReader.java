@@ -85,8 +85,8 @@ public class CatalogReader {
     /**
      * Reads "namespace" elements from the catalog.xml file.
      *
-     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default
-     * uri is located under the empty string key.
+     * <p>For each namespace element read, an entry of <prefix,uri> is created in a map. The default uri is located
+     * under the empty string key.
      *
      * @return A map containing <prefix,uri> tuples.
      * @throws Exception If error processing "namespaces" element.
@@ -125,8 +125,7 @@ public class CatalogReader {
      * @throws Exception If problem parsing any parameters.
      */
     protected Map<String, String> dataStoreParams(Element dataStoreElement) throws Exception {
-        Element paramsElement =
-                ReaderUtils.getChildElement(dataStoreElement, "connectionParameters", true);
+        Element paramsElement = ReaderUtils.getChildElement(dataStoreElement, "connectionParameters", true);
         NodeList paramList = paramsElement.getElementsByTagName("parameter");
 
         Map<String, String> params = new HashMap<>();

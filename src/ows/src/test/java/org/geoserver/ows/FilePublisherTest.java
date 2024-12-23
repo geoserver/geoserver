@@ -133,16 +133,14 @@ public class FilePublisherTest {
     public void testMimeDefault() throws Exception {
         // test that the application/octect-stream content type is used if
         // the servlet context doesn't contain a mapping for the mime type.
-        doTestTypeAndDisposition(
-                "www/", "test.bar", null, MediaType.APPLICATION_OCTET_STREAM_VALUE, "inline");
+        doTestTypeAndDisposition("www/", "test.bar", null, MediaType.APPLICATION_OCTET_STREAM_VALUE, "inline");
     }
 
     @Test
     public void testMimeTextXml() throws Exception {
         // test that the text/xml content type has a Content-Disposition
         // to force the web browser to download the file
-        doTestTypeAndDisposition(
-                "www/", "test.foo", MediaType.TEXT_XML, MediaType.TEXT_XML_VALUE, "attachment");
+        doTestTypeAndDisposition("www/", "test.foo", MediaType.TEXT_XML, MediaType.TEXT_XML_VALUE, "attachment");
     }
 
     @Test
@@ -150,47 +148,35 @@ public class FilePublisherTest {
         // test that the application/xml content type has a Content-Disposition
         // to force the web browser to download the file
         doTestTypeAndDisposition(
-                "www/",
-                "test.foo",
-                MediaType.APPLICATION_XML,
-                MediaType.APPLICATION_XML_VALUE,
-                "attachment");
+                "www/", "test.foo", MediaType.APPLICATION_XML, MediaType.APPLICATION_XML_VALUE, "attachment");
     }
 
     @Test
     public void testMimeImageSvgXml() throws Exception {
         // test that the image/svg+xml content type has a Content-Disposition
         // to force the web browser to download the file
-        doTestTypeAndDisposition(
-                "www/",
-                "test.foo",
-                MediaType.valueOf("image/svg+xml"),
-                "image/svg+xml",
-                "attachment");
+        doTestTypeAndDisposition("www/", "test.foo", MediaType.valueOf("image/svg+xml"), "image/svg+xml", "attachment");
     }
 
     @Test
     public void testMimeTextHtmlPropUndefined() throws Exception {
         // test that the text/html content type is allowed
         System.clearProperty(FilePublisher.DISABLE_STATIC_WEB_FILES);
-        doTestTypeAndDisposition(
-                "www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
+        doTestTypeAndDisposition("www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
     }
 
     @Test
     public void testMimeTextHtmlPropFalse() throws Exception {
         // test that the text/html content type is allowed
         System.setProperty(FilePublisher.DISABLE_STATIC_WEB_FILES, "false");
-        doTestTypeAndDisposition(
-                "www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
+        doTestTypeAndDisposition("www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
     }
 
     @Test
     public void testMimeTextHtmlPropTrue() throws Exception {
         // test that the text/html content type is replaced with text/plain
         System.setProperty(FilePublisher.DISABLE_STATIC_WEB_FILES, "true");
-        doTestTypeAndDisposition(
-                "www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_PLAIN_VALUE, "inline");
+        doTestTypeAndDisposition("www/", "test.foo", MediaType.TEXT_HTML, MediaType.TEXT_PLAIN_VALUE, "inline");
     }
 
     @Test
@@ -198,11 +184,7 @@ public class FilePublisherTest {
         // test that the application/javascript content type is allowed
         System.clearProperty(FilePublisher.DISABLE_STATIC_WEB_FILES);
         doTestTypeAndDisposition(
-                "www/",
-                "test.foo",
-                MediaType.valueOf("application/javascript"),
-                "application/javascript",
-                "inline");
+                "www/", "test.foo", MediaType.valueOf("application/javascript"), "application/javascript", "inline");
     }
 
     @Test
@@ -210,11 +192,7 @@ public class FilePublisherTest {
         // test that the application/javascript content type is allowed
         System.setProperty(FilePublisher.DISABLE_STATIC_WEB_FILES, "false");
         doTestTypeAndDisposition(
-                "www/",
-                "test.foo",
-                MediaType.valueOf("application/javascript"),
-                "application/javascript",
-                "inline");
+                "www/", "test.foo", MediaType.valueOf("application/javascript"), "application/javascript", "inline");
     }
 
     @Test
@@ -222,11 +200,7 @@ public class FilePublisherTest {
         // test that the application/javascript content type is replaced with text/plain
         System.setProperty(FilePublisher.DISABLE_STATIC_WEB_FILES, "true");
         doTestTypeAndDisposition(
-                "www/",
-                "test.foo",
-                MediaType.valueOf("application/javascript"),
-                MediaType.TEXT_PLAIN_VALUE,
-                "inline");
+                "www/", "test.foo", MediaType.valueOf("application/javascript"), MediaType.TEXT_PLAIN_VALUE, "inline");
     }
 
     @Test
@@ -234,17 +208,12 @@ public class FilePublisherTest {
         // test that the text/html content type is allowed even when property is true
         System.setProperty(FilePublisher.DISABLE_STATIC_WEB_FILES, "true");
         String content =
-                doTestTypeAndDisposition(
-                        "", "index.html", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
+                doTestTypeAndDisposition("", "index.html", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
         assertEquals("GOOD", content);
     }
 
     private String doTestTypeAndDisposition(
-            String path,
-            String filename,
-            MediaType serverType,
-            String responseType,
-            String dispositionType)
+            String path, String filename, MediaType serverType, String responseType, String dispositionType)
             throws Exception {
         String[] paths = {path + filename};
         if (serverType != null) {
@@ -253,9 +222,7 @@ public class FilePublisherTest {
         MockHttpServletResponse response = request(paths, null);
         assertEquals(200, response.getStatus());
         assertThat(response.getHeader("Content-Type"), startsWith(responseType));
-        assertEquals(
-                dispositionType + "; filename=\"" + filename + "\"",
-                response.getHeader("Content-Disposition"));
+        assertEquals(dispositionType + "; filename=\"" + filename + "\"", response.getHeader("Content-Disposition"));
         return response.getContentAsString();
     }
 }

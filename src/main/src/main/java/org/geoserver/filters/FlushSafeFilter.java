@@ -15,8 +15,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * A servlet filter making sure we cannot end up calling flush() on the response output stream after
- * close() has been called (https://osgeo-org.atlassian.net/browse/GEOS-5985)
+ * A servlet filter making sure we cannot end up calling flush() on the response output stream after close() has been
+ * called (https://osgeo-org.atlassian.net/browse/GEOS-5985)
  *
  * @author Andrea Aime - GeoSolutions
  */

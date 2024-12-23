@@ -42,16 +42,8 @@ public class CachedContainerAccessResolver implements ContainerAccessResolver {
             List<LayerGroupInfo> containers,
             Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
 
-        ContainerAccessCacheLoaderFactory.ResolveParams params =
-                new ContainerAccessCacheLoaderFactory.ResolveParams(
-                        resourceInfo,
-                        layer,
-                        workspace,
-                        configuration,
-                        callerIp,
-                        user,
-                        containers,
-                        summaries);
+        ContainerAccessCacheLoaderFactory.ResolveParams params = new ContainerAccessCacheLoaderFactory.ResolveParams(
+                resourceInfo, layer, workspace, configuration, callerIp, user, containers, summaries);
         try {
             return cacheManager.getContainerCache().get(params);
         } catch (ExecutionException ex) {

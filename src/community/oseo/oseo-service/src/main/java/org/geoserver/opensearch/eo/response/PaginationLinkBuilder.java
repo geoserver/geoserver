@@ -16,9 +16,9 @@ import org.geoserver.ows.util.ResponseUtils;
 import org.geotools.api.data.Parameter;
 
 /**
- * Can build all the pagination links, given the search results and a target mime type. HREFs
- * returned can be null, in that case the link is not meant to be produced (e.g., previous page when
- * the current request is hitting the first page)
+ * Can build all the pagination links, given the search results and a target mime type. HREFs returned can be null, in
+ * that case the link is not meant to be produced (e.g., previous page when the current request is hitting the first
+ * page)
  */
 public class PaginationLinkBuilder {
 

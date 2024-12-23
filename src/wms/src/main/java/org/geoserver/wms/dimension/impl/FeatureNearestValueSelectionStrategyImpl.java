@@ -17,13 +17,12 @@ import org.geotools.feature.visitor.NearestVisitor;
 import org.geotools.util.Converters;
 
 /**
- * Default implementation for selecting the default values for dimensions of feature (vector)
- * resources using the nearest-domain-value-to-the-reference-value strategy.
+ * Default implementation for selecting the default values for dimensions of feature (vector) resources using the
+ * nearest-domain-value-to-the-reference-value strategy.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class FeatureNearestValueSelectionStrategyImpl
-        extends AbstractFeatureAttributeVisitorSelectionStrategy {
+public class FeatureNearestValueSelectionStrategyImpl extends AbstractFeatureAttributeVisitorSelectionStrategy {
 
     private Object toMatch;
     private String fixedCapabilitiesValue;
@@ -40,10 +39,8 @@ public class FeatureNearestValueSelectionStrategyImpl
     }
 
     @Override
-    public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
-        final FeatureCalc nearest =
-                new NearestVisitor(ff.property(dimension.getAttribute()), this.toMatch);
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
+        final FeatureCalc nearest = new NearestVisitor(ff.property(dimension.getAttribute()), this.toMatch);
 
         CalcResult res = getCalculatedResult((FeatureTypeInfo) resource, dimension, nearest);
         if (res.equals(CalcResult.NULL_RESULT)) {

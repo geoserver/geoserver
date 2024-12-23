@@ -18,8 +18,8 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.Converters;
 
 /**
- * Base class for all the writers it provides some common fields as well as few common functionality
- * that can ben shared among the writers.
+ * Base class for all the writers it provides some common fields as well as few common functionality that can ben shared
+ * among the writers.
  */
 public abstract class TemplateOutputWriter implements AutoCloseable {
 
@@ -30,36 +30,33 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
     protected CRS.AxisOrder axisOrder = CRS.AxisOrder.EAST_NORTH;
 
     /**
-     * Write an element name. An element name may be the field name in a JSON or an element tag name
-     * in case of a gml output.
+     * Write an element name. An element name may be the field name in a JSON or an element tag name in case of a gml
+     * output.
      *
      * @param elementName an object representing the element name.
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeElementName(Object elementName, EncodingHints encodingHints)
-            throws IOException;
+    public abstract void writeElementName(Object elementName, EncodingHints encodingHints) throws IOException;
 
     /**
-     * Write an element value. An element value may be i.e. a field value in a JSON or an element
-     * content in a gml output.
+     * Write an element value. An element value may be i.e. a field value in a JSON or an element content in a gml
+     * output.
      *
      * @param elementValue an object representing the element value.
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeElementValue(Object elementValue, EncodingHints encodingHints)
-            throws IOException;
+    public abstract void writeElementValue(Object elementValue, EncodingHints encodingHints) throws IOException;
 
     /**
      * @param key the element name to be encoded.
      * @param elementValue the element value to be encoded.
-     * @param encodingHints encodingHints a map eventually holding hints about how to encode the
-     *     value.
+     * @param encodingHints encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeElementNameAndValue(
-            String key, Object elementValue, EncodingHints encodingHints) throws IOException;
+    public abstract void writeElementNameAndValue(String key, Object elementValue, EncodingHints encodingHints)
+            throws IOException;
 
     /**
      * Write a static content, no matter how nested.
@@ -69,8 +66,8 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
      * @param encodingHints a map eventually holding hints about how to encode the value.
      * @throws IOException
      */
-    public abstract void writeStaticContent(
-            String name, Object staticContent, EncodingHints encodingHints) throws IOException;
+    public abstract void writeStaticContent(String name, Object staticContent, EncodingHints encodingHints)
+            throws IOException;
 
     /**
      * Write the start of an object.
@@ -107,15 +104,15 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
     public abstract void endArray(String name, EncodingHints encodingHints) throws IOException;
 
     /**
-     * @param encodingHints a map eventually holding hints about how to start the template output or
-     *     additional data to write.
+     * @param encodingHints a map eventually holding hints about how to start the template output or additional data to
+     *     write.
      * @throws IOException
      */
     public abstract void startTemplateOutput(EncodingHints encodingHints) throws IOException;
 
     /**
-     * @param encodingHints a map eventually holding hints about how to end the template output or
-     *     additional data to write.
+     * @param encodingHints a map eventually holding hints about how to end the template output or additional data to
+     *     write.
      * @throws IOException
      */
     public abstract void endTemplateOutput(EncodingHints encodingHints) throws IOException;
@@ -158,8 +155,8 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
     public abstract void writeNumberReturned() throws IOException;
 
     /**
-     * Increment the numberReturned value of 1. Can be used to keep track of the number of features
-     * returned while iterating a FeatureCollection.
+     * Increment the numberReturned value of 1. Can be used to keep track of the number of features returned while
+     * iterating a FeatureCollection.
      */
     public void incrementNumberReturned() {
         numberReturned += 1;
@@ -229,8 +226,7 @@ public abstract class TemplateOutputWriter implements AutoCloseable {
         return isNull;
     }
 
-    protected <T> T getEncodingHintIfPresent(
-            EncodingHints encodingHints, String name, Class<T> cast) {
+    protected <T> T getEncodingHintIfPresent(EncodingHints encodingHints, String name, Class<T> cast) {
         T result = null;
         if (encodingHints != null) {
             result = encodingHints.get(name, cast);

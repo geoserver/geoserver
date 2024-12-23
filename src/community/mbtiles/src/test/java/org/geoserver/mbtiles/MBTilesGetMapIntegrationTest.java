@@ -35,8 +35,7 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
         testData.addStyle("heathmap", "heathmap_style.sld", getClass(), catalog);
         testData.addStyle("barnes_surface", "barnes_surface_style.sld", getClass(), catalog);
         WorkspaceInfo ws = catalog.getWorkspaceByName("cite");
-        DataStoreInfo store =
-                addMBStore(catalog, ws, "many_points", "manypoints_test.mbtiles", getClass());
+        DataStoreInfo store = addMBStore(catalog, ws, "many_points", "manypoints_test.mbtiles", getClass());
         addMBVectorLayer(catalog, ws, store, "manypoints_test");
     }
 
@@ -48,17 +47,16 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
         LayerInfo info = catalog.getLayerByName("manypoints_test");
         info.setDefaultStyle(style);
         catalog.save(info);
-        BufferedImage image =
-                getAsImage(
-                        "wms?bbox="
-                                + bbox
-                                + "&layers=cite:manypoints_test"
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=447"
-                                + "&height=330"
-                                + "&srs=EPSG:3857",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?bbox="
+                        + bbox
+                        + "&layers=cite:manypoints_test"
+                        + "&Format=image/png"
+                        + "&request=GetMap"
+                        + "&width=447"
+                        + "&height=330"
+                        + "&srs=EPSG:3857",
+                "image/png");
 
         URL expectedResponse = getClass().getResource("heathmap_many_points.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
@@ -74,17 +72,16 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
         info.setDefaultStyle(style);
         catalog.save(info);
 
-        BufferedImage image =
-                getAsImage(
-                        "wms?bbox="
-                                + bbox
-                                + "&layers=cite:manypoints_test"
-                                + "&Format=image/png"
-                                + "&request=GetMap"
-                                + "&width=447"
-                                + "&height=330"
-                                + "&srs=EPSG:3857",
-                        "image/png");
+        BufferedImage image = getAsImage(
+                "wms?bbox="
+                        + bbox
+                        + "&layers=cite:manypoints_test"
+                        + "&Format=image/png"
+                        + "&request=GetMap"
+                        + "&width=447"
+                        + "&height=330"
+                        + "&srs=EPSG:3857",
+                "image/png");
         URL expectedResponse = getClass().getResource("barnes_many_points.png");
         BufferedImage expectedImage = ImageIO.read(expectedResponse);
         ImageAssert.assertEquals(image, expectedImage, 500);
@@ -103,8 +100,7 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
             URI uri = scope.getResource(fileName).toURI();
             NamespaceInfo namespace = catalog.getNamespaceByPrefix(ws.getName());
             store.getConnectionParameters().put("database", uri.toString());
-            store.getConnectionParameters()
-                    .put(PropertyDataStoreFactory.NAMESPACE.key, namespace.getURI());
+            store.getConnectionParameters().put(PropertyDataStoreFactory.NAMESPACE.key, namespace.getURI());
             store.getConnectionParameters().put("dbtype", "mbtiles");
             store.setType(new MBTilesDataStoreFactory().getDisplayName());
             catalog.add(store);
@@ -112,8 +108,7 @@ public class MBTilesGetMapIntegrationTest extends WMSTestSupport {
         return catalog.getDataStoreByName(ws.getName(), storeName);
     }
 
-    private void addMBVectorLayer(
-            Catalog catalog, WorkspaceInfo ws, DataStoreInfo store, String typeName)
+    private void addMBVectorLayer(Catalog catalog, WorkspaceInfo ws, DataStoreInfo store, String typeName)
             throws IOException {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.setWorkspace(ws);

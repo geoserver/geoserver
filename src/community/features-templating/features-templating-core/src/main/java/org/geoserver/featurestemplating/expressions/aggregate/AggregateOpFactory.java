@@ -67,18 +67,14 @@ class AggregateOpFactory {
         try {
             return OpType.valueOf(agName);
         } catch (EnumConstantNotPresentException e) {
-            LOGGER.log(
-                    Level.SEVERE,
-                    "The aggregate type specified in the aggregate function was not recognized",
-                    e);
+            LOGGER.log(Level.SEVERE, "The aggregate type specified in the aggregate function was not recognized", e);
             throw new UnsupportedOperationException(
                     "The aggregate type specified in the aggregate function was not recognized");
         }
     }
 
     /**
-     * Extract the param from the string aggregate type. Some aggregation might have params eg.
-     * JOIN(,).
+     * Extract the param from the string aggregate type. Some aggregation might have params eg. JOIN(,).
      *
      * @param aggregateValue the aggregate type value.
      * @return the param value if found, null otherwise.

@@ -53,12 +53,10 @@ class AdvancedDbParamPanel extends Panel {
         looseBBoxContainer.add(fastBBoxCheck);
         advancedPanel.add(looseBBoxContainer);
 
-        WebMarkupContainer excludeGeomlessContainer =
-                new WebMarkupContainer("excludeGeometrylessContainer");
+        WebMarkupContainer excludeGeomlessContainer = new WebMarkupContainer("excludeGeometrylessContainer");
         excludeGeomlessContainer.setVisible(showLooseBBox);
         CheckBox excludeGeomlessCheck =
-                new CheckBox(
-                        "excludeGeometryless", new PropertyModel<>(this, "excludeGeometryless"));
+                new CheckBox("excludeGeometryless", new PropertyModel<>(this, "excludeGeometryless"));
         excludeGeomlessContainer.add(excludeGeomlessCheck);
         advancedPanel.add(excludeGeomlessContainer);
 
@@ -68,26 +66,22 @@ class AdvancedDbParamPanel extends Panel {
     }
 
     Component toggleAdvanced() {
-        final AjaxLink advanced =
-                new AjaxLink("advancedLink") {
+        final AjaxLink advanced = new AjaxLink("advancedLink") {
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        advancedPanel.setVisible(!advancedPanel.isVisible());
-                        target.add(advancedContainer);
-                        target.add(this);
-                    }
-                };
-        advanced.add(
-                new AttributeModifier(
-                        "class",
-                        new AbstractReadOnlyModel() {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                advancedPanel.setVisible(!advancedPanel.isVisible());
+                target.add(advancedContainer);
+                target.add(this);
+            }
+        };
+        advanced.add(new AttributeModifier("class", new AbstractReadOnlyModel() {
 
-                            @Override
-                            public Object getObject() {
-                                return advancedPanel.isVisible() ? "expanded" : "collapsed";
-                            }
-                        }));
+            @Override
+            public Object getObject() {
+                return advancedPanel.isVisible() ? "expanded" : "collapsed";
+            }
+        }));
         advanced.setOutputMarkupId(true);
         return advanced;
     }

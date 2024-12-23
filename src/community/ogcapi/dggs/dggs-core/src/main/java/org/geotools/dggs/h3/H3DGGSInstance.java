@@ -56,13 +56,9 @@ public class H3DGGSInstance implements DGGSInstance {
 
         int[] resolutions = getResolutions();
         this.northPoleZones =
-                Arrays.stream(resolutions)
-                        .mapToObj(r -> getZone(90, 0, r).id)
-                        .collect(Collectors.toSet());
+                Arrays.stream(resolutions).mapToObj(r -> getZone(90, 0, r).id).collect(Collectors.toSet());
         this.southPoleZones =
-                Arrays.stream(resolutions)
-                        .mapToObj(r -> getZone(-90, 0, r).id)
-                        .collect(Collectors.toSet());
+                Arrays.stream(resolutions).mapToObj(r -> getZone(-90, 0, r).id).collect(Collectors.toSet());
     }
 
     @Override
@@ -101,8 +97,7 @@ public class H3DGGSInstance implements DGGSInstance {
     }
 
     @Override
-    public Iterator<Zone> zonesFromEnvelope(
-            Envelope envelope, int targetResolution, boolean compact) {
+    public Iterator<Zone> zonesFromEnvelope(Envelope envelope, int targetResolution, boolean compact) {
         Envelope intersection = envelope.intersection(WORLD);
         if (intersection.isNull()) {
             return new EmptyIterator<>();
@@ -126,8 +121,7 @@ public class H3DGGSInstance implements DGGSInstance {
                                 // envelope, but still overlaps it, or is spanning the dateline
                                 int r = h3.h3GetResolution(id);
                                 return r < targetResolution
-                                        && (ringOverlaps(id, envelope)
-                                                && !containedInEnvelope(id, envelope));
+                                        && (ringOverlaps(id, envelope) && !containedInEnvelope(id, envelope));
                             },
                             id -> {
                                 // accept if at target resolution and overlaps the envelope, or it's
@@ -135,8 +129,7 @@ public class H3DGGSInstance implements DGGSInstance {
                                 // parent fully contained in the envelope
                                 int r = h3.h3GetResolution(id);
                                 return (r == targetResolution && overlaps((long) id, envelope))
-                                        || (r < targetResolution
-                                                && containedInEnvelope(id, envelope));
+                                        || (r < targetResolution && containedInEnvelope(id, envelope));
                             },
                             id -> id)
                     .forEachRemaining(id -> zones.add(id));
@@ -151,12 +144,9 @@ public class H3DGGSInstance implements DGGSInstance {
         } else {
             return new H3ZoneIterator<>(
                     h3,
-                    id ->
-                            h3.h3GetResolution(id) < targetResolution
-                                    && (ringOverlaps(id, envelope) || datelineCrossing(id)),
-                    id ->
-                            h3.h3GetResolution(id) == targetResolution
-                                    && overlaps((long) id, envelope),
+                    id -> h3.h3GetResolution(id) < targetResolution
+                            && (ringOverlaps(id, envelope) || datelineCrossing(id)),
+                    id -> h3.h3GetResolution(id) == targetResolution && overlaps((long) id, envelope),
                     id -> new H3Zone(this, id));
         }
     }
@@ -227,34 +217,31 @@ public class H3DGGSInstance implements DGGSInstance {
         }
         // abuse the iteration machinery to count fast
         AtomicLong counter = new AtomicLong();
-        H3ZoneIterator<AtomicLong> iterator =
-                new H3ZoneIterator<>(
-                        h3,
-                        // drill down if the zone is overlapping but not ring contained, need better
-                        // accuracy
-                        id ->
-                                h3.h3GetResolution(id) < resolution
-                                        // do not test single polygon, the cell might not be
-                                        // overlapping the search area, but one of its child could
-                                        // however if all its neibords are also contained, this one
-                                        // is inside and can be counted quickly
-                                        && !ringContained((long) id, envelope),
-                        // if the zone is ring contained, just count all of its childern
-                        id -> {
-                            int currentResolution = h3.h3GetResolution(id);
-                            if (currentResolution == resolution) {
-                                if (overlaps(id, envelope)) {
-                                    counter.addAndGet(1);
-                                    return true;
-                                }
-                            } else if (ringContained(id, envelope)) {
-                                counter.addAndGet(
-                                        childrenCount(id, resolution - currentResolution));
-                            }
-                            return false;
-                        },
-                        // just return the current counter value
-                        id -> counter);
+        H3ZoneIterator<AtomicLong> iterator = new H3ZoneIterator<>(
+                h3,
+                // drill down if the zone is overlapping but not ring contained, need better
+                // accuracy
+                id -> h3.h3GetResolution(id) < resolution
+                        // do not test single polygon, the cell might not be
+                        // overlapping the search area, but one of its child could
+                        // however if all its neibords are also contained, this one
+                        // is inside and can be counted quickly
+                        && !ringContained((long) id, envelope),
+                // if the zone is ring contained, just count all of its childern
+                id -> {
+                    int currentResolution = h3.h3GetResolution(id);
+                    if (currentResolution == resolution) {
+                        if (overlaps(id, envelope)) {
+                            counter.addAndGet(1);
+                            return true;
+                        }
+                    } else if (ringContained(id, envelope)) {
+                        counter.addAndGet(childrenCount(id, resolution - currentResolution));
+                    }
+                    return false;
+                },
+                // just return the current counter value
+                id -> counter);
         // make it visit
         while (iterator.hasNext()) iterator.next();
         return counter.get();
@@ -326,10 +313,9 @@ public class H3DGGSInstance implements DGGSInstance {
     @Override
     public Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact) {
         List<GeoCoord> shell = getGeoCoords(polygon.getExteriorRing());
-        List<List<GeoCoord>> holes =
-                IntStream.range(0, polygon.getNumInteriorRing())
-                        .mapToObj(i -> getGeoCoords(polygon.getInteriorRingN(i)))
-                        .collect(Collectors.toList());
+        List<List<GeoCoord>> holes = IntStream.range(0, polygon.getNumInteriorRing())
+                .mapToObj(i -> getGeoCoords(polygon.getInteriorRingN(i)))
+                .collect(Collectors.toList());
         // TODO replace with a walk similar to RHealPix, this might be faster for
         // small numbers, but it's memory bound and gets slow
         // pretty quickly due to memory pressure,
@@ -354,11 +340,7 @@ public class H3DGGSInstance implements DGGSInstance {
         long highest = idx.highestIdChild(resolution);
         String lowestId = h3.h3ToString(lowest);
         String highestId = h3.h3ToString(highest);
-        Filter matchFilter =
-                ff.between(
-                        ff.property(DGGSStore.ZONE_ID),
-                        ff.literal(lowestId),
-                        ff.literal(highestId));
+        Filter matchFilter = ff.between(ff.property(DGGSStore.ZONE_ID), ff.literal(lowestId), ff.literal(highestId));
         return matchFilter;
     }
 }

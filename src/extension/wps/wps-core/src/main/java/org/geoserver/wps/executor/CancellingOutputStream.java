@@ -11,8 +11,8 @@ import org.geoserver.wps.ProcessDismissedException;
 import org.geotools.api.util.ProgressListener;
 
 /**
- * Wrapper class for output streams that will throw an exception when a process got cancelled during
- * the production of the outputs
+ * Wrapper class for output streams that will throw an exception when a process got cancelled during the production of
+ * the outputs
  *
  * @author Andrea Aime - GeoSolutions
  */

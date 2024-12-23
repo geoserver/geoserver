@@ -22,14 +22,13 @@ public class DescribeProcessTest extends WPSTestSupport {
 
     @Test
     public void testPostBuffer() throws Exception { // Standard Test A.4.3.2
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
-                        + "<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" "
-                        + "xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
-                        + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-                        + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
-                        + "    <ows:Identifier>JTS:buffer</ows:Identifier>\r\n"
-                        + "</DescribeProcess>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n"
+                + "<DescribeProcess xmlns=\"http://www.opengis.net/wps/1.0.0\" "
+                + "xmlns:ows=\"http://www.opengis.net/ows/1.1\" "
+                + "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+                + "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\r\n"
+                + "    <ows:Identifier>JTS:buffer</ows:Identifier>\r\n"
+                + "</DescribeProcess>";
         Document d = postAsDOM(root(), request);
         // print(d);
         testBufferDescription(d);
@@ -37,21 +36,14 @@ public class DescribeProcessTest extends WPSTestSupport {
 
     @Test
     public void testGetBufferFeatureCollection() throws Exception { // Standard Test A.4.3.1
-        Document d =
-                getAsDOM(
-                        root()
-                                + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
         print(d);
 
         // check that we advertise the base64 encoding for application/zip
         String base = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
-        assertXpathExists(
-                base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']", d);
+        assertXpathExists(base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']", d);
         assertXpathEvaluatesTo(
-                "base64",
-                base
-                        + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']/Encoding",
-                d);
+                "base64", base + "/Input[1]/ComplexData/Supported/Format[MimeType='application/zip']/Encoding", d);
     }
 
     private void testBufferDescription(Document d) throws Exception { // Standard Test A.4.3.3
@@ -69,9 +61,7 @@ public class DescribeProcessTest extends WPSTestSupport {
         assertXpathExists(base + "/Input[1]/ComplexData", d);
 
         assertXpathEvaluatesTo(
-                "text/xml; subtype=gml/3.1.1",
-                base + "/Input[1]/ComplexData/Default/Format/MimeType/child::text()",
-                d);
+                "text/xml; subtype=gml/3.1.1", base + "/Input[1]/ComplexData/Default/Format/MimeType/child::text()", d);
         assertXpathEvaluatesTo(
                 "text/xml; subtype=gml/3.1.1",
                 base + "/Input[1]/ComplexData/Supported/Format[1]/MimeType/child::text()",
@@ -81,17 +71,14 @@ public class DescribeProcessTest extends WPSTestSupport {
                 base + "/Input[1]/ComplexData/Supported/Format[2]/MimeType/child::text()",
                 d);
         assertXpathEvaluatesTo(
-                "application/wkt",
-                base + "/Input[1]/ComplexData/Supported/Format[3]/MimeType/child::text()",
-                d);
+                "application/wkt", base + "/Input[1]/ComplexData/Supported/Format[3]/MimeType/child::text()", d);
 
         // second parameter
         assertXpathExists(base + "/Input[2]", d);
         assertXpathEvaluatesTo("distance", base + "/Input[2]/ows:Identifier/child::text()", d);
         assertXpathExists(base + "/Input[2]/LiteralData", d);
 
-        assertXpathEvaluatesTo(
-                "xs:double", base + "/Input[2]/LiteralData/ows:DataType/child::text()", d);
+        assertXpathEvaluatesTo("xs:double", base + "/Input[2]/LiteralData/ows:DataType/child::text()", d);
 
         // output
         base = "/wps:ProcessDescriptions/ProcessDescription/ProcessOutputs";
@@ -105,32 +92,22 @@ public class DescribeProcessTest extends WPSTestSupport {
         Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:Bounds");
         // print(d);
         checkValidationErrors(d);
-        assertXpathEvaluatesTo(
-                "EPSG:4326", "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Default/CRS", d);
-        assertXpathEvaluatesTo(
-                "EPSG:4326",
-                "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Supported/CRS",
-                d);
+        assertXpathEvaluatesTo("EPSG:4326", "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Default/CRS", d);
+        assertXpathEvaluatesTo("EPSG:4326", "//Output[ows:Identifier='bounds']/BoundingBoxOutput/Supported/CRS", d);
     }
 
     @Test
     public void testDefaultValues() throws Exception {
-        Document d =
-                getAsDOM(
-                        root()
-                                + "service=wps&request=describeprocess&identifier=gs:GeorectifyCoverage");
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:GeorectifyCoverage");
         // print(d);
         checkValidationErrors(d);
-        assertXpathEvaluatesTo(
-                "true", "//Input[ows:Identifier='transparent']/LiteralData/DefaultValue", d);
-        assertXpathEvaluatesTo(
-                "false", "//Input[ows:Identifier='store']/LiteralData/DefaultValue", d);
+        assertXpathEvaluatesTo("true", "//Input[ows:Identifier='transparent']/LiteralData/DefaultValue", d);
+        assertXpathEvaluatesTo("false", "//Input[ows:Identifier='store']/LiteralData/DefaultValue", d);
     }
 
     @Test
     public void testMultiRaw() throws Exception {
-        Document d =
-                getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:MultiRaw");
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:MultiRaw");
         // print(d);
         checkValidationErrors(d);
         // only one input (we have two, but one is the chosen mime type for the outputs
@@ -140,17 +117,11 @@ public class DescribeProcessTest extends WPSTestSupport {
         // three outputs, two complex, one literal
         assertXpathEvaluatesTo("3", "count(//Output)", d);
         assertXpathEvaluatesTo(
-                "text/plain",
-                "//Output[ows:Identifier='text']/ComplexOutput/Supported/Format/MimeType",
-                d);
+                "text/plain", "//Output[ows:Identifier='text']/ComplexOutput/Supported/Format/MimeType", d);
         assertXpathEvaluatesTo(
-                "application/zip",
-                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[1]/MimeType",
-                d);
+                "application/zip", "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[1]/MimeType", d);
         assertXpathEvaluatesTo(
-                "image/png",
-                "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[2]/MimeType",
-                d);
+                "image/png", "//Output[ows:Identifier='binary']/ComplexOutput/Supported/Format[2]/MimeType", d);
         assertXpathEvaluatesTo("1", "count(//Output[ows:Identifier='literal']/LiteralOutput)", d);
     }
 }

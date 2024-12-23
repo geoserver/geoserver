@@ -42,8 +42,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
     private final Map<List<Object>, List<FeatureCalc>> calculators = new LinkedHashMap<>();
     private CalcResult result;
 
-    public GroupedMatrixAggregate(
-            List<Expression> variables, List<Aggregate> aggregates, List<Expression> groupBy) {
+    public GroupedMatrixAggregate(List<Expression> variables, List<Aggregate> aggregates, List<Expression> groupBy) {
         this.variables = variables;
         this.aggregates = aggregates;
         this.groupBy = groupBy;
@@ -51,8 +50,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
 
     public void setResults(Map<List<Object>, List<Object>> results) {
         Map<List<Object>, List<CalcResult>> wrapped = new LinkedHashMap<>();
-        results.entrySet().stream()
-                .forEach(e -> wrapped.put(e.getKey(), toCalcResults(e.getValue())));
+        results.entrySet().stream().forEach(e -> wrapped.put(e.getKey(), toCalcResults(e.getValue())));
         this.result = new MemoryResult(wrapped);
     }
 
@@ -63,8 +61,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
     private List<CalcResult> toCalcResults(List<Object> results) {
         int expectedSize = aggregates.size() * variables.size();
         if (results.size() != expectedSize)
-            throw new IllegalArgumentException(
-                    "Invalid results, size does not match expected: " + expectedSize);
+            throw new IllegalArgumentException("Invalid results, size does not match expected: " + expectedSize);
 
         List<CalcResult> calcResults = new ArrayList<>();
         Iterator<Object> iterator = results.iterator();
@@ -95,8 +92,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
         if (this.result instanceof IterableResult) return result;
 
         Map<List<Object>, List<CalcResult>> wrapped = new LinkedHashMap<>();
-        calculators.entrySet().stream()
-                .forEach(e -> wrapped.put(e.getKey(), getResult(e.getValue())));
+        calculators.entrySet().stream().forEach(e -> wrapped.put(e.getKey(), getResult(e.getValue())));
         MemoryResult computed = new MemoryResult(wrapped);
         if (this.result == null) return computed;
         else return computed.merge(this.result);
@@ -109,8 +105,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
     @Override
     public void visit(Feature feature) {
         List<Object> groupBy = evaluateGroupBy(feature);
-        List<FeatureCalc> groupCalculators =
-                calculators.computeIfAbsent(groupBy, k -> getCalculators());
+        List<FeatureCalc> groupCalculators = calculators.computeIfAbsent(groupBy, k -> getCalculators());
         for (FeatureCalc calc : groupCalculators) {
             calc.visit(feature);
         }
@@ -157,8 +152,7 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
         }
     }
 
-    public static class IterableResult extends AbstractCalcResult
-            implements IterableCalcResult<GroupByResult> {
+    public static class IterableResult extends AbstractCalcResult implements IterableCalcResult<GroupByResult> {
 
         Supplier<CloseableIterator<GroupByResult>> supplier;
 
@@ -218,13 +212,11 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
 
             Map<List<Object>, List<CalcResult>> mergedMap = new LinkedHashMap<>();
             // scan first map and merge if neeeded
-            results.entrySet()
-                    .forEach(
-                            e -> {
-                                List<CalcResult> thisResults = e.getValue();
-                                List<CalcResult> otherResults = other.results.get(e.getKey());
-                                mergedMap.put(e.getKey(), mergeResults(thisResults, otherResults));
-                            });
+            results.entrySet().forEach(e -> {
+                List<CalcResult> thisResults = e.getValue();
+                List<CalcResult> otherResults = other.results.get(e.getKey());
+                mergedMap.put(e.getKey(), mergeResults(thisResults, otherResults));
+            });
             // append all other results that do not match this map
             other.results.entrySet().stream()
                     .filter(e -> results.get(e.getKey()) == null)
@@ -233,13 +225,11 @@ public class GroupedMatrixAggregate implements FeatureCalc, FeatureAttributeVisi
             return new MemoryResult(mergedMap);
         }
 
-        private List<CalcResult> mergeResults(
-                List<CalcResult> thisResults, List<CalcResult> otherResults) {
+        private List<CalcResult> mergeResults(List<CalcResult> thisResults, List<CalcResult> otherResults) {
             if (otherResults == null) return thisResults;
             if (otherResults.size() != thisResults.size())
                 throw new IllegalArgumentException(
-                        "Size of the two calc results do not match, should be "
-                                + this.results.size());
+                        "Size of the two calc results do not match, should be " + this.results.size());
 
             List<CalcResult> merged = new ArrayList<>();
             for (int i = 0; i < thisResults.size(); i++) {

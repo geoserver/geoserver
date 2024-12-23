@@ -20,12 +20,7 @@ public enum WMSErrorCode {
     INVALID_CRS("InvalidSRS", "1.1.1", "InvalidSRS", "1.3.0", "InvalidCRS"),
 
     /** Error code for client specifying a non queryable layer in a GetFeatureInfo request. */
-    LAYER_NOT_QUERYABLE(
-            "OperationNotSupported",
-            "1.1.1",
-            "OperationNotSupported",
-            "1.3.0",
-            "LayerNotQueryable");
+    LAYER_NOT_QUERYABLE("OperationNotSupported", "1.1.1", "OperationNotSupported", "1.3.0", "LayerNotQueryable");
 
     String defaultCode;
     Map<Version, String> codes;

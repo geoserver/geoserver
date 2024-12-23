@@ -36,8 +36,7 @@ public class WebServiceBodyResponseSecurityProvider extends GeoServerSecurityPro
     }
 
     @Override
-    public GeoServerAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         return null;
     }
 
@@ -47,14 +46,12 @@ public class WebServiceBodyResponseSecurityProvider extends GeoServerSecurityPro
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return null;
     }
 
     @Override
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return new WebServiceBodyResponseUserGroupService(config);
     }
 }

@@ -29,24 +29,24 @@ import org.geotools.ows.v2_0.OWSConfiguration;
 import org.geotools.xsd.Encoder;
 
 /**
- * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in
- * a <code>ows:ExceptionReport</code> document.
+ * A default implementation of {@link ServiceExceptionHandler} which outputs as service exception in a <code>
+ * ows:ExceptionReport</code> document.
  *
- * <p>This service exception handler will generate an OWS exception report, see {@linkplain
- * "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"}.
+ * <p>This service exception handler will generate an OWS exception report, see
+ * {@linkplain "http://schemas.opengis.net/ows/1.1.0/owsExceptionReport.xsd"}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
 public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
     /**
-     * A flag controlling whether the http return code should always be 200. It is required when
-     * running CITE tests for WCS2.0, but breaks OWS2 and WCS2 standards.
+     * A flag controlling whether the http return code should always be 200. It is required when running CITE tests for
+     * WCS2.0, but breaks OWS2 and WCS2 standards.
      */
     public static boolean force200httpcode = Boolean.getBoolean("force200");
 
     /**
-     * verbose exception flag controlling whether the exception stack trace will be included in the
-     * encoded ows exception report
+     * verbose exception flag controlling whether the exception stack trace will be included in the encoded ows
+     * exception report
      */
     protected boolean verboseExceptions = false;
 
@@ -104,16 +104,10 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             String code = exception.getCode();
             OWSExceptionCode exCode = OWS20Exception.OWSExceptionCode.getByCode(code);
             if (exCode != null) {
-                ows2ex =
-                        new OWS20Exception(
-                                exception.getMessage(), exception, exCode, exception.getLocator());
+                ows2ex = new OWS20Exception(exception.getMessage(), exception, exCode, exception.getLocator());
             } else {
-                ows2ex =
-                        new OWS20Exception(
-                                exception.getMessage(),
-                                exception,
-                                OWSExceptionCode.NoApplicableCode,
-                                exception.getLocator());
+                ows2ex = new OWS20Exception(
+                        exception.getMessage(), exception, OWSExceptionCode.NoApplicableCode, exception.getLocator());
             }
         }
 
@@ -155,10 +149,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
             // throw new RuntimeException(ex);
             // Hmm, not much we can do here.  I guess log the fact that we couldn't write out the
             // exception and be done with it...
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         } finally {
             try {
                 response.getOutputStream().flush();
@@ -170,8 +161,7 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
     /**
      * Flag that controls what version to use in the ows exception report.
      *
-     * <p>Setting to true will cause the service version to be used rather than the ows spec
-     * version.
+     * <p>Setting to true will cause the service version to be used rather than the ows spec version.
      */
     public void setUseServiceVersion(boolean useServiceVersion) {
         this.useServiceVersion = useServiceVersion;
@@ -194,7 +184,8 @@ public class OWS20ServiceExceptionHandler extends ServiceExceptionHandler {
         // add the message
         StringBuffer sb = new StringBuffer();
         OwsUtils.dumpExceptionMessages(exception, sb, true);
-        if (exception.getExceptionText() != null && !exception.getExceptionText().isEmpty()) {
+        if (exception.getExceptionText() != null
+                && !exception.getExceptionText().isEmpty()) {
             sb.append("\n");
             sb.append(exception.getExceptionText()); // check this
         }

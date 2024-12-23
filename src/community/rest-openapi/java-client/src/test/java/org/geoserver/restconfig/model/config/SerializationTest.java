@@ -26,63 +26,60 @@ import org.junit.Test;
 
 public class SerializationTest {
 
-    private static final String SERVICE_INFO =
-            "{" //
-                    + "\"workspace\":{\"name\":\"topp\"}," //
-                    + "\"enabled\":true," //
-                    + "\"name\":\"My GeoServer\"," //
-                    + "\"title\":\"Test Title\"," //
-                    + "\"maintainer\":\"http:\\/\\/geoserver.org\\/comm\"," //
-                    + "\"abstrct\":\"This is a description of your OWS.\"," //
-                    + "\"accessConstraints\":\"NONE\"," //
-                    + "\"fees\":\"NONE\"," //
-                    + "\"versions\":{\"org.geotools.util.Version\":[{\"version\":\"1.1.1\"},{\"version\":\"1.3.0\"}]}," //
-                    + "\"keywords\":{\"string\":[\"WFS\",\"WMS\",\"GEOSERVER\",\"Hola\\\\@language=es\\\\;\",\"Hola\\\\@vocabulary=Vocabulary\\\\;\"]}," //
-                    + "\"citeCompliant\":false," //
-                    + "\"onlineResource\":\"http:\\/\\/geoserver.org\"," //
-                    + "\"schemaBaseURL\":\"http:\\/\\/schemas.opengis.net\"," //
-                    + "\"verbose\":true," //
-                    + "\"metadata\":{\"entry\":[{\"@key\":\"disableDatelineWrappingHeuristic\",\"$\":\"false\"},{\"@key\":\"kmlSuperoverlayMode\",\"$\":\"auto\"},{\"@key\":\"kmlReflectorMode\",\"$\":\"refresh\"},{\"@key\":\"loopContinuously\",\"$\":\"false\"},{\"@key\":\"svgAntiAlias\",\"$\":\"true\"},{\"@key\":\"kmlPlacemark\",\"$\":\"false\"},{\"@key\":\"kmlKmscore\",\"$\":\"40\"},{\"@key\":\"mapWrapping\",\"$\":\"true\"},{\"@key\":\"pngCompression\",\"$\":\"25\"},{\"@key\":\"jpegCompression\",\"$\":\"25\"},{\"@key\":\"advancedProjectionDensification\",\"$\":\"false\"},{\"@key\":\"advancedProjectionHandling\",\"$\":\"true\"},{\"@key\":\"maxAllowedFrames\",\"$\":\"2147483647\"},{\"@key\":\"kmlAttr\",\"$\":\"true\"},{\"@key\":\"svgRenderer\",\"$\":\"Batik\"},{\"@key\":\"disposalMethod\",\"$\":\"none\"},{\"@key\":\"scalehintMapunitsPixel\",\"$\":\"false\"},{\"@key\":\"framesDelay\",\"$\":\"1000\"}]}," //
-                    + "${serviceInfo}" //
-                    + "}"; //
+    private static final String SERVICE_INFO = "{" //
+            + "\"workspace\":{\"name\":\"topp\"}," //
+            + "\"enabled\":true," //
+            + "\"name\":\"My GeoServer\"," //
+            + "\"title\":\"Test Title\"," //
+            + "\"maintainer\":\"http:\\/\\/geoserver.org\\/comm\"," //
+            + "\"abstrct\":\"This is a description of your OWS.\"," //
+            + "\"accessConstraints\":\"NONE\"," //
+            + "\"fees\":\"NONE\"," //
+            + "\"versions\":{\"org.geotools.util.Version\":[{\"version\":\"1.1.1\"},{\"version\":\"1.3.0\"}]}," //
+            + "\"keywords\":{\"string\":[\"WFS\",\"WMS\",\"GEOSERVER\",\"Hola\\\\@language=es\\\\;\",\"Hola\\\\@vocabulary=Vocabulary\\\\;\"]}," //
+            + "\"citeCompliant\":false," //
+            + "\"onlineResource\":\"http:\\/\\/geoserver.org\"," //
+            + "\"schemaBaseURL\":\"http:\\/\\/schemas.opengis.net\"," //
+            + "\"verbose\":true," //
+            + "\"metadata\":{\"entry\":[{\"@key\":\"disableDatelineWrappingHeuristic\",\"$\":\"false\"},{\"@key\":\"kmlSuperoverlayMode\",\"$\":\"auto\"},{\"@key\":\"kmlReflectorMode\",\"$\":\"refresh\"},{\"@key\":\"loopContinuously\",\"$\":\"false\"},{\"@key\":\"svgAntiAlias\",\"$\":\"true\"},{\"@key\":\"kmlPlacemark\",\"$\":\"false\"},{\"@key\":\"kmlKmscore\",\"$\":\"40\"},{\"@key\":\"mapWrapping\",\"$\":\"true\"},{\"@key\":\"pngCompression\",\"$\":\"25\"},{\"@key\":\"jpegCompression\",\"$\":\"25\"},{\"@key\":\"advancedProjectionDensification\",\"$\":\"false\"},{\"@key\":\"advancedProjectionHandling\",\"$\":\"true\"},{\"@key\":\"maxAllowedFrames\",\"$\":\"2147483647\"},{\"@key\":\"kmlAttr\",\"$\":\"true\"},{\"@key\":\"svgRenderer\",\"$\":\"Batik\"},{\"@key\":\"disposalMethod\",\"$\":\"none\"},{\"@key\":\"scalehintMapunitsPixel\",\"$\":\"false\"},{\"@key\":\"framesDelay\",\"$\":\"1000\"}]}," //
+            + "${serviceInfo}" //
+            + "}"; //
 
-    private static final String WMS_INFO =
-            SERVICE_INFO.replace(
-                    "${serviceInfo}", //
-                    "\"srs\":{\"string\":[4326,3857]}," //
-                            + "\"bboxForEachCRS\":false," //
-                            + "\"watermark\":{\"enabled\":false,\"position\":\"BOT_RIGHT\",\"transparency\":0}," //
-                            + "\"interpolation\":\"Nearest\"," //
-                            + "\"getFeatureInfoMimeTypeCheckingEnabled\":false," //
-                            + "\"getMapMimeTypeCheckingEnabled\":false," //
-                            + "\"dynamicStylingDisabled\":false," //
-                            + "\"featuresReprojectionDisabled\":false," //
-                            + "\"authorityURLs\":{\"AuthorityURL\":[{\"name\":\"CITE\",\"href\":\"http:\\/\\/www.opengeospatial.org\\/cite\"}]}," //
-                            + "\"identifiers\":{\"Identifier\":[{\"authority\":\"CITE\",\"identifier\":\"root\"}]}," //
-                            + "\"maxBuffer\":25," //
-                            + "\"maxRequestMemory\":0," //
-                            + "\"maxRenderingTime\":0," //
-                            + "\"maxRenderingErrors\":0," //
-                            + "\"rootLayerTitle\":\"Root Layer Title\"," //
-                            + "\"rootLayerAbstract\":\"Root Layer abstract\"," //
-                            + "\"maxRequestedDimensionValues\":100," //
-                            + "\"cacheConfiguration\":{\"enabled\":false,\"maxEntries\":1000,\"maxEntrySize\":51200}");
+    private static final String WMS_INFO = SERVICE_INFO.replace(
+            "${serviceInfo}", //
+            "\"srs\":{\"string\":[4326,3857]}," //
+                    + "\"bboxForEachCRS\":false," //
+                    + "\"watermark\":{\"enabled\":false,\"position\":\"BOT_RIGHT\",\"transparency\":0}," //
+                    + "\"interpolation\":\"Nearest\"," //
+                    + "\"getFeatureInfoMimeTypeCheckingEnabled\":false," //
+                    + "\"getMapMimeTypeCheckingEnabled\":false," //
+                    + "\"dynamicStylingDisabled\":false," //
+                    + "\"featuresReprojectionDisabled\":false," //
+                    + "\"authorityURLs\":{\"AuthorityURL\":[{\"name\":\"CITE\",\"href\":\"http:\\/\\/www.opengeospatial.org\\/cite\"}]}," //
+                    + "\"identifiers\":{\"Identifier\":[{\"authority\":\"CITE\",\"identifier\":\"root\"}]}," //
+                    + "\"maxBuffer\":25," //
+                    + "\"maxRequestMemory\":0," //
+                    + "\"maxRenderingTime\":0," //
+                    + "\"maxRenderingErrors\":0," //
+                    + "\"rootLayerTitle\":\"Root Layer Title\"," //
+                    + "\"rootLayerAbstract\":\"Root Layer abstract\"," //
+                    + "\"maxRequestedDimensionValues\":100," //
+                    + "\"cacheConfiguration\":{\"enabled\":false,\"maxEntries\":1000,\"maxEntrySize\":51200}");
 
-    private static final String WFS_INFO =
-            SERVICE_INFO.replace(
-                    "${serviceInfo}", //
-                    "\"gml\":{\"entry\":[" //
-                            + "{\"version\":\"V_11\",\"gml\":{\"srsNameStyle\":[\"URN\"],\"overrideGMLAttributes\":false}}," //
-                            + "{\"version\":\"V_20\",\"gml\":{\"srsNameStyle\":[\"URN2\"],\"overrideGMLAttributes\":false}}," //
-                            + "{\"version\":\"V_10\",\"gml\":{\"srsNameStyle\":[\"XML\"],\"overrideGMLAttributes\":true}}" //
-                            + "]}," //
-                            + "\"serviceLevel\":\"COMPLETE\"," //
-                            + "\"maxFeatures\":1000000," //
-                            + "\"featureBounding\":false," //
-                            + "\"canonicalSchemaLocation\":false," //
-                            + "\"encodeFeatureMember\":false," //
-                            + "\"hitsIgnoreMaxFeatures\":false," //
-                            + "\"srs\":{\"string\":[4326,3857,3003]}"); //
+    private static final String WFS_INFO = SERVICE_INFO.replace(
+            "${serviceInfo}", //
+            "\"gml\":{\"entry\":[" //
+                    + "{\"version\":\"V_11\",\"gml\":{\"srsNameStyle\":[\"URN\"],\"overrideGMLAttributes\":false}}," //
+                    + "{\"version\":\"V_20\",\"gml\":{\"srsNameStyle\":[\"URN2\"],\"overrideGMLAttributes\":false}}," //
+                    + "{\"version\":\"V_10\",\"gml\":{\"srsNameStyle\":[\"XML\"],\"overrideGMLAttributes\":true}}" //
+                    + "]}," //
+                    + "\"serviceLevel\":\"COMPLETE\"," //
+                    + "\"maxFeatures\":1000000," //
+                    + "\"featureBounding\":false," //
+                    + "\"canonicalSchemaLocation\":false," //
+                    + "\"encodeFeatureMember\":false," //
+                    + "\"hitsIgnoreMaxFeatures\":false," //
+                    + "\"srs\":{\"string\":[4326,3857,3003]}"); //
 
     private ObjectMapper objectMapper;
     private JacksonDecoder decoder;
@@ -95,9 +92,9 @@ public class SerializationTest {
 
     private <T> T decode(String raw, Type type) throws IOException {
         @SuppressWarnings("deprecation")
-        Request request =
-                Request.create("GET", "http://doesntmatter", Collections.emptyMap(), null, null);
-        Response response = Response.builder().request(request).body(raw, Charsets.UTF_8).build();
+        Request request = Request.create("GET", "http://doesntmatter", Collections.emptyMap(), null, null);
+        Response response =
+                Response.builder().request(request).body(raw, Charsets.UTF_8).build();
         @SuppressWarnings("unchecked")
         T decoded = (T) decoder.decode(response, type);
         return decoded;
@@ -125,12 +122,11 @@ public class SerializationTest {
     }
 
     public @Test void testGmlInfo() throws IOException {
-        final String raw =
-                "{\"entry\":[" //
-                        + "{\"version\":\"V_10\",\"gml\":{\"srsNameStyle\":[\"XML\"],\"overrideGMLAttributes\":true}}," //
-                        + "{\"version\":\"V_11\",\"gml\":{\"srsNameStyle\":[\"URN\"],\"overrideGMLAttributes\":false}}," //
-                        + "{\"version\":\"V_20\",\"gml\":{\"srsNameStyle\":[\"URN2\"],\"overrideGMLAttributes\":false}}" //
-                        + "]}"; //
+        final String raw = "{\"entry\":[" //
+                + "{\"version\":\"V_10\",\"gml\":{\"srsNameStyle\":[\"XML\"],\"overrideGMLAttributes\":true}}," //
+                + "{\"version\":\"V_11\",\"gml\":{\"srsNameStyle\":[\"URN\"],\"overrideGMLAttributes\":false}}," //
+                + "{\"version\":\"V_20\",\"gml\":{\"srsNameStyle\":[\"URN2\"],\"overrideGMLAttributes\":false}}" //
+                + "]}"; //
         WFSInfoGmlSettings gml = decode(raw, WFSInfoGmlSettings.class);
         assertNotNull(gml);
         List<GmlInfo> entry = gml.getEntry();
@@ -141,18 +137,11 @@ public class SerializationTest {
     }
 
     private void assertGmlInfo(
-            GmlInfo entry,
-            String version,
-            SrsNameStyle srsNameStyle,
-            boolean overrideGMLAttributes) {
+            GmlInfo entry, String version, SrsNameStyle srsNameStyle, boolean overrideGMLAttributes) {
         GmlInfo expected;
-        expected =
-                new GmlInfo()
-                        .version(version)
-                        .gml(
-                                new GmlSettings()
-                                        .addSrsNameStyleItem(srsNameStyle)
-                                        .overrideGMLAttributes(overrideGMLAttributes));
+        expected = new GmlInfo()
+                .version(version)
+                .gml(new GmlSettings().addSrsNameStyleItem(srsNameStyle).overrideGMLAttributes(overrideGMLAttributes));
         assertEquals(expected, entry);
     }
 

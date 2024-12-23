@@ -28,10 +28,7 @@ public class ChangesetAPICallback implements OpenAPICallback {
         try (InputStream is = ChangesetAPICallback.class.getResourceAsStream(location)) {
             if (is == null) {
                 throw new RuntimeException(
-                        "Could not find API definition at "
-                                + location
-                                + " from class "
-                                + ChangesetAPICallback.class);
+                        "Could not find API definition at " + location + " from class " + ChangesetAPICallback.class);
             }
             String specFragment = IOUtils.toString(is);
             this.fragment = Yaml.mapper().readValue(specFragment, GeoServerOpenAPI.class);
@@ -45,10 +42,7 @@ public class ChangesetAPICallback implements OpenAPICallback {
             // TODO: just customize it once added to the Tiles API
             String name = "/collections/{collectionId}/map/{styleId}/tiles/{tileMatrixSetId}";
             PathItem multiTileRenderedPath =
-                    fragment.getPaths()
-                            .get(
-                                    "/collections/{collectionId}/map/{styleId}/tiles"
-                                            + "/{tileMatrixSetId}");
+                    fragment.getPaths().get("/collections/{collectionId}/map/{styleId}/tiles" + "/{tileMatrixSetId}");
             api.getPaths().addPathItem(name, multiTileRenderedPath);
 
             Parameter fTileParameter = fragment.getComponents().getParameters().get("f-tile");

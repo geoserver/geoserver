@@ -32,8 +32,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
     /** A logger for this class. */
     private static final Logger LOGGER = Logging.getLogger(TIFFMapResponse.class);
 
-    private static final ImageWriterSpi writerSPI =
-            new it.geosolutions.imageioimpl.plugins.tiff.TIFFImageWriterSpi();
+    private static final ImageWriterSpi writerSPI = new it.geosolutions.imageioimpl.plugins.tiff.TIFFImageWriterSpi();
 
     /** the only MIME type this map producer supports */
     private static final String MIME_TYPE = "image/tiff";
@@ -54,8 +53,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
      *   <li>transparency = supported
      * </ol>
      */
-    private static MapProducerCapabilities CAPABILITIES =
-            new MapProducerCapabilities(true, true, true);
+    private static MapProducerCapabilities CAPABILITIES = new MapProducerCapabilities(true, true, true);
 
     /**
      * Creates a {@link GetMapProducer} to encode the {@link RenderedImage} generated in <code>
@@ -77,8 +75,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
      */
     @Override
     @SuppressWarnings("PMD.CloseResource") // just a wrapper, actual output managed by servlet
-    public void formatImageOutputStream(
-            RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
+    public void formatImageOutputStream(RenderedImage image, OutputStream outStream, WMSMapContent mapContent)
             throws ServiceException, IOException {
         // getting a writer
         if (LOGGER.isLoggable(Level.FINE)) {
@@ -99,8 +96,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
         // write it out
         try ( // getting a stream caching in memory
         final ImageOutputStream ioutstream = ImageIOExt.createImageOutputStream(image, outStream)) {
-            if (ioutstream == null)
-                throw new ServiceException("Unable to create ImageOutputStream.");
+            if (ioutstream == null) throw new ServiceException("Unable to create ImageOutputStream.");
             writer.setOutput(ioutstream);
             writer.write(image);
         } finally {
@@ -109,8 +105,7 @@ public final class TIFFMapResponse extends RenderedImageMapResponse {
                 writer.dispose();
             } catch (Throwable e) {
                 // eat exception to release resources silently
-                if (LOGGER.isLoggable(Level.FINEST))
-                    LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
+                if (LOGGER.isLoggable(Level.FINEST)) LOGGER.log(Level.FINEST, "Unable to properly dispose writer", e);
             }
 
             // let go of the image

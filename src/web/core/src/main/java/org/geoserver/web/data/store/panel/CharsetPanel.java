@@ -35,7 +35,8 @@ public class CharsetPanel extends Panel implements ParamPanel<String> {
         add(label);
 
         // the drop down field, with a decorator for validations
-        final ArrayList<String> charsets = new ArrayList<>(Charset.availableCharsets().keySet());
+        final ArrayList<String> charsets =
+                new ArrayList<>(Charset.availableCharsets().keySet());
         choice = new DropDownChoice<>("paramValue", charsetModel, charsets);
         choice.setRequired(required);
         // set the label to be the paramLabelModel otherwise a validation error would look like
@@ -47,10 +48,7 @@ public class CharsetPanel extends Panel implements ParamPanel<String> {
         add(feedback);
     }
 
-    /**
-     * Returns the form component used in the panel in case it is needed for related form components
-     * validation
-     */
+    /** Returns the form component used in the panel in case it is needed for related form components validation */
     @Override
     public FormComponent<String> getFormComponent() {
         return choice;

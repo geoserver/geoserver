@@ -33,8 +33,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
     // What is important for this test is the legend info we are adding.
     private static final String LAYER_NAME = "watertemp";
     private static final String HTTP_LEGEND_LAYER = "watertemp_http_legend";
-    private static final QName LAYER_QNAME =
-            new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
+    private static final QName LAYER_QNAME = new QName(MockData.DEFAULT_URI, LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final QName LAYER_QNAME_HTP_LEGND =
             new QName(MockData.DEFAULT_URI, HTTP_LEGEND_LAYER, MockData.DEFAULT_PREFIX);
     private static final String LAYER_FILE = "custwatertemp.zip";
@@ -67,8 +66,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         testData.addStyle(null, STYLE_NAME, STYLE_FILE, getClass(), getCatalog(), legend);
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
-        testData.addRasterLayer(
-                LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(LAYER_QNAME, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
 
         addLayerWithHttpLegend(testData);
         //  addLayerWithLocalFileAsLegend(testData);
@@ -102,12 +100,7 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
         Map<SystemTestData.LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, STYLE_NAME);
         testData.addRasterLayer(
-                LAYER_QNAME_HTP_LEGND,
-                LAYER_FILE,
-                null,
-                propertyMap,
-                SystemTestData.class,
-                getCatalog());
+                LAYER_QNAME_HTP_LEGND, LAYER_FILE, null, propertyMap, SystemTestData.class, getCatalog());
     }
 
     /**
@@ -143,22 +136,17 @@ public class LegendCapabilitiesTest extends WMSTestSupport {
                         + HTTP_LEGEND_LAYER;
 
         final String legendUrlPath = "//Layer[Name='gs:" + LAYER_NAME + "']/Style/LegendURL";
-        final String legendUrlPathHttpLegend =
-                "//Layer[Name='gs:" + HTTP_LEGEND_LAYER + "']/Style/LegendURL";
+        final String legendUrlPathHttpLegend = "//Layer[Name='gs:" + HTTP_LEGEND_LAYER + "']/Style/LegendURL";
 
         // Ensure capabilities document reflects the specified legend info
         assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPath + "/@width", dom);
         assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPath + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPath + "/Format", dom);
         assertXpathEvaluatesTo(
-                BASE + expectedGetLegendGraphicRequestURL,
-                legendUrlPath + "/OnlineResource/@xlink:href",
-                dom);
+                BASE + expectedGetLegendGraphicRequestURL, legendUrlPath + "/OnlineResource/@xlink:href", dom);
         // with external graphic on http url
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_WIDTH), legendUrlPathHttpLegend + "/@width", dom);
-        assertXpathEvaluatesTo(
-                String.valueOf(LEGEND_HEIGHT), legendUrlPathHttpLegend + "/@height", dom);
+        assertXpathEvaluatesTo(String.valueOf(LEGEND_WIDTH), legendUrlPathHttpLegend + "/@width", dom);
+        assertXpathEvaluatesTo(String.valueOf(LEGEND_HEIGHT), legendUrlPathHttpLegend + "/@height", dom);
         assertXpathEvaluatesTo(LEGEND_FORMAT, legendUrlPathHttpLegend + "/Format", dom);
         assertXpathEvaluatesTo(
                 BASE + expectedGetLegendGraphicRequestURLHttp,

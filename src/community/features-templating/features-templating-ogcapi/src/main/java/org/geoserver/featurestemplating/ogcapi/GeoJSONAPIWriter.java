@@ -34,8 +34,7 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
         else super.startTemplateOutput(encodingHints);
     }
 
-    public void writeLinks(
-            String previous, String next, String prefixedName, String featureId, String mimeType)
+    public void writeLinks(String previous, String next, String prefixedName, String featureId, String mimeType)
             throws IOException {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         startArray("links", null);
@@ -48,19 +47,17 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
         }
         // alternate/self links
         String basePath = "ogc/features/v1/collections/" + ResponseUtils.urlEncode(prefixedName);
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             String path = basePath + "/items";
             if (featureId != null) {
                 path += "/" + ResponseUtils.urlEncode(featureId);
             }
-            String href =
-                    ResponseUtils.buildURL(
-                            requestInfo.getBaseURL(),
-                            path,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    requestInfo.getBaseURL(),
+                    path,
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
             if (format.toString().equals(mimeType)) {
@@ -70,14 +67,12 @@ public class GeoJSONAPIWriter extends GeoJSONWriter {
             writeLink(href, linkType, format.toString(), linkTitle, null);
         }
         // backpointer to the collection
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            requestInfo.getBaseURL(),
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+        for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+            String href = ResponseUtils.buildURL(
+                    requestInfo.getBaseURL(),
+                    basePath,
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
             String linkType = Link.REL_COLLECTION;
             String linkTitle = "The collection description as " + format;
             writeLink(href, linkType, format.toString(), linkTitle, null);

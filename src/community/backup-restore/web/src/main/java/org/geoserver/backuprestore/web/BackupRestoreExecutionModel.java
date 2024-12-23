@@ -39,9 +39,13 @@ public class BackupRestoreExecutionModel<T extends AbstractExecutionAdapter>
     protected AbstractExecutionAdapter load() {
         try {
             if (getType() == BackupExecutionAdapter.class) {
-                return BackupRestoreWebUtils.backupFacade().getBackupExecutions().get(id);
+                return BackupRestoreWebUtils.backupFacade()
+                        .getBackupExecutions()
+                        .get(id);
             } else if (getType() == RestoreExecutionAdapter.class) {
-                return BackupRestoreWebUtils.backupFacade().getRestoreExecutions().get(id);
+                return BackupRestoreWebUtils.backupFacade()
+                        .getRestoreExecutions()
+                        .get(id);
             }
             return null;
         } catch (Exception e) {

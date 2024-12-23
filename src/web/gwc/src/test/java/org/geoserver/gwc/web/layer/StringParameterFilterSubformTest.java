@@ -57,17 +57,13 @@ public class StringParameterFilterSubformTest extends GeoServerWicketTestSupport
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<String>> values =
-                (AbstractTextComponent<List<String>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<String>>) tester.getComponentFromLastRenderedPage("form:panel:values");
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
-        AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
+        AbstractSingleSelectChoice<Locale> locale = (AbstractSingleSelectChoice<Locale>)
+                tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
 
         assertThat(defaultValue.getValue(), equalTo(""));
         assertThat(values.getValue(), equalTo(""));
@@ -84,17 +80,13 @@ public class StringParameterFilterSubformTest extends GeoServerWicketTestSupport
         startPage();
 
         AbstractTextComponent<String> defaultValue =
-                (AbstractTextComponent<String>)
-                        tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
+                (AbstractTextComponent<String>) tester.getComponentFromLastRenderedPage("form:panel:defaultValue");
         AbstractTextComponent<List<String>> values =
-                (AbstractTextComponent<List<String>>)
-                        tester.getComponentFromLastRenderedPage("form:panel:values");
+                (AbstractTextComponent<List<String>>) tester.getComponentFromLastRenderedPage("form:panel:values");
         AbstractSingleSelectChoice<Case> kase =
-                (AbstractSingleSelectChoice<Case>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
-        AbstractSingleSelectChoice<Locale> locale =
-                (AbstractSingleSelectChoice<Locale>)
-                        tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
+                (AbstractSingleSelectChoice<Case>) tester.getComponentFromLastRenderedPage("form:panel:normalize:case");
+        AbstractSingleSelectChoice<Locale> locale = (AbstractSingleSelectChoice<Locale>)
+                tester.getComponentFromLastRenderedPage("form:panel:normalize:locale");
 
         assertThat(defaultValue.getValue(), equalTo("testDefault"));
         assertThat(values.getValue(), equalTo("test1\r\ntest2"));
@@ -117,21 +109,18 @@ public class StringParameterFilterSubformTest extends GeoServerWicketTestSupport
         assertThat(pf.getValues(), contains("test1", "test2"));
         assertThat(
                 pf.getNormalize(),
-                both(hasProperty("case", is(Case.UPPER)))
-                        .and(hasProperty("locale", is(Locale.CANADA))));
+                both(hasProperty("case", is(Case.UPPER))).and(hasProperty("locale", is(Locale.CANADA))));
     }
 
     private void startPage() {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            /** serialVersionUID */
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            /** serialVersionUID */
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(final String id) {
-                                return new StringParameterFilterSubform(id, model);
-                            }
-                        }));
+            @Override
+            public Component buildComponent(final String id) {
+                return new StringParameterFilterSubform(id, model);
+            }
+        }));
     }
 }

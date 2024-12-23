@@ -29,9 +29,8 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /**
- * A particular DGGS instance, provides access to zones and conversion operations between zones and
- * classic geometries. A DDGS system can be providing a single instance (e.g., H3) or multiple
- * configurable ones (e.g., rHEALPix)
+ * A particular DGGS instance, provides access to zones and conversion operations between zones and classic geometries.
+ * A DDGS system can be providing a single instance (e.g., H3) or multiple configurable ones (e.g., rHEALPix)
  */
 // TODO: parametrize on T, type of the id, String for rpix but Long for H3. Trying to use
 // the string everywhere pretty much failed, leading to bad performance in clickhouse store
@@ -39,8 +38,7 @@ import org.locationtech.jts.geom.Polygon;
 // the non hierarchical structure of the H3 ids gets lots of the blame here (
 public interface DGGSInstance extends AutoCloseable {
 
-    static final ReferencedEnvelope WORLD =
-            new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
+    static final ReferencedEnvelope WORLD = new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84);
 
     public String getIdentifier();
 
@@ -52,9 +50,8 @@ public interface DGGSInstance extends AutoCloseable {
     int[] getResolutions();
 
     /**
-     * Allows an instance to describe extra zone properties besides the usual id, geometry, and
-     * resolution. Extra property values for a zone can be retrieved using
-     * Zone#getExtraPropertyValues()
+     * Allows an instance to describe extra zone properties besides the usual id, geometry, and resolution. Extra
+     * property values for a zone can be retrieved using Zone#getExtraPropertyValues()
      *
      * @return
      */
@@ -75,16 +72,15 @@ public interface DGGSInstance extends AutoCloseable {
      *
      * @param envelope The envelope being queried
      * @param resolution The target resolution
-     * @param compact If true, return a lower number of zones needed to cover the area, using parent
-     *     zones as needed. Not required to be the minimum set of zones, meant to speed up data
-     *     queries only.
+     * @param compact If true, return a lower number of zones needed to cover the area, using parent zones as needed.
+     *     Not required to be the minimum set of zones, meant to speed up data queries only.
      */
     Iterator<Zone> zonesFromEnvelope(Envelope envelope, int resolution, boolean compact);
 
     /**
-     * Returns the count of zones covering the desired envelope, at the target resolution. The
-     * default implementation just uses {@link #zonesFromEnvelope(Envelope, int, boolean)},
-     * subclasses can provide a better optimized implemnetation
+     * Returns the count of zones covering the desired envelope, at the target resolution. The default implementation
+     * just uses {@link #zonesFromEnvelope(Envelope, int, boolean)}, subclasses can provide a better optimized
+     * implemnetation
      *
      * @param envelope The area of search
      * @param resolution The target resolution
@@ -104,8 +100,8 @@ public interface DGGSInstance extends AutoCloseable {
     Iterator<Zone> neighbors(String id, int radius);
 
     /**
-     * Returns the count of neighboring zones. The default implementation just uses {@link
-     * #neighbors(String, int)}, subclasses can provide a better optimized implemnetation
+     * Returns the count of neighboring zones. The default implementation just uses {@link #neighbors(String, int)},
+     * subclasses can provide a better optimized implemnetation
      *
      * @param envelope The area of search
      * @param resolution The target resolution
@@ -119,16 +115,16 @@ public interface DGGSInstance extends AutoCloseable {
     Iterator<Zone> children(String id, int resolution);
 
     /**
-     * Returns the count of children zones. The default implementation just uses {@link
-     * #children(String, int)}, subclasses can provide a better optimized implementation
+     * Returns the count of children zones. The default implementation just uses {@link #children(String, int)},
+     * subclasses can provide a better optimized implementation
      */
     default long countChildren(String id, int resolution) {
         return Iterators.size(children(id, resolution));
     }
 
     /**
-     * Returns all parents of a given zone, at all resolution levels TODO: normally it's a small
-     * number of zones, though it could grow in a system where a cell can have multiple parents
+     * Returns all parents of a given zone, at all resolution levels TODO: normally it's a small number of zones, though
+     * it could grow in a system where a cell can have multiple parents
      *
      * @param id
      * @return
@@ -136,9 +132,8 @@ public interface DGGSInstance extends AutoCloseable {
     Iterator<Zone> parents(String id);
 
     /**
-     * Counts all the parents of a given zone, at all resolution levels. The default implementation
-     * just uses {@link * #parents(String)}, subclasses can provide a better optimized
-     * implementation
+     * Counts all the parents of a given zone, at all resolution levels. The default implementation just uses {@link *
+     * #parents(String)}, subclasses can provide a better optimized implementation
      */
     default long countParents(String id) {
         long count = 0;
@@ -163,14 +158,14 @@ public interface DGGSInstance extends AutoCloseable {
      *
      * @param polygon A polygon expressed in CRS84
      * @param resolution The target resolution
-     * @param compact If true, return the minimum number of zones needed to cover the area, using
-     *     parent zones as needed.
+     * @param compact If true, return the minimum number of zones needed to cover the area, using parent zones as
+     *     needed.
      */
     Iterator<Zone> polygon(Polygon polygon, int resolution, boolean compact);
 
     /**
-     * Returns the count of zones in the polygon. The default implementation just uses {@link
-     * #polygon(POlygon, int, boolean)}, subclasses can provide a better optimized implemnetation
+     * Returns the count of zones in the polygon. The default implementation just uses {@link #polygon(POlygon, int,
+     * boolean)}, subclasses can provide a better optimized implemnetation
      *
      * @param polygon A polygon expressed in CRS84
      * @param resolution The target resolution
@@ -182,20 +177,17 @@ public interface DGGSInstance extends AutoCloseable {
     /**
      * Given a parent id, returns a filter matching all possible children of a given parent.
      *
-     * <p>Typically implemented as a range or like search based on the hierarchical structure of the
-     * zoneId.
+     * <p>Typically implemented as a range or like search based on the hierarchical structure of the zoneId.
      *
-     * <p>Used to optimize filters in database searches, as opposed to enumerating all children one
-     * by one.
+     * <p>Used to optimize filters in database searches, as opposed to enumerating all children one by one.
      *
-     * <p>The caller is already adding a "AND resolution <=|== targetResolution" in the query, the
-     * resolution and "upTo" values are to be used only to encode zoneId related filters.
+     * <p>The caller is already adding a "AND resolution <=|== targetResolution" in the query, the resolution and "upTo"
+     * values are to be used only to encode zoneId related filters.
      *
      * @param ff The filter factory used to build the response Filter
      * @param zoneId The parent zone id
-     * @param upTo If true, return a filter matching all the children, from the direct ones, up to
-     *     the given solution. If false, return a filter matching only the children at the target
-     *     resolution instead.
+     * @param upTo If true, return a filter matching all the children, from the direct ones, up to the given solution.
+     *     If false, return a filter matching only the children at the target resolution instead.
      */
     Filter getChildFilter(FilterFactory ff, String zoneId, int resolution, boolean upTo);
 }

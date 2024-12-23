@@ -45,7 +45,8 @@ public class BatchElementImpl extends BaseImpl implements BatchElement {
     @JoinColumn(name = "task")
     private TaskImpl task;
 
-    @Column private Integer index;
+    @Column
+    private Integer index;
 
     @OneToMany(
             fetch = FetchType.LAZY,

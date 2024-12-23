@@ -25,7 +25,8 @@ import org.geotools.util.logging.Logging;
 public abstract class XMPPOutputMessage implements XMPPMessage {
 
     /** The LOGGER */
-    public static final Logger LOGGER = Logging.getLogger(XMPPMessage.class.getPackage().getName());
+    public static final Logger LOGGER =
+            Logging.getLogger(XMPPMessage.class.getPackage().getName());
 
     String topic;
 
@@ -44,8 +45,7 @@ public abstract class XMPPOutputMessage implements XMPPMessage {
     protected Object getOutPuts(XMPPClient xmppClient, Entry<String, String> result)
             throws UnsupportedEncodingException, PickleException, IOException {
         final String serviceResultString = URLDecoder.decode(result.getValue(), "UTF-8");
-        final JSONObject serviceResultJSON =
-                (JSONObject) JSONSerializer.toJSON(serviceResultString);
+        final JSONObject serviceResultJSON = (JSONObject) JSONSerializer.toJSON(serviceResultString);
 
         // Cleaning up from JSONNull values
         final LinkedList nullValues = new LinkedList<>();

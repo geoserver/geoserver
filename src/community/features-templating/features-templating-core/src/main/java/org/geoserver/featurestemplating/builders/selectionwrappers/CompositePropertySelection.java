@@ -20,13 +20,12 @@ public class CompositePropertySelection extends PropertySelectionWrapper {
     @Override
     protected AbstractTemplateBuilder retypeBuilder(AbstractTemplateBuilder templateBuilder) {
 
-        AbstractTemplateBuilder result =
-                new CompositeBuilder((CompositeBuilder) templateBuilder, true) {
-                    @Override
-                    public boolean canWrite(TemplateBuilderContext context) {
-                        return CompositePropertySelection.this.canWrite(context);
-                    }
-                };
+        AbstractTemplateBuilder result = new CompositeBuilder((CompositeBuilder) templateBuilder, true) {
+            @Override
+            public boolean canWrite(TemplateBuilderContext context) {
+                return CompositePropertySelection.this.canWrite(context);
+            }
+        };
         return result;
     }
 }

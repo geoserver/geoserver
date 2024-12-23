@@ -37,13 +37,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Wraps a {@link ResourceAwareItemWriterItemStream} and creates a new output resource when the
- * count of items written in current resource exceeds {@link #setItemCountLimitPerResource(int)}.
- * Suffix creation can be customized with {@link #setResourceSuffixCreator(ResourceSuffixCreator)}.
+ * Wraps a {@link ResourceAwareItemWriterItemStream} and creates a new output resource when the count of items written
+ * in current resource exceeds {@link #setItemCountLimitPerResource(int)}. Suffix creation can be customized with
+ * {@link #setResourceSuffixCreator(ResourceSuffixCreator)}.
  *
- * <p>Note that new resources are created only at chunk boundaries i.e. the number of items written
- * into one resource is between the limit set by {@link #setItemCountLimitPerResource(int)} and
- * (limit + chunk size).
+ * <p>Note that new resources are created only at chunk boundaries i.e. the number of items written into one resource is
+ * between the limit set by {@link #setItemCountLimitPerResource(int)} and (limit + chunk size).
  *
  * <p>Code based on original {@link MultiResourceItemWriter} by Robert Kasanicky.
  *
@@ -90,9 +89,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
                 File file = setResourceToDelegate();
                 // create only if write is called
                 file.createNewFile();
-                Assert.state(
-                        file.canWrite(),
-                        "Output resource " + file.getAbsolutePath() + " must be writable");
+                Assert.state(file.canWrite(), "Output resource " + file.getAbsolutePath() + " must be writable");
                 delegate.open(new ExecutionContext());
                 opened = true;
             }
@@ -126,9 +123,8 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
     }
 
     /**
-     * Prototype for output resources. Actual output files will be created in the same directory and
-     * use the same name as this prototype with appended suffix (according to {@link
-     * #setResourceSuffixCreator(ResourceSuffixCreator)}.
+     * Prototype for output resources. Actual output files will be created in the same directory and use the same name
+     * as this prototype with appended suffix (according to {@link #setResourceSuffixCreator(ResourceSuffixCreator)}.
      */
     @Override
     public void setResource(Resource resource) {
@@ -160,8 +156,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
         try {
             super.open(executionContext);
             resourceIndex = executionContext.getInt(getExecutionContextKey(RESOURCE_INDEX_KEY), 1);
-            currentResourceItemCount =
-                    executionContext.getInt(getExecutionContextKey(CURRENT_RESOURCE_ITEM_COUNT), 0);
+            currentResourceItemCount = executionContext.getInt(getExecutionContextKey(CURRENT_RESOURCE_ITEM_COUNT), 0);
 
             try {
                 setResourceToDelegate();
@@ -189,9 +184,7 @@ public class CatalogMultiResourceItemWriter<T> extends CatalogWriter<T> {
                 if (opened) {
                     delegate.update(executionContext);
                 }
-                executionContext.putInt(
-                        getExecutionContextKey(CURRENT_RESOURCE_ITEM_COUNT),
-                        currentResourceItemCount);
+                executionContext.putInt(getExecutionContextKey(CURRENT_RESOURCE_ITEM_COUNT), currentResourceItemCount);
                 executionContext.putInt(getExecutionContextKey(RESOURCE_INDEX_KEY), resourceIndex);
             }
         } catch (ItemStreamException e) {

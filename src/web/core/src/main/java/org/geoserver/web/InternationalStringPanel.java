@@ -39,8 +39,7 @@ import org.geotools.util.GrowableInternationalString;
 /**
  * An abstract panel meant to be used to display international content.
  *
- * @param <C> the type of the AbstractTextComponent implementation meant to be used as the text
- *     field
+ * @param <C> the type of the AbstractTextComponent implementation meant to be used as the text field
  */
 public abstract class InternationalStringPanel<C extends AbstractTextComponent<String>>
         extends FormComponentPanel<GrowableInternationalString> {
@@ -74,14 +73,11 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         setOutputMarkupId(true);
     }
 
-    private void setObjectIfMissing(
-            IModel<GrowableInternationalString> model, C nonInternationalComponent) {
+    private void setObjectIfMissing(IModel<GrowableInternationalString> model, C nonInternationalComponent) {
         GrowableInternationalString obj = model.getObject();
         if (obj == null || obj.getLocales().isEmpty()) {
             if (nonInternationalComponent.getModelObject() != null) {
-                model.setObject(
-                        new GrowableInternationalString(
-                                nonInternationalComponent.getModelObject()));
+                model.setObject(new GrowableInternationalString(nonInternationalComponent.getModelObject()));
             } else {
                 model.setObject(new GrowableInternationalString());
             }
@@ -96,79 +92,66 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         boolean i18nVisible = i18nVisible();
         nonInternationalComponent.setVisible(!i18nVisible);
         AjaxCheckBox checkbox =
-                new AjaxCheckBox(
-                        checkBoxContainer.getId() + CHECKBOX_SUFFIX, new Model<>(i18nVisible)) {
+                new AjaxCheckBox(checkBoxContainer.getId() + CHECKBOX_SUFFIX, new Model<>(i18nVisible)) {
                     @Override
                     protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
                         // this does get form submits, processing here is not useful.
                         // see the AjaxFormSubmitBehavior below
                     }
                 };
-        AjaxFormSubmitBehavior checkboxSubmitter =
-                new AjaxFormSubmitBehavior("change") {
+        AjaxFormSubmitBehavior checkboxSubmitter = new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        switchVisibility(target);
-                    }
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                switchVisibility(target);
+            }
 
-                    private void switchVisibility(AjaxRequestTarget target) {
-                        if (checkbox.getConvertedInput().booleanValue()) {
-                            container.setVisible(true);
-                            nonInternationalComponent.setVisible(false);
-                        } else {
-                            nonInternationalComponent.setVisible(true);
-                            container.setVisible(false);
-                        }
-                        target.add(checkbox, container, nonInternationalComponent, tablePanel);
-                    }
+            private void switchVisibility(AjaxRequestTarget target) {
+                if (checkbox.getConvertedInput().booleanValue()) {
+                    container.setVisible(true);
+                    nonInternationalComponent.setVisible(false);
+                } else {
+                    nonInternationalComponent.setVisible(true);
+                    container.setVisible(false);
+                }
+                target.add(checkbox, container, nonInternationalComponent, tablePanel);
+            }
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        switchVisibility(target);
-                    }
-                };
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                switchVisibility(target);
+            }
+        };
         checkbox.add(checkboxSubmitter);
         checkBoxContainer.add(checkbox);
         container.setVisible(i18nVisible);
         container.add(
-                geoServerAjaxFormLink =
-                        new GeoServerAjaxFormLink("addNew") {
+                geoServerAjaxFormLink = new GeoServerAjaxFormLink("addNew") {
 
-                            private static final long serialVersionUID = -4136656891019857299L;
+                    private static final long serialVersionUID = -4136656891019857299L;
 
-                            @Override
-                            protected void onClick(AjaxRequestTarget target, Form<?> form) {
-                                provider.getItems()
-                                        .add(new GrowableStringModel.InternationalStringEntry());
-                                tablePanel.modelChanged();
-                                target.add(tablePanel);
-                            }
-                        });
+                    @Override
+                    protected void onClick(AjaxRequestTarget target, Form<?> form) {
+                        provider.getItems().add(new GrowableStringModel.InternationalStringEntry());
+                        tablePanel.modelChanged();
+                        target.add(tablePanel);
+                    }
+                });
         provider = new InternationalEntriesProvider();
         GeoServerTablePanel<GrowableStringModel.InternationalStringEntry> tablePanel =
-                new GeoServerTablePanel<GrowableStringModel.InternationalStringEntry>(
-                        "tablePanel", provider) {
+                new GeoServerTablePanel<GrowableStringModel.InternationalStringEntry>("tablePanel", provider) {
                     @Override
                     protected Component getComponentForProperty(
                             String id,
                             IModel<GrowableStringModel.InternationalStringEntry> itemModel,
-                            GeoServerDataProvider.Property<
-                                            GrowableStringModel.InternationalStringEntry>
-                                    property) {
+                            GeoServerDataProvider.Property<GrowableStringModel.InternationalStringEntry> property) {
                         if (property.getName().equals("locale")) {
-                            Fragment localeFragment =
-                                    new Fragment(
-                                            id, "selectFragment", InternationalStringPanel.this);
-                            FormComponentFeedbackBorder localeBorder =
-                                    new FormComponentFeedbackBorder("border");
+                            Fragment localeFragment = new Fragment(id, "selectFragment", InternationalStringPanel.this);
+                            FormComponentFeedbackBorder localeBorder = new FormComponentFeedbackBorder("border");
                             localeFragment.add(localeBorder);
                             LocalesDropdown locales =
-                                    new LocalesDropdown(
-                                            "select", new PropertyModel<>(itemModel, "locale"));
-                            locales.setLabel(
-                                    new ParamResourceModel(
-                                            "th.locale", InternationalStringPanel.this));
+                                    new LocalesDropdown("select", new PropertyModel<>(itemModel, "locale"));
+                            locales.setLabel(new ParamResourceModel("th.locale", InternationalStringPanel.this));
                             localeBorder.add(locales);
                             locales.add(new LocaleValidator());
                             locales.setNullValid(true);
@@ -183,34 +166,25 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
                                 throw new RuntimeException(
                                         "The text component has to be either a TextField or a TextArea");
 
-                            Fragment textFragment =
-                                    new Fragment(id, fragmentId, InternationalStringPanel.this);
-                            FormComponentFeedbackBorder textBorder =
-                                    new FormComponentFeedbackBorder("border");
+                            Fragment textFragment = new Fragment(id, fragmentId, InternationalStringPanel.this);
+                            FormComponentFeedbackBorder textBorder = new FormComponentFeedbackBorder("border");
                             textFragment.add(textBorder);
-                            field.setLabel(
-                                    new ParamResourceModel(
-                                            "th.text", InternationalStringPanel.this));
+                            field.setLabel(new ParamResourceModel("th.text", InternationalStringPanel.this));
                             textBorder.add(field);
                             field.setRequired(true);
                             return textFragment;
                         } else if ("remove".equals(property.getName())) {
-                            Fragment removeFragment =
-                                    new Fragment(
-                                            id, "removeFragment", InternationalStringPanel.this);
-                            GeoServerAjaxFormLink removeLink =
-                                    new GeoServerAjaxFormLink("remove") {
+                            Fragment removeFragment = new Fragment(id, "removeFragment", InternationalStringPanel.this);
+                            GeoServerAjaxFormLink removeLink = new GeoServerAjaxFormLink("remove") {
 
-                                        @Override
-                                        protected void onClick(
-                                                AjaxRequestTarget target, Form form) {
-                                            GrowableStringModel.InternationalStringEntry entry =
-                                                    itemModel.getObject();
-                                            provider.getItems().remove(entry);
-                                            InternationalStringPanel.this.modelChanged();
-                                            target.add(InternationalStringPanel.this);
-                                        }
-                                    };
+                                @Override
+                                protected void onClick(AjaxRequestTarget target, Form form) {
+                                    GrowableStringModel.InternationalStringEntry entry = itemModel.getObject();
+                                    provider.getItems().remove(entry);
+                                    InternationalStringPanel.this.modelChanged();
+                                    target.add(InternationalStringPanel.this);
+                                }
+                            };
                             removeFragment.add(removeLink);
                             return removeFragment;
                         }
@@ -219,12 +193,10 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
                     @Override
                     public void processInputs() {
-                        this.visitChildren(
-                                FormComponent.class,
-                                (component, visit) -> {
-                                    ((FormComponent<?>) component).convertInput();
-                                    ((FormComponent<?>) component).processInput();
-                                });
+                        this.visitChildren(FormComponent.class, (component, visit) -> {
+                            ((FormComponent<?>) component).convertInput();
+                            ((FormComponent<?>) component).processInput();
+                        });
                     }
                 };
         tablePanel.setSelectable(false);
@@ -237,8 +209,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
     protected abstract C getTextComponent(String id, IModel<String> model);
 
-    class InternationalEntriesProvider
-            extends GeoServerDataProvider<GrowableStringModel.InternationalStringEntry> {
+    class InternationalEntriesProvider extends GeoServerDataProvider<GrowableStringModel.InternationalStringEntry> {
 
         List<GrowableStringModel.InternationalStringEntry> internationalEntries;
 
@@ -254,8 +225,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
 
         @Override
         protected List<GrowableStringModel.InternationalStringEntry> getItems() {
-            if (internationalEntries == null)
-                internationalEntries = new ArrayList<>(growableModel.getEntries());
+            if (internationalEntries == null) internationalEntries = new ArrayList<>(growableModel.getEntries());
             return internationalEntries;
         }
 
@@ -292,8 +262,7 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
         long count = items.stream().filter(l -> l.getLocale() == null).count();
         int lastElem = items.size() - 1;
         // the lang is null because input has not been converted yet. Return false.
-        if (entry.getLocale() == null && (items.indexOf(entry) == lastElem) && count > 1)
-            return false;
+        if (entry.getLocale() == null && (items.indexOf(entry) == lastElem) && count > 1) return false;
         return true;
     }
 
@@ -342,14 +311,12 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
             // null locale validation occurs before saving. Here we cannot tell if the model object
             // is null because
             // null is the input or because wicket did not convert input
-            long count =
-                    items.stream()
-                            .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
-                            .count();
-            boolean exisits =
-                    count >= 1
-                            && (iValidatable.getModel().getObject() == null
-                                    || !iValidatable.getModel().getObject().equals(locale));
+            long count = items.stream()
+                    .filter(i -> i.getLocale() != null && i.getLocale().equals(locale))
+                    .count();
+            boolean exisits = count >= 1
+                    && (iValidatable.getModel().getObject() == null
+                            || !iValidatable.getModel().getObject().equals(locale));
             if (locale != null && (exisits || count > 2)) {
 
                 ValidationError error = new ValidationError();
@@ -360,19 +327,16 @@ public abstract class InternationalStringPanel<C extends AbstractTextComponent<S
     }
 
     private String duplicateLocaleMessage(Locale locale) {
-        String lang =
-                locale != null && locale.toLanguageTag() != null ? locale.toLanguageTag() : "empty";
+        String lang = locale != null && locale.toLanguageTag() != null ? locale.toLanguageTag() : "empty";
         String message =
-                new StringResourceModel("InternationalStringPanel.duplicatedLocale", this)
-                                .getString()
-                        + " "
-                        + lang;
+                new StringResourceModel("InternationalStringPanel.duplicatedLocale", this).getString() + " " + lang;
         return message;
     }
 
     private String validateNullLocale() {
         List<GrowableStringModel.InternationalStringEntry> entries = provider.getItems();
-        long count = entries.stream().filter(i -> i != null && i.getLocale() == null).count();
+        long count =
+                entries.stream().filter(i -> i != null && i.getLocale() == null).count();
         if (count > 1) {
             return duplicateLocaleMessage(null);
         }

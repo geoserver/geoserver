@@ -77,8 +77,7 @@ public class SubsetKvpParser extends KvpParser {
         // parse the second part, intervalOrPoint
         String valuePoint = value.substring(openIdx + 1, closeIdx);
         // split on all interval separators not contained in quotes
-        String[] vpElements =
-                valuePoint.split(intervalSeparator + "\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        String[] vpElements = valuePoint.split(intervalSeparator + "\\s*(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
         if (vpElements.length == 1) {
             // point
             String point = parsePoint(vpElements[0], false);
@@ -126,9 +125,7 @@ public class SubsetKvpParser extends KvpParser {
                 Double.parseDouble(point);
             } catch (NumberFormatException e) {
                 throw new OWS20Exception(
-                        "Invalid point value "
-                                + point
-                                + ", it is not a number and it's not between double quotes",
+                        "Invalid point value " + point + ", it is not a number and it's not between double quotes",
                         WCS20ExceptionCode.InvalidEncodingSyntax,
                         "subset");
             }

@@ -32,31 +32,27 @@ import org.springframework.context.ApplicationContextAware;
 /**
  * A default implementation of a {@link WebMapService}
  *
- * <p>This implementations relies on the code setting up the instance to provide the operation beans
- * through the following properties:
+ * <p>This implementations relies on the code setting up the instance to provide the operation beans through the
+ * following properties:
  *
  * <ul>
- *   <li>{@link #setDescribeLayer DescribeLayer} for the {@link
- *       #describeLayer(DescribeLayerRequest)} operation
- *   <li>{@link #setGetCapabilities GetCapabilities} for the {@link
- *       #getCapabilities(GetCapabilitiesRequest)} operation
- *   <li>{@link #setGetFeatureInfo GetFeatureInfo} for the {@link
- *       #getFeatureInfo(GetFeatureInfoRequest)} operation
- *   <li>{@link #setGetLegendGraphic GetLegendGraphic} for the {@link
- *       #getLegendGraphic(GetLegendGraphicRequest)} operation
+ *   <li>{@link #setDescribeLayer DescribeLayer} for the {@link #describeLayer(DescribeLayerRequest)} operation
+ *   <li>{@link #setGetCapabilities GetCapabilities} for the {@link #getCapabilities(GetCapabilitiesRequest)} operation
+ *   <li>{@link #setGetFeatureInfo GetFeatureInfo} for the {@link #getFeatureInfo(GetFeatureInfoRequest)} operation
+ *   <li>{@link #setGetLegendGraphic GetLegendGraphic} for the {@link #getLegendGraphic(GetLegendGraphicRequest)}
+ *       operation
  *   <li>{@link #setGetMap GetMap} for the {@link #getMap(GetMapRequest)} operation
  *   <li>{@link #setGetStyles GetStyles} for the {@link #getStyles(GetStylesRequest)} operation
  * </ul>
  *
- * If an operation is called for which its corresponding operation bean is not set, the call will
- * result in an {@link UnsupportedOperationException}
+ * If an operation is called for which its corresponding operation bean is not set, the call will result in an
+ * {@link UnsupportedOperationException}
  *
  * @author Andrea Aime
  * @author Justin Deoliveira
  * @author Gabriel Roldan
  */
-public class DefaultWebMapService
-        implements WebMapService, ApplicationContextAware, DisposableBean {
+public class DefaultWebMapService implements WebMapService, ApplicationContextAware, DisposableBean {
     /** default for 'format' parameter. */
     public static String FORMAT = "image/png";
 
@@ -98,8 +94,7 @@ public class DefaultWebMapService
     private static Boolean OPTIMIZE_LINE_WIDTH = null;
 
     /** This variable is used to bypass direct raster rendering. */
-    private static boolean BYPASS_DIRECT =
-            Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
+    private static boolean BYPASS_DIRECT = Boolean.getBoolean("org.geoserver.render.raster.direct.disable");
 
     /** Max number of rule filters to be used against the data source */
     private static Integer MAX_FILTER_RULES = null;
@@ -190,16 +185,16 @@ public class DefaultWebMapService
     }
 
     /**
-     * Checks wheter the line width optimization is enabled, or not (defaults to true unless the
-     * user sets the OPTIMIZE_LINE_WIDTH property to false)
+     * Checks wheter the line width optimization is enabled, or not (defaults to true unless the user sets the
+     * OPTIMIZE_LINE_WIDTH property to false)
      */
     public static boolean isLineWidthOptimizationEnabled() {
         return OPTIMIZE_LINE_WIDTH;
     }
 
     /**
-     * If true (default) use the sld rule filters to compose the query to the DB, otherwise don't
-     * and get down only with the bbox and eventual definition filter)
+     * If true (default) use the sld rule filters to compose the query to the DB, otherwise don't and get down only with
+     * the bbox and eventual definition filter)
      */
     public static int getMaxFilterRules() {
         return MAX_FILTER_RULES;
@@ -278,8 +273,7 @@ public class DefaultWebMapService
 
     @Override
     public WebMap kml(GetMapRequest getMap) {
-        throw new ServiceException(
-                "kml service is not available, please include a KML module in WEB-INF/lib");
+        throw new ServiceException("kml service is not available, please include a KML module in WEB-INF/lib");
     }
 
     /** @see WebMapService#reflect(GetMapRequest) */
@@ -312,23 +306,20 @@ public class DefaultWebMapService
     }
 
     /**
-     * This method tries to automatically determine SRS, bounding box and output size based on the
-     * layers provided by the user and any other parameters.
+     * This method tries to automatically determine SRS, bounding box and output size based on the layers provided by
+     * the user and any other parameters.
      *
-     * <p>If bounds are not specified by the user, they are automatically se to the union of the
-     * bounds of all layers.
+     * <p>If bounds are not specified by the user, they are automatically se to the union of the bounds of all layers.
      *
-     * <p>The size of the output image defaults to 512 pixels, the height is automatically
-     * determined based on the width to height ratio of the requested layers. This is also true if
-     * either height or width are specified by the user. If both height and width are specified by
-     * the user, the automatically determined bounding box will be adjusted to fit inside these
-     * bounds.
+     * <p>The size of the output image defaults to 512 pixels, the height is automatically determined based on the width
+     * to height ratio of the requested layers. This is also true if either height or width are specified by the user.
+     * If both height and width are specified by the user, the automatically determined bounding box will be adjusted to
+     * fit inside these bounds.
      *
-     * <p>General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2)
-     * Determine whether all requested layers use the same SRS, - if so, try to do bounding box
-     * calculations in native coordinates 3) Aggregate the bounding boxes (in EPSG:4326 or native)
-     * 4a) If bounding box has been specified, adjust height of image to match 4b) If bounding box
-     * has not been specified, but height has, adjust bounding box
+     * <p>General idea 1) Figure out whether SRS has been specified, fall back to EPSG:4326 2) Determine whether all
+     * requested layers use the same SRS, - if so, try to do bounding box calculations in native coordinates 3)
+     * Aggregate the bounding boxes (in EPSG:4326 or native) 4a) If bounding box has been specified, adjust height of
+     * image to match 4b) If bounding box has not been specified, but height has, adjust bounding box
      */
     public static void autoSetBoundsAndSize(GetMapRequest getMap) {
         new GetMapDefaults().autoSetBoundsAndSize(getMap);

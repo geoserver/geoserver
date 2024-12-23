@@ -40,17 +40,23 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
 
     private static final Logger LOGGER = Logging.getLogger(MetaDataBulkServiceImpl.class);
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
-    @Autowired private MetadataTemplateService templateService;
+    @Autowired
+    private MetadataTemplateService templateService;
 
-    @Autowired private ComplexMetadataService metadataService;
+    @Autowired
+    private ComplexMetadataService metadataService;
 
-    @Autowired private CustomNativeMappingService nativeToCustomService;
+    @Autowired
+    private CustomNativeMappingService nativeToCustomService;
 
-    @Autowired private GeonetworkImportService geonetworkService;
+    @Autowired
+    private GeonetworkImportService geonetworkService;
 
-    @Autowired private GlobalModelService globalModelService;
+    @Autowired
+    private GlobalModelService globalModelService;
 
     @Override
     public void clearAll(boolean templatesToo, UUID progressKey) throws IOException {
@@ -62,8 +68,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                 info.getMetadata().remove(MetadataConstants.DERIVED_KEY);
                 catalog.save(info);
                 if (progressKey != null) {
-                    globalModelService.put(
-                            progressKey, ((float) counter++) / (resources.size() + 1));
+                    globalModelService.put(progressKey, ((float) counter++) / (resources.size() + 1));
                 }
             }
             if (templatesToo) {
@@ -93,8 +98,7 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                 Serializable custom = info.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                 if (custom instanceof HashMap<?, ?>) {
                     @SuppressWarnings("unchecked")
-                    ComplexMetadataMapImpl complex =
-                            new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
+                    ComplexMetadataMapImpl complex = new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
                     metadataService.clean(complex);
                     metadataService.init(complex);
                     metadataService.derive(complex);
@@ -142,16 +146,13 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
             }
             LayerInfo lInfo = catalog.getLayerByName(cols[0].trim());
             if (lInfo != null) {
-                ResourceInfo rInfo =
-                        catalog.getResource(lInfo.getResource().getId(), ResourceInfo.class);
+                ResourceInfo rInfo = catalog.getResource(lInfo.getResource().getId(), ResourceInfo.class);
                 lInfo.setResource(rInfo);
                 HashMap<String, Serializable> map = new HashMap<>();
-                Serializable oldCustom =
-                        rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                Serializable oldCustom = rInfo.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                 if (oldCustom instanceof HashMap<?, ?>) {
                     for (Entry<? extends String, ? extends Serializable> entry :
-                            ((Map<? extends String, ? extends Serializable>) oldCustom)
-                                    .entrySet()) {
+                            ((Map<? extends String, ? extends Serializable>) oldCustom).entrySet()) {
                         map.put(entry.getKey(), ComplexMetadataMapImpl.dimCopy(entry.getValue()));
                     }
                 }
@@ -170,10 +171,9 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
                         rInfo,
                         complex,
                         templates,
-                        Sets.newHashSet(
-                                Arrays.stream(Arrays.copyOfRange(cols, 2, cols.length))
-                                        .map(s -> s.trim())
-                                        .toArray(i -> new String[i])));
+                        Sets.newHashSet(Arrays.stream(Arrays.copyOfRange(cols, 2, cols.length))
+                                .map(s -> s.trim())
+                                .toArray(i -> new String[i])));
                 nativeToCustomService.mapCustomToNative(lInfo);
                 metadataService.derive(complex);
                 // save timestamp
@@ -219,11 +219,8 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
         }
         if (!linkedTemplates.isEmpty()) {
             @SuppressWarnings("unchecked")
-            HashMap<String, List<Integer>> derivedAtts =
-                    (HashMap<String, List<Integer>>)
-                            resource.getMetadata()
-                                    .computeIfAbsent(
-                                            MetadataConstants.DERIVED_KEY, key -> new HashMap<>());
+            HashMap<String, List<Integer>> derivedAtts = (HashMap<String, List<Integer>>)
+                    resource.getMetadata().computeIfAbsent(MetadataConstants.DERIVED_KEY, key -> new HashMap<>());
             metadataService.merge(map, linkedTemplates, derivedAtts);
             resource.getMetadata().put(MetadataConstants.DERIVED_KEY, derivedAtts);
         }
@@ -237,15 +234,12 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
         for (String resourceName : resourceNames) {
             LayerInfo info = catalog.getLayerByName(resourceName.trim());
             if (info != null) {
-                info.setResource(
-                        catalog.getResource(info.getResource().getId(), ResourceInfo.class));
+                info.setResource(catalog.getResource(info.getResource().getId(), ResourceInfo.class));
                 nativeToCustomService.mapNativeToCustom(info, indexes);
-                Serializable custom =
-                        info.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+                Serializable custom = info.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
                 if (custom instanceof HashMap<?, ?>) {
                     @SuppressWarnings("unchecked")
-                    ComplexMetadataMapImpl complex =
-                            new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
+                    ComplexMetadataMapImpl complex = new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
                     // save timestamp
                     complex.get(Date.class, MetadataConstants.TIMESTAMP_KEY).setValue(new Date());
                 }
@@ -271,12 +265,10 @@ public class MetaDataBulkServiceImpl implements MetaDataBulkService {
         for (LayerInfo info : layers) {
             info.setResource(catalog.getResource(info.getResource().getId(), ResourceInfo.class));
             nativeToCustomService.mapNativeToCustom(info, indexes);
-            Serializable custom =
-                    info.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
+            Serializable custom = info.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
             if (custom instanceof HashMap<?, ?>) {
                 @SuppressWarnings("unchecked")
-                ComplexMetadataMapImpl complex =
-                        new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
+                ComplexMetadataMapImpl complex = new ComplexMetadataMapImpl((Map<String, Serializable>) custom);
                 // save timestamp
                 complex.get(Date.class, MetadataConstants.TIMESTAMP_KEY).setValue(new Date());
             }

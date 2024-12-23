@@ -38,8 +38,7 @@ public class TaskParameterPanel extends Panel {
 
         // the parameters panel
         GeoServerTablePanel<Parameter> parametersPanel =
-                new GeoServerTablePanel<Parameter>(
-                        "parametersPanel", new ParametersModel(taskModel), true) {
+                new GeoServerTablePanel<Parameter>("parametersPanel", new ParametersModel(taskModel), true) {
 
                     private static final long serialVersionUID = -8943273843044917552L;
 

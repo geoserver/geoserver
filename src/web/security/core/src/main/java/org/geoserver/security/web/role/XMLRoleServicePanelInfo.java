@@ -13,8 +13,7 @@ import org.geoserver.security.xml.XMLRoleServiceConfig;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class XMLRoleServicePanelInfo
-        extends RoleServicePanelInfo<XMLRoleServiceConfig, XMLRoleServicePanel> {
+public class XMLRoleServicePanelInfo extends RoleServicePanelInfo<XMLRoleServiceConfig, XMLRoleServicePanel> {
 
     public XMLRoleServicePanelInfo() {
         setComponentClass(XMLRoleServicePanel.class);

@@ -46,17 +46,14 @@ public class KafkaMonitorConfig {
     private Properties extractKafkaProperties() {
         if (props == null) {
             props = new Properties();
-            config.getProperties()
-                    .entrySet()
-                    .forEach(
-                            (p) -> {
-                                if (p.getKey().toString().startsWith("kafka.")
-                                        && !p.getKey().toString().equals("kafka.topic")) {
-                                    String propName = p.getKey().toString().substring(6);
-                                    props.put(propName, p.getValue());
-                                    LOGGER.info("using kafka property: " + propName);
-                                }
-                            });
+            config.getProperties().entrySet().forEach((p) -> {
+                if (p.getKey().toString().startsWith("kafka.")
+                        && !p.getKey().toString().equals("kafka.topic")) {
+                    String propName = p.getKey().toString().substring(6);
+                    props.put(propName, p.getValue());
+                    LOGGER.info("using kafka property: " + propName);
+                }
+            });
 
             props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
             props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KafkaAvroSerializer.class);

@@ -28,8 +28,7 @@ public class MetaDataResponse extends AbstractRecordsResponse {
     @Override
     protected void transformResponse(
             OutputStream output, CSWRecordsResult result, RequestBaseType request, CSWInfo csw) {
-        MetaDataTransformer transformer =
-                new MetaDataTransformer(request, csw.isCanonicalSchemaLocation());
+        MetaDataTransformer transformer = new MetaDataTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);
         try {
             transformer.transform(result, output);

@@ -23,8 +23,7 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator {
         super(securityManager);
     }
 
-    protected void checkCurrentPassword(MasterPasswordChangeRequest request)
-            throws MasterPasswordChangeException {
+    protected void checkCurrentPassword(MasterPasswordChangeRequest request) throws MasterPasswordChangeException {
         if (isNotEmpty(request.getCurrentPassword()) == false) {
             throw createSecurityException(MasterPasswordChangeException.CURRENT_PASSWORD_REQUIRED);
         }
@@ -37,16 +36,13 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator {
         }
     }
 
-    protected void checkConfirmationPassword(MasterPasswordChangeRequest request)
-            throws MasterPasswordChangeException {
+    protected void checkConfirmationPassword(MasterPasswordChangeRequest request) throws MasterPasswordChangeException {
         if (isNotEmpty(request.getConfirmPassword()) == false) {
-            throw createSecurityException(
-                    MasterPasswordChangeException.CONFIRMATION_PASSWORD_REQUIRED);
+            throw createSecurityException(MasterPasswordChangeException.CONFIRMATION_PASSWORD_REQUIRED);
         }
     }
 
-    protected void checkNewPassword(MasterPasswordChangeRequest request)
-            throws MasterPasswordChangeException {
+    protected void checkNewPassword(MasterPasswordChangeRequest request) throws MasterPasswordChangeException {
         if (isNotEmpty(request.getNewPassword()) == false) {
             throw createSecurityException(MasterPasswordChangeException.NEW_PASSWORD_REQUIRED);
         }
@@ -55,8 +51,7 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator {
     protected void checkNewEqualsConfirmation(char[] newPassword, char[] confirmationPassword)
             throws MasterPasswordChangeException {
         if (!Arrays.equals(newPassword, confirmationPassword)) {
-            throw createSecurityException(
-                    MasterPasswordChangeException.PASSWORD_AND_CONFIRMATION_NOT_EQUAL);
+            throw createSecurityException(MasterPasswordChangeException.PASSWORD_AND_CONFIRMATION_NOT_EQUAL);
         }
     }
 
@@ -80,8 +75,7 @@ public class MasterPasswordChangeValidator extends AbstractSecurityValidator {
     }
 
     /** Helper method for creating a proper {@link MasterPasswordChangeException} object */
-    protected MasterPasswordChangeException createSecurityException(
-            String errorid, Object... args) {
+    protected MasterPasswordChangeException createSecurityException(String errorid, Object... args) {
         return new MasterPasswordChangeException(errorid, args);
     }
 

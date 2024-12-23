@@ -75,9 +75,8 @@ public abstract class ImportData implements Serializable {
     }
 
     /**
-     * For data types that contain multiple other types, like directories, databases, etc... this
-     * method should return the sub part, or simply return itself for data types (liek files) that
-     * can't be broken up.
+     * For data types that contain multiple other types, like directories, databases, etc... this method should return
+     * the sub part, or simply return itself for data types (liek files) that can't be broken up.
      */
     public ImportData part(String name) {
         return this;
@@ -149,13 +148,7 @@ public abstract class ImportData implements Serializable {
      */
     @Override
     public String toString() {
-        return "ImportData [format="
-                + format
-                + ", charsetEncoding="
-                + charsetEncoding
-                + ", message="
-                + message
-                + "]";
+        return "ImportData [format=" + format + ", charsetEncoding=" + charsetEncoding + ", message=" + message + "]";
     }
 
     public void setParent(ImportTask task) {

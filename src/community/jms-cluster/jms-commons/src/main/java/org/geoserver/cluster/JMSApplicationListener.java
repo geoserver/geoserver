@@ -18,14 +18,12 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 
 /**
- * This class make it possible to enable and disable the Event producer/consumer using Applications
- * Events.
+ * This class make it possible to enable and disable the Event producer/consumer using Applications Events.
  *
- * <p>This is used at the GeoServer startup to disable the producer until the initial configuration
- * is loaded.
+ * <p>This is used at the GeoServer startup to disable the producer until the initial configuration is loaded.
  *
- * <p>It can also be used to enable/disable the producer in a Master+Slave configuration to avoid
- * recursive event production.
+ * <p>It can also be used to enable/disable the producer in a Master+Slave configuration to avoid recursive event
+ * production.
  *
  * @see {@link ToggleEvent}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
@@ -43,7 +41,8 @@ public class JMSApplicationListener implements ApplicationListener<ApplicationEv
      */
     private volatile Boolean status = false;
 
-    @Autowired public JMSConfiguration config;
+    @Autowired
+    public JMSConfiguration config;
 
     public JMSApplicationListener(ToggleType type) {
         this.type = type;

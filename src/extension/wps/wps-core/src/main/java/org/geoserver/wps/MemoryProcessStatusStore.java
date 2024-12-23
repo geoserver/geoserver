@@ -49,11 +49,7 @@ public class MemoryProcessStatusStore implements ProcessStatusStore {
                 ProcessState previousPhase = oldStatus.getPhase();
                 ProcessState currPhase = status.getPhase();
                 if (!currPhase.isValidSuccessor(previousPhase)) {
-                    throw new WPSException(
-                            "Cannot switch process status from "
-                                    + previousPhase
-                                    + " to "
-                                    + currPhase);
+                    throw new WPSException("Cannot switch process status from " + previousPhase + " to " + currPhase);
                 }
                 ExecutionStatus prevInMap = statuses.put(status.getExecutionId(), newStatus);
                 succeded = prevInMap == oldStatus;

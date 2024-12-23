@@ -26,8 +26,7 @@ public class GetStatus {
 
     private ApplicationContext ctx;
 
-    public GetStatus(
-            ProcessStatusTracker tracker, WPSResourceManager resources, ApplicationContext ctx) {
+    public GetStatus(ProcessStatusTracker tracker, WPSResourceManager resources, ApplicationContext ctx) {
         this.tracker = tracker;
         this.resources = resources;
         this.ctx = ctx;
@@ -45,10 +44,9 @@ public class GetStatus {
         if (status.getPhase().isExecutionCompleted()) {
             Resource storedResponse = resources.getStoredResponse(executionId);
             if (storedResponse == null || storedResponse.getType() == Type.UNDEFINED) {
-                throw new WPSException(
-                        "The execution is completed with status "
-                                + status.getPhase()
-                                + " and yet the response cannot be located on disk, this is an internal failure");
+                throw new WPSException("The execution is completed with status "
+                        + status.getPhase()
+                        + " and yet the response cannot be located on disk, this is an internal failure");
             } else {
                 return storedResponse;
             }

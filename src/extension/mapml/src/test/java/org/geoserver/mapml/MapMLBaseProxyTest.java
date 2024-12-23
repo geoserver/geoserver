@@ -40,13 +40,11 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
         WireMockConfiguration config = wireMockConfig().dynamicPort();
         mockService = new WireMockServer(config);
         mockService.start();
-        mockService.stubFor(
-                WireMock.get(urlEqualTo(CAPABILITIES_URL))
-                        .willReturn(
-                                aResponse()
-                                        .withStatus(200)
-                                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
-                                        .withBodyFile(file)));
+        mockService.stubFor(WireMock.get(urlEqualTo(CAPABILITIES_URL))
+                .willReturn(aResponse()
+                        .withStatus(200)
+                        .withHeader("Content-Type", MediaType.TEXT_XML_VALUE)
+                        .withBodyFile(file)));
     }
 
     public static String getCapabilitiesURL() {
@@ -58,19 +56,18 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
         mockService.shutdown();
     }
 
-    protected static final String BASE_REQUEST =
-            "wms?LAYERS=cascadedLayer"
-                    + "&STYLES=&FORMAT="
-                    + MapMLConstants.MAPML_MIME_TYPE
-                    + "&SERVICE=WMS&VERSION=1.3.0"
-                    + "&REQUEST=GetMap"
-                    + "&SRS=EPSG:4326"
-                    + "&BBOX=0,0,1,1"
-                    + "&WIDTH=150"
-                    + "&HEIGHT=150"
-                    + "&format_options="
-                    + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                    + ":image/png";
+    protected static final String BASE_REQUEST = "wms?LAYERS=cascadedLayer"
+            + "&STYLES=&FORMAT="
+            + MapMLConstants.MAPML_MIME_TYPE
+            + "&SERVICE=WMS&VERSION=1.3.0"
+            + "&REQUEST=GetMap"
+            + "&SRS=EPSG:4326"
+            + "&BBOX=0,0,1,1"
+            + "&WIDTH=150"
+            + "&HEIGHT=150"
+            + "&format_options="
+            + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+            + ":image/png";
 
     protected XpathEngine xpath;
 
@@ -91,8 +88,7 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
         xpath = XMLUnit.newXpathEngine();
     }
 
-    protected void checkCascading(
-            String path, boolean shouldCascade, String rel, boolean checkQueryLink)
+    protected void checkCascading(String path, boolean shouldCascade, String rel, boolean checkQueryLink)
             throws Exception {
         Document doc = getMapML(path);
         print(doc);
@@ -107,9 +103,7 @@ public class MapMLBaseProxyTest extends MapMLTestSupport {
 
     protected void assertCascading(boolean shouldCascade, String url) {
         if (shouldCascade) {
-            assertTrue(
-                    url.startsWith(
-                            "http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
+            assertTrue(url.startsWith("http://localhost:" + mockService.port() + MOCK_SERVER + CONTEXT));
             assertTrue(url.contains("layers=topp:states"));
         } else {
             assertTrue(url.startsWith("http://localhost:8080/geoserver" + CONTEXT));

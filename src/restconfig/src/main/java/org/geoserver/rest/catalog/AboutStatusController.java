@@ -40,29 +40,23 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/about/status",
-        produces = {
-            MediaType.TEXT_HTML_VALUE,
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE
-        })
+        produces = {MediaType.TEXT_HTML_VALUE, MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
 public class AboutStatusController extends RestBaseController {
 
     @GetMapping
     protected RestWrapper<ModuleStatus> statusGet() throws Exception {
-        List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class).stream()
-                        .map(ModuleStatusImpl::new)
-                        .collect(Collectors.toList());
+        List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class).stream()
+                .map(ModuleStatusImpl::new)
+                .collect(Collectors.toList());
         return wrapList(applicationStatus, ModuleStatus.class);
     }
 
     @GetMapping(value = "/{target}")
     protected RestWrapper<ModuleStatus> statusGet(@PathVariable String target) throws Exception {
-        List<ModuleStatus> applicationStatus =
-                GeoServerExtensions.extensions(ModuleStatus.class).stream()
-                        .map(ModuleStatusImpl::new)
-                        .filter(getModule(target))
-                        .collect(Collectors.toList());
+        List<ModuleStatus> applicationStatus = GeoServerExtensions.extensions(ModuleStatus.class).stream()
+                .map(ModuleStatusImpl::new)
+                .filter(getModule(target))
+                .collect(Collectors.toList());
         if (applicationStatus.isEmpty()) {
             throw new RestException("No such module: " + target, HttpStatus.NOT_FOUND);
         }
@@ -91,9 +85,7 @@ public class AboutStatusController extends RestBaseController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ModuleStatus.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -105,19 +97,15 @@ public class AboutStatusController extends RestBaseController {
                 if (obj instanceof List) { // we expect List of ModuleStatus
                     List<?> list = (List<?>) obj;
                     SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
-                    CollectionModel valuesModel =
-                            new CollectionModel(
-                                    list,
-                                    new BeansWrapper(FM_VERSION) {
-                                        @Override
-                                        public TemplateModel wrap(Object object)
-                                                throws TemplateModelException {
-                                            if (object instanceof ModuleStatus) {
-                                                return wrapModleStatus((ModuleStatus) object);
-                                            }
-                                            return super.wrap(object);
-                                        }
-                                    });
+                    CollectionModel valuesModel = new CollectionModel(list, new BeansWrapper(FM_VERSION) {
+                        @Override
+                        public TemplateModel wrap(Object object) throws TemplateModelException {
+                            if (object instanceof ModuleStatus) {
+                                return wrapModleStatus((ModuleStatus) object);
+                            }
+                            return super.wrap(object);
+                        }
+                    });
                     hash.put("values", valuesModel);
                     return hash;
                 }
@@ -145,9 +133,7 @@ public class AboutStatusController extends RestBaseController {
 
     private String escapeMessage(String message) {
         String noControlChars =
-                message.replaceAll("\u001b", "ESC")
-                        .replaceAll("\u0008", "BACK")
-                        .replaceAll("\u0007", "BELL");
+                message.replaceAll("\u001b", "ESC").replaceAll("\u0008", "BACK").replaceAll("\u0007", "BELL");
         String escaped = StringEscapeUtils.escapeXml10(noControlChars).replaceAll("\n", "<br/>");
         return escaped;
     }

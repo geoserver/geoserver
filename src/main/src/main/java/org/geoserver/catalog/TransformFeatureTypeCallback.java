@@ -25,13 +25,12 @@ import org.geotools.filter.text.ecql.ECQL;
 import org.geotools.util.SimpleInternationalString;
 
 /**
- * Transforms a vector layer {@link org.geotools.api.feature.type.FeatureType} based on the
- * definitions contains in the eventual {@link AttributeTypeInfo} list.
+ * Transforms a vector layer {@link org.geotools.api.feature.type.FeatureType} based on the definitions contains in the
+ * eventual {@link AttributeTypeInfo} list.
  */
 public class TransformFeatureTypeCallback {
 
-    public FeatureType retypeFeatureType(FeatureTypeInfo fti, FeatureType schema)
-            throws IOException {
+    public FeatureType retypeFeatureType(FeatureTypeInfo fti, FeatureType schema) throws IOException {
         List<AttributeTypeInfo> attributes = fti.getAttributes();
         if (attributes == null || attributes.isEmpty()) return schema;
 
@@ -49,13 +48,11 @@ public class TransformFeatureTypeCallback {
         List<AttributeTypeInfo> attributes = fti.getAttributes();
         if (attributes == null || attributes.isEmpty()) return fs;
 
-        return (FeatureSource<T, U>)
-                getTransformedSource(fti, attributes, (SimpleFeatureSource) fs);
+        return (FeatureSource<T, U>) getTransformedSource(fti, attributes, (SimpleFeatureSource) fs);
     }
 
     private SimpleFeatureSource getTransformedSource(
-            FeatureTypeInfo fti, List<AttributeTypeInfo> attributes, SimpleFeatureSource fs)
-            throws IOException {
+            FeatureTypeInfo fti, List<AttributeTypeInfo> attributes, SimpleFeatureSource fs) throws IOException {
         List<Definition> definitions =
                 attributes.stream().map(ati -> toDefinition(ati)).collect(Collectors.toList());
         SimpleFeatureSource tfs = TransformFactory.transform(fs, fti.getName(), definitions);
@@ -79,9 +76,7 @@ public class TransformFeatureTypeCallback {
             InternationalString descriptionInternational = ati.getDescription();
             String description = null;
             if (descriptionInternational != null) {
-                description =
-                        StringUtils.trimToNull(
-                                ati.getDescription().toString(GeoServerDefaultLocale.get()));
+                description = StringUtils.trimToNull(ati.getDescription().toString(GeoServerDefaultLocale.get()));
                 if (description != null) {
                     descriptionInternational = new SimpleInternationalString(description);
                 } else {
@@ -90,8 +85,7 @@ public class TransformFeatureTypeCallback {
             }
             return new Definition(name, source, binding, null, descriptionInternational);
         } catch (CQLException e) {
-            throw new ServiceException(
-                    "Failed to parse the attribute source definition to a valid OGC Expression", e);
+            throw new ServiceException("Failed to parse the attribute source definition to a valid OGC Expression", e);
         }
     }
 }

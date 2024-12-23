@@ -44,8 +44,7 @@ public class MapServiceRoot extends AbstractGSRModel implements GSRModel {
 
     private String workspace;
 
-    public MapServiceRoot(WMSInfo service, String workspace, List<LayerInfo> layers)
-            throws IOException {
+    public MapServiceRoot(WMSInfo service, String workspace, List<LayerInfo> layers) throws IOException {
         this.mapName = service.getTitle() != null ? service.getTitle() : service.getName();
         this.workspace = workspace;
         int count = 0;
@@ -76,28 +75,21 @@ public class MapServiceRoot extends AbstractGSRModel implements GSRModel {
         for (LayerInfo l : layers) {
             if (l.getResource().getClass().isAssignableFrom(FeatureTypeInfo.class)) {
                 FeatureTypeInfo ftInfo = (FeatureTypeInfo) l.getResource();
-                DimensionInfo dimensionInfo =
-                        ftInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
+                DimensionInfo dimensionInfo = ftInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
                 if (dimensionInfo != null && dimensionInfo.isEnabled()) {
                     String timeProperty = dimensionInfo.getAttribute();
                     FeatureSource<? extends FeatureType, ? extends Feature> source =
                             ftInfo.getFeatureSource(null, null);
-                    FeatureCollection<? extends FeatureType, ? extends Feature> features =
-                            source.getFeatures();
-                    MaxVisitor max =
-                            new MaxVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
-                    MinVisitor min =
-                            new MinVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                    FeatureCollection<? extends FeatureType, ? extends Feature> features = source.getFeatures();
+                    MaxVisitor max = new MaxVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
+                    MinVisitor min = new MinVisitor(timeProperty, (SimpleFeatureType) features.getSchema());
                     features.accepts(min, null);
                     features.accepts(max, null);
                     if (min.getResult() != CalcResult.NULL_RESULT) {
                         if (overallMin == null) {
                             overallMin = min.getMin();
                         } else {
-                            overallMin =
-                                    min.getMin().compareTo(overallMin) < 0
-                                            ? min.getMin()
-                                            : overallMin;
+                            overallMin = min.getMin().compareTo(overallMin) < 0 ? min.getMin() : overallMin;
                         }
                     }
 
@@ -105,10 +97,7 @@ public class MapServiceRoot extends AbstractGSRModel implements GSRModel {
                         if (overallMax == null) {
                             overallMax = max.getMax();
                         } else {
-                            overallMax =
-                                    max.getMax().compareTo(overallMax) > 0
-                                            ? max.getMax()
-                                            : overallMax;
+                            overallMax = max.getMax().compareTo(overallMax) > 0 ? max.getMax() : overallMax;
                         }
                     }
                 }

@@ -18,8 +18,7 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
 
     @Test
     public void smokeTest() {
-        Model<GeoServerJwtHeadersFilterConfig> model =
-                new Model<>(new GeoServerJwtHeadersFilterConfig());
+        Model<GeoServerJwtHeadersFilterConfig> model = new Model<>(new GeoServerJwtHeadersFilterConfig());
         FormTestPage testPage = new FormTestPage(id -> new JwtHeadersAuthFilterPanel(id, model));
         tester.startPage(testPage);
     }
@@ -31,16 +30,13 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
         navigateToJwtHeadersPanel("JwtHeaderFilter1");
 
         formTester.setValue("panel:content:name", "JwtHeaderFilter1");
-        formTester.setValue(
-                "panel:content:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
+        formTester.setValue("panel:content:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
 
         clickSave();
         tester.assertNoErrorMessage();
         clickNamedServiceConfig("JwtHeaderFilter1");
         tester.assertModelValue("panel:panel:form:panel:name", "JwtHeaderFilter1");
-        tester.assertModelValue(
-                "panel:panel:form:panel:userNameHeaderAttributeName",
-                "userNameHeaderAttributeName111");
+        tester.assertModelValue("panel:panel:form:panel:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
     }
 
     @Test
@@ -49,8 +45,7 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
         navigateToJwtHeadersPanel("JwtHeaderFilter2");
 
         formTester.setValue("panel:content:name", "JwtHeaderFilter2");
-        formTester.setValue(
-                "panel:content:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
+        formTester.setValue("panel:content:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
 
         formTester.setValue("panel:content:roleSource", "JWT");
 
@@ -58,13 +53,10 @@ public class JwtHeadersAuthFilterPanelTest extends AbstractSecurityNamedServiceP
         tester.assertNoErrorMessage();
         clickNamedServiceConfig("JwtHeaderFilter2");
         tester.assertModelValue("panel:panel:form:panel:name", "JwtHeaderFilter2");
-        tester.assertModelValue(
-                "panel:panel:form:panel:userNameHeaderAttributeName",
-                "userNameHeaderAttributeName111");
+        tester.assertModelValue("panel:panel:form:panel:userNameHeaderAttributeName", "userNameHeaderAttributeName111");
 
         tester.assertModelValue(
-                "panel:panel:form:panel:roleSource",
-                GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT);
+                "panel:panel:form:panel:roleSource", GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.JWT);
     }
 
     // ----------------------------------------------

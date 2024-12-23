@@ -42,47 +42,42 @@ public class BatchRunPage extends GeoServerSecuredPage {
     public void onInitialize() {
         super.onInitialize();
 
-        add(
-                new SimpleAjaxLink<String>(
-                        "nameLink", new PropertyModel<String>(batchModel, "fullName")) {
-                    private static final long serialVersionUID = -9184383036056499856L;
+        add(new SimpleAjaxLink<String>("nameLink", new PropertyModel<String>(batchModel, "fullName")) {
+            private static final long serialVersionUID = -9184383036056499856L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        setResponsePage(new BatchPage(batchModel, getPage()));
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                setResponsePage(new BatchPage(batchModel, getPage()));
+            }
+        });
 
         add(new Label("startLabel", new PropertyModel<String>(batchRunModel, "start")));
 
-        add(
-                new AjaxLink<Object>("refresh") {
+        add(new AjaxLink<Object>("refresh") {
 
-                    private static final long serialVersionUID = 3905640474193868255L;
+            private static final long serialVersionUID = 3905640474193868255L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        batchRunModel.setObject(
-                                TaskManagerBeans.get().getDao().reload(batchRunModel.getObject()));
-                        ((MarkupContainer) runsPanel.get("listContainer").get("items")).removeAll();
-                        target.add(runsPanel);
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                batchRunModel.setObject(TaskManagerBeans.get().getDao().reload(batchRunModel.getObject()));
+                ((MarkupContainer) runsPanel.get("listContainer").get("items")).removeAll();
+                target.add(runsPanel);
+            }
+        });
 
         // the tasks panel
         add(runsPanel = runPanel());
         runsPanel.setOutputMarkupId(true);
         runsPanel.setSelectable(false);
 
-        add(
-                new AjaxLink<Object>("close") {
-                    private static final long serialVersionUID = -6892944747517089296L;
+        add(new AjaxLink<Object>("close") {
+            private static final long serialVersionUID = -6892944747517089296L;
 
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doReturn();
-                    }
-                });
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                doReturn();
+            }
+        });
     }
 
     protected GeoServerTablePanel<Run> runPanel() {
@@ -91,8 +86,7 @@ public class BatchRunPage extends GeoServerSecuredPage {
             private static final long serialVersionUID = -8943273843044917552L;
 
             @Override
-            protected Component getComponentForProperty(
-                    String id, IModel<Run> runModel, Property<Run> property) {
+            protected Component getComponentForProperty(String id, IModel<Run> runModel, Property<Run> property) {
                 return null;
             }
         };

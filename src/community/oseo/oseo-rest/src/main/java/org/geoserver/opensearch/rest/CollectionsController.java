@@ -110,9 +110,7 @@ public class CollectionsController extends AbstractOpenSearchController {
     Catalog catalog;
 
     public CollectionsController(
-            OpenSearchAccessProvider accessProvider,
-            OseoJSONConverter jsonConverter,
-            Catalog catalog) {
+            OpenSearchAccessProvider accessProvider, OseoJSONConverter jsonConverter, Catalog catalog) {
         super(accessProvider, jsonConverter);
         this.catalog = catalog;
         eventListeners.addAll(GeoServerExtensions.extensions(OseoEventListener.class));
@@ -131,8 +129,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         query.setSortBy(new SortBy[] {FF.sort("name", SortOrder.ASCENDING)});
         query.setPropertyNames(new String[] {"name"});
         OpenSearchAccess access = accessProvider.getOpenSearchAccess();
-        FeatureStore<FeatureType, Feature> fs =
-                (FeatureStore<FeatureType, Feature>) access.getCollectionSource();
+        FeatureStore<FeatureType, Feature> fs = (FeatureStore<FeatureType, Feature>) access.getCollectionSource();
         FeatureCollection<FeatureType, Feature> features = fs.getFeatures(query);
 
         // map to java beans for JSON encoding
@@ -142,19 +139,10 @@ public class CollectionsController extends AbstractOpenSearchController {
                 f -> {
                     String name = (String) f.getProperty("name").getValue();
                     String collectionHref =
-                            ResponseUtils.buildURL(
-                                    baseURL,
-                                    "/rest/oseo/collections/" + name,
-                                    null,
-                                    URLType.RESOURCE);
-                    String oseoHref =
-                            ResponseUtils.buildURL(
-                                    baseURL,
-                                    "/oseo/description",
-                                    Collections.singletonMap("parentId", name),
-                                    URLType.RESOURCE);
-                    CollectionReference cr =
-                            new CollectionReference(name, collectionHref, oseoHref);
+                            ResponseUtils.buildURL(baseURL, "/rest/oseo/collections/" + name, null, URLType.RESOURCE);
+                    String oseoHref = ResponseUtils.buildURL(
+                            baseURL, "/oseo/description", Collections.singletonMap("parentId", name), URLType.RESOURCE);
+                    CollectionReference cr = new CollectionReference(name, collectionHref, oseoHref);
                     list.add(cr);
                 },
                 null);
@@ -166,8 +154,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             HttpServletRequest request, @RequestBody(required = true) SimpleFeature feature)
             throws IOException, URISyntaxException {
         String eoId = checkCollectionIdentifier(feature);
-        Feature collectionFeature =
-                simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
 
         // insert the new feature
         runTransactionOnCollectionStore(fs -> fs.addFeatures(singleton(collectionFeature)));
@@ -179,12 +166,11 @@ public class CollectionsController extends AbstractOpenSearchController {
         return returnCreatedCollectionReference(request, eoId);
     }
 
-    private ResponseEntity<String> returnCreatedCollectionReference(
-            HttpServletRequest request, String eoId) throws URISyntaxException {
+    private ResponseEntity<String> returnCreatedCollectionReference(HttpServletRequest request, String eoId)
+            throws URISyntaxException {
         String baseURL = ResponseUtils.baseURL(request);
         String newCollectionLocation =
-                ResponseUtils.buildURL(
-                        baseURL, "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
+                ResponseUtils.buildURL(baseURL, "/rest/oseo/collections/" + eoId, null, URLType.RESOURCE);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(new URI(newCollectionLocation));
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -200,13 +186,11 @@ public class CollectionsController extends AbstractOpenSearchController {
         // process the collection part
         final byte[] collectionPayload = parts.get(CollectionPart.Collection);
         if (collectionPayload == null) {
-            throw new RestException(
-                    "collection.json file is missing from the zip", HttpStatus.BAD_REQUEST);
+            throw new RestException("collection.json file is missing from the zip", HttpStatus.BAD_REQUEST);
         }
         SimpleFeature jsonFeature = parseGeoJSONFeature("collection.json", collectionPayload);
         String eoId = checkCollectionIdentifier(jsonFeature);
-        Feature collectionFeature =
-                simpleToComplex(jsonFeature, getCollectionSchema(), COLLECTION_HREFS);
+        Feature collectionFeature = simpleToComplex(jsonFeature, getCollectionSchema(), COLLECTION_HREFS);
 
         // grab the other parts
         byte[] rawLinks = parts.get(CollectionPart.OwsLinks);
@@ -219,17 +203,15 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
 
         // insert the new feature and accessory bits
-        runTransactionOnCollectionStore(
-                fs -> {
-                    fs.addFeatures(singleton(collectionFeature));
+        runTransactionOnCollectionStore(fs -> {
+            fs.addFeatures(singleton(collectionFeature));
 
-                    Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
+            Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(eoId), true);
 
-                    if (linksCollection != null) {
-                        fs.modifyFeatures(
-                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
-                    }
-                });
+            if (linksCollection != null) {
+                fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter);
+            }
+        });
 
         Feature collectionAfter = queryCollection(eoId, IDENTITY);
         broadcastOseoEvent(OseoEventType.POST_INSERT, eoId, null, collectionAfter);
@@ -241,43 +223,28 @@ public class CollectionsController extends AbstractOpenSearchController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public SimpleFeature getCollection(
-            HttpServletRequest request,
-            @PathVariable(name = "collection", required = true) String collection)
+            HttpServletRequest request, @PathVariable(name = "collection", required = true) String collection)
             throws IOException {
         // grab the collection
         Feature feature = queryCollection(collection, IDENTITY);
 
         // map to the output schema for GeoJSON encoding
-        SimpleFeatureType targetSchema =
-                mapFeatureTypeToSimple(
-                        feature.getType(),
-                        ftb -> {
-                            COLLECTION_HREFS.forEach(href -> ftb.add(href, String.class));
-                        });
-        return mapFeatureToSimple(
-                feature,
-                targetSchema,
-                fb -> {
-                    String baseURL = ResponseUtils.baseURL(request);
-                    String pathBase = "/rest/oseo/collections/" + collection + "/";
-                    String ogcLinks =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "ogcLinks", null, URLType.RESOURCE);
-                    String metadata =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "metadata", null, URLType.RESOURCE);
-                    String description =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "description", null, URLType.RESOURCE);
-                    String thumb =
-                            ResponseUtils.buildURL(
-                                    baseURL, pathBase + "thumbnail", null, URLType.RESOURCE);
+        SimpleFeatureType targetSchema = mapFeatureTypeToSimple(feature.getType(), ftb -> {
+            COLLECTION_HREFS.forEach(href -> ftb.add(href, String.class));
+        });
+        return mapFeatureToSimple(feature, targetSchema, fb -> {
+            String baseURL = ResponseUtils.baseURL(request);
+            String pathBase = "/rest/oseo/collections/" + collection + "/";
+            String ogcLinks = ResponseUtils.buildURL(baseURL, pathBase + "ogcLinks", null, URLType.RESOURCE);
+            String metadata = ResponseUtils.buildURL(baseURL, pathBase + "metadata", null, URLType.RESOURCE);
+            String description = ResponseUtils.buildURL(baseURL, pathBase + "description", null, URLType.RESOURCE);
+            String thumb = ResponseUtils.buildURL(baseURL, pathBase + "thumbnail", null, URLType.RESOURCE);
 
-                    fb.set("ogcLinksHref", ogcLinks);
-                    fb.set("metadataHref", metadata);
-                    fb.set("descriptionHref", description);
-                    fb.set("thumbnailHref", thumb);
-                });
+            fb.set("ogcLinksHref", ogcLinks);
+            fb.set("metadataHref", metadata);
+            fb.set("descriptionHref", description);
+            fb.set("thumbnailHref", thumb);
+        });
     }
 
     @PutMapping(path = "{collection}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -294,8 +261,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         checkCollectionIdentifier(feature);
 
         // prepare the update, need to convert each field into a Name/Value couple
-        Feature collectionFeature =
-                simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
+        Feature collectionFeature = simpleToComplex(feature, getCollectionSchema(), COLLECTION_HREFS);
         List<Name> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
         for (Property p : collectionFeature.getProperties()) {
@@ -313,18 +279,13 @@ public class CollectionsController extends AbstractOpenSearchController {
         Object[] attributeValues = values.toArray();
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
 
-        runTransactionOnCollectionStore(
-                fs -> fs.modifyFeatures(attributeNames, attributeValues, filter));
+        runTransactionOnCollectionStore(fs -> fs.modifyFeatures(attributeNames, attributeValues, filter));
         Feature collectionAfter = queryCollection(collection, IDENTITY);
-        broadcastOseoEvent(
-                OseoEventType.POST_UPDATE, collection, collectionBefore, collectionAfter);
+        broadcastOseoEvent(OseoEventType.POST_UPDATE, collection, collectionBefore, collectionAfter);
     }
 
     private void broadcastOseoEvent(
-            OseoEventType eventType,
-            String collectionName,
-            Feature collection,
-            Feature collectionAfter) {
+            OseoEventType eventType, String collectionName, Feature collection, Feature collectionAfter) {
         OseoListenerMux oseoListenerMux = new OseoListenerMux();
         OseoEvent oseovent = new OseoEvent();
         oseovent.setType(eventType);
@@ -333,8 +294,7 @@ public class CollectionsController extends AbstractOpenSearchController {
     }
 
     @DeleteMapping(path = "{collection}")
-    public void deleteCollection(
-            @PathVariable(required = true, name = "collection") String collection)
+    public void deleteCollection(@PathVariable(required = true, name = "collection") String collection)
             throws IOException {
         // check the collection exists
         Feature collectionBefore = queryCollection(collection, IDENTITY);
@@ -352,8 +312,7 @@ public class CollectionsController extends AbstractOpenSearchController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public CollectionLayer getDefaultCollectionLayer(
-            HttpServletRequest request,
-            @PathVariable(name = "collection", required = true) String collection)
+            HttpServletRequest request, @PathVariable(name = "collection", required = true) String collection)
             throws IOException {
         // query one collection and grab its OGC links
         return getCollectionLayer(collection, null);
@@ -381,10 +340,11 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // see if there was a layer here, if so, remove it and put the new one in its place
         Feature collectionFeature = queryCollection(collection, IDENTITY);
-        List<CollectionLayer> collectionLayers =
-                buildCollectionLayersFromFeature(collectionFeature, false);
-        CollectionLayer previousLayer =
-                collectionLayers.stream().filter(previousLayerPredicate).findFirst().orElse(null);
+        List<CollectionLayer> collectionLayers = buildCollectionLayersFromFeature(collectionFeature, false);
+        CollectionLayer previousLayer = collectionLayers.stream()
+                .filter(previousLayerPredicate)
+                .findFirst()
+                .orElse(null);
         if (previousLayer != null) {
             collectionLayers.remove(previousLayer);
         }
@@ -395,10 +355,9 @@ public class CollectionsController extends AbstractOpenSearchController {
         ListFeatureCollection layersCollection = beansToLayerCollectionFeature(collectionLayers);
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         Name layersName = getOpenSearchAccess().getName(OpenSearchAccess.LAYERS);
-        runTransactionOnCollectionStore(
-                fs -> {
-                    fs.modifyFeatures(layersName, layersCollection, filter);
-                });
+        runTransactionOnCollectionStore(fs -> {
+            fs.modifyFeatures(layersName, layersCollection, filter);
+        });
 
         // this is done after the changes in the DB to make sure it's reading the same data
         // we are inserting (feature sources do not accept a transaction...)
@@ -445,8 +404,8 @@ public class CollectionsController extends AbstractOpenSearchController {
         return buildCollectionLayersFromFeature(feature, false);
     }
 
-    private List<CollectionLayer> buildCollectionLayersFromFeature(
-            Feature feature, boolean notFoundOnEmpty) throws IOException {
+    private List<CollectionLayer> buildCollectionLayersFromFeature(Feature feature, boolean notFoundOnEmpty)
+            throws IOException {
         List<CollectionLayer> layers = CollectionLayer.buildCollectionLayersFromFeature(feature);
         if (layers == null && notFoundOnEmpty) {
             throw new ResourceNotFoundException();
@@ -459,20 +418,16 @@ public class CollectionsController extends AbstractOpenSearchController {
     private void validateLayer(CollectionLayer layer) {
         if (layer.getWorkspace() == null) {
             throw new RestException(
-                    "Invalid layer configuration, workspace name is missing or null",
-                    HttpStatus.BAD_REQUEST);
+                    "Invalid layer configuration, workspace name is missing or null", HttpStatus.BAD_REQUEST);
         }
         if (catalog.getWorkspaceByName(layer.getWorkspace()) == null) {
             throw new RestException(
-                    "Invalid layer configuration, workspace '"
-                            + layer.getWorkspace()
-                            + "' does not exist",
+                    "Invalid layer configuration, workspace '" + layer.getWorkspace() + "' does not exist",
                     HttpStatus.BAD_REQUEST);
         }
         if (layer.getLayer() == null) {
             throw new RestException(
-                    "Invalid layer configuration, layer name is missing or null",
-                    HttpStatus.BAD_REQUEST);
+                    "Invalid layer configuration, layer name is missing or null", HttpStatus.BAD_REQUEST);
         }
 
         if (layer.isSeparateBands()) {
@@ -489,63 +444,55 @@ public class CollectionsController extends AbstractOpenSearchController {
                         HttpStatus.BAD_REQUEST);
             } else if ((layer.getBrowseBands().length != 3 && layer.getBrowseBands().length != 1)) {
                 throw new RestException(
-                        "Invalid layer configuration, browse bands must be either "
-                                + "one (gray) or three (RGB)",
+                        "Invalid layer configuration, browse bands must be either " + "one (gray) or three (RGB)",
                         HttpStatus.BAD_REQUEST);
             }
         }
         // right now the mosaic can only be in 4326 because the granule table is in that CRS
         if (layer.getMosaicCRS() != null) {
             try {
-                if (!CRS.equalsIgnoreMetadata(
-                        DefaultGeographicCRS.WGS84, CRS.decode(layer.getMosaicCRS()))) {
+                if (!CRS.equalsIgnoreMetadata(DefaultGeographicCRS.WGS84, CRS.decode(layer.getMosaicCRS()))) {
                     throw new RestException(
                             "Invalid mosaicCRS value, can only be EPSG:4326 for the time being",
                             HttpStatus.BAD_REQUEST);
                 }
             } catch (FactoryException e) {
                 throw new RestException(
-                        "Invalid mosaicCRS value, cannot be decoded: " + e.getMessage(),
-                        HttpStatus.BAD_REQUEST);
+                        "Invalid mosaicCRS value, cannot be decoded: " + e.getMessage(), HttpStatus.BAD_REQUEST);
             }
         }
     }
 
     @DeleteMapping(path = "{collection}/layer")
-    public void deleteDefaultCollectionLayer(
-            @PathVariable(name = "collection", required = true) String collection)
+    public void deleteDefaultCollectionLayer(@PathVariable(name = "collection", required = true) String collection)
             throws IOException {
         // check the collection is there
         queryCollection(collection, IDENTITY);
 
         // prepare the update
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> {
-                    List<CollectionLayer> collectionLayers = getCollectionLayers(collection);
-                    CollectionLayer previousDefaultLayer =
-                            getCollectionLayer(collectionLayers, null);
-                    if (previousDefaultLayer != null) {
-                        collectionLayers.remove(previousDefaultLayer);
-                    }
+        runTransactionOnCollectionStore(fs -> {
+            List<CollectionLayer> collectionLayers = getCollectionLayers(collection);
+            CollectionLayer previousDefaultLayer = getCollectionLayer(collectionLayers, null);
+            if (previousDefaultLayer != null) {
+                collectionLayers.remove(previousDefaultLayer);
+            }
 
-                    // remove from DB if empty, otherwise promote one to default
-                    Name layersName = getOpenSearchAccess().getName(OpenSearchAccess.LAYERS);
-                    if (collectionLayers.isEmpty()) {
-                        fs.modifyFeatures(layersName, null, filter);
-                    } else {
-                        normalizeDefaultLayer(collectionLayers, null);
-                        ListFeatureCollection layersCollection =
-                                beansToLayerCollectionFeature(collectionLayers);
-                        fs.modifyFeatures(layersName, layersCollection, filter);
-                    }
+            // remove from DB if empty, otherwise promote one to default
+            Name layersName = getOpenSearchAccess().getName(OpenSearchAccess.LAYERS);
+            if (collectionLayers.isEmpty()) {
+                fs.modifyFeatures(layersName, null, filter);
+            } else {
+                normalizeDefaultLayer(collectionLayers, null);
+                ListFeatureCollection layersCollection = beansToLayerCollectionFeature(collectionLayers);
+                fs.modifyFeatures(layersName, layersCollection, filter);
+            }
 
-                    // remove from configuration if needed
-                    if (previousDefaultLayer != null) {
-                        new CollectionLayerManager(catalog, accessProvider)
-                                .removeMosaicAndLayer(previousDefaultLayer);
-                    }
-                });
+            // remove from configuration if needed
+            if (previousDefaultLayer != null) {
+                new CollectionLayerManager(catalog, accessProvider).removeMosaicAndLayer(previousDefaultLayer);
+            }
+        });
     }
 
     @DeleteMapping(path = "{collection}/layers/{layer}")
@@ -558,45 +505,39 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // prepare the update
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
-        runTransactionOnCollectionStore(
-                fs -> {
-                    List<CollectionLayer> collectionLayers = getCollectionLayers(collection);
-                    CollectionLayer previousDefaultLayer =
-                            getCollectionLayer(collectionLayers, null);
-                    CollectionLayer removedLayer = getCollectionLayer(collectionLayers, layer);
-                    if (removedLayer != null) {
-                        collectionLayers.remove(removedLayer);
-                    }
+        runTransactionOnCollectionStore(fs -> {
+            List<CollectionLayer> collectionLayers = getCollectionLayers(collection);
+            CollectionLayer previousDefaultLayer = getCollectionLayer(collectionLayers, null);
+            CollectionLayer removedLayer = getCollectionLayer(collectionLayers, layer);
+            if (removedLayer != null) {
+                collectionLayers.remove(removedLayer);
+            }
 
-                    // remove from DB if empty, otherwise promote one to default
-                    Name layersName = getOpenSearchAccess().getName(OpenSearchAccess.LAYERS);
-                    if (collectionLayers.isEmpty()) {
-                        fs.modifyFeatures(layersName, null, filter);
-                    } else {
-                        normalizeDefaultLayer(collectionLayers, null);
-                        ListFeatureCollection layersCollection =
-                                beansToLayerCollectionFeature(collectionLayers);
-                        fs.modifyFeatures(layersName, layersCollection, filter);
-                    }
+            // remove from DB if empty, otherwise promote one to default
+            Name layersName = getOpenSearchAccess().getName(OpenSearchAccess.LAYERS);
+            if (collectionLayers.isEmpty()) {
+                fs.modifyFeatures(layersName, null, filter);
+            } else {
+                normalizeDefaultLayer(collectionLayers, null);
+                ListFeatureCollection layersCollection = beansToLayerCollectionFeature(collectionLayers);
+                fs.modifyFeatures(layersName, layersCollection, filter);
+            }
 
-                    // remove from configuration if needed
-                    if (removedLayer != null) {
-                        new CollectionLayerManager(catalog, accessProvider)
-                                .removeMosaicAndLayer(removedLayer);
-                    }
-                });
+            // remove from configuration if needed
+            if (removedLayer != null) {
+                new CollectionLayerManager(catalog, accessProvider).removeMosaicAndLayer(removedLayer);
+            }
+        });
     }
 
     /**
      * Makes sure there is only one default collection layer
      *
      * @param collectionLayers the layer list to normalize
-     * @param newDefault the layer to set as default, or null if no specific layer should be made
-     *     the default (the method will check if there is already one, if not, will set the first
-     *     found)
+     * @param newDefault the layer to set as default, or null if no specific layer should be made the default (the
+     *     method will check if there is already one, if not, will set the first found)
      */
-    private void normalizeDefaultLayer(
-            List<CollectionLayer> collectionLayers, CollectionLayer newDefault) {
+    private void normalizeDefaultLayer(List<CollectionLayer> collectionLayers, CollectionLayer newDefault) {
         for (CollectionLayer collectionLayer : collectionLayers) {
             if (newDefault == null) {
                 if (collectionLayer.isDefaultLayer()) {
@@ -611,8 +552,7 @@ public class CollectionsController extends AbstractOpenSearchController {
         }
     }
 
-    private ListFeatureCollection beansToLayerCollectionFeature(List<CollectionLayer> layers)
-            throws IOException {
+    private ListFeatureCollection beansToLayerCollectionFeature(List<CollectionLayer> layers) throws IOException {
         SimpleFeatureType schema = getOpenSearchAccess().getCollectionLayerSchema();
         SimpleFeatureBuilder fb = new SimpleFeatureBuilder(schema);
         ListFeatureCollection result = new ListFeatureCollection(schema);
@@ -637,18 +577,12 @@ public class CollectionsController extends AbstractOpenSearchController {
             produces = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public OgcLinks getCollectionOgcLinks(
-            HttpServletRequest request,
-            @PathVariable(name = "collection", required = true) String collection)
+            HttpServletRequest request, @PathVariable(name = "collection", required = true) String collection)
             throws IOException {
         // query one collection and grab its OGC links
-        Feature feature =
-                queryCollection(
-                        collection,
-                        q -> {
-                            q.setProperties(
-                                    Collections.singletonList(
-                                            FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
-                        });
+        Feature feature = queryCollection(collection, q -> {
+            q.setProperties(Collections.singletonList(FF.property(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME)));
+        });
 
         OgcLinks links = buildOgcLinksFromFeature(feature, true);
         return links;
@@ -667,14 +601,11 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         Filter filter = FF.equal(FF.property(COLLECTION_ID), FF.literal(collection), true);
         runTransactionOnCollectionStore(
-                fs ->
-                        fs.modifyFeatures(
-                                OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
+                fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, linksCollection, filter));
     }
 
     @DeleteMapping(path = "{collection}/ogcLinks")
-    public void deleteCollectionLinks(
-            @PathVariable(name = "collection", required = true) String collection)
+    public void deleteCollectionLinks(@PathVariable(name = "collection", required = true) String collection)
             throws IOException {
         // check the collection is there
         queryCollection(collection, IDENTITY);
@@ -685,8 +616,7 @@ public class CollectionsController extends AbstractOpenSearchController {
                 fs -> fs.modifyFeatures(OpenSearchAccess.OGC_LINKS_PROPERTY_NAME, null, filter));
     }
 
-    private void runTransactionOnCollectionStore(IOConsumer<FeatureStore> featureStoreConsumer)
-            throws IOException {
+    private void runTransactionOnCollectionStore(IOConsumer<FeatureStore> featureStoreConsumer) throws IOException {
         FeatureStore store = (FeatureStore) getOpenSearchAccess().getCollectionSource();
         super.runTransactionOnStore(store, featureStoreConsumer);
     }
@@ -742,23 +672,17 @@ public class CollectionsController extends AbstractOpenSearchController {
 
         // map to list of references and return
         String baseURL = ResponseUtils.baseURL(request);
-        List<LayerReference> layerReferences =
-                layers.stream()
-                        .map(
-                                cl -> {
-                                    String layerName = cl.getLayer();
-                                    String collectionHref =
-                                            ResponseUtils.buildURL(
-                                                    baseURL,
-                                                    "/rest/oseo/collections/"
-                                                            + collection
-                                                            + "/layers/"
-                                                            + layerName,
-                                                    null,
-                                                    URLType.RESOURCE);
-                                    return new LayerReference(layerName, collectionHref);
-                                })
-                        .collect(Collectors.toList());
+        List<LayerReference> layerReferences = layers.stream()
+                .map(cl -> {
+                    String layerName = cl.getLayer();
+                    String collectionHref = ResponseUtils.buildURL(
+                            baseURL,
+                            "/rest/oseo/collections/" + collection + "/layers/" + layerName,
+                            null,
+                            URLType.RESOURCE);
+                    return new LayerReference(layerName, collectionHref);
+                })
+                .collect(Collectors.toList());
 
         return new LayerReferences(layerReferences);
     }

@@ -18,9 +18,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * WFS GetFeature to test GEOS-5618: using functions in idExpression with joining. If the function
- * is not translatable to SQL, it is not supported with joining. However, it should work without
- * joining.
+ * WFS GetFeature to test GEOS-5618: using functions in idExpression with joining. If the function is not translatable
+ * to SQL, it is not supported with joining. However, it should work without joining.
  *
  * @author Rini Angreani (CSIRO Earth Science and Resource Engineering)
  */
@@ -56,8 +55,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                .setProperty("app-schema.joining", "false");
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.joining", "false");
         super.setUpTestData(testData);
     }
 
@@ -81,10 +79,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
         {
             String id = mf1;
             assertXpathEvaluatesTo(id, "(//gsml:MappedFeature)[1]/@gml:id", doc);
-            assertXpathEvaluatesTo(
-                    "GUNTHORPE FORMATION",
-                    "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name",
-                    doc);
+            assertXpathEvaluatesTo("GUNTHORPE FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
             // shape
             assertXpathEvaluatesTo(
                     "urn:x-ogc:def:crs:EPSG:4326",
@@ -97,9 +92,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             // specification gu.25699
             assertXpathEvaluatesTo(
                     "gu.25699",
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
                     doc);
             // description
             assertXpathEvaluatesTo(
@@ -112,10 +105,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             // name
             assertXpathCount(
                     2,
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification"
-                            + "/gsml:GeologicUnit/gml:name",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name",
                     doc);
             assertXpathEvaluatesTo(
                     "Yaugher Volcanic Group",
@@ -129,20 +119,12 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             List<String> names = new ArrayList<>();
             names.add("Yaugher Volcanic Group");
             names.add("-Py");
-            String name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                            doc);
+            String name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
             assertTrue(names.contains(name));
             names.remove(name);
-            name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                            doc);
+            name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
             assertTrue(names.contains(name));
             names.remove(name);
             assertTrue(names.isEmpty());
@@ -152,10 +134,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
         {
             String id = mf2;
             assertXpathEvaluatesTo(id, "(//gsml:MappedFeature)[2]/@gml:id", doc);
-            assertXpathEvaluatesTo(
-                    "MERCIA MUDSTONE GROUP",
-                    "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name",
-                    doc);
+            assertXpathEvaluatesTo("MERCIA MUDSTONE GROUP", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
             // shape
             assertXpathEvaluatesTo(
                     "urn:x-ogc:def:crs:EPSG:4326",
@@ -168,17 +147,12 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             // gu.25678
             assertXpathEvaluatesTo(
                     "gu.25678",
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
                     doc);
             // name
             assertXpathCount(
                     3,
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification"
-                            + "/gsml:GeologicUnit/gml:name",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name",
                     doc);
             // multi-valued leaf attributes that are feature chained come in random order
             // when joining is used
@@ -186,12 +160,8 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             names.put("Yaugher Volcanic Group 1", "urn:ietf:rfc:2141");
             names.put("Yaugher Volcanic Group 2", "urn:ietf:rfc:2141");
             names.put("-Py", "");
-            String name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                            doc);
+            String name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
             assertTrue(names.containsKey(name));
             assertXpathEvaluatesTo(
                     names.get(name),
@@ -201,12 +171,8 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
                     doc);
             names.remove(name);
 
-            name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                            doc);
+            name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
             assertTrue(names.containsKey(name));
             assertXpathEvaluatesTo(
                     names.get(name),
@@ -216,12 +182,8 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
                     doc);
             names.remove(name);
 
-            name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[3]",
-                            doc);
+            name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[3]", doc);
             assertTrue(names.containsKey(name));
             assertXpathEvaluatesTo(
                     names.get(name),
@@ -237,10 +199,7 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
         {
             String id = mf3;
             assertXpathEvaluatesTo(id, "(//gsml:MappedFeature)[3]/@gml:id", doc);
-            assertXpathEvaluatesTo(
-                    "CLIFTON FORMATION",
-                    "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name",
-                    doc);
+            assertXpathEvaluatesTo("CLIFTON FORMATION", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
             // shape
             assertXpathEvaluatesTo(
                     "urn:x-ogc:def:crs:EPSG:4326",
@@ -252,17 +211,14 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
                     doc);
             // gu.25678
             assertXpathEvaluatesTo(
-                    "#gu.25678",
-                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/@xlink:href",
-                    doc);
+                    "#gu.25678", "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/@xlink:href", doc);
         }
 
         // mf4
         {
             String id = mf4;
             assertXpathEvaluatesTo(id, "(//gsml:MappedFeature)[4]/@gml:id", doc);
-            assertXpathEvaluatesTo(
-                    "MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
+            assertXpathEvaluatesTo("MURRADUC BASALT", "//gsml:MappedFeature[@gml:id='" + id + "']/gml:name", doc);
             // shape
             assertXpathEvaluatesTo(
                     "urn:x-ogc:def:crs:EPSG:4326",
@@ -275,24 +231,17 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             // gu.25682
             assertXpathEvaluatesTo(
                     "gu.25682",
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/@gml:id",
                     doc);
             // description
             assertXpathEvaluatesTo(
                     "Olivine basalt",
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification/gsml:GeologicUnit/gml:description",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:description",
                     doc);
             // name
             assertXpathCount(
                     2,
-                    "//gsml:MappedFeature[@gml:id='"
-                            + id
-                            + "']/gsml:specification"
-                            + "/gsml:GeologicUnit/gml:name",
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification" + "/gsml:GeologicUnit/gml:name",
                     doc);
             assertXpathEvaluatesTo(
                     "New Group",
@@ -304,20 +253,12 @@ public class IdFunctionWfsTest extends AbstractAppSchemaTestSupport {
             List<String> names = new ArrayList<>();
             names.add("New Group");
             names.add("-Xy");
-            String name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]",
-                            doc);
+            String name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[1]", doc);
             assertTrue(names.contains(name));
             names.remove(name);
-            name =
-                    evaluate(
-                            "//gsml:MappedFeature[@gml:id='"
-                                    + id
-                                    + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]",
-                            doc);
+            name = evaluate(
+                    "//gsml:MappedFeature[@gml:id='" + id + "']/gsml:specification/gsml:GeologicUnit/gml:name[2]", doc);
             assertTrue(names.contains(name));
             names.remove(name);
             assertTrue(names.isEmpty());

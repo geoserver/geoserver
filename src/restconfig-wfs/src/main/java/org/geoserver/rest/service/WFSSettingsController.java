@@ -32,11 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/services/wfs",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class WFSSettingsController extends ServiceSettingsController<WFSInfo> {
 
     @Autowired
@@ -53,8 +49,7 @@ public class WFSSettingsController extends ServiceSettingsController<WFSInfo> {
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public void serviceSettingsPut(
-            @RequestBody WFSInfo info, @PathVariable(required = false) String workspaceName) {
+    public void serviceSettingsPut(@RequestBody WFSInfo info, @PathVariable(required = false) String workspaceName) {
 
         super.serviceSettingsPut(info, workspaceName);
     }
@@ -66,36 +61,33 @@ public class WFSSettingsController extends ServiceSettingsController<WFSInfo> {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return WFSInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setHideFeatureTypeAttributes();
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected ServiceInfo getServiceObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
-                        ServiceInfo service;
-                        if (workspace != null) {
-                            WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                            service = geoServer.getService(ws, WFSInfo.class);
-                        } else {
-                            service = geoServer.getService(WFSInfo.class);
-                        }
-                        return service;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected ServiceInfo getServiceObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
+                ServiceInfo service;
+                if (workspace != null) {
+                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                    service = geoServer.getService(ws, WFSInfo.class);
+                } else {
+                    service = geoServer.getService(WFSInfo.class);
+                }
+                return service;
+            }
 
-                    @Override
-                    protected Class<WFSInfo> getObjectClass() {
-                        return WFSInfo.class;
-                    }
-                });
+            @Override
+            protected Class<WFSInfo> getObjectClass() {
+                return WFSInfo.class;
+            }
+        });
         WFSXStreamLoader.initXStreamPersister(persister);
     }
 }

@@ -74,8 +74,7 @@ public class CoverageCleanerCallback extends AbstractDispatcherCallback {
                     try {
                         disposeCoverage(coverage);
                     } catch (Exception e) {
-                        LOGGER.log(
-                                Level.WARNING, "Failed to fully dispose coverage: " + coverage, e);
+                        LOGGER.log(Level.WARNING, "Failed to fully dispose coverage: " + coverage, e);
                     }
                 }
             }

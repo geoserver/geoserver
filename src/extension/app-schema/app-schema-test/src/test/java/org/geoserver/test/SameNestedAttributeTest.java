@@ -48,11 +48,8 @@ public class SameNestedAttributeTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testWfsGetFeatureWithAdvancedNestedFilter() throws Exception {
         // execute the WFS 2.0 request
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        "wfs",
-                        readResource(
-                                "/test-data/stations/sameNameAttribute/requests/wfs_get_feature_1.xml"));
+        MockHttpServletResponse response = postAsServletResponse(
+                "wfs", readResource("/test-data/stations/sameNameAttribute/requests/wfs_get_feature_1.xml"));
         // check that station 1 was returned
         String content = response.getContentAsString();
         LOGGER.fine(content);

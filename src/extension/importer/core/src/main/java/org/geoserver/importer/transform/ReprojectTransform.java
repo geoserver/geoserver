@@ -51,8 +51,8 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
     }
 
     @Override
-    public SimpleFeatureType apply(
-            ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception {
+    public SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
+            throws Exception {
 
         // update the layer metadata
         ResourceInfo r = task.getLayer().getResource();
@@ -66,8 +66,7 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
     }
 
     @Override
-    public SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    public SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception {
         if (transform == null) {
             // compute the reprojection transform
@@ -93,13 +92,6 @@ public class ReprojectTransform extends AbstractTransform implements InlineVecto
 
     @Override
     public String toString() {
-        return "ReprojectTransform{"
-                + "source="
-                + source
-                + ", target="
-                + target
-                + ", transform="
-                + transform
-                + '}';
+        return "ReprojectTransform{" + "source=" + source + ", target=" + target + ", transform=" + transform + '}';
     }
 }

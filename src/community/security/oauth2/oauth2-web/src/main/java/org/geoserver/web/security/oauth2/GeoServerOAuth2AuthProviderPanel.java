@@ -70,9 +70,8 @@ public class GeoServerOAuth2AuthProviderPanel<T extends GeoServerOAuth2FilterCon
     }
 
     /**
-     * Allows subclasses to add a panel at the top of the parameter list, in addition to normal
-     * Wicket extension mechanism, which places them at the bottom instead. The default
-     * implementation just hides the top panel.
+     * Allows subclasses to add a panel at the top of the parameter list, in addition to normal Wicket extension
+     * mechanism, which places them at the bottom instead. The default implementation just hides the top panel.
      *
      * @return
      * @param panelId

@@ -125,8 +125,7 @@ public class SecuredGetMapRequest implements GetMapRequest {
                          * supports transparency, crop, merge them back
                          */
                         LOGGER.severe(
-                                "Sorry, raster filters for cascaded wms layers "
-                                        + "have not been implemented yet");
+                                "Sorry, raster filters for cascaded wms layers " + "have not been implemented yet");
                     }
                 }
 

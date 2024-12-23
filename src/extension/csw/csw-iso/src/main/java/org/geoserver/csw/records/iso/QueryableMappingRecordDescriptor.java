@@ -35,9 +35,9 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.FatalBeanException;
 
 /**
- * Abstract class for Record Descriptor that supports configurable Queryables. The queryables
- * mapping is stored in the ${recordtype}.queryables.properties file which is automatically copied
- * to the csw folder in the geoserver data directory.
+ * Abstract class for Record Descriptor that supports configurable Queryables. The queryables mapping is stored in the
+ * ${recordtype}.queryables.properties file which is automatically copied to the csw folder in the geoserver data
+ * directory.
  */
 public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDescriptor {
 
@@ -46,12 +46,8 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
         protected Map<String, List<PropertyName>> queryableMapping = new HashMap<>();
 
         public MappedQueryables(Properties props) {
-            queryableMapping.putAll(
-                    props.entrySet().stream()
-                            .collect(
-                                    Collectors.toMap(
-                                            e -> (String) e.getKey(),
-                                            e -> toPropertyNames((String) e.getValue()))));
+            queryableMapping.putAll(props.entrySet().stream()
+                    .collect(Collectors.toMap(e -> (String) e.getKey(), e -> toPropertyNames((String) e.getValue()))));
         }
 
         @Override
@@ -98,14 +94,10 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
 
         @Override
         public String getBoundingBoxPropertyName() {
-            XPathUtil.StepList steps =
-                    XPathUtil.steps(
-                            getFeatureDescriptor(),
-                            queryableMapping
-                                    .get(getBoundingBoxQueryable())
-                                    .get(0)
-                                    .getPropertyName(),
-                            getNamespaceSupport());
+            XPathUtil.StepList steps = XPathUtil.steps(
+                    getFeatureDescriptor(),
+                    queryableMapping.get(getBoundingBoxQueryable()).get(0).getPropertyName(),
+                    getNamespaceSupport());
 
             return CatalogStoreMapping.toDotPath(steps);
         }
@@ -143,8 +135,7 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
     @Override
     public QueryablesMapping getQueryablesMapping(String mappingName) {
         QueryablesMapping result =
-                mappedQueryables.computeIfAbsent(
-                        mappingName == null ? "" : mappingName, name -> readMapping(name));
+                mappedQueryables.computeIfAbsent(mappingName == null ? "" : mappingName, name -> readMapping(name));
         if (result == null && mappingName != null) {
             return getQueryablesMapping(null); // default
         }
@@ -152,10 +143,9 @@ public abstract class QueryableMappingRecordDescriptor extends AbstractRecordDes
     }
 
     private MappedQueryables readMapping(String mappingName) {
-        String fileName =
-                getFeatureDescriptor().getLocalName()
-                        + (Strings.isNullOrEmpty(mappingName) ? "" : "-" + mappingName)
-                        + ".queryables.properties";
+        String fileName = getFeatureDescriptor().getLocalName()
+                + (Strings.isNullOrEmpty(mappingName) ? "" : "-" + mappingName)
+                + ".queryables.properties";
 
         try {
             Properties props = new Properties();

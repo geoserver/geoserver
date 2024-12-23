@@ -39,8 +39,7 @@ public class WfsXmlReader extends XmlRequestReader {
         this(element, configuration, geoServer, "wfs");
     }
 
-    protected WfsXmlReader(
-            String element, Configuration configuration, GeoServer geoServer, String serviceId) {
+    protected WfsXmlReader(String element, Configuration configuration, GeoServer geoServer, String serviceId) {
         super(new QName(WFS.NAMESPACE, element), new Version("1.0.0"), serviceId);
         this.configuration = configuration;
         this.geoServer = geoServer;

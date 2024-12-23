@@ -86,17 +86,13 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
     }
 
     @Override
-    public FeaturesResponse read(
-            Class<? extends FeaturesResponse> aClass, HttpInputMessage httpInputMessage)
+    public FeaturesResponse read(Class<? extends FeaturesResponse> aClass, HttpInputMessage httpInputMessage)
             throws IOException, HttpMessageNotReadableException {
         throw new UnsupportedEncodingException();
     }
 
     @Override
-    public void write(
-            FeaturesResponse featureResponse,
-            MediaType mediaType,
-            HttpOutputMessage httpOutputMessage)
+    public void write(FeaturesResponse featureResponse, MediaType mediaType, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
         try (Writer writer = getWriter(httpOutputMessage)) {
             JSONBuilder jsonWriter = new JSONBuilder(writer);
@@ -107,21 +103,20 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             // DGGS always generates a single collection in output
             FeatureCollectionResponse response = featureResponse.getResponse();
             GetFeatureRequest request = GetFeatureRequest.adapt(featureResponse.getRequest());
-            SimpleFeatureCollection fc = (SimpleFeatureCollection) response.getFeature().get(0);
+            SimpleFeatureCollection fc =
+                    (SimpleFeatureCollection) response.getFeature().get(0);
             writeCollection(fc, jsonWriter);
 
             jsonWriter.endArray(); // end features
 
             // write the set of collection wide informations
             // get feature count for request
-            BigInteger totalNumberOfFeatures =
-                    Optional.ofNullable(response.getTotalNumberOfFeatures())
-                            .filter(n -> n.signum() >= 0)
-                            .orElse(null);
-            BigInteger featureCount =
-                    Optional.ofNullable(response.getNumberOfFeatures())
-                            .filter(n -> n.signum() >= 0)
-                            .orElse(null);
+            BigInteger totalNumberOfFeatures = Optional.ofNullable(response.getTotalNumberOfFeatures())
+                    .filter(n -> n.signum() >= 0)
+                    .orElse(null);
+            BigInteger featureCount = Optional.ofNullable(response.getNumberOfFeatures())
+                    .filter(n -> n.signum() >= 0)
+                    .orElse(null);
             writeCollectionCounts(totalNumberOfFeatures, featureCount, jsonWriter);
             writeCollectionTimeStamp(jsonWriter);
             writeLinks(response, request, jsonWriter, null);
@@ -172,15 +167,11 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
                         if ((value instanceof Double && Double.isNaN((Double) value))
                                 || value instanceof Float && Float.isNaN((Float) value)) {
                             jsonWriter.value(null);
-                        } else if ((value instanceof Double
-                                        && ((Double) value) == Double.POSITIVE_INFINITY)
-                                || value instanceof Float
-                                        && ((Float) value) == Float.POSITIVE_INFINITY) {
+                        } else if ((value instanceof Double && ((Double) value) == Double.POSITIVE_INFINITY)
+                                || value instanceof Float && ((Float) value) == Float.POSITIVE_INFINITY) {
                             jsonWriter.value("Infinity");
-                        } else if ((value instanceof Double
-                                        && ((Double) value) == Double.NEGATIVE_INFINITY)
-                                || value instanceof Float
-                                        && ((Float) value) == Float.NEGATIVE_INFINITY) {
+                        } else if ((value instanceof Double && ((Double) value) == Double.NEGATIVE_INFINITY)
+                                || value instanceof Float && ((Float) value) == Float.NEGATIVE_INFINITY) {
                             jsonWriter.value("-Infinity");
                         } else {
                             jsonWriter.value(value);
@@ -196,8 +187,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
         }
     }
 
-    protected void writeCollectionCounts(
-            BigInteger featureCount, BigInteger numberReturned, JSONBuilder jsonWriter) {
+    protected void writeCollectionCounts(BigInteger featureCount, BigInteger numberReturned, JSONBuilder jsonWriter) {
         // counts
         if (featureCount != null) {
             jsonWriter.key("numberMatched").value(featureCount);
@@ -206,8 +196,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
     }
 
     private static Writer getWriter(HttpOutputMessage outputMessage) throws IOException {
-        return new OutputStreamWriter(
-                outputMessage.getBody(), getCharset(outputMessage.getHeaders()));
+        return new OutputStreamWriter(outputMessage.getBody(), getCharset(outputMessage.getHeaders()));
     }
 
     private static Charset getCharset(HttpHeaders headers) {
@@ -223,10 +212,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
     }
 
     private void writeLinks(
-            FeatureCollectionResponse response,
-            GetFeatureRequest request,
-            JSONBuilder jw,
-            String featureId) {
+            FeatureCollectionResponse response, GetFeatureRequest request, JSONBuilder jw, String featureId) {
         APIRequestInfo requestInfo = APIRequestInfo.get();
         FeatureTypeInfo featureType = getFeatureType(request);
         String baseUrl = request.getBaseUrl();
@@ -242,17 +228,12 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             }
         }
         // alternate/self links
-        Collection<MediaType> formats =
-                requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> formats = requestInfo.getProducibleMediaTypes(FeaturesResponse.class, true);
         for (MediaType format : formats) {
             Map<String, String> kvp = APIRequestInfo.get().getSimpleQueryMap();
             kvp.put("f", format.toString());
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            APIRequestInfo.get().getRequestPath(),
-                            kvp,
-                            URLMangler.URLType.SERVICE);
+            String href = ResponseUtils.buildURL(
+                    baseUrl, APIRequestInfo.get().getRequestPath(), kvp, URLMangler.URLType.SERVICE);
             String linkType = Link.REL_ALTERNATE;
             String linkTitle = "This document as " + format;
             if (format.toString().equals(DGGS_JSON_MIME)) {
@@ -262,16 +243,10 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
             writeLink(jw, linkTitle, format.toString(), linkType, href);
         }
         // backpointer to the collection
-        String basePath =
-                "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
-        for (MediaType format :
-                requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
-            String href =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            basePath,
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
+        String basePath = "ogc/dggs/collections/" + ResponseUtils.urlEncode(featureType.prefixedName());
+        for (MediaType format : requestInfo.getProducibleMediaTypes(CollectionDocument.class, true)) {
+            String href = ResponseUtils.buildURL(
+                    baseUrl, basePath, Collections.singletonMap("f", format.toString()), URLMangler.URLType.SERVICE);
             String linkType = Link.REL_COLLECTION;
             String linkTitle = "The collection description as " + format;
             writeLink(jw, linkTitle, format.toString(), linkType, href);
@@ -279,8 +254,7 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
         jw.endArray();
     }
 
-    protected void writeLink(
-            JSONBuilder jw, String title, String mimeType, String rel, String href) {
+    protected void writeLink(JSONBuilder jw, String title, String mimeType, String rel, String href) {
         if (href != null) {
             jw.object();
             if (title != null) {
@@ -300,8 +274,6 @@ public class DGGSJSONMessageConverter implements HttpMessageConverter<FeaturesRe
     private FeatureTypeInfo getFeatureType(GetFeatureRequest request) {
         Query query = request.getQueries().get(0);
         QName typeName = query.getTypeNames().get(0);
-        return gs.getCatalog()
-                .getFeatureTypeByName(
-                        new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
+        return gs.getCatalog().getFeatureTypeByName(new NameImpl(typeName.getNamespaceURI(), typeName.getLocalPart()));
     }
 }

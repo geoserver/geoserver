@@ -28,9 +28,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * {@link SecurityMetadataSource} implementation for GeoServer web UI, provides {@link
- * ConfigAttribute}s with authentication and authorization constraints for evaluation through {@link
- * GeoServerSecurityInterceptorFilter}.
+ * {@link SecurityMetadataSource} implementation for GeoServer web UI, provides {@link ConfigAttribute}s with
+ * authentication and authorization constraints for evaluation through {@link GeoServerSecurityInterceptorFilter}.
  *
  * @author mcr
  */
@@ -45,8 +44,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
      */
     static class LoginPageRequestMatcher implements RequestMatcher {
 
-        RequestMatcher webChainMatcher1 =
-                new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+        RequestMatcher webChainMatcher1 = new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
 
         RequestMatcher webChainMatcher2 =
                 new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME + "/");
@@ -55,8 +53,7 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
         public boolean matches(HttpServletRequest request) {
 
             // check if we are on the "web" chain
-            boolean isOnWebChain =
-                    webChainMatcher1.matches(request) || webChainMatcher2.matches(request);
+            boolean isOnWebChain = webChainMatcher1.matches(request) || webChainMatcher2.matches(request);
             if (isOnWebChain == false) return false;
 
             Map<String, String[]> params = request.getParameterMap();
@@ -72,7 +69,8 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
 
             return true;
         }
-    };
+    }
+    ;
 
     static final Map<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
@@ -95,7 +93,8 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
         map.put(matcher, list);
 
         requestMap = Collections.unmodifiableMap(map);
-    };
+    }
+    ;
 
     private Logger logger = Logging.getLogger(GeoServerSecurityMetadataSource.class);
 
@@ -119,14 +118,10 @@ public class GeoServerSecurityMetadataSource implements SecurityMetadataSource {
                 return entry.getValue();
             } else {
                 if (this.logger.isLoggable(Level.FINEST)) {
-                    String msg =
-                            LogMessage.format(
-                                            "Did not match request to %s - %s (%d/%d)",
-                                            entry.getKey(),
-                                            entry.getValue(),
-                                            ++count,
-                                            requestMap.size())
-                                    .toString();
+                    String msg = LogMessage.format(
+                                    "Did not match request to %s - %s (%d/%d)",
+                                    entry.getKey(), entry.getValue(), ++count, requestMap.size())
+                            .toString();
                     this.logger.finest(msg);
                 }
             }

@@ -52,10 +52,9 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
         Set<String> exclude = new HashSet<>(Arrays.asList(CURVE_PROPERTY, "uriProperty"));
-        List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes().stream()
-                        .filter(at -> !exclude.contains(at.getName()))
-                        .collect(Collectors.toList());
+        List<AttributeTypeInfo> filteredAttributes = fti.attributes().stream()
+                .filter(at -> !exclude.contains(at.getName()))
+                .collect(Collectors.toList());
         fti.getAttributes().clear();
         fti.getAttributes().addAll(filteredAttributes);
         catalog.save(fti);
@@ -82,15 +81,12 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         // switch one property type from boolean to string
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
-        List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes().stream()
-                        .map(
-                                at -> {
-                                    if (BOOLEAN_PROPERTY.equals(at.getName()))
-                                        at.setBinding(String.class);
-                                    return at;
-                                })
-                        .collect(Collectors.toList());
+        List<AttributeTypeInfo> filteredAttributes = fti.attributes().stream()
+                .map(at -> {
+                    if (BOOLEAN_PROPERTY.equals(at.getName())) at.setBinding(String.class);
+                    return at;
+                })
+                .collect(Collectors.toList());
         fti.getAttributes().clear();
         fti.getAttributes().addAll(filteredAttributes);
         catalog.save(fti);
@@ -120,17 +116,15 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         // rename one property
         Catalog catalog = getCatalog();
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(getLayerId(PRIMITIVEGEOFEATURE));
-        List<AttributeTypeInfo> filteredAttributes =
-                fti.attributes().stream()
-                        .map(
-                                at -> {
-                                    if (BOOLEAN_PROPERTY.equals(at.getName())) {
-                                        at.setName(TRUE_OR_FALSE);
-                                        at.setSource(BOOLEAN_PROPERTY);
-                                    }
-                                    return at;
-                                })
-                        .collect(Collectors.toList());
+        List<AttributeTypeInfo> filteredAttributes = fti.attributes().stream()
+                .map(at -> {
+                    if (BOOLEAN_PROPERTY.equals(at.getName())) {
+                        at.setName(TRUE_OR_FALSE);
+                        at.setSource(BOOLEAN_PROPERTY);
+                    }
+                    return at;
+                })
+                .collect(Collectors.toList());
         fti.getAttributes().clear();
         fti.getAttributes().addAll(filteredAttributes);
         catalog.save(fti);
@@ -206,9 +200,7 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         try {
             catalog.save(fti);
         } catch (ValidationException e) {
-            assertThat(
-                    e.getMessage(),
-                    allOf(containsString("multiple definitions"), containsString("description")));
+            assertThat(e.getMessage(), allOf(containsString("multiple definitions"), containsString("description")));
         }
     }
 
@@ -246,9 +238,7 @@ public class FeatureTypeCustomizationTest extends GeoServerSystemTestSupport {
         try {
             catalog.save(fti);
         } catch (ValidationException e) {
-            assertThat(
-                    e.getMessage(),
-                    allOf(containsString("attributes unavailable"), containsString("one, two")));
+            assertThat(e.getMessage(), allOf(containsString("attributes unavailable"), containsString("one, two")));
         }
     }
 

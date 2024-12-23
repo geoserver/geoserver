@@ -6,25 +6,23 @@ import java.util.Set;
 import org.geotools.api.filter.capability.FunctionName;
 
 /**
- * Checks if the given zoneId is a children of the given referenceZoneId, within a certain distance.
- * This function is meant to be used against a {@link org.geotools.dggs.gstore.DGGSStore} that will
- * fill in the {@link DGGSInstance} to use, usage in any other context will throw an exception.
+ * Checks if the given zoneId is a children of the given referenceZoneId, within a certain distance. This function is
+ * meant to be used against a {@link org.geotools.dggs.gstore.DGGSStore} that will fill in the {@link DGGSInstance} to
+ * use, usage in any other context will throw an exception.
  *
- * <p>TODO: add some limit to the cached children ids, use a different approach in case the set is
- * large
+ * <p>TODO: add some limit to the cached children ids, use a different approach in case the set is large
  */
 public class ChildrenFunction extends DGGSSetFunctionBase {
 
     Set<String> zoneIds;
 
-    public static FunctionName NAME =
-            functionName(
-                    "children",
-                    "result:Boolean",
-                    "testedZoneId:String",
-                    "referenceZoneId:String",
-                    "resolution:Integer",
-                    "dggs:org.geotools.dggs.DGGSInstance");
+    public static FunctionName NAME = functionName(
+            "children",
+            "result:Boolean",
+            "testedZoneId:String",
+            "referenceZoneId:String",
+            "resolution:Integer",
+            "dggs:org.geotools.dggs.DGGSInstance");
 
     public ChildrenFunction() {
         super(NAME);
@@ -36,21 +34,17 @@ public class ChildrenFunction extends DGGSSetFunctionBase {
         String testedZoneId = (String) getParameterValue(object, 0);
         if (testedZoneId == null) return false;
 
-        return matches(
-                testedZoneId,
-                () -> {
-                    // check params
-                    String referenceZoneId = (String) getParameterValue(object, 1);
-                    Integer resolution = (Integer) getParameterValue(object, 2);
-                    DGGSInstance dggs = (DGGSInstance) getParameterValue(object, 3);
-                    if (referenceZoneId == null || resolution == null || dggs == null)
-                        return Collections.emptyIterator();
+        return matches(testedZoneId, () -> {
+            // check params
+            String referenceZoneId = (String) getParameterValue(object, 1);
+            Integer resolution = (Integer) getParameterValue(object, 2);
+            DGGSInstance dggs = (DGGSInstance) getParameterValue(object, 3);
+            if (referenceZoneId == null || resolution == null || dggs == null) return Collections.emptyIterator();
 
-                    // check resolution first
-                    if (dggs.getZone(testedZoneId).getResolution() != resolution)
-                        return Collections.emptyIterator();
-                    return dggs.children(referenceZoneId, resolution);
-                });
+            // check resolution first
+            if (dggs.getZone(testedZoneId).getResolution() != resolution) return Collections.emptyIterator();
+            return dggs.children(referenceZoneId, resolution);
+        });
     }
 
     @Override

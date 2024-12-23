@@ -43,14 +43,10 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
 
     @Parameters
     public static Collection<Object[]> data() {
-        return Arrays.asList(
-                new Object[][] {
-                    {"", ""},
-                    {
-                        "http://www.opengis.net/def/axis/OGC/1/",
-                        "http://www.opengis.net/def/axis/OGC/0/"
-                    }
-                });
+        return Arrays.asList(new Object[][] {
+            {"", ""},
+            {"http://www.opengis.net/def/axis/OGC/1/", "http://www.opengis.net/def/axis/OGC/0/"}
+        });
     }
 
     public ScaleKvpTest(String axisPrefix, String subsetPrefix) {
@@ -79,21 +75,16 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport)", dom);
         assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception)", dom);
         assertXpathEvaluatesTo(
-                "1",
-                "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])",
-                dom);
-        assertXpathEvaluatesTo(
-                "1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
+                "1", "count(//ows:ExceptionReport//ows:Exception[@exceptionCode='InvalidParameterValue'])", dom);
+        assertXpathEvaluatesTo("1", "count(//ows:ExceptionReport//ows:Exception[@locator='wCS'])", dom);
     }
 
     @Test
     public void scaleFactor() throws Exception {
 
         // subsample
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0.5");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0.5");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -105,17 +96,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange().getSpan(0) / 2,
@@ -128,10 +115,8 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // upsample
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=2");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=2");
 
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -142,17 +127,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         readerTarget = new GeoTiffReader(file);
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange().getSpan(0) * 2,
@@ -165,38 +146,30 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // error 0
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "0.0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "0.0");
 
         // error < 0
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=-12");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=-12");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "-12.0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "-12.0");
     }
 
     @Test
     public void scaleAxesByFactor() throws Exception {
 
         // subsample
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
-                                + axisPrefix
-                                + "i(0.5),"
-                                + axisPrefix
-                                + "j(0.5)");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
+                + axisPrefix
+                + "i(0.5),"
+                + axisPrefix
+                + "j(0.5)");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -208,17 +181,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange().getSpan(0) / 2,
@@ -231,14 +200,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // upsample
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
-                                + axisPrefix
-                                + "i(2),"
-                                + axisPrefix
-                                + "j(2)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
+                + axisPrefix
+                + "i(2),"
+                + axisPrefix
+                + "j(2)");
 
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -249,17 +216,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         readerTarget = new GeoTiffReader(file);
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(
                     sourceCoverage.getGridGeometry().getGridRange().getSpan(0) * 2,
@@ -272,32 +235,26 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // error 0
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
-                                + axisPrefix
-                                + "i(0),"
-                                + axisPrefix
-                                + "j(0.5)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
+                + axisPrefix
+                + "i(0),"
+                + axisPrefix
+                + "j(0.5)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "0.0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "0.0");
 
         // error < 0
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
-                                + axisPrefix
-                                + "i(-1),"
-                                + axisPrefix
-                                + "j(0.5)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEAXES="
+                + axisPrefix
+                + "i(-1),"
+                + axisPrefix
+                + "j(0.5)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "-1.0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidScaleFactor.getExceptionCode(), "-1.0");
     }
 
     @Test
@@ -308,38 +265,34 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
-                                    + ")"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")"
-                                    + "&SCALESIZE="
-                                    + axisPrefix
-                                    + "i(50),"
-                                    + axisPrefix
-                                    + "j(50)");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
+                    + ")"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")"
+                    + "&SCALESIZE="
+                    + axisPrefix
+                    + "i(50),"
+                    + axisPrefix
+                    + "j(50)");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -350,25 +303,19 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             targetCoverage = readerTarget.read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             final GeneralBounds finalEnvelope =
-                    new GeneralBounds(
-                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
-                            new double[] {
-                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
-                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
-                            });
-            finalEnvelope.setCoordinateReferenceSystem(
-                    sourceCoverage.getCoordinateReferenceSystem());
+                    new GeneralBounds(new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()}, new double[] {
+                        sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                        sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
+                    });
+            finalEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
             assertEquals(50, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(50, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
             // get extrema (allow some difference as sub-sampling on read will be skipping input
             // pixels)
-            assertEquals(
-                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 1);
+            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 1);
         } finally {
             clean(readerTarget, targetCoverage, sourceCoverage);
         }
@@ -376,37 +323,33 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         try {
 
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
-                                    + axisPrefix
-                                    + "i(1000),"
-                                    + axisPrefix
-                                    + "j(1000)&"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
-                                    + ")"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
+                    + axisPrefix
+                    + "i(1000),"
+                    + axisPrefix
+                    + "j(1000)&"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
+                    + ")"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -417,78 +360,62 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             readerTarget = new GeoTiffReader(file);
 
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
             final GeneralBounds finalEnvelope =
-                    new GeneralBounds(
-                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
-                            new double[] {
-                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() * 2,
-                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() * 2
-                            });
-            finalEnvelope.setCoordinateReferenceSystem(
-                    sourceCoverage.getCoordinateReferenceSystem());
+                    new GeneralBounds(new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()}, new double[] {
+                        sourceEnvelope.getMinX() + sourceEnvelope.getWidth() * 2,
+                        sourceEnvelope.getMinY() + sourceEnvelope.getHeight() * 2
+                    });
+            finalEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
 
             // get extrema
-            assertEquals(
-                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
+            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             clean(readerTarget, targetCoverage, sourceCoverage);
         }
 
         // error 0
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
-                                + axisPrefix
-                                + "i(100),"
-                                + axisPrefix
-                                + "j(0)");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
+                + axisPrefix
+                + "i(100),"
+                + axisPrefix
+                + "j(0)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
 
         // error < 0
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
-                                + axisPrefix
-                                + "i(-2),"
-                                + axisPrefix
-                                + "j(100)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALESIZE="
+                + axisPrefix
+                + "i(-2),"
+                + axisPrefix
+                + "j(100)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "-2");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "-2");
     }
 
     @Test
     public void scaleToExtent() throws Exception {
 
         // subsample
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(0,99),"
-                                + axisPrefix
-                                + "j(0,99)");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(0,99),"
+                + axisPrefix
+                + "j(0,99)");
 
         assertEquals("image/tiff", response.getContentType());
         byte[] tiffContents = getBinary(response);
@@ -500,17 +427,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
@@ -519,14 +442,12 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // upsample
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(100,1099),"
-                                + axisPrefix
-                                + "j(100,1099)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(100,1099),"
+                + axisPrefix
+                + "j(100,1099)");
 
         assertEquals("image/tiff", response.getContentType());
         tiffContents = getBinary(response);
@@ -537,17 +458,13 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         readerTarget = new GeoTiffReader(file);
         try {
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             assertEnvelopeEquals(sourceCoverage, targetCoverage);
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
@@ -563,22 +480,17 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
 
         // test coverage directly to make sure we respect LLC & URC
         try {
-            targetCoverage =
-                    (GridCoverage2D)
-                            executeGetCoverage(
-                                    "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                            + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                            + axisPrefix
-                                            + "i(100,1099),"
-                                            + axisPrefix
-                                            + "j(100,1099)");
+            targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                    + axisPrefix
+                    + "i(100,1099),"
+                    + axisPrefix
+                    + "j(100,1099)");
             assertNotNull(targetCoverage);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
             //            assertEquals(sourceCoverage.getCoordinateReferenceSystem(),
@@ -596,60 +508,48 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // error minx > maxx
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(1000,0),"
-                                + axisPrefix
-                                + "j(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(1000,0),"
+                + axisPrefix
+                + "j(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
 
         // error minx ==  maxx
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(1000,1000),"
-                                + axisPrefix
-                                + "j(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(1000,1000),"
+                + axisPrefix
+                + "j(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
 
         // error miny > maxy
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "j(1000,0),"
-                                + axisPrefix
-                                + "i(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "j(1000,0),"
+                + axisPrefix
+                + "i(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
 
         // error miny ==  maxy
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "j(1000,1000),"
-                                + axisPrefix
-                                + "i(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "j(1000,1000),"
+                + axisPrefix
+                + "i(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
     }
 
     @Test
@@ -659,37 +559,33 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         GridCoverage2D targetCoverage = null, sourceCoverage = null;
         try {
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // subsample
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                    + axisPrefix
-                                    + "i(50,149),"
-                                    + axisPrefix
-                                    + "j(50,149)"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
-                                    + ")"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                    + axisPrefix
+                    + "i(50,149),"
+                    + axisPrefix
+                    + "j(50,149)"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
+                    + ")"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -698,32 +594,24 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
 
             readerTarget = new GeoTiffReader(file);
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             final GeneralBounds finalEnvelope =
-                    new GeneralBounds(
-                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
-                            new double[] {
-                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
-                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
-                            });
-            finalEnvelope.setCoordinateReferenceSystem(
-                    sourceCoverage.getCoordinateReferenceSystem());
+                    new GeneralBounds(new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()}, new double[] {
+                        sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                        sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
+                    });
+            finalEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
             assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(100, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
             // get extrema
-            assertEquals(
-                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
+            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             clean(readerTarget, targetCoverage, sourceCoverage);
         }
@@ -731,37 +619,33 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         try {
 
             // source
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
             final ReferencedEnvelope sourceEnvelope = sourceCoverage.getEnvelope2D();
 
             // upsample
-            MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                    + axisPrefix
-                                    + "i(100,1099),"
-                                    + axisPrefix
-                                    + "j(100,1099)"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Long("
-                                    + sourceEnvelope.getMinX()
-                                    + ","
-                                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
-                                    + ")"
-                                    + "&subset="
-                                    + subsetPrefix
-                                    + "Lat("
-                                    + sourceEnvelope.getMinY()
-                                    + ","
-                                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
-                                    + ")");
+            MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                    + axisPrefix
+                    + "i(100,1099),"
+                    + axisPrefix
+                    + "j(100,1099)"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Long("
+                    + sourceEnvelope.getMinX()
+                    + ","
+                    + (sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2)
+                    + ")"
+                    + "&subset="
+                    + subsetPrefix
+                    + "Lat("
+                    + sourceEnvelope.getMinY()
+                    + ","
+                    + (sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2)
+                    + ")");
 
             assertEquals("image/tiff", response.getContentType());
             byte[] tiffContents = getBinary(response);
@@ -772,26 +656,19 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             readerTarget = new GeoTiffReader(file);
 
             targetCoverage = readerTarget.read(null);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
-            assertEquals(
-                    sourceCoverage.getCoordinateReferenceSystem(),
-                    targetCoverage.getCoordinateReferenceSystem());
+            assertEquals(sourceCoverage.getCoordinateReferenceSystem(), targetCoverage.getCoordinateReferenceSystem());
             final GeneralBounds finalEnvelope =
-                    new GeneralBounds(
-                            new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()},
-                            new double[] {
-                                sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
-                                sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
-                            });
-            finalEnvelope.setCoordinateReferenceSystem(
-                    sourceCoverage.getCoordinateReferenceSystem());
+                    new GeneralBounds(new double[] {sourceEnvelope.getMinX(), sourceEnvelope.getMinY()}, new double[] {
+                        sourceEnvelope.getMinX() + sourceEnvelope.getWidth() / 2,
+                        sourceEnvelope.getMinY() + sourceEnvelope.getHeight() / 2
+                    });
+            finalEnvelope.setCoordinateReferenceSystem(sourceCoverage.getCoordinateReferenceSystem());
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(0));
             assertEquals(1000, targetCoverage.getGridGeometry().getGridRange().getSpan(1));
 
@@ -802,30 +679,24 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
             assertEquals(999, targetCoverage.getGridGeometry().getGridRange().getHigh(1));
 
             // get extrema
-            assertEquals(
-                    29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
+            assertEquals(29.0, new ImageWorker(targetCoverage.getRenderedImage()).getMaximums()[0], 0d);
         } finally {
             clean(readerTarget, targetCoverage, sourceCoverage);
         }
 
         // test coverage directly to make sure we respect LLC & URC
         try {
-            targetCoverage =
-                    (GridCoverage2D)
-                            executeGetCoverage(
-                                    "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                            + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                            + axisPrefix
-                                            + "i(100,1099),"
-                                            + axisPrefix
-                                            + "j(100,1099)");
+            targetCoverage = (GridCoverage2D) executeGetCoverage("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                    + axisPrefix
+                    + "i(100,1099),"
+                    + axisPrefix
+                    + "j(100,1099)");
             assertNotNull(targetCoverage);
-            sourceCoverage =
-                    (GridCoverage2D)
-                            this.getCatalog()
-                                    .getCoverageByName("BlueMarble")
-                                    .getGridCoverageReader(null, null)
-                                    .read(null);
+            sourceCoverage = (GridCoverage2D) this.getCatalog()
+                    .getCoverageByName("BlueMarble")
+                    .getGridCoverageReader(null, null)
+                    .read(null);
 
             // checks
             //            assertEquals(sourceCoverage.getCoordinateReferenceSystem(),
@@ -843,60 +714,48 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         }
 
         // error minx > maxx
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(1000,0),"
-                                + axisPrefix
-                                + "j(0,1000)");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(1000,0),"
+                + axisPrefix
+                + "j(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
 
         // error minx ==  maxx
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "i(1000,1000),"
-                                + axisPrefix
-                                + "j(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "i(1000,1000),"
+                + axisPrefix
+                + "j(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
 
         // error miny > maxy
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "j(1000,0),"
-                                + axisPrefix
-                                + "i(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "j(1000,0),"
+                + axisPrefix
+                + "i(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "0");
 
         // error miny ==  maxy
-        response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
-                                + axisPrefix
-                                + "j(1000,1000),"
-                                + axisPrefix
-                                + "i(0,1000)");
+        response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEEXTENT="
+                + axisPrefix
+                + "j(1000,1000),"
+                + axisPrefix
+                + "i(0,1000)");
 
         assertEquals("application/xml", response.getContentType());
-        checkOws20Exception(
-                response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
+        checkOws20Exception(response, 404, WCS20ExceptionCode.InvalidExtent.getExceptionCode(), "1000");
     }
 
     /** See https://osgeo-org.atlassian.net/browse/GEOS-8491 */
@@ -907,18 +766,15 @@ public class ScaleKvpTest extends WCSKVPTestSupport {
         try {
             List<Future<Object>> futures = new ArrayList<>();
             for (int i = 0; i < 100; i++) {
-                Future<Object> future =
-                        executor.submit(
-                                () -> {
-                                    // subsample
-                                    MockHttpServletResponse response =
-                                            getAsServletResponse(
-                                                    "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                                            + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0.5");
+                Future<Object> future = executor.submit(() -> {
+                    // subsample
+                    MockHttpServletResponse response =
+                            getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                                    + "&coverageId=wcs__BlueMarble&&Format=image/tiff&SCALEFACTOR=0.5");
 
-                                    assertEquals("image/tiff", response.getContentType());
-                                    return null;
-                                });
+                    assertEquals("image/tiff", response.getContentType());
+                    return null;
+                });
                 futures.add(future);
             }
             // let it throw exceptions in case it fails

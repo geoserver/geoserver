@@ -63,8 +63,7 @@ public class GetCoverageHandler extends RequestObjectHandler {
 
         try {
             // Turn into a class that implements BoundingBox
-            return new ReferencedEnvelope(minX, maxX, minY, maxY, crs)
-                    .toBounds(monitorConfig.getBboxCrs());
+            return new ReferencedEnvelope(minX, maxX, minY, maxY, crs).toBounds(monitorConfig.getBboxCrs());
         } catch (TransformException e) {
             LOGGER.log(Level.WARNING, "Could not transform bounding box to logging CRS", e);
             return null;

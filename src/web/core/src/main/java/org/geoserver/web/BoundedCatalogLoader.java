@@ -13,8 +13,8 @@ import org.geoserver.catalog.util.CloseableIterator;
 import org.geotools.api.filter.Filter;
 
 /**
- * Loads {@link org.geoserver.catalog.CatalogInfo} objects from the catalog, with a timeout and a
- * maximum number of objects to load.
+ * Loads {@link org.geoserver.catalog.CatalogInfo} objects from the catalog, with a timeout and a maximum number of
+ * objects to load.
  */
 class BoundedCatalogLoader<T extends CatalogInfo> implements Serializable {
 
@@ -27,8 +27,7 @@ class BoundedCatalogLoader<T extends CatalogInfo> implements Serializable {
         this.boundExceeded = false;
     }
 
-    public BoundedCatalogLoader(
-            Catalog catalog, Filter filter, Class<T> target, long timeout, int max) {
+    public BoundedCatalogLoader(Catalog catalog, Filter filter, Class<T> target, long timeout, int max) {
         // perform a bounded load of the catalog
         // (single call, doing count + list is slower and count cannot be stopped mid-way)
         long limit = System.currentTimeMillis() + timeout;
@@ -52,10 +51,7 @@ class BoundedCatalogLoader<T extends CatalogInfo> implements Serializable {
         return result;
     }
 
-    /**
-     * Returns true if the bounds were exceeded (either timed out, or went beyond maximum count),
-     * false otherwise
-     */
+    /** Returns true if the bounds were exceeded (either timed out, or went beyond maximum count), false otherwise */
     public boolean isBoundExceeded() {
         return boundExceeded;
     }

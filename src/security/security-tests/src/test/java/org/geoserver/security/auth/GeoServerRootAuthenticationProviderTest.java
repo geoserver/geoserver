@@ -36,8 +36,7 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
         provider.setSecurityManager(getSecurityManager());
         provider.initializeFromConfig(null);
 
-        UsernamePasswordAuthenticationToken token =
-                new UsernamePasswordAuthenticationToken("abc", null);
+        UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken("abc", null);
 
         assertTrue(provider.supports(token.getClass()));
         assertFalse(provider.supports(RememberMeAuthenticationToken.class));
@@ -52,18 +51,14 @@ public class GeoServerRootAuthenticationProviderTest extends GeoServerSecurityTe
 
         String masterPassword = getMasterPassword();
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
-        token =
-                new UsernamePasswordAuthenticationToken(
-                        GeoServerUser.ROOT_USERNAME, masterPassword);
+        token = new UsernamePasswordAuthenticationToken(GeoServerUser.ROOT_USERNAME, masterPassword);
         token.setDetails("hallo");
-        UsernamePasswordAuthenticationToken result =
-                (UsernamePasswordAuthenticationToken) provider.authenticate(token);
+        UsernamePasswordAuthenticationToken result = (UsernamePasswordAuthenticationToken) provider.authenticate(token);
 
         assertNotNull(result);
         assertNull(result.getCredentials());

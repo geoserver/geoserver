@@ -12,8 +12,8 @@ import org.geoserver.security.GeoServerRoleStore;
 import org.geoserver.security.impl.GeoServerRole;
 
 /**
- * This is a wrapper class for a {@link GeoServerRoleStore} Thsi wrapper protects internal data
- * structures using read/write locks
+ * This is a wrapper class for a {@link GeoServerRoleStore} Thsi wrapper protects internal data structures using
+ * read/write locks
  *
  * @author christian
  */
@@ -32,8 +32,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#addRole(org.geoserver.security.impl.GeoServerRole)
+     * @see org.geoserver.security.GeoServerRoleStore#addRole(org.geoserver.security.impl.GeoServerRole)
      */
     @Override
     public void addRole(GeoServerRole role) throws IOException {
@@ -48,8 +47,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#updateRole(org.geoserver.security.impl.GeoServerRole)
+     * @see org.geoserver.security.GeoServerRoleStore#updateRole(org.geoserver.security.impl.GeoServerRole)
      */
     @Override
     public void updateRole(GeoServerRole role) throws IOException {
@@ -64,8 +62,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#removeRole(org.geoserver.security.impl.GeoServerRole)
+     * @see org.geoserver.security.GeoServerRoleStore#removeRole(org.geoserver.security.impl.GeoServerRole)
      */
     @Override
     public boolean removeRole(GeoServerRole role) throws IOException {
@@ -80,8 +77,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#associateRoleToGroup(org.geoserver.security.impl.GeoServerRole,
+     * @see org.geoserver.security.GeoServerRoleStore#associateRoleToGroup(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
     @Override
@@ -114,8 +110,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#associateRoleToUser(org.geoserver.security.impl.GeoServerRole,
+     * @see org.geoserver.security.GeoServerRoleStore#associateRoleToUser(org.geoserver.security.impl.GeoServerRole,
      *     java.lang.String)
      */
     @Override
@@ -178,8 +173,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#setParentRole(org.geoserver.security.impl.GeoServerRole,
+     * @see org.geoserver.security.GeoServerRoleStore#setParentRole(org.geoserver.security.impl.GeoServerRole,
      *     org.geoserver.security.impl.GeoServerRole)
      */
     @Override
@@ -210,8 +204,7 @@ public class LockingRoleStore extends LockingRoleService implements GeoServerRol
     /**
      * WRITE_LOCK
      *
-     * @see
-     *     org.geoserver.security.GeoServerRoleStore#initializeFromService(org.geoserver.security.GeoServerRoleService)
+     * @see org.geoserver.security.GeoServerRoleStore#initializeFromService(org.geoserver.security.GeoServerRoleService)
      */
     @Override
     public void initializeFromService(GeoServerRoleService service) throws IOException {

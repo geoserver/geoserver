@@ -48,16 +48,15 @@ public class CurveTypeWrapper implements FeatureType {
         GeometryType type = gd.getType();
         Class<?> binding = type.getBinding();
         if (MultiLineString.class.isAssignableFrom(binding)) {
-            GeometryType curvedType =
-                    new GeometryTypeImpl(
-                            type.getName(),
-                            MultiCurvedGeometry.class,
-                            type.getCoordinateReferenceSystem(),
-                            type.isIdentified(),
-                            type.isAbstract(),
-                            type.getRestrictions(),
-                            type.getSuper(),
-                            type.getDescription());
+            GeometryType curvedType = new GeometryTypeImpl(
+                    type.getName(),
+                    MultiCurvedGeometry.class,
+                    type.getCoordinateReferenceSystem(),
+                    type.isIdentified(),
+                    type.isAbstract(),
+                    type.getRestrictions(),
+                    type.getSuper(),
+                    type.getDescription());
             return new GeometryDescriptorImpl(
                     curvedType,
                     gd.getName(),
@@ -66,16 +65,15 @@ public class CurveTypeWrapper implements FeatureType {
                     gd.isNillable(),
                     gd.getDefaultValue());
         } else if (LineString.class.isAssignableFrom(binding)) {
-            GeometryType curvedType =
-                    new GeometryTypeImpl(
-                            type.getName(),
-                            CurvedGeometry.class,
-                            type.getCoordinateReferenceSystem(),
-                            type.isIdentified(),
-                            type.isAbstract(),
-                            type.getRestrictions(),
-                            type.getSuper(),
-                            type.getDescription());
+            GeometryType curvedType = new GeometryTypeImpl(
+                    type.getName(),
+                    CurvedGeometry.class,
+                    type.getCoordinateReferenceSystem(),
+                    type.isIdentified(),
+                    type.isAbstract(),
+                    type.getRestrictions(),
+                    type.getSuper(),
+                    type.getDescription());
             return new GeometryDescriptorImpl(
                     curvedType,
                     gd.getName(),

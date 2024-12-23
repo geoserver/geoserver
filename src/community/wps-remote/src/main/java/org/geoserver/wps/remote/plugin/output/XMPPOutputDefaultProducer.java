@@ -17,9 +17,7 @@ public class XMPPOutputDefaultProducer {
     private final XMPPOutputVisitor visitor;
 
     /** */
-    public static final XMPPOutputType[] outputProducers = {
-        new XMPPTextualOutput(), new XMPPRawDataOutput()
-    };
+    public static final XMPPOutputType[] outputProducers = {new XMPPTextualOutput(), new XMPPRawDataOutput()};
 
     /** */
     public XMPPOutputDefaultProducer() {
@@ -45,21 +43,20 @@ public class XMPPOutputDefaultProducer {
         Object wpsOutputValue = null;
 
         for (XMPPOutputType outputProducer : outputProducers) {
-            wpsOutputValue =
-                    outputProducer.accept(
-                            this.visitor,
-                            value,
-                            type,
-                            pID,
-                            baseURL,
-                            xmppClient,
-                            publish,
-                            name,
-                            title,
-                            description,
-                            defaultStyle,
-                            targetWorkspace,
-                            metadata);
+            wpsOutputValue = outputProducer.accept(
+                    this.visitor,
+                    value,
+                    type,
+                    pID,
+                    baseURL,
+                    xmppClient,
+                    publish,
+                    name,
+                    title,
+                    description,
+                    defaultStyle,
+                    targetWorkspace,
+                    metadata);
             if (wpsOutputValue != null) {
                 return wpsOutputValue;
             }

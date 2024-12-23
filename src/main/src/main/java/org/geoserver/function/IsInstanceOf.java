@@ -17,8 +17,8 @@ import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.Converters;
 
 /**
- * This class implements the {@link Function} interface and can be used for checking if an object is
- * an instance of the provided input class.
+ * This class implements the {@link Function} interface and can be used for checking if an object is an instance of the
+ * provided input class.
  *
  * <p>Users can call this function using the {@link Predicates} class:
  *
@@ -30,10 +30,7 @@ public class IsInstanceOf implements VolatileFunction, Function {
 
     /** Function name and related parameters */
     public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "isInstanceOf",
-                    Boolean.class,
-                    FunctionNameImpl.parameter("class", Class.class));
+            new FunctionNameImpl("isInstanceOf", Boolean.class, FunctionNameImpl.parameter("class", Class.class));
 
     /** Function parameters */
     private List<Expression> parameters;

@@ -59,20 +59,15 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testRunSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
-        BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(
-                        Files.asResource(
-                                File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
-                        true,
-                        null,
-                        null,
-                        null,
-                        hints);
+        BackupExecutionAdapter backupExecution = backupFacade.runBackupAsync(
+                Files.asResource(File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
+                true,
+                null,
+                null,
+                null,
+                hints);
 
         // Wait a bit
         Thread.sleep(100);
@@ -82,9 +77,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -111,10 +104,7 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testTryToRunMultipleSpringBatchBackupJobs() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         backupFacade.runBackupAsync(
                 Files.asResource(File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
@@ -154,9 +144,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || !backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || !backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -178,35 +166,25 @@ public class BackupTest extends BackupRestoreTestSupport {
 
     private static void checkWorkspacesAndNamespacesIds(final Catalog restoreCatalog) {
         // Check workspaces former IDs are respected
-        catalog.getWorkspaces()
-                .forEach(
-                        wsInfo -> {
-                            WorkspaceInfo restoreInfo =
-                                    restoreCatalog.getWorkspaceByName(wsInfo.getName());
-                            assertEquals(wsInfo.getId(), restoreInfo.getId());
-                        });
+        catalog.getWorkspaces().forEach(wsInfo -> {
+            WorkspaceInfo restoreInfo = restoreCatalog.getWorkspaceByName(wsInfo.getName());
+            assertEquals(wsInfo.getId(), restoreInfo.getId());
+        });
         // Check Namespaces former IDs are respected
-        catalog.getNamespaces()
-                .forEach(
-                        nsInfo -> {
-                            NamespaceInfo restpreNsInfo =
-                                    restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix());
-                            assertEquals(nsInfo.getId(), restpreNsInfo.getId());
-                        });
+        catalog.getNamespaces().forEach(nsInfo -> {
+            NamespaceInfo restpreNsInfo = restoreCatalog.getNamespaceByPrefix(nsInfo.getPrefix());
+            assertEquals(nsInfo.getId(), restpreNsInfo.getId());
+        });
     }
 
     @Test
     public void testRunSpringBatchFilteredRestoreJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
         Filter filter = ECQL.toFilter("name = 'topp'");
         RestoreExecutionAdapter restoreExecution =
-                backupFacade.runRestoreAsync(
-                        file("geoserver-full-backup.zip"), filter, null, null, hints);
+                backupFacade.runRestoreAsync(file("geoserver-full-backup.zip"), filter, null, null, hints);
 
         // Wait a bit
         Thread.sleep(100);
@@ -250,20 +228,15 @@ public class BackupTest extends BackupRestoreTestSupport {
     @Test
     public void testStopSpringBatchBackupJob() throws Exception {
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
-        BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(
-                        Files.asResource(
-                                File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
-                        true,
-                        null,
-                        null,
-                        null,
-                        hints);
+        BackupExecutionAdapter backupExecution = backupFacade.runBackupAsync(
+                Files.asResource(File.createTempFile("testRunSpringBatchBackupJob", ".zip")),
+                true,
+                null,
+                null,
+                null,
+                hints);
 
         int cnt = 0;
         while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.STARTED)) {
@@ -300,8 +273,7 @@ public class BackupTest extends BackupRestoreTestSupport {
                         || backupExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                     for (Throwable exception : backupExecution.getAllFailureExceptions()) {
-                        LOGGER.log(
-                                Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
+                        LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
                     }
                     break;
                 }
@@ -319,23 +291,16 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertTrue(Resources.exists(dd.get("foo/folder")));
 
         Hints hints = new Hints(new HashMap(2));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                        Backup.PARAM_BEST_EFFORT_MODE));
-        hints.add(
-                new Hints(
-                        new Hints.OptionKey(Backup.PARAM_EXCLUDE_FILE_PATH, "*"),
-                        "/demo;/layergroups;/cite;/WEB-INF;/foo/folder"));
+        hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+        hints.add(new Hints(
+                new Hints.OptionKey(Backup.PARAM_EXCLUDE_FILE_PATH, "*"),
+                "/demo;/layergroups;/cite;/WEB-INF;/foo/folder"));
 
-        Resource backupFile =
-                Files.asResource(
-                        File.createTempFile("testRunSpringBatchBackupJobFiltered", ".zip"));
+        Resource backupFile = Files.asResource(File.createTempFile("testRunSpringBatchBackupJobFiltered", ".zip"));
         if (Resources.exists(backupFile)) {
             assertTrue(backupFile.delete());
         }
-        BackupExecutionAdapter backupExecution =
-                backupFacade.runBackupAsync(backupFile, true, null, null, null, hints);
+        BackupExecutionAdapter backupExecution = backupFacade.runBackupAsync(backupFile, true, null, null, null, hints);
 
         // Wait a bit
         Thread.sleep(100);
@@ -345,9 +310,7 @@ public class BackupTest extends BackupRestoreTestSupport {
         assertNotNull(backupExecution);
 
         int cnt = 0;
-        while (cnt < 100
-                && (backupExecution.getStatus() != BatchStatus.COMPLETED
-                        || backupExecution.isRunning())) {
+        while (cnt < 100 && (backupExecution.getStatus() != BatchStatus.COMPLETED || backupExecution.isRunning())) {
             Thread.sleep(100);
             cnt++;
 
@@ -390,13 +353,10 @@ public class BackupTest extends BackupRestoreTestSupport {
         }
     }
 
-    /**
-     * Helper method that just check if the extra properties file was correctly backup / restore.
-     */
+    /** Helper method that just check if the extra properties file was correctly backup / restore. */
     static void checkExtraPropertiesExists() {
         // find the properties file on the current data dir
-        GeoServerDataDirectory dataDirectory =
-                GeoServerExtensions.bean(GeoServerDataDirectory.class);
+        GeoServerDataDirectory dataDirectory = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         Resource extraResource = dataDirectory.get(ExtraFileHandler.EXTRA_FILE_NAME);
         assertThat(extraResource.file().exists(), is(true));
         assertThat(extraResource.file().length(), not(0));
@@ -427,25 +387,17 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testParameterizedRestore() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS),
-                            Backup.PARAM_PARAMETERIZE_PASSWDS));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
+            hints.add(new Hints(
+                    new Hints.OptionKey(Backup.PARAM_PARAMETERIZE_PASSWDS), Backup.PARAM_PARAMETERIZE_PASSWDS));
 
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"),
-                            "${sf:sf.passwd.encryptedValue}=foo"));
+            hints.add(new Hints(
+                    new Hints.OptionKey(Backup.PARAM_PASSWORD_TOKENS, "*"), "${sf:sf.passwd.encryptedValue}=foo"));
 
             removeSfDatastore();
 
             RestoreExecutionAdapter restoreExecution =
-                    backupFacade.runRestoreAsync(
-                            file("parameterized-restore.zip"), null, null, null, hints);
+                    backupFacade.runRestoreAsync(file("parameterized-restore.zip"), null, null, null, hints);
 
             // Wait a bit
             Thread.sleep(100);
@@ -462,8 +414,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
             int cnt = 0;
             while (cnt < 100
-                    && (restoreExecution.getStatus() != BatchStatus.COMPLETED
-                            || !restoreExecution.isRunning())) {
+                    && (restoreExecution.getStatus() != BatchStatus.COMPLETED || !restoreExecution.isRunning())) {
                 Thread.sleep(100);
                 cnt++;
 
@@ -472,15 +423,13 @@ public class BackupTest extends BackupRestoreTestSupport {
                         || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                     for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
-                        LOGGER.log(
-                                Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
+                        LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
                     }
                     break;
                 }
             }
 
-            if (restoreExecution.getStatus() != BatchStatus.COMPLETED
-                    && restoreExecution.isRunning()) {
+            if (restoreExecution.getStatus() != BatchStatus.COMPLETED && restoreExecution.isRunning()) {
                 backupFacade.stopExecution(restoreExecution.getId());
             }
 
@@ -489,7 +438,8 @@ public class BackupTest extends BackupRestoreTestSupport {
                         restoreCatalog.getWorkspaces().size(),
                         restoreCatalog.getNamespaces().size());
                 assertEquals(9, restoreCatalog.getDataStores().size());
-                assertEquals(47, restoreCatalog.getResources(FeatureTypeInfo.class).size());
+                assertEquals(
+                        47, restoreCatalog.getResources(FeatureTypeInfo.class).size());
                 assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
                 assertEquals(35, restoreCatalog.getStyles().size());
                 assertEquals(32, restoreCatalog.getLayers().size());
@@ -505,17 +455,16 @@ public class BackupTest extends BackupRestoreTestSupport {
                 assertThat(GenericListener.getRestoreAfterInvocations(), is(2));
                 assertThat(GenericListener.getRestoreBeforeInvocations(), is(2));
 
-                DataStoreInfo restoredDataStore =
-                        restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
-                Serializable passwd = restoredDataStore.getConnectionParameters().get("passwd");
+                DataStoreInfo restoredDataStore = restoreCatalog.getStoreByName("sf", "sf", DataStoreInfo.class);
+                Serializable passwd =
+                        restoredDataStore.getConnectionParameters().get("passwd");
                 assertEquals("foo", passwd);
             }
         }
 
         private void removeSfDatastore() {
             DataStoreInfo sfDataStore = catalog.getStoreByName("sf", "sf", DataStoreInfo.class);
-            List<ResourceInfo> resourcesByStore =
-                    catalog.getResourcesByStore(sfDataStore, ResourceInfo.class);
+            List<ResourceInfo> resourcesByStore = catalog.getResourcesByStore(sfDataStore, ResourceInfo.class);
             for (ResourceInfo ri : resourcesByStore) {
                 List<LayerInfo> layers = catalog.getLayers(ri);
                 for (LayerInfo li : layers) {
@@ -547,14 +496,10 @@ public class BackupTest extends BackupRestoreTestSupport {
         @Test
         public void testRunSpringBatchRestoreJob() throws Exception {
             Hints hints = new Hints(new HashMap(2));
-            hints.add(
-                    new Hints(
-                            new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE),
-                            Backup.PARAM_BEST_EFFORT_MODE));
+            hints.add(new Hints(new Hints.OptionKey(Backup.PARAM_BEST_EFFORT_MODE), Backup.PARAM_BEST_EFFORT_MODE));
 
             RestoreExecutionAdapter restoreExecution =
-                    backupFacade.runRestoreAsync(
-                            file("geoserver-full-backup.zip"), null, null, null, hints);
+                    backupFacade.runRestoreAsync(file("geoserver-full-backup.zip"), null, null, null, hints);
 
             // Wait a bit
             Thread.sleep(100);
@@ -571,8 +516,7 @@ public class BackupTest extends BackupRestoreTestSupport {
 
             int cnt = 0;
             while (cnt < 100
-                    && (restoreExecution.getStatus() != BatchStatus.COMPLETED
-                            || !restoreExecution.isRunning())) {
+                    && (restoreExecution.getStatus() != BatchStatus.COMPLETED || !restoreExecution.isRunning())) {
                 Thread.sleep(100);
                 cnt++;
 
@@ -581,15 +525,13 @@ public class BackupTest extends BackupRestoreTestSupport {
                         || restoreExecution.getStatus() == BatchStatus.UNKNOWN) {
 
                     for (Throwable exception : restoreExecution.getAllFailureExceptions()) {
-                        LOGGER.log(
-                                Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
+                        LOGGER.log(Level.INFO, "ERROR: " + exception.getLocalizedMessage(), exception);
                     }
                     break;
                 }
             }
 
-            if (restoreExecution.getStatus() != BatchStatus.COMPLETED
-                    && restoreExecution.isRunning()) {
+            if (restoreExecution.getStatus() != BatchStatus.COMPLETED && restoreExecution.isRunning()) {
                 backupFacade.stopExecution(restoreExecution.getId());
             }
 
@@ -598,7 +540,8 @@ public class BackupTest extends BackupRestoreTestSupport {
                         restoreCatalog.getWorkspaces().size(),
                         restoreCatalog.getNamespaces().size());
                 assertEquals(9, restoreCatalog.getDataStores().size(), 9);
-                assertEquals(50, restoreCatalog.getResources(FeatureTypeInfo.class).size());
+                assertEquals(
+                        50, restoreCatalog.getResources(FeatureTypeInfo.class).size());
                 assertEquals(4, restoreCatalog.getResources(CoverageInfo.class).size());
                 assertEquals(35, restoreCatalog.getStyles().size());
                 assertEquals(35, restoreCatalog.getLayers().size());

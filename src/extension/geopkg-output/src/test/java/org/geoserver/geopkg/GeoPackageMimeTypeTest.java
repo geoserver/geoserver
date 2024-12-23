@@ -27,9 +27,8 @@ public class GeoPackageMimeTypeTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
 
         // Getting the wms outputformats available
-        Component component =
-                tester.getComponentFromLastRenderedPage(
-                        "table:listContainer:items:1:itemProperties:4:component:menu:wms:wmsFormats");
+        Component component = tester.getComponentFromLastRenderedPage(
+                "table:listContainer:items:1:itemProperties:4:component:menu:wms:wmsFormats");
         assertNotNull(component);
         assertTrue(component instanceof RepeatingView);
         // Get the list of all the format
@@ -38,8 +37,7 @@ public class GeoPackageMimeTypeTest extends GeoServerWicketTestSupport {
         // Check that GeoPackage has been found
         boolean gpkgFound = false;
         // Get the string for the application/geopackage+sqlite3 mimetype
-        ParamResourceModel rm =
-                new ParamResourceModel("format.wms.application/geopackage+sqlite3", null, "");
+        ParamResourceModel rm = new ParamResourceModel("format.wms.application/geopackage+sqlite3", null, "");
         String mbtiles = rm.getString();
         while (iterator.hasNext()) {
             Component comp = iterator.next();

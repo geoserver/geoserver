@@ -62,21 +62,29 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_FAIL = "fail";
     private static final String ATT_FILE = "file";
 
-    @Autowired private LookupService<ExternalGS> extGeoservers;
+    @Autowired
+    private LookupService<ExternalGS> extGeoservers;
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -105,8 +113,7 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
 
         params.put(AppSchemaDataAccessFactory.URL.key, "file:data/MappedFeature.xml");
         params.put(AppSchemaDataAccessFactory.DBTYPE.key, AppSchemaDataAccessFactory.DBTYPE_STRING);
-        DATA_DIRECTORY.addCustomType(
-                new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "MappedFeature", "gsml"), params);
+        DATA_DIRECTORY.addCustomType(new QName("urn:cgi:xmlns:CGI:GeoSciML:2.0", "MappedFeature", "gsml"), params);
 
         return true;
     }
@@ -122,12 +129,9 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(FileRemotePublicationTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
-        dataUtil.setTaskParameterToAttribute(
-                task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_EXT_GS, ATT_EXT_GS);
+        dataUtil.setTaskParameterToAttribute(task1, FileRemotePublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -155,8 +159,7 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void testRasterSuccessAndCleanup()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testRasterSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
         // set some metadata
         CoverageInfo ci = geoServer.getCatalog().getCoverageByName("DEM");
         ci.setName("mydem");
@@ -189,8 +192,10 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -234,8 +239,7 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
     }
 
     @Test
-    public void testVectorSuccessAndCleanup()
-            throws SchedulerException, SQLException, MalformedURLException {
+    public void testVectorSuccessAndCleanup() throws SchedulerException, SQLException, MalformedURLException {
         // set some metadata
         FeatureTypeInfo fi = geoServer.getCatalog().getFeatureTypeByName("MappedFeature");
         fi.setTitle("my title ë");
@@ -246,8 +250,10 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_EXT_GS, "mygs");
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -286,8 +292,10 @@ public class FileRemotePublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

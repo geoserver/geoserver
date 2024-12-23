@@ -9,8 +9,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 /**
  * Generic API service landing page with conformance details.
  *
- * <p>Document provided for Jackson translate to JSON/YAML (also used as a Freemarker template
- * model).
+ * <p>Document provided for Jackson translate to JSON/YAML (also used as a Freemarker template model).
  */
 @JsonPropertyOrder({"title", "description", "links"})
 public class AbstractLandingPageDocument extends AbstractLandingPageDocumentNoConformance {

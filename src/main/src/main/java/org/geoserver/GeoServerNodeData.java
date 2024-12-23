@@ -29,8 +29,7 @@ import org.geotools.util.logging.Logging;
 /**
  * Holds information about how to identify a geoserver node within a cluster.
  *
- * <p>Contains both the node identifier itself, and information about how to style the id for UI
- * purposes.
+ * <p>Contains both the node identifier itself, and information about how to style the id for UI purposes.
  */
 public class GeoServerNodeData {
 
@@ -57,25 +56,18 @@ public class GeoServerNodeData {
 
         subs.put("host_ip", InetAddress::getHostAddress);
         subs.put("host_name", InetAddress::getHostName);
-        subs.put(
-                "host_short_name",
-                addr -> {
-                    String name = addr.getHostName();
-                    return name.split("\\.")[0];
-                });
-        subs.put(
-                "host_compact_name",
-                addr -> {
-                    String name = addr.getHostName();
-                    String[] parts = name.split("\\.");
-                    String hostName = parts[0];
-                    return Streams.concat(
-                                    Stream.of(hostName),
-                                    Arrays.stream(parts)
-                                            .skip(1)
-                                            .map((String p) -> p.substring(0, 1)))
-                            .collect(Collectors.joining("."));
-                });
+        subs.put("host_short_name", addr -> {
+            String name = addr.getHostName();
+            return name.split("\\.")[0];
+        });
+        subs.put("host_compact_name", addr -> {
+            String name = addr.getHostName();
+            String[] parts = name.split("\\.");
+            String hostName = parts[0];
+            return Streams.concat(
+                            Stream.of(hostName), Arrays.stream(parts).skip(1).map((String p) -> p.substring(0, 1)))
+                    .collect(Collectors.joining("."));
+        });
 
         SUBSTITUTIONS = Collections.unmodifiableMap(subs);
     }
@@ -95,8 +87,7 @@ public class GeoServerNodeData {
                 if (id != null) {
                     if (SUBSTITUTIONS.keySet().stream().anyMatch(id::contains)) {
                         final InetAddress address = getLocalHostLANAddress();
-                        for (Entry<String, Function<InetAddress, String>> e :
-                                SUBSTITUTIONS.entrySet()) {
+                        for (Entry<String, Function<InetAddress, String>> e : SUBSTITUTIONS.entrySet()) {
                             final String token = String.format("$%s", e.getKey());
                             final String value = e.getValue().apply(address);
                             id = id.replace(token, value);
@@ -130,8 +121,7 @@ public class GeoServerNodeData {
     }
 
     /**
-     * Creates the node data from environment variable, system property, etc... define by {@link
-     * #GEOSERVER_NODE_OPTS}
+     * Creates the node data from environment variable, system property, etc... define by {@link #GEOSERVER_NODE_OPTS}
      */
     public static GeoServerNodeData createFromEnvironment() {
         return createFromString(GeoServerExtensions.getProperty(GEOSERVER_NODE_OPTS));
@@ -156,8 +146,7 @@ public class GeoServerNodeData {
         try {
             InetAddress candidateAddress = null;
             // Iterate all NICs (network interface cards)...
-            for (Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
-                    interfaces.hasMoreElements(); ) {
+            for (Enumeration interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements(); ) {
                 NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
                 // each interface can have more than one address
                 for (Enumeration inetAddrs = ni.getInetAddresses(); inetAddrs.hasMoreElements(); ) {
@@ -178,13 +167,11 @@ public class GeoServerNodeData {
             // Fall back to whatever localhost provides
             InetAddress jdkSuppliedAddress = InetAddress.getLocalHost();
             if (jdkSuppliedAddress == null) {
-                throw new UnknownHostException(
-                        "The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
+                throw new UnknownHostException("The JDK InetAddress.getLocalHost() method unexpectedly returned null.");
             }
             return jdkSuppliedAddress;
         } catch (Exception e) {
-            UnknownHostException unknownHostException =
-                    new UnknownHostException("Failed to determine LAN address");
+            UnknownHostException unknownHostException = new UnknownHostException("Failed to determine LAN address");
             unknownHostException.initCause(e);
             throw unknownHostException;
         }

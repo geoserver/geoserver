@@ -57,15 +57,15 @@ public interface HTTPStoreInfo extends StoreInfo {
     void setConnectTimeout(int timeoutSeconds);
 
     /**
-     * @return {@code true} (default) if the store shall use an http connection managed that pools
-     *     connections, {@code false} otherwise.
+     * @return {@code true} (default) if the store shall use an http connection managed that pools connections,
+     *     {@code false} otherwise.
      * @see #getMaxConnections()
      */
     public boolean isUseConnectionPooling();
 
     /**
-     * @param useHttpConnectionPooling {@code true} if the store shall use an http connection
-     *     managed that pools connections, {@code false} otherwise.
+     * @param useHttpConnectionPooling {@code true} if the store shall use an http connection managed that pools
+     *     connections, {@code false} otherwise.
      * @see #setMaxConnections(int)
      */
     public void setUseConnectionPooling(boolean useHttpConnectionPooling);

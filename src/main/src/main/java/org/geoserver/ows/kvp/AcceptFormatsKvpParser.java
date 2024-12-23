@@ -13,9 +13,8 @@ import org.geoserver.ows.util.KvpUtils;
 import org.geotools.xsd.EMFUtils;
 
 /**
- * Parses a kvp of the form "acceptFormats=format1,format2,...,formatN" into an instance of OWS
- * AcceptFormatsType. This class is version independent, the subclasses bind it to a specific OWS
- * version.
+ * Parses a kvp of the form "acceptFormats=format1,format2,...,formatN" into an instance of OWS AcceptFormatsType. This
+ * class is version independent, the subclasses bind it to a specific OWS version.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -33,8 +32,7 @@ public abstract class AcceptFormatsKvpParser extends KvpParser {
 
         for (String v : values) {
             @SuppressWarnings("unchecked")
-            Collection<String> of =
-                    (Collection<String>) EMFUtils.get(acceptFormats, "outputFormat");
+            Collection<String> of = (Collection<String>) EMFUtils.get(acceptFormats, "outputFormat");
             of.add(v);
         }
 

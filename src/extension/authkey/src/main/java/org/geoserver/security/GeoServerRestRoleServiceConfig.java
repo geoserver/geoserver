@@ -179,8 +179,8 @@ public class GeoServerRestRoleServiceConfig extends BaseSecurityNamedServiceConf
     }
 
     /**
-     * @return the authApiKey if set, the rest client will create an "X-AUTH" custom header in order
-     *     to send authentication to the backend.
+     * @return the authApiKey if set, the rest client will create an "X-AUTH" custom header in order to send
+     *     authentication to the backend.
      */
     public String getAuthApiKey() {
         return authApiKey;

@@ -40,8 +40,7 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
      * @see GetLegendGraphicProducer#writeTo(java.io.OutputStream)
      */
     @Override
-    public void write(Object legend, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object legend, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage image = (BufferedImage) ((LegendGraphic) legend).getLegend();
@@ -52,18 +51,16 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // /////////////////////////////////////////////////////////////////
         final MemoryCacheImageOutputStream memOutStream = new MemoryCacheImageOutputStream(output);
         final ImageWorker worker = new ImageWorker(image);
-        final PlanarImage finalImage =
-                (image.getColorModel() instanceof DirectColorModel)
-                        ? worker.forceComponentColorModel().getPlanarImage()
-                        : worker.getPlanarImage();
+        final PlanarImage finalImage = (image.getColorModel() instanceof DirectColorModel)
+                ? worker.forceComponentColorModel().getPlanarImage()
+                : worker.getPlanarImage();
 
         // /////////////////////////////////////////////////////////////////
         //
         // Getting a writer
         //
         // /////////////////////////////////////////////////////////////////
-        final Iterator<ImageWriter> it =
-                ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
+        final Iterator<ImageWriter> it = ImageIO.getImageWritersByMIMEType(PNGLegendOutputFormat.MIME_TYPE);
         ImageWriter writer = null;
 
         if (!it.hasNext()) {
@@ -79,9 +76,7 @@ public class PNGLegendGraphicResponse extends AbstractGetLegendGraphicResponse {
         // /////////////////////////////////////////////////////////////////
         final ImageWriteParam iwp = writer.getDefaultWriteParam();
 
-        if (writer.getClass()
-                .getName()
-                .equals("com.sun.media.imageioimpl.plugins.png.CLibPNGImageWriter")) {
+        if (writer.getClass().getName().equals("com.sun.media.imageioimpl.plugins.png.CLibPNGImageWriter")) {
             iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
 
             iwp.setCompressionQuality(0.75f); // we can control quality here

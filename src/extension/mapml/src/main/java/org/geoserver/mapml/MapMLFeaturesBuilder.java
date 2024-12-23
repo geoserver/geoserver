@@ -60,8 +60,7 @@ public class MapMLFeaturesBuilder {
                     "MapML WMS Feature format does not currently support Multiple Feature Type output.");
         FeatureSource fs = mapContent.layers().get(0).getFeatureSource();
         if (!(fs instanceof SimpleFeatureSource))
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Complex Features.");
+            throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
         this.featureSource = (SimpleFeatureSource) fs;
 
         this.geoServer = geoServer;
@@ -73,19 +72,14 @@ public class MapMLFeaturesBuilder {
 
     private MapMLSimplifier getSimplifier(WMSMapContent mapContent, Query query) {
         try {
-            CoordinateReferenceSystem layerCRS =
-                    featureSource.getSchema().getCoordinateReferenceSystem();
+            CoordinateReferenceSystem layerCRS = featureSource.getSchema().getCoordinateReferenceSystem();
             MapMLSimplifier simplifier = new MapMLSimplifier(mapContent, layerCRS);
             if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_DISTANCE)) {
-                query.getHints()
-                        .put(Hints.GEOMETRY_DISTANCE, simplifier.getQuerySimplificationDistance());
+                query.getHints().put(Hints.GEOMETRY_DISTANCE, simplifier.getQuerySimplificationDistance());
             }
             return simplifier;
         } catch (FactoryException e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Unable to create MapML Simplifier, proceeding with full geometries",
-                    e);
+            LOGGER.log(Level.WARNING, "Unable to create MapML Simplifier, proceeding with full geometries", e);
         }
         return null;
     }
@@ -109,8 +103,7 @@ public class MapMLFeaturesBuilder {
     public Mapml getMapMLDocument() throws IOException {
         if (!getMapRequest.getLayers().isEmpty()
                 && MapLayerInfo.TYPE_VECTOR != getMapRequest.getLayers().get(0).getType()) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support non-vector layers.");
+            throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
         }
         SimpleFeatureCollection fc = null;
         if (query != null) {
@@ -121,21 +114,16 @@ public class MapMLFeaturesBuilder {
 
         GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
         if (sourceGeometryDescriptor == null) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support non-geometry features.");
+            throw new ServiceException("MapML WMS Feature format does not currently support non-geometry features.");
         }
         SimpleFeatureCollection reprojectedFeatureCollection = null;
-        if (!sourceGeometryDescriptor
-                .getCoordinateReferenceSystem()
-                .equals(getMapRequest.getCrs())) {
+        if (!sourceGeometryDescriptor.getCoordinateReferenceSystem().equals(getMapRequest.getCrs())) {
             try {
-                reprojectedFeatureCollection =
-                        new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
+                reprojectedFeatureCollection = new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
                 ((ReprojectingFeatureCollection) reprojectedFeatureCollection)
                         .setDefaultSource(sourceGeometryDescriptor.getCoordinateReferenceSystem());
             } catch (SchemaException | FactoryException e) {
-                throw new ServiceException(
-                        "Unable to reproject to the requested coordinate references system", e);
+                throw new ServiceException("Unable to reproject to the requested coordinate references system", e);
             }
         } else {
             reprojectedFeatureCollection = fc;
@@ -143,14 +131,12 @@ public class MapMLFeaturesBuilder {
 
         Map<String, MapMLStyle> styles = getMapMLStyleMap();
 
-        LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
+        LayerInfo layerInfo =
+                geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
         FeatureType featureType = fc.getSchema();
-        ResourceInfo meta =
-                geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
-        if (query != null
-                && query.getFilter() != null
-                && query.getFilter().equals(Filter.EXCLUDE)) {
+        ResourceInfo meta = geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
+        if (query != null && query.getFilter() != null && query.getFilter().equals(Filter.EXCLUDE)) {
             // if the filter is exclude, return an empty MapML that has header metadata
             return MapMLFeatureUtil.getEmptyMapML(layerInfo, crs);
         }
@@ -173,13 +159,13 @@ public class MapMLFeaturesBuilder {
     private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {
         Style style = getMapRequest.getStyles().get(0);
         if (style == null) {
-            StyleInfo styleInfo = getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
+            StyleInfo styleInfo =
+                    getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
             if (styleInfo != null && styleInfo.getStyle() != null) {
                 style = styleInfo.getStyle();
             } else {
-                throw new ServiceException(
-                        "No style or default style found for layer"
-                                + getMapRequest.getLayers().get(0).getLayerInfo().getName());
+                throw new ServiceException("No style or default style found for layer"
+                        + getMapRequest.getLayers().get(0).getLayerInfo().getName());
             }
         }
         return MapMLFeatureUtil.getMapMLStyleMap(style, mapContent.getScaleDenominator());

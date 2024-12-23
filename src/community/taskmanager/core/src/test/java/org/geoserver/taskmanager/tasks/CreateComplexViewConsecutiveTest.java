@@ -60,19 +60,26 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
     private static final String ATT_TABLE_NAME_STEP2 = "table_name_step2";
     private static final String ATT_VIEW_NAME_STEP2 = "view_name_step2";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private LookupService<DbSource> dbSources;
+    @Autowired
+    private LookupService<DbSource> dbSources;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private Configuration config;
 
@@ -84,8 +91,7 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
         config.setName("my_config");
         config.setWorkspace("some_ws");
 
-        Task taskOtherStepTwo =
-                generateCreateViewTask("taskOther", ATT_VIEW_NAME_STEP2, ATT_DEFINITION_STEP2);
+        Task taskOtherStepTwo = generateCreateViewTask("taskOther", ATT_VIEW_NAME_STEP2, ATT_DEFINITION_STEP2);
         dataUtil.addTaskToConfiguration(config, taskOtherStepTwo);
         Task taskOtherStepOne = generateCreateViewTask("taskStep1", ATT_VIEW_NAME, ATT_DEFINITION);
         dataUtil.addTaskToConfiguration(config, taskOtherStepOne);
@@ -122,8 +128,10 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
 
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -131,12 +139,10 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
         assertTrue(viewExists(SqlUtil.schema(VIEW_NAME), SqlUtil.notQualified(VIEW_NAME)));
 
         assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_STEP2), "_temp%"));
-        assertTrue(
-                viewExists(SqlUtil.schema(VIEW_NAME_STEP2), SqlUtil.notQualified(VIEW_NAME_STEP2)));
+        assertTrue(viewExists(SqlUtil.schema(VIEW_NAME_STEP2), SqlUtil.notQualified(VIEW_NAME_STEP2)));
 
         assertTrue(taskUtil.cleanup(config));
-        assertFalse(
-                viewExists(SqlUtil.schema(VIEW_NAME_STEP2), SqlUtil.notQualified(VIEW_NAME_STEP2)));
+        assertFalse(viewExists(SqlUtil.schema(VIEW_NAME_STEP2), SqlUtil.notQualified(VIEW_NAME_STEP2)));
     }
 
     private boolean viewExists(String schema, String pattern) throws SQLException {
@@ -156,12 +162,9 @@ public class CreateComplexViewConsecutiveTest extends AbstractTaskManagerTest {
         Task task = fac.createTask();
         task.setName(taskname);
         task.setType(CreateComplexViewTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task, CreateComplexViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task, CreateComplexViewTaskTypeImpl.PARAM_VIEW_NAME, viewName);
-        dataUtil.setTaskParameterToAttribute(
-                task, CreateComplexViewTaskTypeImpl.PARAM_DEFINITION, definition);
+        dataUtil.setTaskParameterToAttribute(task, CreateComplexViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(task, CreateComplexViewTaskTypeImpl.PARAM_VIEW_NAME, viewName);
+        dataUtil.setTaskParameterToAttribute(task, CreateComplexViewTaskTypeImpl.PARAM_DEFINITION, definition);
 
         return task;
     }

@@ -44,19 +44,15 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     static final String BASE_URL_3857 =
             "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&QUERY_LAYERS=watertemp&STYLES&LAYERS=watertemp&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A3857&WIDTH=101&HEIGHT=101&BBOX=1007839.2841354463%2C5039196.420677232%2C1254607.205826792%2C5285964.342368577";
 
-    static final String TIME_RANGE_COMPLETE =
-            "&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z";
+    static final String TIME_RANGE_COMPLETE = "&TIME=2008-10-31T00:00:00.000Z/2008-11-01T00:00:00.000Z";
 
     static final String TIME_RANGE_NO_VALUES = "&TIME=2005/2006";
 
-    static final String TIME_RANGE_EXTRA =
-            "&TIME=2008-10-01T00:00:00.000Z/2008-11-01T00:00:00.000Z";
+    static final String TIME_RANGE_EXTRA = "&TIME=2008-10-01T00:00:00.000Z/2008-11-01T00:00:00.000Z";
 
-    static final String TIME_RANGE_SLICE1 =
-            "&TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z";
+    static final String TIME_RANGE_SLICE1 = "&TIME=2008-10-31T00:00:00.000Z/2008-10-31T00:00:00.000Z";
 
-    static final String TIME_RANGE_SLICE2 =
-            "&TIME=2008-11-01T00:00:00.000Z/2008-11-01T00:00:00.000Z";
+    static final String TIME_RANGE_SLICE2 = "&TIME=2008-11-01T00:00:00.000Z/2008-11-01T00:00:00.000Z";
 
     static final String BASE_URL_4326_TIMESERIES =
             "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&LAYERS=timeseries&QUERY_LAYERS=timeseries&STYLES&&FEATURE_COUNT=50&X=50&Y=50&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40.81420898437501%2C5.943603515625%2C43.03344726562501";
@@ -79,10 +75,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         revertService(WMSInfo.class, null);
     }
 
-    /**
-     * Tests the number of output lines, the CSV headers and the returned date and value per each
-     * CSV record.
-     */
+    /** Tests the number of output lines, the CSV headers and the returned date and value per each CSV record. */
     @Test
     public void testCsvOutput() throws Exception {
         setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
@@ -96,18 +89,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String[] csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 5, csvLines.length);
         Assert.assertEquals("CSV header", "Time (UTC),sf:watertemp", csvLines[2]);
-        assertCsvLine(
-                "value 2008-10-31",
-                csvLines[3],
-                "2008-10-31T00:00:00.000Z",
-                16.88799985218793,
-                EPS);
-        assertCsvLine(
-                "value 2008-11-01",
-                csvLines[4],
-                "2008-11-01T00:00:00.000Z",
-                17.120999863254838,
-                EPS);
+        assertCsvLine("value 2008-10-31", csvLines[3], "2008-10-31T00:00:00.000Z", 16.88799985218793, EPS);
+        assertCsvLine("value 2008-11-01", csvLines[4], "2008-11-01T00:00:00.000Z", 17.120999863254838, EPS);
     }
 
     /** Tests that lat lon values are returned for a geographic CRS request */
@@ -142,8 +125,7 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         Assert.assertEquals("y", 1130001.6216064095, y, 0.000001);
     }
 
-    private void assertCsvLine(
-            String message, String line, String expectedDate, double expectedValue, double delta) {
+    private void assertCsvLine(String message, String line, String expectedDate, double expectedValue, double delta) {
         String[] lineSplit = line.split(",");
         String date = lineSplit[0];
         double value = Double.parseDouble(lineSplit[1]);
@@ -161,46 +143,23 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 5, csvLines.length);
-        assertCsvLine(
-                "value 2008-10-31",
-                csvLines[3],
-                "2008-10-31T00:00:00.000Z",
-                16.88799985218793,
-                EPS);
-        assertCsvLine(
-                "value 2008-11-01",
-                csvLines[4],
-                "2008-11-01T00:00:00.000Z",
-                17.120999863254838,
-                EPS);
+        assertCsvLine("value 2008-10-31", csvLines[3], "2008-10-31T00:00:00.000Z", 16.88799985218793, EPS);
+        assertCsvLine("value 2008-11-01", csvLines[4], "2008-11-01T00:00:00.000Z", 17.120999863254838, EPS);
 
         url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_SLICE1;
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 4, csvLines.length);
-        assertCsvLine(
-                "value 2008-10-31",
-                csvLines[3],
-                "2008-10-31T00:00:00.000Z",
-                16.88799985218793,
-                EPS);
+        assertCsvLine("value 2008-10-31", csvLines[3], "2008-10-31T00:00:00.000Z", 16.88799985218793, EPS);
 
         url = BASE_URL_4326 + CSV_FORMAT + TIME_RANGE_SLICE2;
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 4, csvLines.length);
-        assertCsvLine(
-                "value 2008-11-01",
-                csvLines[3],
-                "2008-11-01T00:00:00.000Z",
-                17.120999863254838,
-                EPS);
+        assertCsvLine("value 2008-11-01", csvLines[3], "2008-11-01T00:00:00.000Z", 17.120999863254838, EPS);
     }
 
-    /**
-     * Ensures we get the right results when specifying a timeList with/without nearest match
-     * enabled
-     */
+    /** Ensures we get the right results when specifying a timeList with/without nearest match enabled */
     @Test
     public void testTimeList() throws Exception {
         setupRasterDimension(TIMESERIES, TIME, LIST, null, null, null);
@@ -209,39 +168,22 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
         final int numberOfResults = 4;
-        Assert.assertEquals(
-                "CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
+        Assert.assertEquals("CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
         double[] expectedValues =
-                new double[] {
-                    16.88799985218793, 13.399999686516821, 13.331999683286995, 17.120999863254838
-                };
+                new double[] {16.88799985218793, 13.399999686516821, 13.331999683286995, 17.120999863254838};
         final int referenceYear = 2014;
         for (int i = 0; i < numberOfResults; i++) {
             String date = (referenceYear + i) + "-01-01";
             assertCsvLine(
-                    "value " + date,
-                    csvLines[CSV_HEADER_ROWS + i],
-                    date + "T00:00:00.000Z",
-                    expectedValues[i],
-                    DELTA);
+                    "value " + date, csvLines[CSV_HEADER_ROWS + i], date + "T00:00:00.000Z", expectedValues[i], DELTA);
         }
 
         url = BASE_URL_4326_TIMESERIES + CSV_FORMAT + TIME_LIST_NEAREST;
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 5, csvLines.length);
-        assertCsvLine(
-                "value 2014-01-01",
-                csvLines[3],
-                "2014-01-01T00:00:00.000Z",
-                16.88799985218793,
-                DELTA);
-        assertCsvLine(
-                "value 2017-01-01",
-                csvLines[4],
-                "2017-01-01T00:00:00.000Z",
-                17.120999863254838,
-                DELTA);
+        assertCsvLine("value 2014-01-01", csvLines[3], "2014-01-01T00:00:00.000Z", 16.88799985218793, DELTA);
+        assertCsvLine("value 2017-01-01", csvLines[4], "2017-01-01T00:00:00.000Z", 17.120999863254838, DELTA);
 
         // Enable Nearest Match
         setNearestMatch(TIMESERIES, TIME, "P2D");
@@ -249,30 +191,10 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         rawCsv = getAsString(url);
         csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 7, csvLines.length);
-        assertCsvLine(
-                "value 2010-01-01",
-                csvLines[3],
-                "2014-01-01T00:00:00.000Z",
-                16.88799985218793,
-                DELTA);
-        assertCsvLine(
-                "value 2015-01-01",
-                csvLines[4],
-                "2015-01-01T00:00:00.000Z",
-                13.399999686516821,
-                DELTA);
-        assertCsvLine(
-                "value 2016-01-01",
-                csvLines[5],
-                "2016-01-01T00:00:00.000Z",
-                13.331999683286995,
-                DELTA);
-        assertCsvLine(
-                "value 2017-01-01",
-                csvLines[6],
-                "2017-01-01T00:00:00.000Z",
-                17.120999863254838,
-                DELTA);
+        assertCsvLine("value 2010-01-01", csvLines[3], "2014-01-01T00:00:00.000Z", 16.88799985218793, DELTA);
+        assertCsvLine("value 2015-01-01", csvLines[4], "2015-01-01T00:00:00.000Z", 13.399999686516821, DELTA);
+        assertCsvLine("value 2016-01-01", csvLines[5], "2016-01-01T00:00:00.000Z", 13.331999683286995, DELTA);
+        assertCsvLine("value 2017-01-01", csvLines[6], "2017-01-01T00:00:00.000Z", 17.120999863254838, DELTA);
         setNearestMatch(TIMESERIES, TIME, null);
     }
 
@@ -284,18 +206,8 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         String rawCsv = getAsString(url);
         String[] csvLines = rawCsv.split("\\r?\\n");
         Assert.assertEquals("CSV Number of results", 5, csvLines.length);
-        assertCsvLine(
-                "value 2014-01-01",
-                csvLines[3],
-                "2014-01-01T00:00:00.000Z",
-                16.88799985218793,
-                DELTA);
-        assertCsvLine(
-                "value 2018-01-01",
-                csvLines[4],
-                "2018-01-01T00:00:00.000Z",
-                16.88799985218793,
-                DELTA);
+        assertCsvLine("value 2014-01-01", csvLines[3], "2014-01-01T00:00:00.000Z", 16.88799985218793, DELTA);
+        assertCsvLine("value 2018-01-01", csvLines[4], "2018-01-01T00:00:00.000Z", 16.88799985218793, DELTA);
 
         // Enable nearest match to catch more results at the beginning of each year
         setNearestMatch(TIMESERIES, TIME, "P2D");
@@ -304,26 +216,20 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         csvLines = rawCsv.split("\\r?\\n");
 
         final int numberOfResults = 6;
-        Assert.assertEquals(
-                "CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
-        double[] expectedValues =
-                new double[] {
-                    16.88799985218793,
-                    13.399999686516821,
-                    13.331999683286995,
-                    17.120999863254838,
-                    16.88799985218793,
-                    13.399999686516821
-                };
+        Assert.assertEquals("CSV Number of results", CSV_HEADER_ROWS + numberOfResults, csvLines.length);
+        double[] expectedValues = new double[] {
+            16.88799985218793,
+            13.399999686516821,
+            13.331999683286995,
+            17.120999863254838,
+            16.88799985218793,
+            13.399999686516821
+        };
         final int referenceYear = 2014;
         for (int i = 0; i < numberOfResults; i++) {
             String date = (referenceYear + i) + "-01-01";
             assertCsvLine(
-                    "value " + date,
-                    csvLines[CSV_HEADER_ROWS + i],
-                    date + "T00:00:00.000Z",
-                    expectedValues[i],
-                    DELTA);
+                    "value " + date, csvLines[CSV_HEADER_ROWS + i], date + "T00:00:00.000Z", expectedValues[i], DELTA);
         }
         setNearestMatch(TIMESERIES, TIME, null);
     }
@@ -362,16 +268,15 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
     public void testChartOutput() throws Exception {
         setupRasterDimension(WATTEMP, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees");
-        BufferedImage image =
-                getAsImage(BASE_URL_4326 + PNG_FORMAT + TIME_RANGE_COMPLETE, "image/png");
+        BufferedImage image = getAsImage(BASE_URL_4326 + PNG_FORMAT + TIME_RANGE_COMPLETE, "image/png");
         assertPixel(image, 679, 50, new Color(255, 85, 85));
         assertPixel(image, 75, 536, new Color(255, 85, 85));
         assertPixel(image, 317, 373, Color.WHITE);
     }
 
     /**
-     * Ensures we get all values in interval when nearest match is enabled and querying with a
-     * simple interval without period
+     * Ensures we get all values in interval when nearest match is enabled and querying with a simple interval without
+     * period
      */
     @Test
     public void testTimeRangesNearestWithSimpleRange() throws Exception {
@@ -411,16 +316,13 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         setupRasterDimension(WATTEMP, TIME, LIST, null, null, "degrees", true, "PT101M/PT0H");
 
         // ask for too many (less than the default WMS one, but more than the above configuration)
-        Document dom =
-                getAsDOM(
-                        "wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&LAYERS"
-                                + "=watertemp&QUERY_LAYERS=watertemp&STYLES&&FEATURE_COUNT=50&X=50&Y=50"
-                                + "&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40"
-                                + ".81420898437501%2C5.943603515625%2C43.03344726562501&time=&TIME=2005/2006/P1M");
+        Document dom = getAsDOM("wms?SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&FORMAT=image%2Fjpeg&LAYERS"
+                + "=watertemp&QUERY_LAYERS=watertemp&STYLES&&FEATURE_COUNT=50&X=50&Y=50"
+                + "&SRS=EPSG%3A4326&WIDTH=101&HEIGHT=101&BBOX=3.724365234375%2C40"
+                + ".81420898437501%2C5.943603515625%2C43.03344726562501&time=&TIME=2005/2006/P1M");
         assertThat(
                 checkLegacyException(dom, "InvalidParameterValue", "time"),
-                CoreMatchers.containsString(
-                        "More than 3 times specified in the request, bailing out."));
+                CoreMatchers.containsString("More than 3 times specified in the request, bailing out."));
     }
 
     @Test
@@ -428,19 +330,17 @@ public class NcWmsGetTimeSeriesTest extends WMSDimensionsTestSupport {
         // setup all the dimensions
         setupRasterDimension(TIMERANGES, TIME, LIST, null, null, null);
         setupRasterDimension(TIMERANGES, ELEVATION, LIST, null, UNITS, UNIT_SYMBOL);
-        setupRasterDimension(
-                TIMERANGES, CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", LIST, null, null, null);
+        setupRasterDimension(TIMERANGES, CUSTOM_DIMENSION_PREFIX + "WAVELENGTH", LIST, null, null, null);
         // not setting up the date custom dimension as it just uses the same columns as time
 
         // prepare URL
         String layer = getLayerId(TIMERANGES);
-        String baseUrl =
-                "wms?LAYERS="
-                        + layer
-                        + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&SRS=EPSG:4326"
-                        + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
-                        + layer
-                        + "&x=68&y=72";
+        String baseUrl = "wms?LAYERS="
+                + layer
+                + "&STYLES=temperature&FORMAT=image%2Fpng&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetTimeSeries&SRS=EPSG:4326"
+                + "&BBOX=-0.89131513678082,40.246933882167,15.721292974683,44.873229811941&WIDTH=200&HEIGHT=80&query_layers="
+                + layer
+                + "&x=68&y=72";
         String url = baseUrl + "&TIME=2008-10-31T12:00:00.000Z/2008-11-06T12:00:00.000Z";
 
         // run and check

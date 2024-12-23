@@ -51,11 +51,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
 
     @Override
     public File convert(
-            File inputData,
-            File outputDirectory,
-            String typeName,
-            Format format,
-            CoordinateReferenceSystem crs)
+            File inputData, File outputDirectory, String typeName, Format format, CoordinateReferenceSystem crs)
             throws IOException, InterruptedException {
         // build the command line
         List<String> cmd = new ArrayList<>();
@@ -87,14 +83,13 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
         }
 
         if (exitCode != 0)
-            throw new IOException(
-                    executable
-                            + " did not terminate successfully, exit code "
-                            + exitCode
-                            + ". Was trying to run: "
-                            + cmd
-                            + "\nResulted in:\n"
-                            + sb);
+            throw new IOException(executable
+                    + " did not terminate successfully, exit code "
+                    + exitCode
+                    + ". Was trying to run: "
+                    + cmd
+                    + "\nResulted in:\n"
+                    + sb);
 
         // output may be a directory, handle that case gracefully
         File output = new File(outputDirectory, outFileName);
@@ -107,11 +102,11 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
     /**
      * Sets up input and output parameters.
      *
-     * <p>Uses {@link #isInputFirst()} internally to determine whether input or output should come
-     * first in the list of arguments.
+     * <p>Uses {@link #isInputFirst()} internally to determine whether input or output should come first in the list of
+     * arguments.
      *
-     * <p>May be overridden by subclasses, e.g. to support commands that modify the input file
-     * inline and thus need no output parameter.
+     * <p>May be overridden by subclasses, e.g. to support commands that modify the input file inline and thus need no
+     * output parameter.
      *
      * @param cmd the command to run and its arguments
      * @param inputData the input file
@@ -121,11 +116,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
      * @return the name of the (main) output file
      */
     protected String setInputOutput(
-            List<String> cmd,
-            File inputData,
-            File outputDirectory,
-            String typeName,
-            Format format) {
+            List<String> cmd, File inputData, File outputDirectory, String typeName, Format format) {
         String outFileName = typeName;
 
         if (format.getFileExtension() != null) outFileName += format.getFileExtension();
@@ -145,8 +136,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
      *
      * @return the temp file containing the CRS definition in WKT format
      */
-    protected static File dumpCrs(File parentDir, CoordinateReferenceSystem crs)
-            throws IOException {
+    protected static File dumpCrs(File parentDir, CoordinateReferenceSystem crs) throws IOException {
         File crsFile = null;
         if (crs != null) {
             // we don't use an EPSG code since there is no guarantee we'll be able to reverse
@@ -164,11 +154,11 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
     }
 
     /**
-     * Invoked by <code>convert()</code> before the command is actually run, but after the options
-     * specified in the format configuration have been added to the arguments list.
+     * Invoked by <code>convert()</code> before the command is actually run, but after the options specified in the
+     * format configuration have been added to the arguments list.
      *
-     * <p>Default implementation does nothing at all. May be implemented by subclasses to append
-     * additional arguments to <code>cmd</code>.
+     * <p>Default implementation does nothing at all. May be implemented by subclasses to append additional arguments to
+     * <code>cmd</code>.
      *
      * @param cmd the command to run and its arguments
      */
@@ -184,12 +174,10 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
     }
 
     /**
-     * Invoked by <code>convert()</code> after the command is run. Invocation is done inside a
-     * <code>try ... finally</code> block, so it happens even if an exception is thrown during
-     * command execution.
+     * Invoked by <code>convert()</code> after the command is run. Invocation is done inside a <code>try ... finally
+     * </code> block, so it happens even if an exception is thrown during command execution.
      *
-     * <p>Default implementation does nothing at all. May be implemented by subclasses to do some
-     * clean-up work.
+     * <p>Default implementation does nothing at all. May be implemented by subclasses to do some clean-up work.
      *
      * @param exitCode the exit code of the invoked command. Usually, 0 indicates normal termination
      */
@@ -198,8 +186,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
     }
 
     /**
-     * Runs the specified command appending the output to the string builder and returning the exit
-     * code.
+     * Runs the specified command appending the output to the string builder and returning the exit code.
      *
      * @param cmd the command to run and its arguments
      * @param sb command output is appended here
@@ -211,8 +198,7 @@ public abstract class AbstractToolWrapper implements ToolWrapper {
         if (environment != null) builder.environment().putAll(environment);
         builder.redirectErrorStream(true);
         Process p = builder.start();
-        try (BufferedReader reader =
-                new BufferedReader(new InputStreamReader(p.getInputStream()))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 if (sb != null) {

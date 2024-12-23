@@ -29,8 +29,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GSRModelReader extends BaseMessageConverter<GSRModel> {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(GSRModelReader.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(GSRModelReader.class);
 
     public GSRModelReader() {
         super(MediaType.APPLICATION_JSON);
@@ -72,8 +71,7 @@ public class GSRModelReader extends BaseMessageConverter<GSRModel> {
                         features.add(FeatureEncoder.fromJson((JSONObject) o));
                     } catch (JSONException e) {
                         features.add(null);
-                        LOGGER.log(
-                                java.util.logging.Level.WARNING, "Error parsing json feature", e);
+                        LOGGER.log(java.util.logging.Level.WARNING, "Error parsing json feature", e);
                     }
                 }
                 return new FeatureArray(features);

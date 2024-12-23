@@ -27,13 +27,12 @@ import org.geotools.geometry.GeneralBounds;
 import org.geotools.util.factory.Hints;
 
 /**
- * Delegates every method to the delegate structured grid coverage reader. Subclasses will override
- * selected methods to perform their "decoration" job
+ * Delegates every method to the delegate structured grid coverage reader. Subclasses will override selected methods to
+ * perform their "decoration" job
  *
  * @author Daniele Romagnoli
  */
-public abstract class DecoratingStructuredGridCoverage2DReader
-        implements StructuredGridCoverage2DReader {
+public abstract class DecoratingStructuredGridCoverage2DReader implements StructuredGridCoverage2DReader {
 
     StructuredGridCoverage2DReader delegate;
 
@@ -102,8 +101,7 @@ public abstract class DecoratingStructuredGridCoverage2DReader
     }
 
     @Override
-    public GridCoverage2D read(GeneralParameterValue[] parameters)
-            throws IllegalArgumentException, IOException {
+    public GridCoverage2D read(GeneralParameterValue[] parameters) throws IllegalArgumentException, IOException {
         return delegate.read(parameters);
     }
 
@@ -134,20 +132,17 @@ public abstract class DecoratingStructuredGridCoverage2DReader
     }
 
     @Override
-    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName)
-            throws IOException {
+    public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         return delegate.getDynamicParameters(coverageName);
     }
 
     @Override
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
-            throws IOException {
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) throws IOException {
         return delegate.getReadingResolutions(policy, requestedResolution);
     }
 
     @Override
-    public double[] getReadingResolutions(
-            String coverageName, OverviewPolicy policy, double[] requestedResolution)
+    public double[] getReadingResolutions(String coverageName, OverviewPolicy policy, double[] requestedResolution)
             throws IOException {
         return delegate.getReadingResolutions(coverageName, policy, requestedResolution);
     }
@@ -217,8 +212,7 @@ public abstract class DecoratingStructuredGridCoverage2DReader
     }
 
     @Override
-    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName)
-            throws IOException {
+    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
         return delegate.getDimensionDescriptors(coverageName);
     }
 

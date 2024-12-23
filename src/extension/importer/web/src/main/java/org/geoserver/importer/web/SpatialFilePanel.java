@@ -49,7 +49,8 @@ public class SpatialFilePanel extends ImportSourcePanel {
     public ImportData createImportSource() throws IOException {
         File file = new File(this.file);
         return FileData.createFromFile(file);
-    };
+    }
+    ;
 
     protected void initFileChooser(GeoServerFileChooser fileChooser) {
         // chooser.setFilter(new Model(new ExtensionFile"(".shp")));
@@ -63,58 +64,54 @@ public class SpatialFilePanel extends ImportSourcePanel {
         @Override
         protected void onSubmit(AjaxRequestTarget target, Form form) {
             dialog.setTitle(new ParamResourceModel("chooseFile", this));
-            dialog.showOkCancel(
-                    target,
-                    new GeoServerDialog.DialogDelegate() {
+            dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
 
+                @Override
+                protected Component getContents(String id) {
+                    // use what the user currently typed
+                    File file = null;
+                    if (!fileField.getInput().trim().equals("")) {
+                        file = new File(fileField.getInput());
+                        if (!file.exists()) file = null;
+                    }
+
+                    GeoServerFileChooser chooser = new GeoServerFileChooser(id, new Model<>(file)) {
                         @Override
-                        protected Component getContents(String id) {
-                            // use what the user currently typed
-                            File file = null;
-                            if (!fileField.getInput().trim().equals("")) {
-                                file = new File(fileField.getInput());
-                                if (!file.exists()) file = null;
-                            }
+                        protected void fileClicked(File file, AjaxRequestTarget target) {
+                            SpatialFilePanel.this.file = file.getAbsolutePath();
 
-                            GeoServerFileChooser chooser =
-                                    new GeoServerFileChooser(id, new Model<>(file)) {
-                                        @Override
-                                        protected void fileClicked(
-                                                File file, AjaxRequestTarget target) {
-                                            SpatialFilePanel.this.file = file.getAbsolutePath();
-
-                                            fileField.clearInput();
-                                            fileField.setModelObject(file.getAbsolutePath());
-
-                                            target.add(fileField);
-                                            dialog.close(target);
-                                        }
-                                    };
-
-                            initFileChooser(chooser);
-                            return chooser;
-                        }
-
-                        @Override
-                        protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                            GeoServerFileChooser chooser = (GeoServerFileChooser) contents;
-                            file = ((File) chooser.getDefaultModelObject()).getAbsolutePath();
-
-                            // clear the raw input of the field won't show the new model
-                            // value
                             fileField.clearInput();
-                            // fileField.setModelObject(file);
+                            fileField.setModelObject(file.getAbsolutePath());
 
                             target.add(fileField);
-                            return true;
+                            dialog.close(target);
                         }
+                    };
 
-                        @Override
-                        public void onClose(AjaxRequestTarget target) {
-                            // update the field with the user chosen value
-                            target.add(fileField);
-                        }
-                    });
+                    initFileChooser(chooser);
+                    return chooser;
+                }
+
+                @Override
+                protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                    GeoServerFileChooser chooser = (GeoServerFileChooser) contents;
+                    file = ((File) chooser.getDefaultModelObject()).getAbsolutePath();
+
+                    // clear the raw input of the field won't show the new model
+                    // value
+                    fileField.clearInput();
+                    // fileField.setModelObject(file);
+
+                    target.add(fileField);
+                    return true;
+                }
+
+                @Override
+                public void onClose(AjaxRequestTarget target) {
+                    // update the field with the user chosen value
+                    target.add(fileField);
+                }
+            });
         }
     }
 }

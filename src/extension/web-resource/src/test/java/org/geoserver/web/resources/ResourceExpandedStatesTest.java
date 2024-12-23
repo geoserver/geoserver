@@ -43,11 +43,9 @@ public class ResourceExpandedStatesTest extends GeoServerWicketTestSupport {
 
         // automatic removal
         CountDownLatch lock = new CountDownLatch(1);
-        store().get("temp")
-                .addListener(
-                        notify -> {
-                            lock.countDown();
-                        });
+        store().get("temp").addListener(notify -> {
+            lock.countDown();
+        });
 
         // delete resource
         res.delete();

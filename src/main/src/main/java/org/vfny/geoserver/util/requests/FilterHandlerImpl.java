@@ -19,8 +19,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
  */
 public class FilterHandlerImpl extends XMLFilterImpl implements ContentHandler, FilterHandler {
     /** Class logger */
-    private static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
+    private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.requests");
 
     /** Tracks current filter */
     private Filter currentFilter = null;

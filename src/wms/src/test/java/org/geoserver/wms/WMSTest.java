@@ -54,23 +54,17 @@ import org.junit.Test;
 /** @author Ian Schneider <ischneider@opengeo.org> */
 public class WMSTest extends WMSTestSupport {
 
-    static final QName TIME_WITH_START_END =
-            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
     WMS wms;
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         testData.addVectorLayer(
-                TIME_WITH_START_END,
-                emptyMap(),
-                "TimeElevationWithStartEnd.properties",
-                getClass(),
-                getCatalog());
+                TIME_WITH_START_END, emptyMap(), "TimeElevationWithStartEnd.properties", getClass(), getCatalog());
     }
 
-    protected void setupStartEndTimeDimension(
-            String featureTypeName, String dimension, String start, String end) {
+    protected void setupStartEndTimeDimension(String featureTypeName, String dimension, String start, String end) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(featureTypeName);
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);
@@ -115,10 +109,8 @@ public class WMSTest extends WMSTestSupport {
     @Test
     public void testGetTimeElevationToFilterStartEndDate() throws Exception {
 
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
+        setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
 
         /* Reference for test assertions
         TimeElevationWithStartEnd.0=0|2012-02-11Z|2012-02-12Z|1.0|2.0|POLYGON((-180 90, 0 90, 0 0, -180 0, -180 90))
@@ -135,38 +127,19 @@ public class WMSTest extends WMSTestSupport {
         doTimeElevationFilter(format.parse("2012-02-15"), null);
 
         // Test start and end before all ranges.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-09"), format.parse("2012-02-10")), null);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-09"), format.parse("2012-02-10")), null);
         // Test start before and end during a range.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-09"), format.parse("2012-02-11")), null, 0, 2);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-09"), format.parse("2012-02-11")), null, 0, 2);
         // Test start on and end after or during a range.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-11"), format.parse("2012-02-13")),
-                null,
-                0,
-                1,
-                2);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-11"), format.parse("2012-02-13")), null, 0, 1, 2);
         // Test start before and end after all ranges.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-09"), format.parse("2012-02-14")),
-                null,
-                0,
-                1,
-                2);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-09"), format.parse("2012-02-14")), null, 0, 1, 2);
         // Test start during and end after a range.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-13"), format.parse("2012-02-14")), null, 1, 2);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-13"), format.parse("2012-02-14")), null, 1, 2);
         // Test start during and end during a range.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-12"), format.parse("2012-02-13")),
-                null,
-                0,
-                1,
-                2);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-12"), format.parse("2012-02-13")), null, 0, 1, 2);
         // Test start and end after all ranges.
-        doTimeElevationFilter(
-                new DateRange(format.parse("2012-02-15"), format.parse("2012-02-16")), null);
+        doTimeElevationFilter(new DateRange(format.parse("2012-02-15"), format.parse("2012-02-16")), null);
 
         doTimeElevationFilter(null, 0);
         doTimeElevationFilter(null, 1, 0, 2);
@@ -187,14 +160,11 @@ public class WMSTest extends WMSTestSupport {
         doTimeElevationFilter(format.parse("2012-02-11"), 3, 2);
     }
 
-    public void doTimeElevationFilter(Object time, Object elevation, Integer... expectedIds)
-            throws Exception {
+    public void doTimeElevationFilter(Object time, Object elevation, Integer... expectedIds) throws Exception {
 
-        FeatureTypeInfo timeWithStartEnd =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo timeWithStartEnd = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
 
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
+        setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
         FeatureSource fs = timeWithStartEnd.getFeatureSource(null, null);
 
         List<Object> times = time == null ? null : Arrays.asList(time);
@@ -223,15 +193,14 @@ public class WMSTest extends WMSTestSupport {
     private static final String CUSTOM_DIMENSION_NAME = WMS.DIM_ + "reference_time";
 
     /**
-     * In case no custom dimension is defined at all, the dimension filter should return {@link
-     * Filter#INCLUDE} and a filter operation should then of course return all features.
+     * In case no custom dimension is defined at all, the dimension filter should return {@link Filter#INCLUDE} and a
+     * filter operation should then of course return all features.
      */
     @Test
     public void customDimensionFilterWithoutCustomDimensions() throws IOException {
 
         // clear away the custom dimension
-        FeatureTypeInfo featureTypeInfo =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo featureTypeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         featureTypeInfo.getMetadata().remove(CUSTOM_DIMENSION_NAME);
         getCatalog().save(featureTypeInfo);
 
@@ -244,9 +213,7 @@ public class WMSTest extends WMSTestSupport {
 
         // with request
         Map<String, String> rawKvp = new HashMap<>();
-        rawKvp.put(
-                CUSTOM_DIMENSION_NAME.toUpperCase(),
-                ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
+        rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
 
         assertEquals(
                 "Custom dimension filter should return 'Filter.INCLUDE' when no custom dimensions are defined.",
@@ -257,36 +224,26 @@ public class WMSTest extends WMSTestSupport {
         doCustomDimensionFilter(rawKvp, null, List.of(0, 1, 2), false);
     }
 
-    /**
-     * For certain types of requests, the custom dimension filter should return the expected set of
-     * features.
-     */
+    /** For certain types of requests, the custom dimension filter should return the expected set of features. */
     @Test
     public void customDimensionFilterFeaturesMatchingRequest() throws Exception {
 
         Map<String, String> rawKvp = new HashMap<>();
         // matching
-        rawKvp.put(
-                CUSTOM_DIMENSION_NAME.toUpperCase(),
-                ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
+        rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), ISO_INSTANT.format(Instant.parse("2012-02-12T09:05:00Z")));
         doCustomDimensionFilter(rawKvp, null, List.of(1, 2), true);
 
         // too early
-        rawKvp.put(
-                CUSTOM_DIMENSION_NAME.toUpperCase(),
-                ISO_INSTANT.format(Instant.parse("2012-02-10T09:05:00Z")));
+        rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), ISO_INSTANT.format(Instant.parse("2012-02-10T09:05:00Z")));
         doCustomDimensionFilter(rawKvp, null, emptyList(), true);
 
         // too late
-        rawKvp.put(
-                CUSTOM_DIMENSION_NAME.toUpperCase(),
-                ISO_INSTANT.format(Instant.parse("2012-02-20T09:05:00Z")));
+        rawKvp.put(CUSTOM_DIMENSION_NAME.toUpperCase(), ISO_INSTANT.format(Instant.parse("2012-02-20T09:05:00Z")));
         doCustomDimensionFilter(rawKvp, null, emptyList(), true);
     }
 
     /**
-     * In case no default value lookup setting is defined, the dimension filter should fall back to
-     * Minimum strategy.
+     * In case no default value lookup setting is defined, the dimension filter should fall back to Minimum strategy.
      */
     @Test
     public void customDimensionFilterMinimumDefaultStrategy() throws Exception {
@@ -294,8 +251,8 @@ public class WMSTest extends WMSTestSupport {
     }
 
     /**
-     * For several defined default value lookup settings, the custom dimension filter should return
-     * the corresponding set of expected features in case a dimension is missing in the request.
+     * For several defined default value lookup settings, the custom dimension filter should return the corresponding
+     * set of expected features in case a dimension is missing in the request.
      */
     @Test
     public void customDimensionFilterDefaultStrategyWhenDimensionMissing() throws IOException {
@@ -316,8 +273,8 @@ public class WMSTest extends WMSTestSupport {
     }
 
     /**
-     * In case the dimension is passed in the request but without a dimension value, then the
-     * default value settings should kick in and return the corresponding set of expected features.
+     * In case the dimension is passed in the request but without a dimension value, then the default value settings
+     * should kick in and return the corresponding set of expected features.
      */
     @Test
     public void customDimensionFilterDefaultStrategyWhenDimensionValueMissing() throws IOException {
@@ -331,8 +288,7 @@ public class WMSTest extends WMSTestSupport {
     }
 
     /**
-     * Executes the custom dimension filter and asserts for the presence of the expected features
-     * ids.
+     * Executes the custom dimension filter and asserts for the presence of the expected features ids.
      *
      * @param rawKvp the request represented by the raw KVP
      * @param defaultValueSetting the default value strategy (can be null)
@@ -347,8 +303,7 @@ public class WMSTest extends WMSTestSupport {
             boolean setupDimension)
             throws IOException {
 
-        FeatureTypeInfo typeInfo =
-                getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
+        FeatureTypeInfo typeInfo = getCatalog().getFeatureTypeByName(TIME_WITH_START_END.getLocalPart());
         FeatureSource<?, ?> fs = typeInfo.getFeatureSource(null, null);
 
         // set up a custom dimension
@@ -372,10 +327,7 @@ public class WMSTest extends WMSTestSupport {
             }
         }
         assertEquals(
-                "We are expecting "
-                        + expectedFeatureIds.size()
-                        + " features but got "
-                        + results.size(),
+                "We are expecting " + expectedFeatureIds.size() + " features but got " + results.size(),
                 expectedFeatureIds.size(),
                 results.size());
         assertTrue(
@@ -386,8 +338,7 @@ public class WMSTest extends WMSTestSupport {
     @Test
     public void testWMSLifecycleHandlerGraphicCacheReset() throws Exception {
 
-        Iterator<ExternalGraphicFactory> it =
-                DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
         Map<URL, BufferedImage> imageCache = null;
         while (it.hasNext()) {
             ExternalGraphicFactory egf = it.next();
@@ -422,14 +373,12 @@ public class WMSTest extends WMSTestSupport {
         WMSInfo info = wms.getServiceInfo();
         info.setMaxRequestedDimensionValues(1);
         getGeoServer().save(info);
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
+        setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "time", "startTime", "endTime");
         String name = TIME_WITH_START_END.getLocalPart();
         MapLayerInfo mapLayerInfo = new MapLayerInfo(getCatalog().getLayerByName(name));
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
         formatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-        DateRange dateRange =
-                new DateRange(formatter.parse("2012-02-09"), formatter.parse("2012-02-20"));
+        DateRange dateRange = new DateRange(formatter.parse("2012-02-09"), formatter.parse("2012-02-20"));
         List<Object> times = Arrays.asList(dateRange);
         wms.checkMaxDimensions(mapLayerInfo, times, null, false);
     }
@@ -439,8 +388,7 @@ public class WMSTest extends WMSTestSupport {
         WMSInfo info = wms.getServiceInfo();
         info.setMaxRequestedDimensionValues(1);
         getGeoServer().save(info);
-        setupStartEndTimeDimension(
-                TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
+        setupStartEndTimeDimension(TIME_WITH_START_END.getLocalPart(), "elevation", "startElevation", "endElevation");
         String name = TIME_WITH_START_END.getLocalPart();
         MapLayerInfo mapLayerInfo = new MapLayerInfo(getCatalog().getLayerByName(name));
         NumberRange elevationRange = NumberRange.create(0, 99);

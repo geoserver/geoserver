@@ -14,9 +14,9 @@ import org.geoserver.catalog.CatalogException;
  *
  * <h4>Exceptions</h4>
  *
- * In general the catalog protects itself against misbehaved listeners that throw exceptions.
- * However sometimes it is the case in which a listener must report an error via exception. For such
- * purposes {@link CatalogException} should be thrown.
+ * In general the catalog protects itself against misbehaved listeners that throw exceptions. However sometimes it is
+ * the case in which a listener must report an error via exception. For such purposes {@link CatalogException} should be
+ * thrown.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -25,7 +25,8 @@ public interface CatalogListener {
     /** Handles the event of just before addition to the catalog. */
     default void handlePreAddEvent(CatalogBeforeAddEvent event) throws CatalogException {
         // empty implementation for backward compatibility
-    };
+    }
+    ;
 
     /** Handles the event of an addition to the catalog. */
     void handleAddEvent(CatalogAddEvent event) throws CatalogException;

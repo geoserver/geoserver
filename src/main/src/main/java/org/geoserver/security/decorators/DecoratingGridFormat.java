@@ -14,8 +14,8 @@ import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.util.factory.Hints;
 
 /**
- * Delegates every method to the delegate grid format. Subclasses will override selected methods to
- * perform their "decoration" job
+ * Delegates every method to the delegate grid format. Subclasses will override selected methods to perform their
+ * "decoration" job
  *
  * @author Andrea Aime
  */

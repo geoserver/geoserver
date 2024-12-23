@@ -37,9 +37,8 @@ public class RoleServiceChoice extends DropDownChoice<String> {
 
         RoleServiceNamesModel() {
             try {
-                this.serviceNames =
-                        new ArrayList<>(
-                                GeoServerApplication.get().getSecurityManager().listRoleServices());
+                this.serviceNames = new ArrayList<>(
+                        GeoServerApplication.get().getSecurityManager().listRoleServices());
             } catch (IOException e) {
                 throw new WicketRuntimeException(e);
             }

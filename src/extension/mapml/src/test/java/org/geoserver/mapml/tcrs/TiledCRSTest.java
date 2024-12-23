@@ -94,10 +94,8 @@ public class TiledCRSTest {
         TiledCRS osmtile = new TiledCRS("OSMTILE");
 
         // this query has 8 tiles in it (at zoom=15)
-        LatLngBounds query =
-                new LatLngBounds(
-                        new LatLng(45.39079543037812, -75.7205629348755),
-                        new LatLng(45.40525984235134, -75.693097114563));
+        LatLngBounds query = new LatLngBounds(
+                new LatLng(45.39079543037812, -75.7205629348755), new LatLng(45.40525984235134, -75.693097114563));
         List<TileCoordinates> tiles = osmtile.getTilesForExtent(query, 15, 0);
         assertEquals("Expect 8 tiles for extent: ", 8, tiles.size());
 
@@ -138,10 +136,8 @@ public class TiledCRSTest {
         TiledCRS osmtile = new TiledCRS("OSMTILE");
 
         osmtile.setPageSize(5);
-        LatLngBounds query =
-                new LatLngBounds(
-                        new LatLng(45.39079543037812, -75.7205629348755),
-                        new LatLng(45.40525984235134, -75.693097114563));
+        LatLngBounds query = new LatLngBounds(
+                new LatLng(45.39079543037812, -75.7205629348755), new LatLng(45.40525984235134, -75.693097114563));
         List<TileCoordinates> tiles = osmtile.getTilesForExtent(query, 15, 0);
         assertEquals("Expect 5 tiles for first page of extent: ", 5, tiles.size());
         tiles = osmtile.getTilesForExtent(query, 15, 5);
@@ -187,10 +183,8 @@ public class TiledCRSTest {
         TiledCRS cbmlcc = new TiledCRS("CBMTILE");
 
         // this query has 9 tiles in it (at zoom=17)
-        LatLngBounds query =
-                new LatLngBounds(
-                        new LatLng(45.39257399473906, -75.72876150576825),
-                        new LatLng(45.40352437491144, -75.68484627676823));
+        LatLngBounds query = new LatLngBounds(
+                new LatLng(45.39257399473906, -75.72876150576825), new LatLng(45.40352437491144, -75.68484627676823));
         List<TileCoordinates> tiles = cbmlcc.getTilesForExtent(query, 17, 0);
         assertEquals("Expect 9 tiles for extent: ", 9, tiles.size());
 

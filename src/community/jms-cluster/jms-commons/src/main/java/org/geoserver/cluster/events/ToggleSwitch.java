@@ -9,9 +9,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * An instance of this class can be used to send over the Application Context ToggleEvent events.
- * Those events can be used by the a producer to enable or disable the message events production
- * over the JMS channel.
+ * An instance of this class can be used to send over the Application Context ToggleEvent events. Those events can be
+ * used by the a producer to enable or disable the message events production over the JMS channel.
  *
  * @see {@link JMSEventListener}
  * @author Carlo Cancellieri - carlo.cancellieri@geo-solutions.it
@@ -29,8 +28,7 @@ public class ToggleSwitch implements ApplicationContextAware {
         this.toggleType = toggleType;
     }
 
-    public ToggleSwitch(
-            final ApplicationContext ctx, final Boolean status, final ToggleType toggleType) {
+    public ToggleSwitch(final ApplicationContext ctx, final Boolean status, final ToggleType toggleType) {
         super();
         this.ctx = ctx;
         this.status = status;

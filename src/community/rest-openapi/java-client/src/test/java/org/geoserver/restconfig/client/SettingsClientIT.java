@@ -80,13 +80,12 @@ public class SettingsClientIT {
         assertNotNull(settings.getContact());
         assertNull(settings.getContact().getAddress());
 
-        ContactInfo contact =
-                new ContactInfo()
-                        .address("address")
-                        .addressCity("addressCity")
-                        .addressCountry("addressCountry")
-                        .addressType("addressType")
-                        .contactEmail("contact@example.com");
+        ContactInfo contact = new ContactInfo()
+                .address("address")
+                .addressCity("addressCity")
+                .addressCountry("addressCountry")
+                .addressType("addressType")
+                .contactEmail("contact@example.com");
 
         SettingsInfo request = new SettingsInfo();
         request.charset("ISO-8859-1")

@@ -24,8 +24,7 @@ public final class SpatialReferences {
     public static int DEFAULT_WKID = 4326;
 
     private SpatialReferences() {
-        throw new RuntimeException(
-                "No need to instantiate SpatialReferences, it has only static methods.");
+        throw new RuntimeException("No need to instantiate SpatialReferences, it has only static methods.");
     }
 
     public static SpatialReference fromCRS(CoordinateReferenceSystem crs) throws FactoryException {
@@ -35,8 +34,7 @@ public final class SpatialReferences {
         }
         if (null != epsgCode) {
             // strip off EPSG
-            String code =
-                    epsgCode.substring(epsgCode.lastIndexOf(GenericName.DEFAULT_SEPARATOR) + 1);
+            String code = epsgCode.substring(epsgCode.lastIndexOf(GenericName.DEFAULT_SEPARATOR) + 1);
             SpatialReferenceWKID sr = new SpatialReferenceWKID(Integer.parseInt(code));
             /* TODO: Re-renable this once BSE is on GS 2.13.2 or newer
             Integer latestWkid = latestWkid(crs);
@@ -50,11 +48,9 @@ public final class SpatialReferences {
         }
     }
 
-    public static CoordinateReferenceSystem fromSpatialReference(SpatialReference sr)
-            throws FactoryException {
+    public static CoordinateReferenceSystem fromSpatialReference(SpatialReference sr) throws FactoryException {
         if (sr instanceof SpatialReferenceWKID) {
-            return Utils.parseSpatialReference(
-                    String.valueOf(((SpatialReferenceWKID) sr).getWkid()));
+            return Utils.parseSpatialReference(String.valueOf(((SpatialReferenceWKID) sr).getWkid()));
         } else if (sr instanceof SpatialReferenceWKT) {
             return CRS.parseWKT(((SpatialReferenceWKT) sr).getWkt());
         } else {

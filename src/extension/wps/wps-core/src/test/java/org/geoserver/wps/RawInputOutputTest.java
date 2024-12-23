@@ -58,57 +58,43 @@ public class RawInputOutputTest extends WPSTestSupport {
         // check inputs
         String inputBase = "/wps:ProcessDescriptions/ProcessDescription/DataInputs";
         assertXpathEvaluatesTo(
-                "application/json",
-                inputBase + "/Input[1]/ComplexData/Default/Format/MimeType/child::text()",
-                d);
+                "application/json", inputBase + "/Input[1]/ComplexData/Default/Format/MimeType/child::text()", d);
         assertXpathEvaluatesTo(
-                "application/json",
-                inputBase + "/Input[1]/ComplexData/Supported/Format[1]/MimeType/child::text()",
-                d);
+                "application/json", inputBase + "/Input[1]/ComplexData/Supported/Format[1]/MimeType/child::text()", d);
         assertXpathEvaluatesTo(
-                "text/xml",
-                inputBase + "/Input[1]/ComplexData/Supported/Format[2]/MimeType/child::text()",
-                d);
-        assertXpathEvaluatesTo(
-                "0", "count(" + inputBase + "/Input[ows:Identifier='outputMimeType'])", d);
+                "text/xml", inputBase + "/Input[1]/ComplexData/Supported/Format[2]/MimeType/child::text()", d);
+        assertXpathEvaluatesTo("0", "count(" + inputBase + "/Input[ows:Identifier='outputMimeType'])", d);
 
         // check outputs
         String outputBase = "/wps:ProcessDescriptions/ProcessDescription/ProcessOutputs";
+        assertXpathEvaluatesTo("application/json", outputBase + "/Output/ComplexOutput/Default/Format/MimeType", d);
         assertXpathEvaluatesTo(
-                "application/json",
-                outputBase + "/Output/ComplexOutput/Default/Format/MimeType",
-                d);
-        assertXpathEvaluatesTo(
-                "application/json",
-                outputBase + "/Output/ComplexOutput/Supported/Format[1]/MimeType",
-                d);
-        assertXpathEvaluatesTo(
-                "text/xml", outputBase + "/Output/ComplexOutput/Supported/Format[2]/MimeType", d);
+                "application/json", outputBase + "/Output/ComplexOutput/Supported/Format[1]/MimeType", d);
+        assertXpathEvaluatesTo("text/xml", outputBase + "/Output/ComplexOutput/Supported/Format[2]/MimeType", d);
     }
 
     @Test
     public void testExecuteSynchDocument() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>data</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:ResponseDocument storeExecuteResponse='false'>"
-                        + "<wps:Output>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:Output>"
-                        + "</wps:ResponseDocument>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Raw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>data</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument storeExecuteResponse='false'>"
+                + "<wps:Output>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         // System.out.println(xml);
 
         Document d = postAsDOM("wps", xml);
@@ -120,25 +106,24 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     @Test
     public void testExecuteSynchRaw() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>data</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:RawDataOutput mimeType=\"text/xml\">"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:RawDataOutput>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Raw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>data</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:RawDataOutput mimeType=\"text/xml\">"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         // System.out.println(xml);
 
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
@@ -149,29 +134,28 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     @Test
     public void testExecuteEmbeddedXML() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>data</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"text/xml\" xmlns:ani=\"http://geoserver.org/wps/animation\">"
-                        + "  <ani:Layer>\n"
-                        + "    <ani:Name>test</ani:Name>\n"
-                        + "    <ani:Parameter key=\"CQL_FILTER\">sun_elevation%3C51</ani:Parameter>\n"
-                        + "  </ani:Layer>\n"
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:RawDataOutput mimeType=\"text/xml\">"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:RawDataOutput>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Raw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>data</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"text/xml\" xmlns:ani=\"http://geoserver.org/wps/animation\">"
+                + "  <ani:Layer>\n"
+                + "    <ani:Name>test</ani:Name>\n"
+                + "    <ani:Parameter key=\"CQL_FILTER\">sun_elevation%3C51</ani:Parameter>\n"
+                + "  </ani:Layer>\n"
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:RawDataOutput mimeType=\"text/xml\">"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         // System.out.println(xml);
 
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
@@ -184,27 +168,26 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     @Test
     public void testExecuteAsynch() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>data</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:ResponseDocument storeExecuteResponse='true' status='true'>"
-                        + "<wps:Output asReference='true'>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:Output>"
-                        + "</wps:ResponseDocument>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Raw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>data</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument storeExecuteResponse='true' status='true'>"
+                + "<wps:Output asReference='true'>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         // System.out.println(xml);
 
         Document dom = postAsDOM("wps", xml);
@@ -213,23 +196,19 @@ public class RawInputOutputTest extends WPSTestSupport {
         String fullStatusLocation = xp.evaluate("//wps:ExecuteResponse/@statusLocation", dom);
         String statusLocation = fullStatusLocation.substring(fullStatusLocation.indexOf('?') - 3);
 
-        await().atMost(60, SECONDS)
-                .until(
-                        () -> {
-                            Document wd = getAsDOM(statusLocation);
-                            // are we still waiting for termination?
-                            return countMatches(wd, "//wps:Status/wps:ProcessAccepted") == 0
-                                    && countMatches(wd, "//wps:Status/wps:ProcessStarted") == 0
-                                    && countMatches(wd, "//wps:Status/wps:ProcessQueued") == 0;
-                        });
+        await().atMost(60, SECONDS).until(() -> {
+            Document wd = getAsDOM(statusLocation);
+            // are we still waiting for termination?
+            return countMatches(wd, "//wps:Status/wps:ProcessAccepted") == 0
+                    && countMatches(wd, "//wps:Status/wps:ProcessStarted") == 0
+                    && countMatches(wd, "//wps:Status/wps:ProcessQueued") == 0;
+        });
 
         dom = getAsDOM(statusLocation);
         // print(dom);
         assertEquals(1, countMatches(dom, "//wps:Status/wps:ProcessSucceeded"));
         String fullReference =
-                xp.evaluate(
-                        "//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Reference/@href",
-                        dom);
+                xp.evaluate("//wps:ProcessOutputs/wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
         String reference = fullReference.substring(fullReference.indexOf('?') - 3);
 
         MockHttpServletResponse response = getAsServletResponse(reference);
@@ -239,33 +218,32 @@ public class RawInputOutputTest extends WPSTestSupport {
 
     @Test
     public void testReturnNull() throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:Raw</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>data</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
-                        + "</wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>returnNull</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:LiteralData>true</wps:LiteralData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:ResponseDocument>"
-                        + "<wps:Output>"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:Output>"
-                        + "</wps:ResponseDocument>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:Raw</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>data</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA[ABCDE]]>"
+                + "</wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>returnNull</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>true</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument>"
+                + "<wps:Output>"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         // System.out.println(xml);
 
         Document dom = postAsDOM("wps", xml);

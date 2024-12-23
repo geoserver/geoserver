@@ -75,22 +75,15 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
     @Before
     public void setUp() throws Exception {
         listener = new AutopopulateTransactionCallback(getCatalog());
-        File f =
-                new File(
-                        this.getTestData().getDataDirectoryRoot()
-                                + "\\workspaces\\cite\\cite\\NamedPlaces\\",
-                        "transactionCustomizer.properties");
+        File f = new File(
+                this.getTestData().getDataDirectoryRoot() + "\\workspaces\\cite\\cite\\NamedPlaces\\",
+                "transactionCustomizer.properties");
         f.deleteOnExit();
         try (FileOutputStream fout = new FileOutputStream(f)) {
-            IOUtils.copy(
-                    this.getClass()
-                            .getResourceAsStream("test-data/transactionCustomizer.properties"),
-                    fout);
+            IOUtils.copy(this.getClass().getResourceAsStream("test-data/transactionCustomizer.properties"), fout);
         }
         template =
-                new AutopopulateTemplate(
-                        getDataDirectory()
-                                .get("cite/NamedPlaces/transactionCustomizer.properties"));
+                new AutopopulateTemplate(getDataDirectory().get("cite/NamedPlaces/transactionCustomizer.properties"));
         Map templateCache = mock(Map.class);
         when(templateCache.get(any())).thenReturn(template);
         listener.setTemplateCache(templateCache);
@@ -174,10 +167,9 @@ public class AutopopulateTransactionCallbackTest extends GeoServerSystemTestSupp
 
         listener.beforeTransaction(request);
 
-        StringBuilder sb =
-                new StringBuilder("wfs?request=GetFeature&version=2.0")
-                        .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
-                        .append("application/json");
+        StringBuilder sb = new StringBuilder("wfs?request=GetFeature&version=2.0")
+                .append("&TYPENAME=cite:NamedPlaces&outputFormat=")
+                .append("application/json");
         JSONObject result = (JSONObject) getJson(sb.toString());
         JSONArray features = (JSONArray) result.get("features");
         assertEquals(features.size(), 2);

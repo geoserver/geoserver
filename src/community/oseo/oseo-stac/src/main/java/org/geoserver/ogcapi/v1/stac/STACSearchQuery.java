@@ -71,11 +71,7 @@ public class STACSearchQuery extends APISearchQuery {
                         && arrayNode.get(i).has(STAC_SORTBY_FIELD)
                         && arrayNode.get(i).has(STAC_SORTBY_DIRECTION)) {
                     SortOrder direction =
-                            arrayNode
-                                            .get(i)
-                                            .get(STAC_SORTBY_DIRECTION)
-                                            .asText()
-                                            .equalsIgnoreCase(STAC_SORTBY_ASC)
+                            arrayNode.get(i).get(STAC_SORTBY_DIRECTION).asText().equalsIgnoreCase(STAC_SORTBY_ASC)
                                     ? SortOrder.ASCENDING
                                     : SortOrder.DESCENDING;
                     PropertyName field =

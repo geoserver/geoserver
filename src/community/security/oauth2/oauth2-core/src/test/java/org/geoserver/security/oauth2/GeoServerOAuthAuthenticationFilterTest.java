@@ -44,40 +44,34 @@ public class GeoServerOAuthAuthenticationFilterTest extends GeoServerSystemTestS
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         FileUtils.copyFileToDirectory(
-                new File("./src/test/resources/geoserver-environment.properties"),
-                testData.getDataDirectoryRoot());
+                new File("./src/test/resources/geoserver-environment.properties"), testData.getDataDirectoryRoot());
     }
 
     @Test
     public void testAnonymousAuthenticationIsNotCreate() {
-        GeoServerOAuthAuthenticationFilter filter =
-                new GeoServerOAuthAuthenticationFilter(null, null, null, null) {
-                    @Override
-                    protected String getPreAuthenticatedPrincipal(
-                            HttpServletRequest request, HttpServletResponse response) {
-                        return null;
-                    }
-                };
+        GeoServerOAuthAuthenticationFilter filter = new GeoServerOAuthAuthenticationFilter(null, null, null, null) {
+            @Override
+            protected String getPreAuthenticatedPrincipal(HttpServletRequest request, HttpServletResponse response) {
+                return null;
+            }
+        };
         filter.doAuthenticate(new MockHttpServletRequest(), new MockHttpServletResponse());
         assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
-    public void testAvoidSessionClearingIfNoAccessTokenIsPresent()
-            throws IOException, ServletException {
+    public void testAvoidSessionClearingIfNoAccessTokenIsPresent() throws IOException, ServletException {
         final boolean[] didLogout = {false};
-        MockHttpServletRequest httpServletRequest =
-                new MockHttpServletRequest() {
-                    @Override
-                    public void logout() throws ServletException {
-                        super.logout();
-                        didLogout[0] = true;
-                    }
-                };
+        MockHttpServletRequest httpServletRequest = new MockHttpServletRequest() {
+            @Override
+            public void logout() throws ServletException {
+                super.logout();
+                didLogout[0] = true;
+            }
+        };
         httpServletRequest.setSession(new MockHttpSession());
         HttpServletResponse httpServletResponse = new MockHttpServletResponse();
-        GeoServerOAuth2SecurityConfiguration config =
-                Mockito.mock(GeoServerOAuth2SecurityConfiguration.class);
+        GeoServerOAuth2SecurityConfiguration config = Mockito.mock(GeoServerOAuth2SecurityConfiguration.class);
         GeoServerOAuth2FilterConfig filterConfig = new GeoServerOAuth2FilterConfig();
         filterConfig.setName("openidconnect");
         filterConfig.setClassName(GeoServerOAuthAuthenticationFilter.class.getName());
@@ -92,13 +86,10 @@ public class GeoServerOAuthAuthenticationFilterTest extends GeoServerSystemTestS
         filterConfig.setEnableRedirectAuthenticationEntryPoint(true);
         OAuth2RestTemplate oAuth2RestTemplate = Mockito.mock(OAuth2RestTemplate.class);
         Mockito.when(oAuth2RestTemplate.getAccessToken()).thenReturn(null);
-        Mockito.when(oAuth2RestTemplate.getOAuth2ClientContext())
-                .thenReturn(new DefaultOAuth2ClientContext());
-        GeoServerOAuthRemoteTokenServices services =
-                Mockito.mock(GeoServerOAuthRemoteTokenServices.class);
+        Mockito.when(oAuth2RestTemplate.getOAuth2ClientContext()).thenReturn(new DefaultOAuth2ClientContext());
+        GeoServerOAuthRemoteTokenServices services = Mockito.mock(GeoServerOAuthRemoteTokenServices.class);
         GeoServerOAuthAuthenticationFilter filter =
-                new GeoServerOAuthAuthenticationFilter(
-                        filterConfig, services, config, oAuth2RestTemplate) {
+                new GeoServerOAuthAuthenticationFilter(filterConfig, services, config, oAuth2RestTemplate) {
                     @Override
                     protected String getPreAuthenticatedPrincipal(
                             HttpServletRequest request, HttpServletResponse response) {

@@ -39,18 +39,13 @@ public class CoverageKvpParser extends KvpParser {
         final List<String> identifiers = KvpUtils.readFlat(value);
         if (identifiers == null || identifiers.isEmpty()) {
             throw new WcsException(
-                    "Required paramer, coverage, missing",
-                    WcsExceptionCode.MissingParameterValue,
-                    "coverage");
+                    "Required paramer, coverage, missing", WcsExceptionCode.MissingParameterValue, "coverage");
         }
 
         for (String coverage : identifiers) {
             final LayerInfo layer = catalog.getLayerByName(coverage);
             if (layer == null || layer.getType() != PublishedType.RASTER)
-                throw new WcsException(
-                        "Could not find coverage '" + coverage + "'",
-                        InvalidParameterValue,
-                        "coverage");
+                throw new WcsException("Could not find coverage '" + coverage + "'", InvalidParameterValue, "coverage");
             coverages.add(coverage);
         }
 

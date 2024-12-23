@@ -33,8 +33,8 @@ public class OpenSearchAccessProvider {
     }
 
     /**
-     * Returns the OpenSearchAccess configured in {@link OSEOInfo}, or throws a service exception in
-     * case of mis-configuration
+     * Returns the OpenSearchAccess configured in {@link OSEOInfo}, or throws a service exception in case of
+     * mis-configuration
      */
     public OpenSearchAccess getOpenSearchAccess() throws IOException {
         OSEOInfo service = getService();
@@ -43,20 +43,18 @@ public class OpenSearchAccessProvider {
 
         DataAccess result = dataStore.getDataStore(null);
         if (result == null) {
-            throw new OWS20Exception(
-                    "Failed to locate OpenSearch data access with identifier "
-                            + openSearchAccessStoreId
-                            + ", please correct the configuration in the OpenSearch for EO panel");
+            throw new OWS20Exception("Failed to locate OpenSearch data access with identifier "
+                    + openSearchAccessStoreId
+                    + ", please correct the configuration in the OpenSearch for EO panel");
         } else if (!(result instanceof OpenSearchAccess)) {
-            throw new OWS20Exception(
-                    "Data access with identifier "
-                            + openSearchAccessStoreId
-                            + " does not point to a valid OpenSearchDataAccess, "
-                            + "please correct the configuration in the OpenSearch for EO panel, "
-                            + "but got instead an istance of "
-                            + result.getClass()
-                            + "\n. ToString follows: "
-                            + result);
+            throw new OWS20Exception("Data access with identifier "
+                    + openSearchAccessStoreId
+                    + " does not point to a valid OpenSearchDataAccess, "
+                    + "please correct the configuration in the OpenSearch for EO panel, "
+                    + "but got instead an istance of "
+                    + result.getClass()
+                    + "\n. ToString follows: "
+                    + result);
         }
 
         return (OpenSearchAccess) result;
@@ -68,8 +66,7 @@ public class OpenSearchAccessProvider {
         String openSearchAccessStoreId = service.getOpenSearchAccessStoreId();
         if (openSearchAccessStoreId == null) {
             throw new OWS20Exception(
-                    "OpenSearchAccess is not configured in the"
-                            + " OpenSearch for EO panel, please do so");
+                    "OpenSearchAccess is not configured in the" + " OpenSearch for EO panel, please do so");
         }
         // using rawCatalog to avoid issues with mismatch between workspace and OSEO delegate store
         DataStoreInfo dataStore = this.rawCatalog.getDataStore(openSearchAccessStoreId);

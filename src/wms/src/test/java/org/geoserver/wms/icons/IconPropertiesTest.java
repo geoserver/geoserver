@@ -60,18 +60,14 @@ public class IconPropertiesTest extends IconTestSupport {
     @Test
     public void testMultipleFeatureTypeStyle() {
         final PointSymbolizer symbolizer = grayCircle();
-        final Style s =
-                style(
-                        featureTypeStyle(catchAllRule(symbolizer)),
-                        featureTypeStyle(catchAllRule(symbolizer)));
+        final Style s = style(featureTypeStyle(catchAllRule(symbolizer)), featureTypeStyle(catchAllRule(symbolizer)));
         assertEquals("0.0.0=&1.0.0=", encode(s, fieldIs1));
     }
 
     @Test
     public void testElseFilter() throws CQLException {
         final PointSymbolizer symbolizer = grayCircle();
-        final Style style =
-                styleFromRules(rule(toFilter("field = 1"), symbolizer), elseRule(symbolizer));
+        final Style style = styleFromRules(rule(toFilter("field = 1"), symbolizer), elseRule(symbolizer));
         assertEquals("0.0.0=", encode(style, fieldIs1));
         assertEquals("0.1.0=", encode(style, fieldIs2));
     }
@@ -92,11 +88,9 @@ public class IconPropertiesTest extends IconTestSupport {
         Stroke stroke = styleFactory.stroke(color, null, null, null, null, null, null);
         Fill fill = styleFactory.fill(null, color, null);
         Mark mark = styleFactory.mark(toExpression("circle"), fill, stroke);
-        Graphic graphic =
-                styleFactory.graphic(Collections.singletonList(mark), null, null, null, null, null);
+        Graphic graphic = styleFactory.graphic(Collections.singletonList(mark), null, null, null, null, null);
         PointSymbolizer symbolizer =
-                styleFactory.pointSymbolizer(
-                        "symbolizer", toExpression("geom"), null, null, graphic);
+                styleFactory.pointSymbolizer("symbolizer", toExpression("geom"), null, null, graphic);
 
         final Style s = styleFromRules(catchAllRule(symbolizer));
         assertEquals(
@@ -140,16 +134,13 @@ public class IconPropertiesTest extends IconTestSupport {
     @Test
     public void testDynamicURL() throws CQLException, UnsupportedEncodingException {
         // TODO: This test should overlay two different images
-        final PointSymbolizer symbolizer =
-                externalGraphic("http://127.0.0.1/foo${field}.png", "image/png");
+        final PointSymbolizer symbolizer = externalGraphic("http://127.0.0.1/foo${field}.png", "image/png");
         final Style style = styleFromRules(catchAllRule(symbolizer, symbolizer));
         final String url = URLEncoder.encode("http://127.0.0.1/", "UTF-8");
         assertEquals(
-                "0.0.0=&0.0.0.url=" + url + "foo1.png&0.0.1=&0.0.1.url=" + url + "foo1.png",
-                encode(style, fieldIs1));
+                "0.0.0=&0.0.0.url=" + url + "foo1.png&0.0.1=&0.0.1.url=" + url + "foo1.png", encode(style, fieldIs1));
         assertEquals(
-                "0.0.0=&0.0.0.url=" + url + "foo2.png&0.0.1=&0.0.1.url=" + url + "foo2.png",
-                encode(style, fieldIs2));
+                "0.0.0=&0.0.0.url=" + url + "foo2.png&0.0.1=&0.0.1.url=" + url + "foo2.png", encode(style, fieldIs2));
     }
 
     @Test
@@ -173,12 +164,10 @@ public class IconPropertiesTest extends IconTestSupport {
         graphic.setRotation(toExpression("45 * field"));
         final Style style = styleFromRules(catchAllRule(symbolizer));
         IconProperties prop1 = IconPropertyExtractor.extractProperties(style, fieldIs1);
-        assertEquals(
-                "http://127.0.0.1/styles/foo.png", prop1.href("http://127.0.0.1/", null, "test"));
+        assertEquals("http://127.0.0.1/styles/foo.png", prop1.href("http://127.0.0.1/", null, "test"));
         assertEquals(45.0d, prop1.getHeading(), 0.0001);
         IconProperties prop2 = IconPropertyExtractor.extractProperties(style, fieldIs2);
-        assertEquals(
-                "http://127.0.0.1/styles/foo.png", prop2.href("http://127.0.0.1/", null, "test"));
+        assertEquals("http://127.0.0.1/styles/foo.png", prop2.href("http://127.0.0.1/", null, "test"));
         assertEquals(90.0d, prop2.getHeading(), 0.0001);
     }
 

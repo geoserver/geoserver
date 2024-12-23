@@ -14,8 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class CollectionConverter
-        extends com.thoughtworks.xstream.converters.collections.CollectionConverter {
+public class CollectionConverter extends com.thoughtworks.xstream.converters.collections.CollectionConverter {
 
     public static final String UNMODIFIABLE_LIST = "java.util.Collections$UnmodifiableList";
     public static final String UNMODIFIABLE_SET = "java.util.Collections$UnmodifiableSet";

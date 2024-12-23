@@ -27,12 +27,7 @@ import org.junit.Test;
 public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSupport {
 
     EditDataAccessRulePage page;
-    String ruleName =
-            MockData.CITE_PREFIX
-                    + "."
-                    + MockData.LAKES.getLocalPart()
-                    + "."
-                    + AccessMode.WRITE.getAlias();
+    String ruleName = MockData.CITE_PREFIX + "." + MockData.LAKES.getLocalPart() + "." + AccessMode.WRITE.getAlias();
 
     @Before
     public void init() throws Exception {
@@ -48,8 +43,7 @@ public class EditDataAccessRulePageTest extends AbstractSecurityWicketTestSuppor
         tester.assertRenderedPage(EditDataAccessRulePage.class);
 
         tester.assertModelValue("form:root", MockData.CITE_PREFIX);
-        tester.assertModelValue(
-                "form:layerContainer:layerAndLabel:layer", MockData.LAKES.getLocalPart());
+        tester.assertModelValue("form:layerContainer:layerAndLabel:layer", MockData.LAKES.getLocalPart());
         tester.assertModelValue("form:accessMode", AccessMode.WRITE);
 
         // Does not work with Palette

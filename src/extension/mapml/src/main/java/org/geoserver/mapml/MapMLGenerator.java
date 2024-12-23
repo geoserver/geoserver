@@ -73,8 +73,7 @@ public class MapMLGenerator {
     /**
      * @param sf a feature
      * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
-     * @return the feature (eventually null if the feature is outside the clip bounds or has no
-     *     matching style
+     * @return the feature (eventually null if the feature is outside the clip bounds or has no matching style
      * @throws IOException - IOException
      */
     public Optional<Feature> buildFeature(
@@ -89,13 +88,11 @@ public class MapMLGenerator {
         }
         Feature f = new Feature();
         f.setId(sf.getID());
-        Optional<Map<String, String>> replacmentAttsOptional =
-                getTemplateAttributes(templateOptional);
+        Optional<Map<String, String>> replacmentAttsOptional = getTemplateAttributes(templateOptional);
         if (featureCaptionTemplate != null && !featureCaptionTemplate.isEmpty()) {
             AttributeValueResolver attributeResolver = new AttributeValueResolver(sf);
             String caption =
-                    StringEscapeUtils.escapeXml10(
-                            attributeResolver.resolveFeatureCaption(featureCaptionTemplate));
+                    StringEscapeUtils.escapeXml10(attributeResolver.resolveFeatureCaption(featureCaptionTemplate));
             if (caption != null && !caption.trim().isEmpty()) {
                 f.setFeatureCaption(caption.trim());
             }
@@ -112,8 +109,7 @@ public class MapMLGenerator {
         if (g == null) return Optional.empty();
 
         // intersection check
-        if (clipBounds != null && !clipBounds.intersects(g.getEnvelopeInternal()))
-            return Optional.empty();
+        if (clipBounds != null && !clipBounds.intersects(g.getEnvelopeInternal())) return Optional.empty();
         // eventual simplification (for WMS usage)
         if (simplifier != null) {
             try {
@@ -130,18 +126,15 @@ public class MapMLGenerator {
             // can't convert geometry to type expected by symbolizer?
             if (g == null) {
                 if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer(
-                            "Could not convert geometry of type"
-                                    + (g != null ? g.getGeometryType() : "null")
-                                    + " to symbolizer type: "
-                                    + mapMLStyles.get(0).getSymbolizerType());
+                    LOGGER.finer("Could not convert geometry of type"
+                            + (g != null ? g.getGeometryType() : "null")
+                            + " to symbolizer type: "
+                            + mapMLStyles.get(0).getSymbolizerType());
                 }
                 return Optional.empty();
             }
             String spaceDelimitedCSSClasses =
-                    mapMLStyles.stream()
-                            .map(MapMLStyle::getCSSClassName)
-                            .collect(Collectors.joining(SPACE));
+                    mapMLStyles.stream().map(MapMLStyle::getCSSClassName).collect(Collectors.joining(SPACE));
             f.setStyle(spaceDelimitedCSSClasses);
         }
 
@@ -156,7 +149,8 @@ public class MapMLGenerator {
         // of the original geometry
         GeometryContent geometryContent = null;
         if (templateOptional.isPresent() && g.getUserData() == null) {
-            geometryContent = templateOptional.get().getBody().getFeatures().get(0).getGeometry();
+            geometryContent =
+                    templateOptional.get().getBody().getFeatures().get(0).getGeometry();
             // format the geometry coming from the template using the formatter
             Object geometry = geometryContent.getGeometryContent().getValue();
             formatGeometry(geometry);
@@ -178,12 +172,10 @@ public class MapMLGenerator {
             org.geoserver.mapml.xml.Point point = (org.geoserver.mapml.xml.Point) geometry;
             formatCoordinates(point.getCoordinates());
         } else if (geometry instanceof org.geoserver.mapml.xml.MultiPoint) {
-            org.geoserver.mapml.xml.MultiPoint multiPoint =
-                    (org.geoserver.mapml.xml.MultiPoint) geometry;
+            org.geoserver.mapml.xml.MultiPoint multiPoint = (org.geoserver.mapml.xml.MultiPoint) geometry;
             formatCoordinates(multiPoint.getCoordinates());
         } else if (geometry instanceof org.geoserver.mapml.xml.LineString) {
-            org.geoserver.mapml.xml.LineString lineString =
-                    (org.geoserver.mapml.xml.LineString) geometry;
+            org.geoserver.mapml.xml.LineString lineString = (org.geoserver.mapml.xml.LineString) geometry;
             formatCoordinates(lineString.getCoordinates());
         } else if (geometry instanceof org.geoserver.mapml.xml.MultiLineString) {
             org.geoserver.mapml.xml.MultiLineString multiLineString =
@@ -193,8 +185,7 @@ public class MapMLGenerator {
             org.geoserver.mapml.xml.Polygon polygon = (org.geoserver.mapml.xml.Polygon) geometry;
             formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
         } else if (geometry instanceof org.geoserver.mapml.xml.MultiPolygon) {
-            org.geoserver.mapml.xml.MultiPolygon multiPolygon =
-                    (org.geoserver.mapml.xml.MultiPolygon) geometry;
+            org.geoserver.mapml.xml.MultiPolygon multiPolygon = (org.geoserver.mapml.xml.MultiPolygon) geometry;
             for (org.geoserver.mapml.xml.Polygon polygon : multiPolygon.getPolygon()) {
                 formatCoordinates(polygon.getThreeOrMoreCoordinatePairs());
             }
@@ -243,18 +234,16 @@ public class MapMLGenerator {
      * @return the formatted coordinates
      */
     private String[] formatCoordStrings(String xy) {
-        String[] xyArray =
-                Arrays.asList(xy.split("\\s+")).stream()
-                        .filter(s -> !s.trim().isEmpty())
-                        .toArray(String[]::new);
+        String[] xyArray = Arrays.asList(xy.split("\\s+")).stream()
+                .filter(s -> !s.trim().isEmpty())
+                .toArray(String[]::new);
         for (int i = 0; i < xyArray.length; i++) {
             xyArray[i] = formatter.format(Double.parseDouble(xyArray[i]));
         }
         return xyArray;
     }
 
-    private static Optional<Map<String, String>> getTemplateAttributes(
-            Optional<Mapml> templateOptional) {
+    private static Optional<Map<String, String>> getTemplateAttributes(Optional<Mapml> templateOptional) {
 
         return templateOptional
                 .map(Mapml::getBody)
@@ -263,41 +252,31 @@ public class MapMLGenerator {
                 .map(features -> features.get(0))
                 .map(Feature::getProperties)
                 .map(PropertyContent::getOtherAttributes)
-                .filter(
-                        attributes ->
-                                attributes != null
-                                        && !attributes.isEmpty()
-                                        && attributes.values().size() % 2 == 0)
-                .map(
-                        attributes -> {
-                            List<String> values = new ArrayList<>(attributes.values());
-                            return IntStream.range(0, values.size() / 2)
-                                    .boxed()
-                                    .collect(
-                                            Collectors.toMap(
-                                                    i -> values.get(i * 2),
-                                                    i -> values.get(i * 2 + 1)));
-                        });
+                .filter(attributes -> attributes != null
+                        && !attributes.isEmpty()
+                        && attributes.values().size() % 2 == 0)
+                .map(attributes -> {
+                    List<String> values = new ArrayList<>(attributes.values());
+                    return IntStream.range(0, values.size() / 2)
+                            .boxed()
+                            .collect(Collectors.toMap(i -> values.get(i * 2), i -> values.get(i * 2 + 1)));
+                });
     }
 
     /** Collects the attributes representation as a HTML table */
-    private String collectAttributes(
-            SimpleFeature sf, Optional<Map<String, String>> replacmentAttsOptional) {
-        StringBuilder sb =
-                new StringBuilder(
-                        "<table xmlns=\"http://www.w3.org/1999/xhtml\"><thead><tr>"
-                                + "<th role=\"columnheader\" scope=\"col\">Property name</th>"
-                                + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
-                                + "</tr></thead><tbody>");
+    private String collectAttributes(SimpleFeature sf, Optional<Map<String, String>> replacmentAttsOptional) {
+        StringBuilder sb = new StringBuilder("<table xmlns=\"http://www.w3.org/1999/xhtml\"><thead><tr>"
+                + "<th role=\"columnheader\" scope=\"col\">Property name</th>"
+                + "<th role=\"columnheader\" scope=\"col\">Property value</th>"
+                + "</tr></thead><tbody>");
 
         if (replacmentAttsOptional.isEmpty()) {
             for (AttributeDescriptor attr : sf.getFeatureType().getAttributeDescriptors()) {
                 if (!(attr.getType() instanceof GeometryType)) {
                     String escapedName = StringEscapeUtils.escapeXml10(attr.getLocalName());
-                    String value =
-                            sf.getAttribute(attr.getName()) != null
-                                    ? sf.getAttribute(attr.getName()).toString()
-                                    : "";
+                    String value = sf.getAttribute(attr.getName()) != null
+                            ? sf.getAttribute(attr.getName()).toString()
+                            : "";
                     sb.append("<tr><th scope=\"row\">")
                             .append(escapedName)
                             .append("</th>")
@@ -334,8 +313,7 @@ public class MapMLGenerator {
      * @return the geometry content
      * @throws IOException IOException
      */
-    private Geometry convertGeometryToSymbolizerType(Geometry g, MapMLStyle mapMLStyle)
-            throws IOException {
+    private Geometry convertGeometryToSymbolizerType(Geometry g, MapMLStyle mapMLStyle) throws IOException {
         if (mapMLStyle.getSymbolizerType().startsWith(POINT)) {
             if (g instanceof Point || g instanceof MultiPoint) {
                 return g;
@@ -391,16 +369,14 @@ public class MapMLGenerator {
     private static class AttributeValueResolver {
 
         private final Constants constants = new Constants(PlaceholderConfigurerSupport.class);
-        private final PropertyPlaceholderHelper helper =
-                new PropertyPlaceholderHelper(
-                        constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
-                        constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
-                        constants.asString("DEFAULT_VALUE_SEPARATOR"),
-                        true);
+        private final PropertyPlaceholderHelper helper = new PropertyPlaceholderHelper(
+                constants.asString("DEFAULT_PLACEHOLDER_PREFIX"),
+                constants.asString("DEFAULT_PLACEHOLDER_SUFFIX"),
+                constants.asString("DEFAULT_VALUE_SEPARATOR"),
+                true);
         private final String nullValue = "null";
         private final SimpleFeature feature;
-        private final PropertyPlaceholderHelper.PlaceholderResolver resolver =
-                (name) -> resolveAttributeNames(name);
+        private final PropertyPlaceholderHelper.PlaceholderResolver resolver = (name) -> resolveAttributeNames(name);
 
         /**
          * Wrap the feature to caption via this constructor
@@ -412,9 +388,9 @@ public class MapMLGenerator {
         }
 
         /**
-         * Take an attribute name, return the attribute. "attribute" may be a band name. Band names
-         * can have spaces in them, but these seem to require that the space be replaced by an
-         * underscore, so this function performs that transformation.
+         * Take an attribute name, return the attribute. "attribute" may be a band name. Band names can have spaces in
+         * them, but these seem to require that the space be replaced by an underscore, so this function performs that
+         * transformation.
          *
          * @param attributeName
          * @return null-signifying token (nullValue) or the attribute value
@@ -428,9 +404,8 @@ public class MapMLGenerator {
         }
 
         /**
-         * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the
-         * userTemplate string to replace placeholders with attribute values of the attribute of
-         * that name, if found.
+         * Invokes PropertyPlaceholderHelper.replacePlaceholders, which iterates over the userTemplate string to replace
+         * placeholders with attribute values of the attribute of that name, if found.
          *
          * @param userTemplate
          * @return A possibly null string with placeholders resolved
@@ -461,8 +436,7 @@ public class MapMLGenerator {
             org.geoserver.mapml.xml.LineString lineString = buildLineString((LineString) g);
             geom.setGeometryContent(factory.createLineString(lineString));
         } else if (g instanceof MultiLineString) {
-            org.geoserver.mapml.xml.MultiLineString multiLineString =
-                    buildMultiLineString((MultiLineString) g);
+            org.geoserver.mapml.xml.MultiLineString multiLineString = buildMultiLineString((MultiLineString) g);
             geom.setGeometryContent(factory.createMultiLineString(multiLineString));
         } else if (g instanceof Polygon) {
             org.geoserver.mapml.xml.Polygon polygon = buildPolygon((Polygon) g);
@@ -471,9 +445,7 @@ public class MapMLGenerator {
             org.geoserver.mapml.xml.MultiPolygon multiPolygon = buildMultiPolygon((MultiPolygon) g);
             geom.setGeometryContent(factory.createMultiPolygon(multiPolygon));
         } else if (g instanceof GeometryCollection) {
-            geom.setGeometryContent(
-                    factory.createGeometryCollection(
-                            buildGeometryCollection((GeometryCollection) g)));
+            geom.setGeometryContent(factory.createGeometryCollection(buildGeometryCollection((GeometryCollection) g)));
         } else if (g != null) {
             throw new IOException("Unknown geometry type: " + g.getGeometryType());
         }
@@ -513,10 +485,9 @@ public class MapMLGenerator {
      * @return
      * @throws IOException - IOException
      */
-    private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(
-            GeometryCollection gc) throws IOException {
-        org.geoserver.mapml.xml.GeometryCollection geomColl =
-                new org.geoserver.mapml.xml.GeometryCollection();
+    private org.geoserver.mapml.xml.GeometryCollection buildGeometryCollection(GeometryCollection gc)
+            throws IOException {
+        org.geoserver.mapml.xml.GeometryCollection geomColl = new org.geoserver.mapml.xml.GeometryCollection();
         List<Object> geoms = geomColl.getPointOrLineStringOrPolygon();
         for (int i = 0; i < gc.getNumGeometries(); i++) {
             geoms.add(buildSpecificGeom(gc.getGeometryN(i)));
@@ -542,8 +513,7 @@ public class MapMLGenerator {
      * @return
      */
     private org.geoserver.mapml.xml.MultiLineString buildMultiLineString(MultiLineString ml) {
-        org.geoserver.mapml.xml.MultiLineString multiLine =
-                new org.geoserver.mapml.xml.MultiLineString();
+        org.geoserver.mapml.xml.MultiLineString multiLine = new org.geoserver.mapml.xml.MultiLineString();
         List<Coordinates> coordLists = multiLine.getTwoOrMoreCoordinatePairs();
         for (int i = 0; i < ml.getNumGeometries(); i++) {
             LineString ls = (LineString) ml.getGeometryN(i);
@@ -582,11 +552,7 @@ public class MapMLGenerator {
     private org.geoserver.mapml.xml.Point buildPoint(Point p) {
         org.geoserver.mapml.xml.Point point = new org.geoserver.mapml.xml.Point();
         point.getCoordinates()
-                .add(
-                        new Coordinates(
-                                this.formatter.format(p.getX())
-                                        + SPACE
-                                        + this.formatter.format(p.getY())));
+                .add(new Coordinates(this.formatter.format(p.getX()) + SPACE + this.formatter.format(p.getY())));
         return point;
     }
 
@@ -595,8 +561,7 @@ public class MapMLGenerator {
      * @return
      */
     private org.geoserver.mapml.xml.Polygon buildPolygon(Polygon p) {
-        if (p.getUserData() instanceof TaggedPolygon)
-            return buildTaggedPolygon((TaggedPolygon) p.getUserData());
+        if (p.getUserData() instanceof TaggedPolygon) return buildTaggedPolygon((TaggedPolygon) p.getUserData());
 
         org.geoserver.mapml.xml.Polygon poly = new org.geoserver.mapml.xml.Polygon();
         List<Coordinates> ringList = poly.getThreeOrMoreCoordinatePairs();
@@ -648,9 +613,7 @@ public class MapMLGenerator {
             return new Span(
                     "bbox",
                     buildSpanCoordinates(
-                            new CoordinateArraySequence(
-                                    cs.getCoordinates().toArray(n -> new Coordinate[n])),
-                            null));
+                            new CoordinateArraySequence(cs.getCoordinates().toArray(n -> new Coordinate[n])), null));
         }
     }
 
@@ -664,8 +627,7 @@ public class MapMLGenerator {
             coordList = new ArrayList<>(cs.size());
         }
         for (int i = 0; i < cs.size(); i++) {
-            coordList.add(
-                    this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
+            coordList.add(this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
         }
         return coordList;
     }
@@ -681,8 +643,7 @@ public class MapMLGenerator {
         }
         StringJoiner joiner = new StringJoiner(" ");
         for (int i = 0; i < cs.size(); i++) {
-            joiner.add(
-                    this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
+            joiner.add(this.formatter.format(cs.getX(i)) + SPACE + this.formatter.format(cs.getY(i)));
         }
         Coordinates coords = new Coordinates(joiner.toString());
         coordList.add(coords);

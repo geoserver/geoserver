@@ -14,8 +14,8 @@ import org.geotools.api.style.Description;
 import org.geotools.util.logging.Logging;
 
 /**
- * A document describing a style. Typically just id and title, if the style service is embedded a
- * callback will add links to the formats and metadata
+ * A document describing a style. Typically just id and title, if the style service is embedded a callback will add
+ * links to the formats and metadata
  */
 @JsonPropertyOrder({"id", "title", "links"})
 public class StyleDocument extends AbstractDocument {
@@ -37,14 +37,12 @@ public class StyleDocument extends AbstractDocument {
         this.style = style;
         this.id = style.prefixedName();
         try {
-            this.title =
-                    Optional.ofNullable(style.getStyle().getDescription())
-                            .map(Description::getTitle)
-                            .map(Object::toString)
-                            .orElse(null);
+            this.title = Optional.ofNullable(style.getStyle().getDescription())
+                    .map(Description::getTitle)
+                    .map(Object::toString)
+                    .orElse(null);
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING, "Could not get description from style, setting it to null", e);
+            LOGGER.log(Level.WARNING, "Could not get description from style, setting it to null", e);
             this.title = null;
         }
     }
@@ -54,8 +52,8 @@ public class StyleDocument extends AbstractDocument {
     }
 
     /**
-     * The {@link StyleInfo} behind the document. It could be null, in case this is the "default"
-     * style of a layer group in a OGC API - Maps
+     * The {@link StyleInfo} behind the document. It could be null, in case this is the "default" style of a layer group
+     * in a OGC API - Maps
      *
      * @return
      */

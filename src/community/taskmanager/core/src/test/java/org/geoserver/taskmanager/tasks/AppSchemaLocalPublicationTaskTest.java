@@ -64,21 +64,29 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_TABLE_NAME = "table-name";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
-    @Autowired private Catalog catalog;
+    @Autowired
+    private Catalog catalog;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private LookupService<FileService> fileServices;
+    @Autowired
+    private LookupService<FileService> fileServices;
 
     private Configuration config;
 
@@ -133,14 +141,11 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         task1.setType(AppSchemaLocalPublicationTaskTypeImpl.NAME);
         dataUtil.setTaskParameterToAttribute(
                 task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_FILE_SERVICE, ATT_FILE_SERVICE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
+        dataUtil.setTaskParameterToAttribute(task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_FILE, ATT_FILE);
         dataUtil.setTaskParameterToAttribute(
                 task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_WORKSPACE, ATT_WORKSPACE);
-        dataUtil.setTaskParameterToAttribute(
-                task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
-        dataUtil.setTaskParameterToAttribute(
-                task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_DB, ATT_DATABASE);
+        dataUtil.setTaskParameterToAttribute(task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_LAYER, ATT_LAYER);
+        dataUtil.setTaskParameterToAttribute(task1, AppSchemaLocalPublicationTaskTypeImpl.PARAM_DB, ATT_DATABASE);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -173,8 +178,10 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_TABLE_NAME, TABLE_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -212,8 +219,10 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_DATABASE, DB_NAME);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -268,8 +277,10 @@ public class AppSchemaLocalPublicationTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

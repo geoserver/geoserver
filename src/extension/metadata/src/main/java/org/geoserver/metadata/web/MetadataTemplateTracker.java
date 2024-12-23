@@ -46,9 +46,7 @@ public class MetadataTemplateTracker implements Serializable {
 
     public Set<String> getAffectedResources() {
         MetadataTemplateService service =
-                GeoServerApplication.get()
-                        .getApplicationContext()
-                        .getBean(MetadataTemplateService.class);
+                GeoServerApplication.get().getApplicationContext().getBean(MetadataTemplateService.class);
 
         Set<String> result = new HashSet<>();
         for (SortedSet<String> pair : changes) {

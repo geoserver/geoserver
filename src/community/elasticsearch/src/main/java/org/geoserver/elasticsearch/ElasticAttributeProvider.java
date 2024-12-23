@@ -21,23 +21,21 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     static final Property<ElasticAttribute> NAME = new BeanProperty<>("name", "displayName");
 
     /** Class type of field */
-    static final Property<ElasticAttribute> TYPE =
-            new AbstractProperty<ElasticAttribute>("type") {
+    static final Property<ElasticAttribute> TYPE = new AbstractProperty<ElasticAttribute>("type") {
 
-                private static final long serialVersionUID = 4454312983828267130L;
+        private static final long serialVersionUID = 4454312983828267130L;
 
-                @Override
-                public Object getPropertyValue(ElasticAttribute item) {
-                    if (item.getType() != null) {
-                        return item.getType().getSimpleName();
-                    }
-                    return null;
-                }
-            };
+        @Override
+        public Object getPropertyValue(ElasticAttribute item) {
+            if (item.getType() != null) {
+                return item.getType().getSimpleName();
+            }
+            return null;
+        }
+    };
 
     /** Mark as the default geometry */
-    static final Property<ElasticAttribute> DEFAULT_GEOMETRY =
-            new BeanProperty<>("defaultGeometry", "defaultGeometry");
+    static final Property<ElasticAttribute> DEFAULT_GEOMETRY = new BeanProperty<>("defaultGeometry", "defaultGeometry");
 
     /** SRID of geometric field */
     static final Property<ElasticAttribute> SRID = new BeanProperty<>("srid", "srid");
@@ -46,8 +44,7 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     static final Property<ElasticAttribute> USE = new BeanProperty<>("use", "use");
 
     /** Store if the field is in use in datastore */
-    static final Property<ElasticAttribute> DATE_FORMAT =
-            new BeanProperty<>("dateFormat", "dateFormat");
+    static final Property<ElasticAttribute> DATE_FORMAT = new BeanProperty<>("dateFormat", "dateFormat");
 
     /** If field is analyzed */
     static final Property<ElasticAttribute> ANALYZED = new BeanProperty<>("analyzed", "analyzed");
@@ -59,8 +56,7 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     static final Property<ElasticAttribute> ORDER = new BeanProperty<>("order", "order");
 
     /** Custom name of the field */
-    static final Property<ElasticAttribute> CUSTOM_NAME =
-            new BeanProperty<>("customName", "customName");
+    static final Property<ElasticAttribute> CUSTOM_NAME = new BeanProperty<>("customName", "customName");
 
     /**
      * Build attribute provider
@@ -72,19 +68,9 @@ class ElasticAttributeProvider extends GeoServerDataProvider<ElasticAttribute> {
     }
 
     @Override
-    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ElasticAttribute>>
-            getProperties() {
+    protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ElasticAttribute>> getProperties() {
         return Arrays.asList(
-                USE,
-                NAME,
-                TYPE,
-                ORDER,
-                CUSTOM_NAME,
-                DEFAULT_GEOMETRY,
-                STORED,
-                ANALYZED,
-                SRID,
-                DATE_FORMAT);
+                USE, NAME, TYPE, ORDER, CUSTOM_NAME, DEFAULT_GEOMETRY, STORED, ANALYZED, SRID, DATE_FORMAT);
     }
 
     @Override

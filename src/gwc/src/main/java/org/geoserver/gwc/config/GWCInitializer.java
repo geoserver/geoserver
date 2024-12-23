@@ -44,17 +44,14 @@ import org.geowebcache.storage.blobstore.memory.guava.GuavaCacheProvider;
  * <p>For instance, this initializer:
  *
  * <ul>
- *   <i> Creates a <data directory>/gwc-gs.xml configuration file if it doesn't exist, populated
- *   with old defaults global configuration for gwc layers based on geoserver layers and layer
- *   groups.
- *   <li>Configures a gwc {@link GeoServerTileLayerInfoImpl tile layer} for every {@link LayerInfo}
- *       and {@link LayerGroupInfo} matching the old defaults, also only if {@code gwc-gs.xml}
- *       didn't already exist.
- *   <li>Upgrades the direct WMS integration configuration from an old config. Before using {@code
- *       gwc-gs.xml} to hold the integrated GWC configuration, the only property configured was
- *       whether the direct WMS integration option was enabled, and it was saved as part of the
- *       {@link WMSInfo} metadata map under the {@code GWC_WMS_Integration} key. This method removes
- *       that key from WMSInfo if present and sets its value to the {@code GWCConfig} instead.
+ *   <i> Creates a <data directory>/gwc-gs.xml configuration file if it doesn't exist, populated with old defaults
+ *   global configuration for gwc layers based on geoserver layers and layer groups.
+ *   <li>Configures a gwc {@link GeoServerTileLayerInfoImpl tile layer} for every {@link LayerInfo} and
+ *       {@link LayerGroupInfo} matching the old defaults, also only if {@code gwc-gs.xml} didn't already exist.
+ *   <li>Upgrades the direct WMS integration configuration from an old config. Before using {@code gwc-gs.xml} to hold
+ *       the integrated GWC configuration, the only property configured was whether the direct WMS integration option
+ *       was enabled, and it was saved as part of the {@link WMSInfo} metadata map under the {@code GWC_WMS_Integration}
+ *       key. This method removes that key from WMSInfo if present and sets its value to the {@code GWCConfig} instead.
  * </ul>
  *
  * @author groldan
@@ -65,8 +62,8 @@ public class GWCInitializer implements GeoServerReinitializer {
     private static final Logger LOGGER = Logging.getLogger(GWCInitializer.class);
 
     /**
-     * {@link WMSInfo#getMetadata() WMSInfo metadata} key used in < 2.1.2 to hold the gwc direct wms
-     * integration enablement flag
+     * {@link WMSInfo#getMetadata() WMSInfo metadata} key used in < 2.1.2 to hold the gwc direct wms integration
+     * enablement flag
      */
     static String WMS_INTEGRATION_ENABLED_KEY = "GWC_WMS_Integration";
 
@@ -78,10 +75,7 @@ public class GWCInitializer implements GeoServerReinitializer {
 
     private ConfigurableBlobStore blobStore;
 
-    public GWCInitializer(
-            GWCConfigPersister configPersister,
-            Catalog rawCatalog,
-            TileLayerCatalog tileLayerCatalog) {
+    public GWCInitializer(GWCConfigPersister configPersister, Catalog rawCatalog, TileLayerCatalog tileLayerCatalog) {
         this.configPersister = configPersister;
         this.rawCatalog = rawCatalog;
         this.tileLayerCatalog = tileLayerCatalog;
@@ -90,15 +84,12 @@ public class GWCInitializer implements GeoServerReinitializer {
     /** @see org.geoserver.config.GeoServerInitializer#initialize(org.geoserver.config.GeoServer) */
     @Override
     public void initialize(final GeoServer geoServer) throws Exception {
-        LOGGER.config(
-                "Initializing GeoServer specific GWC configuration from "
-                        + GWCConfigPersister.GWC_CONFIG_FILE);
+        LOGGER.config("Initializing GeoServer specific GWC configuration from " + GWCConfigPersister.GWC_CONFIG_FILE);
 
         final Version currentVersion = new Version("1.1.0");
         final Resource configFile = configPersister.findConfigFile();
         if (configFile == null || configFile.getType() != Type.RESOURCE) {
-            LOGGER.fine(
-                    "GWC's GeoServer specific configuration not found, creating with old defaults");
+            LOGGER.fine("GWC's GeoServer specific configuration not found, creating with old defaults");
             GWCConfig oldDefaults = GWCConfig.getOldDefaults();
             oldDefaults.setVersion(currentVersion.toString());
             upgradeWMSIntegrationConfig(geoServer, oldDefaults);
@@ -160,10 +151,7 @@ public class GWCInitializer implements GeoServerReinitializer {
                 gwcConfig.setCacheProviderClass(GuavaCacheProvider.class.toString());
                 configPersister.save(gwcConfig);
                 if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.finest(
-                            "Unable to find: "
-                                    + cacheProviderClass
-                                    + ", used default configuration");
+                    LOGGER.finest("Unable to find: " + cacheProviderClass + ", used default configuration");
                 }
             }
             blobStore.setChanged(gwcConfig, true);
@@ -174,8 +162,8 @@ public class GWCInitializer implements GeoServerReinitializer {
     }
 
     /**
-     * Migrates the configuration of geoserver tile layers from the Layer/GroupInfo metadata maps to
-     * the {@link #tileLayerCatalog}
+     * Migrates the configuration of geoserver tile layers from the Layer/GroupInfo metadata maps to the
+     * {@link #tileLayerCatalog}
      */
     private void moveTileLayerInfosToTileLayerCatalog() {
 
@@ -194,9 +182,7 @@ public class GWCInitializer implements GeoServerReinitializer {
             } catch (RuntimeException e) {
                 LOGGER.log(
                         Level.WARNING,
-                        "Error migrating GWC Tile Layer settings for Layer '"
-                                + layer.getName()
-                                + "'",
+                        "Error migrating GWC Tile Layer settings for Layer '" + layer.getName() + "'",
                         e);
             }
         }
@@ -222,8 +208,8 @@ public class GWCInitializer implements GeoServerReinitializer {
     }
 
     /**
-     * This method is called only the first time the {@link GWCConfig} is initialized and is used to
-     * maintain backwards compatibility with the old GWC defaults.
+     * This method is called only the first time the {@link GWCConfig} is initialized and is used to maintain backwards
+     * compatibility with the old GWC defaults.
      */
     private void createDefaultTileLayerInfos(final GWCConfig defaultSettings) {
         checkArgument(defaultSettings.isSane());
@@ -232,8 +218,7 @@ public class GWCInitializer implements GeoServerReinitializer {
                 continue;
             }
             try {
-                GeoServerTileLayerInfo tileLayerInfo =
-                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
                 MetadataMap metadata = layer.getMetadata();
                 if (metadata.containsKey(LegacyTileLayerInfoLoader.CONFIG_KEY_ENABLED)) {
@@ -243,17 +228,14 @@ public class GWCInitializer implements GeoServerReinitializer {
             } catch (RuntimeException e) {
                 LOGGER.log(
                         Level.WARNING,
-                        "Error occurred saving default GWC Tile Layer settings for Layer '"
-                                + layer.getName()
-                                + "'",
+                        "Error occurred saving default GWC Tile Layer settings for Layer '" + layer.getName() + "'",
                         e);
             }
         }
 
         for (LayerGroupInfo layer : rawCatalog.getLayerGroups()) {
             try {
-                GeoServerTileLayerInfo tileLayerInfo =
-                        TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
+                GeoServerTileLayerInfo tileLayerInfo = TileLayerInfoUtil.loadOrCreate(layer, defaultSettings);
                 tileLayerCatalog.save(tileLayerInfo);
 
                 MetadataMap metadata = layer.getMetadata();
@@ -273,14 +255,12 @@ public class GWCInitializer implements GeoServerReinitializer {
     }
 
     /**
-     * Before using {@code gwc-gs.xml} to hold the integrated GWC configuration, the only property
-     * configured was whether the direct WMS integration option was enabled, and it was saved as
-     * part of the {@link WMSInfo} metadata map under the {@code GWC_WMS_Integration} key. This
-     * method removes that key from WMSInfo if present and sets its value to the {@code gwcConfig}
-     * instead.
+     * Before using {@code gwc-gs.xml} to hold the integrated GWC configuration, the only property configured was
+     * whether the direct WMS integration option was enabled, and it was saved as part of the {@link WMSInfo} metadata
+     * map under the {@code GWC_WMS_Integration} key. This method removes that key from WMSInfo if present and sets its
+     * value to the {@code gwcConfig} instead.
      */
-    private void upgradeWMSIntegrationConfig(final GeoServer geoServer, final GWCConfig gwcConfig)
-            throws IOException {
+    private void upgradeWMSIntegrationConfig(final GeoServer geoServer, final GWCConfig gwcConfig) throws IOException {
         // Check whether we're using the old way of storing this information, and get rid of it
         WMSInfo service = geoServer.getService(WMSInfo.class);
         if (service != null) {
@@ -297,28 +277,20 @@ public class GWCInitializer implements GeoServerReinitializer {
         }
     }
 
-    /**
-     * Private method for adding all the Layer that must not be cached to the {@link CacheProvider}
-     * instance.
-     */
+    /** Private method for adding all the Layer that must not be cached to the {@link CacheProvider} instance. */
     private void addLayersToNotCache(CacheProvider cache, GWCConfig defaultSettings) {
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.finest("Adding Layers to avoid In Memory Caching");
         }
         // it is ok to use the ForkJoinPool.commonPool() here, there's no I/O involved
-        tileLayerCatalog
-                .getLayerIds()
-                .parallelStream()
-                .forEach(id -> addLayerToNotCache(cache, id));
+        tileLayerCatalog.getLayerIds().parallelStream().forEach(id -> addLayerToNotCache(cache, id));
     }
 
     private void addLayerToNotCache(CacheProvider cache, String layerId) {
         try {
             // Check if the Layer must not be cached
             GeoServerTileLayerInfo tileLayerInfo = tileLayerCatalog.getLayerById(layerId);
-            if (tileLayerInfo != null
-                    && tileLayerInfo.isEnabled()
-                    && !tileLayerInfo.isInMemoryCached()) {
+            if (tileLayerInfo != null && tileLayerInfo.isEnabled() && !tileLayerInfo.isInMemoryCached()) {
                 // Add it to the cache
                 cache.addUncachedLayer(tileLayerInfo.getName());
             }

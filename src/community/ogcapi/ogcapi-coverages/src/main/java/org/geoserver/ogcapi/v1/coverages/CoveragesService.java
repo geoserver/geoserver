@@ -64,11 +64,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /** Implementation of OGC Coverages API service */
-@APIService(
-        service = "Coverages",
-        version = "1.0.0",
-        landingPage = "ogc/coverages/v1",
-        serviceClass = WCSInfo.class)
+@APIService(service = "Coverages", version = "1.0.0", landingPage = "ogc/coverages/v1", serviceClass = WCSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/coverages/v1")
 public class CoveragesService {
 
@@ -76,8 +72,7 @@ public class CoveragesService {
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
     public static final String CONF_CLASS_COVERAGE =
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geodata-coverage";
-    public static final String CONF_CLASS_GEOTIFF =
-            "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
+    public static final String CONF_CLASS_GEOTIFF = "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/conf/geotiff";
     public static final String CONF_CLASS_SUBSET =
             "http://www.opengis.net/spec/ogcapi-coverages-1/1.0/req/coverage-subset";
 
@@ -90,9 +85,7 @@ public class CoveragesService {
     private SubsetsParser subsetParser = new SubsetsParser();
 
     public CoveragesService(
-            GeoServer geoServer,
-            @Qualifier("wcs20Service") WebCoverageService20 wcs20,
-            APIFilterParser filterParser) {
+            GeoServer geoServer, @Qualifier("wcs20Service") WebCoverageService20 wcs20, APIFilterParser filterParser) {
         this.geoServer = geoServer;
         this.wcs20 = wcs20;
         this.filterParser = filterParser;
@@ -100,11 +93,10 @@ public class CoveragesService {
 
     public static List<String> getCoverageCRS(CoverageInfo coverage, List<String> defaultCRS) {
         if (coverage.getResponseSRS() != null) {
-            List<String> result =
-                    coverage.getResponseSRS().stream()
-                            // the GUI allows to enter codes as "EPSG:XYZW"
-                            .map(c -> mapResponseSRS(c))
-                            .collect(Collectors.toList());
+            List<String> result = coverage.getResponseSRS().stream()
+                    // the GUI allows to enter codes as "EPSG:XYZW"
+                    .map(c -> mapResponseSRS(c))
+                    .collect(Collectors.toList());
             result.remove(CoveragesService.DEFAULT_CRS);
             result.add(0, CoveragesService.DEFAULT_CRS);
             return result;
@@ -137,28 +129,23 @@ public class CoveragesService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes =
-                Arrays.asList(
-                        ConformanceClass.CORE,
-                        ConformanceClass.COLLECTIONS,
-                        ConformanceClass.HTML,
-                        ConformanceClass.JSON,
-                        ConformanceClass.OAS3,
-                        ConformanceClass.GEODATA,
-                        CONF_CLASS_COVERAGE,
-                        CONF_CLASS_GEOTIFF,
-                        CONF_CLASS_SUBSET);
+        List<String> classes = Arrays.asList(
+                ConformanceClass.CORE,
+                ConformanceClass.COLLECTIONS,
+                ConformanceClass.HTML,
+                ConformanceClass.JSON,
+                ConformanceClass.OAS3,
+                ConformanceClass.GEODATA,
+                CONF_CLASS_COVERAGE,
+                CONF_CLASS_GEOTIFF,
+                CONF_CLASS_SUBSET);
         return new ConformanceDocument("OGC API Coverages", classes);
     }
 
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {OPEN_API_MEDIA_TYPE_VALUE, APPLICATION_YAML_VALUE, MediaType.TEXT_XML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -175,11 +162,10 @@ public class CoveragesService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument getCollection(
-            @PathVariable(name = "collectionId") String collectionId) throws IOException {
+    public CollectionDocument getCollection(@PathVariable(name = "collectionId") String collectionId)
+            throws IOException {
         CoverageInfo ci = getCoverage(collectionId);
-        CollectionDocument collection =
-                new CollectionDocument(geoServer, ci, getCoverageCRS(ci, getServiceCRSList()));
+        CollectionDocument collection = new CollectionDocument(geoServer, ci, getCoverageCRS(ci, getServiceCRSList()));
 
         return collection;
     }
@@ -216,7 +202,8 @@ public class CoveragesService {
     }
 
     private void setupSubsets(String subsetsSpec, CoverageInfo coverage, GetCoverageType request) {
-        subsetParser.parse(subsetsSpec).forEach(ss -> request.getDimensionSubset().add(ss));
+        subsetParser.parse(subsetsSpec).forEach(ss -> request.getDimensionSubset()
+                .add(ss));
     }
 
     private void setupTimeSubset(String datetime, CoverageInfo coverage, GetCoverageType request)
@@ -225,9 +212,7 @@ public class CoveragesService {
         DimensionInfo time = coverage.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         if (time == null || !time.isEnabled()) {
             throw new APIException(
-                    INVALID_PARAMETER_VALUE,
-                    "Time dimension is not enabled in this coverage",
-                    HttpStatus.BAD_REQUEST);
+                    INVALID_PARAMETER_VALUE, "Time dimension is not enabled in this coverage", HttpStatus.BAD_REQUEST);
         }
         Collection times = timeParser.parse(datetime);
         if (times.isEmpty() || times.size() > 1) {
@@ -252,8 +237,7 @@ public class CoveragesService {
         }
     }
 
-    private void setBBOXDimensionSubset(String bbox, String bboxCRS, GetCoverageType request)
-            throws FactoryException {
+    private void setBBOXDimensionSubset(String bbox, String bboxCRS, GetCoverageType request) throws FactoryException {
         Wcs20Factory wf = Wcs20Factory.eINSTANCE;
         CoordinateReferenceSystem bcrs = getCRS(bboxCRS, DefaultGeographicCRS.WGS84);
         ReferencedEnvelope[] envelopes = APIBBoxParser.parse(bbox, bcrs);
@@ -289,9 +273,7 @@ public class CoveragesService {
         CoverageInfo coverage = getCatalog().getCoverageByName(collectionId);
         if (coverage == null) {
             throw new ServiceException(
-                    "Unknown collection " + collectionId,
-                    ServiceException.INVALID_PARAMETER_VALUE,
-                    "collectionId");
+                    "Unknown collection " + collectionId, ServiceException.INVALID_PARAMETER_VALUE, "collectionId");
         }
         return coverage;
     }
@@ -337,12 +319,9 @@ public class CoveragesService {
     }
 
     @ResponseBody
-    @GetMapping(
-            path = "collections/{collectionId}/coverage/domainset",
-            name = "getCoverageDomainSet")
+    @GetMapping(path = "collections/{collectionId}/coverage/domainset", name = "getCoverageDomainSet")
     @DefaultContentType("application/json")
-    public DomainSet domainSet(@PathVariable(name = "collectionId") String collectionId)
-            throws Exception {
+    public DomainSet domainSet(@PathVariable(name = "collectionId") String collectionId) throws Exception {
         // side effect, checks existence
         CoverageInfo coverage = getCoverage(collectionId);
         return new DomainSetBuilder(coverage).build();

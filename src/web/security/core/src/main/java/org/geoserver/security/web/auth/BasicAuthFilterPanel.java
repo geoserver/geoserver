@@ -15,8 +15,7 @@ import org.geoserver.security.filter.GeoServerBasicAuthenticationFilter;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class BasicAuthFilterPanel
-        extends AuthenticationFilterPanel<BasicAuthenticationFilterConfig> {
+public class BasicAuthFilterPanel extends AuthenticationFilterPanel<BasicAuthenticationFilterConfig> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

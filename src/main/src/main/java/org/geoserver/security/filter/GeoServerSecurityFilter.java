@@ -23,11 +23,10 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 /**
  * Extension of {@link Filter} for the geoserver security subsystem.
  *
- * <p>Instances of this class are provided by {@link GeoServerSecurityProvider}, or may also be
- * contribute via a spring context. Filters are configured via name through {@link
- * SecurityManagerConfig#getFilterChain()}.The referenced name will be matched to a named security
- * configuration through {@link GeoServerSecurityManager#loadFilter(String)} or matched to a bean
- * name in the application context.
+ * <p>Instances of this class are provided by {@link GeoServerSecurityProvider}, or may also be contribute via a spring
+ * context. Filters are configured via name through {@link SecurityManagerConfig#getFilterChain()}.The referenced name
+ * will be matched to a named security configuration through {@link GeoServerSecurityManager#loadFilter(String)} or
+ * matched to a bean name in the application context.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -35,14 +34,12 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         implements Filter, BeanNameAware {
 
     /**
-     * Geoserver authentication filter should set an {@link AuthenticationEntryPoint} using this
-     * servlet attribute name.
+     * Geoserver authentication filter should set an {@link AuthenticationEntryPoint} using this servlet attribute name.
      *
      * <p>The {@link GeoServerExceptionTranslationFilter} may use the entry point in case of an
      * {@link AuthenticationException}
      */
-    public static final String AUTHENTICATION_ENTRY_POINT_HEADER =
-            "_AUTHENTICATION_ENTRY_POINT_HEADER";
+    public static final String AUTHENTICATION_ENTRY_POINT_HEADER = "_AUTHENTICATION_ENTRY_POINT_HEADER";
 
     private String beanName;
 
@@ -64,13 +61,12 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
     public void destroy() {}
 
     /**
-     * Tries to authenticate from cache if a key can be derived and the {@link Authentication}
-     * object is not in the cache, the key will be returned.
+     * Tries to authenticate from cache if a key can be derived and the {@link Authentication} object is not in the
+     * cache, the key will be returned.
      *
      * <p>A not <code>null</code> return value indicates a missing cache entry
      */
-    protected String authenticateFromCache(
-            AuthenticationCachingFilter filter, HttpServletRequest request) {
+    protected String authenticateFromCache(AuthenticationCachingFilter filter, HttpServletRequest request) {
         return authenticateFromCache(filter, request, false);
     }
 
@@ -80,15 +76,11 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         Authentication authFromCache = null;
         String cacheKey = null;
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (force
-                || authentication == null
-                || authentication instanceof AnonymousAuthenticationToken) {
+        if (force || authentication == null || authentication instanceof AnonymousAuthenticationToken) {
             cacheKey = filter.getCacheKey(request);
             if (cacheKey != null) {
-                authFromCache =
-                        getSecurityManager().getAuthenticationCache().get(getName(), cacheKey);
-                if (authFromCache != null)
-                    SecurityContextHolder.getContext().setAuthentication(authFromCache);
+                authFromCache = getSecurityManager().getAuthenticationCache().get(getName(), cacheKey);
+                if (authFromCache != null) SecurityContextHolder.getContext().setAuthentication(authFromCache);
                 else return cacheKey;
             }
         }

@@ -27,9 +27,7 @@ import org.geotools.process.factory.DescribeResult;
  * @author Daniele Romagnoli, GeoSolutions SAS
  * @author Andrea Aime, GeoSolutions SAS
  */
-@DescribeProcess(
-        title = "GetFullCoverage",
-        description = "Returns a raster from the catalog, with optional filtering")
+@DescribeProcess(title = "GetFullCoverage", description = "Returns a raster from the catalog, with optional filtering")
 public class GetFullCoverage implements GeoServerProcess {
 
     private Catalog catalog;
@@ -42,13 +40,9 @@ public class GetFullCoverage implements GeoServerProcess {
     public GridCoverage2D execute(
             @DescribeParameter(
                             name = "name",
-                            description =
-                                    "Name of raster, optionally fully qualified (workspace:name)")
+                            description = "Name of raster, optionally fully qualified (workspace:name)")
                     String name,
-            @DescribeParameter(
-                            name = "filter",
-                            description = "Filter to use on the raster data",
-                            min = 0)
+            @DescribeParameter(name = "filter", description = "Filter to use on the raster data", min = 0)
                     Filter filter)
             throws IOException {
         CoverageInfo ci = catalog.getCoverageByName(name);
@@ -62,9 +56,7 @@ public class GetFullCoverage implements GeoServerProcess {
                 readParametersDescriptor.getDescriptor().descriptors();
         GeneralParameterValue[] params = new GeneralParameterValue[0];
         if (filter != null) {
-            params =
-                    CoverageUtils.mergeParameter(
-                            parameterDescriptors, params, filter, "FILTER", "Filter");
+            params = CoverageUtils.mergeParameter(parameterDescriptors, params, filter, "FILTER", "Filter");
         }
 
         return (GridCoverage2D) reader.read(params);

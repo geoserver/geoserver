@@ -33,12 +33,7 @@ class OgcLink {
     }
 
     public OgcLink(
-            String offering,
-            String method,
-            String code,
-            String type,
-            String href,
-            Map<String, Object> unknownFields) {
+            String offering, String method, String code, String type, String href, Map<String, Object> unknownFields) {
         this.offering = offering;
         this.method = method;
         this.code = code;

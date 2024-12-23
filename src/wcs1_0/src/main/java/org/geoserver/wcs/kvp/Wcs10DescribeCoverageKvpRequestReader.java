@@ -24,18 +24,14 @@ public class Wcs10DescribeCoverageKvpRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         // let super do its thing
         request = super.read(request, kvp, rawKvp);
 
         DescribeCoverageType describeCoverage = (DescribeCoverageType) request;
         // if not specified, throw a resounding exception (by spec)
         if (!describeCoverage.isSetVersion())
-            throw new WcsException(
-                    "Version has not been specified",
-                    WcsExceptionCode.MissingParameterValue,
-                    "version");
+            throw new WcsException("Version has not been specified", WcsExceptionCode.MissingParameterValue, "version");
 
         return request;
     }

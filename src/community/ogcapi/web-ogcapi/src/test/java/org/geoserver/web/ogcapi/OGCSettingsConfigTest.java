@@ -30,11 +30,7 @@ public class OGCSettingsConfigTest extends AbstractLinksEditorTest {
         GeoServerInfo gsi = getGeoServer().getGlobal();
         SettingsInfo settings = gsi.getSettings();
         ArrayList<LinkInfo> links = new ArrayList<>();
-        link =
-                new LinkInfoImpl(
-                        "enclosure",
-                        "application/zip",
-                        "http://www.geoserver.org/data/dataset.zip");
+        link = new LinkInfoImpl("enclosure", "application/zip", "http://www.geoserver.org/data/dataset.zip");
         link.setTitle("The whole dataset published by GeoServer");
         link.setService("Features");
         links.add(link);
@@ -49,15 +45,13 @@ public class OGCSettingsConfigTest extends AbstractLinksEditorTest {
         // setting panel extensions available in the classpath
         WebMarkupContainer extensions =
                 (WebMarkupContainer) tester.getLastRenderedPage().get("form:extensions");
-        extensions.visitChildren(
-                Component.class,
-                (component, visit) -> {
-                    if (component instanceof LinkInfoEditor) {
-                        visit.stop();
-                        EDITOR = component.getPageRelativePath();
-                        EDITOR_FT = EDITOR.substring(EDITOR.indexOf(":") + 1);
-                    }
-                });
+        extensions.visitChildren(Component.class, (component, visit) -> {
+            if (component instanceof LinkInfoEditor) {
+                visit.stop();
+                EDITOR = component.getPageRelativePath();
+                EDITOR_FT = EDITOR.substring(EDITOR.indexOf(":") + 1);
+            }
+        });
     }
 
     @SuppressWarnings("unchecked")

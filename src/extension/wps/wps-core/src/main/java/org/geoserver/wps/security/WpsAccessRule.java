@@ -11,11 +11,11 @@ import java.util.Set;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 /**
- * Represents a data access rule: identifies a workspace, a layer, an access mode, and the set of
- * roles that are allowed to access it
+ * Represents a data access rule: identifies a workspace, a layer, an access mode, and the set of roles that are allowed
+ * to access it
  *
- * <p>Mind, two rules are considered equal if the address the same data, if you need full
- * comparison, use {@link #equalsExact(WpsAccessRule)}
+ * <p>Mind, two rules are considered equal if the address the same data, if you need full comparison, use
+ * {@link #equalsExact(WpsAccessRule)}
  */
 @SuppressWarnings("serial")
 public class WpsAccessRule implements Comparable<WpsAccessRule>, Serializable {
@@ -102,8 +102,8 @@ public class WpsAccessRule implements Comparable<WpsAccessRule>, Serializable {
     }
 
     /**
-     * Comparison implemented so that generic rules get first, specific one are compared by name,
-     * and if anything else is equal, read comes before write
+     * Comparison implemented so that generic rules get first, specific one are compared by name, and if anything else
+     * is equal, read comes before write
      */
     @Override
     public int compareTo(WpsAccessRule other) {

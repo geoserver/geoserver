@@ -36,8 +36,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     private static final String PROP_USE_ROLES = "useRolesToFilter";
     private static final String PROP_ACCEPTED_ROLES = "acceptedRoles";
     private static final String PROP_GWCCONTEXTSUFFIX = "gwc.context.suffix";
-    private static final String PROP_ORGGEOSERVERREST =
-            "org.geoserver.rest.DefaultUserGroupServiceName";
+    private static final String PROP_ORGGEOSERVERREST = "org.geoserver.rest.DefaultUserGroupServiceName";
     private static final String PROP_CACHE_EXPIRE = "cacheExpire";
     private static final String PROP_CACHE_REFRESH = "cacheRefresh";
     private static final String PROP_CACHE_SIZE = "cacheSize";
@@ -65,8 +64,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
 
         this.geofenceConfiguration = cfg;
 
-        LOGGER.log(
-                Level.INFO, "GeoFence configuration: instance name is {0}", cfg.getInstanceName());
+        LOGGER.log(Level.INFO, "GeoFence configuration: instance name is {0}", cfg.getInstanceName());
     }
 
     public CacheConfiguration getCacheConfiguration() {
@@ -80,8 +78,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     public void storeConfiguration() throws IOException {
         Resource configurationFile = configurer.getConfigFile();
 
-        try (BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
             writer.write("### GeoFence Module configuration file\n");
             writer.write("### \n");
             writer.write("### GeoServer will read this file at boot time.\n");
@@ -122,8 +119,8 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     }
 
     /**
-     * The PropertyPlaceholderConfigurer may have race conditions sometimes, so we're going to read
-     * the props from the file and assign them to the GeoFenceConfiguration
+     * The PropertyPlaceholderConfigurer may have race conditions sometimes, so we're going to read the props from the
+     * file and assign them to the GeoFenceConfiguration
      */
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -166,10 +163,8 @@ public class GeoFenceConfigurationManager implements InitializingBean {
     private void loadConfiguration(Properties props, GeoFenceConfiguration cfg) {
         cfg.setInstanceName(props.getProperty(PROP_INSTANCE_NAME));
         cfg.setServicesUrl(props.getProperty(PROP_SERVICES_URL));
-        cfg.setAllowRemoteAndInlineLayers(
-                BooleanUtils.toBoolean(props.getProperty(PROP_ALLOW_REMOTE)));
-        cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(
-                BooleanUtils.toBoolean(props.getProperty(PROP_GRANT_WRITE)));
+        cfg.setAllowRemoteAndInlineLayers(BooleanUtils.toBoolean(props.getProperty(PROP_ALLOW_REMOTE)));
+        cfg.setGrantWriteToWorkspacesToAuthenticatedUsers(BooleanUtils.toBoolean(props.getProperty(PROP_GRANT_WRITE)));
         cfg.setUseRolesToFilter(BooleanUtils.toBoolean(props.getProperty(PROP_USE_ROLES)));
         cfg.setAcceptedRoles(props.getProperty(PROP_ACCEPTED_ROLES));
         cfg.setGwcContextSuffix(props.getProperty(PROP_GWCCONTEXTSUFFIX));
@@ -186,8 +181,7 @@ public class GeoFenceConfigurationManager implements InitializingBean {
         props.setProperty(PROP_INSTANCE_NAME, cfg.getInstanceName());
         props.setProperty(PROP_SERVICES_URL, cfg.getServicesUrl());
         props.setProperty(PROP_ALLOW_REMOTE, format_prop(cfg.isAllowRemoteAndInlineLayers()));
-        props.setProperty(
-                PROP_GRANT_WRITE, format_prop(cfg.isGrantWriteToWorkspacesToAuthenticatedUsers()));
+        props.setProperty(PROP_GRANT_WRITE, format_prop(cfg.isGrantWriteToWorkspacesToAuthenticatedUsers()));
         props.setProperty(PROP_USE_ROLES, format_prop(cfg.isUseRolesToFilter()));
         props.setProperty(PROP_ACCEPTED_ROLES, format_prop(cfg.getAcceptedRoles()));
         props.setProperty(PROP_GWCCONTEXTSUFFIX, format_prop(cfg.getGwcContextSuffix()));

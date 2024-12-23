@@ -57,18 +57,16 @@ public class H3DGGSInstanceTest {
 
     static final Logger LOGGER = Logging.getLogger(H3DGGSInstanceTest.class);
 
-    private static final ReferencedEnvelope WORLD =
-            new ReferencedEnvelope(-180, 180, -90, 90, WGS84);
+    private static final ReferencedEnvelope WORLD = new ReferencedEnvelope(-180, 180, -90, 90, WGS84);
     private static final GeometryFactory GF = new GeometryFactory();
     private DGGSInstance h3i;
     private H3Core h3;
 
     @Before
     public void setup() throws IOException {
-        Optional<DGGSFactory> factory =
-                DGGSFactoryFinder.getExtensionFactories()
-                        .filter(d -> "H3".equalsIgnoreCase(d.getId()))
-                        .findFirst();
+        Optional<DGGSFactory> factory = DGGSFactoryFinder.getExtensionFactories()
+                .filter(d -> "H3".equalsIgnoreCase(d.getId()))
+                .findFirst();
         assertTrue(factory.isPresent());
         h3i = factory.get().createInstance(null);
         h3 = H3Core.newInstance();
@@ -164,11 +162,10 @@ public class H3DGGSInstanceTest {
         assertEquals(boundary.getEnvelopeInternal().getMinX(), -180d, 0);
         assertEquals(boundary.getEnvelopeInternal().getMaxX(), 180d, 0);
         assertEquals(boundary.getEnvelopeInternal().getMaxY(), 90d, 0);
-        Polygon expected =
-                (Polygon)
-                        new WKTReader()
-                                .read(
-                                        "POLYGON ((-180 86.19672397564815, -34.75841798028461 81.27137179020497, 0.3256103519432604 73.31022368544396, 31.831280499087416 68.92995788193984, 31.831280499087416 68.92995788193984, 62.345344956509784 69.39359648991828, 94.14309010184775 76.163042830191, 145.55819769133683 87.3646953231962, 180 86.19672397564815, 180 90, -180 90, -180 86.19672397564815))");
+        Polygon expected = (Polygon)
+                new WKTReader()
+                        .read(
+                                "POLYGON ((-180 86.19672397564815, -34.75841798028461 81.27137179020497, 0.3256103519432604 73.31022368544396, 31.831280499087416 68.92995788193984, 31.831280499087416 68.92995788193984, 62.345344956509784 69.39359648991828, 94.14309010184775 76.163042830191, 145.55819769133683 87.3646953231962, 180 86.19672397564815, 180 90, -180 90, -180 86.19672397564815))");
         assertTrue(expected.equalsExact(boundary, 1e-6));
     }
 
@@ -201,11 +198,7 @@ public class H3DGGSInstanceTest {
         assertThat(
                 neighbors,
                 CoreMatchers.hasItems(
-                        "805bfffffffffff",
-                        "8077fffffffffff",
-                        "809bfffffffffff",
-                        "8071fffffffffff",
-                        "809ffffffffffff"));
+                        "805bfffffffffff", "8077fffffffffff", "809bfffffffffff", "8071fffffffffff", "809ffffffffffff"));
         assertThat(neighbors, CoreMatchers.not(hasItems("807ffffffffffff")));
         assertEquals(5, neighbors.size());
     }
@@ -251,27 +244,20 @@ public class H3DGGSInstanceTest {
 
     @Test
     public void testMapPolygon() throws Exception {
-        Polygon polygon =
-                (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
+        Polygon polygon = (Polygon) new WKTReader().read("POLYGON((-1 -1, -1 1, 1 1, 1 -1, -1 -1))");
 
         Set<String> actual = new HashSet<>();
         h3i.polygon(polygon, 3, false).forEachRemaining(z -> actual.add(z.getId()));
         // visually verified
-        Set<String> expected =
-                new HashSet<>(
-                        Arrays.asList(
-                                "83754afffffffff",
-                                "837548fffffffff",
-                                "83754efffffffff",
-                                "83755dfffffffff"));
+        Set<String> expected = new HashSet<>(
+                Arrays.asList("83754afffffffff", "837548fffffffff", "83754efffffffff", "83755dfffffffff"));
         assertEquals(expected, actual);
     }
 
     @Test
     public void zonesFromEnvelopeCompact() {
         // hitting the area of the central
-        Iterator<Zone> zonesIterator =
-                h3i.zonesFromEnvelope(new ReferencedEnvelope(-14, 4, -6, 11.7, WGS84), 1, true);
+        Iterator<Zone> zonesIterator = h3i.zonesFromEnvelope(new ReferencedEnvelope(-14, 4, -6, 11.7, WGS84), 1, true);
         Set<String> zones = new HashSet<>();
         zonesIterator.forEachRemaining(z -> zones.add(z.getId()));
         // should have collected the central pentagon plus 11 smaller zones around it

@@ -15,9 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A Track Segment holds a list of Track Points which are logically connected in order. To represent
- * a single GPS track where GPS reception was lost, or the GPS receiver was turned off, start a new
- * Track Segment for each continuous span of track data.
+ * A Track Segment holds a list of Track Points which are logically connected in order. To represent a single GPS track
+ * where GPS reception was lost, or the GPS receiver was turned off, start a new Track Segment for each continuous span
+ * of track data.
  *
  * <p>Java class for trksegType complex type.
  *
@@ -44,9 +44,9 @@ public class TrksegType {
     /**
      * Gets the value of the trkpt property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the trkpt property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the trkpt property.
      *
      * <p>For example, to add a new item, do as follows:
      *

@@ -36,8 +36,7 @@ public class WmsGetFeatureInfoTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * Checks if submitting features templating request with not supported template format doesn't
-     * throw an exception
+     * Checks if submitting features templating request with not supported template format doesn't throw an exception
      *
      * @throws Exception
      */

@@ -32,11 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 @ControllerAdvice
 @RequestMapping(
         path = RestBaseController.ROOT_PATH + "/services/wmts",
-        produces = {
-            MediaType.APPLICATION_JSON_VALUE,
-            MediaType.APPLICATION_XML_VALUE,
-            MediaType.TEXT_HTML_VALUE
-        })
+        produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
 public class WMTSSettingsController extends ServiceSettingsController<WMTSInfo> {
 
     @Autowired
@@ -53,8 +49,7 @@ public class WMTSSettingsController extends ServiceSettingsController<WMTSInfo> 
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public void serviceSettingsPut(
-            @RequestBody WMTSInfo info, @PathVariable(required = false) String workspaceName) {
+    public void serviceSettingsPut(@RequestBody WMTSInfo info, @PathVariable(required = false) String workspaceName) {
 
         super.serviceSettingsPut(info, workspaceName);
     }
@@ -66,9 +61,7 @@ public class WMTSSettingsController extends ServiceSettingsController<WMTSInfo> 
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return WMTSInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -76,27 +69,26 @@ public class WMTSSettingsController extends ServiceSettingsController<WMTSInfo> 
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
         persister.setHideFeatureTypeAttributes();
         persister.getClassAliasingMapper().addClassAlias("wmts", WMTSInfoImpl.class);
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected ServiceInfo getServiceObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String workspace = uriTemplateVars.get("workspaceName");
-                        ServiceInfo service;
-                        if (workspace != null) {
-                            WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
-                            service = geoServer.getService(ws, WMTSInfo.class);
-                        } else {
-                            service = geoServer.getService(WMTSInfo.class);
-                        }
-                        return service;
-                    }
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected ServiceInfo getServiceObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String workspace = uriTemplateVars.get("workspaceName");
+                ServiceInfo service;
+                if (workspace != null) {
+                    WorkspaceInfo ws = geoServer.getCatalog().getWorkspaceByName(workspace);
+                    service = geoServer.getService(ws, WMTSInfo.class);
+                } else {
+                    service = geoServer.getService(WMTSInfo.class);
+                }
+                return service;
+            }
 
-                    @Override
-                    protected Class<WMTSInfo> getObjectClass() {
-                        return WMTSInfo.class;
-                    }
-                });
+            @Override
+            protected Class<WMTSInfo> getObjectClass() {
+                return WMTSInfo.class;
+            }
+        });
         WMSXStreamLoader.initXStreamPersister(persister);
     }
 }

@@ -54,10 +54,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     /** filter factory */
     protected FilterFactory filterFactory;
 
-    /**
-     * The spring application context, used to look up transaction listeners, plugins and element
-     * handlers
-     */
+    /** The spring application context, used to look up transaction listeners, plugins and element handlers */
     protected ApplicationContext context;
 
     public DefaultWebFeatureService20(GeoServer geoServer) {
@@ -84,23 +81,18 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
 
     public StoredQueryProvider getStoredQueryProvider() {
         return new StoredQueryProvider(
-                getCatalog(),
-                getServiceInfo(),
-                geoServer.getGlobal().isAllowStoredQueriesPerWorkspace());
+                getCatalog(), getServiceInfo(), geoServer.getGlobal().isAllowStoredQueriesPerWorkspace());
     }
 
     @Override
     public TransformerBase getCapabilities(GetCapabilitiesType request) throws WFSException {
         return new GetCapabilities(
-                        getServiceInfo(),
-                        getCatalog(),
-                        WFSExtensions.findExtendedCapabilitiesProviders(context))
+                        getServiceInfo(), getCatalog(), WFSExtensions.findExtendedCapabilitiesProviders(context))
                 .run(new GetCapabilitiesRequest.WFS20(request));
     }
 
     @Override
-    public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request)
-            throws WFSException {
+    public FeatureTypeInfo[] describeFeatureType(DescribeFeatureTypeType request) throws WFSException {
         return new DescribeFeatureType(getServiceInfo(), getCatalog())
                 .run(new DescribeFeatureTypeRequest.WFS20(request));
     }
@@ -115,8 +107,7 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     }
 
     @Override
-    public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
-            throws WFSException {
+    public FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request) throws WFSException {
         return getFeature(request);
     }
 
@@ -138,22 +129,19 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
         } else {
             // Need to perform some of the same Stored Query handling as GetFeature
             // ... expand eventual stored queries
-            boolean getFeatureById =
-                    GetFeature.expandStoredQueries(
-                            requestWrapper,
-                            request.getAbstractQueryExpression(),
-                            getStoredQueryProvider());
+            boolean getFeatureById = GetFeature.expandStoredQueries(
+                    requestWrapper, request.getAbstractQueryExpression(), getStoredQueryProvider());
             // ... expand the typenames from feature id filters (the wrappers will modify the
             // underlying object
-            List<Query> queries =
-                    GetFeatureRequest.WFS20.getQueries(request.getAbstractQueryExpression());
+            List<Query> queries = GetFeatureRequest.WFS20.getQueries(request.getAbstractQueryExpression());
             GetFeature.expandTypeNames(requestWrapper, queries, getFeatureById, getCatalog());
             // ... lock cannot handle queries with multiple target typenames, need to expand them
             // into separate queries
             fixQueriesForLock(request.getAbstractQueryExpression());
 
             // run the lock
-            return (LockFeatureResponseType) lockFeature.lockFeature(requestWrapper).getAdaptee();
+            return (LockFeatureResponseType)
+                    lockFeature.lockFeature(requestWrapper).getAdaptee();
         }
     }
 
@@ -189,20 +177,18 @@ public class DefaultWebFeatureService20 implements WebFeatureService20, Applicat
     }
 
     @Override
-    public ListStoredQueriesResponseType listStoredQueries(ListStoredQueriesType request)
-            throws WFSException {
+    public ListStoredQueriesResponseType listStoredQueries(ListStoredQueriesType request) throws WFSException {
         return new ListStoredQueries(getCatalog(), getStoredQueryProvider()).run(request);
     }
 
     @Override
-    public DescribeStoredQueriesResponseType describeStoredQueries(
-            DescribeStoredQueriesType request) throws WFSException {
+    public DescribeStoredQueriesResponseType describeStoredQueries(DescribeStoredQueriesType request)
+            throws WFSException {
         return new DescribeStoredQueries(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
 
     @Override
-    public CreateStoredQueryResponseType createStoredQuery(CreateStoredQueryType request)
-            throws WFSException {
+    public CreateStoredQueryResponseType createStoredQuery(CreateStoredQueryType request) throws WFSException {
         return new CreateStoredQuery(getServiceInfo(), getStoredQueryProvider()).run(request);
     }
 

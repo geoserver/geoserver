@@ -16,8 +16,7 @@ import org.geoserver.security.web.SecurityNamedServiceProvider;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class AuthenticationProviderProvider
-        extends SecurityNamedServiceProvider<SecurityAuthProviderConfig> {
+public class AuthenticationProviderProvider extends SecurityNamedServiceProvider<SecurityAuthProviderConfig> {
 
     @Override
     protected List<SecurityAuthProviderConfig> getItems() {

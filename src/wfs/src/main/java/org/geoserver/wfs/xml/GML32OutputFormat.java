@@ -40,9 +40,7 @@ import org.w3c.dom.Document;
 
 public class GML32OutputFormat extends GML3OutputFormat {
 
-    public static final String[] MIME_TYPES = {
-        "application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"
-    };
+    public static final String[] MIME_TYPES = {"application/gml+xml; version=3.2", "text/xml; subtype=gml/3.2"};
 
     public static final List<String> FORMATS = new ArrayList<>();
 
@@ -60,12 +58,9 @@ public class GML32OutputFormat extends GML3OutputFormat {
         docFactory.setNamespaceAware(true);
         Document xsdDocument = null;
         try {
-            xsdDocument =
-                    docFactory
-                            .newDocumentBuilder()
-                            .parse(
-                                    GML3OutputFormat.class.getResourceAsStream(
-                                            "/ChangeNumberOfFeature32.xslt"));
+            xsdDocument = docFactory
+                    .newDocumentBuilder()
+                    .parse(GML3OutputFormat.class.getResourceAsStream("/ChangeNumberOfFeature32.xslt"));
             xslt = new DOMSource(xsdDocument);
         } catch (Exception e) {
             xslt = null;
@@ -78,8 +73,7 @@ public class GML32OutputFormat extends GML3OutputFormat {
         this.geoServer = geoServer;
     }
 
-    protected GML32OutputFormat(
-            GeoServer geoServer, Set<String> formats, WFSConfiguration configuration) {
+    protected GML32OutputFormat(GeoServer geoServer, Set<String> formats, WFSConfiguration configuration) {
         super(formats, geoServer, configuration);
         this.geoServer = geoServer;
     }
@@ -101,12 +95,11 @@ public class GML32OutputFormat extends GML3OutputFormat {
 
         org.geotools.wfs.v2_0.WFSConfiguration wfs = new org.geotools.wfs.v2_0.WFSConfiguration();
         wfs.getDependency(GMLConfiguration.class)
-                .setSrsSyntax(
-                        getInfo()
-                                .getGML()
-                                .get(WFSInfo.Version.V_20)
-                                .getSrsNameStyle()
-                                .toSrsSyntax());
+                .setSrsSyntax(getInfo()
+                        .getGML()
+                        .get(WFSInfo.Version.V_20)
+                        .getSrsNameStyle()
+                        .toSrsSyntax());
         ApplicationSchemaConfiguration2 config = new ApplicationSchemaConfiguration2(xsd, wfs);
         // adding properties from original configuration to allow
         // hints handling
@@ -122,19 +115,16 @@ public class GML32OutputFormat extends GML3OutputFormat {
     }
 
     @Override
-    protected void setAdditionalSchemaLocations(
-            Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
+    protected void setAdditionalSchemaLocations(Encoder encoder, GetFeatureRequest request, WFSInfo wfs) {
         // since wfs 2.0 schema does not depend on gml 3.2 schema we register it manually
-        String loc =
-                wfs.isCanonicalSchemaLocation()
-                        ? GML.CANONICAL_SCHEMA_LOCATION
-                        : ResponseUtils.buildSchemaURL(request.getBaseUrl(), "gml/3.2.1/gml.xsd");
+        String loc = wfs.isCanonicalSchemaLocation()
+                ? GML.CANONICAL_SCHEMA_LOCATION
+                : ResponseUtils.buildSchemaURL(request.getBaseUrl(), "gml/3.2.1/gml.xsd");
         encoder.setSchemaLocation(GML.NAMESPACE, loc);
     }
 
     @Override
-    protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder)
-            throws IOException {
+    protected void encode(FeatureCollectionResponse results, OutputStream output, Encoder encoder) throws IOException {
         // evil behavior... if the query was a GetFeatureById then we have to write out a single
         // feature
         // without the feature collection wrapper
@@ -145,15 +135,12 @@ public class GML32OutputFormat extends GML3OutputFormat {
             Feature next = DataUtilities.first(fc);
             if (next == null) {
                 throw new WFSException(
-                        (EObject) null,
-                        "No feature matching the requested id found",
-                        WFSException.NOT_FOUND);
+                        (EObject) null, "No feature matching the requested id found", WFSException.NOT_FOUND);
             } else {
                 encoder.encode(next, GML.AbstractFeature, output);
             }
         } else {
-            encoder.encode(
-                    results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);
+            encoder.encode(results.unadapt(FeatureCollectionType.class), WFS.FeatureCollection, output);
         }
     }
 

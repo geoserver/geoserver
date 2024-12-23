@@ -110,8 +110,7 @@ public interface TaskManagerDao {
     <T extends SoftRemove> T remove(T item);
 
     /**
-     * If a task is currently being run, return the current run. This method must be protected
-     * against concurrency.
+     * If a task is currently being run, return the current run. This method must be protected against concurrency.
      *
      * @param task the task.
      * @return the current run, or null if it is not being run.
@@ -127,33 +126,32 @@ public interface TaskManagerDao {
     Run getCommittingRun(final Task task);
 
     /**
-     * Permanently delete a batch. All historical information (runs) associated with this batch will
-     * be removed.
+     * Permanently delete a batch. All historical information (runs) associated with this batch will be removed.
      *
      * @param batch the batch
      */
     void delete(Batch batch);
 
     /**
-     * Permanently delete a configuration. All historical information (tasks + runs + batches)
-     * associated with this configuration will be removed. Note that this will fail if some of the
-     * tasks are still used in existing independent batches.
+     * Permanently delete a configuration. All historical information (tasks + runs + batches) associated with this
+     * configuration will be removed. Note that this will fail if some of the tasks are still used in existing
+     * independent batches.
      *
      * @param batch the batch
      */
     void delete(Configuration config);
 
     /**
-     * Permanently delete a batch element. All historical information (runs) associated with this
-     * batch element will be removed.
+     * Permanently delete a batch element. All historical information (runs) associated with this batch element will be
+     * removed.
      *
      * @param batchElement the batch element
      */
     void delete(BatchElement batchElement);
 
     /**
-     * Permanently delete a task. All historical information associated with this task will be
-     * removed (runs). Note that this will fail if the task is still used in existing batches.
+     * Permanently delete a task. All historical information associated with this task will be removed (runs). Note that
+     * this will fail if the task is still used in existing batches.
      *
      * @param task the task
      */
@@ -176,10 +174,9 @@ public interface TaskManagerDao {
     Configuration copyConfiguration(String configName);
 
     /**
-     * List all tasks available for a batch. That means - no tasks already in the batch - only
-     * active tasks - if the batch is part of a configuration or template, only tasks of that
-     * configuration or template - if the batch is not part of a configuration or template, only
-     * tasks in a real configuration (not template).
+     * List all tasks available for a batch. That means - no tasks already in the batch - only active tasks - if the
+     * batch is part of a configuration or template, only tasks of that configuration or template - if the batch is not
+     * part of a configuration or template, only tasks in a real configuration (not template).
      *
      * @return the list of available tasks.
      */
@@ -210,8 +207,8 @@ public interface TaskManagerDao {
     <T extends Identifiable> T lockReload(T object);
 
     /**
-     * Return batch run on the basis of the scheduler reference If the scheduler reference is not
-     * unique, the most recent batch run is returned.
+     * Return batch run on the basis of the scheduler reference If the scheduler reference is not unique, the most
+     * recent batch run is returned.
      *
      * @param schedulerReference scheduler reference
      */

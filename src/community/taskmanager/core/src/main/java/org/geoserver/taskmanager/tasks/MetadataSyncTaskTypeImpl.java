@@ -52,25 +52,25 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
 
     public static final String PARAM_LAYER = "layer";
 
-    protected final Map<String, ParameterInfo> paramInfo =
-            new LinkedHashMap<String, ParameterInfo>();
+    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
 
-    @Autowired protected Catalog catalog;
+    @Autowired
+    protected Catalog catalog;
 
-    @Autowired protected ExtTypes extTypes;
+    @Autowired
+    protected ExtTypes extTypes;
 
-    @Autowired protected CatalogUtil catalogUtil;
+    @Autowired
+    protected CatalogUtil catalogUtil;
 
     @PostConstruct
     public void initParamInfo() {
         paramInfo.put(PARAM_EXT_GS, new ParameterInfo(PARAM_EXT_GS, extTypes.extGeoserver, true));
-        ParameterInfo paramWorkspace =
-                new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, false);
+        ParameterInfo paramWorkspace = new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, false);
         paramInfo.put(PARAM_WORKSPACE, paramWorkspace);
         paramInfo.put(
                 PARAM_LAYER,
-                new ParameterInfo(PARAM_LAYER, extTypes.internalLayer, true)
-                        .dependsOn(false, paramWorkspace));
+                new ParameterInfo(PARAM_LAYER, extTypes.internalLayer, true).dependsOn(false, paramWorkspace));
     }
 
     @Override
@@ -85,9 +85,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
         final ResourceInfo resource = layer.getResource();
         final StoreInfo store = resource.getStore();
         final StoreType storeType =
-                store instanceof CoverageStoreInfo
-                        ? StoreType.COVERAGESTORES
-                        : StoreType.DATASTORES;
+                store instanceof CoverageStoreInfo ? StoreType.COVERAGESTORES : StoreType.DATASTORES;
         final String ws = store.getWorkspace().getName();
 
         final GeoServerRESTManager restManager;
@@ -108,8 +106,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
         }
         String storeName;
 
-        Pattern pattern =
-                Pattern.compile("rest/workspaces/" + ws + "/" + storeType.toString() + "/([^/]*)/");
+        Pattern pattern = Pattern.compile("rest/workspaces/" + ws + "/" + storeType.toString() + "/([^/]*)/");
         Matcher matcher = pattern.matcher(restLayer.getResourceUrl());
         if (matcher.find()) {
             storeName = matcher.group(1);
@@ -119,8 +116,7 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
         // sync resource
         GSResourceEncoder re = catalogUtil.syncMetadata(resource);
         if (!restManager.getPublisher().configureResource(ws, storeType, storeName, re)) {
-            throw new TaskException(
-                    "Failed to configure resource " + ws + ":" + resource.getName());
+            throw new TaskException("Failed to configure resource " + ws + ":" + resource.getName());
         }
 
         // sync styles
@@ -138,14 +134,13 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
             }
         }
         for (String newWs : createWorkspaces) { // workspace doesn't exist yet, publish
-            LOGGER.log(
-                    Level.INFO,
-                    "Workspace doesn't exist: " + newWs + " on " + extGS.getName() + ", creating.");
+            LOGGER.log(Level.INFO, "Workspace doesn't exist: " + newWs + " on " + extGS.getName() + ", creating.");
             try {
                 if (!restManager
                         .getPublisher()
                         .createWorkspace(
-                                newWs, new URI(catalog.getNamespaceByPrefix(newWs).getURI()))) {
+                                newWs,
+                                new URI(catalog.getNamespaceByPrefix(newWs).getURI()))) {
                     throw new TaskException("Failed to create workspace " + newWs);
                 }
             } catch (URISyntaxException e) {
@@ -159,20 +154,16 @@ public class MetadataSyncTaskTypeImpl implements TaskType {
             if (!(restManager.getStyleManager().existsStyle(wsName, si.getName())
                     ? restManager
                             .getStyleManager()
-                            .updateStyleZippedInWorkspace(
-                                    wsName, catalogUtil.createStyleZipFile(si), si.getName())
+                            .updateStyleZippedInWorkspace(wsName, catalogUtil.createStyleZipFile(si), si.getName())
                     : restManager
                             .getStyleManager()
-                            .publishStyleZippedInWorkspace(
-                                    wsName, catalogUtil.createStyleZipFile(si), si.getName()))) {
+                            .publishStyleZippedInWorkspace(wsName, catalogUtil.createStyleZipFile(si), si.getName()))) {
                 throw new TaskException("Failed to create style " + si.getName());
             }
             if (!restManager
                     .getStyleManager()
                     .updateStyleInWorkspace(
-                            CatalogUtil.wsName(si.getWorkspace()),
-                            catalogUtil.syncStyle(si),
-                            si.getName())) {
+                            CatalogUtil.wsName(si.getWorkspace()), catalogUtil.syncStyle(si), si.getName())) {
                 throw new TaskException("Failed to sync style " + si.getName());
             }
         }

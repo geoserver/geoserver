@@ -14,8 +14,7 @@ import org.geotools.geopkg.GeoPkgDataStoreFactory;
  *
  * @author Justin Deoliveira, Boundless
  */
-public class GeoPkgDataStoreFactoryInitializer
-        extends DataStoreFactoryInitializer<GeoPkgDataStoreFactory> {
+public class GeoPkgDataStoreFactoryInitializer extends DataStoreFactoryInitializer<GeoPkgDataStoreFactory> {
 
     GeoServerResourceLoader resourceLoader;
 

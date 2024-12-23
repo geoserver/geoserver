@@ -30,8 +30,7 @@ public class WorkspacePageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         assertEquals(dv.size(), getCatalog().getWorkspaces().size());
         WorkspaceInfo ws = (WorkspaceInfo) dv.getDataProvider().iterator(0, 1).next();
         assertEquals("cdf", ws.getName());
@@ -48,8 +47,7 @@ public class WorkspacePageTest extends GeoServerWicketTestSupport {
         tester.assertRenderedPage(WorkspacePage.class);
         tester.assertNoErrorMessage();
 
-        DataView dv =
-                (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
+        DataView dv = (DataView) tester.getComponentFromLastRenderedPage("table:listContainer:items");
         // Ensure the data provider is an instance of WorkspaceProvider
         assertTrue(dv.getDataProvider() instanceof WorkspaceProvider);
 

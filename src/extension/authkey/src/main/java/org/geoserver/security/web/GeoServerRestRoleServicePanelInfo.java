@@ -10,8 +10,7 @@ import org.geoserver.security.web.role.RoleServicePanelInfo;
 
 /** @author Alessio Fabiani, GeoSolutions S.A.S. */
 public class GeoServerRestRoleServicePanelInfo
-        extends RoleServicePanelInfo<
-                GeoServerRestRoleServiceConfig, GeoServerRestRoleServicePanel> {
+        extends RoleServicePanelInfo<GeoServerRestRoleServiceConfig, GeoServerRestRoleServicePanel> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1804560200750315834L;

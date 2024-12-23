@@ -58,10 +58,7 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
 
     /** Helper method for copying a file from a directory to another. */
     private void copyFile(
-            Resource inputDirectory,
-            String inputFileName,
-            Resource outputDirectory,
-            String outputFileName) {
+            Resource inputDirectory, String inputFileName, Resource outputDirectory, String outputFileName) {
         Resource inputFile = inputDirectory.get(inputFileName);
         if (!Resources.exists(inputFile)) {
             // nothing to copy
@@ -75,9 +72,7 @@ public final class ExtraFileHandler implements GenericTaskletHandler {
                 IOUtils.copy(input, output);
             } catch (Exception exception) {
                 throw new RuntimeException(
-                        String.format(
-                                "Error copying file '%s' to file '%s'.", inputFile, outputFile),
-                        exception);
+                        String.format("Error copying file '%s' to file '%s'.", inputFile, outputFile), exception);
             }
         }
     }

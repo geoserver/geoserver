@@ -78,9 +78,7 @@ public class ConformanceTest extends STACTestSupport {
                 "GeoServer SpatioTemporal Asset Catalog Conformance",
                 document.select("#title").text());
         List<String> classes =
-                document.select("#content li").stream()
-                        .map(e -> e.text())
-                        .collect(Collectors.toList());
+                document.select("#content li").stream().map(e -> e.text()).collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
     }
 }

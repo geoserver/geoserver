@@ -9,8 +9,7 @@ import org.geoserver.security.keycloak.GeoServerKeycloakFilterConfig;
 import org.geoserver.security.web.auth.AuthenticationFilterPanelInfo;
 
 public class KeycloakAuthFilterPanelInfo
-        extends AuthenticationFilterPanelInfo<
-                GeoServerKeycloakFilterConfig, KeycloakAuthFilterPanel> {
+        extends AuthenticationFilterPanelInfo<GeoServerKeycloakFilterConfig, KeycloakAuthFilterPanel> {
 
     private static final long serialVersionUID = 1L;
 

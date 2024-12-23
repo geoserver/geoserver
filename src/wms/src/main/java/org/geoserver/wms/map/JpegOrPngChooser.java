@@ -13,10 +13,9 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.image.util.ImageUtilities;
 
 /**
- * A support object attaching itself to the WebMapContent and deciding which format should be used
- * between jpeg and png when using the image/vnd.jpeg-png image format. This is not done in the
- * renderer because when meta-tiling we want to defer the decision about the format to the point in
- * which the single tiles are encoded
+ * A support object attaching itself to the WebMapContent and deciding which format should be used between jpeg and png
+ * when using the image/vnd.jpeg-png image format. This is not done in the renderer because when meta-tiling we want to
+ * defer the decision about the format to the point in which the single tiles are encoded
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -62,15 +61,14 @@ public class JpegOrPngChooser {
     }
 
     /**
-     * Returns true if the best format to encode the image is jpeg (the image is rgb, or rgba
-     * without any actual transparency use)
+     * Returns true if the best format to encode the image is jpeg (the image is rgb, or rgba without any actual
+     * transparency use)
      */
     private boolean isBestFormatJpeg(RenderedImage renderedImage) {
         int numBands = renderedImage.getSampleModel().getNumBands();
         if (numBands == 4 || numBands == 2) {
             RenderingHints renderingHints = ImageUtilities.getRenderingHints(renderedImage);
-            RenderedOp extremaOp =
-                    ExtremaDescriptor.create(renderedImage, null, 1, 1, false, 1, renderingHints);
+            RenderedOp extremaOp = ExtremaDescriptor.create(renderedImage, null, 1, 1, false, 1, renderingHints);
             double[][] extrema = (double[][]) extremaOp.getProperty("Extrema");
             double[] mins = extrema[0];
 

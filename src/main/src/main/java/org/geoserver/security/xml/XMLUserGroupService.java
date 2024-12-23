@@ -41,8 +41,7 @@ import org.xml.sax.SAXException;
 /** @author christian */
 public class XMLUserGroupService extends AbstractUserGroupService {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.xml");
     protected DocumentBuilder builder;
     protected Resource userResource;
     /** Validate against schema on load/store, default = true; */
@@ -67,17 +66,13 @@ public class XMLUserGroupService extends AbstractUserGroupService {
         passwordEncoderName = ((SecurityUserGroupServiceConfig) config).getPasswordEncoderName();
         passwordValidatorName = ((SecurityUserGroupServiceConfig) config).getPasswordPolicyName();
 
-        GeoServerPasswordEncoder enc =
-                getSecurityManager().loadPasswordEncoder(passwordEncoderName);
+        GeoServerPasswordEncoder enc = getSecurityManager().loadPasswordEncoder(passwordEncoderName);
         if (enc.getEncodingType() == PasswordEncodingType.ENCRYPT) {
             KeyStoreProvider prov = getSecurityManager().getKeyStoreProvider();
             String alias = prov.aliasForGroupService(name);
             if (prov.containsAlias(alias) == false) {
                 prov.setUserGroupKey(
-                        name,
-                        getSecurityManager()
-                                .getRandomPassworddProvider()
-                                .getRandomPasswordWithDefaultLength());
+                        name, getSecurityManager().getRandomPassworddProvider().getRandomPasswordWithDefaultLength());
                 prov.storeKeyStore();
             }
         }
@@ -88,8 +83,7 @@ public class XMLUserGroupService extends AbstractUserGroupService {
             // copy schema file
             Resource xsdFile = getConfigRoot().get(XMLConstants.FILE_UR_SCHEMA);
             if (xsdFile.getType() == Type.UNDEFINED) {
-                IOUtils.copy(
-                        getClass().getResourceAsStream(XMLConstants.FILE_UR_SCHEMA), xsdFile.out());
+                IOUtils.copy(getClass().getResourceAsStream(XMLConstants.FILE_UR_SCHEMA), xsdFile.out());
             }
         }
 
@@ -103,8 +97,7 @@ public class XMLUserGroupService extends AbstractUserGroupService {
             }
 
             if (userResource.getType() == Type.UNDEFINED) {
-                IOUtils.copy(
-                        getClass().getResourceAsStream("usersTemplate.xml"), userResource.out());
+                IOUtils.copy(getClass().getResourceAsStream("usersTemplate.xml"), userResource.out());
             }
         } else {
             throw new IOException("Cannot initialize from " + config.getClass().getName());
@@ -153,40 +146,31 @@ public class XMLUserGroupService extends AbstractUserGroupService {
 
             XPathExpression expr = XMLXpathFactory.Singleton.getVersionExpressionUR();
             String versionNummer = expr.evaluate(doc);
-            UserGroupXMLXpath xmlXPath =
-                    XMLXpathFactory.Singleton.getUserGroupXMLXpath(versionNummer);
+            UserGroupXMLXpath xmlXPath = XMLXpathFactory.Singleton.getUserGroupXMLXpath(versionNummer);
 
             clearMaps();
 
-            NodeList userNodes =
-                    (NodeList)
-                            xmlXPath.getUserListExpression().evaluate(doc, XPathConstants.NODESET);
+            NodeList userNodes = (NodeList) xmlXPath.getUserListExpression().evaluate(doc, XPathConstants.NODESET);
             for (int i = 0; i < userNodes.getLength(); i++) {
                 Node userNode = userNodes.item(i);
-                boolean userEnabled =
-                        Util.convertToBoolean(
-                                xmlXPath.getUserEnabledExpression().evaluate(userNode), true);
+                boolean userEnabled = Util.convertToBoolean(
+                        xmlXPath.getUserEnabledExpression().evaluate(userNode), true);
                 String userPassword = null;
 
                 // there doesn't seem to be a way to check for existence of an attribute vs an
                 // attribute being empty, so we check the attribute manually
-                if (userNode.getAttributes().getNamedItem(XMLConstants.A_USER_PASSWORD_UR)
-                        != null) {
+                if (userNode.getAttributes().getNamedItem(XMLConstants.A_USER_PASSWORD_UR) != null) {
                     userPassword = xmlXPath.getUserPasswordExpression().evaluate(userNode);
                 }
 
                 String userName = xmlXPath.getUserNameExpression().evaluate(userNode);
                 NodeList propertyNodes =
-                        (NodeList)
-                                xmlXPath.getUserPropertiesExpression()
-                                        .evaluate(userNode, XPathConstants.NODESET);
+                        (NodeList) xmlXPath.getUserPropertiesExpression().evaluate(userNode, XPathConstants.NODESET);
                 Properties userProps = new Properties();
                 for (int j = 0; j < propertyNodes.getLength(); j++) {
                     Node propertyNode = propertyNodes.item(j);
-                    String propertyName =
-                            xmlXPath.getPropertyNameExpression().evaluate(propertyNode);
-                    String propertyValue =
-                            xmlXPath.getPropertyValueExpression().evaluate(propertyNode);
+                    String propertyName = xmlXPath.getPropertyNameExpression().evaluate(propertyNode);
+                    String propertyValue = xmlXPath.getPropertyValueExpression().evaluate(propertyNode);
                     userProps.put(propertyName, propertyValue);
                 }
                 GeoServerUser user = createUserObject(userName, userPassword, userEnabled);
@@ -204,25 +188,19 @@ public class XMLUserGroupService extends AbstractUserGroupService {
                 }
             }
 
-            NodeList groupNodes =
-                    (NodeList)
-                            xmlXPath.getGroupListExpression().evaluate(doc, XPathConstants.NODESET);
+            NodeList groupNodes = (NodeList) xmlXPath.getGroupListExpression().evaluate(doc, XPathConstants.NODESET);
             for (int i = 0; i < groupNodes.getLength(); i++) {
                 Node groupNode = groupNodes.item(i);
                 String groupName = xmlXPath.getGroupNameExpression().evaluate(groupNode);
-                boolean groupEnabled =
-                        Util.convertToBoolean(
-                                xmlXPath.getGroupEnabledExpression().evaluate(groupNode), true);
+                boolean groupEnabled = Util.convertToBoolean(
+                        xmlXPath.getGroupEnabledExpression().evaluate(groupNode), true);
                 GeoServerUserGroup group = createGroupObject(groupName, groupEnabled);
                 helper.groupMap.put(groupName, group);
                 NodeList memberNodes =
-                        (NodeList)
-                                xmlXPath.getGroupMemberListExpression()
-                                        .evaluate(groupNode, XPathConstants.NODESET);
+                        (NodeList) xmlXPath.getGroupMemberListExpression().evaluate(groupNode, XPathConstants.NODESET);
                 for (int j = 0; j < memberNodes.getLength(); j++) {
                     Node memberNode = memberNodes.item(j);
-                    String memberName =
-                            xmlXPath.getGroupMemberNameExpression().evaluate(memberNode);
+                    String memberName = xmlXPath.getGroupMemberNameExpression().evaluate(memberNode);
                     GeoServerUser member = helper.userMap.get(memberName);
 
                     SortedSet<GeoServerUser> members = helper.group_userMap.get(group);
@@ -246,8 +224,7 @@ public class XMLUserGroupService extends AbstractUserGroupService {
     }
 
     @Override
-    public GeoServerUser createUserObject(String username, String password, boolean isEnabled)
-            throws IOException {
+    public GeoServerUser createUserObject(String username, String password, boolean isEnabled) throws IOException {
         XMLGeoserverUser user = new XMLGeoserverUser(username);
         user.setEnabled(isEnabled);
         user.setPassword(password);

@@ -106,8 +106,7 @@ public class KMLPPIO extends CDataPPIO {
 
     @Override
     public Object decode(InputStream input) throws Exception {
-        StreamingParser parser =
-                new StreamingParser(new KMLConfiguration(), input, SimpleFeature.class);
+        StreamingParser parser = new StreamingParser(new KMLConfiguration(), input, SimpleFeature.class);
         parser.setEntityResolver(resolverProvider.getEntityResolver());
         SimpleFeature f;
         ListFeatureCollection features = null;
@@ -143,11 +142,10 @@ public class KMLPPIO extends CDataPPIO {
 
     @Override
     public void encode(Object obj, OutputStream os) throws Exception {
-        LOGGER.info(
-                "KMLPPIO::encode: obj is of class "
-                        + obj.getClass().getName()
-                        + ", handler is of class "
-                        + os.getClass().getName());
+        LOGGER.info("KMLPPIO::encode: obj is of class "
+                + obj.getClass().getName()
+                + ", handler is of class "
+                + os.getClass().getName());
 
         // prepare the encoding context
         KMLEncoder encoder = new KMLEncoder();
@@ -172,9 +170,7 @@ public class KMLPPIO extends CDataPPIO {
             document = (Document) decorator.decorate(document, context);
             if (document == null) {
                 throw new ServiceException(
-                        "Coding error in decorator "
-                                + decorator
-                                + ", document objects cannot be set to null");
+                        "Coding error in decorator " + decorator + ", document objects cannot be set to null");
             }
         }
 

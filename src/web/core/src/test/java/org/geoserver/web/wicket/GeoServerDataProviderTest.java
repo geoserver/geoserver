@@ -16,18 +16,17 @@ import org.junit.Test;
 
 public class GeoServerDataProviderTest {
 
-    private final GeoServerDataProvider<Layer> geoServerLayerDataProviderMock =
-            new GeoServerDataProvider<>() {
-                @Override
-                protected List<Property<Layer>> getProperties() {
-                    return List.of(new BeanProperty<>("title", "title"));
-                }
+    private final GeoServerDataProvider<Layer> geoServerLayerDataProviderMock = new GeoServerDataProvider<>() {
+        @Override
+        protected List<Property<Layer>> getProperties() {
+            return List.of(new BeanProperty<>("title", "title"));
+        }
 
-                @Override
-                protected List<Layer> getItems() {
-                    return List.of(new Layer("key"), new Layer("keyword"));
-                }
-            };
+        @Override
+        protected List<Layer> getItems() {
+            return List.of(new Layer("key"), new Layer("keyword"));
+        }
+    };
 
     @Test
     public void fullTextFilter() {
@@ -71,8 +70,7 @@ public class GeoServerDataProviderTest {
 
         Filter filter = geoServerLayerDataProviderMock.getFilter();
 
-        assertEquals(
-                "AnyText ILIKE '*\"keyword'*' OR AnyText ILIKE '*'keyword*'", ECQL.toCQL(filter));
+        assertEquals("AnyText ILIKE '*\"keyword'*' OR AnyText ILIKE '*'keyword*'", ECQL.toCQL(filter));
     }
 
     @Test

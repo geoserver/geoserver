@@ -31,15 +31,13 @@ public class WebServiceSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
 
         return new WebServiceAuthenticationProvider();
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new WebAuthenticationConfigValidator(securityManager);
     }
 }

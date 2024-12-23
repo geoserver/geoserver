@@ -30,14 +30,11 @@ import org.junit.Before;
 
 public abstract class TestsSupport extends WMSTestSupport {
 
-    protected static final QName RASTER_ELEVATION_TIME =
-            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    protected static final QName RASTER_ELEVATION =
-            new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION_TIME = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
+    protected static final QName RASTER_ELEVATION = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static final QName RASTER_TIME =
             new QName(MockData.SF_URI, "watertemp_future_generated", MockData.SF_PREFIX);
-    protected static final QName RASTER_CUSTOM =
-            new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
+    protected static final QName RASTER_CUSTOM = new QName(MockData.SF_URI, "watertemp_custom", MockData.SF_PREFIX);
 
     protected static final QName VECTOR_ELEVATION_TIME =
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
@@ -45,10 +42,8 @@ public abstract class TestsSupport extends WMSTestSupport {
             new QName(MockData.SF_URI, "ElevationWithStartEnd", MockData.SF_PREFIX);
     protected static final QName SIDECAR_VECTOR_ET =
             new QName(MockData.SF_URI, "SidecarTimeElevationWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_TIME =
-            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
-    protected static final QName VECTOR_CUSTOM =
-            new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
+    protected static final QName VECTOR_TIME = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName VECTOR_CUSTOM = new QName(MockData.SF_URI, "TimeElevationCustom", MockData.SF_PREFIX);
 
     protected WMS wms;
     protected Catalog catalog;
@@ -131,17 +126,13 @@ public abstract class TestsSupport extends WMSTestSupport {
             int expandLimit, boolean useEndAttribute, String... expectedDomainValues) {
         DimensionInfo dimensionInfo = createDimension(true, null);
         Dimension dimension =
-                useEndAttribute
-                        ? buildDimensionWithEndAttribute(dimensionInfo)
-                        : buildDimension(dimensionInfo);
-        List<String> valuesAsStrings =
-                dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
+                useEndAttribute ? buildDimensionWithEndAttribute(dimensionInfo) : buildDimension(dimensionInfo);
+        List<String> valuesAsStrings = dimension.getDomainValuesAsStrings(Query.ALL, expandLimit).second;
         assertThat(valuesAsStrings.size(), is(expectedDomainValues.length));
         assertThat(valuesAsStrings, containsInAnyOrder(expectedDomainValues));
     }
 
-    protected void testDomainsValuesRepresentation(
-            int expandLimit, String... expectedDomainValues) {
+    protected void testDomainsValuesRepresentation(int expandLimit, String... expectedDomainValues) {
         testDomainsValuesRepresentation(expandLimit, false, expectedDomainValues);
     }
 
@@ -160,8 +151,7 @@ public abstract class TestsSupport extends WMSTestSupport {
         assertThat(defaultValue, is(expectedDefaultValue));
     }
 
-    protected static DimensionInfo createDimension(
-            boolean enable, DimensionDefaultValueSetting defaultValueStrategy) {
+    protected static DimensionInfo createDimension(boolean enable, DimensionDefaultValueSetting defaultValueStrategy) {
         DimensionInfo dimension = new DimensionInfoImpl();
         dimension.setEnabled(enable);
         dimension.setPresentation(DimensionPresentation.LIST);

@@ -61,10 +61,7 @@ public class XmlTestUtil {
         regenerateContext();
     }
 
-    /**
-     * Match a document where one node matched the XPath expression, and it also matches the given
-     * matcher.
-     */
+    /** Match a document where one node matched the XPath expression, and it also matches the given matcher. */
     @SuppressWarnings("unchecked")
     public Matcher<Document> hasOneNode(final String xPath, final Matcher<? super Node> matcher) {
         return hasNodes(xPath, (Matcher) contains(matcher));
@@ -73,10 +70,7 @@ public class XmlTestUtil {
     public Matcher<Document> hasOneNode(final String xPath) {
         return hasOneNode(xPath, any(Node.class));
     }
-    /**
-     * Match a document at least one of the nodes matched by the given XPath expression matches the
-     * given matcher.
-     */
+    /** Match a document at least one of the nodes matched by the given XPath expression matches the given matcher. */
     @SuppressWarnings("unchecked")
     public Matcher<Document> hasNode(final String xPath, final Matcher<Node> matcher) {
         return hasNodes(xPath, (Matcher) hasItem(matcher));
@@ -88,11 +82,9 @@ public class XmlTestUtil {
     }
 
     /**
-     * Match a document where the list of nodes selected by the given XPath expression also matches
-     * the given matcher.
+     * Match a document where the list of nodes selected by the given XPath expression also matches the given matcher.
      */
-    public Matcher<Document> hasNodes(
-            final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
+    public Matcher<Document> hasNodes(final String xPath, final Matcher<? extends Iterable<Node>> matcher) {
         return new BaseMatcher<Document>() {
 
             @Override
@@ -100,8 +92,7 @@ public class XmlTestUtil {
                 XpathEngine engine = XMLUnit.newXpathEngine();
                 engine.setNamespaceContext(namespaceContext);
                 try {
-                    List<Node> nodes =
-                            nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
+                    List<Node> nodes = nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
                     return matcher.matches(nodes);
                 } catch (XpathException e) {
                     return false;
@@ -122,8 +113,7 @@ public class XmlTestUtil {
                 XpathEngine engine = XMLUnit.newXpathEngine();
                 engine.setNamespaceContext(namespaceContext);
                 try {
-                    List<Node> nodes =
-                            nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
+                    List<Node> nodes = nodeCollection(engine.getMatchingNodes(xPath, (Document) item));
 
                     matcher.describeMismatch(nodes, description);
 
@@ -153,10 +143,7 @@ public class XmlTestUtil {
         };
     }
 
-    /**
-     * Print a DOM tree to an output stream or if there is an exception while doing so, print the
-     * stack trace.
-     */
+    /** Print a DOM tree to an output stream or if there is an exception while doing so, print the stack trace. */
     public static void printDom(Node dom, OutputStream os) {
         Transformer trans;
         PrintWriter w = new PrintWriter(os);

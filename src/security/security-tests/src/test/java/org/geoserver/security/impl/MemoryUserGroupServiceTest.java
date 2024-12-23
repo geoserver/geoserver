@@ -29,8 +29,7 @@ public class MemoryUserGroupServiceTest extends AbstractUserGroupServiceTest {
 
     @Override
     public GeoServerUserGroupService createUserGroupService(String name) throws Exception {
-        MemoryUserGroupServiceConfigImpl config =
-                (MemoryUserGroupServiceConfigImpl) createConfigObject(name);
+        MemoryUserGroupServiceConfigImpl config = (MemoryUserGroupServiceConfigImpl) createConfigObject(name);
         getSecurityManager().saveUserGroupService(config);
         return getSecurityManager().loadUserGroupService(name);
     }

@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Jetty starter, will run GeoBatch inside the Jetty web container.<br>
- * Useful for debugging, especially in IDE were you have direct dependencies between the sources of
- * the various modules (such as Eclipse).
+ * Useful for debugging, especially in IDE were you have direct dependencies between the sources of the various modules
+ * (such as Eclipse).
  *
  * @author Andrea Aime - GeoSolutions SAS
  * @author Carlo Cancellieri - GeoSolutions SAS
@@ -106,8 +106,7 @@ public class Start {
 
     public static final String JETTY_PORT_DEFAULT = "8080";
 
-    private static Properties loadProperties(final File props)
-            throws IllegalArgumentException, IOException {
+    private static Properties loadProperties(final File props) throws IllegalArgumentException, IOException {
         Properties prop = new Properties();
         if (props == null || !props.exists()) {
             throw new IllegalArgumentException("Bad file name argument: " + props);

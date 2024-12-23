@@ -23,8 +23,7 @@ public class ProxyBaseExtensionRule implements Serializable {
      * @param activated if the rule is activated
      * @param position the position of the rule in processing order
      */
-    public ProxyBaseExtensionRule(
-            String id, String matcher, String transformer, boolean activated, int position) {
+    public ProxyBaseExtensionRule(String id, String matcher, String transformer, boolean activated, int position) {
         this.id = id;
         this.matcher = matcher;
         this.transformer = transformer;

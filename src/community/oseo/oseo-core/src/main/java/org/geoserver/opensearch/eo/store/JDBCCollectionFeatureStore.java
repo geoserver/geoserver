@@ -25,8 +25,7 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     static final Logger LOGGER = Logging.getLogger(JDBCCollectionFeatureStore.class);
     static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
 
-    public JDBCCollectionFeatureStore(
-            JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
+    public JDBCCollectionFeatureStore(JDBCOpenSearchAccess openSearchAccess, FeatureType collectionFeatureType)
             throws IOException {
         super(openSearchAccess, collectionFeatureType);
     }
@@ -34,9 +33,7 @@ public class JDBCCollectionFeatureStore extends AbstractMappingStore {
     @Override
     public SimpleFeatureSource getDelegateSource() throws IOException {
         SimpleFeatureSource delegate =
-                openSearchAccess
-                        .getDelegateStore()
-                        .getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
+                openSearchAccess.getDelegateStore().getFeatureSource(JDBCOpenSearchAccess.COLLECTION);
         // if we're in a OWS Dispatcher handled request, check for workspace
         if (Dispatcher.REQUEST.get() != null) {
             WorkspaceInfo workspaceInfo = LocalWorkspace.get();

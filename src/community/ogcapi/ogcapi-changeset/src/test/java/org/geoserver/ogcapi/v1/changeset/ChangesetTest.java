@@ -60,8 +60,7 @@ public class ChangesetTest extends OGCApiTestSupport {
     static final double EPS = 1e-3;
     public static final String S2_STORE = "s2";
     static final QName S2 = new QName(MockTestData.SF_URI, S2_STORE, MockTestData.SF_PREFIX);
-    static final QName S2_SCALES =
-            new QName(MockTestData.SF_URI, "s2Scales", MockTestData.SF_PREFIX);
+    static final QName S2_SCALES = new QName(MockTestData.SF_URI, "s2Scales", MockTestData.SF_PREFIX);
     public static final String RASTER_SCALES_STYLE = "raster_scales";
     public static final String S2_LAYER = "sf:s2";
     public static final String S2_SCALES_LAYER = "sf:s2Scales";
@@ -76,8 +75,7 @@ public class ChangesetTest extends OGCApiTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        testData.addStyle(
-                RASTER_SCALES_STYLE, "raster_scales.sld", ChangesetTest.class, getCatalog());
+        testData.addStyle(RASTER_SCALES_STYLE, "raster_scales.sld", ChangesetTest.class, getCatalog());
     }
 
     @Before
@@ -94,8 +92,7 @@ public class ChangesetTest extends OGCApiTestSupport {
 
         // prepare a mosaic with just one tile
         s2Directory.mkdir();
-        this.s2TestData =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/changeset/hetero_s2");
+        this.s2TestData = new File("src/test/resources/org/geoserver/ogcapi/v1/changeset/hetero_s2");
         FileUtils.copyFileToDirectory(new File(s2TestData, "g1.tif"), s2Directory);
         FileUtils.copyFileToDirectory(new File(s2TestData, "indexer.properties"), s2Directory);
         CatalogBuilder cb = new CatalogBuilder(catalog);
@@ -117,8 +114,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         editableWgs84.setZoomStart(0);
         editableWgs84.setZoomStop(11);
         tileLayer.addGridSubset(editableWgs84.getGridSubSet(gwc.getGridSetBroker()));
-        XMLGridSubset editableWebMercator =
-                new XMLGridSubset(tileLayer.removeGridSubset("EPSG:900913"));
+        XMLGridSubset editableWebMercator = new XMLGridSubset(tileLayer.removeGridSubset("EPSG:900913"));
         editableWebMercator.setZoomStart(0);
         editableWebMercator.setZoomStop(11);
         tileLayer.addGridSubset(editableWebMercator.getGridSubSet(gwc.getGridSetBroker()));
@@ -147,9 +143,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(doc.read("summaryOfChangedItems[0].count"), equalTo(18));
         // single modified extent
         assertThat(doc.read("extentOfChangedItems.size()"), equalTo(1));
-        assertThat(
-                doc.read("extentOfChangedItems[0].crs"),
-                equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(doc.read("extentOfChangedItems[0].crs"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(doc.read("extentOfChangedItems[0].bbox[0]"), closeTo(11.683611, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[1]"), closeTo(47.63776, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[2]"), closeTo(11.861294, EPS));
@@ -161,8 +155,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         // upload single image
         uploadImage("g2.tif", S2_SCALES);
 
-        DocumentContext doc =
-                getChangesAsJSONPath(S2_SCALES_LAYER, RASTER_SCALES_STYLE, "EPSG:4326", null);
+        DocumentContext doc = getChangesAsJSONPath(S2_SCALES_LAYER, RASTER_SCALES_STYLE, "EPSG:4326", null);
 
         // the doc contains the requested checkpoint
         assertThat(doc.read("checkpoint"), equalTo(ChangesetIndexProvider.INITIAL_STATE));
@@ -172,9 +165,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(doc.read("summaryOfChangedItems[0].count"), equalTo(8));
         // single modified extent
         assertThat(doc.read("extentOfChangedItems.size()"), equalTo(1));
-        assertThat(
-                doc.read("extentOfChangedItems[0].crs"),
-                equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(doc.read("extentOfChangedItems[0].crs"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(doc.read("extentOfChangedItems[0].bbox[0]"), closeTo(11.683611, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[1]"), closeTo(47.63776, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[2]"), closeTo(11.861294, EPS));
@@ -198,8 +189,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(doc.read("summaryOfChangedItems[0].count"), equalTo(expectedChanges));
         // single modified extent
         assertThat(doc.read("extentOfChangedItems.size()"), equalTo(1));
-        assertThat(
-                doc.read("extentOfChangedItems[0].crs"), equalTo("urn:ogc:def:crs:EPSG::900913"));
+        assertThat(doc.read("extentOfChangedItems[0].crs"), equalTo("urn:ogc:def:crs:EPSG::900913"));
         assertThat(doc.read("extentOfChangedItems[0].bbox[0]"), closeTo(1300613, 1));
         assertThat(doc.read("extentOfChangedItems[0].bbox[1]"), closeTo(6046801, 1));
         assertThat(doc.read("extentOfChangedItems[0].bbox[2]"), closeTo(1320393, 1));
@@ -219,9 +209,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(contents.keySet(), hasItem("EPSG:900913/EPSG:900913:0/0/0.png"));
 
         // get the changeset
-        JsonContext json =
-                (JsonContext)
-                        JsonPath.parse(new ByteArrayInputStream(contents.get("changeset.json")));
+        JsonContext json = (JsonContext) JsonPath.parse(new ByteArrayInputStream(contents.get("changeset.json")));
         checkSummarySingle3857(json, 16);
 
         // checking a few paths hand tested with a WMTS client, verifies y axis inversion from
@@ -242,13 +230,9 @@ public class ChangesetTest extends OGCApiTestSupport {
 
         // check a single tile contents
         BufferedImage image =
-                ImageIO.read(
-                        new ByteArrayInputStream(
-                                contents.get("EPSG:900913/EPSG:900913:10" + "/357/545.png")));
+                ImageIO.read(new ByteArrayInputStream(contents.get("EPSG:900913/EPSG:900913:10" + "/357/545.png")));
         ImageAssert.assertEquals(
-                new File("src/test/resources/org/geoserver/ogcapi/v1/changeset/10_357_545.png"),
-                image,
-                100);
+                new File("src/test/resources/org/geoserver/ogcapi/v1/changeset/10_357_545.png"), image, 100);
     }
 
     @Test
@@ -256,8 +240,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         // upload single image
         uploadImage("g2.tif", S2_SCALES);
 
-        Map<String, byte[]> contents =
-                getChangesAsZip(S2_SCALES_LAYER, "EPSG:900913", null, RASTER_SCALES_STYLE);
+        Map<String, byte[]> contents = getChangesAsZip(S2_SCALES_LAYER, "EPSG:900913", null, RASTER_SCALES_STYLE);
 
         assertEquals(14, contents.size());
         assertThat(contents.keySet(), hasItem("changeset.json"));
@@ -265,9 +248,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(contents.keySet(), not(hasItem("EPSG:900913/EPSG:900913:0/0/0.png")));
 
         // get the changeset
-        JsonContext json =
-                (JsonContext)
-                        JsonPath.parse(new ByteArrayInputStream(contents.get("changeset.json")));
+        JsonContext json = (JsonContext) JsonPath.parse(new ByteArrayInputStream(contents.get("changeset.json")));
         // this layer has scale limitations and covers zoom level 11 and 12, thus different number
         // of changes
         checkSummarySingle3857(json, 13);
@@ -303,16 +284,12 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(doc.read("summaryOfChangedItems[0].count"), equalTo(18));
         // single modified extent
         assertThat(doc.read("extentOfChangedItems.size()"), equalTo(2));
-        assertThat(
-                doc.read("extentOfChangedItems[0].crs"),
-                equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(doc.read("extentOfChangedItems[0].crs"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(doc.read("extentOfChangedItems[0].bbox[0]"), closeTo(11.683482, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[1]"), closeTo(47.637856, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[2]"), closeTo(11.861166, EPS));
         assertThat(doc.read("extentOfChangedItems[0].bbox[3]"), closeTo(47.754345, EPS));
-        assertThat(
-                doc.read("extentOfChangedItems[1].crs"),
-                equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(doc.read("extentOfChangedItems[1].crs"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(doc.read("extentOfChangedItems[1].bbox[0]"), closeTo(11.683616, EPS));
         assertThat(doc.read("extentOfChangedItems[1].bbox[1]"), closeTo(47.63785, EPS));
         assertThat(doc.read("extentOfChangedItems[1].bbox[2]"), closeTo(11.8612995, EPS));
@@ -322,27 +299,20 @@ public class ChangesetTest extends OGCApiTestSupport {
     private void uploadImage(String fileName, QName layerName) throws Exception {
         String layerId = getLayerId(layerName);
         byte[] payload = getBytes(fileName);
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        "ogc/images/v1/collections/" + layerId + "/images?filename=" + fileName,
-                        payload,
-                        "image/tiff");
+        MockHttpServletResponse response = postAsServletResponse(
+                "ogc/images/v1/collections/" + layerId + "/images?filename=" + fileName, payload, "image/tiff");
         assertThat(response.getStatus(), equalTo(201));
         // layer is stored in the S2 table of the mosaic index, even if we use two different
         // published layer names for it
         assertThat(
                 response.getHeader("Location"),
-                startsWith(
-                        "http://localhost:8080/geoserver/ogc/images/v1/collections/"
-                                + urlEncode(layerId)
-                                + "/images/s2."));
+                startsWith("http://localhost:8080/geoserver/ogc/images/v1/collections/"
+                        + urlEncode(layerId)
+                        + "/images/s2."));
 
         // check it's really there
-        DocumentContext json =
-                getAsJSONPath(
-                        response.getHeader("Location")
-                                .substring("http://localhost:8080/geoserver/".length()),
-                        200);
+        DocumentContext json = getAsJSONPath(
+                response.getHeader("Location").substring("http://localhost:8080/geoserver/".length()), 200);
         assertThat(json.read("type"), equalTo("Feature"));
         assertThat(json.read("id"), startsWith("s2."));
         // in case of no date, the unix epoch is used
@@ -359,18 +329,16 @@ public class ChangesetTest extends OGCApiTestSupport {
     }
 
     protected DocumentContext getChangesAsJSONPath(
-            String collectionId, String styleName, String tileMatrixId, String extraParameters)
-            throws Exception {
+            String collectionId, String styleName, String tileMatrixId, String extraParameters) throws Exception {
         // build the request and check the checkpoint
-        String url =
-                "ogc/tiles/v1/collections/"
-                        + collectionId
-                        + "/map/"
-                        + styleName
-                        + "/tiles/"
-                        + tileMatrixId
-                        + "?f="
-                        + urlEncode(ChangesetTilesService.CHANGESET_MIME);
+        String url = "ogc/tiles/v1/collections/"
+                + collectionId
+                + "/map/"
+                + styleName
+                + "/tiles/"
+                + tileMatrixId
+                + "?f="
+                + urlEncode(ChangesetTilesService.CHANGESET_MIME);
         if (extraParameters != null) {
             url += "&" + extraParameters;
         }
@@ -383,18 +351,16 @@ public class ChangesetTest extends OGCApiTestSupport {
     }
 
     protected Map<String, byte[]> getChangesAsZip(
-            String collectionId, String tileMatrixId, String extraParameters, String styleName)
-            throws Exception {
+            String collectionId, String tileMatrixId, String extraParameters, String styleName) throws Exception {
         // build the request and check the checkpoint
-        String url =
-                "ogc/tiles/v1/collections/"
-                        + collectionId
-                        + "/map/"
-                        + styleName
-                        + "/tiles/"
-                        + tileMatrixId
-                        + "?f="
-                        + urlEncode(ChangesetTilesService.ZIP_MIME);
+        String url = "ogc/tiles/v1/collections/"
+                + collectionId
+                + "/map/"
+                + styleName
+                + "/tiles/"
+                + tileMatrixId
+                + "?f="
+                + urlEncode(ChangesetTilesService.ZIP_MIME);
         if (extraParameters != null) {
             url += "&" + extraParameters;
         }
@@ -405,8 +371,7 @@ public class ChangesetTest extends OGCApiTestSupport {
         assertThat(response.getHeader(CheckpointCallback.X_CHECKPOINT), equalTo(lastCheckpoint));
 
         Map<String, byte[]> contents = new LinkedHashMap<>();
-        try (ZipInputStream zis =
-                new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
+        try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 if (entry.isDirectory()) {

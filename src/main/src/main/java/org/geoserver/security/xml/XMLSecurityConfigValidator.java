@@ -60,13 +60,11 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
     }
 
     /**
-     * Additional Validation. Removing this configuration may also remove the file where the roles
-     * are contained. (the file may be stored within the configuration sub directory). The design
-     * insists on an empty role file.
+     * Additional Validation. Removing this configuration may also remove the file where the roles are contained. (the
+     * file may be stored within the configuration sub directory). The design insists on an empty role file.
      */
     @Override
-    public void validateRemoveRoleService(SecurityRoleServiceConfig config)
-            throws SecurityConfigException {
+    public void validateRemoveRoleService(SecurityRoleServiceConfig config) throws SecurityConfigException {
         super.validateRemoveRoleService(config);
 
         XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) config;
@@ -76,8 +74,8 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
             if (file.isAbsolute()
                     && !file.getCanonicalPath()
                             .startsWith(
-                                    manager.role().get(config.getName()).dir().getCanonicalPath()
-                                            + File.separator)) return;
+                                    manager.role().get(config.getName()).dir().getCanonicalPath() + File.separator))
+                return;
             // file in security sub dir, check if roles exists
             if (manager.loadRoleService(config.getName()).getRoleCount() > 0) {
                 throw createSecurityException(ROLE_SERVICE_NOT_EMPTY_$1, config.getName());
@@ -89,13 +87,12 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
     }
 
     /**
-     * Additional Validation. Removing this configuration may also remove the file where the users
-     * and groups are contained. (the file may be stored within the configuration sub directory).
-     * The design insists on an empty user/group file.
+     * Additional Validation. Removing this configuration may also remove the file where the users and groups are
+     * contained. (the file may be stored within the configuration sub directory). The design insists on an empty
+     * user/group file.
      */
     @Override
-    public void validateRemoveUserGroupService(SecurityUserGroupServiceConfig config)
-            throws SecurityConfigException {
+    public void validateRemoveUserGroupService(SecurityUserGroupServiceConfig config) throws SecurityConfigException {
         XMLUserGroupServiceConfig xmlConfig = (XMLUserGroupServiceConfig) config;
         File file = new File(xmlConfig.getFileName());
         // check if if file name is absolute and not in standard role directory
@@ -103,12 +100,11 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
 
             if (file.isAbsolute()
                     && !file.getCanonicalPath()
-                            .startsWith(
-                                    manager.userGroup()
-                                                    .get(config.getName())
-                                                    .file()
-                                                    .getCanonicalPath()
-                                            + File.separator)) return;
+                            .startsWith(manager.userGroup()
+                                            .get(config.getName())
+                                            .file()
+                                            .getCanonicalPath()
+                                    + File.separator)) return;
             // file in security sub dir, check if roles exists
             GeoServerUserGroupService service = manager.loadUserGroupService(config.getName());
             if (service.getGroupCount() > 0 || service.getUserCount() > 0) {
@@ -123,37 +119,31 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
 
     /** Additional validation, check if the file exists or can be created */
     @Override
-    public void validateAddRoleService(SecurityRoleServiceConfig config)
-            throws SecurityConfigException {
+    public void validateAddRoleService(SecurityRoleServiceConfig config) throws SecurityConfigException {
         super.validateAddRoleService(config);
         XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig) config;
         File file = new File(xmlConfig.getFileName());
-        if (checkFile(file) == false)
-            throw createSecurityException(FILE_CREATE_FAILED_$1, file.getPath());
+        if (checkFile(file) == false) throw createSecurityException(FILE_CREATE_FAILED_$1, file.getPath());
     }
 
     /** Additional validation, check if the file exists or can be created */
     @Override
-    public void validateAddUserGroupService(SecurityUserGroupServiceConfig config)
-            throws SecurityConfigException {
+    public void validateAddUserGroupService(SecurityUserGroupServiceConfig config) throws SecurityConfigException {
         super.validateAddUserGroupService(config);
         XMLUserGroupServiceConfig xmlConfig = (XMLUserGroupServiceConfig) config;
         File file = new File(xmlConfig.getFileName());
-        if (checkFile(file) == false)
-            throw createSecurityException(FILE_CREATE_FAILED_$1, file.getPath());
+        if (checkFile(file) == false) throw createSecurityException(FILE_CREATE_FAILED_$1, file.getPath());
     }
 
     @Override
-    public void validateModifiedRoleService(
-            SecurityRoleServiceConfig config, SecurityRoleServiceConfig oldConfig)
+    public void validateModifiedRoleService(SecurityRoleServiceConfig config, SecurityRoleServiceConfig oldConfig)
             throws SecurityConfigException {
         super.validateModifiedRoleService(config, oldConfig);
         XMLRoleServiceConfig old = (XMLRoleServiceConfig) oldConfig;
         XMLRoleServiceConfig modified = (XMLRoleServiceConfig) config;
 
         if (old.getFileName().equals(modified.getFileName()) == false)
-            throw createSecurityException(
-                    FILENAME_CHANGE_INVALID_$2, old.getFileName(), modified.getFileName());
+            throw createSecurityException(FILENAME_CHANGE_INVALID_$2, old.getFileName(), modified.getFileName());
     }
 
     @Override
@@ -165,8 +155,7 @@ public class XMLSecurityConfigValidator extends SecurityConfigValidator {
         XMLUserGroupServiceConfig modified = (XMLUserGroupServiceConfig) config;
 
         if (old.getFileName().equals(modified.getFileName()) == false)
-            throw createSecurityException(
-                    FILENAME_CHANGE_INVALID_$2, old.getFileName(), modified.getFileName());
+            throw createSecurityException(FILENAME_CHANGE_INVALID_$2, old.getFileName(), modified.getFileName());
     }
 
     @Override

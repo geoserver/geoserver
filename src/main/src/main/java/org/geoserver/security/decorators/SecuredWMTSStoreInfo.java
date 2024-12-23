@@ -25,8 +25,7 @@ public class SecuredWMTSStoreInfo extends DecoratingWMTSStoreInfo {
     public WebMapTileServer getWebMapTileServer(ProgressListener listener) throws IOException {
         WebMapTileServer wms = super.getWebMapTileServer(null);
         if (wms == null) return null;
-        else if (policy.level == AccessLevel.METADATA)
-            throw SecureCatalogImpl.unauthorizedAccess(this.getName());
+        else if (policy.level == AccessLevel.METADATA) throw SecureCatalogImpl.unauthorizedAccess(this.getName());
         else return SecuredObjects.secure(wms, policy);
     }
 }

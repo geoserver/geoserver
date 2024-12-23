@@ -49,8 +49,7 @@ public class GwcResponseProxy extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         GwcOperationProxy op = (GwcOperationProxy) value;
         byte[] contents = op.getContents();

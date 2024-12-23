@@ -63,11 +63,7 @@ public abstract class LayerGroupBaseTest extends GeoServerWicketTestSupport {
         builder.calculateLayerGroupBounds(lg);
         catalog.add(lg);
 
-        testData.addStyle(
-                "multiStyleGroup",
-                "multiStyleGroup.sld",
-                CatalogIntegrationTest.class,
-                getCatalog());
+        testData.addStyle("multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, getCatalog());
         lg = catalog.getFactory().createLayerGroup();
         lg.setName("styleGroup");
         lg.getLayers().add(null);
@@ -79,8 +75,7 @@ public abstract class LayerGroupBaseTest extends GeoServerWicketTestSupport {
     public void setNativeBox(Catalog catalog, String name) throws Exception {
         FeatureTypeInfo fti = catalog.getFeatureTypeByName(name);
         fti.setNativeBoundingBox(fti.getFeatureSource(null, null).getBounds());
-        fti.setLatLonBoundingBox(
-                new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
+        fti.setLatLonBoundingBox(new ReferencedEnvelope(fti.getNativeBoundingBox(), DefaultGeographicCRS.WGS84));
         catalog.save(fti);
     }
 }

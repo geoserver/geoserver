@@ -84,11 +84,11 @@ public class ConformanceTest extends FeaturesTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/features/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Features Conformance", document.select("#title").text());
+        assertEquals(
+                "GeoServer OGC API Features Conformance",
+                document.select("#title").text());
         List<String> classes =
-                document.select("#content li").stream()
-                        .map(e -> e.text())
-                        .collect(Collectors.toList());
+                document.select("#content li").stream().map(e -> e.text()).collect(Collectors.toList());
         assertThat(classes, containsInAnyOrder(getExpectedConformanceClasses()));
     }
 }

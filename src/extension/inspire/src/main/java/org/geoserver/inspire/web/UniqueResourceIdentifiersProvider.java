@@ -12,8 +12,7 @@ import org.geoserver.inspire.UniqueResourceIdentifiers;
 import org.geoserver.web.wicket.GeoServerDataProvider;
 
 @SuppressWarnings("serial")
-public class UniqueResourceIdentifiersProvider
-        extends GeoServerDataProvider<UniqueResourceIdentifier> {
+public class UniqueResourceIdentifiersProvider extends GeoServerDataProvider<UniqueResourceIdentifier> {
 
     UniqueResourceIdentifiers items;
 

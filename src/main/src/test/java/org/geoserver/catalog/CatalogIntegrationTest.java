@@ -73,15 +73,9 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     @Override
     protected void onSetUp(SystemTestData testData) throws IOException {
         final Catalog catalog = getCatalog();
-        testData.addStyle(
-                "singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, catalog);
-        testData.addStyle(
-                "multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, catalog);
-        testData.addStyle(
-                "recursiveStyleGroup",
-                "recursiveStyleGroup.sld",
-                CatalogIntegrationTest.class,
-                catalog);
+        testData.addStyle("singleStyleGroup", "singleStyleGroup.sld", CatalogIntegrationTest.class, catalog);
+        testData.addStyle("multiStyleGroup", "multiStyleGroup.sld", CatalogIntegrationTest.class, catalog);
+        testData.addStyle("recursiveStyleGroup", "recursiveStyleGroup.sld", CatalogIntegrationTest.class, catalog);
 
         // add a style with relative resource references, and resources in sub-directories
         testData.addStyle("relative", "se_relativepath.sld", ResourcePoolTest.class, catalog);
@@ -188,31 +182,25 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         DataStoreInfo ds = catalog.getDataStoreByName(MockData.CITE_PREFIX);
         DataStoreInfo ds2 = serialize(ds);
         assertSame(ModificationProxy.unwrap(ds), ModificationProxy.unwrap(ds2));
-        assertSame(
-                ModificationProxy.unwrap(ds.getWorkspace()),
-                ModificationProxy.unwrap(ds2.getWorkspace()));
+        assertSame(ModificationProxy.unwrap(ds.getWorkspace()), ModificationProxy.unwrap(ds2.getWorkspace()));
 
         // coverage store and related objects
         CoverageStoreInfo cs = catalog.getCoverageStoreByName(MockData.TASMANIA_DEM.getLocalPart());
         CoverageStoreInfo cs2 = serialize(cs);
         assertSame(ModificationProxy.unwrap(cs), ModificationProxy.unwrap(cs2));
-        assertSame(
-                ModificationProxy.unwrap(cs.getWorkspace()),
-                ModificationProxy.unwrap(cs2.getWorkspace()));
+        assertSame(ModificationProxy.unwrap(cs.getWorkspace()), ModificationProxy.unwrap(cs2.getWorkspace()));
 
         // feature type and related objects
         FeatureTypeInfo ft = catalog.getFeatureTypeByName(getLayerId(MockData.BRIDGES));
         FeatureTypeInfo ft2 = serialize(ft);
         assertSame(ModificationProxy.unwrap(ft), ModificationProxy.unwrap(ft2));
-        assertSame(
-                ModificationProxy.unwrap(ft.getStore()), ModificationProxy.unwrap(ft2.getStore()));
+        assertSame(ModificationProxy.unwrap(ft.getStore()), ModificationProxy.unwrap(ft2.getStore()));
 
         // coverage and related objects
         CoverageInfo ci = catalog.getCoverageByName(getLayerId(MockData.TASMANIA_DEM));
         CoverageInfo ci2 = serialize(ci);
         assertSame(ModificationProxy.unwrap(ci), ModificationProxy.unwrap(ci2));
-        assertSame(
-                ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
+        assertSame(ModificationProxy.unwrap(ci.getStore()), ModificationProxy.unwrap(ci.getStore()));
 
         // style
         StyleInfo streamsStyle = catalog.getStyleByName("Streams");
@@ -227,12 +215,8 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         catalog.save(li);
         LayerInfo li2 = serialize(li);
         assertSame(ModificationProxy.unwrap(li), ModificationProxy.unwrap(li2));
-        assertSame(
-                ModificationProxy.unwrap(li.getResource()),
-                ModificationProxy.unwrap(li2.getResource()));
-        assertSame(
-                ModificationProxy.unwrap(li.getDefaultStyle()),
-                ModificationProxy.unwrap(li2.getDefaultStyle()));
+        assertSame(ModificationProxy.unwrap(li.getResource()), ModificationProxy.unwrap(li2.getResource()));
+        assertSame(ModificationProxy.unwrap(li.getDefaultStyle()), ModificationProxy.unwrap(li2.getDefaultStyle()));
         assertSame(
                 ModificationProxy.unwrap(li.getStyles().iterator().next()),
                 ModificationProxy.unwrap(li2.getStyles().iterator().next()));
@@ -268,9 +252,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         lim.getStyles().add(streamsStyle);
         // clone and check
         LayerInfo lim2 = serialize(lim);
-        assertSame(
-                ModificationProxy.unwrap(lim.getDefaultStyle()),
-                ModificationProxy.unwrap(lim2.getDefaultStyle()));
+        assertSame(ModificationProxy.unwrap(lim.getDefaultStyle()), ModificationProxy.unwrap(lim2.getDefaultStyle()));
         assertSame(
                 ModificationProxy.unwrap(lim.getStyles().iterator().next()),
                 ModificationProxy.unwrap(lim2.getStyles().iterator().next()));
@@ -327,8 +309,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(1, styles.size());
         assertEquals(style, styles.get(0));
 
-        List<LayerGroupInfo> groups =
-                reporter.getObjects(LayerGroupInfo.class, ModificationType.DELETE);
+        List<LayerGroupInfo> groups = reporter.getObjects(LayerGroupInfo.class, ModificationType.DELETE);
         assertEquals(1, groups.size());
         assertEquals(lg, groups.get(0));
 
@@ -341,8 +322,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
-    public void testReprojectLayerGroup()
-            throws NoSuchAuthorityCodeException, FactoryException, Exception {
+    public void testReprojectLayerGroup() throws NoSuchAuthorityCodeException, FactoryException, Exception {
 
         Catalog catalog = getCatalog();
 
@@ -508,16 +488,13 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         assertEquals(catalog.getLayerByName((getLayerId(MockData.BUILDINGS))), layers.get(4));
         // user layer (inline feature) with user style -> 1 layer
         SimpleFeature inlineFeature =
-                (SimpleFeature)
-                        ((FeatureTypeInfo) layers.get(5).getResource())
-                                .getFeatureSource(null, null)
-                                .getFeatures()
-                                .features()
-                                .next();
+                (SimpleFeature) ((FeatureTypeInfo) layers.get(5).getResource())
+                        .getFeatureSource(null, null)
+                        .getFeatures()
+                        .features()
+                        .next();
         assertTrue(inlineFeature.getDefaultGeometry() instanceof Point);
-        assertEquals(
-                "POINT (115.741666667 -64.6583333333)",
-                ((Point) inlineFeature.getDefaultGeometry()).toText());
+        assertEquals("POINT (115.741666667 -64.6583333333)", ((Point) inlineFeature.getDefaultGeometry()).toText());
         assertTrue(
                 styles.get(5)
                                 .getStyle()
@@ -531,9 +508,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
         // Test bounds calculation
         new LayerGroupHelper(lg).calculateBounds();
-        assertEquals(
-                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84),
-                lg.getBounds());
+        assertEquals(new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84), lg.getBounds());
     }
 
     @Test
@@ -625,11 +600,9 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
         catalog.save(style);
 
         // check the referenced image and svg has been moved keeping the relative position
-        final Resource relativeImage =
-                getDataDirectory().getStyles(secondaryWs, "images", "rockFillSymbol.png");
+        final Resource relativeImage = getDataDirectory().getStyles(secondaryWs, "images", "rockFillSymbol.png");
         assertEquals(Resource.Type.RESOURCE, relativeImage.getType());
-        final Resource relativeSvg =
-                getDataDirectory().getStyles(secondaryWs, "images", "square16.svg");
+        final Resource relativeSvg = getDataDirectory().getStyles(secondaryWs, "images", "square16.svg");
         assertEquals(Resource.Type.RESOURCE, relativeSvg.getType());
     }
 

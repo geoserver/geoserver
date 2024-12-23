@@ -34,8 +34,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
         // Load the page
         MetadataTemplate allData = templateService.findByName("allData");
         MetadataTemplatePage page =
-                new MetadataTemplatePage(
-                        new ListModel<>(templateService.list()), new Model<>(allData));
+                new MetadataTemplatePage(new ListModel<>(templateService.list()), new Model<>(allData));
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatePage.class);
     }
@@ -59,29 +58,25 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testPageNewSave() throws IOException {
-        MetadataTemplatePage page =
-                new MetadataTemplatePage(new ListModel<>(templateService.list()));
+        MetadataTemplatePage page = new MetadataTemplatePage(new ListModel<>(templateService.list()));
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatePage.class);
 
         ((IModel<String>) tester.getComponentFromLastRenderedPage("form:name").getDefaultModel())
                 .setObject("newtemplate");
-        ((IModel<String>)
-                        tester.getComponentFromLastRenderedPage("form:description")
-                                .getDefaultModel())
+        ((IModel<String>) tester.getComponentFromLastRenderedPage("form:description")
+                        .getDefaultModel())
                 .setObject("description");
-        ((IModel<String>)
-                        tester.getComponentFromLastRenderedPage(
-                                        "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
-                                .getDefaultModel())
+        ((IModel<String>) tester.getComponentFromLastRenderedPage(
+                                "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
+                        .getDefaultModel())
                 .setObject("new identifier value");
 
         tester.clickLink("form:save");
 
         MetadataTemplate template = templateService.findByName("newtemplate");
         Assert.assertEquals("description", template.getDescription());
-        Assert.assertEquals(
-                "new identifier value", template.getMetadata().get("identifier-single"));
+        Assert.assertEquals("new identifier value", template.getMetadata().get("identifier-single"));
     }
 
     @SuppressWarnings("unchecked")
@@ -89,14 +84,12 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     public void testPageSave() throws IOException {
         tester.assertModelValue("form:description", "All fields");
 
-        ((IModel<String>)
-                        tester.getComponentFromLastRenderedPage("form:description")
-                                .getDefaultModel())
+        ((IModel<String>) tester.getComponentFromLastRenderedPage("form:description")
+                        .getDefaultModel())
                 .setObject("description update");
-        ((IModel<String>)
-                        tester.getComponentFromLastRenderedPage(
-                                        "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
-                                .getDefaultModel())
+        ((IModel<String>) tester.getComponentFromLastRenderedPage(
+                                "form:metadataTabs:panel:attributesPanel:attributesTablePanel:listContainer:items:2:itemProperties:1:component:textfield")
+                        .getDefaultModel())
                 .setObject("new identifier value");
 
         tester.assertModelValue("form:description", "description update");
@@ -105,8 +98,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
 
         MetadataTemplate template = templateService.findByName("allData");
         Assert.assertEquals("description update", template.getDescription());
-        Assert.assertEquals(
-                "new identifier value", template.getMetadata().get("identifier-single"));
+        Assert.assertEquals("new identifier value", template.getMetadata().get("identifier-single"));
     }
 
     @SuppressWarnings("unchecked")
@@ -114,9 +106,8 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     public void testPageCancel() throws IOException {
         tester.assertModelValue("form:description", "All fields");
 
-        ((IModel<String>)
-                        tester.getComponentFromLastRenderedPage("form:description")
-                                .getDefaultModel())
+        ((IModel<String>) tester.getComponentFromLastRenderedPage("form:description")
+                        .getDefaultModel())
                 .setObject("description update");
 
         tester.assertModelValue("form:description", "description update");
@@ -130,8 +121,7 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
     @Test
     public void testPageValidation() throws IOException {
         // Load the page
-        MetadataTemplatePage page =
-                new MetadataTemplatePage(new ListModel<>(templateService.list()));
+        MetadataTemplatePage page = new MetadataTemplatePage(new ListModel<>(templateService.list()));
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatePage.class);
 
@@ -143,19 +133,16 @@ public class TemplatePageTest extends AbstractWicketMetadataTest {
         Assert.assertEquals(
                 "Field 'Name' is required.",
                 tester.getMessages(FeedbackMessage.ERROR).get(0).toString());
-        tester.assertLabel(
-                "topFeedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
+        tester.assertLabel("topFeedback:feedbackul:messages:0:message", "Field &#039;Name&#039; is required.");
     }
 
     @Test
     public void testLayerTab() {
         // Load the page
-        MetadataTemplatePage page =
-                new MetadataTemplatePage(new ListModel<>(templateService.list()));
+        MetadataTemplatePage page = new MetadataTemplatePage(new ListModel<>(templateService.list()));
         tester.startPage(page);
         tester.assertRenderedPage(MetadataTemplatePage.class);
-        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:metadataTabs"))
-                .setSelectedTab(1);
+        ((TabbedPanel<?>) tester.getComponentFromLastRenderedPage("form:metadataTabs")).setSelectedTab(1);
         tester.submitForm("form");
         tester.assertComponent("form:metadataTabs:panel", LinkedLayersPanel.class);
         tester.assertComponent("form:metadataTabs:panel:layersTable", GeoServerTablePanel.class);

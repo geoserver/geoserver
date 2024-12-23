@@ -22,8 +22,7 @@ import org.geoserver.gsr.model.feature.LayerEdits;
 import org.geoserver.gsr.model.feature.ServiceEdits;
 
 public class LayerEditsEncoder {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(LayerEditsEncoder.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(LayerEditsEncoder.class);
     /**
      * Converts JSONObject into LayerEdits Object
      *
@@ -74,8 +73,7 @@ public class LayerEditsEncoder {
                 }
             }
         } catch (JSONException je) {
-            LOGGER.info(
-                    "Layer Edits JSON parsing issue when trying to retrieve the id array from the deletes object");
+            LOGGER.info("Layer Edits JSON parsing issue when trying to retrieve the id array from the deletes object");
         }
 
         return layerEdits;

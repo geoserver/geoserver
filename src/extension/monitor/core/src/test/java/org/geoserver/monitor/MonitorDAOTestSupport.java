@@ -69,9 +69,7 @@ public abstract class MonitorDAOTestSupport {
     @Test
     public void testGetRequestsVisitor() throws Exception {
         final List<RequestData> datas = new ArrayList<>();
-        dao.getRequests(
-                new Query().filter("path", "/seven", Comparison.EQ),
-                (data, aggregates) -> datas.add(data));
+        dao.getRequests(new Query().filter("path", "/seven", Comparison.EQ), (data, aggregates) -> datas.add(data));
 
         assertCoveredInOrder(datas, 7);
     }
@@ -85,8 +83,7 @@ public abstract class MonitorDAOTestSupport {
     @Test
     public void testGetRequestsSorted() throws Exception {
         assertCoveredInOrder(
-                dao.getRequests(
-                        new Query().filter("id", 11l, Comparison.LT).sort("path", SortOrder.ASC)),
+                dao.getRequests(new Query().filter("id", 11l, Comparison.LT).sort("path", SortOrder.ASC)),
                 8,
                 5,
                 4,
@@ -102,11 +99,7 @@ public abstract class MonitorDAOTestSupport {
     @Test
     public void testGetRequestsBetween() throws Exception {
         List<RequestData> datas =
-                dao.getRequests(
-                        new Query()
-                                .between(
-                                        toDate("2010-07-23T15:55:00"),
-                                        toDate("2010-07-23T16:17:00")));
+                dao.getRequests(new Query().between(toDate("2010-07-23T15:55:00"), toDate("2010-07-23T16:17:00")));
 
         assertCoveredInOrder(datas, 6, 5, 4);
     }
@@ -114,56 +107,47 @@ public abstract class MonitorDAOTestSupport {
     @Test
     public void testGetRequestsBetween2() throws Exception {
         // test that the query is inclusive, and test sorting
-        List<RequestData> datas =
-                dao.getRequests(
-                        new Query()
-                                .between(
-                                        toDate("2010-07-23T15:56:44"),
-                                        toDate("2010-07-23T16:16:44"))
-                                .sort("startTime", SortOrder.ASC));
+        List<RequestData> datas = dao.getRequests(new Query()
+                .between(toDate("2010-07-23T15:56:44"), toDate("2010-07-23T16:16:44"))
+                .sort("startTime", SortOrder.ASC));
 
         assertCoveredInOrder(datas, 4, 5, 6);
     }
 
     @Test
     public void testGetRequestsPaged() throws Exception {
-        List<RequestData> datas =
-                dao.getRequests(new Query().page(5l, 2l).sort("startTime", SortOrder.ASC));
+        List<RequestData> datas = dao.getRequests(new Query().page(5l, 2l).sort("startTime", SortOrder.ASC));
 
         assertCoveredInOrder(datas, 6, 7);
     }
 
     @Test
     public void testGetRequestsFilter() throws Exception {
-        assertCoveredInOrder(
-                dao.getRequests(new Query().filter("path", "/seven", Comparison.EQ)), 7);
+        assertCoveredInOrder(dao.getRequests(new Query().filter("path", "/seven", Comparison.EQ)), 7);
     }
 
     @Test
     public void testGetRequestsFilterNull() throws Exception {
-        assertEquals(0, dao.getRequests(new Query().filter("path", null, Comparison.EQ)).size());
+        assertEquals(
+                0,
+                dao.getRequests(new Query().filter("path", null, Comparison.EQ)).size());
         assertEquals(
                 testData.getData().size(),
-                dao.getRequests(new Query().filter("path", null, Comparison.NEQ)).size());
+                dao.getRequests(new Query().filter("path", null, Comparison.NEQ))
+                        .size());
     }
 
     @Test
     public void testGetRequestsFilterIN() throws Exception {
         List<RequestData> datas =
-                dao.getRequests(
-                        new Query().filter("path", Arrays.asList("/two", "/seven"), Comparison.IN));
+                dao.getRequests(new Query().filter("path", Arrays.asList("/two", "/seven"), Comparison.IN));
         assertCovered(datas, 2, 7);
     }
 
     @Test
     public void testGetRequestsFilterIN2() throws Exception {
-        List<RequestData> datas =
-                dao.getRequests(
-                        new Query()
-                                .filter(
-                                        "status",
-                                        Arrays.asList(Status.RUNNING, Status.WAITING),
-                                        Comparison.IN));
+        List<RequestData> datas = dao.getRequests(
+                new Query().filter("status", Arrays.asList(Status.RUNNING, Status.WAITING), Comparison.IN));
         assertCovered(datas, 1, 2, 5, 6, 10, 11, 12, 15, 16, 20);
     }
 
@@ -175,8 +159,7 @@ public abstract class MonitorDAOTestSupport {
     @Test
     public void testGetIterator() throws Exception {
         Iterator<RequestData> it =
-                dao.getIterator(
-                        new Query().filter("path", Arrays.asList("/two", "/seven"), Comparison.IN));
+                dao.getIterator(new Query().filter("path", Arrays.asList("/two", "/seven"), Comparison.IN));
 
         assertTrue(it.hasNext());
         RequestData data = it.next();

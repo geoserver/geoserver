@@ -97,24 +97,16 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testXMLReader() throws Exception {
-        CSWXmlReader reader =
-                new CSWXmlReader(
-                        "DescribeRecord",
-                        "2.0.2",
-                        new CSWConfiguration(),
-                        EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
-        DescribeRecordType dr =
-                (DescribeRecordType)
-                        reader.read(null, getResourceAsReader("DescribeRecord.xml"), null);
+        CSWXmlReader reader = new CSWXmlReader(
+                "DescribeRecord", "2.0.2", new CSWConfiguration(), EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        DescribeRecordType dr = (DescribeRecordType) reader.read(null, getResourceAsReader("DescribeRecord.xml"), null);
         assertDescribeRecordValid(dr);
     }
 
     // this is one of the CITE tests, unknown type names should just be ignored
     @Test
     public void testDummyRecord() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=csw:DummyRecord");
+        Document dom = getAsDOM("csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=csw:DummyRecord");
         checkValidationErrors(dom);
         print(dom);
 
@@ -131,13 +123,9 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
         assertCswRecordSchema(dom, false);
 
         // check we can really read those schemas
-        MockHttpServletResponse response =
-                getAsServletResponse("/schemas/csw/2.0.2/rec-dcterms.xsd");
+        MockHttpServletResponse response = getAsServletResponse("/schemas/csw/2.0.2/rec-dcterms.xsd");
         assertEquals(200, response.getStatus());
-        dom =
-                dom(
-                        new ByteArrayInputStream(
-                                response.getContentAsString().getBytes(StandardCharsets.UTF_8)));
+        dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes(StandardCharsets.UTF_8)));
         assertXpathEvaluatesTo("dc:SimpleLiteral", "//xs:element[@name='abstract']/@type", dom);
     }
 
@@ -172,10 +160,7 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     private void assertCswRecordSchema(Document dom, boolean canonicalSchema) throws Exception {
         // print(dom);
-        String root =
-                canonicalSchema
-                        ? "http://schemas.opengis.net"
-                        : "http://localhost:8080/geoserver/schemas";
+        String root = canonicalSchema ? "http://schemas.opengis.net" : "http://localhost:8080/geoserver/schemas";
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/cat/csw/2.0.2 " + root + "/csw/2.0.2/CSW-discovery.xsd",
                 "//csw:DescribeRecordResponse/@xsi:schemaLocation",
@@ -191,34 +176,29 @@ public class DescribeRecordTest extends CSWSimpleTestSupport {
 
     @Test
     public void testAlternativeNamespacePrefix() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=fuffa:Record&namespace=xmlns(fuffa=http://www.opengis.net/cat/csw/2.0.2)");
+        Document dom = getAsDOM(
+                "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=fuffa:Record&namespace=xmlns(fuffa=http://www.opengis.net/cat/csw/2.0.2)");
         assertCswRecordSchema(dom, false);
     }
 
     @Test
     public void testDefaultNamespacePrefix() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=Record&namespace=xmlns(=http://www.opengis.net/cat/csw/2.0.2)");
+        Document dom = getAsDOM(
+                "csw?service=CSW&version=2.0.2&request=DescribeRecord&typeName=Record&namespace=xmlns(=http://www.opengis.net/cat/csw/2.0.2)");
         // print(dom);
         assertCswRecordSchema(dom, false);
     }
 
     @Test
     public void testMissingOutputFormat() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&outputFormat=text/sgml");
+        Document dom = getAsDOM("csw?service=CSW&version=2.0.2&request=DescribeRecord&outputFormat=text/sgml");
         checkOws10Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "outputFormat");
     }
 
     @Test
     public void testInvalidSchemaLanguage() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "csw?service=CSW&version=2.0.2&request=DescribeRecord&schemaLanguage=http://purl.oclc.org/dsdl/schematron");
+        Document dom = getAsDOM(
+                "csw?service=CSW&version=2.0.2&request=DescribeRecord&schemaLanguage=http://purl.oclc.org/dsdl/schematron");
         checkOws10Exception(dom, ServiceException.INVALID_PARAMETER_VALUE, "schemaLanguage");
     }
 }

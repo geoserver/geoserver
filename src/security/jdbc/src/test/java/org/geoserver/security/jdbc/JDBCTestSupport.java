@@ -28,8 +28,7 @@ import org.geoserver.security.password.PasswordValidator;
 
 public class JDBCTestSupport {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     public static void dropExistingTables(AbstractJDBCService service) throws IOException {
         try (Connection con = service.getDataSource().getConnection()) {
@@ -39,8 +38,7 @@ public class JDBCTestSupport {
         }
     }
 
-    public static void dropExistingTables(AbstractJDBCService service, Connection con)
-            throws IOException {
+    public static void dropExistingTables(AbstractJDBCService service, Connection con) throws IOException {
         try {
             for (String stmt : service.getOrderedNamesForDrop()) {
                 try (PreparedStatement ps = service.getDDLStatement(stmt, con)) {
@@ -72,10 +70,9 @@ public class JDBCTestSupport {
         config.setPropertyFileNameDDL(JDBCUserGroupService.DEFAULT_DDL_FILE);
         config.setPropertyFileNameDML(JDBCUserGroupService.DEFAULT_DML_FILE);
         config.setCreatingTables(false);
-        config.setPasswordEncoderName(
-                securityManager
-                        .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
-                        .getName());
+        config.setPasswordEncoderName(securityManager
+                .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
+                .getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         return config;
     }
@@ -90,8 +87,7 @@ public class JDBCTestSupport {
                 store.clear();
                 store.store();
             }
-            SecurityUserGroupServiceConfig old =
-                    securityManager.loadUserGroupServiceConfig(serviceName);
+            SecurityUserGroupServiceConfig old = securityManager.loadUserGroupServiceConfig(serviceName);
             securityManager.removeUserGroupService(old);
         }
 
@@ -109,18 +105,16 @@ public class JDBCTestSupport {
         config.setPropertyFileNameDDL(JDBCUserGroupService.DEFAULT_DDL_FILE);
         config.setPropertyFileNameDML(JDBCUserGroupService.DEFAULT_DML_FILE);
         config.setCreatingTables(false);
-        config.setPasswordEncoderName(
-                securityManager
-                        .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
-                        .getName());
+        config.setPasswordEncoderName(securityManager
+                .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
+                .getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         return config;
     }
 
     protected static GeoServerUserGroupService createH2UserGroupServiceFromJNDI(
             String serviceName, GeoServerSecurityManager securityManager) throws Exception {
-        securityManager.saveUserGroupService(
-                createConfigObjectH2Jndi(serviceName, securityManager));
+        securityManager.saveUserGroupService(createConfigObjectH2Jndi(serviceName, securityManager));
         return securityManager.loadUserGroupService(serviceName);
     }
 
@@ -175,8 +169,7 @@ public class JDBCTestSupport {
     }
 
     protected static GeoServerRoleService createRoleService(
-            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager)
-            throws Exception {
+            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager) throws Exception {
 
         JDBCRoleServiceConfig config = new JDBCRoleServiceConfig();
 
@@ -186,9 +179,7 @@ public class JDBCTestSupport {
         config.setConnectURL(props.getProperty("url"));
         config.setDriverClassName(props.getProperty("driver"));
         config.setUserName(
-                props.getProperty("user") == null
-                        ? props.getProperty("username")
-                        : props.getProperty("user"));
+                props.getProperty("user") == null ? props.getProperty("username") : props.getProperty("user"));
         config.setPassword(props.getProperty("password"));
         config.setClassName(JDBCRoleService.class.getName());
         config.setCreatingTables(false);
@@ -208,8 +199,7 @@ public class JDBCTestSupport {
     }
 
     protected static JDBCUserGroupServiceConfig createConfigObject(
-            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager)
-            throws Exception {
+            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager) throws Exception {
         JDBCUserGroupServiceConfig config = new JDBCUserGroupServiceConfig();
 
         Properties props = Util.loadUniversal(new FileInputStream(data.getFixture()));
@@ -218,16 +208,13 @@ public class JDBCTestSupport {
         config.setConnectURL(props.getProperty("url"));
         config.setDriverClassName(props.getProperty("driver"));
         config.setUserName(
-                props.getProperty("user") == null
-                        ? props.getProperty("username")
-                        : props.getProperty("user"));
+                props.getProperty("user") == null ? props.getProperty("username") : props.getProperty("user"));
         config.setPassword(props.getProperty("password"));
         config.setClassName(JDBCUserGroupService.class.getName());
         config.setCreatingTables(false);
-        config.setPasswordEncoderName(
-                securityManager
-                        .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
-                        .getName());
+        config.setPasswordEncoderName(securityManager
+                .loadPasswordEncoder(GeoServerDigestPasswordEncoder.class)
+                .getName());
         config.setPasswordPolicyName(PasswordValidator.DEFAULT_NAME);
         if ("mysql".equals(fixtureId)) {
             config.setPropertyFileNameDDL("usersddl.mysql.xml");
@@ -239,8 +226,7 @@ public class JDBCTestSupport {
     }
 
     protected static GeoServerUserGroupService createUserGroupService(
-            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager)
-            throws Exception {
+            String fixtureId, LiveDbmsDataSecurity data, GeoServerSecurityManager securityManager) throws Exception {
         securityManager.saveUserGroupService(createConfigObject(fixtureId, data, securityManager));
         return securityManager.loadUserGroupService(fixtureId);
     }

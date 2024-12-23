@@ -110,15 +110,13 @@ public class RequestFilterChainWrapper implements Serializable {
     }
 
     public String getPatternString() {
-        if (chain.getPatterns() != null)
-            return StringUtils.collectionToCommaDelimitedString(chain.getPatterns());
+        if (chain.getPatterns() != null) return StringUtils.collectionToCommaDelimitedString(chain.getPatterns());
         else return "";
     }
 
     public void setPatternString(String patternString) {
         if (StringUtils.hasLength(patternString))
-            chain.setPatterns(
-                    Arrays.asList(StringUtils.commaDelimitedListToStringArray(patternString)));
+            chain.setPatterns(Arrays.asList(StringUtils.commaDelimitedListToStringArray(patternString)));
         else chain.getPatterns().clear();
     }
 
@@ -190,8 +188,7 @@ public class RequestFilterChainWrapper implements Serializable {
     }
 
     public String getHttpMethodString() {
-        if (chain.isMatchHTTPMethod())
-            return StringUtils.collectionToCommaDelimitedString(chain.getHttpMethods());
+        if (chain.isMatchHTTPMethod()) return StringUtils.collectionToCommaDelimitedString(chain.getHttpMethods());
         else return "*";
     }
 

@@ -16,8 +16,8 @@ import org.geoserver.smartdataloader.domain.entities.DomainModel;
 import org.geoserver.smartdataloader.domain.entities.DomainRelation;
 
 /**
- * DomainModelVisitor that based on list of exclusions tails a domainmodel and returns a new one
- * with removed domainmodel objects.
+ * DomainModelVisitor that based on list of exclusions tails a domainmodel and returns a new one with removed
+ * domainmodel objects.
  */
 public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
 
@@ -27,12 +27,10 @@ public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
     private Map<DomainEntitySimpleAttribute, DomainEntity> attributesToRemove = new HashMap<>();
 
     /**
-     * Returns a DomainModel, clone of the original, that excludes domain objects listed in
-     * parameter list.
+     * Returns a DomainModel, clone of the original, that excludes domain objects listed in parameter list.
      *
      * @param model The original domain model.
-     * @param excludedObjects List of domain objects to exclude (entities, attributes and
-     *     relations).
+     * @param excludedObjects List of domain objects to exclude (entities, attributes and relations).
      * @return Cloned and reduced domainmodel
      */
     public static DomainModel buildDomainModel(DomainModel model, List<String> excludedObjects) {
@@ -43,8 +41,7 @@ public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
         }
         DomainModelConfig domainModelConfig = new DomainModelConfig();
         domainModelConfig.setRootEntityName(rootEntityName);
-        DomainModelBuilder dmb =
-                new DomainModelBuilder(model.getDataStoreMetadata(), domainModelConfig);
+        DomainModelBuilder dmb = new DomainModelBuilder(model.getDataStoreMetadata(), domainModelConfig);
         DomainModel clonedDomainModel = dmb.buildDomainModel();
         ExclusionsDomainModelVisitor dmv = new ExclusionsDomainModelVisitor(excludedObjects);
         clonedDomainModel.accept(dmv);
@@ -95,10 +92,9 @@ public class ExclusionsDomainModelVisitor extends DomainModelVisitorImpl {
 
     @Override
     public void visitDomainRelation(DomainRelation relation) {
-        String domainObjectName =
-                relation.getContainingEntity().getName()
-                        + "."
-                        + relation.getDestinationEntity().getName();
+        String domainObjectName = relation.getContainingEntity().getName()
+                + "."
+                + relation.getDestinationEntity().getName();
         // if relation is in exclusion list, remove it from cloneEntity and add entity to list of
         // removed entities
         if (exclusions.contains(domainObjectName)) {

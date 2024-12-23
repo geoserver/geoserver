@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestAccessController extends AbstractAclController<String, RESTAccessRuleDAO> {
 
     /** rule pattern */
-    static final Pattern KEYPATTERN =
-            Pattern.compile("\\S+:(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*");
+    static final Pattern KEYPATTERN = Pattern.compile("\\S+:(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*");
 
     public RestAccessController() {
         super(RESTAccessRuleDAO.get());
@@ -42,8 +41,7 @@ public class RestAccessController extends AbstractAclController<String, RESTAcce
 
     @Override
     protected String validateRuleKey(String ruleKey) {
-        if (!KEYPATTERN.matcher(ruleKey).matches())
-            return "Invalid '" + ruleKey + "' not matching " + KEYPATTERN;
+        if (!KEYPATTERN.matcher(ruleKey).matches()) return "Invalid '" + ruleKey + "' not matching " + KEYPATTERN;
         return null;
     }
 

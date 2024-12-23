@@ -28,14 +28,14 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
     private GeoServerDataProvider<ImportTask> provider;
     private FeedbackPanel feedback;
 
-    @Rule public TemporaryFolder temp = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder temp = new TemporaryFolder();
 
     @Before
     public void setUp() throws Exception {
         // Create a test file.
         File file = temp.newFile("twoShapefilesNoPrj.zip");
-        try (InputStream rin =
-                ImportTaskTableTest.class.getResourceAsStream("twoShapefilesNoPrj.zip"); ) {
+        try (InputStream rin = ImportTaskTableTest.class.getResourceAsStream("twoShapefilesNoPrj.zip"); ) {
             IOUtils.copy(rin, file);
         }
 
@@ -60,48 +60,37 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         tester.assertComponent("taskTable", ImportTaskTable.class);
 
         // Click the Find CRS button for the first layer to import
-        tester.clickLink(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:find", true);
+        tester.clickLink("taskTable:listContainer:items:1:itemProperties:2:component:form:crs:find", true);
         // Select the first CRS
         tester.clickLink(
                 "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:popup:content:table:listContainer:items:1:itemProperties:0:component:link",
                 true);
         // Click the Find CRS button for the second layer to import
-        tester.clickLink(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:find", true);
+        tester.clickLink("taskTable:listContainer:items:2:itemProperties:2:component:form:crs:find", true);
         // Select the first CRS
         tester.clickLink(
                 "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:popup:content:table:listContainer:items:2:itemProperties:0:component:link",
                 true);
 
         // The EPSG codes should be set
-        tester.assertModelValue(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:srs",
-                "CRS:27");
-        tester.assertModelValue(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:srs",
-                "CRS:83");
+        tester.assertModelValue("taskTable:listContainer:items:1:itemProperties:2:component:form:crs:srs", "CRS:27");
+        tester.assertModelValue("taskTable:listContainer:items:2:itemProperties:2:component:form:crs:srs", "CRS:83");
 
         // Check that the WKT links set
         tester.assertModelValue(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel",
-                "CRS:NAD27");
+                "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel", "CRS:NAD27");
         tester.assertModelValue(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel",
-                "CRS:NAD83");
+                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel", "CRS:NAD83");
 
         // Apply the first
-        tester.clickLink(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:apply", true);
+        tester.clickLink("taskTable:listContainer:items:1:itemProperties:2:component:form:apply", true);
         // The first entry should be replaced with an "Advanced" link, the numbering continues from
         // those used before so the second item is 3
         tester.assertComponent(
                 "taskTable:listContainer:items:3:itemProperties:2:component",
                 ImportTaskTable.AdvancedOptionPanel.class);
         // The second (4) should still be set
-        tester.assertModelValue(
-                "taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs",
-                "CRS:83");
+        tester.assertModelValue("taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs", "CRS:83");
     }
 
     void fill(String formPath, String fieldPath, String value) {
@@ -115,34 +104,24 @@ public class ImportTaskTableTest extends GeoServerWicketTestSupport {
         tester.assertComponent("taskTable", ImportTaskTable.class);
 
         // "Type" in the EPSG codes
-        fill(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form",
-                "crs:srs",
-                "EPSG:3857");
-        fill(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form",
-                "crs:srs",
-                "EPSG:4326");
+        fill("taskTable:listContainer:items:1:itemProperties:2:component:form", "crs:srs", "EPSG:3857");
+        fill("taskTable:listContainer:items:2:itemProperties:2:component:form", "crs:srs", "EPSG:4326");
 
         // Check that the WKT links set
         tester.assertModelValue(
                 "taskTable:listContainer:items:1:itemProperties:2:component:form:crs:wkt:wktLabel",
                 "EPSG:WGS 84 / Pseudo-Mercator");
         tester.assertModelValue(
-                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel",
-                "EPSG:WGS 84");
+                "taskTable:listContainer:items:2:itemProperties:2:component:form:crs:wkt:wktLabel", "EPSG:WGS 84");
 
         // Apply the first
-        tester.clickLink(
-                "taskTable:listContainer:items:1:itemProperties:2:component:form:apply", true);
+        tester.clickLink("taskTable:listContainer:items:1:itemProperties:2:component:form:apply", true);
         // The first entry should be replaced with an "Advanced" link, the numbering continues from
         // those used before so the second item is 3
         tester.assertComponent(
                 "taskTable:listContainer:items:3:itemProperties:2:component",
                 ImportTaskTable.AdvancedOptionPanel.class);
         // The second (4) should still be set
-        tester.assertModelValue(
-                "taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs",
-                "EPSG:4326");
+        tester.assertModelValue("taskTable:listContainer:items:4:itemProperties:2:component:form:crs:srs", "EPSG:4326");
     }
 }

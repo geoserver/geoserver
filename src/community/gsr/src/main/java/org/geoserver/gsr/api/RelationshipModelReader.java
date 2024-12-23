@@ -28,8 +28,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RelationshipModelReader extends BaseMessageConverter<RelationshipModel> {
 
-    static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(RelationshipModelReader.class);
+    static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(RelationshipModelReader.class);
 
     public RelationshipModelReader() {
         super(MediaType.APPLICATION_JSON);
@@ -51,8 +50,8 @@ public class RelationshipModelReader extends BaseMessageConverter<RelationshipMo
     }
 
     /**
-     * Converts the wrapped RelationshipClass object passed in as JSON to the controller into a
-     * RelationshipClass object, avoiding XStream issues
+     * Converts the wrapped RelationshipClass object passed in as JSON to the controller into a RelationshipClass
+     * object, avoiding XStream issues
      *
      * @param clazz Passed in object
      * @param inputMessage
@@ -61,14 +60,12 @@ public class RelationshipModelReader extends BaseMessageConverter<RelationshipMo
      * @throws HttpMessageNotReadableException
      */
     @Override
-    protected RelationshipModel readInternal(
-            Class<? extends RelationshipModel> clazz, HttpInputMessage inputMessage)
+    protected RelationshipModel readInternal(Class<? extends RelationshipModel> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
         IOUtils.copy(inputMessage.getBody(), bout);
         JSON json = JSONSerializer.toJSON(new String(bout.toByteArray()));
-        if (RelationshipClassWrapper.class.isAssignableFrom(clazz)
-                || RelationshipClass.class.isAssignableFrom(clazz)) {
+        if (RelationshipClassWrapper.class.isAssignableFrom(clazz) || RelationshipClass.class.isAssignableFrom(clazz)) {
             if (json instanceof JSONObject) {
                 return new Gson().fromJson(String.valueOf(json), RelationshipClass.class);
             }

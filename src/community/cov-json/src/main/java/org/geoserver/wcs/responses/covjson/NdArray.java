@@ -32,7 +32,8 @@ public class NdArray extends CoverageJson {
     @JsonProperty(required = true)
     private List<String> axisNames;
 
-    @JsonIgnore private List<GridCoverage2D> coverages;
+    @JsonIgnore
+    private List<GridCoverage2D> coverages;
 
     public NdArray(int dataType, Domain domain, List<GridCoverage2D> coverages) {
         super(TYPE);

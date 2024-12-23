@@ -66,12 +66,8 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
         if (notification.getKind() == Kind.ENTRY_DELETE) {
             for (Event event : notification.events()) {
                 if (!notification.getPath().equals(event.getPath())) {
-                    changedInternal(
-                            new ResourceNotification(
-                                    event.getPath(),
-                                    Kind.ENTRY_DELETE,
-                                    notification.getTimestamp(),
-                                    notification.events()));
+                    changedInternal(new ResourceNotification(
+                            event.getPath(), Kind.ENTRY_DELETE, notification.getTimestamp(), notification.events()));
                 }
             }
         }
@@ -91,12 +87,11 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
         String path = Paths.parent(notification.getPath());
         while (path != null) {
             boolean isCreate = createdParents.contains(path);
-            changedInternal(
-                    new ResourceNotification(
-                            path,
-                            isCreate ? Kind.ENTRY_CREATE : Kind.ENTRY_MODIFY,
-                            notification.getTimestamp(),
-                            relative(notification.events(), path)));
+            changedInternal(new ResourceNotification(
+                    path,
+                    isCreate ? Kind.ENTRY_CREATE : Kind.ENTRY_MODIFY,
+                    notification.getTimestamp(),
+                    relative(notification.events(), path)));
 
             // stop propagating after first modify
             path = isCreate ? Paths.parent(path) : null;
@@ -114,16 +109,13 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     }
 
     /**
-     * Helper method to create all events for any operation (except rename) that happens to a
-     * resource. This method should be called just before the action takes place in order to analyze
-     * the effects properly.
+     * Helper method to create all events for any operation (except rename) that happens to a resource. This method
+     * should be called just before the action takes place in order to analyze the effects properly.
      *
-     * <p>Operations are assumed to be atomic except in the following two cases: (1) deleting causes
-     * children to delete as well (2) creating causes non existing parents on the path to be created
-     * as well
+     * <p>Operations are assumed to be atomic except in the following two cases: (1) deleting causes children to delete
+     * as well (2) creating causes non existing parents on the path to be created as well
      *
-     * <p>(Note: do not confuse the creation of notification events with propagation of
-     * notifications).
+     * <p>(Note: do not confuse the creation of notification events with propagation of notifications).
      *
      * @param resource Resource being changed
      * @param kind Nature of resource change
@@ -154,9 +146,9 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     }
 
     /**
-     * Helper method to create all create/modify events caused by a rename/move operation. (delete
-     * events must be created separately.) This method should be called just before the action takes
-     * place in order to analyze the effects properly.
+     * Helper method to create all create/modify events caused by a rename/move operation. (delete events must be
+     * created separately.) This method should be called just before the action takes place in order to analyze the
+     * effects properly.
      *
      * <p>Rename/move causes children to be moved as well.
      *
@@ -167,17 +159,13 @@ public class SimpleResourceNotificationDispatcher implements ResourceNotificatio
     public static List<Event> createRenameEvents(Resource src, Resource dest) {
         List<Event> events = new ArrayList<>();
 
-        events.add(
-                new ResourceNotification.Event(
-                        dest.path(),
-                        Resources.exists(dest) ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE));
+        events.add(new ResourceNotification.Event(
+                dest.path(), Resources.exists(dest) ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE));
 
         for (Resource child : Resources.listRecursively(src)) {
             Resource newChild = dest.get(child.path().substring(src.path().length() + 1));
-            events.add(
-                    new ResourceNotification.Event(
-                            newChild.path(),
-                            Resources.exists(newChild) ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE));
+            events.add(new ResourceNotification.Event(
+                    newChild.path(), Resources.exists(newChild) ? Kind.ENTRY_MODIFY : Kind.ENTRY_CREATE));
         }
 
         return events;

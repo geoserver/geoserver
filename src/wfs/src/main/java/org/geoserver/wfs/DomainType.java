@@ -10,9 +10,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Represents a OWS 1.1 DomainType (used for constraints, operation parametes and the like). The
- * current implementation is incomplete, more options are possible but these are the ones currently
- * used in WFS capabilities documents
+ * Represents a OWS 1.1 DomainType (used for constraints, operation parametes and the like). The current implementation
+ * is incomplete, more options are possible but these are the ones currently used in WFS capabilities documents
  */
 public class DomainType {
     String name;

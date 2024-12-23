@@ -58,8 +58,7 @@ public class UniqueProcessTest extends WPSTestSupport {
         tb.remove("uriProperty");
         store.createSchema(tb.buildFeatureType());
         SimpleFeatureStore targetFeatureStore =
-                (SimpleFeatureStore)
-                        store.getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE.getLocalPart());
+                (SimpleFeatureStore) store.getFeatureSource(SystemTestData.PRIMITIVEGEOFEATURE.getLocalPart());
         targetFeatureStore.addFeatures(fs3.getFeatures());
 
         CatalogBuilder cb = new CatalogBuilder(cat);

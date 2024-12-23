@@ -71,16 +71,11 @@ public class Ogr2OgrFormatTest {
 
         // the output format (and let's add a few output formats to play with
         ogr = new Ogr2OgrOutputFormat(new GeoServerImpl(), new OGRWrapperFactory());
-        ogr.addFormat(
-                new OgrFormat("KML", "OGR-KML", ".kml", true, "application/vnd.google-earth.kml"));
-        ogr.addFormat(
-                new OgrFormat(
-                        "KML", "OGR-KML-ZIP", ".kml", false, "application/vnd.google-earth.kml"));
+        ogr.addFormat(new OgrFormat("KML", "OGR-KML", ".kml", true, "application/vnd.google-earth.kml"));
+        ogr.addFormat(new OgrFormat("KML", "OGR-KML-ZIP", ".kml", false, "application/vnd.google-earth.kml"));
         ogr.addFormat(new OgrFormat("CSV", "OGR-CSV", ".csv", true, "text/csv"));
         ogr.addFormat(new OgrFormat("SHP", "OGR-SHP", ".shp", false, null));
-        ogr.addFormat(
-                new OgrFormat(
-                        "MapInfo File", "OGR-MIF", ".mif", false, null, "-dsco", "FORMAT=MIF"));
+        ogr.addFormat(new OgrFormat("MapInfo File", "OGR-MIF", ".mif", false, null, "-dsco", "FORMAT=MIF"));
 
         ogr.setExecutable(Ogr2OgrTestUtil.getOgr2Ogr());
         ogr.setEnvironment(Collections.singletonMap("GDAL_DATA", Ogr2OgrTestUtil.getGdalData()));
@@ -88,12 +83,11 @@ public class Ogr2OgrFormatTest {
         // the EMF objects used to talk with the output format
         gft = WfsFactory.eINSTANCE.createGetFeatureType();
         fct = WfsFactory.eINSTANCE.createFeatureCollectionType();
-        op =
-                new Operation(
-                        "GetFeature",
-                        new Service("WFS", null, new Version("1.0.0"), Arrays.asList("GetFeature")),
-                        null,
-                        new Object[] {gft});
+        op = new Operation(
+                "GetFeature",
+                new Service("WFS", null, new Version("1.0.0"), Arrays.asList("GetFeature")),
+                null,
+                new Object[] {gft});
     }
 
     @Test
@@ -279,8 +273,7 @@ public class Ogr2OgrFormatTest {
     protected void print(Document dom) throws Exception {
         TransformerFactory txFactory = TransformerFactory.newInstance();
         try {
-            txFactory.setAttribute(
-                    "{http://xml.apache.org/xalan}indent-number", Integer.valueOf(2));
+            txFactory.setAttribute("{http://xml.apache.org/xalan}indent-number", Integer.valueOf(2));
         } catch (Exception e) {
             // some
         }
@@ -289,9 +282,7 @@ public class Ogr2OgrFormatTest {
         tx.setOutputProperty(OutputKeys.METHOD, "xml");
         tx.setOutputProperty(OutputKeys.INDENT, "yes");
 
-        tx.transform(
-                new DOMSource(dom),
-                new StreamResult(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
+        tx.transform(new DOMSource(dom), new StreamResult(new OutputStreamWriter(System.out, StandardCharsets.UTF_8)));
     }
 
     protected String read(InputStream is) throws IOException {
@@ -310,8 +301,7 @@ public class Ogr2OgrFormatTest {
      *
      * @param skipDTD If true, will skip loading and validating against the associated DTD
      */
-    protected Document dom(InputStream input)
-            throws ParserConfigurationException, SAXException, IOException {
+    protected Document dom(InputStream input) throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         factory.setValidating(false);

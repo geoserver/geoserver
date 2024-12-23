@@ -27,8 +27,8 @@ public class ClickHouseJDBCDataStoreFactory extends JDBCDataStoreFactory {
     public static final String DATABASE_ID = "clickhouse";
     public static final String DRIVER_CLASSNAME = "com.clickhouse.jdbc.ClickHouseDriver";
     /**
-     * Use the Java 11 built-in HTTP client (the default would be Commons HTTPClient, which would
-     * cause version conflicts
+     * Use the Java 11 built-in HTTP client (the default would be Commons HTTPClient, which would cause version
+     * conflicts
      */
     public static final String FORCE_HTTP_CLIENT = "http_connection_provider=HTTP_CLIENT";
 

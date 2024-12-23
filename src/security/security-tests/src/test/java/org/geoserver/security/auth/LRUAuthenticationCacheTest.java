@@ -59,8 +59,7 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     @Test
     public void testAuthenticationEntry() {
 
-        UsernamePasswordAuthenticationToken t1 =
-                new UsernamePasswordAuthenticationToken("user1", "password1");
+        UsernamePasswordAuthenticationToken t1 = new UsernamePasswordAuthenticationToken("user1", "password1");
         AuthenticationCacheEntry entry1 = new AuthenticationCacheEntry(t1, 10, 10);
         assertNotEquals(entry1.hashCode(), 0);
         assertEquals(t1.hashCode(), entry1.hashCode());
@@ -70,8 +69,7 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
         assertEquals(t1.hashCode(), entry1_1.hashCode());
         assertEquals(entry1, entry1_1);
 
-        UsernamePasswordAuthenticationToken t2 =
-                new UsernamePasswordAuthenticationToken("user2", "password2");
+        UsernamePasswordAuthenticationToken t2 = new UsernamePasswordAuthenticationToken("user2", "password2");
         AuthenticationCacheEntry entry2 = new AuthenticationCacheEntry(t2, 5, 10);
         // assertFalse(entry2.hashCode()==entry1.hashCode());
         assertNotEquals(entry2, entry1);
@@ -89,14 +87,10 @@ public class LRUAuthenticationCacheTest extends BaseAuthenticationCacheTest {
     }
 
     protected void fillCache(AuthenticationCache cache) {
-        UsernamePasswordAuthenticationToken t1 =
-                new UsernamePasswordAuthenticationToken("user1", "password1");
-        UsernamePasswordAuthenticationToken t2 =
-                new UsernamePasswordAuthenticationToken("user2", "password2");
-        UsernamePasswordAuthenticationToken t3 =
-                new UsernamePasswordAuthenticationToken("user3", "password3");
-        UsernamePasswordAuthenticationToken t4 =
-                new UsernamePasswordAuthenticationToken("user4", "password4");
+        UsernamePasswordAuthenticationToken t1 = new UsernamePasswordAuthenticationToken("user1", "password1");
+        UsernamePasswordAuthenticationToken t2 = new UsernamePasswordAuthenticationToken("user2", "password2");
+        UsernamePasswordAuthenticationToken t3 = new UsernamePasswordAuthenticationToken("user3", "password3");
+        UsernamePasswordAuthenticationToken t4 = new UsernamePasswordAuthenticationToken("user4", "password4");
 
         cache.put("filtera", "key1", t1);
         cache.put("filtera", "key2", t2);

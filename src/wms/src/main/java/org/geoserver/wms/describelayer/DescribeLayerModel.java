@@ -67,8 +67,7 @@ public class DescribeLayerModel {
                 // non vector nor raster layer, LayerDescription will not contain these
                 // attributes
                 if (LOGGER.isLoggable(Level.WARNING))
-                    LOGGER.warning(
-                            "Non vector nor raster layer, LayerDescription will not contain these attributes");
+                    LOGGER.warning("Non vector nor raster layer, LayerDescription will not contain these attributes");
             }
 
             final LayerDescription layerDesc = new LayerDescription();

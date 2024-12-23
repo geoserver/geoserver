@@ -16,8 +16,7 @@ import org.geoserver.web.ComponentInfo;
  * @param <C> The configuration class.
  * @param <T> The configuration panel class.
  */
-public class SecurityNamedServicePanelInfo<
-                C extends SecurityNamedServiceConfig, T extends SecurityNamedServicePanel<C>>
+public class SecurityNamedServicePanelInfo<C extends SecurityNamedServiceConfig, T extends SecurityNamedServicePanel<C>>
         extends ComponentInfo<T> implements ExtensionPriority {
 
     String shortTitleKey;

@@ -32,8 +32,7 @@ public class TemplateGetFeatureInfoResponse extends GetFeatureInfoResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         GetFeatureInfoRequest request = (GetFeatureInfoRequest) operation.getParameters()[0];
         FeatureCollectionType results = (FeatureCollectionType) value;
         outputFormat.write(results, request, output);

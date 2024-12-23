@@ -5,16 +5,16 @@
 package org.geoserver.config;
 
 /**
- * Extension point interface for initializing based on configuration. Intended to be run both upon
- * configuration initialization, and upon reload.
+ * Extension point interface for initializing based on configuration. Intended to be run both upon configuration
+ * initialization, and upon reload.
  */
 public interface GeoServerReinitializer extends GeoServerInitializer {
 
     /** Perform any actions that should be performed before reloading the configuration. */
     default void beforeReinitialize(GeoServer geoServer) throws Exception {}
     /**
-     * Performs initialization of GeoServer configuration, as well as any actions that should be
-     * performed only when reloading the configuration.
+     * Performs initialization of GeoServer configuration, as well as any actions that should be performed only when
+     * reloading the configuration.
      */
     default void reinitialize(GeoServer geoServer) throws Exception {
         initialize(geoServer);

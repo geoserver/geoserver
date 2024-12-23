@@ -35,8 +35,7 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
     private static Pattern NUMERIC = Pattern.compile("\\d+");
 
     /**
-     * A lightweight bean to carry over the code and description of a {@link
-     * CoordinateReferenceSystem}
+     * A lightweight bean to carry over the code and description of a {@link CoordinateReferenceSystem}
      *
      * @author Gabriel Roldan - OpenGeo
      */
@@ -62,7 +61,9 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
                 // grab the description
                 String desc = "-";
                 try {
-                    desc = CRS.getAuthorityFactory(true).getDescriptionText(identifier).toString();
+                    desc = CRS.getAuthorityFactory(true)
+                            .getDescriptionText(identifier)
+                            .toString();
                 } catch (Exception e) {
                     // no problem
                 }
@@ -90,32 +91,27 @@ public class SRSProvider extends GeoServerDataProvider<SRSProvider.SRS> {
         }
     }
 
-    public static final Property<SRS> IDENTIFIER =
-            new BeanProperty<SRS>("identifier", "identifier") {
+    public static final Property<SRS> IDENTIFIER = new BeanProperty<SRS>("identifier", "identifier") {
 
-                private static final long serialVersionUID = -1638823520421390286L;
+        private static final long serialVersionUID = -1638823520421390286L;
 
-                @Override
-                public Comparator<SRS> getComparator() {
-                    return new SRSIdentifierComparator();
-                }
-            };
+        @Override
+        public Comparator<SRS> getComparator() {
+            return new SRSIdentifierComparator();
+        }
+    };
 
-    public static final Property<SRS> DESCRIPTION =
-            new BeanProperty<SRS>("description", "description") {
+    public static final Property<SRS> DESCRIPTION = new BeanProperty<SRS>("description", "description") {
 
-                private static final long serialVersionUID = 3549074714488486991L;
+        private static final long serialVersionUID = 3549074714488486991L;
 
-                @Override
-                public Comparator<SRS> getComparator() {
-                    return (o1, o2) ->
-                            String.CASE_INSENSITIVE_ORDER.compare(
-                                    o1.getDescription(), o2.getDescription());
-                }
-            };
+        @Override
+        public Comparator<SRS> getComparator() {
+            return (o1, o2) -> String.CASE_INSENSITIVE_ORDER.compare(o1.getDescription(), o2.getDescription());
+        }
+    };
 
-    private static final ArrayList<Property<SRS>> PROPERTIES =
-            new ArrayList<>(Arrays.asList(IDENTIFIER, DESCRIPTION));
+    private static final ArrayList<Property<SRS>> PROPERTIES = new ArrayList<>(Arrays.asList(IDENTIFIER, DESCRIPTION));
 
     private volatile List<SRS> items;
 

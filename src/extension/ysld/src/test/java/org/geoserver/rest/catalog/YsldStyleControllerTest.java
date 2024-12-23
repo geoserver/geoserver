@@ -67,13 +67,8 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         assertNull("foo not available", cat.getStyleByName("foo"));
 
         String xml =
-                "<style>"
-                        + "<name>foo</name>"
-                        + "<format>ysld</format>"
-                        + "<filename>foo.yaml</filename>"
-                        + "</style>";
-        MockHttpServletResponse response =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+                "<style>" + "<name>foo</name>" + "<format>ysld</format>" + "<filename>foo.yaml</filename>" + "</style>";
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("foo"));
 
@@ -135,14 +130,9 @@ public class YsldStyleControllerTest extends GeoServerSystemTestSupport {
         assertNull(cat.getStyleByName("bar"));
 
         String xml =
-                "<style>"
-                        + "<name>bar</name>"
-                        + "<format>ysld</format>"
-                        + "<filename>bar.yaml</filename>"
-                        + "</style>";
+                "<style>" + "<name>bar</name>" + "<format>ysld</format>" + "<filename>bar.yaml</filename>" + "</style>";
 
-        MockHttpServletResponse response =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
+        MockHttpServletResponse response = postAsServletResponse(RestBaseController.ROOT_PATH + "/styles", xml);
         assertEquals(201, response.getStatus());
         assertNotNull(cat.getStyleByName("bar"));
 

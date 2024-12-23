@@ -37,11 +37,7 @@ public class FeatureGML32MockData extends AbstractAppSchemaMockData {
         putNamespace(EX_PREFIX, EX_URI);
 
         addFeatureType(
-                GSML_PREFIX,
-                "MappedFeature",
-                "MappedFeature32Property.xml",
-                "MappedFeaturePropertyfile.properties");
-        addFeatureType(
-                GSML_PREFIX, "GeologicUnit", "GeologicUnit32.xml", "GeologicUnit.properties");
+                GSML_PREFIX, "MappedFeature", "MappedFeature32Property.xml", "MappedFeaturePropertyfile.properties");
+        addFeatureType(GSML_PREFIX, "GeologicUnit", "GeologicUnit32.xml", "GeologicUnit.properties");
     }
 }

@@ -65,11 +65,7 @@ public class LayerController extends AbstractCatalogController {
      * @return All layers
      */
     @GetMapping(
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<LayerInfo> layersGet(@PathVariable(required = false) String workspaceName) {
 
         List<LayerInfo> layers;
@@ -77,8 +73,7 @@ public class LayerController extends AbstractCatalogController {
             layers = catalog.getLayers();
         } else {
             layers = new ArrayList<>();
-            for (ResourceInfo resourceInfo :
-                    catalog.getResourcesByNamespace(workspaceName, ResourceInfo.class)) {
+            for (ResourceInfo resourceInfo : catalog.getResourcesByNamespace(workspaceName, ResourceInfo.class)) {
                 layers.addAll(catalog.getLayers(resourceInfo));
             }
         }
@@ -92,11 +87,7 @@ public class LayerController extends AbstractCatalogController {
      */
     @GetMapping(
             path = "/{layerName}",
-            produces = {
-                MediaType.APPLICATION_JSON_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.TEXT_HTML_VALUE
-            })
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.TEXT_HTML_VALUE})
     public RestWrapper<LayerInfo> layerGet(
             @PathVariable String layerName, @PathVariable(required = false) String workspaceName) {
 
@@ -114,8 +105,7 @@ public class LayerController extends AbstractCatalogController {
     public void layerDelete(
             @PathVariable String layerName,
             @PathVariable(required = false) String workspaceName,
-            @RequestParam(name = "recurse", required = false, defaultValue = "false")
-                    boolean recurse)
+            @RequestParam(name = "recurse", required = false, defaultValue = "false") boolean recurse)
             throws IOException {
 
         if (workspaceName != null) {
@@ -168,9 +158,7 @@ public class LayerController extends AbstractCatalogController {
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return LayerInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -179,72 +167,68 @@ public class LayerController extends AbstractCatalogController {
     //
     @Override
     public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
-        persister.setCallback(
-                new XStreamPersister.Callback() {
-                    @Override
-                    protected Class<LayerInfo> getObjectClass() {
-                        return LayerInfo.class;
+        persister.setCallback(new XStreamPersister.Callback() {
+            @Override
+            protected Class<LayerInfo> getObjectClass() {
+                return LayerInfo.class;
+            }
+
+            @Override
+            protected CatalogInfo getCatalogObject() {
+                Map<String, String> uriTemplateVars = getURITemplateVariables();
+                String layerName = uriTemplateVars.get("layerName");
+                if (layerName == null) {
+                    return null;
+                }
+                return catalog.getLayerByName(layerName);
+            }
+
+            @Override
+            protected void postEncodeReference(
+                    Object obj,
+                    String ref,
+                    String prefix,
+                    HierarchicalStreamWriter writer,
+                    MarshallingContext context) {
+                if (obj instanceof StyleInfo) {
+                    StyleInfo style = (StyleInfo) obj;
+                    StringBuilder link = new StringBuilder();
+                    if (style.getWorkspace() != null) {
+                        String wsName = style.getWorkspace().getName();
+                        writer.startNode("workspace");
+                        writer.setValue(wsName);
+                        writer.endNode();
+                        link.append("/workspaces/").append(converter.encode(wsName));
+                    }
+                    link.append("/styles/").append(converter.encode(style.getName()));
+                    converter.encodeLink(link.toString(), writer);
+                }
+                if (obj instanceof ResourceInfo) {
+                    ResourceInfo r = (ResourceInfo) obj;
+                    StringBuilder link = new StringBuilder("/workspaces/")
+                            .append(converter.encode(r.getStore().getWorkspace().getName()))
+                            .append("/");
+
+                    if (r instanceof FeatureTypeInfo) {
+                        link.append("datastores/")
+                                .append(converter.encode(r.getStore().getName()))
+                                .append("/featuretypes/");
+                    } else if (r instanceof CoverageInfo) {
+                        link.append("coveragestores/")
+                                .append(converter.encode(r.getStore().getName()))
+                                .append("/coverages/");
+                    } else if (r instanceof WMSLayerInfo) {
+                        link.append("wmsstores/")
+                                .append(converter.encode(r.getStore().getName()))
+                                .append("/wmslayers/");
+                    } else {
+                        return;
                     }
 
-                    @Override
-                    protected CatalogInfo getCatalogObject() {
-                        Map<String, String> uriTemplateVars = getURITemplateVariables();
-                        String layerName = uriTemplateVars.get("layerName");
-                        if (layerName == null) {
-                            return null;
-                        }
-                        return catalog.getLayerByName(layerName);
-                    }
-
-                    @Override
-                    protected void postEncodeReference(
-                            Object obj,
-                            String ref,
-                            String prefix,
-                            HierarchicalStreamWriter writer,
-                            MarshallingContext context) {
-                        if (obj instanceof StyleInfo) {
-                            StyleInfo style = (StyleInfo) obj;
-                            StringBuilder link = new StringBuilder();
-                            if (style.getWorkspace() != null) {
-                                String wsName = style.getWorkspace().getName();
-                                writer.startNode("workspace");
-                                writer.setValue(wsName);
-                                writer.endNode();
-                                link.append("/workspaces/").append(converter.encode(wsName));
-                            }
-                            link.append("/styles/").append(converter.encode(style.getName()));
-                            converter.encodeLink(link.toString(), writer);
-                        }
-                        if (obj instanceof ResourceInfo) {
-                            ResourceInfo r = (ResourceInfo) obj;
-                            StringBuilder link =
-                                    new StringBuilder("/workspaces/")
-                                            .append(
-                                                    converter.encode(
-                                                            r.getStore().getWorkspace().getName()))
-                                            .append("/");
-
-                            if (r instanceof FeatureTypeInfo) {
-                                link.append("datastores/")
-                                        .append(converter.encode(r.getStore().getName()))
-                                        .append("/featuretypes/");
-                            } else if (r instanceof CoverageInfo) {
-                                link.append("coveragestores/")
-                                        .append(converter.encode(r.getStore().getName()))
-                                        .append("/coverages/");
-                            } else if (r instanceof WMSLayerInfo) {
-                                link.append("wmsstores/")
-                                        .append(converter.encode(r.getStore().getName()))
-                                        .append("/wmslayers/");
-                            } else {
-                                return;
-                            }
-
-                            link.append(converter.encode(r.getName()));
-                            converter.encodeLink(link.toString(), writer);
-                        }
-                    }
-                });
+                    link.append(converter.encode(r.getName()));
+                    converter.encodeLink(link.toString(), writer);
+                }
+            }
+        });
     }
 }

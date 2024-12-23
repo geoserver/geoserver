@@ -17,8 +17,7 @@ public class DescribeLayer {
 
     public DescribeLayer() {}
 
-    public static DescribeLayerModel run(final DescribeLayerRequest request)
-            throws ServiceException {
+    public static DescribeLayerModel run(final DescribeLayerRequest request) throws ServiceException {
 
         return new DescribeLayerModel(request);
     }

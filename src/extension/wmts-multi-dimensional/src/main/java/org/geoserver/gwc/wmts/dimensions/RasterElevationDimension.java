@@ -18,12 +18,7 @@ import org.geotools.feature.FeatureCollection;
 public class RasterElevationDimension extends RasterDimension {
 
     public RasterElevationDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(
-                wms,
-                ResourceInfo.ELEVATION,
-                layerInfo,
-                dimensionInfo,
-                CoverageDimensionsReader.DataType.NUMERIC);
+        super(wms, ResourceInfo.ELEVATION, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.NUMERIC);
     }
 
     @Override
@@ -33,14 +28,9 @@ public class RasterElevationDimension extends RasterDimension {
 
     @Override
     protected FeatureCollection getDomain(Query query) {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
-        Tuple<String, FeatureCollection> values =
-                reader.getValues(
-                        this.dimensionName,
-                        query,
-                        CoverageDimensionsReader.DataType.NUMERIC,
-                        SortOrder.ASCENDING);
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        Tuple<String, FeatureCollection> values = reader.getValues(
+                this.dimensionName, query, CoverageDimensionsReader.DataType.NUMERIC, SortOrder.ASCENDING);
 
         return values.second;
     }

@@ -23,8 +23,7 @@ class NewWorkspacePanel extends Panel {
     public NewWorkspacePanel(String id) {
         super(id);
         add(new FeedbackPanel("feedback").setOutputMarkupId(true));
-        TextField<String> wst =
-                new TextField<>("workspace", new PropertyModel<>(this, "workspace"));
+        TextField<String> wst = new TextField<>("workspace", new PropertyModel<>(this, "workspace"));
         wst.setRequired(true);
 
         wst.add(new WorkspaceDoesNotExistValidator());
@@ -40,9 +39,7 @@ class NewWorkspacePanel extends Panel {
         public void validate(IValidatable<String> iv) {
             String value = iv.getValue();
             if (GeoServerApplication.get().getCatalog().getWorkspaceByName(value) != null) {
-                iv.error(
-                        new ValidationError("NewWorkspacePanel.duplicateWorkspace")
-                                .setVariable("workspace", value));
+                iv.error(new ValidationError("NewWorkspacePanel.duplicateWorkspace").setVariable("workspace", value));
             }
         }
     }

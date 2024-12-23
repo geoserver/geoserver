@@ -56,11 +56,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class ConfigurationPageTest extends AbstractBatchesPanelTest<ConfigurationPage> {
 
-    @Rule public TemporaryFolder tempDir = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempDir = new TemporaryFolder();
 
-    @Rule public TemporaryFolder tempDestDir = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempDestDir = new TemporaryFolder();
 
-    @Autowired LookupService<FileService> fileServiceRegistry;
+    @Autowired
+    LookupService<FileService> fileServiceRegistry;
 
     private TaskManagerDataUtil util;
     private TaskManagerTaskUtil tutil;
@@ -154,15 +157,12 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // tasks table
         GeoServerTablePanel<Task> tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(2, tasksPanel.getDataProvider().size());
 
         // attributes table
-        GeoServerTablePanel<Attribute> attributesPanel =
-                (GeoServerTablePanel<Attribute>)
-                        tester.getComponentFromLastRenderedPage(
-                                "configurationForm:attributesPanel");
+        GeoServerTablePanel<Attribute> attributesPanel = (GeoServerTablePanel<Attribute>)
+                tester.getComponentFromLastRenderedPage("configurationForm:attributesPanel");
         assertEquals(8, attributesPanel.getDataProvider().size());
 
         // add task
@@ -182,8 +182,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         assertEquals(11, attributesPanel.getDataProvider().size());
 
         // edit task parameters
-        tester.clickLink(
-                "configurationForm:tasksPanel:listContainer:items:1:itemProperties:2:component:link");
+        tester.clickLink("configurationForm:tasksPanel:listContainer:items:1:itemProperties:2:component:link");
 
         tester.assertComponent("dialog:dialog:content:form:userPanel", TaskParameterPanel.class);
 
@@ -201,8 +200,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         assertEquals(10, attributesPanel.getDataProvider().size());
 
         // edit task name
-        tester.clickLink(
-                "configurationForm:tasksPanel:listContainer:items:1:itemProperties:0:component:link");
+        tester.clickLink("configurationForm:tasksPanel:listContainer:items:1:itemProperties:0:component:link");
         tester.assertComponent("dialog:dialog:content:form:userPanel", NamePanel.class);
         formTester = tester.newFormTester("dialog:dialog:content:form");
 
@@ -212,7 +210,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("userPanel:textfield", "new_name_for_task");
         formTester.submit("submit");
 
-        assertNotNull(configModel.getObject().getTasks().get("new_name_for_task").getName());
+        assertNotNull(
+                configModel.getObject().getTasks().get("new_name_for_task").getName());
         assertEquals(
                 "new_name_for_task",
                 configModel.getObject().getTasks().get("new_name_for_task").getName());
@@ -228,8 +227,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // tasks table
         GeoServerTablePanel<Task> tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(2, tasksPanel.getDataProvider().size());
 
         // copy task
@@ -238,8 +236,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         FormTester formTester = tester.newFormTester("dialog:dialog:content:form");
         formTester.select("userPanel:copy", 0);
         tester.executeAjaxEvent("dialog:dialog:content:form:userPanel:copy", "change");
-        tester.assertModelValue(
-                "dialog:dialog:content:form:userPanel:type", CopyTableTaskTypeImpl.NAME);
+        tester.assertModelValue("dialog:dialog:content:form:userPanel:type", CopyTableTaskTypeImpl.NAME);
         formTester.setValue("userPanel:name", "task3");
         formTester.submit("submit");
         assertEquals(3, tasksPanel.getDataProvider().size());
@@ -268,21 +265,16 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
 
         // cancel
         FormTester formTester = tester.newFormTester("configurationForm");
-        formTester.setValue(
-                "tasksPanel:listContainer:items:1:selectItemContainer:selectItem", true);
+        formTester.setValue("tasksPanel:listContainer:items:1:selectItemContainer:selectItem", true);
         tester.executeAjaxEvent(
-                "configurationForm:tasksPanel:listContainer:items:1:selectItemContainer:selectItem",
-                "click");
-        formTester.setValue(
-                "tasksPanel:listContainer:items:2:selectItemContainer:selectItem", true);
+                "configurationForm:tasksPanel:listContainer:items:1:selectItemContainer:selectItem", "click");
+        formTester.setValue("tasksPanel:listContainer:items:2:selectItemContainer:selectItem", true);
         tester.executeAjaxEvent(
-                "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem",
-                "click");
+                "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem", "click");
         formTester.submit("removeSelected");
         tester.newFormTester("dialog:dialog:content:form").submit("submit");
         GeoServerTablePanel<Task> tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(0, tasksPanel.getDataProvider().size());
         formTester.setValue("name", "the_greatest_configuration");
 
@@ -298,21 +290,16 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.assertRenderedPage(ConfigurationPage.class);
 
         formTester = tester.newFormTester("configurationForm");
-        formTester.setValue(
-                "tasksPanel:listContainer:items:1:selectItemContainer:selectItem", true);
+        formTester.setValue("tasksPanel:listContainer:items:1:selectItemContainer:selectItem", true);
         tester.executeAjaxEvent(
-                "configurationForm:tasksPanel:listContainer:items:1:selectItemContainer:selectItem",
-                "click");
-        formTester.setValue(
-                "tasksPanel:listContainer:items:2:selectItemContainer:selectItem", true);
+                "configurationForm:tasksPanel:listContainer:items:1:selectItemContainer:selectItem", "click");
+        formTester.setValue("tasksPanel:listContainer:items:2:selectItemContainer:selectItem", true);
         tester.executeAjaxEvent(
-                "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem",
-                "click");
+                "configurationForm:tasksPanel:listContainer:items:2:selectItemContainer:selectItem", "click");
         formTester.submit("removeSelected");
         tester.newFormTester("dialog:dialog:content:form").submit("submit");
         tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(0, tasksPanel.getDataProvider().size());
         formTester.setValue("name", "the_greatest_configuration");
 
@@ -329,7 +316,8 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         formTester.setValue("name", "foo_bar_configuration");
         tester.clickLink("configurationForm:save");
         tester.assertRenderedPage(ConfigurationsPage.class);
-        assertEquals("foo_bar_configuration", dao.reload(configModel.getObject()).getName());
+        assertEquals(
+                "foo_bar_configuration", dao.reload(configModel.getObject()).getName());
 
         dao.delete(dummyBatch);
     }
@@ -390,14 +378,11 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
                 "Edit Layer..");
 
         FormTester formTester = tester.newFormTester("configurationForm");
-        formTester.submit(
-                "attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
+        formTester.submit("attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
         assertFeedback("topFeedback", "You cannot execute this action with this value.");
 
-        formTester.select(
-                "attributesPanel:listContainer:items:11:itemProperties:1:component:dropdown", 1);
-        formTester.submit(
-                "attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
+        formTester.select("attributesPanel:listContainer:items:11:itemProperties:1:component:dropdown", 1);
+        formTester.submit("attributesPanel:listContainer:items:11:itemProperties:2:component:listview:0:panel:button");
         tester.assertNoErrorMessage();
 
         tester.assertRenderedPage(ResourceConfigurationPage.class);
@@ -426,21 +411,17 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
                 ButtonPanel.class);
 
         tester.assertModelValue(
-                "configurationForm:attributesPanel:listContainer:items:9:itemProperties:0:component",
-                "fileService");
+                "configurationForm:attributesPanel:listContainer:items:9:itemProperties:0:component", "fileService");
         tester.assertModelValue(
                 "configurationForm:attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button",
                 "Upload..");
 
         FormTester formTester = tester.newFormTester("configurationForm");
-        formTester.submit(
-                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+        formTester.submit("attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
         assertFeedback("topFeedback", "You cannot execute this action with this value.");
 
-        formTester.select(
-                "attributesPanel:listContainer:items:9:itemProperties:1:component:dropdown", 1);
-        formTester.submit(
-                "attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
+        formTester.select("attributesPanel:listContainer:items:9:itemProperties:1:component:dropdown", 1);
+        formTester.submit("attributesPanel:listContainer:items:10:itemProperties:2:component:listview:0:panel:button");
         tester.assertNoErrorMessage();
 
         tester.assertComponent("dialog:dialog:content:form:userPanel", FileUploadPanel.class);
@@ -450,8 +431,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.assertErrorMessages("Field 'File folder' is required.", "Field 'File' is required.");
 
         dialogFormTester.select("userPanel:folderSelection", 0);
-        tester.assertComponent(
-                "dialog:dialog:content:form:userPanel:fileInput", FileUploadField.class);
+        tester.assertComponent("dialog:dialog:content:form:userPanel:fileInput", FileUploadField.class);
         tester.assertComponent("dialog:dialog:content:form:userPanel:prepare", CheckBox.class);
         tester.assertModelValue("dialog:dialog:content:form:userPanel:prepare", true);
 
@@ -473,10 +453,9 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
             fail(String.format("feedback panel at path [%s] returned null messages", path));
         }
         if (numberOfMessages != renderedMessages.size()) {
-            fail(
-                    String.format(
-                            "you expected '%d' messages for the feedback panel [%s], but there were actually '%d'",
-                            numberOfMessages, path, renderedMessages.size()));
+            fail(String.format(
+                    "you expected '%d' messages for the feedback panel [%s], but there were actually '%d'",
+                    numberOfMessages, path, renderedMessages.size()));
         }
     }
 
@@ -505,8 +484,7 @@ public class ConfigurationPageTest extends AbstractBatchesPanelTest<Configuratio
         tester.startPage(page);
 
         tester.clickLink(
-                prefix()
-                        + "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:1:component:link");
+                prefix() + "batchesPanel:form:batchesPanel:listContainer:items:1:itemProperties:1:component:link");
 
         tester.assertRenderedPage(BatchPage.class);
 

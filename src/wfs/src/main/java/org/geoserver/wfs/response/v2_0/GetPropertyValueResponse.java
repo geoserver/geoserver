@@ -66,8 +66,7 @@ public class GetPropertyValueResponse extends WFSResponse {
             try {
                 for (NamespaceInfo nameSpaceinfo : catalog.getNamespaces()) {
                     if (encoder.getNamespaces().getURI(nameSpaceinfo.getPrefix()) == null) {
-                        encoder.getNamespaces()
-                                .declarePrefix(nameSpaceinfo.getPrefix(), nameSpaceinfo.getURI());
+                        encoder.getNamespaces().declarePrefix(nameSpaceinfo.getPrefix(), nameSpaceinfo.getURI());
                     }
                 }
             } finally {

@@ -19,10 +19,9 @@ public class RestEnvVariableCallback extends DispatcherCallbackAdapter {
     static final FormatOptionsKvpParser PARSER = new FormatOptionsKvpParser("env");
 
     /**
-     * Parses and sets the environment variables from their "var1:value1;v2:value;..." syntax, that
-     * a {@link org.springframework.stereotype.Controller} retrieved from the request some way
-     * (ideally via a "env" KVP parameter, but we don't want to be prescriptive about it, in REST
-     * "env" could be used for something else
+     * Parses and sets the environment variables from their "var1:value1;v2:value;..." syntax, that a
+     * {@link org.springframework.stereotype.Controller} retrieved from the request some way (ideally via a "env" KVP
+     * parameter, but we don't want to be prescriptive about it, in REST "env" could be used for something else
      */
     public static void setOptions(String unparsedOptions) {
         try {
@@ -30,8 +29,7 @@ public class RestEnvVariableCallback extends DispatcherCallbackAdapter {
             Map<String, Object> localEnvVars = (Map<String, Object>) PARSER.parse(unparsedOptions);
             EnvFunction.setLocalValues(localEnvVars);
         } catch (Exception e) {
-            throw new RestException(
-                    "Invalid syntax for environment variables", HttpStatus.BAD_REQUEST, e);
+            throw new RestException("Invalid syntax for environment variables", HttpStatus.BAD_REQUEST, e);
         }
     }
 

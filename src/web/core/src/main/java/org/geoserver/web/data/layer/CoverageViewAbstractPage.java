@@ -78,20 +78,14 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     CoverageViewEditor coverageEditor;
 
     public CoverageViewAbstractPage(PageParameters params) throws IOException {
-        this(
-                params.get(WORKSPACE).toOptionalString(),
-                params.get(COVERAGESTORE).toString(),
-                null,
-                null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
     public CoverageViewAbstractPage(
-            String workspaceName, String storeName, String coverageName, CoverageInfo coverageInfo)
-            throws IOException {
-        storeId =
-                getCatalog()
-                        .getStoreByName(workspaceName, storeName, CoverageStoreInfo.class)
-                        .getId();
+            String workspaceName, String storeName, String coverageName, CoverageInfo coverageInfo) throws IOException {
+        storeId = getCatalog()
+                .getStoreByName(workspaceName, storeName, CoverageStoreInfo.class)
+                .getId();
         Catalog catalog = getCatalog();
         CoverageStoreInfo store = catalog.getStore(storeId, CoverageStoreInfo.class);
 
@@ -120,14 +114,11 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             newCoverage = false;
 
             // grab the coverage view
-            coverageViewInfo =
-                    coverageInfo != null
-                            ? coverageInfo
-                            : catalog.getResourceByStore(store, coverageName, CoverageInfo.class);
+            coverageViewInfo = coverageInfo != null
+                    ? coverageInfo
+                    : catalog.getResourceByStore(store, coverageName, CoverageInfo.class);
             CoverageView coverageView =
-                    coverageViewInfo
-                            .getMetadata()
-                            .get(CoverageView.COVERAGE_VIEW, CoverageView.class);
+                    coverageViewInfo.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
             // the type can be still not saved
             if (coverageViewInfo != null) {
                 coverageInfoId = coverageViewInfo.getId();
@@ -138,12 +129,10 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             }
             outputBands = new ArrayList<>(coverageView.getCoverageBands());
             name = coverageView.getName();
-            envelopeCompositionType =
-                    Optional.ofNullable(coverageView.getEnvelopeCompositionType())
-                            .orElse(EnvelopeCompositionType.INTERSECTION);
+            envelopeCompositionType = Optional.ofNullable(coverageView.getEnvelopeCompositionType())
+                    .orElse(EnvelopeCompositionType.INTERSECTION);
             selectedResolution =
-                    Optional.ofNullable(coverageView.getSelectedResolution())
-                            .orElse(SelectedResolution.BEST);
+                    Optional.ofNullable(coverageView.getSelectedResolution()).orElse(SelectedResolution.BEST);
         } else {
             outputBands = new ArrayList<>();
             newCoverage = true;
@@ -162,33 +151,30 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
         nameField.add(new CoverageViewNameValidator());
         form.add(nameField);
 
-        coverageEditor =
-                new CoverageViewEditor(
-                        "coverages",
-                        new PropertyModel<>(this, "selectedCoverages"),
-                        new PropertyModel<>(this, "outputBands"),
-                        new PropertyModel<>(this, "envelopeCompositionType"),
-                        new PropertyModel<>(this, "selectedResolution"),
-                        new PropertyModel<>(this, "resolutionReferenceCoverage"),
-                        availableCoverages);
+        coverageEditor = new CoverageViewEditor(
+                "coverages",
+                new PropertyModel<>(this, "selectedCoverages"),
+                new PropertyModel<>(this, "outputBands"),
+                new PropertyModel<>(this, "envelopeCompositionType"),
+                new PropertyModel<>(this, "selectedResolution"),
+                new PropertyModel<>(this, "resolutionReferenceCoverage"),
+                availableCoverages);
         form.add(coverageEditor);
 
         // save and cancel at the bottom of the page
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        onSave();
-                    }
-                });
-        form.add(
-                new Link<Void>("cancel") {
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                onSave();
+            }
+        });
+        form.add(new Link<Void>("cancel") {
 
-                    @Override
-                    public void onClick() {
-                        onCancel();
-                    }
-                });
+            @Override
+            public void onClick() {
+                onCancel();
+            }
+        });
     }
 
     protected CoverageView buildCoverageView() throws IOException {
@@ -215,8 +201,8 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
     }
 
     /**
-     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from
-     * the db is in the cause. This method extracts the first not null message in the cause chain
+     * Data stores tend to return IOExceptions with no explanation, and the actual error coming from the db is in the
+     * cause. This method extracts the first not null message in the cause chain
      */
     protected String getFirstErrorMessage(Throwable t) {
         Throwable original = t;
@@ -249,18 +235,16 @@ public abstract class CoverageViewAbstractPage extends GeoServerSecuredPage {
             final CoverageStoreInfo store = getCatalog().getStore(storeId, CoverageStoreInfo.class);
             List<CoverageInfo> coverages = getCatalog().getCoveragesByCoverageStore(store);
             for (CoverageInfo curr : coverages) {
-                CoverageView currvc =
-                        curr.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
+                CoverageView currvc = curr.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
                 if (currvc != null) {
                     if (coverageInfoId == null || !coverageInfoId.equals(curr.getId())) {
                         if (currvc.getName().equals(vcName) && newCoverage) {
                             Map<String, Object> map = new HashMap<>();
                             map.put("name", vcName);
                             map.put("coverageName", curr.getName());
-                            IValidationError err =
-                                    new ValidationError("duplicateCoverageViewName")
-                                            .addKey("duplicateCoverageViewName")
-                                            .setVariables(map);
+                            IValidationError err = new ValidationError("duplicateCoverageViewName")
+                                    .addKey("duplicateCoverageViewName")
+                                    .setVariables(map);
                             validatable.error(err);
                             return;
                         }

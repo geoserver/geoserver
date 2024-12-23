@@ -37,8 +37,7 @@ public class FileStrategy implements ServiceStrategy {
     static int sequence = 0;
 
     /** Class logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
     /** OutputStream provided to writeTo method */
     private OutputStream safe;
@@ -68,8 +67,7 @@ public class FileStrategy implements ServiceStrategy {
             temp = File.createTempFile("wfs" + sequence, "tmp");
 
             if (!temp.canRead() || !temp.canWrite()) {
-                String errorMsg =
-                        "Temporary-file permission problem for location: " + temp.getPath();
+                String errorMsg = "Temporary-file permission problem for location: " + temp.getPath();
                 throw new IOException(errorMsg);
             }
         } catch (IOException e) {
@@ -92,15 +90,14 @@ public class FileStrategy implements ServiceStrategy {
     @Override
     public void flush(HttpServletResponse response) throws IOException {
         if ((temp == null) || (response == null) || (safe == null) || !temp.exists()) {
-            LOGGER.fine(
-                    "temp is "
-                            + temp
-                            + ", response is "
-                            + response
-                            + " safe is "
-                            + safe
-                            + ", temp exists "
-                            + (temp == null ? "false" : temp.exists()));
+            LOGGER.fine("temp is "
+                    + temp
+                    + ", response is "
+                    + response
+                    + " safe is "
+                    + safe
+                    + ", temp exists "
+                    + (temp == null ? "false" : temp.exists()));
             throw new IllegalStateException("flush should only be called after getDestination");
         }
 

@@ -36,8 +36,7 @@ class WCS11GetCoverageTransformer extends TransformerBase {
 
     private CoverageResponseDelegateFinder responseFactory;
 
-    public WCS11GetCoverageTransformer(
-            Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
+    public WCS11GetCoverageTransformer(Catalog catalog, CoverageResponseDelegateFinder responseFactory) {
         this.catalog = catalog;
         this.responseFactory = responseFactory;
     }
@@ -66,24 +65,23 @@ class WCS11GetCoverageTransformer extends TransformerBase {
         }
 
         private void encode(GetCoverageRequest request) {
-            AttributesImpl attributes =
-                    attributes(
-                            "version",
-                            "1.1.1",
-                            "service",
-                            "WCS",
-                            "xmlns:xsi",
-                            XSI_URI,
-                            "xmlns",
-                            WCS_URI,
-                            "xmlns:ows",
-                            OWS.NAMESPACE,
-                            "xmlns:gml",
-                            GML.NAMESPACE,
-                            "xmlns:ogc",
-                            OGC.NAMESPACE,
-                            "xsi:schemaLocation",
-                            WCS_URI + " " + "http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd");
+            AttributesImpl attributes = attributes(
+                    "version",
+                    "1.1.1",
+                    "service",
+                    "WCS",
+                    "xmlns:xsi",
+                    XSI_URI,
+                    "xmlns",
+                    WCS_URI,
+                    "xmlns:ows",
+                    OWS.NAMESPACE,
+                    "xmlns:gml",
+                    GML.NAMESPACE,
+                    "xmlns:ogc",
+                    OGC.NAMESPACE,
+                    "xsi:schemaLocation",
+                    WCS_URI + " " + "http://schemas.opengis.net/wcs/1.1.1/wcsAll.xsd");
 
             start("GetCoverage", attributes);
             element("ows:Identifier", request.coverage);
@@ -104,10 +102,7 @@ class WCS11GetCoverageTransformer extends TransformerBase {
                 start("GridCRS");
                 element("GridBaseCRS", epsgUrnCode(request.targetCRS));
                 AffineTransform at = request.targetGridToWorld;
-                if (at.getTranslateX() == 0
-                        && at.getTranslateY() == 0
-                        && at.getShearX() == 0
-                        && at.getShearY() == 0) {
+                if (at.getTranslateX() == 0 && at.getTranslateY() == 0 && at.getShearX() == 0 && at.getShearY() == 0) {
                     // simple grid mode
                     element("GridType", "urn:ogc:def:method:WCS:1.1:2dSimpleGrid");
                     element("GridOffsets", at.getScaleX() + " " + at.getScaleY());
@@ -116,13 +111,7 @@ class WCS11GetCoverageTransformer extends TransformerBase {
                     element("GridOrigin", at.getTranslateX() + " " + at.getTranslateY());
                     element(
                             "GridOffsets",
-                            at.getScaleX()
-                                    + " "
-                                    + at.getShearX()
-                                    + " "
-                                    + at.getShearY()
-                                    + " "
-                                    + at.getScaleY());
+                            at.getScaleX() + " " + at.getShearX() + " " + at.getShearY() + " " + at.getScaleY());
                 }
                 element("GridCS", "urn:ogc:def:cs:OGC:0.0:Grid2dSquareCS");
                 end("GridCRS");

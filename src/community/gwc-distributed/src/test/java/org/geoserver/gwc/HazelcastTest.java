@@ -116,15 +116,11 @@ public class HazelcastTest extends GeoServerSystemTestSupport {
         config.addMapConfig(mapConfig);
         config.getNetworkConfig().getJoin().getMulticastConfig().setEnabled(false);
         config.getNetworkConfig().getJoin().getTcpIpConfig().setEnabled(true);
-        config.getNetworkConfig()
-                .getJoin()
-                .getTcpIpConfig()
-                .setMembers(
-                        new ArrayList<String>() {
-                            {
-                                add("127.0.0.1");
-                            }
-                        });
+        config.getNetworkConfig().getJoin().getTcpIpConfig().setMembers(new ArrayList<String>() {
+            {
+                add("127.0.0.1");
+            }
+        });
         config.getNetworkConfig().getInterfaces().addInterface("127.0.0.1");
         HazelcastInstance instance1 = Hazelcast.newHazelcastInstance(config);
         HazelcastLoader loader1 = new HazelcastLoader();
@@ -157,15 +153,13 @@ public class HazelcastTest extends GeoServerSystemTestSupport {
         Map<String, String> parameters = new HashMap<String, String>();
         parameters.put("a", "x");
         parameters.put("b", "ø");
-        TileObject to =
-                TileObject.createCompleteTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
+        TileObject to = TileObject.createCompleteTileObject(
+                "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters, bytes);
 
         blobStore.put(to);
         // Try to get the Tile Object
         TileObject to2 =
-                TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.get(to2);
 
         // Check formats
@@ -198,14 +192,12 @@ public class HazelcastTest extends GeoServerSystemTestSupport {
 
         // Remove TileObject
         TileObject to5 =
-                TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         blobStore.delete(to5);
 
         // Ensure TileObject is no more present
         TileObject to6 =
-                TileObject.createQueryTileObject(
-                        "test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
+                TileObject.createQueryTileObject("test:123123 112", xyz, "EPSG:4326", "image/jpeg", parameters);
         assertFalse(blobStore.get(to6));
 
         // Ensure that each cache provider does not contain the tile object

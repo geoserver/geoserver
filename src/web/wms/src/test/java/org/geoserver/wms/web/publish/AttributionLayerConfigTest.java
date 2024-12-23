@@ -23,16 +23,14 @@ import org.junit.Test;
 public class AttributionLayerConfigTest extends GeoServerWicketTestSupport {
 
     protected <T extends PublishedInfo> void testPublished(final IModel<T> publishedInfoModel) {
-        FormTestPage page =
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 6999752257807054508L;
+        FormTestPage page = new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = 6999752257807054508L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new AttributionLayerConfigPanel(id, publishedInfoModel);
-                            }
-                        });
+            @Override
+            public Component buildComponent(String id) {
+                return new AttributionLayerConfigPanel(id, publishedInfoModel);
+            }
+        });
 
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);

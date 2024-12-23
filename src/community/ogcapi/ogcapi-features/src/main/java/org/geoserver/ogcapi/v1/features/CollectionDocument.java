@@ -45,8 +45,7 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
     List<String> crs;
     String storageCrs;
 
-    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs)
-            throws IOException {
+    public CollectionDocument(GeoServer geoServer, FeatureTypeInfo featureType, List<String> crs) throws IOException {
         super(featureType);
         // basic info
         String collectionId = featureType.prefixedName();
@@ -61,38 +60,32 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
         this.storageCrs = lookupStorageCrs();
 
         // links
-        Collection<MediaType> formats =
-                APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
+        Collection<MediaType> formats = APIRequestInfo.get().getProducibleMediaTypes(FeaturesResponse.class, true);
         String baseUrl = APIRequestInfo.get().getBaseURL();
         for (MediaType format : formats) {
-            String apiUrl =
-                    ResponseUtils.buildURL(
-                            baseUrl,
-                            "ogc/features/v1/collections/" + collectionId + "/items",
-                            Collections.singletonMap("f", format.toString()),
-                            URLMangler.URLType.SERVICE);
-            addLink(
-                    new Link(
-                            apiUrl,
-                            Link.REL_ITEMS,
-                            format.toString(),
-                            collectionId + " items as " + format.toString(),
-                            "items"));
+            String apiUrl = ResponseUtils.buildURL(
+                    baseUrl,
+                    "ogc/features/v1/collections/" + collectionId + "/items",
+                    Collections.singletonMap("f", format.toString()),
+                    URLMangler.URLType.SERVICE);
+            addLink(new Link(
+                    apiUrl,
+                    Link.REL_ITEMS,
+                    format.toString(),
+                    collectionId + " items as " + format.toString(),
+                    "items"));
         }
         addSelfLinks("ogc/features/v1/collections/" + id);
 
         // describedBy as GML schema
         if (isOWSAvailable(geoServer, "WFS")) {
-            Map<String, String> kvp =
-                    Map.ofEntries(
-                            Map.entry("service", "WFS"),
-                            Map.entry("version", "2.0"),
-                            Map.entry("request", "DescribeFeatureType"),
-                            Map.entry("typenames", featureType.prefixedName()));
-            String describedByHref =
-                    ResponseUtils.buildURL(baseUrl, "wfs", kvp, URLMangler.URLType.SERVICE);
-            Link describedBy =
-                    new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
+            Map<String, String> kvp = Map.ofEntries(
+                    Map.entry("service", "WFS"),
+                    Map.entry("version", "2.0"),
+                    Map.entry("request", "DescribeFeatureType"),
+                    Map.entry("typenames", featureType.prefixedName()));
+            String describedByHref = ResponseUtils.buildURL(baseUrl, "wfs", kvp, URLMangler.URLType.SERVICE);
+            Link describedBy = new Link(describedByHref, "describedBy", "application/xml", "Schema for " + id);
             addLink(describedBy);
         }
 
@@ -109,14 +102,12 @@ public class CollectionDocument extends AbstractCollectionDocument<FeatureTypeIn
             Map<String, String> kvp = new HashMap<>();
             kvp.put("LAYERS", featureType.prefixedName());
             kvp.put("FORMAT", "application/openlayers");
-            this.mapPreviewURL =
-                    ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
+            this.mapPreviewURL = ResponseUtils.buildURL(baseUrl, "wms/reflect", kvp, URLMangler.URLType.SERVICE);
         }
     }
 
     private static boolean isOWSAvailable(GeoServer geoServer, String serviceId) {
-        return geoServer.getServices().stream()
-                .anyMatch(s -> serviceId.equalsIgnoreCase(s.getName()) && s.isEnabled());
+        return geoServer.getServices().stream().anyMatch(s -> serviceId.equalsIgnoreCase(s.getName()) && s.isEnabled());
     }
 
     private String lookupStorageCrs() {

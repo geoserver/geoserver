@@ -10,9 +10,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
 
-/**
- * Manages creation and "decoding" of the file URLs so that the actual file system path is hidden
- */
+/** Manages creation and "decoding" of the file URLs so that the actual file system path is hidden */
 @Component
 class AssetHasher {
 
@@ -22,8 +20,8 @@ class AssetHasher {
     }
 
     /**
-     * Return a SHA-1 based hash for the specified file, by appending the file's base name to the
-     * hashed full path. This allows to hide the underlying file system structure.
+     * Return a SHA-1 based hash for the specified file, by appending the file's base name to the hashed full path. This
+     * allows to hide the underlying file system structure.
      */
     public String hashFile(File file) {
         try {

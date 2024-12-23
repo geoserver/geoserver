@@ -19,13 +19,10 @@ public class GeoServerFeignErrorDecoder implements ErrorDecoder {
         Map<String, Collection<String>> headers = response.headers();
         String reason = response.reason();
         String request = response.request().toString();
-        if (headers.containsKey("Content-Type")
-                && headers.get("Content-Type").contains("text/plain")) {
+        if (headers.containsKey("Content-Type") && headers.get("Content-Type").contains("text/plain")) {
             try {
                 String errorText =
-                        new BufferedReader(response.body().asReader())
-                                .lines()
-                                .collect(Collectors.joining("\n"));
+                        new BufferedReader(response.body().asReader()).lines().collect(Collectors.joining("\n"));
                 if (errorText != null && !errorText.trim().isEmpty()) {
                     reason = errorText;
                 }

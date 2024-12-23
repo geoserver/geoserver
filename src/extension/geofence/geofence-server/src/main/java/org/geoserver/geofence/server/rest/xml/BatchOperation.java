@@ -5,8 +5,8 @@
 package org.geoserver.geofence.server.rest.xml;
 
 /**
- * Represents a single BatchOperation. A batch operation can either use rules or adminrules services
- * and can be of one of these types: insert, update, delete.
+ * Represents a single BatchOperation. A batch operation can either use rules or adminrules services and can be of one
+ * of these types: insert, update, delete.
  */
 public class BatchOperation {
 

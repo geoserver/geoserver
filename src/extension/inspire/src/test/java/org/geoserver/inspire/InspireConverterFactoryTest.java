@@ -34,9 +34,7 @@ public class InspireConverterFactoryTest {
     @Test
     public void testCodeMetadata() {
         UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "code", null, "http://metadata.geoserver.org/id?code"));
+        ids.add(new UniqueResourceIdentifier("code", null, "http://metadata.geoserver.org/id?code"));
         String str = Converters.convert(ids, String.class);
         assertEquals("code,,http://metadata.geoserver.org/id?code", str);
         UniqueResourceIdentifiers ids2 = Converters.convert(str, UniqueResourceIdentifiers.class);
@@ -46,9 +44,7 @@ public class InspireConverterFactoryTest {
     @Test
     public void testCodeNamespaceMetadata() {
         UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "code", "http://www.geoserver.org", "http://www.geoserver.org/metadata"));
+        ids.add(new UniqueResourceIdentifier("code", "http://www.geoserver.org", "http://www.geoserver.org/metadata"));
         String str = Converters.convert(ids, String.class);
         assertEquals("code,http://www.geoserver.org,http://www.geoserver.org/metadata", str);
         UniqueResourceIdentifiers ids2 = Converters.convert(str, UniqueResourceIdentifiers.class);
@@ -60,11 +56,8 @@ public class InspireConverterFactoryTest {
         UniqueResourceIdentifiers ids = new UniqueResourceIdentifiers();
         ids.add(new UniqueResourceIdentifier("code1"));
         ids.add(new UniqueResourceIdentifier("code2", "http://www.geoserver.org/1"));
-        ids.add(
-                new UniqueResourceIdentifier(
-                        "code3",
-                        "http://www.geoserver.org/2",
-                        "http://www.geoserver.org/metadata"));
+        ids.add(new UniqueResourceIdentifier(
+                "code3", "http://www.geoserver.org/2", "http://www.geoserver.org/metadata"));
         String str = Converters.convert(ids, String.class);
         assertEquals(
                 "code1,,;code2,http://www.geoserver.org/1,;code3,http://www.geoserver.org/2,http://www.geoserver.org/metadata",

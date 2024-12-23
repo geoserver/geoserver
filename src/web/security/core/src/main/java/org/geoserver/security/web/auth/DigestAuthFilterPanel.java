@@ -16,8 +16,7 @@ import org.geoserver.security.web.usergroup.UserGroupServiceChoice;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class DigestAuthFilterPanel
-        extends AuthenticationFilterPanel<DigestAuthenticationFilterConfig> {
+public class DigestAuthFilterPanel extends AuthenticationFilterPanel<DigestAuthenticationFilterConfig> {
 
     /** serialVersionUID */
     private static final long serialVersionUID = 1L;

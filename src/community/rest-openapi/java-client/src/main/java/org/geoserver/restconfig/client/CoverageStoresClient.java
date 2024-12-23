@@ -45,44 +45,26 @@ public class CoverageStoresClient {
 
     public CoverageStoreResponse create(@NonNull CoverageStoreInfo info) {
         String workspace = info.getWorkspace().getName();
-        this.api()
-                .createCoverageStore(workspace, new CoverageStoreInfoWrapper().coverageStore(info));
+        this.api().createCoverageStore(workspace, new CoverageStoreInfoWrapper().coverageStore(info));
         return this.findByWorkspaceAndName(workspace, info.getName())
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "CoverageStore not found after being created: "
-                                                + info.getName()));
+                .orElseThrow(() ->
+                        new IllegalStateException("CoverageStore not found after being created: " + info.getName()));
     }
 
     public CoverageStoreResponse update(
-            @NonNull String oldWorkspace,
-            @NonNull String oldName,
-            @NonNull CoverageStoreInfo info) {
-        this.api()
-                .modifyCoverageStore(
-                        oldWorkspace, oldName, new CoverageStoreInfoWrapper().coverageStore(info));
+            @NonNull String oldWorkspace, @NonNull String oldName, @NonNull CoverageStoreInfo info) {
+        this.api().modifyCoverageStore(oldWorkspace, oldName, new CoverageStoreInfoWrapper().coverageStore(info));
         return this.findByWorkspaceAndName(info.getWorkspace().getName(), info.getName())
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "CoverageStoreInfo not found after being updated: "
-                                                + info.getName()));
+                .orElseThrow(() -> new IllegalStateException(
+                        "CoverageStoreInfo not found after being updated: " + info.getName()));
     }
 
     public CoverageStoreResponse update(@NonNull CoverageStoreInfo info) {
         String workspace = info.getWorkspace().getName();
-        this.api()
-                .modifyCoverageStore(
-                        workspace,
-                        info.getName(),
-                        new CoverageStoreInfoWrapper().coverageStore(info));
+        this.api().modifyCoverageStore(workspace, info.getName(), new CoverageStoreInfoWrapper().coverageStore(info));
         return this.findByWorkspaceAndName(workspace, info.getName())
-                .orElseThrow(
-                        () ->
-                                new IllegalStateException(
-                                        "CoverageStoreInfo not found after being updated: "
-                                                + info.getName()));
+                .orElseThrow(() -> new IllegalStateException(
+                        "CoverageStoreInfo not found after being updated: " + info.getName()));
     }
 
     public void delete(@NonNull String ws, @NonNull String name) {
@@ -108,8 +90,7 @@ public class CoverageStoresClient {
     }
 
     /** @throws NotFound */
-    public CoverageStoreResponse getByWorkspaceAndName(
-            @NonNull String workspaceName, @NonNull String storeName) {
+    public CoverageStoreResponse getByWorkspaceAndName(@NonNull String workspaceName, @NonNull String storeName) {
         CoverageStoreResponseWrapper response;
         response = this.api().getCoverageStore(workspaceName, storeName, true);
         return response.getCoverageStore();

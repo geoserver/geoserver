@@ -35,8 +35,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     static final int DEFAULT_MAX_ASYNCH = Runtime.getRuntime().availableProcessors();
 
     /**
-     * Connection timeout in seconds. Using a double allows for fractional values, like as an
-     * instance, half a second ==> 0.5
+     * Connection timeout in seconds. Using a double allows for fractional values, like as an instance, half a second
+     * ==> 0.5
      */
     Double connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
@@ -56,38 +56,35 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     String storageDirectory;
 
     /**
-     * The directory where processes are allowed to store outputs outside of the WPS resource
-     * storage so that the files will not be automatically removed based on the resource expiration
-     * timeout.
+     * The directory where processes are allowed to store outputs outside of the WPS resource storage so that the files
+     * will not be automatically removed based on the resource expiration timeout.
      */
     String externalOutputDirectory;
 
     /**
-     * How to handle requests for processes that have been secured, and should not be reached
-     * without the proper authentication
+     * How to handle requests for processes that have been secured, and should not be reached without the proper
+     * authentication
      */
     CatalogMode catalogMode;
 
-    /**
-     * The global maximum size of a complex input, in MB. Per process configuration can override it
-     */
+    /** The global maximum size of a complex input, in MB. Per process configuration can override it */
     int maxComplexInputSize;
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP
-     * connection) before it gets killed by the WPS container
+     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP connection) before it
+     * gets killed by the WPS container
      */
     int maxSynchronousExecutionTime;
 
     /**
-     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the
-     * HTTP connection) before it gets killed by the WPS container
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP connection)
+     * before it gets killed by the WPS container
      */
     Integer maxSynchronousTotalTime;
 
     /**
-     * How many seconds a process can run in asynchronous mode (with the user polling for its
-     * status) before it gets killed by the WPS container
+     * How many seconds a process can run in asynchronous mode (with the user polling for its status) before it gets
+     * killed by the WPS container
      */
     int maxAsynchronousExecutionTime;
 
@@ -106,8 +103,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
-     * Returns the connection timeout (in seconds). It represents the timeout to be used during WPS
-     * execute requests, when opening the connection/reading through it.
+     * Returns the connection timeout (in seconds). It represents the timeout to be used during WPS execute requests,
+     * when opening the connection/reading through it.
      *
      * @return the timeout, or -1 if infinite timeout.
      */
@@ -129,10 +126,7 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         return connectionTimeout;
     }
 
-    /**
-     * Sets the connection timeout (in seconds) to be used in WPS execute requests. -1 for infinite
-     * timeout
-     */
+    /** Sets the connection timeout (in seconds) to be used in WPS execute requests. -1 for infinite timeout */
     @Override
     public void setConnectionTimeout(double connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
@@ -260,8 +254,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP
-     * connection) before it gets killed by the WPS container
+     * How many seconds a process can run in synchronous mode (with the user waiting on the HTTP connection) before it
+     * gets killed by the WPS container
      */
     @Override
     public int getMaxSynchronousExecutionTime() {
@@ -274,14 +268,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
-     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the
-     * HTTP connection) before it gets killed by the WPS container
+     * How many seconds a process can run or queue in synchronous mode (with the user waiting on the HTTP connection)
+     * before it gets killed by the WPS container
      */
     @Override
     public Integer getMaxSynchronousTotalTime() {
-        return (maxSynchronousTotalTime != null)
-                ? maxSynchronousTotalTime
-                : maxSynchronousExecutionTime;
+        return (maxSynchronousTotalTime != null) ? maxSynchronousTotalTime : maxSynchronousExecutionTime;
     }
 
     @Override
@@ -290,8 +282,8 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user polling for its status)
-     * before it gets killed by the WPS container
+     * How many seconds a process can run in synchronous mode (with the user polling for its status) before it gets
+     * killed by the WPS container
      */
     @Override
     public int getMaxAsynchronousExecutionTime() {
@@ -304,14 +296,12 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
     }
 
     /**
-     * How many seconds a process can run in synchronous mode (with the user polling for its status)
-     * before it gets killed by the WPS container
+     * How many seconds a process can run in synchronous mode (with the user polling for its status) before it gets
+     * killed by the WPS container
      */
     @Override
     public Integer getMaxAsynchronousTotalTime() {
-        return (maxAsynchronousTotalTime != null)
-                ? maxAsynchronousTotalTime
-                : maxAsynchronousExecutionTime;
+        return (maxAsynchronousTotalTime != null) ? maxAsynchronousTotalTime : maxAsynchronousExecutionTime;
     }
 
     @Override
@@ -335,35 +325,15 @@ public class WPSInfoImpl extends ServiceInfoImpl implements WPSInfo {
         int result = super.hashCode();
         result = prime * result + ((catalogMode == null) ? 0 : catalogMode.hashCode());
         result = prime * result + ((connectionTimeout == null) ? 0 : connectionTimeout.hashCode());
-        result =
-                prime * result
-                        + ((maxAsynchronousProcesses == null)
-                                ? 0
-                                : maxAsynchronousProcesses.hashCode());
+        result = prime * result + ((maxAsynchronousProcesses == null) ? 0 : maxAsynchronousProcesses.hashCode());
         result = prime * result + maxAsynchronousExecutionTime;
-        result =
-                prime * result
-                        + ((maxAsynchronousTotalTime == null)
-                                ? 0
-                                : maxAsynchronousTotalTime.hashCode());
+        result = prime * result + ((maxAsynchronousTotalTime == null) ? 0 : maxAsynchronousTotalTime.hashCode());
         result = prime * result + maxComplexInputSize;
         result = prime * result + maxSynchronousExecutionTime;
-        result =
-                prime * result
-                        + ((maxSynchronousTotalTime == null)
-                                ? 0
-                                : maxSynchronousTotalTime.hashCode());
-        result =
-                prime * result
-                        + ((maxSynchronousProcesses == null)
-                                ? 0
-                                : maxSynchronousProcesses.hashCode());
+        result = prime * result + ((maxSynchronousTotalTime == null) ? 0 : maxSynchronousTotalTime.hashCode());
+        result = prime * result + ((maxSynchronousProcesses == null) ? 0 : maxSynchronousProcesses.hashCode());
         result = prime * result + ((processGroups == null) ? 0 : processGroups.hashCode());
-        result =
-                prime * result
-                        + ((resourceExpirationTimeout == null)
-                                ? 0
-                                : resourceExpirationTimeout.hashCode());
+        result = prime * result + ((resourceExpirationTimeout == null) ? 0 : resourceExpirationTimeout.hashCode());
         result = prime * result + ((storageDirectory == null) ? 0 : storageDirectory.hashCode());
         return result;
     }

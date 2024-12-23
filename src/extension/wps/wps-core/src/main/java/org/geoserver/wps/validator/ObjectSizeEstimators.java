@@ -12,8 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
 /**
- * Central class providing static methods to estimate the size of an object. It will scan the
- * application context looking for {@link ObjectSizeEstimator} objects
+ * Central class providing static methods to estimate the size of an object. It will scan the application context
+ * looking for {@link ObjectSizeEstimator} objects
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -22,9 +22,9 @@ public class ObjectSizeEstimators implements ApplicationContextAware {
     private static List<ObjectSizeEstimator> estimators = Collections.emptyList();
 
     /**
-     * Looks up all the {@link ObjectSizeEstimator} available in the application context, and will
-     * return the result of the first one returning a positive size, or {@link
-     * ObjectSizeEstimator#UNKNOWN_SIZE} if none returns a positive value
+     * Looks up all the {@link ObjectSizeEstimator} available in the application context, and will return the result of
+     * the first one returning a positive size, or {@link ObjectSizeEstimator#UNKNOWN_SIZE} if none returns a positive
+     * value
      */
     public static long getSizeOf(Object object) {
 

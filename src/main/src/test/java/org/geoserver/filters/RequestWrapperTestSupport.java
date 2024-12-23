@@ -25,8 +25,7 @@ public class RequestWrapperTestSupport {
     };
 
     @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
-    protected MockHttpServletRequest makeRequest(String body, String queryString)
-            throws UnsupportedEncodingException {
+    protected MockHttpServletRequest makeRequest(String body, String queryString) throws UnsupportedEncodingException {
         MockHttpServletRequest request = new MockHttpServletRequest();
         request.setScheme("http");
         request.setServerName("localhost");

@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * Tests whether app-schema can walk through substitution groups automatically, without having to
- * explicitly put a target
+ * Tests whether app-schema can walk through substitution groups automatically, without having to explicitly put a
+ * target
  *
  * @author Niels Charlier, Curtin University of Technology
  */

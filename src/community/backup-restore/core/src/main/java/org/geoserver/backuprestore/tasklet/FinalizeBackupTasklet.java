@@ -26,17 +26,13 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
     protected void initialize(StepExecution stepExecution) {}
 
     @Override
-    RepeatStatus doExecute(
-            StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
+    RepeatStatus doExecute(StepContribution contribution, ChunkContext chunkContext, JobExecution jobExecution)
             throws Exception {
 
         BackupExecutionAdapter backupExecution =
                 backupFacade.getBackupExecutions().get(jobExecution.getId());
         boolean bestEffort =
-                Boolean.parseBoolean(
-                        jobExecution
-                                .getJobParameters()
-                                .getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         final Long executionId = jobExecution.getId();
 
@@ -45,8 +41,7 @@ public class FinalizeBackupTasklet extends AbstractCatalogBackupRestoreTasklet {
         if (jobExecution.getStatus() != BatchStatus.STOPPED) {
             try {
                 JobParameters jobParameters = backupExecution.getJobParameters();
-                Resource sourceFolder =
-                        Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
+                Resource sourceFolder = Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
 
                 dumpBackupIndex(sourceFolder);
 

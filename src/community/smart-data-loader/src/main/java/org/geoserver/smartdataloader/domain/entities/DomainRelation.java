@@ -7,8 +7,8 @@ package org.geoserver.smartdataloader.domain.entities;
 import org.geoserver.smartdataloader.domain.DomainModelVisitor;
 
 /**
- * Represents a relation between two entities fo the domain model. Entities are rleated by a key
- * attribute and there is a containing and a destination entity.
+ * Represents a relation between two entities fo the domain model. Entities are rleated by a key attribute and there is
+ * a containing and a destination entity.
  */
 public final class DomainRelation {
 

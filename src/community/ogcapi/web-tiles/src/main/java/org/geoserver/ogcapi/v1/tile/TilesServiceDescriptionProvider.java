@@ -9,8 +9,7 @@ import org.geoserver.ogcapi.v1.tiles.TilesService;
 import org.geoserver.ogcapi.v1.tiles.TilesServiceInfo;
 import org.geoserver.web.ogcapi.OgcApiServiceDescriptionProvider;
 
-public class TilesServiceDescriptionProvider
-        extends OgcApiServiceDescriptionProvider<TilesServiceInfo, TilesService> {
+public class TilesServiceDescriptionProvider extends OgcApiServiceDescriptionProvider<TilesServiceInfo, TilesService> {
 
     public TilesServiceDescriptionProvider(GeoServer gs) {
         super(gs, "WMTS", "Tiles", "Tiles");

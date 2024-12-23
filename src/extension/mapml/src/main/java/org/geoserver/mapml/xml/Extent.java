@@ -65,26 +65,11 @@ import javax.xml.bind.annotation.XmlType;
 public class Extent {
 
     @XmlElements({
-        @XmlElement(
-                name = "map-input",
-                type = Input.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-datalist",
-                type = Datalist.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-link",
-                type = Link.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-select",
-                type = Select.class,
-                namespace = "http://www.w3.org/1999/xhtml"),
-        @XmlElement(
-                name = "map-label",
-                type = Label.class,
-                namespace = "http://www.w3.org/1999/xhtml")
+        @XmlElement(name = "map-input", type = Input.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-datalist", type = Datalist.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-link", type = Link.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-select", type = Select.class, namespace = "http://www.w3.org/1999/xhtml"),
+        @XmlElement(name = "map-label", type = Label.class, namespace = "http://www.w3.org/1999/xhtml")
     })
     protected List<Object> inputOrDatalistOrLink;
 
@@ -106,9 +91,9 @@ public class Extent {
     /**
      * Gets the value of the inputOrDatalistOrLink property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the inputOrDatalistOrLink property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the inputOrDatalistOrLink property.
      *
      * <p>For example, to add a new item, do as follows:
      *
@@ -116,8 +101,8 @@ public class Extent {
      *    getInputOrDatalistOrLink().add(newItem);
      * </pre>
      *
-     * <p>Objects of the following type(s) are allowed in the list {@link Input } {@link Datalist }
-     * {@link Link } {@link Select } {@link Label }
+     * <p>Objects of the following type(s) are allowed in the list {@link Input } {@link Datalist } {@link Link }
+     * {@link Select } {@link Label }
      */
     public List<Object> getInputOrDatalistOrLink() {
         if (inputOrDatalistOrLink == null) {

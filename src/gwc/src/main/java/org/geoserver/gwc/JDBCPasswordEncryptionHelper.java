@@ -30,11 +30,11 @@ class JDBCPasswordEncryptionHelper {
     }
 
     /**
-     * If the connection pool password is encrypted, this method will un-encrypt it using the
-     * GeoServer password encoders
+     * If the connection pool password is encrypted, this method will un-encrypt it using the GeoServer password
+     * encoders
      *
-     * @param configuration A deep copy of the configuration with the unencrypted password, if the
-     *     password was encrypted, or the original one, if the password was plaintext
+     * @param configuration A deep copy of the configuration with the unencrypted password, if the password was
+     *     encrypted, or the original one, if the password was plaintext
      */
     public JDBCConfiguration unencryptPassword(JDBCConfiguration configuration) {
         if (configuration.getConnectionPool() != null
@@ -46,10 +46,7 @@ class JDBCPasswordEncryptionHelper {
                 configuration = cloneAndSetPassword(configuration, decoded);
             } catch (EncryptionOperationNotPossibleException e) {
                 // fine, it must have been a plain text password
-                LOGGER.log(
-                        Level.FINE,
-                        "Unencrypting the password failed, assuming it is a plain text one",
-                        e);
+                LOGGER.log(Level.FINE, "Unencrypting the password failed, assuming it is a plain text one", e);
             }
         }
 

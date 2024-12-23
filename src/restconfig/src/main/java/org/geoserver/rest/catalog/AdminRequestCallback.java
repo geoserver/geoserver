@@ -23,9 +23,7 @@ public class AdminRequestCallback extends DispatcherCallbackAdapter {
 
     @Override
     public void dispatched(
-            HttpServletRequest HttpServletRequest,
-            HttpServletResponse HttpServletResponse,
-            Object handler) {
+            HttpServletRequest HttpServletRequest, HttpServletResponse HttpServletResponse, Object handler) {
         Object controllerBean = DispatcherCallback.getControllerBean(handler);
         if (controllerBean instanceof AbstractCatalogController
                 || controllerBean instanceof AbstractGeoServerController) {
@@ -34,8 +32,7 @@ public class AdminRequestCallback extends DispatcherCallbackAdapter {
     }
 
     @Override
-    public void finished(
-            HttpServletRequest HttpServletRequest, HttpServletResponse HttpServletResponse) {
+    public void finished(HttpServletRequest HttpServletRequest, HttpServletResponse HttpServletResponse) {
         AdminRequest.finish();
     }
 }

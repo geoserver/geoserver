@@ -43,11 +43,10 @@ public class WorkspacesClientIT {
         assertNotNull(defaultWorkspace.get().getName());
 
         final String currentDefault = defaultWorkspace.get().getName();
-        final String newDefault =
-                client.findAllNames().stream()
-                        .filter(name -> !currentDefault.equals(name))
-                        .findFirst()
-                        .get();
+        final String newDefault = client.findAllNames().stream()
+                .filter(name -> !currentDefault.equals(name))
+                .findFirst()
+                .get();
 
         client.setDeafultWorkspace(newDefault);
 

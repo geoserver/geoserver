@@ -36,8 +36,7 @@ public class DataLinkInfoImplTest {
     public void testSetAbsoluteTelnet() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        Assert.assertThrows(
-                IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> info.setContent("telnet:example.com"));
     }
 
     @Test
@@ -72,8 +71,7 @@ public class DataLinkInfoImplTest {
     public void testSetNotAURL() {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
-        Assert.assertThrows(
-                IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
+        Assert.assertThrows(IllegalArgumentException.class, () -> info.setContent("::^%/[*] FOO ::"));
     }
 
     @Test
@@ -81,7 +79,6 @@ public class DataLinkInfoImplTest {
         DataLinkInfoImpl info = new DataLinkInfoImpl();
 
         Assert.assertThrows(
-                IllegalArgumentException.class,
-                () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
+                IllegalArgumentException.class, () -> info.setContent("https://example.com/::^%/[*] FOO ::"));
     }
 }

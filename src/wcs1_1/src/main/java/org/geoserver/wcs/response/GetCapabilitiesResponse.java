@@ -18,8 +18,7 @@ import org.geotools.xml.transform.TransformerBase;
 /**
  * Runs the transformer and outputs the capabilities
  *
- * @author Andrea Aime, TOPP TODO: This is a blatant copy of WFS GetCapabilities response. Find a
- *     way to share code.
+ * @author Andrea Aime, TOPP TODO: This is a blatant copy of WFS GetCapabilities response. Find a way to share code.
  */
 public class GetCapabilitiesResponse extends Response {
     public GetCapabilitiesResponse() {
@@ -38,8 +37,7 @@ public class GetCapabilitiesResponse extends Response {
 
     @Override
     public String getMimeType(Object value, Operation operation) {
-        GetCapabilitiesType request =
-                OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
+        GetCapabilitiesType request = OwsUtils.parameter(operation.getParameters(), GetCapabilitiesType.class);
 
         if ((request != null) && (request.getAcceptFormats() != null)) {
             // look for an accepted format

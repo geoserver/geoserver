@@ -22,18 +22,10 @@ public class OpenSearchBBoxKvpParser extends BBoxKvpParser {
 
     @Override
     protected Object buildEnvelope(
-            int countco,
-            double minx,
-            double miny,
-            double minz,
-            double maxx,
-            double maxy,
-            double maxz,
-            String srs)
+            int countco, double minx, double miny, double minz, double maxx, double maxy, double maxz, String srs)
             throws NoSuchAuthorityCodeException, FactoryException {
         if (countco > 4) {
-            throw new IllegalArgumentException(
-                    "Too many coordinates, openSearch cannot handle non flat envelopes yet");
+            throw new IllegalArgumentException("Too many coordinates, openSearch cannot handle non flat envelopes yet");
         }
 
         CoordinateReferenceSystem crs = srs == null ? null : CRS.decode(srs, true);
@@ -49,8 +41,7 @@ public class OpenSearchBBoxKvpParser extends BBoxKvpParser {
         if (minx > maxx) {
             // dateline crossing case
             return new ReferencedEnvelope[] {
-                new ReferencedEnvelope(minx, 180, miny, maxy, crs),
-                new ReferencedEnvelope(-180, maxx, miny, maxy, crs),
+                new ReferencedEnvelope(minx, 180, miny, maxy, crs), new ReferencedEnvelope(-180, maxx, miny, maxy, crs),
             };
         } else {
             return new ReferencedEnvelope(minx, maxx, miny, maxy, crs);

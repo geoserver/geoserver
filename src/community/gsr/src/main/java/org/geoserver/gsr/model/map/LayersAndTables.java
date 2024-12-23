@@ -40,8 +40,8 @@ public class LayersAndTables extends AbstractGSRModel implements GSRModel {
     }
 
     /**
-     * Layer names are just integers IDs in Esri, but not in GeoServer. This method is basically a
-     * hack and really ought to be rethought.
+     * Layer names are just integers IDs in Esri, but not in GeoServer. This method is basically a hack and really ought
+     * to be rethought.
      *
      * <p>TODO
      *
@@ -50,12 +50,10 @@ public class LayersAndTables extends AbstractGSRModel implements GSRModel {
      * @param workspaceName
      * @return
      */
-    public static String integerIdToGeoserverLayerName(
-            Catalog catalog, String layerName, String workspaceName) {
+    public static String integerIdToGeoserverLayerName(Catalog catalog, String layerName, String workspaceName) {
         String name = layerName;
         try {
-            LayerOrTable layerOrTable =
-                    LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName));
+            LayerOrTable layerOrTable = LayerDAO.find(catalog, workspaceName, Integer.parseInt(layerName));
             name = layerOrTable.getName();
         } catch (IOException e) {
             throw new IllegalArgumentException(e);

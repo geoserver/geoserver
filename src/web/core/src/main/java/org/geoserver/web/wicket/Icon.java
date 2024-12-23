@@ -13,8 +13,8 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
- * A simple {@link Image} in a panel. For when you need to add an icon in a repeater without
- * breaking yet another fragment.
+ * A simple {@link Image} in a panel. For when you need to add an icon in a repeater without breaking yet another
+ * fragment.
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -27,11 +27,10 @@ public class Icon extends Panel {
     }
 
     /**
-     * Constructs an icon from a resource reference for the image and resource model for the "title"
-     * attribute to apply to the rendered "&lt;img>" tag.
+     * Constructs an icon from a resource reference for the image and resource model for the "title" attribute to apply
+     * to the rendered "&lt;img>" tag.
      */
-    public Icon(
-            String id, PackageResourceReference PackageResourceReference, IModel<String> title) {
+    public Icon(String id, PackageResourceReference PackageResourceReference, IModel<String> title) {
         this(id, new Model<>(PackageResourceReference), title);
     }
 
@@ -42,8 +41,8 @@ public class Icon extends Panel {
     }
 
     /**
-     * Constructs an Icon from a model for the resource reference and a resource model for the
-     * "title" attribute to apply to the rendered "&lt;img>" tag.
+     * Constructs an Icon from a model for the resource reference and a resource model for the "title" attribute to
+     * apply to the rendered "&lt;img>" tag.
      */
     public Icon(String id, IModel<?> model, IModel<String> title) {
         super(id);

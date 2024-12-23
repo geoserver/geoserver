@@ -12,8 +12,8 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /**
- * Forces usage of local workspace de-qualification of names on {@link
- * org.geoserver.catalog.FeatureTypeInfo} too in {@link LocalWorkspaceCatalog}
+ * Forces usage of local workspace de-qualification of names on {@link org.geoserver.catalog.FeatureTypeInfo} too in
+ * {@link LocalWorkspaceCatalog}
  */
 @Component
 public class LocalWorkspaceCallback extends AbstractDispatcherCallback {
@@ -22,8 +22,7 @@ public class LocalWorkspaceCallback extends AbstractDispatcherCallback {
     public Request init(Request request) {
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         if (APIRequestInfo.get() != null && requestAttributes != null) {
-            requestAttributes.setAttribute(
-                    LocalWorkspaceCatalog.DEQUALIFY_ALL, true, RequestAttributes.SCOPE_REQUEST);
+            requestAttributes.setAttribute(LocalWorkspaceCatalog.DEQUALIFY_ALL, true, RequestAttributes.SCOPE_REQUEST);
         }
         return super.init(request);
     }

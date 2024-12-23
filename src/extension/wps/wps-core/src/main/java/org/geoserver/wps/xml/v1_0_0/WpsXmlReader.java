@@ -31,10 +31,7 @@ public class WpsXmlReader extends XmlRequestReader {
     private EntityResolverProvider resolverProvider;
 
     public WpsXmlReader(
-            String element,
-            String version,
-            WPSConfiguration configuration,
-            EntityResolverProvider resolverProvider) {
+            String element, String version, WPSConfiguration configuration, EntityResolverProvider resolverProvider) {
         super(new QName(org.geotools.wps.WPS.NAMESPACE, element), new Version("1.0.0"), "wps");
         this.configuration = configuration;
         this.resolverProvider = resolverProvider;

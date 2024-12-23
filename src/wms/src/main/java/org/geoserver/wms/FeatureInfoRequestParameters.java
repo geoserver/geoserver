@@ -23,9 +23,8 @@ import org.geotools.util.factory.GeoTools;
 import org.locationtech.jts.geom.Envelope;
 
 /**
- * Wraps the large number of information normally extracted from a feature info request into a
- * single object, provides facilities to access extra information about the current layer (view
- * parameters, styles)
+ * Wraps the large number of information normally extracted from a feature info request into a single object, provides
+ * facilities to access extra information about the current layer (view parameters, styles)
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -110,9 +109,7 @@ public class FeatureInfoRequestParameters {
         if (mapcrs != null) {
             mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, mapcrs));
         } else {
-            mapContent
-                    .getViewport()
-                    .setBounds(new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
+            mapContent.getViewport().setBounds(new ReferencedEnvelope(envelope, DefaultGeographicCRS.WGS84));
         }
         mapContent.setMapWidth(request.getWidth());
         mapContent.setMapHeight(request.getHeight());
@@ -122,8 +119,8 @@ public class FeatureInfoRequestParameters {
     }
 
     /**
-     * Grab the list of styles for each query layer, we'll use them to auto-evaluate the
-     * GetFeatureInfo radius if the user did not specify one
+     * Grab the list of styles for each query layer, we'll use them to auto-evaluate the GetFeatureInfo radius if the
+     * user did not specify one
      */
     private List<Style> getStyles(final GetFeatureInfoRequest request, List<MapLayerInfo> layers) {
         List<Style> getMapStyles = request.getGetMapRequest().getStyles();
@@ -179,8 +176,7 @@ public class FeatureInfoRequestParameters {
         } else {
             SortBy[] layerSort = sorts.get(currentLayer);
             final MapLayerInfo layer = layers.get(currentLayer);
-            if (layer.getType() == MapLayerInfo.TYPE_VECTOR
-                    || layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR) {
+            if (layer.getType() == MapLayerInfo.TYPE_VECTOR || layer.getType() == MapLayerInfo.TYPE_REMOTE_VECTOR) {
                 // for visual consistency, we must return the information that is on top of the
                 // map first, to get this we just need to invert the sort (the code returns the
                 // features it encounters first, until FEATURE_COUNT is reached).
@@ -193,12 +189,9 @@ public class FeatureInfoRequestParameters {
                 for (int i = 0; i < layerSort.length; i++) {
                     SortBy sb = layerSort[i];
                     SortOrder order = sb.getSortOrder();
-                    SortBy reverse =
-                            FF.sort(
-                                    sb.getPropertyName().getPropertyName(),
-                                    order == SortOrder.ASCENDING || order == null
-                                            ? SortOrder.DESCENDING
-                                            : SortOrder.ASCENDING);
+                    SortBy reverse = FF.sort(
+                            sb.getPropertyName().getPropertyName(),
+                            order == SortOrder.ASCENDING || order == null ? SortOrder.DESCENDING : SortOrder.ASCENDING);
                     result[i] = reverse;
                 }
                 return result;
@@ -211,9 +204,7 @@ public class FeatureInfoRequestParameters {
 
     /** The property names for the specified layer (if any, null otherwise) */
     public String[] getPropertyNames() {
-        if (propertyNames == null
-                || propertyNames.isEmpty()
-                || propertyNames.get(currentLayer) == null) {
+        if (propertyNames == null || propertyNames.isEmpty() || propertyNames.get(currentLayer) == null) {
             return Query.ALL_NAMES;
         } else {
             List<String> layerPropNames = propertyNames.get(currentLayer);

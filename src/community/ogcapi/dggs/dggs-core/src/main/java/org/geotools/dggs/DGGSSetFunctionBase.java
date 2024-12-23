@@ -28,8 +28,8 @@ import org.geotools.api.parameter.Parameter;
 import org.geotools.filter.FunctionImpl;
 
 /**
- * Base class for DGGS functions based on set evaluation, e.g., neighbors, children, parents. This
- * implementation assumes that:
+ * Base class for DGGS functions based on set evaluation, e.g., neighbors, children, parents. This implementation
+ * assumes that:
  *
  * <ul>
  *   <li>The first parameter is a zoneId, which may vary call by call
@@ -43,10 +43,8 @@ public abstract class DGGSSetFunctionBase extends FunctionImpl implements DGGSSe
     protected Set<String> zoneIds;
 
     int dggsParameterIndex = -1;
-    private int cacheLimit =
-            Integer.parseInt(System.getProperty("dggs.function.cache.limit", "10000"));
-    private int iterationLimit =
-            Integer.parseInt(System.getProperty("dggs.function.iteration.limit", "50000"));
+    private int cacheLimit = Integer.parseInt(System.getProperty("dggs.function.cache.limit", "10000"));
+    private int iterationLimit = Integer.parseInt(System.getProperty("dggs.function.iteration.limit", "50000"));
     private Boolean cacheTooBig;
 
     public DGGSSetFunctionBase(FunctionName functionName) {
@@ -62,8 +60,7 @@ public abstract class DGGSSetFunctionBase extends FunctionImpl implements DGGSSe
             }
         }
         if (dggsParameterIndex == -1) {
-            throw new IllegalArgumentException(
-                    "Extending class does not expose a DGGSInstance parameter");
+            throw new IllegalArgumentException("Extending class does not expose a DGGSInstance parameter");
         }
     }
 
@@ -92,8 +89,7 @@ public abstract class DGGSSetFunctionBase extends FunctionImpl implements DGGSSe
     }
 
     /**
-     * Default implementation, assuming that the first parameter is a variable zoneId, and the
-     * others are
+     * Default implementation, assuming that the first parameter is a variable zoneId, and the others are
      *
      * @return
      */
@@ -144,8 +140,7 @@ public abstract class DGGSSetFunctionBase extends FunctionImpl implements DGGSSe
 
         if (i >= iterationLimit)
             throw new IllegalStateException(
-                    "The iteration loaded up too many zones, above the configured limit of "
-                            + iterationLimit);
+                    "The iteration loaded up too many zones, above the configured limit of " + iterationLimit);
 
         return false;
     }

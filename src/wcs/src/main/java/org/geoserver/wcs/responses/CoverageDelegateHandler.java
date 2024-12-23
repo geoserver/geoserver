@@ -13,8 +13,8 @@ import javax.activation.DataContentHandler;
 import javax.activation.DataSource;
 
 /**
- * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a {@link
- * CoverageResponseDelegate} to determine the actual mime type and to encode the contents
+ * A data handler for the fake "geoserver/coverageDelegate" mime type. Uses a {@link CoverageResponseDelegate} to
+ * determine the actual mime type and to encode the contents
  *
  * @author Andrea Aime - TOPP
  */
@@ -22,21 +22,17 @@ public class CoverageDelegateHandler implements DataContentHandler {
 
     @Override
     public Object getContent(DataSource source) throws IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
-    public Object getTransferData(DataFlavor flavor, DataSource source)
-            throws UnsupportedFlavorException, IOException {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+    public Object getTransferData(DataFlavor flavor, DataSource source) throws UnsupportedFlavorException, IOException {
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override
     public DataFlavor[] getTransferDataFlavors() {
-        throw new UnsupportedOperationException(
-                "This handler is not able to work on the parsing side");
+        throw new UnsupportedOperationException("This handler is not able to work on the parsing side");
     }
 
     @Override

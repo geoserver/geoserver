@@ -58,8 +58,8 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
     }
 
     /**
-     * The class name of the service to be constructed The class must have a constructor with a
-     * string argument, specifying the name of the service
+     * The class name of the service to be constructed The class must have a constructor with a string argument,
+     * specifying the name of the service
      */
     @Override
     public void setClassName(String className) {
@@ -72,27 +72,18 @@ public class BaseSecurityNamedServiceConfig implements SecurityNamedServiceConfi
 
     @Override
     public String toString() {
-        return "BaseSecurityNamedServiceConfig [name="
-                + name
-                + ", className="
-                + className
-                + ", id="
-                + id
-                + "]";
+        return "BaseSecurityNamedServiceConfig [name=" + name + ", className=" + className + ", id=" + id + "]";
     }
 
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
 
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
         BaseSecurityNamedServiceConfig target = SerializationUtils.clone(this);
 
         if (target != null) {
-            if (allowEnvParametrization
-                    && gsEnvironment != null
-                    && GeoServerEnvironment.allowEnvParametrization()) {
+            if (allowEnvParametrization && gsEnvironment != null && GeoServerEnvironment.allowEnvParametrization()) {
                 target.setName((String) gsEnvironment.resolveValue(name));
             }
         }

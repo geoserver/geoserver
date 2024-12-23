@@ -39,8 +39,7 @@ public abstract class AbstractRecordsResponse extends Response {
         this(recordType, schema, Collections.singleton("application/xml"), gs);
     }
 
-    public AbstractRecordsResponse(
-            FeatureType recordType, String schema, Set<String> outputFormats, GeoServer gs) {
+    public AbstractRecordsResponse(FeatureType recordType, String schema, Set<String> outputFormats, GeoServer gs) {
         super(CSWRecordsResult.class, outputFormats);
         this.schema = schema;
         this.gs = gs;
@@ -75,8 +74,7 @@ public abstract class AbstractRecordsResponse extends Response {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         CSWRecordsResult result = (CSWRecordsResult) value;
         RequestBaseType request = (RequestBaseType) operation.getParameters()[0];
         CSWInfo csw = gs.getService(CSWInfo.class);
@@ -86,10 +84,7 @@ public abstract class AbstractRecordsResponse extends Response {
             FeatureType recordSchema = result.getRecords().getSchema();
             if (recordSchema != null && !recordType.equals(recordSchema)) {
                 throw new IllegalArgumentException(
-                        "Cannot encode this kind of record "
-                                + recordSchema.getName()
-                                + " into schema "
-                                + schema);
+                        "Cannot encode this kind of record " + recordSchema.getName() + " into schema " + schema);
             }
         }
 
@@ -109,8 +104,7 @@ public abstract class AbstractRecordsResponse extends Response {
         }
     }
 
-    private void transformAcknowledgement(
-            OutputStream output, RequestBaseType request, CSWInfo csw) {
+    private void transformAcknowledgement(OutputStream output, RequestBaseType request, CSWInfo csw) {
         AcknowledgementTransformer transformer =
                 new AcknowledgementTransformer(request, csw.isCanonicalSchemaLocation());
         transformer.setIndentation(2);

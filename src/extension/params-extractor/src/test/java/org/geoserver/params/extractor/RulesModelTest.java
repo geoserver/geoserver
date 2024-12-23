@@ -17,34 +17,30 @@ public final class RulesModelTest extends TestSupport {
     @Test
     public void testCrudRuleModel() throws Exception {
         // create rules and echo parameters to be used (the rules have all the same)
-        Rule ruleA =
-                new RuleBuilder()
-                        .withId("0")
-                        .withActivated(true)
-                        .withPosition(3)
-                        .withParameter("cql_filter")
-                        .withTransform("CFCC='$2'")
-                        .build();
-        Rule ruleB =
-                new RuleBuilder()
-                        .withId("0")
-                        .withActivated(false)
-                        .withPosition(2)
-                        .withParameter("cql_filter")
-                        .withTransform("CFCC='$2'")
-                        .build();
-        EchoParameter echoParameterA =
-                new EchoParameterBuilder()
-                        .withId("0")
-                        .withParameter("cql_filter")
-                        .withActivated(false)
-                        .build();
-        EchoParameter echoParameterB =
-                new EchoParameterBuilder()
-                        .withId("0")
-                        .withParameter("cql_filter")
-                        .withActivated(false)
-                        .build();
+        Rule ruleA = new RuleBuilder()
+                .withId("0")
+                .withActivated(true)
+                .withPosition(3)
+                .withParameter("cql_filter")
+                .withTransform("CFCC='$2'")
+                .build();
+        Rule ruleB = new RuleBuilder()
+                .withId("0")
+                .withActivated(false)
+                .withPosition(2)
+                .withParameter("cql_filter")
+                .withTransform("CFCC='$2'")
+                .build();
+        EchoParameter echoParameterA = new EchoParameterBuilder()
+                .withId("0")
+                .withParameter("cql_filter")
+                .withActivated(false)
+                .build();
+        EchoParameter echoParameterB = new EchoParameterBuilder()
+                .withId("0")
+                .withParameter("cql_filter")
+                .withActivated(false)
+                .build();
         // save rule A
         RuleModel ruleModelA = new RuleModel(ruleA);
         checkRule(ruleA, ruleModelA.toRule());

@@ -51,15 +51,13 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         return getAsJSONPath(response);
     }
 
-    protected DocumentContext postAsJSONPath(String path, String body, int expectedHttpCode)
-            throws Exception {
+    protected DocumentContext postAsJSONPath(String path, String body, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = postAsServletResponse(path, body, "application/json");
         assertEquals(expectedHttpCode, response.getStatus());
         return getAsJSONPath(response);
     }
 
-    protected DocumentContext getAsJSONPath(MockHttpServletResponse response)
-            throws UnsupportedEncodingException {
+    protected DocumentContext getAsJSONPath(MockHttpServletResponse response) throws UnsupportedEncodingException {
         assertThat(response.getContentType(), containsString("json"));
         JsonContext json = (JsonContext) JsonPath.parse(response.getContentAsString());
         if (!isQuietTests()) {
@@ -68,8 +66,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         return json;
     }
 
-    protected MockHttpServletResponse getAsMockHttpServletResponse(
-            String path, int expectedHttpCode) throws Exception {
+    protected MockHttpServletResponse getAsMockHttpServletResponse(String path, int expectedHttpCode) throws Exception {
         MockHttpServletResponse response = getAsServletResponse(path);
 
         assertEquals(expectedHttpCode, response.getStatus());
@@ -90,8 +87,8 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Allows subclasses to register namespaces. By default, does not add any, subclasses can
-     * manipulate the namespaces map as they see fit.
+     * Allows subclasses to register namespaces. By default, does not add any, subclasses can manipulate the namespaces
+     * map as they see fit.
      */
     protected void registerNamespaces(Map<String, String> namespaces) {}
 
@@ -110,30 +107,24 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Returns a single element out of an array, checking that there is just one. Works around
-     * Workaround for https://github.com/json-path/JsonPath/issues/272
+     * Returns a single element out of an array, checking that there is just one. Works around Workaround for
+     * https://github.com/json-path/JsonPath/issues/272
      */
     @SuppressWarnings("unchecked")
     protected <T> T readSingle(DocumentContext json, String path) {
         List<Object> items = json.read(path);
         assertEquals(
-                "Found "
-                        + items.size()
-                        + " items for this path, but was expecting one: "
-                        + path
-                        + "\n"
-                        + items,
+                "Found " + items.size() + " items for this path, but was expecting one: " + path + "\n" + items,
                 1,
                 items.size());
         return (T) items.get(0);
     }
 
     /**
-     * Evaluates the path, which is supposed to return a JSON like object. Turns it into a string,
-     * and then turns it again into a {@link DocumentContext}.
+     * Evaluates the path, which is supposed to return a JSON like object. Turns it into a string, and then turns it
+     * again into a {@link DocumentContext}.
      *
-     * <p>Useful to create a sub-section of a JSON document for further analysis, allows to cut on
-     * JSONPath complexity.
+     * <p>Useful to create a sub-section of a JSON document for further analysis, allows to cut on JSONPath complexity.
      *
      * @param ctx The parent context
      * @param path The JSON Path to be evaluated
@@ -145,8 +136,8 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Similar to {@link #readSingle(DocumentContext, String)} but returns a {@link
-     * DocumentContext}. Workaround for https://github.com/json-path/JsonPath/issues/272.
+     * Similar to {@link #readSingle(DocumentContext, String)} but returns a {@link DocumentContext}. Workaround for
+     * https://github.com/json-path/JsonPath/issues/272.
      *
      * @param ctx The parent context
      * @param path The JSON Path to be evaluated, assumes it's returning an array of one item
@@ -156,9 +147,7 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
         List list = ctx.read(path, List.class);
         if (list.size() != 1)
             throw new RuntimeException(
-                    "Was expecting to get an array of one, but got "
-                            + list.size()
-                            + " elements instead");
+                    "Was expecting to get an array of one, but got " + list.size() + " elements instead");
         // remove the array markers around the json we want (ugly!, could not find another way)
         String array = ctx.read(path, JSONAware.class).toJSONString();
         int opening = array.indexOf("[");
@@ -168,9 +157,8 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Prints the contents of a document on the standard output. Won't show up during Maven
-     * execution due to the quiet test setting, but will be executed when running tests directly
-     * (e.g., from an IDE)
+     * Prints the contents of a document on the standard output. Won't show up during Maven execution due to the quiet
+     * test setting, but will be executed when running tests directly (e.g., from an IDE)
      */
     @SuppressWarnings("PMD.SystemPrintln")
     protected void print(DocumentContext json) {
@@ -205,16 +193,14 @@ public class OGCApiTestSupport extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Verifies that the given header is present in the response, and that it contains the expected
-     * value
+     * Verifies that the given header is present in the response, and that it contains the expected value
      *
      * @param response the response
      * @param headerName the header name
      * @param expectedValue the expected value
      * @return true if the header is present and contains the expected value
      */
-    protected boolean headerHasValue(
-            MockHttpServletResponse response, String headerName, String expectedValue) {
+    protected boolean headerHasValue(MockHttpServletResponse response, String headerName, String expectedValue) {
         String headerValue = response.getHeader(headerName);
         return headerValue != null && headerValue.contains(expectedValue);
     }

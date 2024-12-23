@@ -97,20 +97,17 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
 
     @Override
     public void convertInput() {
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).processInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).processInput();
+        });
 
-        long time =
-                seconds * secondMS
-                        + minutes * minuteMS
-                        + hours * hourMS
-                        + days * dayMS
-                        + weeks * weekMS
-                        + months * monthMS
-                        + years * yearMS;
+        long time = seconds * secondMS
+                + minutes * minuteMS
+                + hours * hourMS
+                + days * dayMS
+                + weeks * weekMS
+                + months * monthMS
+                + years * yearMS;
         setConvertedInput(new BigDecimal(time));
     }
 
@@ -119,10 +116,8 @@ public class PeriodEditor extends FormComponentPanel<BigDecimal> {
         // when the client programmatically changed the model, update the fields
         // so that the textfields will change too
         updateFields();
-        visitChildren(
-                TextField.class,
-                (component, visit) -> {
-                    ((TextField) component).clearInput();
-                });
+        visitChildren(TextField.class, (component, visit) -> {
+            ((TextField) component).clearInput();
+        });
     }
 }

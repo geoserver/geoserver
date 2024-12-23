@@ -32,17 +32,15 @@ import org.geotools.api.filter.sort.SortBy;
 /**
  * {@link GeoServerDataProvider} for the list of workspaces available in the {@link Catalog}
  *
- * @implNote This class overrides the following methods in order to leverage the Catalog filtering
- *     and paging support:
+ * @implNote This class overrides the following methods in order to leverage the Catalog filtering and paging support:
  *     <ul>
- *       <li>{@link #size()}: in order to call {@link Catalog#count(Class, Filter)} with any filter
- *           criteria set on the page
- *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with {@link
- *           Predicates#acceptAll()}
- *       <li>{@link #iterator}: in order to ask the catalog for paged and sorted contents directly
- *           through {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
- *       <li>{@link #getItems()} throws an unsupported operation exception, as given the above it
- *           should not be called
+ *       <li>{@link #size()}: in order to call {@link Catalog#count(Class, Filter)} with any filter criteria set on the
+ *           page
+ *       <li>{@link #fullSize()}: in order to call {@link Catalog#count(Class, Filter)} with
+ *           {@link Predicates#acceptAll()}
+ *       <li>{@link #iterator}: in order to ask the catalog for paged and sorted contents directly through
+ *           {@link Catalog#list(Class, Filter, Integer, Integer, SortBy)}
+ *       <li>{@link #getItems()} throws an unsupported operation exception, as given the above it should not be called
  *     </ul>
  */
 public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
@@ -52,33 +50,29 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     public static Property<WorkspaceInfo> NAME = new BeanProperty<>("name", "name");
 
     /**
-     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link
-     * #iterator()} decorating the default workspace, so {@link Catalog#getDefaultWorkspace()}
-     * doesn't need to be called for each item.
+     * "Default" is not a {@link WorkspaceInfo} attribute, this property relies on {@link #iterator()} decorating the
+     * default workspace, so {@link Catalog#getDefaultWorkspace()} doesn't need to be called for each item.
      *
      * @see #decorateDefault(WorkspaceInfo, WorkspaceInfo)
      * @see #isDefaultWorkspace(WorkspaceInfo)
      */
-    public static Property<WorkspaceInfo> DEFAULT =
-            new AbstractProperty<WorkspaceInfo>("default") {
+    public static Property<WorkspaceInfo> DEFAULT = new AbstractProperty<WorkspaceInfo>("default") {
 
-                private static final long serialVersionUID = 7732697329315316826L;
+        private static final long serialVersionUID = 7732697329315316826L;
 
-                @Override
-                public Object getPropertyValue(WorkspaceInfo item) {
-                    return isDefaultWorkspace(item);
-                }
-            };
+        @Override
+        public Object getPropertyValue(WorkspaceInfo item) {
+            return isDefaultWorkspace(item);
+        }
+    };
 
     public static Property<WorkspaceInfo> ISOLATED = new BeanProperty<>("isolated", "isolated");
 
     static List<Property<WorkspaceInfo>> PROPERTIES = List.of(NAME, DEFAULT, ISOLATED);
 
-    public static final Property<WorkspaceInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    public static final Property<WorkspaceInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    public static final Property<WorkspaceInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    public static final Property<WorkspaceInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
     public WorkspaceProvider() {
         setSort(NAME.getName(), SortOrder.ASCENDING);
@@ -159,10 +153,8 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
         List<Property<WorkspaceInfo>> modifiedPropertiesList = new ArrayList<>(PROPERTIES);
         // check geoserver properties
         SettingsInfo settings = getSettings();
-        if (settings.isShowCreatedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (settings.isShowModifiedTimeColumnsInAdminList())
-            modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
+        if (settings.isShowCreatedTimeColumnsInAdminList()) modifiedPropertiesList.add(CREATED_TIMESTAMP);
+        if (settings.isShowModifiedTimeColumnsInAdminList()) modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
         return modifiedPropertiesList;
     }
 
@@ -185,12 +177,12 @@ public class WorkspaceProvider extends GeoServerDataProvider<WorkspaceInfo> {
     }
 
     /**
-     * Uses the items metadata map to mark it as the default workspace if {@code item} is the same
-     * as {@code defaultWorkspace}
+     * Uses the items metadata map to mark it as the default workspace if {@code item} is the same as
+     * {@code defaultWorkspace}
      *
      * @param defaultWorkspace the catalog's default workspace
-     * @param item the item to mark as the default workspace or not, for the {@link #DEFAULT}
-     *     property to get the property value
+     * @param item the item to mark as the default workspace or not, for the {@link #DEFAULT} property to get the
+     *     property value
      */
     static WorkspaceInfo decorateDefault(WorkspaceInfo defaultWorkspace, WorkspaceInfo item) {
         if (Objects.equal(defaultWorkspace.getId(), item.getId())) {

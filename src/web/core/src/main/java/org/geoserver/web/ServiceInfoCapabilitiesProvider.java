@@ -17,9 +17,9 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 
 /**
- * Contributes standard GetCapabilities links for all the versions in all the {@link ServiceInfo}
- * implementations available to the {@link GeoServerApplication} using the GeoServer's {@code /ows}
- * standard OpenGIS Web Service entry point as the root of the GetCapabilities request.
+ * Contributes standard GetCapabilities links for all the versions in all the {@link ServiceInfo} implementations
+ * available to the {@link GeoServerApplication} using the GeoServer's {@code /ows} standard OpenGIS Web Service entry
+ * point as the root of the GetCapabilities request.
  *
  * @author Gabriel Roldan
  * @see CapabilitiesHomePagePanel
@@ -32,8 +32,7 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
         Set<String> skip = skipServiceDescriptionProviders();
 
         @SuppressWarnings("deprecation")
-        List<org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo> serviceInfoLinks =
-                new ArrayList<>();
+        List<org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo> serviceInfoLinks = new ArrayList<>();
 
         for (Service service : GeoServerExtensions.extensions(Service.class)) {
             String serviceId = service.getId();
@@ -47,12 +46,11 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
                                 serviceId, service.getVersion(), capsLink);
                 serviceInfoLinks.add(ci);
             } else if (service.getOperations().contains("GetCapabilities")) {
-                String capsLink =
-                        "../ows?service="
-                                + serviceId
-                                + "&version="
-                                + service.getVersion().toString()
-                                + "&request=GetCapabilities";
+                String capsLink = "../ows?service="
+                        + serviceId
+                        + "&version="
+                        + service.getVersion().toString()
+                        + "&request=GetCapabilities";
                 @SuppressWarnings("deprecation")
                 org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo ci =
                         new org.geoserver.web.CapabilitiesHomePagePanel.CapsInfo(
@@ -67,12 +65,11 @@ public class ServiceInfoCapabilitiesProvider implements CapabilitiesHomePageLink
     }
 
     /**
-     * Check which services are covered by {@link ServiceDescriptionProvider} and can be safely
-     * skipped.
+     * Check which services are covered by {@link ServiceDescriptionProvider} and can be safely skipped.
      *
-     * <p>This is slightly more error-prone when global services are disabled and few
-     * ServiceDescriptionProvider's are willing to participate. In this case we check each workspace
-     * to see what services are available for the application as a whole.
+     * <p>This is slightly more error-prone when global services are disabled and few ServiceDescriptionProvider's are
+     * willing to participate. In this case we check each workspace to see what services are available for the
+     * application as a whole.
      *
      * @return list of services to skip, in lowercase (for case-insensitive matching)
      */

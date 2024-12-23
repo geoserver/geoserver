@@ -32,34 +32,31 @@ import org.locationtech.jts.geom.Polygon;
 class ClassTextField extends AutoCompleteTextField<Class> {
 
     /** List of well known class names this component will auto-complete to */
-    private static final List<Class> BINDINGS =
-            Arrays.asList(
-                            // alphanumeric
-                            String.class,
-                            Boolean.class,
-                            Byte.class,
-                            Short.class,
-                            Integer.class,
-                            Long.class,
-                            Float.class,
-                            Double.class,
-                            // dates
-                            Time.class,
-                            Date.class,
-                            Timestamp.class,
-                            // geometries
-                            Geometry.class,
-                            Point.class,
-                            MultiPoint.class,
-                            LineString.class,
-                            MultiLineString.class,
-                            Polygon.class,
-                            MultiPolygon.class)
-                    .stream()
-                    .sorted(Comparator.comparing(Class::getSimpleName))
-                    .collect(
-                            Collectors.collectingAndThen(
-                                    Collectors.toList(), ImmutableList::copyOf));
+    private static final List<Class> BINDINGS = Arrays.asList(
+                    // alphanumeric
+                    String.class,
+                    Boolean.class,
+                    Byte.class,
+                    Short.class,
+                    Integer.class,
+                    Long.class,
+                    Float.class,
+                    Double.class,
+                    // dates
+                    Time.class,
+                    Date.class,
+                    Timestamp.class,
+                    // geometries
+                    Geometry.class,
+                    Point.class,
+                    MultiPoint.class,
+                    LineString.class,
+                    MultiLineString.class,
+                    Polygon.class,
+                    MultiPolygon.class)
+            .stream()
+            .sorted(Comparator.comparing(Class::getSimpleName))
+            .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
 
     // Has a simplified setup thanks to class simple names having no overlaps
     private static final Map<String, Class> NAME_TO_CLASS =

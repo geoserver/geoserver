@@ -103,12 +103,10 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         if (result != null) {
             Integer[] seconds = getCache().getExpireTimes(filterName, cacheKey);
-            if (idleTime == null)
-                assertEquals(TestingAuthenticationCache.DEFAULT_IDLE_SECS, seconds[0]);
+            if (idleTime == null) assertEquals(TestingAuthenticationCache.DEFAULT_IDLE_SECS, seconds[0]);
             else assertEquals(idleTime, seconds[0]);
 
-            if (liveTime == null)
-                assertEquals(TestingAuthenticationCache.DEFAULT_LIVE_SECS, seconds[1]);
+            if (liveTime == null) assertEquals(TestingAuthenticationCache.DEFAULT_LIVE_SECS, seconds[1]);
             else assertEquals(liveTime, seconds[1]);
         }
 
@@ -144,10 +142,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + new String(Base64.encodeBytes((testUserName + ":" + testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName, testUserName, null, null);
@@ -182,8 +177,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
 
         request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("unknwon:" + testPassword).getBytes())));
+                "Authorization", "Basic " + new String(Base64.encodeBytes(("unknwon:" + testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
@@ -203,10 +197,8 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + new String(Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
         auth = getAuth(GeoServerUser.ROOT_USERNAME, "geoserver", null, null);
@@ -223,10 +215,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + new String(Base64.encodeBytes((testUserName + ":" + testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName, null, null);
@@ -246,10 +235,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + new String(Base64.encodeBytes((testUserName + ":" + testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
         assertNotNull(tmp);
@@ -353,8 +339,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     @Test
     public void testRequestHeaderProxy() throws Exception {
 
-        RequestHeaderAuthenticationFilterConfig config =
-                new RequestHeaderAuthenticationFilterConfig();
+        RequestHeaderAuthenticationFilterConfig config = new RequestHeaderAuthenticationFilterConfig();
         config.setClassName(GeoServerRequestHeaderAuthenticationFilter.class.getName());
         config.setName(testFilterName4);
         config.setRoleServiceName("rs1");
@@ -495,8 +480,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        String headerValue =
-                clientDigestString(tmp, testUserName, testPassword, request.getMethod());
+        String headerValue = clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -551,16 +535,13 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         chain = new MockFilterChain();
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
-        headerValue =
-                clientDigestString(
-                        tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
+        headerValue = clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, getMasterPassword(), request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -574,9 +555,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        headerValue =
-                clientDigestString(
-                        tmp, GeoServerUser.ROOT_USERNAME, "geoserver1", request.getMethod());
+        headerValue = clientDigestString(tmp, GeoServerUser.ROOT_USERNAME, "geoserver1", request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         tmp = response.getHeader("WWW-Authenticate");
@@ -649,8 +628,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         config.setName(testFilterName5);
 
         getSecurityManager().saveFilter(config);
-        prepareFilterChain(
-                pattern, testFilterName5, GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
+        prepareFilterChain(pattern, testFilterName5, GeoServerSecurityFilterChain.REMEMBER_ME_FILTER);
 
         SecurityContextHolder.getContext().setAuthentication(null);
 
@@ -673,9 +651,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+        request.addHeader("Authorization", "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         Authentication auth = getAuth(testFilterName5, "abc@xyz.com", null, null);
@@ -708,9 +684,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.setCookies(cookie);
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
-        request.addHeader(
-                "Authorization",
-                "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
+        request.addHeader("Authorization", "Basic " + new String(Base64.encodeBytes(("abc@xyz.com:abc").getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName5, "abc@xyz.com", null, null);
@@ -729,18 +703,15 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         request.addHeader(
                 "Authorization",
                 "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword())
-                                                .getBytes())));
+                        + new String(Base64.encodeBytes(
+                                (GeoServerUser.ROOT_USERNAME + ":" + getMasterPassword()).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_UNAUTHORIZED, response.getStatus());
 
         // Let's try again by allowing the Master Root to login
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
         response = new MockHttpServletResponse();
@@ -775,8 +746,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
     @Test
     public void testX509Auth() throws Exception {
 
-        X509CertificateAuthenticationFilterConfig config =
-                new X509CertificateAuthenticationFilterConfig();
+        X509CertificateAuthenticationFilterConfig config = new X509CertificateAuthenticationFilterConfig();
         config.setClassName(GeoServerX509CertificateAuthenticationFilter.class.getName());
         config.setName(testFilterName8);
         config.setRoleServiceName("rs1");
@@ -916,8 +886,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
         response = new MockHttpServletResponse();
         chain = new MockFilterChain();
 
-        String headerValue =
-                clientDigestString(tmp, testUserName, testPassword, request.getMethod());
+        String headerValue = clientDigestString(tmp, testUserName, testPassword, request.getMethod());
         request.addHeader("Authorization", headerValue);
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
@@ -937,10 +906,7 @@ public class AuthenticationCacheFilterTest extends AbstractAuthenticationProvide
 
         request.addHeader(
                 "Authorization",
-                "Basic "
-                        + new String(
-                                Base64.encodeBytes(
-                                        (testUserName + ":" + testPassword).getBytes())));
+                "Basic " + new String(Base64.encodeBytes((testUserName + ":" + testPassword).getBytes())));
         getProxy().doFilter(request, response, chain);
         assertEquals(HttpServletResponse.SC_OK, response.getStatus());
         auth = getAuth(testFilterName, testUserName, null, null);

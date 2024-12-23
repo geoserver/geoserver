@@ -39,7 +39,6 @@ public abstract class AbstractGeoSearchDecorator implements KmlDecorator {
         GetMapRequest request = context.getRequest();
         String baseURL = request.getBaseUrl();
         String prefix = ns.getPrefix();
-        return buildURL(
-                baseURL, appendPath("rest", prefix, featureTypeName), null, URLType.SERVICE);
+        return buildURL(baseURL, appendPath("rest", prefix, featureTypeName), null, URLType.SERVICE);
     }
 }

@@ -91,29 +91,26 @@ public class ImportDataPage extends GeoServerSecuredPage {
         Form form = new Form("form");
         add(form);
 
-        sourceList =
-                new AjaxRadioPanel<Source>(
-                        "sources", Arrays.asList(Source.values()), Source.SPATIAL_FILES) {
-                    @Override
-                    protected void onRadioSelect(AjaxRequestTarget target, Source newSelection) {
-                        updateSourcePanel(newSelection, target);
-                    }
+        sourceList = new AjaxRadioPanel<Source>("sources", Arrays.asList(Source.values()), Source.SPATIAL_FILES) {
+            @Override
+            protected void onRadioSelect(AjaxRequestTarget target, Source newSelection) {
+                updateSourcePanel(newSelection, target);
+            }
 
-                    @Override
-                    protected AjaxRadio<Source> newRadioCell(
-                            RadioGroup<Source> group, ListItem<Source> item) {
-                        AjaxRadio<Source> radio = super.newRadioCell(group, item);
-                        if (!item.getModelObject().isAvailable()) {
-                            radio.setEnabled(false);
-                        }
-                        return radio;
-                    }
+            @Override
+            protected AjaxRadio<Source> newRadioCell(RadioGroup<Source> group, ListItem<Source> item) {
+                AjaxRadio<Source> radio = super.newRadioCell(group, item);
+                if (!item.getModelObject().isAvailable()) {
+                    radio.setEnabled(false);
+                }
+                return radio;
+            }
 
-                    @Override
-                    protected Component createLabel(String id, ListItem<Source> item) {
-                        return new SourceLabelPanel(id, item.getModelObject());
-                    }
-                };
+            @Override
+            protected Component createLabel(String id, ListItem<Source> item) {
+                return new SourceLabelPanel(id, item.getModelObject());
+            }
+        };
 
         form.add(sourceList);
 
@@ -126,24 +123,18 @@ public class ImportDataPage extends GeoServerSecuredPage {
         // workspace chooser
         workspace = new WorkspaceDetachableModel(catalog.getDefaultWorkspace());
         workspaceChoice =
-                new DropDownChoice<>(
-                        "workspace",
-                        workspace,
-                        new WorkspacesModel(),
-                        new WorkspaceChoiceRenderer());
+                new DropDownChoice<>("workspace", workspace, new WorkspacesModel(), new WorkspaceChoiceRenderer());
         workspaceChoice.setOutputMarkupId(true);
-        workspaceChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updateTargetStore(target);
-                    }
-                });
+        workspaceChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updateTargetStore(target);
+            }
+        });
         workspaceChoice.setNullValid(true);
         form.add(workspaceChoice);
 
-        WebMarkupContainer workspaceNameContainer =
-                new WebMarkupContainer("workspaceNameContainer");
+        WebMarkupContainer workspaceNameContainer = new WebMarkupContainer("workspaceNameContainer");
         workspaceNameContainer.setOutputMarkupId(true);
         form.add(workspaceNameContainer);
 
@@ -159,14 +150,12 @@ public class ImportDataPage extends GeoServerSecuredPage {
         store = new StoreModel<>(ws != null ? catalog.getDefaultDataStore(ws) : null);
         storeChoice =
                 new DropDownChoice<StoreInfo>(
-                        "store",
-                        store,
-                        new EnabledStoresModel(workspace),
-                        new StoreChoiceRenderer()) {
+                        "store", store, new EnabledStoresModel(workspace), new StoreChoiceRenderer()) {
                     @Override
                     protected String getNullValidKey() {
                         return ImportDataPage.class.getSimpleName() + "." + super.getNullValidKey();
-                    };
+                    }
+                    ;
                 };
         storeChoice.setOutputMarkupId(true);
 
@@ -182,9 +171,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
                         "imports",
                         new ImportContextProvider(true) {
                             @Override
-                            protected List<
-                                            org.geoserver.web.wicket.GeoServerDataProvider.Property<
-                                                    ImportContext>>
+                            protected List<org.geoserver.web.wicket.GeoServerDataProvider.Property<ImportContext>>
                                     getProperties() {
                                 return Arrays.asList(ID, STATE, UPDATED);
                             }
@@ -194,7 +181,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
                     protected void onSelectionUpdate(AjaxRequestTarget target) {
                         removeImportLink.setEnabled(!getSelection().isEmpty());
                         target.add(removeImportLink);
-                    };
+                    }
+                    ;
                 };
         importTable.setOutputMarkupId(true);
         importTable.setFilterable(false);
@@ -202,44 +190,39 @@ public class ImportDataPage extends GeoServerSecuredPage {
         form.add(importTable);
 
         form.add(
-                removeImportLink =
-                        new AjaxLink("remove") {
-                            @Override
-                            public void onClick(AjaxRequestTarget target) {
-                                Importer importer = ImporterWebUtils.importer();
-                                for (ImportContext c : importTable.getSelection()) {
-                                    try {
-                                        importer.delete(c);
-                                    } catch (IOException e) {
-                                        LOGGER.log(Level.WARNING, "Error deleting context", c);
-                                    }
-                                }
-                                importTable.clearSelection();
-                                target.add(importTable);
-                            }
-                        });
-        removeImportLink.setOutputMarkupId(true).setEnabled(false);
-
-        AjaxLink jobLink =
-                new AjaxLink("jobs") {
+                removeImportLink = new AjaxLink("remove") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        dialog.showOkCancel(
-                                target,
-                                new DialogDelegate() {
-                                    @Override
-                                    protected boolean onSubmit(
-                                            AjaxRequestTarget target, Component contents) {
-                                        return true;
-                                    }
-
-                                    @Override
-                                    protected Component getContents(String id) {
-                                        return new JobQueuePanel(id);
-                                    }
-                                });
+                        Importer importer = ImporterWebUtils.importer();
+                        for (ImportContext c : importTable.getSelection()) {
+                            try {
+                                importer.delete(c);
+                            } catch (IOException e) {
+                                LOGGER.log(Level.WARNING, "Error deleting context", c);
+                            }
+                        }
+                        importTable.clearSelection();
+                        target.add(importTable);
                     }
-                };
+                });
+        removeImportLink.setOutputMarkupId(true).setEnabled(false);
+
+        AjaxLink jobLink = new AjaxLink("jobs") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                dialog.showOkCancel(target, new DialogDelegate() {
+                    @Override
+                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                        return true;
+                    }
+
+                    @Override
+                    protected Component getContents(String id) {
+                        return new JobQueuePanel(id);
+                    }
+                });
+            }
+        };
         jobLink.setVisible(ImporterWebUtils.isDevMode());
         form.add(jobLink);
 
@@ -287,10 +270,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
     void updateTargetStore(AjaxRequestTarget target) {
         WorkspaceInfo ws = workspace.getObject();
-        store.setObject(
-                ws != null
-                        ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws)
-                        : null);
+        store.setObject(ws != null ? GeoServerApplication.get().getCatalog().getDefaultDataStore(ws) : null);
 
         workspaceNameTextField.setVisible(ws == null);
         workspaceNameTextField.setRequired(ws == null);
@@ -343,11 +323,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
             if (!source.isAvailable()) {
                 get("name").add(AttributeModifier.replace("style", "font-style: italic;"));
-                add(
-                        AttributeModifier.replace(
-                                "title",
-                                "Data source not available. Please "
-                                        + "install required plugin and drivers."));
+                add(AttributeModifier.replace(
+                        "title", "Data source not available. Please " + "install required plugin and drivers."));
             } else {
                 extra.setVisible(false);
             }
@@ -382,8 +359,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
             @Override
             boolean isAvailable() {
-                return isDataStoreFactoryAvaiable(
-                        "org.geotools.data.oracle.OracleNGDataStoreFactory");
+                return isDataStoreFactoryAvaiable("org.geotools.data.oracle.OracleNGDataStoreFactory");
             }
         },
         SQLSERVER(DataIcon.DATABASE) {
@@ -394,8 +370,7 @@ public class ImportDataPage extends GeoServerSecuredPage {
 
             @Override
             boolean isAvailable() {
-                return isDataStoreFactoryAvaiable(
-                        "org.geotools.data.sqlserver.SQLServerDataStoreFactory");
+                return isDataStoreFactoryAvaiable("org.geotools.data.sqlserver.SQLServerDataStoreFactory");
             }
         };
 
@@ -508,71 +483,67 @@ public class ImportDataPage extends GeoServerSecuredPage {
             }
 
             cancel.setDefaultModelObject(jobid);
-            this.add(
-                    new AbstractAjaxTimerBehavior(Duration.seconds(3)) {
-                        @Override
-                        protected void onTimer(AjaxRequestTarget target) {
-                            Importer importer = ImporterWebUtils.importer();
-                            Task<ImportContext> t = importer.getTask(jobid);
+            this.add(new AbstractAjaxTimerBehavior(Duration.seconds(3)) {
+                @Override
+                protected void onTimer(AjaxRequestTarget target) {
+                    Importer importer = ImporterWebUtils.importer();
+                    Task<ImportContext> t = importer.getTask(jobid);
 
-                            if (t.isDone()) {
-                                try {
-                                    if (t.getError() != null) {
-                                        error(t.getError());
-                                    } else if (!t.isCancelled()) {
-                                        ImportContext imp = t.get();
+                    if (t.isDone()) {
+                        try {
+                            if (t.getError() != null) {
+                                error(t.getError());
+                            } else if (!t.isCancelled()) {
+                                ImportContext imp = t.get();
 
-                                        // check the import for actual things to do
-                                        boolean proceed = !imp.getTasks().isEmpty();
+                                // check the import for actual things to do
+                                boolean proceed = !imp.getTasks().isEmpty();
 
-                                        if (proceed) {
-                                            imp.setArchive(false);
-                                            importer.changed(imp);
+                                if (proceed) {
+                                    imp.setArchive(false);
+                                    importer.changed(imp);
 
-                                            PageParameters pp = new PageParameters();
-                                            pp.add("id", imp.getId());
+                                    PageParameters pp = new PageParameters();
+                                    pp.add("id", imp.getId());
 
-                                            setResponsePage(ImportPage.class, pp);
-                                        } else {
-                                            info("No data to import was found");
-                                            importer.delete(imp);
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    error(e);
-                                    LOGGER.log(Level.WARNING, "", e);
-                                } finally {
-                                    stop(null);
-
-                                    // update the button back to original state
-                                    resetButtons(form, target);
-
-                                    addFeedbackPanels(target);
+                                    setResponsePage(ImportPage.class, pp);
+                                } else {
+                                    info("No data to import was found");
+                                    importer.delete(imp);
                                 }
-                                return;
                             }
+                        } catch (Exception e) {
+                            error(e);
+                            LOGGER.log(Level.WARNING, "", e);
+                        } finally {
+                            stop(null);
 
-                            ProgressMonitor m = t.getMonitor();
-                            String msg = m.getTask() != null ? m.getTask().toString() : "Working";
+                            // update the button back to original state
+                            resetButtons(form, target);
 
-                            statusLabel.setDefaultModelObject(msg);
-                            target.add(statusLabel);
-                        };
-
-                        @Override
-                        public boolean canCallListenerInterface(
-                                Component component, Method method) {
-                            if (self.equals(component)
-                                    && method.getDeclaringClass()
-                                            .equals(
-                                                    org.apache.wicket.behavior.IBehaviorListener
-                                                            .class)
-                                    && method.getName().equals("onRequest")) {
-                                return true;
-                            }
-                            return super.canCallListenerInterface(component, method);
+                            addFeedbackPanels(target);
                         }
-                    });
+                        return;
+                    }
+
+                    ProgressMonitor m = t.getMonitor();
+                    String msg = m.getTask() != null ? m.getTask().toString() : "Working";
+
+                    statusLabel.setDefaultModelObject(msg);
+                    target.add(statusLabel);
+                }
+                ;
+
+                @Override
+                public boolean canCallListenerInterface(Component component, Method method) {
+                    if (self.equals(component)
+                            && method.getDeclaringClass().equals(org.apache.wicket.behavior.IBehaviorListener.class)
+                            && method.getName().equals("onRequest")) {
+                        return true;
+                    }
+                    return super.canCallListenerInterface(component, method);
+                }
+            });
         }
     }
 
@@ -585,7 +556,8 @@ public class ImportDataPage extends GeoServerSecuredPage {
         protected void disableLink(ComponentTag tag) {
             super.disableLink(tag);
             ImporterWebUtils.disableLink(tag);
-        };
+        }
+        ;
 
         @Override
         public void onClick(AjaxRequestTarget target) {

@@ -18,8 +18,7 @@ import org.geoserver.security.validation.SecurityConfigValidator;
 public class AbstractFilterProvider extends GeoServerSecurityProvider {
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new FilterConfigValidator(securityManager);
     }
 }

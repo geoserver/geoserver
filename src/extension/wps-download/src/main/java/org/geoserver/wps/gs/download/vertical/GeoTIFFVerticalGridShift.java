@@ -177,8 +177,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
         return true;
     }
 
-    private double interpolateDouble(
-            double gridX, double gridY, int gridI0, int gridI1, int gridJ0, int gridJ1) {
+    private double interpolateDouble(double gridX, double gridY, int gridI0, int gridI1, int gridJ0, int gridJ1) {
         // Get the 4 pixels of the 2x2 matrix:
         // (I0,J0) ----- (I1,J0)
         //   |              |
@@ -228,8 +227,7 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
         return pixelValue;
     }
 
-    private float interpolateFloat(
-            double gridX, double gridY, int gridI0, int gridI1, int gridJ0, int gridJ1) {
+    private float interpolateFloat(double gridX, double gridY, int gridI0, int gridI1, int gridJ0, int gridJ1) {
         // Get the 4 pixels of the 2x2 matrix:
         // (I0,J0) ----- (I1,J0)
         //   |              |
@@ -280,10 +278,9 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
     }
 
     private double readDouble(int gridI, int gridJ) {
-        Raster tile =
-                gridImage.getTile(
-                        PlanarImage.XToTileX(gridI, tileGridXOffset, tileWidth),
-                        PlanarImage.XToTileX(gridJ, tileGridYOffset, tileHeight));
+        Raster tile = gridImage.getTile(
+                PlanarImage.XToTileX(gridI, tileGridXOffset, tileWidth),
+                PlanarImage.XToTileX(gridJ, tileGridYOffset, tileHeight));
         double val = tile.getSampleDouble(gridI, gridJ, 0);
         if (Math.abs(val - noData) < DELTA) {
             val = Double.NaN;
@@ -293,10 +290,9 @@ public class GeoTIFFVerticalGridShift implements VerticalGridShift {
     }
 
     private float readFloat(int gridI, int gridJ) {
-        Raster tile =
-                gridImage.getTile(
-                        PlanarImage.XToTileX(gridI, tileGridXOffset, tileWidth),
-                        PlanarImage.XToTileX(gridJ, tileGridYOffset, tileHeight));
+        Raster tile = gridImage.getTile(
+                PlanarImage.XToTileX(gridI, tileGridXOffset, tileWidth),
+                PlanarImage.XToTileX(gridJ, tileGridYOffset, tileHeight));
         float val = tile.getSampleFloat(gridI, gridJ, 0);
         if (Math.abs(val - noData) < DELTA) {
             val = Float.NaN;

@@ -11,8 +11,7 @@ import org.geoserver.ogr.core.Format;
 import org.geoserver.ogr.core.OutputType;
 
 /**
- * Parameters defining an output format generated using ogr2ogr from either a GML or a shapefile
- * dump
+ * Parameters defining an output format generated using ogr2ogr from either a GML or a shapefile dump
  *
  * @author Andrea Aime - OpenGeo
  * @author Stefano Costa - GeoSolutions
@@ -48,14 +47,7 @@ public class OgrFormat extends Format {
             boolean singleFile,
             String mimeType,
             String... options) {
-        this(
-                toolFormat,
-                formatName,
-                fileExtension,
-                singleFile,
-                mimeType,
-                OutputType.BINARY,
-                options);
+        this(toolFormat, formatName, fileExtension, singleFile, mimeType, OutputType.BINARY, options);
     }
 
     /** The -f parameter */

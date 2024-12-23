@@ -35,8 +35,7 @@ public interface CoverageStoreInfo extends StoreInfo {
     /** The grid format. */
     AbstractGridFormat getFormat();
 
-    GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
-            throws IOException;
+    GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException;
 
     /** Returns the coverage resource from the store with the given name. */
     // CoverageResource getResource(String name, ProgressListener listener);

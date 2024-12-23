@@ -29,11 +29,10 @@ public class GoogleTokenServices extends GeoServerOAuthRemoteTokenServices {
         formData.add("token", accessToken);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(accessToken));
-        String accessTokenUrl =
-                new StringBuilder(checkTokenEndpointUrl)
-                        .append("?access_token=")
-                        .append(accessToken)
-                        .toString();
+        String accessTokenUrl = new StringBuilder(checkTokenEndpointUrl)
+                .append("?access_token=")
+                .append(accessToken)
+                .toString();
         return postForMap(accessTokenUrl, formData, headers);
     }
 

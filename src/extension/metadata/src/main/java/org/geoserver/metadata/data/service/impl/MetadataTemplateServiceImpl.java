@@ -44,8 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
- * Service that manages the list of templates. When the config of a template is updated all linked
- * metadata is also updated.
+ * Service that manages the list of templates. When the config of a template is updated all linked metadata is also
+ * updated.
  *
  * @author Timothy De Bock - timothy.debock.github@gmail.com
  * @author Niels Charlier
@@ -59,24 +59,27 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
 
     private static String LIST_FILE = "templates.xml";
 
-    @Autowired private GeoServerDataDirectory dataDirectory;
+    @Autowired
+    private GeoServerDataDirectory dataDirectory;
 
-    @Autowired private ComplexMetadataService metadataService;
+    @Autowired
+    private ComplexMetadataService metadataService;
 
-    @Autowired private CustomNativeMappingService nativeToCustomService;
+    @Autowired
+    private CustomNativeMappingService nativeToCustomService;
 
-    @Autowired private GlobalModelService globalModelService;
+    @Autowired
+    private GlobalModelService globalModelService;
 
-    @Autowired private Catalog rawCatalog;
+    @Autowired
+    private Catalog rawCatalog;
 
     private List<MetadataTemplate> templates = new ArrayList<>();
 
     public MetadataTemplateServiceImpl() {
         this.persister = new XStreamPersisterFactory().createXMLPersister();
         this.persister.getXStream().processAnnotations(MetadataTemplateImpl.class);
-        this.persister
-                .getXStream()
-                .allowTypesByWildcard(new String[] {"org.geoserver.metadata.data.model.**"});
+        this.persister.getXStream().allowTypesByWildcard(new String[] {"org.geoserver.metadata.data.model.**"});
     }
 
     private Resource getFolder() {
@@ -110,8 +113,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
                     for (String id : priorities) {
                         Resource templateFile = folder.get(id + ".xml");
                         try (InputStream inTemplate = templateFile.in()) {
-                            MetadataTemplate template =
-                                    persister.load(inTemplate, MetadataTemplate.class);
+                            MetadataTemplate template = persister.load(inTemplate, MetadataTemplate.class);
                             templates.add(template);
                         } catch (StreamException | IOException e) {
                             LOGGER.log(Level.WARNING, e.getMessage(), e);
@@ -140,8 +142,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
         synchronized (templates) {
             for (MetadataTemplate other : templates) {
                 if (!other.equals(template) && other.getName().equals(template.getName())) {
-                    throw new IllegalArgumentException(
-                            "template name " + template.getName() + " not unique.");
+                    throw new IllegalArgumentException("template name " + template.getName() + " not unique.");
                 }
             }
 
@@ -223,9 +224,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
     private void persistList() throws IOException {
         synchronized (templates) {
             List<String> priorities =
-                    templates.stream()
-                            .map(template -> template.getId())
-                            .collect(Collectors.toList());
+                    templates.stream().map(template -> template.getId()).collect(Collectors.toList());
             try (OutputStream out = getFolder().get(LIST_FILE).out()) {
                 persister.save(priorities, out);
             } catch (IOException e) {
@@ -238,9 +237,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
     @Override
     public List<MetadataTemplate> list() {
         synchronized (templates) {
-            return templates.stream()
-                    .map(template -> template.clone())
-                    .collect(Collectors.toList());
+            return templates.stream().map(template -> template.clone()).collect(Collectors.toList());
         }
     }
 
@@ -265,8 +262,7 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
     private void update(ResourceInfo resource) {
         Serializable custom = resource.getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         @SuppressWarnings("unchecked")
-        ComplexMetadataMapImpl model =
-                new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
+        ComplexMetadataMapImpl model = new ComplexMetadataMapImpl((HashMap<String, Serializable>) custom);
 
         ArrayList<ComplexMetadataMap> sources = new ArrayList<>();
         synchronized (templates) {
@@ -279,11 +275,8 @@ public class MetadataTemplateServiceImpl implements MetadataTemplateService, Res
 
         if (!sources.isEmpty()) {
             @SuppressWarnings("unchecked")
-            HashMap<String, List<Integer>> derivedAtts =
-                    (HashMap<String, List<Integer>>)
-                            resource.getMetadata()
-                                    .computeIfAbsent(
-                                            MetadataConstants.DERIVED_KEY, key -> new HashMap<>());
+            HashMap<String, List<Integer>> derivedAtts = (HashMap<String, List<Integer>>)
+                    resource.getMetadata().computeIfAbsent(MetadataConstants.DERIVED_KEY, key -> new HashMap<>());
             metadataService.merge(model, sources, derivedAtts);
             // derived atts
             metadataService.derive(model);

@@ -13,6 +13,5 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class AuthenticationFilterPanelInfo<
-                C extends SecurityAuthFilterConfig, T extends AuthenticationFilterPanel<C>>
+public class AuthenticationFilterPanelInfo<C extends SecurityAuthFilterConfig, T extends AuthenticationFilterPanel<C>>
         extends SecurityNamedServicePanelInfo<C, T> {}

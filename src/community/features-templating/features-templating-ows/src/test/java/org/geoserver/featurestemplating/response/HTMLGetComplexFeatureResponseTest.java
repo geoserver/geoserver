@@ -68,23 +68,19 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
 
     @Test
     public void getMappedFeature() throws Exception {
-        org.jsoup.nodes.Document doc =
-                getAsJSoup(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text/html"
-                                + MF_HTML_PARAM);
+        org.jsoup.nodes.Document doc = getAsJSoup("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                + "&outputFormat=text/html"
+                + MF_HTML_PARAM);
         assertEquals(1, doc.select("script").size());
         assertHTMLResult(doc);
     }
 
     @Test
     public void getMappedFeatureHTMLWithJSONLD() {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text/html"
-                                + MF_HTML_PARAM_JSONLD
-                                + MF_JSON_LD_PARAM);
+        Document doc = getAsDOM("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                + "&outputFormat=text/html"
+                + MF_HTML_PARAM_JSONLD
+                + MF_JSON_LD_PARAM);
 
         assertXpathCount(2, "//html/head/script", doc);
         NodeList list = doc.getElementsByTagName("script");
@@ -111,20 +107,17 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
     @Test
     public void getMappedFeatureHTMLWithJSONLDTemplateMissing() throws Exception {
         MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text/html"
-                                + MF_HTML_PARAM_JSONLD);
+                getAsServletResponse("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                        + "&outputFormat=text/html"
+                        + MF_HTML_PARAM_JSONLD);
         assertTrue(resp.getContentAsString().contains("Unable to find a JSON-LD template"));
     }
 
     @Test
     public void testEscaping() throws Exception {
-        org.jsoup.nodes.Document doc =
-                getAsJSoup(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
-                                + "&outputFormat=text/html"
-                                + MF_HTML_PARAM);
+        org.jsoup.nodes.Document doc = getAsJSoup("wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature"
+                + "&outputFormat=text/html"
+                + MF_HTML_PARAM);
         assertFalse(doc.select("li:contains(60°)").isEmpty());
         assertHTMLResult(doc);
     }
@@ -152,30 +145,15 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
         assertXpathCount(4, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'instance']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'New Group']", doc);
         assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = '-Xy']", doc);
-        assertXpathCount(
-                1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group']", doc);
-        assertXpathCount(
-                2,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 1']",
-                doc);
-        assertXpathCount(
-                2,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 2']",
-                doc);
+        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group']", doc);
+        assertXpathCount(2, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 1']", doc);
+        assertXpathCount(2, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = 'Yaugher Volcanic Group 2']", doc);
         assertXpathCount(3, "//html/body/ul/li/ul/li/ul/li/ul/li/ul[./li = '-Py']", doc);
-        assertXpathCount(
-                6, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Composition Parts']", doc);
+        assertXpathCount(6, "//html/body/ul/li/ul/li/ul/li/ul/li[./span = 'Composition Parts']", doc);
         assertXpathCount(6, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Part']", doc);
-        assertXpathCount(
-                6, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
-        assertXpathCount(
-                5,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']",
-                doc);
-        assertXpathCount(
-                1,
-                "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'fictitious component']",
-                doc);
+        assertXpathCount(6, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li[./span = 'Role']", doc);
+        assertXpathCount(5, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'interbedded component']", doc);
+        assertXpathCount(1, "//html/body/ul/li/ul/li/ul/li/ul/li/ul/li/ul/li/ul[./li = 'fictitious component']", doc);
     }
 
     private void assertHTMLResult(org.jsoup.nodes.Document doc) {
@@ -187,10 +165,15 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
         assertEquals(1, doc.select("li ul li:contains(mf4)").size());
         assertEquals(1, doc.select("li ul li:contains(mf5)").size());
 
-        assertEquals(1, doc.select("ul li ul li ul li:contains(GUNTHORPE FORMATION)").size());
-        assertEquals(1, doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
-        assertEquals(1, doc.select("ul li ul li ul li:contains(CLIFTON FORMATION)").size());
-        assertEquals(1, doc.select("ul li ul li ul li:contains(MURRADUC BASALT)").size());
+        assertEquals(
+                1, doc.select("ul li ul li ul li:contains(GUNTHORPE FORMATION)").size());
+        assertEquals(
+                1,
+                doc.select("ul li ul li ul li:contains(MERCIA MUDSTONE GROUP)").size());
+        assertEquals(
+                1, doc.select("ul li ul li ul li:contains(CLIFTON FORMATION)").size());
+        assertEquals(
+                1, doc.select("ul li ul li ul li:contains(MURRADUC BASALT)").size());
         assertEquals(1, doc.select("ul li ul li ul li:contains(IDONTKNOW)").size());
 
         assertEquals(5, doc.select("span:contains(Shape)").size());
@@ -198,14 +181,18 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
         assertEquals(4, doc.select("ul li ul li span:contains(Specifications)").size());
         assertEquals(4, doc.select("ul li ul li span:contains(Geologic Unit)").size());
         assertEquals(4, doc.select("ul li ul li span:contains(Purpose)").size());
-        assertEquals(4, doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
-        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(New Group)").size());
-        assertEquals(1, doc.select("ul li ul li ul li ul li ul li:contains(-Xy)").size());
+        assertEquals(
+                4,
+                doc.select("ul li ul li ul li ul li ul li:contains(instance)").size());
+        assertEquals(
+                1,
+                doc.select("ul li ul li ul li ul li ul li:contains(New Group)").size());
+        assertEquals(
+                1, doc.select("ul li ul li ul li ul li ul li:contains(-Xy)").size());
 
         assertEquals(
                 "Yaugher Volcanic Group",
-                doc.select(
-                                "ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group):first-child")
+                doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group):first-child")
                         .get(0)
                         .text());
         assertEquals(
@@ -217,20 +204,25 @@ public class HTMLGetComplexFeatureResponseTest extends TemplateComplexTestSuppor
                 doc.select("ul li ul li ul li ul li ul li:contains(Yaugher Volcanic Group 2)")
                         .size());
 
-        assertEquals(3, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
         assertEquals(
-                6, doc.select("ul li ul li ul li ul li span:contains(Composition Parts)").size());
-        assertEquals(6, doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
-        assertEquals(6, doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
+                3, doc.select("ul li ul li ul li ul li ul li:contains(-Py)").size());
+        assertEquals(
+                6,
+                doc.select("ul li ul li ul li ul li span:contains(Composition Parts)")
+                        .size());
+        assertEquals(
+                6,
+                doc.select("ul li ul li ul li ul li ul li span:contains(Part)").size());
+        assertEquals(
+                6,
+                doc.select("ul li ul li ul li ul li ul li span:contains(Role)").size());
         assertEquals(
                 5,
-                doc.select(
-                                "ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
+                doc.select("ul li ul li ul li ul li ul li ul li ul li:contains(interbedded component)")
                         .size());
         assertEquals(
                 1,
-                doc.select(
-                                "ul li ul li ul li ul li ul li ul li ul li:contains(fictitious component)")
+                doc.select("ul li ul li ul li ul li ul li ul li ul li:contains(fictitious component)")
                         .size());
     }
 }

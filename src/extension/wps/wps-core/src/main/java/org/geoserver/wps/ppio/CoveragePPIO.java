@@ -15,8 +15,8 @@ import org.geotools.image.ImageWorker;
 import org.geotools.util.logging.Logging;
 
 /**
- * Process parameter input / output for GridCoverage on a specific mime type. Current implementation
- * only supports PNG/JPEG encoding.
+ * Process parameter input / output for GridCoverage on a specific mime type. Current implementation only supports
+ * PNG/JPEG encoding.
  */
 public abstract class CoveragePPIO extends BinaryPPIO {
 
@@ -44,12 +44,11 @@ public abstract class CoveragePPIO extends BinaryPPIO {
                 quality = Float.parseFloat(compressionQuality);
             } catch (NumberFormatException nfe) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Specified quality is not valid (it should be in the range [0,1])."
-                                    + " quality = "
-                                    + compressionQuality
-                                    + "\nUsing default Quality: "
-                                    + DEFAULT_QUALITY);
+                    LOGGER.info("Specified quality is not valid (it should be in the range [0,1])."
+                            + " quality = "
+                            + compressionQuality
+                            + "\nUsing default Quality: "
+                            + DEFAULT_QUALITY);
                 }
             }
         }
@@ -57,9 +56,8 @@ public abstract class CoveragePPIO extends BinaryPPIO {
     }
 
     /**
-     * GridCoverage2D to PNG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a
-     * pure PNG Image. Report this by overriding the getDirection method and throwing an
-     * UnsupportedOperationException on a decode call.
+     * GridCoverage2D to PNG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a pure PNG Image. Report
+     * this by overriding the getDirection method and throwing an UnsupportedOperationException on a decode call.
      */
     public static class PNGPPIO extends CoveragePPIO {
 
@@ -68,8 +66,7 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public void encode(
-                Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
+        public void encode(Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
                 throws Exception {
             GridCoverage2D gridCoverage = (GridCoverage2D) value;
             RenderedImage renderedImage = gridCoverage.getRenderedImage();
@@ -96,9 +93,8 @@ public abstract class CoveragePPIO extends BinaryPPIO {
     }
 
     /**
-     * GridCoverage2D to JPEG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a
-     * pure JPEG Image. Report this by overriding the getDirection method and throwing an
-     * UnsupportedOperationException on a decode call.
+     * GridCoverage2D to JPEG encoding PPIO. Note that we cannot decode a GridCoverage2D out of a pure JPEG Image.
+     * Report this by overriding the getDirection method and throwing an UnsupportedOperationException on a decode call.
      */
     public static class JPEGPPIO extends CoveragePPIO {
 
@@ -107,8 +103,7 @@ public abstract class CoveragePPIO extends BinaryPPIO {
         }
 
         @Override
-        public void encode(
-                Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
+        public void encode(Object value, Map<String, Object> encodingParameters, OutputStream outputStream)
                 throws Exception {
             GridCoverage2D gridCoverage = (GridCoverage2D) value;
             RenderedImage renderedImage = gridCoverage.getRenderedImage();

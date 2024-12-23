@@ -63,9 +63,8 @@ import org.vfny.geoserver.wms.responses.map.htmlimagemap.holes.HolesRemover;
  * @author Mauro Bartolomeoli
  */
 public class HTMLImageMapWriter extends OutputStreamWriter {
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(
-                    HTMLImageMapWriter.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            HTMLImageMapWriter.class.getPackage().getName());
 
     GeometryFactory gFac = new GeometryFactory();
 
@@ -206,7 +205,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         boolean hasElseFilter = false;
 
         for (Rule rule : featureTypeStyle.rules()) {
-            LOGGER.finer(new StringBuffer("Applying rule: ").append(rule.toString()).toString());
+            LOGGER.finer(
+                    new StringBuffer("Applying rule: ").append(rule.toString()).toString());
 
             // does this rule have an else filter
             if (rule.isElseFilter()) {
@@ -268,12 +268,11 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         StringBuffer buffer = new StringBuffer();
 
         /**
-         * Encodes a single feature. Default implementation. The encoding is accomplished through
-         * many phases: 1) reset writer state 2) process supplied style and apply filters to decide
-         * if the feature has to be included in output. If the feature has to be included, proceed
-         * with the following phases, else go to the next feature. 3) start feature encoding 4) pre
-         * geometry encoding 5) actual geometry encoding 6) post geometry encoding 7) end feature
-         * encoding
+         * Encodes a single feature. Default implementation. The encoding is accomplished through many phases: 1) reset
+         * writer state 2) process supplied style and apply filters to decide if the feature has to be included in
+         * output. If the feature has to be included, proceed with the following phases, else go to the next feature. 3)
+         * start feature encoding 4) pre geometry encoding 5) actual geometry encoding 6) post geometry encoding 7) end
+         * feature encoding
          *
          * @param ft feature to encode
          * @param fts "cached" ftss matching the FeatureType of the feature
@@ -310,12 +309,10 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                     }
                 } catch (IOException e) {
                     buffer = new StringBuffer();
-                    if (LOGGER.isLoggable(Level.WARNING))
-                        LOGGER.warning("Problems encoding shape: " + e.getMessage());
+                    if (LOGGER.isLoggable(Level.WARNING)) LOGGER.warning("Problems encoding shape: " + e.getMessage());
                 } catch (Throwable t) {
                     buffer = new StringBuffer();
-                    if (LOGGER.isLoggable(Level.SEVERE))
-                        LOGGER.severe("Problems encoding shape: " + t.getMessage());
+                    if (LOGGER.isLoggable(Level.SEVERE)) LOGGER.severe("Problems encoding shape: " + t.getMessage());
                 }
             }
         }
@@ -326,20 +323,18 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Encodes a "MultiFeature", a feature with multiple geometries. Default implementation. The
-         * encoding is accomplished through many phases: 1) reset writer state 2) process supplied
-         * style and apply filters to decide if the feature has to be included in output. If the
-         * feature has to be included, proceed with the following phases, else go to the next
-         * feature. 3) loops for all the geometries, with the following phases for every single
-         * geometry. a) start feature encoding b) pre geometry encoding c) actual geometry encoding
-         * d) post geometry encoding e) end feature encoding
+         * Encodes a "MultiFeature", a feature with multiple geometries. Default implementation. The encoding is
+         * accomplished through many phases: 1) reset writer state 2) process supplied style and apply filters to decide
+         * if the feature has to be included in output. If the feature has to be included, proceed with the following
+         * phases, else go to the next feature. 3) loops for all the geometries, with the following phases for every
+         * single geometry. a) start feature encoding b) pre geometry encoding c) actual geometry encoding d) post
+         * geometry encoding e) end feature encoding
          *
          * @param ft feature to encode
          * @param fts "cached" ftss matching the FeatureType of the feature
          * @throws IOException if an error occurs during encoding
          */
-        protected void writeMultiFeature(SimpleFeature ft, FeatureTypeStyle[] fts)
-                throws IOException {
+        protected void writeMultiFeature(SimpleFeature ft, FeatureTypeStyle[] fts) throws IOException {
             reset(ft);
             if (processStyle(ft, fts)) {
                 GeometryCollection geomCollection = (GeometryCollection) ft.getDefaultGeometry();
@@ -376,16 +371,14 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * Encodes the feature starting tag (area).
          *
          * @param feature feature to encode
-         * @param suffix (optional) suffix to append to the tag id (useful to have different ids in
-         *     the multigeometry scenario.
+         * @param suffix (optional) suffix to append to the tag id (useful to have different ids in the multigeometry
+         *     scenario.
          * @throws IOException if an error occures during encoding
          */
         protected void startElement(SimpleFeature feature, String suffix) throws IOException {
             // each feature (multi geometry ones are an exception) is represented by an <area> tag
             // each area tag has an id, equal to the feature id, and a shape (rect, poly or circle)
-            writeToBuffer(
-                    "<area shape=\"" + getShape() + "\" id=\"" + feature.getID() + suffix + "\" ",
-                    buffer);
+            writeToBuffer("<area shape=\"" + getShape() + "\" id=\"" + feature.getID() + suffix + "\" ", buffer);
         }
 
         /**
@@ -399,8 +392,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Each area tag has a shape attribute, defining the coords attribute meaning. The W3C HTML
-         * 4.0 standard defines 3 possible shape values: rect, poly and circle.
+         * Each area tag has a shape attribute, defining the coords attribute meaning. The W3C HTML 4.0 standard defines
+         * 3 possible shape values: rect, poly and circle.
          *
          * @return the writer associated shape value
          * @throws IOException if an error occures during encoding
@@ -413,8 +406,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @param geom geometry to encode
          * @throws IOException if an error occures during encoding
          */
-        protected abstract void writeGeometry(Geometry geom, StringBuffer buffer)
-                throws IOException;
+        protected abstract void writeGeometry(Geometry geom, StringBuffer buffer) throws IOException;
 
         /**
          * Encodes the geometry "ending" (closing quotes)
@@ -427,8 +419,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Encodes feature ending. extraAttributes accumulated till now are encoded and the area tag
-         * is closed
+         * Encodes feature ending. extraAttributes accumulated till now are encoded and the area tag is closed
          *
          * @param feature feature to encode
          * @throws IOException if an error occures during encoding
@@ -437,8 +428,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             Iterator<String> iter = extraAttributes.keySet().iterator();
             while (iter.hasNext()) {
                 String attrName = iter.next();
-                writeToBuffer(
-                        " " + attrName + "=\"" + extraAttributes.get(attrName) + "\"", buffer);
+                writeToBuffer(" " + attrName + "=\"" + extraAttributes.get(attrName) + "\"", buffer);
             }
             writeToBuffer("/>\n", buffer);
         }
@@ -458,12 +448,10 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          *
          * @param ft feature to which the style is going to be applied
          * @param ftsList cached fts matching the feature
-         * @return true if the supplied feature has to be included in the output according to style
-         *     filters.
+         * @return true if the supplied feature has to be included in the output according to style filters.
          * @throws IOException if an error occurs during the process
          */
-        protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList)
-                throws IOException {
+        protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList) throws IOException {
             int total = 0;
             for (FeatureTypeStyle fts : ftsList) {
                 List<Rule> rules = filterRules(fts, ft);
@@ -493,17 +481,15 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             }
         }
         /**
-         * Process a single style symbolizer and apply meaningful style to the feature. The default
-         * implementation processes TextSymbolizer, using Label definition to apply textual
-         * attributes to the area tag.
+         * Process a single style symbolizer and apply meaningful style to the feature. The default implementation
+         * processes TextSymbolizer, using Label definition to apply textual attributes to the area tag.
          *
          * @param ft feature to which the symbolizer has to be applied
          * @param rule current rule to analyze
          * @param symbolizer current symbolizer to analyze
          * @throws IOException if an error occurs during the process
          */
-        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer)
-                throws IOException {
+        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer) throws IOException {
             if (symbolizer instanceof TextSymbolizer) {
                 // TODO: any check for label definition needed here?
                 Expression e = SLD.textLabel((TextSymbolizer) symbolizer);
@@ -538,14 +524,11 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          */
         protected String getPoint(Coordinate c) {
             Point2D transformed = worldToScreen.transform(new Point2D.Double(c.x, c.y), null);
-            return (int) Math.round(transformed.getX())
-                    + ","
-                    + (int) Math.round(transformed.getY());
+            return (int) Math.round(transformed.getX()) + "," + (int) Math.round(transformed.getY());
         }
 
         /**
-         * Encodes a list of coordinates in textual form (for the coords attribute) <i>coords</i>
-         * Area attribute
+         * Encodes a list of coordinates in textual form (for the coords attribute) <i>coords</i> Area attribute
          *
          * <p>
          *
@@ -561,8 +544,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                 tempBuf.append(" " + p);
             }
             // Close the path if it's not already closed
-            if (!coords[nCoords - 1].equals2D(coords[0]))
-                tempBuf.append(" " + coords[0].x + "," + coords[0].y);
+            if (!coords[nCoords - 1].equals2D(coords[0])) tempBuf.append(" " + coords[0].x + "," + coords[0].y);
             if (tempBuf.length() > 0) writeToBuffer(tempBuf.substring(1), buf);
             else throw new IOException("No coordinates");
         }
@@ -572,9 +554,9 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Simplifies a geometry to exclude duplicated points. When translating from world to screen
-         * coordinates it's possible that many world points collapse to a single screen point. Those
-         * colliding points are simplified to a single point.
+         * Simplifies a geometry to exclude duplicated points. When translating from world to screen coordinates it's
+         * possible that many world points collapse to a single screen point. Those colliding points are simplified to a
+         * single point.
          */
         Geometry decimate(Geometry geom) {
             DefaultMathTransformFactory f = new DefaultMathTransformFactory();
@@ -605,13 +587,11 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Uses the supplied style to define point rendering. Currently it gets WellKnownName from a
-         * Mark (circle is the only value correctly rendered by now). It also uses the Size
-         * parameter to define circle radius.
+         * Uses the supplied style to define point rendering. Currently it gets WellKnownName from a Mark (circle is the
+         * only value correctly rendered by now). It also uses the Size parameter to define circle radius.
          */
         @Override
-        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer)
-                throws IOException {
+        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer) throws IOException {
             super.processSymbolizer(ft, rule, symbolizer);
             if (symbolizer instanceof PointSymbolizer) {
                 Mark mark = SLD.mark((PointSymbolizer) symbolizer);
@@ -655,8 +635,8 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
     }
 
     /**
-     * FeatureWriter for LineString geometry features. A buffer is applied to the linear geometry to
-     * transform it to a Polygon. The result polygon is then encoded.
+     * FeatureWriter for LineString geometry features. A buffer is applied to the linear geometry to transform it to a
+     * Polygon. The result polygon is then encoded.
      *
      * @author Mauro Bartolomeoli
      */
@@ -673,12 +653,11 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         }
 
         /**
-         * Uses the supplied style to define line rendering. Currently it gets stroke-width to
-         * define the buffer around the linestring.
+         * Uses the supplied style to define line rendering. Currently it gets stroke-width to define the buffer around
+         * the linestring.
          */
         @Override
-        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer)
-                throws IOException {
+        protected void processSymbolizer(SimpleFeature ft, Rule rule, Symbolizer symbolizer) throws IOException {
             super.processSymbolizer(ft, rule, symbolizer);
             if (symbolizer instanceof LineSymbolizer) {
                 buffer = SLD.width((LineSymbolizer) symbolizer);
@@ -765,8 +744,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
             } else throw new IOException("Impossible to encode: " + geom);
             if (poly != null) {
                 LineString shell = poly.getExteriorRing();
-                if (shell != null && shell.getCoordinates() != null)
-                    writePathContent(shell.getCoordinates(), buf);
+                if (shell != null && shell.getCoordinates() != null) writePathContent(shell.getCoordinates(), buf);
                 else throw new IOException("Nothing to encode");
             } else throw new IOException("Nothing to encode");
         }
@@ -795,12 +773,11 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
         /**
          * Encodes the GeometryCollection.
          *
-         * <p>The encoding is accomplished through many phases: 1) reset writer state 2) loops for
-         * all the geometries, with the following phases for every single geometry. a) process
-         * supplied style b) start feature encoding c) pre geometry encoding d) actual geometry
-         * encoding e) post geometry encoding f) end feature encoding A delegate is used for many of
-         * these phases. The delegate is a specific FeatureWriter for the single geometry, during
-         * the loop.
+         * <p>The encoding is accomplished through many phases: 1) reset writer state 2) loops for all the geometries,
+         * with the following phases for every single geometry. a) process supplied style b) start feature encoding c)
+         * pre geometry encoding d) actual geometry encoding e) post geometry encoding f) end feature encoding A
+         * delegate is used for many of these phases. The delegate is a specific FeatureWriter for the single geometry,
+         * during the loop.
          *
          * @param ft feature to encode
          * @param fts "cached" ftss matching the FeatureType of the feature
@@ -839,8 +816,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
                     }
                 } else {
                     buffer = new StringBuffer();
-                    if (LOGGER.isLoggable(Level.WARNING))
-                        LOGGER.warning("Problems encoding shape: null geometry");
+                    if (LOGGER.isLoggable(Level.WARNING)) LOGGER.warning("Problems encoding shape: null geometry");
                 }
             }
         }
@@ -859,8 +835,7 @@ public class HTMLImageMapWriter extends OutputStreamWriter {
          * @throws IOException if an error occurs during the process
          */
         @Override
-        protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList)
-                throws IOException {
+        protected boolean processStyle(SimpleFeature ft, FeatureTypeStyle[] ftsList) throws IOException {
             if (delegateWriter.processStyle(ft, ftsList)) {
                 Iterator<String> iter = delegateWriter.extraAttributes.keySet().iterator();
                 while (iter.hasNext()) {

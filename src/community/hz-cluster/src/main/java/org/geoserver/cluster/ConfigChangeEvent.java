@@ -155,10 +155,9 @@ public class ConfigChangeEvent extends Event {
     }
 
     /**
-     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
-     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
-     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
-     * different class can have the same id).
+     * Equals is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link #getChangeType()
+     * changeType}. {@link #getObjectClass() class} is left off because it can be a proxy class and id/name/type are
+     * good enough anyways (given ids are unique, no two objects of different class can have the same id).
      */
     @Override
     public boolean equals(Object o) {
@@ -170,10 +169,9 @@ public class ConfigChangeEvent extends Event {
     }
 
     /**
-     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link
-     * #getChangeType() changeType}. {@link #getObjectClass() class} is left off because it can be a
-     * proxy class and id/name/type are good enough anyways (given ids are unique, no two objects of
-     * different class can have the same id).
+     * Hash code is based on {@link #getObjectId() id}, {@link #getObjectName() name}, and {@link #getChangeType()
+     * changeType}. {@link #getObjectClass() class} is left off because it can be a proxy class and id/name/type are
+     * good enough anyways (given ids are unique, no two objects of different class can have the same id).
      */
     @Override
     public int hashCode() {

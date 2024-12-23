@@ -36,16 +36,16 @@ import javax.xml.namespace.QName;
 @XmlType(name = "propertyContent")
 public class PropertyContent extends AnyContent {
 
-    @XmlAnyAttribute private final Map<QName, String> otherAttributes = new HashMap<>();
+    @XmlAnyAttribute
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets a map that contains attributes that aren't bound to any typed property on this class.
      *
-     * <p>the map is keyed by the name of the attribute and the value is the string value of the
-     * attribute.
+     * <p>the map is keyed by the name of the attribute and the value is the string value of the attribute.
      *
-     * <p>the map returned by this method is live, and you can add new attribute by updating the map
-     * directly. Because of this design, there's no setter.
+     * <p>the map returned by this method is live, and you can add new attribute by updating the map directly. Because
+     * of this design, there's no setter.
      *
      * @return always non-null
      */

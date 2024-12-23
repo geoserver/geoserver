@@ -25,7 +25,6 @@ public class ExceptionHandlingTest extends STACTestSupport {
         String path = "ogc/stac/v1/notThere";
         DocumentContext json = getAsJSONPath(path, 404);
         assertEquals("ResourceNotFound", json.read("code"));
-        assertEquals(
-                "No mapping for GET /geoserver/ogc/stac/v1/notThere", json.read("description"));
+        assertEquals("No mapping for GET /geoserver/ogc/stac/v1/notThere", json.read("description"));
     }
 }

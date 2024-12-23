@@ -11,8 +11,7 @@ import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.feature.simple.SimpleFeatureType;
 
 /**
- * Vector transform that is performed inline features are read from the source and written to the
- * destination.
+ * Vector transform that is performed inline features are read from the source and written to the destination.
  *
  * <p>This type of transform can only be applied to an indirect import.
  *
@@ -20,11 +19,9 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
  */
 public interface InlineVectorTransform extends VectorTransform {
 
-    SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType)
-            throws Exception;
+    SimpleFeatureType apply(ImportTask task, DataStore dataStore, SimpleFeatureType featureType) throws Exception;
 
     /** @return null to discontinue processing */
-    SimpleFeature apply(
-            ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
+    SimpleFeature apply(ImportTask task, DataStore dataStore, SimpleFeature oldFeature, SimpleFeature feature)
             throws Exception;
 }

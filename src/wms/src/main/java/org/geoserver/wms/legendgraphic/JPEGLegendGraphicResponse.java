@@ -17,8 +17,7 @@ import org.geotools.image.ImageWorker;
 import org.springframework.util.Assert;
 
 /**
- * OWS {@link Response} that encodes a {@link BufferedImageLegendGraphic} to the image/jpeg MIME
- * Type
+ * OWS {@link Response} that encodes a {@link BufferedImageLegendGraphic} to the image/jpeg MIME Type
  *
  * @author Gabriel Roldan
  * @version $Id$
@@ -34,13 +33,12 @@ public class JPEGLegendGraphicResponse extends AbstractGetLegendGraphicResponse 
 
     /**
      * @param legend a {@link BufferedImageLegendGraphic}
-     * @param output destination for the image written by {@link ImageIO} in the {@link
-     *     #getContentType() supported format}
+     * @param output destination for the image written by {@link ImageIO} in the {@link #getContentType() supported
+     *     format}
      * @see Response#write(Object, OutputStream, Operation)
      */
     @Override
-    public void write(Object legend, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object legend, OutputStream output, Operation operation) throws IOException, ServiceException {
         Assert.isInstanceOf(BufferedImageLegendGraphic.class, legend);
 
         BufferedImage legendImage = (BufferedImage) ((LegendGraphic) legend).getLegend();

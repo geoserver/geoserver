@@ -35,9 +35,8 @@ import org.geoserver.web.wicket.ParamResourceModel;
 import org.geowebcache.layer.TileLayer;
 
 /**
- * A page that lists all {@link LayerInfo} and {@link LayerGroupInfo} that don't already have an
- * associated {@link GeoServerTileLayer} and allows to create a tile layer for each of one or in
- * bulk using the default settings.
+ * A page that lists all {@link LayerInfo} and {@link LayerGroupInfo} that don't already have an associated
+ * {@link GeoServerTileLayer} and allows to create a tile layer for each of one or in bulk using the default settings.
  *
  * @author groldan
  */
@@ -57,47 +56,44 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
     public NewCachedLayerPage() {
 
-        table =
-                new GeoServerTablePanel<TileLayer>("table", provider, true) {
+        table = new GeoServerTablePanel<TileLayer>("table", provider, true) {
 
-                    private static final long serialVersionUID = -5260899839139961722L;
+            private static final long serialVersionUID = -5260899839139961722L;
 
-                    @Override
-                    protected Component getComponentForProperty(
-                            String id, IModel<TileLayer> itemModel, Property<TileLayer> property) {
+            @Override
+            protected Component getComponentForProperty(
+                    String id, IModel<TileLayer> itemModel, Property<TileLayer> property) {
 
-                        if (property == TYPE) {
-                            Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
-                            TileLayer layer = itemModel.getObject();
-                            PackageResourceReference layerIcon =
-                                    GWCIconFactory.getSpecificLayerIcon(layer);
-                            f.add(new Image("layerIcon", layerIcon));
-                            return f;
-                        } else if (property == NAME) {
-                            return nameLink(id, itemModel);
-                        } else if (property == ENABLED) {
-                            TileLayer layerInfo = itemModel.getObject();
-                            boolean enabled = layerInfo.isEnabled();
-                            PackageResourceReference icon;
-                            if (enabled) {
-                                icon = GWCIconFactory.getEnabledIcon();
-                            } else {
-                                icon = GWCIconFactory.getDisabledIcon();
-                            }
-                            Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
-                            f.add(new Image("layerIcon", icon));
-                            return f;
-                        }
-                        throw new IllegalArgumentException(
-                                "Don't know a property named " + property.getName());
+                if (property == TYPE) {
+                    Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
+                    TileLayer layer = itemModel.getObject();
+                    PackageResourceReference layerIcon = GWCIconFactory.getSpecificLayerIcon(layer);
+                    f.add(new Image("layerIcon", layerIcon));
+                    return f;
+                } else if (property == NAME) {
+                    return nameLink(id, itemModel);
+                } else if (property == ENABLED) {
+                    TileLayer layerInfo = itemModel.getObject();
+                    boolean enabled = layerInfo.isEnabled();
+                    PackageResourceReference icon;
+                    if (enabled) {
+                        icon = GWCIconFactory.getEnabledIcon();
+                    } else {
+                        icon = GWCIconFactory.getDisabledIcon();
                     }
+                    Fragment f = new Fragment(id, "iconFragment", NewCachedLayerPage.this);
+                    f.add(new Image("layerIcon", icon));
+                    return f;
+                }
+                throw new IllegalArgumentException("Don't know a property named " + property.getName());
+            }
 
-                    @Override
-                    protected void onSelectionUpdate(AjaxRequestTarget target) {
-                        updateBulkConfigLink();
-                        target.add(bulkConfig);
-                    }
-                };
+            @Override
+            protected void onSelectionUpdate(AjaxRequestTarget target) {
+                updateBulkConfigLink();
+                target.add(bulkConfig);
+            }
+        };
         table.setOutputMarkupId(true);
         add(table);
 
@@ -134,9 +130,7 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
 
         header.add(
                 insaneDefaultsMessage =
-                        new Label(
-                                "insaneDefaultsMessage",
-                                new ResourceModel("bulkConfig.insaneDefaults")));
+                        new Label("insaneDefaultsMessage", new ResourceModel("bulkConfig.insaneDefaults")));
         insaneDefaultsMessage.setOutputMarkupId(true);
 
         updateBulkConfigLink();
@@ -144,8 +138,8 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
     }
 
     /**
-     * A simple ajax link that asks for confirmation and configures all the selected layers and
-     * layer groups using the {@link GWC#getConfig() default settings}.
+     * A simple ajax link that asks for confirmation and configures all the selected layers and layer groups using the
+     * {@link GWC#getConfig() default settings}.
      */
     private class BulkCachedLayerConfigurationLink extends AjaxLink<String> {
 
@@ -169,58 +163,52 @@ public class NewCachedLayerPage extends GeoServerSecuredPage {
             for (TileLayer layer : selection) {
                 selectedNames.add(layer.getName());
             }
-            dialog.setTitle(
-                    new ParamResourceModel("confirmBulkConfig.title", NewCachedLayerPage.this));
+            dialog.setTitle(new ParamResourceModel("confirmBulkConfig.title", NewCachedLayerPage.this));
 
             // if there is something to cancel, let's warn the user about what
             // could go wrong, and if the user accepts, let's delete what's needed
-            dialog.showOkCancel(
-                    target,
-                    new GeoServerDialog.DialogDelegate() {
-                        private static final long serialVersionUID = 1L;
+            dialog.showOkCancel(target, new GeoServerDialog.DialogDelegate() {
+                private static final long serialVersionUID = 1L;
 
-                        @Override
-                        protected Component getContents(final String id) {
-                            // show a confirmation panel for all the objects we have to remove
+                @Override
+                protected Component getContents(final String id) {
+                    // show a confirmation panel for all the objects we have to remove
 
-                            final Integer selectedLayerCount = selectedNames.size();
+                    final Integer selectedLayerCount = selectedNames.size();
 
-                            IModel<String> model =
-                                    new StringResourceModel(
-                                                    "NewCachedLayerPage.confirmBulkConfig.message",
-                                                    BulkCachedLayerConfigurationLink.this)
-                                            .setParameters(
-                                                    new Object[] {selectedLayerCount.toString()});
-                            Label confirmLabel = new Label(id, model);
-                            confirmLabel.setEscapeModelStrings(
-                                    false); // allow some html inside, like
-                            // <b></b>, etc
-                            return confirmLabel;
-                        }
+                    IModel<String> model = new StringResourceModel(
+                                    "NewCachedLayerPage.confirmBulkConfig.message",
+                                    BulkCachedLayerConfigurationLink.this)
+                            .setParameters(new Object[] {selectedLayerCount.toString()});
+                    Label confirmLabel = new Label(id, model);
+                    confirmLabel.setEscapeModelStrings(false); // allow some html inside, like
+                    // <b></b>, etc
+                    return confirmLabel;
+                }
 
-                        @Override
-                        protected boolean onSubmit(
-                                final AjaxRequestTarget target, final Component contents) {
-                            GWC facade = GWC.get();
-                            GWCConfig saneConfig = facade.getConfig().saneConfig();
-                            saneConfig.setCacheLayersByDefault(true);
-                            facade.autoConfigureLayers(selectedNames, saneConfig);
-                            table.clearSelection();
-                            return true;
-                        }
+                @Override
+                protected boolean onSubmit(final AjaxRequestTarget target, final Component contents) {
+                    GWC facade = GWC.get();
+                    GWCConfig saneConfig = facade.getConfig().saneConfig();
+                    saneConfig.setCacheLayersByDefault(true);
+                    facade.autoConfigureLayers(selectedNames, saneConfig);
+                    table.clearSelection();
+                    return true;
+                }
 
-                        @Override
-                        public void onClose(final AjaxRequestTarget target) {
-                            // if the selection has been cleared out it's sign a deletion
-                            // occurred, so refresh the table
-                            List<TileLayer> selection = table.getSelection();
-                            if (selection.isEmpty()) {
-                                updateBulkConfigLink();
-                                target.add(BulkCachedLayerConfigurationLink.this);
-                                target.add(table);
-                            }
-                        }
-                    });
+                @Override
+                public void onClose(final AjaxRequestTarget target) {
+                    // if the selection has been cleared out it's sign a deletion
+                    // occurred, so refresh the table
+                    List<TileLayer> selection = table.getSelection();
+                    if (selection.isEmpty()) {
+                        updateBulkConfigLink();
+                        target.add(BulkCachedLayerConfigurationLink.this);
+                        target.add(table);
+                    }
+                }
+            });
         }
-    };
+    }
+    ;
 }

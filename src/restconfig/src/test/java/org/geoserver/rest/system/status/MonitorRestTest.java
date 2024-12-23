@@ -34,8 +34,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testDefaultCallback() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(RestBaseController.ROOT_PATH + "/about/system-status");
+        MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH + "/about/system-status");
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getContentType());
         XStream xs = new XStream(new JettisonMappedXmlDriver());
@@ -98,10 +97,9 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
                 getAsServletResponse(RestBaseController.ROOT_PATH + "/about/system-status.xml");
         assertEquals(200, response.getStatus());
         assertEquals("application/xml", response.getContentType());
-        Document xml =
-                DocumentBuilderFactory.newInstance()
-                        .newDocumentBuilder()
-                        .parse(new InputSource(new StringReader(response.getContentAsString())));
+        Document xml = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(new InputSource(new StringReader(response.getContentAsString())));
         XPathExpression expression = XPathFactory.newInstance().newXPath().compile("//value");
         NodeList nodes = (NodeList) expression.evaluate(xml, XPathConstants.NODESET);
         for (int i = 0; i < nodes.getLength(); i++) {
@@ -113,8 +111,7 @@ public class MonitorRestTest extends GeoServerSystemTestSupport {
     public void testHtmlCallback() throws Exception {
         Document doc = getAsDOM(RestBaseController.ROOT_PATH + "/about/system-status.html");
         XPath xpath = XPathFactory.newInstance().newXPath();
-        NodeList nodes =
-                (NodeList) xpath.evaluate("/html/body/table/tr", doc, XPathConstants.NODESET);
+        NodeList nodes = (NodeList) xpath.evaluate("/html/body/table/tr", doc, XPathConstants.NODESET);
         assertTrue(nodes.getLength() >= MetricInfo.values().length);
     }
 }

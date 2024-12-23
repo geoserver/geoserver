@@ -26,8 +26,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 /**
- * Extended BindAuthenticator using a filter to find user data as an alternative to a direct dn
- * access.
+ * Extended BindAuthenticator using a filter to find user data as an alternative to a direct dn access.
  *
  * @author "Mauro Bartolomeoli - mauro.bartolomeoli@geo-solutions.it"
  */
@@ -58,8 +57,8 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
     }
 
     /**
-     * If userFilter is defined we extract user data using the filter and dnPattern (if defined) to
-     * transform username for authentication.
+     * If userFilter is defined we extract user data using the filter and dnPattern (if defined) to transform username
+     * for authentication.
      */
     protected DirContextOperations authenticateUsingFilter(Authentication authentication) {
         DirContextOperations user = null;
@@ -77,8 +76,7 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
         }
         if (!StringUtils.hasLength(password)) {
             logger.fine("Rejecting empty password for user " + username);
-            throw new BadCredentialsException(
-                    messages.getMessage("BindAuthenticator.emptyPassword", "Empty Password"));
+            throw new BadCredentialsException(messages.getMessage("BindAuthenticator.emptyPassword", "Empty Password"));
         }
 
         DirContext ctx = null;
@@ -93,9 +91,8 @@ public class GeoserverLdapBindAuthenticator extends BindAuthenticator {
             SearchControls searchCtls = new SearchControls();
             searchCtls.setSearchScope(SearchControls.SUBTREE_SCOPE);
 
-            user =
-                    SpringSecurityLdapTemplate.searchForSingleEntryInternal(
-                            ctx, searchCtls, "", userFilter, new Object[] {username, originalUser});
+            user = SpringSecurityLdapTemplate.searchForSingleEntryInternal(
+                    ctx, searchCtls, "", userFilter, new Object[] {username, originalUser});
             userDnStr = user.getDn().toString();
             if (ppolicy != null) {
                 user.setAttributeValue(ppolicy.getID(), ppolicy);

@@ -31,8 +31,7 @@ public class RESTAccessRuleDAO extends AbstractAccessRuleDAO<String> {
 
     /** rule pattern */
     static final Pattern PATTERN =
-            Pattern.compile(
-                    "\\S+;(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*=\\S+(, ?\\S+)*");
+            Pattern.compile("\\S+;(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*=\\S+(, ?\\S+)*");
 
     protected RESTAccessRuleDAO(GeoServerDataDirectory dd) throws IOException {
         super(dd, "rest.properties");

@@ -54,10 +54,7 @@ public class OSEOExceptionHandler extends ServiceExceptionHandler {
             if (format != null && format.contains("json")) writeJSONResponse(exception, request);
             else writeXMLResponse(exception, request);
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 

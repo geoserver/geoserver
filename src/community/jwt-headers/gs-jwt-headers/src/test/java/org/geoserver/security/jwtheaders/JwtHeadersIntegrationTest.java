@@ -66,16 +66,12 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         // username
         filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
-        filterConfig
-                .getJwtConfiguration()
-                .setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JSON);
+        filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JSON);
         filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("json-header");
 
         // roles
         filterConfig.setRoleSource(JSON);
-        filterConfig
-                .getJwtConfiguration()
-                .setRoleConverterString("GeoserverAdministrator=ROLE_ADMINISTRATOR");
+        filterConfig.getJwtConfiguration().setRoleConverterString("GeoserverAdministrator=ROLE_ADMINISTRATOR");
         filterConfig.getJwtConfiguration().setRolesJsonPath("resource_access.live-key2.roles");
         filterConfig.getJwtConfiguration().setRolesHeaderName("json-header");
         filterConfig.getJwtConfiguration().setOnlyExternalListedRoles(true);
@@ -112,16 +108,12 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         // username
         filterConfig.getJwtConfiguration().setUserNameJsonPath("preferred_username");
-        filterConfig
-                .getJwtConfiguration()
-                .setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
+        filterConfig.getJwtConfiguration().setUserNameFormatChoice(JwtConfiguration.UserNameHeaderFormat.JWT);
         filterConfig.getJwtConfiguration().setUserNameHeaderAttributeName("json-header");
 
         // roles
         filterConfig.setRoleSource(JWT);
-        filterConfig
-                .getJwtConfiguration()
-                .setRoleConverterString("GeoserverAdministrator=ROLE_ADMINISTRATOR");
+        filterConfig.getJwtConfiguration().setRoleConverterString("GeoserverAdministrator=ROLE_ADMINISTRATOR");
         filterConfig.getJwtConfiguration().setRolesJsonPath("resource_access.live-key2.roles");
         filterConfig.getJwtConfiguration().setRolesHeaderName("json-header");
         filterConfig.getJwtConfiguration().setOnlyExternalListedRoles(true);
@@ -138,10 +130,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
         return filterConfig;
     }
 
-    /**
-     * Enable the Spring Security authentication filters, we want the test to be complete and
-     * realistic
-     */
+    /** Enable the Spring Security authentication filters, we want the test to be complete and realistic */
     @Override
     protected List<Filter> getFilters() {
 
@@ -187,16 +176,14 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         Assert.assertNotNull(auth);
         Assert.assertEquals(PreAuthenticatedAuthenticationToken.class, auth.getClass());
-        Assert.assertEquals(JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
+        Assert.assertEquals(
+                JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
 
-        String authFilterId =
-                ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
+        String authFilterId = ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
         Assert.assertEquals(filterConfig.getId(), authFilterId);
 
         List<String> roles =
-                auth.getAuthorities().stream()
-                        .map(x -> x.getAuthority())
-                        .collect(Collectors.toList());
+                auth.getAuthorities().stream().map(x -> x.getAuthority()).collect(Collectors.toList());
         Assert.assertEquals(2, roles.size());
         Assert.assertTrue(roles.contains("ROLE_ADMINISTRATOR"));
         Assert.assertTrue(roles.contains("ROLE_AUTHENTICATED"));
@@ -230,16 +217,14 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
 
         Assert.assertNotNull(auth);
         Assert.assertEquals(PreAuthenticatedAuthenticationToken.class, auth.getClass());
-        Assert.assertEquals(JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
+        Assert.assertEquals(
+                JwtHeadersWebAuthenticationDetails.class, auth.getDetails().getClass());
 
-        String authFilterId =
-                ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
+        String authFilterId = ((JwtHeadersWebAuthenticationDetails) auth.getDetails()).getJwtHeadersConfigId();
         Assert.assertEquals(filterConfig.getId(), authFilterId);
 
         List<String> roles =
-                auth.getAuthorities().stream()
-                        .map(x -> x.getAuthority())
-                        .collect(Collectors.toList());
+                auth.getAuthorities().stream().map(x -> x.getAuthority()).collect(Collectors.toList());
         Assert.assertEquals(2, roles.size());
         Assert.assertTrue(roles.contains("ROLE_ADMINISTRATOR"));
         Assert.assertTrue(roles.contains("ROLE_AUTHENTICATED"));
@@ -316,18 +301,15 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
         Assert.assertEquals("david.blasby22@geocat.net", auth.getPrincipal());
     }
 
-    public Authentication getAuthentication(
-            MockHttpServletRequest request, MockHttpServletResponse response) {
-        SecurityContext context =
-                new HttpSessionSecurityContextRepository()
-                        .loadContext(new HttpRequestResponseHolder(request, response));
+    public Authentication getAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
         return auth;
     }
 
     public HttpSession getSession() {
-        ServletRequestAttributes attr =
-                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        ServletRequestAttributes attr = (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
         HttpSession session = attr.getRequest().getSession();
         return session;
     }
@@ -335,8 +317,7 @@ public class JwtHeadersIntegrationTest extends GeoServerSystemTestSupport {
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
             throws IOException, javax.servlet.ServletException {
         // for session local support in Spring
-        new RequestContextListener()
-                .requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
+        new RequestContextListener().requestInitialized(new ServletRequestEvent(request.getServletContext(), request));
 
         // run on the
         MockFilterChain chain = new MockFilterChain();

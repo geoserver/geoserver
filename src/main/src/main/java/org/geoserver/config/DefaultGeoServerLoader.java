@@ -14,8 +14,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 
 /**
- * Default GeoServerLoader which loads and persists configuration from the classic GeoServer data
- * directory structure.
+ * Default GeoServerLoader which loads and persists configuration from the classic GeoServer data directory structure.
  *
  * @author Justin Deoliveira, OpenGeo
  */

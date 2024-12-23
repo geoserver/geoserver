@@ -20,7 +20,6 @@ public class DateFieldTest extends GeoServerWicketTestSupport {
         assertTrue(html.contains("initJQDatepicker('dateTime',true,'yyyy-MM-dd HH:mm',' ');"));
 
         assertTrue(html.contains("initJQDatepicker('date2',false,'YYYY/MM/DD',' ');"));
-        assertTrue(
-                html.contains("initJQDatepicker('dateTime2',true,'YYYY/MM/DD HH:mm:ss.SSS',' ');"));
+        assertTrue(html.contains("initJQDatepicker('dateTime2',true,'YYYY/MM/DD HH:mm:ss.SSS',' ');"));
     }
 }

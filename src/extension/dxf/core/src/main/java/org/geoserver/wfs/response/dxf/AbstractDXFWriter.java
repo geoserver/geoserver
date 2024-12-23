@@ -25,8 +25,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.logging.Logging;
 
 /**
- * Basic, abstract implementation of DXFWriter. Implements a common base of export functions useful
- * for any implementations (groups, tables, etc.).
+ * Basic, abstract implementation of DXFWriter. Implements a common base of export functions useful for any
+ * implementations (groups, tables, etc.).
  *
  * @author Mauro Bartolomeoli, mbarto@infosia.it
  */
@@ -108,10 +108,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     public AbstractDXFWriter() {}
 
-    /**
-     * Full constructor. Needs a writer, to write the dxf out. It permits to specify an encoding for
-     * the dxf.
-     */
+    /** Full constructor. Needs a writer, to write the dxf out. It permits to specify an encoding for the dxf. */
     public AbstractDXFWriter(Writer writer, String encoding) {
         // initialize handle counters
         handles.put("LType", 22); // max 19 linetypes
@@ -148,8 +145,7 @@ public abstract class AbstractDXFWriter implements DXFWriter {
 
     /** Performs the actual writing. Override it in the actual implementation class. */
     @Override
-    public abstract void write(List<SimpleFeatureCollection> featureList, String version)
-            throws IOException;
+    public abstract void write(List<SimpleFeatureCollection> featureList, String version) throws IOException;
 
     /** Extracts and cache the global ReferenceEnvelope for the given feature list. */
     protected ReferencedEnvelope getEnvelope(List<SimpleFeatureCollection> featureList) {
@@ -182,8 +178,8 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Writes the simplest dxf object, a group, composed of a numeric code and a value. The value
-     * type can be interpreted looking at the code.
+     * Writes the simplest dxf object, a group, composed of a numeric code and a value. The value type can be
+     * interpreted looking at the code.
      */
     protected void writeGroup(int code, String value) throws IOException {
         writer.write(StringUtils.leftPad(code + "", 3) + EOL);
@@ -201,12 +197,11 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Loads a static section from a resource/file. Some parts of the dxf can be really static, so
-     * it's easier to load them from files.
+     * Loads a static section from a resource/file. Some parts of the dxf can be really static, so it's easier to load
+     * them from files.
      */
     protected void loadFromResource(String resource) throws IOException {
-        try (InputStream tpl =
-                this.getClass().getClassLoader().getResourceAsStream(resource + ".dxf")) {
+        try (InputStream tpl = this.getClass().getClassLoader().getResourceAsStream(resource + ".dxf")) {
             if (tpl != null) {
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(tpl))) {
                     String line = null;
@@ -239,8 +234,8 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Writes an handle of the given type. The type is used to generate handles in different numeric
-     * spaces, for different entities.
+     * Writes an handle of the given type. The type is used to generate handles in different numeric spaces, for
+     * different entities.
      */
     protected String writeHandle(String type) throws IOException {
         String handle = getNewHandle(type);
@@ -249,8 +244,8 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Gets a new handle of the given type. The type is used to generate handles in different
-     * numeric spaces, for different entities.
+     * Gets a new handle of the given type. The type is used to generate handles in different numeric spaces, for
+     * different entities.
      */
     protected String getNewHandle(String type) {
         int currentHandle = handles.get(type);
@@ -310,12 +305,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to
-     * the given layer and has an owner handle. The geometry is assigned a line type and color, if
-     * specified.
+     * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to the given layer and
+     * has an owner handle. The geometry is assigned a line type and color, if specified.
      */
-    protected void writeGeometryStart(
-            String geometryName, String layer, String ownerHandle, int lineType, int color)
+    protected void writeGeometryStart(String geometryName, String layer, String ownerHandle, int lineType, int color)
             throws IOException {
         writeGroup(0, geometryName);
         writeHandle("Geometry");
@@ -327,11 +320,10 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to
-     * the given layer and has an owner handle. The geometry is assigned layer line type and color.
+     * Writes a geometry start, for the given geometry name (line, etc.). The geometry belongs to the given layer and
+     * has an owner handle. The geometry is assigned layer line type and color.
      */
-    protected void writeGeometryStart(String geometryName, String layer, String ownerHandle)
-            throws IOException {
+    protected void writeGeometryStart(String geometryName, String layer, String ownerHandle) throws IOException {
         writeGeometryStart(geometryName, layer, ownerHandle, -1, -1);
     }
 
@@ -380,16 +372,16 @@ public abstract class AbstractDXFWriter implements DXFWriter {
     }
 
     /**
-     * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from
-     * output. Uses the standard (10,20,30) codes.
+     * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from output. Uses the
+     * standard (10,20,30) codes.
      */
     protected void writePoint(double x, double y, double z) throws IOException {
         writePoint(10, x, y, z);
     }
 
     /**
-     * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from
-     * output. Uses the codes given by baseCode (baseCode,baseCode+10,baseCode+20)
+     * Writes a point with the given coordinates. Use NaN to exclude a coordinate (tipically z) from output. Uses the
+     * codes given by baseCode (baseCode,baseCode+10,baseCode+20)
      */
     protected void writePoint(int baseCode, double x, double y, double z) throws IOException {
         writeDoubleGroup(baseCode, x);

@@ -52,8 +52,7 @@ public class TransactionResponse extends WFSResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
         TransactionResponseType response = (TransactionResponseType) value;
 
         if (new Version("1.0.0").equals(operation.getService().getVersion())) {
@@ -113,9 +112,7 @@ public class TransactionResponse extends WFSResponse {
 
                 if (first
                         || ((lastHandle == null) && (handle != null))
-                        || ((lastHandle != null)
-                                && (handle != null)
-                                && handle.equals(lastHandle))) {
+                        || ((lastHandle != null) && (handle != null) && handle.equals(lastHandle))) {
                     if (!first) {
                         // close last one, if not the first time through
                         writer.write("</wfs:InsertResult>");
@@ -191,8 +188,8 @@ public class TransactionResponse extends WFSResponse {
         if (!response.getTransactionResults().getAction().isEmpty()) {
             // since we do atomic transactions, an action failure means all we rolled back
             // spec says to throw exception
-            ActionType action =
-                    (ActionType) response.getTransactionResults().getAction().iterator().next();
+            ActionType action = (ActionType)
+                    response.getTransactionResults().getAction().iterator().next();
             throw new WFSException(action.getMessage(), action.getCode(), action.getLocator());
         }
 
@@ -203,13 +200,13 @@ public class TransactionResponse extends WFSResponse {
             throw new RuntimeException(e);
         }
         Encoder encoder = new Encoder(configuration, result);
-        encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
+        encoder.setEncoding(
+                Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
 
         TransactionType req = (TransactionType) operation.getParameters()[0];
 
         encoder.setSchemaLocation(
-                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE,
-                buildSchemaURL(req.getBaseUrl(), "wfs/1.1.0/wfs.xsd"));
+                org.geoserver.wfs.xml.v1_1_0.WFS.NAMESPACE, buildSchemaURL(req.getBaseUrl(), "wfs/1.1.0/wfs.xsd"));
         encoder.encode(response, org.geoserver.wfs.xml.v1_1_0.WFS.TRANSACTIONRESPONSE, output);
     }
 }

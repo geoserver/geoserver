@@ -24,9 +24,8 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testBbox1() {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,0,200,200,50");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,0,200,200,50");
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         // all features fall in to the x-y boundaries, only mf2 and mf3 fall in to the z boundaries
         assertXpathCount(0, "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']", doc);
@@ -39,9 +38,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4979",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf2']/gsml:shape/gml:Point/@srsName",
@@ -51,9 +48,8 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
     /** Tests re-projection of NonFeatureTypeProxy. */
     @Test
     public void testBbox2() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,50,200,200,200");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&version=1.1.0&typename=gsml:MappedFeature&srsName=EPSG:4979&bbox=-200,-200,50,200,200,200");
         // print(doc);
         LOGGER.info("WFS GetFeature&typename=gsml:MappedFeature response:\n" + prettyString(doc));
         // all features fall in to the x-y boundaries, only mf1 and mf4 fall in to the z boundaries
@@ -67,9 +63,7 @@ public class BBox3DTest extends AbstractAppSchemaTestSupport {
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/gml:pos",
                 doc);
         assertXpathEvaluatesTo(
-                "3",
-                "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension",
-                doc);
+                "3", "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsDimension", doc);
         assertXpathEvaluatesTo(
                 "http://www.opengis.net/gml/srs/epsg.xml#4979",
                 "//gsml:MappedFeature[@gml:id='gsml.mappedfeature.mf1']/gsml:shape/gml:Point/@srsName",

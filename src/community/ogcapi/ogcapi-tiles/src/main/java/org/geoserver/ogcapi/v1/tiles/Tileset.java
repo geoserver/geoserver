@@ -45,22 +45,12 @@ public class Tileset extends AbstractDocument {
 
     List<TileMatrixSetLimit> tileMatrixSetLimits = new ArrayList<>();
 
-    public Tileset(
-            WMS wms,
-            TileLayer tileLayer,
-            DataType dataType,
-            String tileMatrixId,
-            boolean addDetails) {
+    public Tileset(WMS wms, TileLayer tileLayer, DataType dataType, String tileMatrixId, boolean addDetails) {
         this(wms, tileLayer, dataType, tileMatrixId, null, addDetails);
     }
 
     public Tileset(
-            WMS wms,
-            TileLayer tileLayer,
-            DataType dataType,
-            String tileMatrixId,
-            String styleId,
-            boolean addDetails) {
+            WMS wms, TileLayer tileLayer, DataType dataType, String tileMatrixId, String styleId, boolean addDetails) {
         GridSubset gridSubset = tileLayer.getGridSubset(tileMatrixId);
         this.gridSubsetId = tileMatrixId;
         this.dataType = dataType;
@@ -70,54 +60,39 @@ public class Tileset extends AbstractDocument {
 
         // TODO: link definition to local URL, but if the matrix is a well known one,
         // use the well known URI for tileMatrixSetURI instead
-        this.tileMatrixSetURI =
-                ResponseUtils.buildURL(
-                        baseURL,
-                        "ogc/tiles/v1/tileMatrixSets/"
-                                + ResponseUtils.urlEncode(gridSubset.getGridSet().getName()),
-                        null,
-                        URLMangler.URLType.SERVICE);
+        this.tileMatrixSetURI = ResponseUtils.buildURL(
+                baseURL,
+                "ogc/tiles/v1/tileMatrixSets/"
+                        + ResponseUtils.urlEncode(gridSubset.getGridSet().getName()),
+                null,
+                URLMangler.URLType.SERVICE);
         this.tileMatrixSetDefinition = this.tileMatrixSetURI;
 
-        boolean hasLimits =
-                !gridSubset.fullGridSetCoverage()
-                        || (gridSubset.getGridSet().getNumLevels()
-                                != gridSubset.getZoomStop() - gridSubset.getZoomStart() + 1);
+        boolean hasLimits = !gridSubset.fullGridSetCoverage()
+                || (gridSubset.getGridSet().getNumLevels() != gridSubset.getZoomStop() - gridSubset.getZoomStart() + 1);
         if (hasLimits && addDetails) {
             String[] levelNames = gridSubset.getGridNames();
             long[][] wmtsLimits = gridSubset.getWMTSCoverages();
 
             for (int i = 0; i < levelNames.length; i++) {
-                TileMatrixSetLimit limit =
-                        new TileMatrixSetLimit(
-                                levelNames[i],
-                                wmtsLimits[i][1],
-                                wmtsLimits[i][3],
-                                wmtsLimits[i][0],
-                                wmtsLimits[i][2]);
+                TileMatrixSetLimit limit = new TileMatrixSetLimit(
+                        levelNames[i], wmtsLimits[i][1], wmtsLimits[i][3], wmtsLimits[i][0], wmtsLimits[i][2]);
                 validateLimits(limit, gridSubset, i);
                 tileMatrixSetLimits.add(limit);
             }
         }
 
         // go for the links
-        this.id =
-                tileLayer instanceof GeoServerTileLayer
-                        ? ((GeoServerTileLayer) tileLayer).getContextualName()
-                        : tileLayer.getName();
+        this.id = tileLayer instanceof GeoServerTileLayer
+                ? ((GeoServerTileLayer) tileLayer).getContextualName()
+                : tileLayer.getName();
         if (dataType == DataType.vector) {
             addSelfLinks("ogc/tiles/v1/collections/" + id + "/tiles/" + tileMatrixId);
         } else if (dataType == DataType.map) {
             if (styleId == null) {
                 addSelfLinks("ogc/tiles/v1/collections/" + id + "/map/tiles/" + tileMatrixId);
             } else {
-                addSelfLinks(
-                        "ogc/tiles/v1/collections/"
-                                + id
-                                + "/styles/"
-                                + styleId
-                                + "/map/tiles/"
-                                + tileMatrixId);
+                addSelfLinks("ogc/tiles/v1/collections/" + id + "/styles/" + styleId + "/map/tiles/" + tileMatrixId);
             }
         } else {
             throw new IllegalArgumentException("Cannot handle data type: " + dataType);
@@ -130,17 +105,12 @@ public class Tileset extends AbstractDocument {
                 tileTypes.stream()
                         .filter(mt -> mt.isVector())
                         .collect(Collectors.toList())
-                        .forEach(
-                                dataFormat ->
-                                        addTilesLinkForFormat(
-                                                this.id,
-                                                baseURL,
-                                                dataFormat.getFormat(),
-                                                appendPath(
-                                                        "/tiles/",
-                                                        tileMatrixId,
-                                                        "/{tileMatrix}/{tileRow}/{tileCol}"),
-                                                TILE_REL));
+                        .forEach(dataFormat -> addTilesLinkForFormat(
+                                this.id,
+                                baseURL,
+                                dataFormat.getFormat(),
+                                appendPath("/tiles/", tileMatrixId, "/{tileMatrix}/{tileRow}/{tileCol}"),
+                                TILE_REL));
 
                 // tileJSON
                 new LinksBuilder(TileJSON.class, "ogc/tiles/v1/collections")
@@ -155,37 +125,24 @@ public class Tileset extends AbstractDocument {
                         .add(this);
             } else if (dataType == DataType.map) {
                 List<MimeType> imageFormats =
-                        tileTypes.stream()
-                                .filter(mt -> !mt.isVector())
-                                .collect(Collectors.toList());
-                String base =
-                        styleId != null ? "/styles/" + styleId + "/map/tiles/" : "/map/tiles/";
-                imageFormats.forEach(
-                        imageFormat ->
-                                addTilesLinkForFormat(
-                                        this.id,
-                                        baseURL,
-                                        imageFormat.getFormat(),
-                                        appendPath(
-                                                base,
-                                                tileMatrixId,
-                                                "/{tileMatrix}/{tileRow}/{tileCol}"),
-                                        TILE_REL));
+                        tileTypes.stream().filter(mt -> !mt.isVector()).collect(Collectors.toList());
+                String base = styleId != null ? "/styles/" + styleId + "/map/tiles/" : "/map/tiles/";
+                imageFormats.forEach(imageFormat -> addTilesLinkForFormat(
+                        this.id,
+                        baseURL,
+                        imageFormat.getFormat(),
+                        appendPath(base, tileMatrixId, "/{tileMatrix}/{tileRow}/{tileCol}"),
+                        TILE_REL));
 
                 // add the info links (might be needed only for maps, but we always have a style
                 // so...)
                 wms.getAvailableFeatureInfoFormats()
-                        .forEach(
-                                infoFormat ->
-                                        addTilesLinkForFormat(
-                                                this.id,
-                                                baseURL,
-                                                infoFormat,
-                                                appendPath(
-                                                        base,
-                                                        tileMatrixId,
-                                                        "/{tileMatrix}/{tileRow}/{tileCol}/info"),
-                                                "info"));
+                        .forEach(infoFormat -> addTilesLinkForFormat(
+                                this.id,
+                                baseURL,
+                                infoFormat,
+                                appendPath(base, tileMatrixId, "/{tileMatrix}/{tileRow}/{tileCol}/info"),
+                                "info"));
 
                 // tileJSON
                 new LinksBuilder(TileJSON.class, "ogc/tiles/v1/collections/")
@@ -196,15 +153,13 @@ public class Tileset extends AbstractDocument {
                         .title("Tiles metadata as ")
                         .rel("describedBy")
                         .classification("metadata")
-                        .updater(
-                                (m, l) -> {
-                                    l.setTemplated(true);
-                                    l.setHref(l.getHref() + "&tileFormat={tileFormat}");
-                                })
+                        .updater((m, l) -> {
+                            l.setTemplated(true);
+                            l.setHref(l.getHref() + "&tileFormat={tileFormat}");
+                        })
                         .add(this);
             } else {
-                throw new IllegalArgumentException(
-                        "Tiles of this type are not yet supported: " + dataType);
+                throw new IllegalArgumentException("Tiles of this type are not yet supported: " + dataType);
             }
         }
     }
@@ -275,12 +230,11 @@ public class Tileset extends AbstractDocument {
 
     protected final void addTilesLinkForFormat(
             String layerName, String baseURL, String format, String path, String rel) {
-        String apiUrl =
-                ResponseUtils.buildURL(
-                        baseURL,
-                        "ogc/tiles/v1/collections/" + ResponseUtils.urlEncode(layerName) + path,
-                        Collections.singletonMap("f", format),
-                        URLMangler.URLType.SERVICE);
+        String apiUrl = ResponseUtils.buildURL(
+                baseURL,
+                "ogc/tiles/v1/collections/" + ResponseUtils.urlEncode(layerName) + path,
+                Collections.singletonMap("f", format),
+                URLMangler.URLType.SERVICE);
         Link link = new Link(apiUrl, rel, format, layerName + " tiles as " + format);
         link.setTemplated(true);
         addLink(link);

@@ -39,15 +39,11 @@ public class SolrStorePageTest extends GeoServerWicketTestSupport {
 
         // check the deprecated fields are not visible
         MarkupContainer container =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "dataStoreForm:parametersPanel:parameters:1");
+                (MarkupContainer) tester.getComponentFromLastRenderedPage("dataStoreForm:parametersPanel:parameters:1");
         assertEquals("layer_mapper", container.getDefaultModelObject());
         assertFalse(container.get("parameterPanel").isVisible());
         container =
-                (MarkupContainer)
-                        tester.getComponentFromLastRenderedPage(
-                                "dataStoreForm:parametersPanel:parameters:2");
+                (MarkupContainer) tester.getComponentFromLastRenderedPage("dataStoreForm:parametersPanel:parameters:2");
         assertEquals("layer_name_field", container.getDefaultModelObject());
         assertFalse(container.get("parameterPanel").isVisible());
     }
@@ -58,15 +54,13 @@ public class SolrStorePageTest extends GeoServerWicketTestSupport {
 
         WorkspaceInfo defaultWs = getCatalog().getDefaultWorkspace();
 
-        tester.assertModelValue(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
+        tester.assertModelValue("dataStoreForm:workspacePanel:border:border_body:paramValue", defaultWs);
         // print(tester.getLastRenderedPage(), true, true);
 
         // configure the store
         FormTester ft = tester.newFormTester("dataStoreForm", false);
         ft.select("workspacePanel:border:border_body:paramValue", 2);
-        tester.executeAjaxEvent(
-                "dataStoreForm:workspacePanel:border:border_body:paramValue", "change");
+        tester.executeAjaxEvent("dataStoreForm:workspacePanel:border:border_body:paramValue", "change");
 
         ft.setValue("dataStoreNamePanel:border:border_body:paramValue", "testStore");
         ft.setValue(

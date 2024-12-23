@@ -43,27 +43,23 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
         }
         initCoverage(coverageAccess);
 
-        geoServer.addListener(
-                new ConfigurationListenerAdapter() {
+        geoServer.addListener(new ConfigurationListenerAdapter() {
 
-                    @Override
-                    public void handleGlobalChange(
-                            GeoServerInfo global,
-                            List<String> propertyNames,
-                            List<Object> oldValues,
-                            List<Object> newValues) {
-                        if (propertyNames.contains("coverageAccess")) {
-                            // Make sure to proceed with coverageAccess init
-                            // only in case the global change involved that section
-                            initCoverage(global.getCoverageAccess());
-                        }
-                    }
+            @Override
+            public void handleGlobalChange(
+                    GeoServerInfo global, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
+                if (propertyNames.contains("coverageAccess")) {
+                    // Make sure to proceed with coverageAccess init
+                    // only in case the global change involved that section
+                    initCoverage(global.getCoverageAccess());
+                }
+            }
 
-                    @Override
-                    public void handlePostGlobalChange(GeoServerInfo global) {
-                        // No need to handle that change too
-                    }
-                });
+            @Override
+            public void handlePostGlobalChange(GeoServerInfo global) {
+                // No need to handle that change too
+            }
+        });
     }
 
     void initCoverage(CoverageAccessInfo coverageAccess) {
@@ -81,15 +77,14 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
             }
             if (executor == null) {
                 // No Executor found: Create a new one
-                executor =
-                        new ThreadPoolExecutor(
-                                coverageAccess.getCorePoolSize(),
-                                coverageAccess.getMaxPoolSize(),
-                                coverageAccess.getKeepAliveTime(),
-                                TimeUnit.MILLISECONDS,
-                                coverageAccess.getQueueType() == QueueType.UNBOUNDED
-                                        ? new LinkedBlockingQueue<>()
-                                        : new SynchronousQueue<>());
+                executor = new ThreadPoolExecutor(
+                        coverageAccess.getCorePoolSize(),
+                        coverageAccess.getMaxPoolSize(),
+                        coverageAccess.getKeepAliveTime(),
+                        TimeUnit.MILLISECONDS,
+                        coverageAccess.getQueueType() == QueueType.UNBOUNDED
+                                ? new LinkedBlockingQueue<>()
+                                : new SynchronousQueue<>());
                 coverageAccess.setThreadPoolExecutor(executor);
             } else {
 
@@ -111,8 +106,7 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
                     // now reconfigure
                     executor.setMaximumPoolSize(coverageAccess.getMaxPoolSize());
                     executor.setCorePoolSize(coverageAccess.getCorePoolSize());
-                    executor.setKeepAliveTime(
-                            coverageAccess.getKeepAliveTime(), TimeUnit.MILLISECONDS);
+                    executor.setKeepAliveTime(coverageAccess.getKeepAliveTime(), TimeUnit.MILLISECONDS);
                     coverageAccess.setThreadPoolExecutor(executor);
                 } else {
 
@@ -123,15 +117,14 @@ public class CoverageAccessInitializer implements GeoServerInitializer, Extensio
                         executor.shutdownNow();
                     }
 
-                    executor =
-                            new ThreadPoolExecutor(
-                                    coverageAccess.getCorePoolSize(),
-                                    coverageAccess.getMaxPoolSize(),
-                                    coverageAccess.getKeepAliveTime(),
-                                    TimeUnit.MILLISECONDS,
-                                    coverageAccess.getQueueType() == QueueType.DIRECT
-                                            ? new SynchronousQueue<>()
-                                            : new LinkedBlockingQueue<>());
+                    executor = new ThreadPoolExecutor(
+                            coverageAccess.getCorePoolSize(),
+                            coverageAccess.getMaxPoolSize(),
+                            coverageAccess.getKeepAliveTime(),
+                            TimeUnit.MILLISECONDS,
+                            coverageAccess.getQueueType() == QueueType.DIRECT
+                                    ? new SynchronousQueue<>()
+                                    : new LinkedBlockingQueue<>());
                     coverageAccess.setThreadPoolExecutor(executor);
                 }
             }

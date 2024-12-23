@@ -34,9 +34,7 @@ public class Projection {
         try {
             this.crs = CRS.decode(code);
             this.baseCRS =
-                    CRS.getProjectedCRS(crs) != null
-                            ? CRS.getProjectedCRS(crs).getBaseCRS()
-                            : this.crs;
+                    CRS.getProjectedCRS(crs) != null ? CRS.getProjectedCRS(crs).getBaseCRS() : this.crs;
             this.baseLatLon = CRS.getAxisOrder(this.baseCRS) == CRS.AxisOrder.NORTH_EAST;
             this.toProjected = CRS.findMathTransform(this.baseCRS, crs);
             this.toLatLng = this.toProjected.inverse();
@@ -81,10 +79,7 @@ public class Projection {
         else return new LatLng(p.y, p.x);
     }
 
-    /**
-     * This method is used to convert a Position2D to a LatLng. The Position2D is assumed to be in
-     * Lat/Lon
-     */
+    /** This method is used to convert a Position2D to a LatLng. The Position2D is assumed to be in Lat/Lon */
     private LatLng toLatLon(Position2D position) {
         if (baseLatLon) return new LatLng(position.getOrdinate(0), position.getOrdinate(1));
         else return new LatLng(position.getOrdinate(1), position.getOrdinate(0));
@@ -96,10 +91,7 @@ public class Projection {
         else return new Point(latlng.lng, latlng.lat);
     }
 
-    /**
-     * This method is used to convert a LatLng to a Position2D. The Position2D is assumed to be in
-     * Lat/Lon
-     */
+    /** This method is used to convert a LatLng to a Position2D. The Position2D is assumed to be in Lat/Lon */
     private Position2D toPosition2D(LatLng latlng) {
         if (baseLatLon) return new Position2D(this.baseCRS, latlng.lat, latlng.lng);
         else return new Position2D(this.baseCRS, latlng.lng, latlng.lat);

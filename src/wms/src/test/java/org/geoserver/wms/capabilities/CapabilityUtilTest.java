@@ -28,8 +28,7 @@ public class CapabilityUtilTest extends WMSTestSupport {
     public void testSearchMinMaxScaleDenominator() throws Exception {
         Catalog catalog = getCatalog();
         Set<StyleInfo> styles = Collections.singleton(catalog.getStyleByName("multiNamedLayers"));
-        NumberRange<Double> denominatorsMultiNamed =
-                CapabilityUtil.searchMinMaxScaleDenominator(styles);
+        NumberRange<Double> denominatorsMultiNamed = CapabilityUtil.searchMinMaxScaleDenominator(styles);
         assertEquals(
                 "There are two NamedLayer sections in this SLD, should grab both to get min denom",
                 10000000,
@@ -41,8 +40,7 @@ public class CapabilityUtilTest extends WMSTestSupport {
                 denominatorsMultiNamed.getMaxValue(),
                 0.0);
         Set<StyleInfo> stylesSingle = Collections.singleton(catalog.getStyleByName("regionated"));
-        NumberRange<Double> denominatorsSingle =
-                CapabilityUtil.searchMinMaxScaleDenominator(stylesSingle);
+        NumberRange<Double> denominatorsSingle = CapabilityUtil.searchMinMaxScaleDenominator(stylesSingle);
         assertEquals(
                 "There is one UserStyle section in this SLD, should be able to get min denom",
                 80000000,

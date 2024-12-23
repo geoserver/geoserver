@@ -12,8 +12,8 @@ import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
 
 /**
- * Parses kvp of the form 'sortBy=Field1:{A|D},Field2:{A|D}...' into a list of {@link
- * org.geotools.api.filter.sort.SortBy}.
+ * Parses kvp of the form 'sortBy=Field1:{A|D},Field2:{A|D}...' into a list of
+ * {@link org.geotools.api.filter.sort.SortBy}.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */

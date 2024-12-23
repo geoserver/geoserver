@@ -42,9 +42,7 @@ public abstract class ImagePPIO extends BinaryPPIO {
             ri = decoder.decodeAsRenderedImage();
         } catch (IOException ioe) {
             WPSException wpse =
-                    new WPSException(
-                            "Unable to decode the image. Expected an image having mimetype = "
-                                    + mimeType);
+                    new WPSException("Unable to decode the image. Expected an image having mimetype = " + mimeType);
             wpse.initCause(ioe);
             throw wpse;
         }

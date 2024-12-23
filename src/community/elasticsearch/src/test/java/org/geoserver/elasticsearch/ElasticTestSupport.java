@@ -115,8 +115,8 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
         host = elasticsearch.getContainerIpAddress();
         port = elasticsearch.getFirstMappedPort();
         indexName = "gt_integ_test_" + System.nanoTime();
-        client =
-                new RestElasticClient(RestClient.builder(new HttpHost(host, port, "http")).build());
+        client = new RestElasticClient(
+                RestClient.builder(new HttpHost(host, port, "http")).build());
         Map<String, Serializable> params = createConnectionParams();
         ElasticDataStoreFactory factory = new ElasticDataStoreFactory();
         dataStore = (ElasticDataStore) factory.createDataStore(params);
@@ -144,9 +144,7 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
     protected void createIndices(ElasticClient client, String indexName) throws IOException {
         // create index and add mappings
         Map<String, Object> settings = new HashMap<>();
-        settings.put(
-                "settings",
-                ImmutableMap.of("number_of_shards", numShards, "number_of_replicas", numReplicas));
+        settings.put("settings", ImmutableMap.of("number_of_shards", numShards, "number_of_replicas", numReplicas));
         final String filename;
         if (client.getVersion() < 5) {
             filename = LEGACY_ACTIVE_MAPPINGS_FILE;
@@ -172,12 +170,8 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
         performRequest(client, "PUT", "/" + indexName, settings);
 
         // add alias
-        Map<String, Object> aliases =
-                ImmutableMap.of(
-                        "actions",
-                        ImmutableList.of(
-                                ImmutableMap.of(
-                                        "index", indexName, "alias", indexName + "_alias")));
+        Map<String, Object> aliases = ImmutableMap.of(
+                "actions", ImmutableList.of(ImmutableMap.of("index", indexName, "alias", indexName + "_alias")));
         performRequest(client, "PUT", "/_alias", aliases);
     }
 
@@ -199,20 +193,13 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
                     }
                     final Map<String, Object> content = mapReader.readValue(builder.toString());
                     @SuppressWarnings("unchecked")
-                    final List<Map<String, Object>> features =
-                            (List<Map<String, Object>>) content.get("features");
+                    final List<Map<String, Object>> features = (List<Map<String, Object>>) content.get("features");
                     for (final Map<String, Object> featureSource : features) {
                         if (featureSource.containsKey("status_s")
                                 && featureSource.get("status_s").equals(status)) {
-                            final String id =
-                                    featureSource.containsKey("id")
-                                            ? (String) featureSource.get("id")
-                                            : null;
+                            final String id = featureSource.containsKey("id") ? (String) featureSource.get("id") : null;
                             final String typeName = client.getVersion() < 7 ? TYPE_NAME : "_doc";
-                            performRequest(
-                                    "POST",
-                                    "/" + indexName + "/" + typeName + "/" + id,
-                                    featureSource);
+                            performRequest("POST", "/" + indexName + "/" + typeName + "/" + id, featureSource);
                         }
                     }
 
@@ -262,13 +249,11 @@ public class ElasticTestSupport extends GeoServerWicketTestSupport {
         featureSource = (ElasticFeatureSource) dataStore.getFeatureSource(TYPE_NAME);
     }
 
-    private void performRequest(String method, String endpoint, Map<String, Object> body)
-            throws IOException {
+    private void performRequest(String method, String endpoint, Map<String, Object> body) throws IOException {
         performRequest(client, method, endpoint, body);
     }
 
-    protected void performRequest(
-            ElasticClient client, String method, String endpoint, Map<String, Object> body)
+    protected void performRequest(ElasticClient client, String method, String endpoint, Map<String, Object> body)
             throws IOException {
         ((RestElasticClient) client).performRequest(method, endpoint, body);
     }

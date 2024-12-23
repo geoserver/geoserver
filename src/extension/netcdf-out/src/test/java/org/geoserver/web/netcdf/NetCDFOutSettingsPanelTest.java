@@ -35,9 +35,7 @@ public class NetCDFOutSettingsPanelTest extends GeoServerWicketTestSupport {
         // Ensure the element is in the map
         assertNotNull(container);
         // Ensure the panel is present
-        NetCDFPanel panel =
-                (NetCDFPanel)
-                        tester.getComponentFromLastRenderedPage("form:extensions:0:content:panel");
+        NetCDFPanel panel = (NetCDFPanel) tester.getComponentFromLastRenderedPage("form:extensions:0:content:panel");
         assertNotNull(panel);
         // Check that the values are the same
         NetCDFSettingsContainer container2 = (NetCDFSettingsContainer) panel.getModelObject();

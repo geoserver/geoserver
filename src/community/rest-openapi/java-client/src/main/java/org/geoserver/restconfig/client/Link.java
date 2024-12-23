@@ -7,8 +7,8 @@ import lombok.Value;
 import org.geoserver.openapi.v1.model.NamedLink;
 
 /**
- * Value class to unify the mismatch in the geoserver REST API regarding mixed usage of "href" and
- * "link" attributes when returning a list of {@link NamedLink named links}
+ * Value class to unify the mismatch in the geoserver REST API regarding mixed usage of "href" and "link" attributes
+ * when returning a list of {@link NamedLink named links}
  */
 public @Value class Link {
 

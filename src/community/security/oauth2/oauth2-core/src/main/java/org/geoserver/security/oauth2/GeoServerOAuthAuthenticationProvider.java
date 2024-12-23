@@ -50,8 +50,7 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
         this.tokenServices = (RemoteTokenServices) context.getBean(tokenServices);
         this.oauth2SecurityConfiguration =
                 (GeoServerOAuth2SecurityConfiguration) context.getBean(oauth2SecurityConfiguration);
-        this.geoServerOauth2RestTemplate =
-                (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
+        this.geoServerOauth2RestTemplate = (OAuth2RestTemplate) context.getBean(geoServerOauth2RestTemplate);
 
         securityManager.addListener(this);
     }
@@ -66,8 +65,7 @@ public abstract class GeoServerOAuthAuthenticationProvider extends AbstractFilte
     public abstract GeoServerSecurityFilter createFilter(SecurityNamedServiceConfig config);
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new OAuth2FilterConfigValidator(securityManager);
     }
 

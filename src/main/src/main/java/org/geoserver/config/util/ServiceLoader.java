@@ -30,14 +30,12 @@ public abstract class ServiceLoader {
      *
      * @param reader The services.xml reader.
      */
-    public abstract ServiceInfo load(LegacyServicesReader reader, GeoServer geoServer)
-            throws Exception;
+    public abstract ServiceInfo load(LegacyServicesReader reader, GeoServer geoServer) throws Exception;
 
     /**
      * Reads all the common attributes from the service info class.
      *
-     * <p>This method is intended to be called by subclasses after creating an instance of
-     * ServiceInfo. Example:
+     * <p>This method is intended to be called by subclasses after creating an instance of ServiceInfo. Example:
      *
      * <pre>
      *   // read properties
@@ -54,8 +52,7 @@ public abstract class ServiceLoader {
      *   ...
      * </pre>
      */
-    protected void load(ServiceInfo service, Map<String, Object> properties, GeoServer gs)
-            throws Exception {
+    protected void load(ServiceInfo service, Map<String, Object> properties, GeoServer gs) throws Exception {
 
         service.setEnabled((Boolean) properties.get("enabled"));
         service.setName((String) properties.get("name"));

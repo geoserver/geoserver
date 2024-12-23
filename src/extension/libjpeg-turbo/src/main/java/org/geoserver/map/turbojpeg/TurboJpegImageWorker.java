@@ -40,8 +40,7 @@ import org.geotools.util.logging.Logging;
  */
 final class TurboJpegImageWorker extends ImageWorker {
 
-    static final String ERROR_LIB_MESSAGE =
-            "The TurboJpeg native library hasn't been loaded: Skipping";
+    static final String ERROR_LIB_MESSAGE = "The TurboJpeg native library hasn't been loaded: Skipping";
 
     static final String ERROR_FILE_MESSAGE = "The specified input file can't be read: Skipping";
 
@@ -64,27 +63,25 @@ final class TurboJpegImageWorker extends ImageWorker {
     }
 
     /**
-     * Writes outs the image contained into this {@link ImageWorker} as a JPEG using the provided
-     * destination , compression and compression rate.
+     * Writes outs the image contained into this {@link ImageWorker} as a JPEG using the provided destination ,
+     * compression and compression rate.
      *
-     * <p>The destination object can be anything providing that we have an {@link
-     * ImageOutputStreamSpi} that recognizes it.
+     * <p>The destination object can be anything providing that we have an {@link ImageOutputStreamSpi} that recognizes
+     * it.
      *
      * @param destination where to write the internal {@link #image} as a JPEG.
      * @param compressionRate percentage of compression.
-     * @throws IOException In case an error occurs during the search for an {@link
-     *     ImageOutputStream} or during the eoncding process.
+     * @throws IOException In case an error occurs during the search for an {@link ImageOutputStream} or during the
+     *     eoncding process.
      */
-    public final void writeTurboJPEG(final OutputStream destination, final float compressionRate)
-            throws IOException {
+    public final void writeTurboJPEG(final OutputStream destination, final float compressionRate) throws IOException {
 
         if (!TurboJpegUtilities.isTurboJpegAvailable()) {
             throw new IllegalStateException(ERROR_LIB_MESSAGE);
         }
 
         // Reformatting this image for jpeg.
-        if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.fine("Encoding input image to write out as JPEG using .");
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Encoding input image to write out as JPEG using .");
 
         // go to component color model if needed
         ColorModel cm = image.getColorModel();
@@ -108,11 +105,9 @@ final class TurboJpegImageWorker extends ImageWorker {
         }
 
         // Getting a writer.
-        if (LOGGER.isLoggable(Level.FINE))
-            LOGGER.fine("Creating a TURBO JPEG writer and configuring it.");
+        if (LOGGER.isLoggable(Level.FINE)) LOGGER.fine("Creating a TURBO JPEG writer and configuring it.");
 
-        final TurboJpegImageWriter writer =
-                (TurboJpegImageWriter) TURBO_JPEG_SPI.createWriterInstance();
+        final TurboJpegImageWriter writer = (TurboJpegImageWriter) TURBO_JPEG_SPI.createWriterInstance();
         // Compression is available on both lib
         TurboJpegImageWriteParam iwp = (TurboJpegImageWriteParam) writer.getDefaultWriteParam();
         iwp.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
@@ -128,8 +123,7 @@ final class TurboJpegImageWorker extends ImageWorker {
             try {
                 writer.dispose();
             } catch (Throwable e) {
-                if (LOGGER.isLoggable(Level.FINE))
-                    LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
+                if (LOGGER.isLoggable(Level.FINE)) LOGGER.log(Level.FINE, e.getLocalizedMessage(), e);
             }
         }
     }
@@ -147,16 +141,13 @@ final class TurboJpegImageWorker extends ImageWorker {
         }
 
         // Forcing the colormodel with noAlpha
-        final ColorModel colorModel =
-                new ComponentColorModel(
-                        ColorSpace.getInstance(
-                                requestedBands == 3 ? ColorSpace.CS_sRGB : ColorSpace.CS_GRAY),
-                        false,
-                        false,
-                        Transparency.OPAQUE,
-                        DataBuffer.TYPE_BYTE);
-        SampleModel sm =
-                colorModel.createCompatibleSampleModel(image.getWidth(), image.getHeight());
+        final ColorModel colorModel = new ComponentColorModel(
+                ColorSpace.getInstance(requestedBands == 3 ? ColorSpace.CS_sRGB : ColorSpace.CS_GRAY),
+                false,
+                false,
+                Transparency.OPAQUE,
+                DataBuffer.TYPE_BYTE);
+        SampleModel sm = colorModel.createCompatibleSampleModel(image.getWidth(), image.getHeight());
         layout.setSampleModel(sm);
 
         // Forcing the output format to remove the alpha Band

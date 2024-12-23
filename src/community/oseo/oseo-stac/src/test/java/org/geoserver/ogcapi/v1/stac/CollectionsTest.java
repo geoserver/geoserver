@@ -55,18 +55,15 @@ public class CollectionsTest extends STACTestSupport {
         assertEquals("GeoServer STAC Collections", document.select("#title").text());
 
         // the collection titles
-        Set<String> titles =
-                document.select("div.card-header h2").stream()
-                        .map(e -> e.text())
-                        .collect(Collectors.toSet());
+        Set<String> titles = document.select("div.card-header h2").stream()
+                .map(e -> e.text())
+                .collect(Collectors.toSet());
         assertThat(
                 titles,
-                Matchers.containsInAnyOrder(
-                        "ATMTEST", "ATMTEST2", "SENTINEL2", "SENTINEL1", "LANDSAT8", "GS_TEST"));
+                Matchers.containsInAnyOrder("ATMTEST", "ATMTEST2", "SENTINEL2", "SENTINEL1", "LANDSAT8", "GS_TEST"));
 
         // test the Sentinel2 entry
-        Elements s2Body =
-                document.select("div.card-header:has(a:contains(SENTINEL2)) ~ div.card-body");
+        Elements s2Body = document.select("div.card-header:has(a:contains(SENTINEL2)) ~ div.card-body");
         testSentinel2HTML(s2Body);
     }
 
@@ -101,16 +98,27 @@ public class CollectionsTest extends STACTestSupport {
                 1,
                 s1.read("providers[?(@.name == 'European Union/ESA/Copernicus')]", List.class)
                         .size());
-        assertEquals(1, s1.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
+        assertEquals(
+                1,
+                s1.read("providers[?(@.name == 'GeoServer')].length()", List.class)
+                        .size());
 
         // and the Landsat ones
         DocumentContext l8 = readSingleContext(json, "collections[?(@.id == 'LANDSAT8')]");
         assertEquals(2, (int) l8.read("providers.length()", Integer.class));
-        assertEquals(1, l8.read("providers[?(@.name == 'USGS')].length()", List.class).size());
-        assertEquals(1, l8.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
+        assertEquals(
+                1,
+                l8.read("providers[?(@.name == 'USGS')].length()", List.class).size());
+        assertEquals(
+                1,
+                l8.read("providers[?(@.name == 'GeoServer')].length()", List.class)
+                        .size());
         assertEquals(2, (int) l8.read("providers.length()", Integer.class));
         assertEquals(1, l8.read("providers[?(@.name == 'USGS')]", List.class).size());
-        assertEquals(1, l8.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
+        assertEquals(
+                1,
+                l8.read("providers[?(@.name == 'GeoServer')].length()", List.class)
+                        .size());
     }
 
     @Test
@@ -151,9 +159,7 @@ public class CollectionsTest extends STACTestSupport {
     private void testSentinel2HTML(Elements elements) {
         assertTextContains(elements, "[data-tid='title']", "The Sentinel-2 mission");
         assertTextContains(
-                elements,
-                "[data-tid='description']",
-                "The SENTINEL-2 mission is a land monitoring constellation");
+                elements, "[data-tid='description']", "The SENTINEL-2 mission is a land monitoring constellation");
         assertTextContains(elements, "[data-tid='gbounds']", "-179, -89, 179, 89");
         assertTextContains(elements, "[data-tid='tbounds']", "2015-07-01");
         assertTextContains(elements, "[data-tid='tbounds']", "2016-02-26");
@@ -171,8 +177,7 @@ public class CollectionsTest extends STACTestSupport {
         assertThat(
                 s2.read("description"),
                 CoreMatchers.containsString(
-                        "The SENTINEL-2 mission is a land monitoring constellation of two "
-                                + "satellites"));
+                        "The SENTINEL-2 mission is a land monitoring constellation of two " + "satellites"));
         assertEquals(STACService.STAC_VERSION, s2.read("stac_version"));
         assertEquals("CC-BY-NC-ND-3.0-IGO", s2.read("license"));
         // Sentinel 2 bounding box, uses the eoSummaries function in the collections.json template
@@ -191,18 +196,17 @@ public class CollectionsTest extends STACTestSupport {
                 1,
                 s2.read("providers[?(@.name == 'European Union/ESA/Copernicus')]", List.class)
                         .size());
-        assertEquals(1, s2.read("providers[?(@.name == 'GeoServer')].length()", List.class).size());
+        assertEquals(
+                1,
+                s2.read("providers[?(@.name == 'GeoServer')].length()", List.class)
+                        .size());
         // the links for sentinel2
         assertEquals(6, (int) s2.read("links.length()", Integer.class));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2",
                 readSingle(s2, "links[?(@.rel == 'self')].href"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/v1",
-                readSingle(s2, "links[?(@.rel == 'parent')].href"));
-        assertEquals(
-                "http://localhost:8080/geoserver/ogc/stac/v1",
-                readSingle(s2, "links[?(@.rel == 'root')].href"));
+        assertEquals("http://localhost:8080/geoserver/ogc/stac/v1", readSingle(s2, "links[?(@.rel == 'parent')].href"));
+        assertEquals("http://localhost:8080/geoserver/ogc/stac/v1", readSingle(s2, "links[?(@.rel == 'root')].href"));
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/stac/v1/collections/SENTINEL2/items",
                 readSingle(s2, "links[?(@.rel == 'items')].href"));
@@ -224,8 +228,7 @@ public class CollectionsTest extends STACTestSupport {
 
     @Test
     public void testVersionHeader() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/stac/v1/collections/SENTINEL2?f=json");
+        MockHttpServletResponse response = getAsServletResponse("ogc/stac/v1/collections/SENTINEL2?f=json");
         assertTrue(headerHasValue(response, "API-Version", "1.0.0"));
     }
 }

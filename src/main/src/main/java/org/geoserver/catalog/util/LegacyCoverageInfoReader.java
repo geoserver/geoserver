@@ -68,9 +68,7 @@ public class LegacyCoverageInfoReader {
     public Map<String, String> metadataLink() {
         HashMap<String, String> ml = new HashMap<>();
         ml.put("about", ReaderUtils.getChildAttribute(coverage, "metadataLink", "about"));
-        ml.put(
-                "metadataType",
-                ReaderUtils.getChildAttribute(coverage, "metadataLink", ",metadataType"));
+        ml.put("metadataType", ReaderUtils.getChildAttribute(coverage, "metadataLink", ",metadataType"));
 
         return ml;
     }
@@ -135,9 +133,7 @@ public class LegacyCoverageInfoReader {
 
         HashMap<String, Object> grid = new HashMap<>();
 
-        grid.put(
-                "dimension",
-                Integer.parseInt(ReaderUtils.getAttribute(gridElement, "dimension", true)));
+        grid.put("dimension", Integer.parseInt(ReaderUtils.getAttribute(gridElement, "dimension", true)));
 
         Element lowElement = ReaderUtils.getChildElement(gridElement, "low");
         String[] lows = lowElement.getFirstChild().getTextContent().trim().split(" ");
@@ -236,8 +232,8 @@ public class LegacyCoverageInfoReader {
 
     public List<String> supportedInterpolations() throws Exception {
         Element supportedFormats = ReaderUtils.getChildElement(coverage, "supportedInterpolations");
-        String[] interpolations =
-                ReaderUtils.getChildText(supportedFormats, "interpolationMethods").split(",");
+        String[] interpolations = ReaderUtils.getChildText(supportedFormats, "interpolationMethods")
+                .split(",");
         return Arrays.asList(interpolations);
     }
 

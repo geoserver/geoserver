@@ -124,9 +124,9 @@ public class ConfirmRemovalPanel extends Panel {
 
         // modified objects root (we show it if any modified object is on the list)
         WebMarkupContainer modified = new WebMarkupContainer("modifiedObjects");
-        modified.setVisible(
-                visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET).size()
-                        > 0);
+        modified.setVisible(visitor.getObjects(null, EXTRA_STYLE_REMOVED, GROUP_CHANGED, STYLE_RESET)
+                        .size()
+                > 0);
         add(modified);
 
         // layers modified
@@ -162,37 +162,33 @@ public class ConfirmRemovalPanel extends Panel {
             return BeanUtils.getProperty(object, "name");
         } catch (Exception e) {
             throw new RuntimeException(
-                    "A catalog object that does not have "
-                            + "a 'name' property has been used, this is unexpected",
-                    e);
+                    "A catalog object that does not have " + "a 'name' property has been used, this is unexpected", e);
         }
     }
 
     ListView<CatalogInfo> notRemovedList(final Map<CatalogInfo, StringResourceModel> notRemoved) {
         List<CatalogInfo> items = new ArrayList<>(notRemoved.keySet());
-        ListView<CatalogInfo> lv =
-                new ListView<CatalogInfo>("notRemovedList", items) {
+        ListView<CatalogInfo> lv = new ListView<CatalogInfo>("notRemovedList", items) {
 
-                    @Override
-                    protected void populateItem(ListItem<CatalogInfo> item) {
-                        CatalogInfo object = item.getModelObject();
-                        StringResourceModel reason = notRemoved.get(object);
-                        item.add(new Label("name", name(object)));
-                        item.add(new Label("reason", reason));
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem<CatalogInfo> item) {
+                CatalogInfo object = item.getModelObject();
+                StringResourceModel reason = notRemoved.get(object);
+                item.add(new Label("name", name(object)));
+                item.add(new Label("reason", reason));
+            }
+        };
         return lv;
     }
 
     /**
      * Determines if a catalog object can be removed or not.
      *
-     * <p>This method returns non-null in cases where the object should not be be removed. The
-     * return value should be a description or reason of why the object can not be removed.
+     * <p>This method returns non-null in cases where the object should not be be removed. The return value should be a
+     * description or reason of why the object can not be removed.
      *
      * @param info The object to be removed.
-     * @return A message stating why the object can not be removed, or null to indicate that it can
-     *     be removed.
+     * @return A message stating why the object can not be removed, or null to indicate that it can be removed.
      */
     protected StringResourceModel canRemove(CatalogInfo info) {
         return null;

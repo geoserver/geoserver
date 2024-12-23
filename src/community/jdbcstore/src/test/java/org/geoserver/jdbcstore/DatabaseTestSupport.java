@@ -50,9 +50,6 @@ public interface DatabaseTestSupport extends AutoCloseable {
     @Override
     public void close() throws SQLException;
 
-    /**
-     * Stub the database relevant configuration options of the provided easyMock
-     * JDBCResourceStoreProperties
-     */
+    /** Stub the database relevant configuration options of the provided easyMock JDBCResourceStoreProperties */
     public abstract void stubConfig(JDBCResourceStoreProperties config);
 }

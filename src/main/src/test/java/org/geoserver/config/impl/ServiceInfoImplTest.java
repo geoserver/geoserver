@@ -19,13 +19,11 @@ public class ServiceInfoImplTest {
         ServiceInfoImpl s2 = new ServiceInfoImpl();
 
         // initialize both with the same state, no title but i18n title available
-        Consumer<ServiceInfoImpl> initer =
-                s -> {
-                    GrowableInternationalString title =
-                            new GrowableInternationalString("default language");
-                    title.add(Locale.ITALIAN, "lingua italiana");
-                    s.setInternationalTitle(title);
-                };
+        Consumer<ServiceInfoImpl> initer = s -> {
+            GrowableInternationalString title = new GrowableInternationalString("default language");
+            title.add(Locale.ITALIAN, "lingua italiana");
+            s.setInternationalTitle(title);
+        };
         initer.accept(s1);
         initer.accept(s2);
 
@@ -38,13 +36,11 @@ public class ServiceInfoImplTest {
         ServiceInfoImpl s2 = new ServiceInfoImpl();
 
         // initialize both with the same state, no abstract but i18n abstract available
-        Consumer<ServiceInfoImpl> initer =
-                s -> {
-                    GrowableInternationalString abs =
-                            new GrowableInternationalString("default language");
-                    abs.add(Locale.ITALIAN, "lingua italiana");
-                    s.setInternationalAbstract(abs);
-                };
+        Consumer<ServiceInfoImpl> initer = s -> {
+            GrowableInternationalString abs = new GrowableInternationalString("default language");
+            abs.add(Locale.ITALIAN, "lingua italiana");
+            s.setInternationalAbstract(abs);
+        };
         initer.accept(s1);
         initer.accept(s2);
 

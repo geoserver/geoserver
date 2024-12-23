@@ -79,8 +79,7 @@ public class GeoServerClient {
 
         public boolean canHandle(String contentType) {
             return contentType != null
-                    && (contentType.startsWith("text/plain")
-                            || supportedMimeTypes.contains(contentType));
+                    && (contentType.startsWith("text/plain") || supportedMimeTypes.contains(contentType));
         }
     }
 
@@ -88,8 +87,7 @@ public class GeoServerClient {
 
         private final Encoder delegate;
 
-        public @Override void encode(Object object, Type bodyType, RequestTemplate template)
-                throws EncodeException {
+        public @Override void encode(Object object, Type bodyType, RequestTemplate template) throws EncodeException {
             if (byte[].class.equals(bodyType)) {
                 if (object != null) {
                     byte[] bytes;
@@ -99,9 +97,7 @@ public class GeoServerClient {
                         bytes = (byte[]) object;
                     } else {
                         throw new IllegalArgumentException(
-                                "Don't know how to convert "
-                                        + object.getClass().getName()
-                                        + " to byte[]");
+                                "Don't know how to convert " + object.getClass().getName() + " to byte[]");
                     }
                     Body body = Body.encoded(bytes, UTF_8);
                     template.body(body);
@@ -134,40 +130,35 @@ public class GeoServerClient {
         feignBuilder.client(new OkHttpClient());
         // but avoid error "feign.FeignException: source exhausted prematurely reading POST" due to
         // server sending incorrect content-length
-        feignBuilder.requestInterceptor(
-                new RequestInterceptor() {
-                    public @Override void apply(RequestTemplate template) {
-                        template.header("Accept-Encoding", "identity");
-                    }
-                });
+        feignBuilder.requestInterceptor(new RequestInterceptor() {
+            public @Override void apply(RequestTemplate template) {
+                template.header("Accept-Encoding", "identity");
+            }
+        });
 
-        Decoder decoder =
-                new Decoder() {
+        Decoder decoder = new Decoder() {
 
-                    final JacksonDecoder jacksonDecoder = new JacksonDecoder(objectMapper);
-                    final ByContentTypeStringDecoder stringDecoder =
-                            new ByContentTypeStringDecoder( //
-                                    StylesClient.StyleFormat.MAPBOX.getMimeType(), //
-                                    StylesClient.StyleFormat.SLD_1_0_0.getMimeType(), //
-                                    StylesClient.StyleFormat.SLD_1_1_0.getMimeType(), //
-                                    StylesClient.StyleFormat.GEOCSS.getMimeType(), //
-                                    StylesClient.StyleFormat.YSLD.getMimeType() //
-                                    );
+            final JacksonDecoder jacksonDecoder = new JacksonDecoder(objectMapper);
+            final ByContentTypeStringDecoder stringDecoder = new ByContentTypeStringDecoder( //
+                    StylesClient.StyleFormat.MAPBOX.getMimeType(), //
+                    StylesClient.StyleFormat.SLD_1_0_0.getMimeType(), //
+                    StylesClient.StyleFormat.SLD_1_1_0.getMimeType(), //
+                    StylesClient.StyleFormat.GEOCSS.getMimeType(), //
+                    StylesClient.StyleFormat.YSLD.getMimeType() //
+                    );
 
-                    @Override
-                    public Object decode(Response response, Type type)
-                            throws IOException, DecodeException, FeignException {
-                        Collection<String> contentType = response.headers().get("Content-Type");
-                        String mime =
-                                contentType == null || contentType.isEmpty()
-                                        ? null
-                                        : contentType.iterator().next();
-                        if (stringDecoder.canHandle(mime)) {
-                            return stringDecoder.decode(response, type);
-                        }
-                        return jacksonDecoder.decode(response, type);
-                    }
-                };
+            @Override
+            public Object decode(Response response, Type type) throws IOException, DecodeException, FeignException {
+                Collection<String> contentType = response.headers().get("Content-Type");
+                String mime = contentType == null || contentType.isEmpty()
+                        ? null
+                        : contentType.iterator().next();
+                if (stringDecoder.canHandle(mime)) {
+                    return stringDecoder.decode(response, type);
+                }
+                return jacksonDecoder.decode(response, type);
+            }
+        };
         feignBuilder.decoder(decoder);
         feignBuilder.encoder(new BinaryEncoder(new FormEncoder(new JacksonEncoder(objectMapper))));
     }
@@ -186,8 +177,8 @@ public class GeoServerClient {
     }
 
     /**
-     * Utility method to clone a model object to overcome the issue that openapi-codegen generated
-     * models don't provide a copy constructor
+     * Utility method to clone a model object to overcome the issue that openapi-codegen generated models don't provide
+     * a copy constructor
      */
     @SuppressWarnings("unchecked")
     public @NonNull <T> T clone(@NonNull T modelObject) {
@@ -226,19 +217,17 @@ public class GeoServerClient {
         return this;
     }
 
-    public GeoServerClient setRequestHeaderAuth(
-            @NonNull String authName, @NonNull Map<String, String> authHeaders) {
-        RequestInterceptor interceptor =
-                new RequestInterceptor() {
-                    private final Map<String, String> headers = new HashMap<>(authHeaders);
+    public GeoServerClient setRequestHeaderAuth(@NonNull String authName, @NonNull Map<String, String> authHeaders) {
+        RequestInterceptor interceptor = new RequestInterceptor() {
+            private final Map<String, String> headers = new HashMap<>(authHeaders);
 
-                    public @Override void apply(RequestTemplate template) {
-                        for (String name : headers.keySet()) {
-                            String value = headers.get(name);
-                            template.header(name, value);
-                        }
-                    }
-                };
+            public @Override void apply(RequestTemplate template) {
+                for (String name : headers.keySet()) {
+                    String value = headers.get(name);
+                    template.header(name, value);
+                }
+            }
+        };
         apiClient.getApiAuthorizations().remove("basicAuth");
         apiClient.addAuthorization(authName, interceptor);
         return this;

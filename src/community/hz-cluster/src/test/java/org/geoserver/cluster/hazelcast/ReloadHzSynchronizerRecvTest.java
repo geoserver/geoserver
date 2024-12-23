@@ -46,102 +46,88 @@ public class ReloadHzSynchronizerRecvTest extends HzSynchronizerRecvTest {
     }
 
     @Override
-    protected void expectationTestDisableLayer(LayerInfo info, String layerName, String layerId)
-            throws Exception {
+    protected void expectationTestDisableLayer(LayerInfo info, String layerName, String layerId) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
     protected void expectationTestStoreDelete(
-            DataStoreInfo info, String storeName, String storeId, Class<? extends StoreInfo> clazz)
-            throws Exception {
+            DataStoreInfo info, String storeName, String storeId, Class<? extends StoreInfo> clazz) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
     protected void expectationTestFTDelete(
-            FeatureTypeInfo info, String ftName, String ftId, String storeId, Class<?> clazz)
-            throws Exception {
+            FeatureTypeInfo info, String ftName, String ftId, String storeId, Class<?> clazz) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestContactChange(GeoServerInfo info, String storeId)
-            throws Exception {
+    protected void expectationTestContactChange(GeoServerInfo info, String storeId) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
     protected void expectationTestMultipleChange(
-            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId)
-            throws Exception {
+            GeoServerInfo gsInfo, String globalId, LayerInfo layerInfo, String layerId) throws Exception {
         expectGeoServerReload();
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestTwoAddressChangeNoPause(GeoServerInfo gsInfo, String globalId)
-            throws Exception {
+    protected void expectationTestTwoAddressChangeNoPause(GeoServerInfo gsInfo, String globalId) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestTwoAddressChangeWithPause(GeoServerInfo gsInfo, String globalId)
-            throws Exception {
-        expectGeoServerReload();
-        expectGeoServerReload();
-    }
-
-    @Override
-    protected void expectationTestTwoLayerChangeNoPause(LayerInfo layerInfo, String layerId)
-            throws Exception {
-        expectGeoServerReload();
-    }
-
-    @Override
-    protected void expectationTestTwoLayerChangeWithPause(LayerInfo layerInfo, String layerId)
-            throws Exception {
+    protected void expectationTestTwoAddressChangeWithPause(GeoServerInfo gsInfo, String globalId) throws Exception {
         expectGeoServerReload();
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestWorkspaceAdd(
-            WorkspaceInfo info, String workspaceName, String workspaceId) throws Exception {
+    protected void expectationTestTwoLayerChangeNoPause(LayerInfo layerInfo, String layerId) throws Exception {
+        expectGeoServerReload();
+    }
+
+    @Override
+    protected void expectationTestTwoLayerChangeWithPause(LayerInfo layerInfo, String layerId) throws Exception {
+        expectGeoServerReload();
+        expectGeoServerReload();
+    }
+
+    @Override
+    protected void expectationTestWorkspaceAdd(WorkspaceInfo info, String workspaceName, String workspaceId)
+            throws Exception {
         expectGeoServerReload();
     }
 
     @Override
     protected void expectationTestChangeSettings(
-            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId)
-            throws Exception {
+            SettingsInfo info, String settingsId, WorkspaceInfo wsInfo, String workspaceId) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestChangeLogging(LoggingInfo info, String loggingId)
-            throws Exception {
+    protected void expectationTestChangeLogging(LoggingInfo info, String loggingId) throws Exception {
         expectGeoServerReload();
     }
 
     @Override
-    protected void expectationTestChangeService(ServiceInfo info, String ServiceId)
-            throws Exception {
+    protected void expectationTestChangeService(ServiceInfo info, String ServiceId) throws Exception {
         expectGeoServerReload();
     }
 
     private void expectGeoServerReload() throws Exception {
         // Add a small delay to reload calls to mitigate a race condition.
         getGeoServer().reload();
-        expectLastCall()
-                .andAnswer(
-                        () -> {
-                            try {
-                                Thread.sleep(50);
-                            } catch (InterruptedException e) {
-                            }
-                            return null;
-                        });
+        expectLastCall().andAnswer(() -> {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+            }
+            return null;
+        });
     }
 
     @Override

@@ -53,8 +53,7 @@ public class RecordCustomizer extends FeatureCustomizer {
         List<Property> newReferencesList = new ArrayList<>();
         String link = null;
         try {
-            try (CloseableIterator<String> links =
-                    downloadLinkHandler.generateDownloadLinks(resource)) {
+            try (CloseableIterator<String> links = downloadLinkHandler.generateDownloadLinks(resource)) {
                 if (links == null) {
                     // No need to update the feature
                     return;
@@ -84,8 +83,7 @@ public class RecordCustomizer extends FeatureCustomizer {
 
                 // link String should contain the last link generated
                 // let's recycle it to generate the full download link
-                newReferencesList.add(
-                        createReferencesElement(downloadLinkHandler.extractFullDownloadLink(link)));
+                newReferencesList.add(createReferencesElement(downloadLinkHandler.extractFullDownloadLink(link)));
                 // append new references to the current collection
                 // before going to other elements
                 propertyList.addAll(newReferencesList);
@@ -101,7 +99,6 @@ public class RecordCustomizer extends FeatureCustomizer {
         Property urlAttribute = new AttributeImpl(link, VALUE_DESCRIPTOR, null);
 
         // Setting references
-        return new ComplexAttributeImpl(
-                Collections.singletonList(urlAttribute), REFERENCES_DESCRIPTOR, null);
+        return new ComplexAttributeImpl(Collections.singletonList(urlAttribute), REFERENCES_DESCRIPTOR, null);
     }
 }

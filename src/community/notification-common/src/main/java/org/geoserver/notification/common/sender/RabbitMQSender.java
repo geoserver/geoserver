@@ -18,11 +18,11 @@ import org.geoserver.notification.common.NotificationXStreamDefaultInitializer;
 import org.geotools.util.logging.Logging;
 
 /**
- * Initialize the AMQP broker client connection and delegate to specific RabbitMQ client
- * implementation the dispatch of payload.
+ * Initialize the AMQP broker client connection and delegate to specific RabbitMQ client implementation the dispatch of
+ * payload.
  *
- * <p>The broker connection parameters are populated by {@link XStream} deserialization, using the
- * configuration provided by {@link NotificationXStreamDefaultInitializer}
+ * <p>The broker connection parameters are populated by {@link XStream} deserialization, using the configuration
+ * provided by {@link NotificationXStreamDefaultInitializer}
  *
  * <p>Anonymous connection is possible using {@link CustomSaslConfig}
  *
@@ -62,15 +62,7 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
                     && !this.username.isEmpty()
                     && this.password != null
                     && !this.password.isEmpty()) {
-                this.uri =
-                        "amqp://"
-                                + this.username
-                                + ":"
-                                + this.password
-                                + "@"
-                                + this.host
-                                + ":"
-                                + this.port;
+                this.uri = "amqp://" + this.username + ":" + this.password + "@" + this.host + ":" + this.port;
             } else {
                 this.uri = "amqp://" + this.host + ":" + this.port;
             }
@@ -79,17 +71,13 @@ public abstract class RabbitMQSender implements NotificationSender, Serializable
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setUri(this.uri);
-            String vHost =
-                    (this.virtualHost != null && !this.virtualHost.isEmpty()
-                            ? this.virtualHost
-                            : "/");
+            String vHost = (this.virtualHost != null && !this.virtualHost.isEmpty() ? this.virtualHost : "/");
             factory.setVirtualHost(vHost);
             factory.setSaslConfig(new CustomSaslConfig());
             conn = factory.newConnection();
             channel = conn.createChannel();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING, "Error while trying to initialize RabbitMQ Sender Connecton", e);
+            LOGGER.log(Level.WARNING, "Error while trying to initialize RabbitMQ Sender Connecton", e);
         }
     }
 

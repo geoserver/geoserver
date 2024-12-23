@@ -37,12 +37,12 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         HttpServletRequest req = makeRequest(testString, null);
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(
-                        req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
+                new BufferedRequestWrapper(req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         byte[] b = new byte[32];
         try (ServletInputStream sis = req.getInputStream()) {
             /* clear out the request body */
-            while ((sis.readLine(b, 0, 32)) > 0) ;
+            while ((sis.readLine(b, 0, 32)) > 0)
+                ;
         }
 
         try (ServletInputStream sis = wrapper.getInputStream()) {
@@ -62,8 +62,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         clearOutBody(req);
 
         BufferedRequestWrapper wrapper =
-                new BufferedRequestWrapper(
-                        req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
+                new BufferedRequestWrapper(req, WebUtils.DEFAULT_CHARACTER_ENCODING, testString.getBytes());
         StringBuffer buff = new StringBuffer();
         int c;
         try (BufferedReader br = wrapper.getReader()) {
@@ -96,7 +95,8 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
     private void clearOutBody(HttpServletRequest req) throws IOException {
         try (BufferedReader br = req.getReader()) {
             /* clear out the body */
-            while ((br.readLine()) != null) ;
+            while ((br.readLine()) != null)
+                ;
         }
     }
 

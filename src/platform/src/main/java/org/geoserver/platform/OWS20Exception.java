@@ -18,8 +18,7 @@ import java.util.logging.Logger;
  */
 public class OWS20Exception extends ServiceException {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(OWS20Exception.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(OWS20Exception.class);
 
     /** Serial UID */
     private static final long serialVersionUID = 7254349181794561724L;
@@ -43,12 +42,10 @@ public class OWS20Exception extends ServiceException {
         public static final OWSExceptionCode NoApplicableCode =
                 new OWSExceptionCode("NoApplicableCode", 500, "Not Implemented");
         /** Added for OpenSearch support, not part of OWS 2.0 */
-        public static final OWSExceptionCode NotFound =
-                new OWSExceptionCode("NotFound", 404, "Not found");
+        public static final OWSExceptionCode NotFound = new OWSExceptionCode("NotFound", 404, "Not found");
 
         public static final OWSExceptionCode InvalidCoverageType =
-                new OWSExceptionCode(
-                        "InvalidCoverageType", 404, "Coverage addressed is not a grid coverage");
+                new OWSExceptionCode("InvalidCoverageType", 404, "Coverage addressed is not a grid coverage");
 
         public static final OWSExceptionCode ServiceUnavailable =
                 new OWSExceptionCode("ServiceUnavailable", 503, "Service Unavailable");

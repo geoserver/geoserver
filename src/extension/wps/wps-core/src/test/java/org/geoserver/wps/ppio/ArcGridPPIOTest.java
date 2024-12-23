@@ -54,11 +54,10 @@ public class ArcGridPPIOTest {
     @Test
     public void testDecodeValidStream() throws Exception {
         try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
-            doAnswer(
-                            inv -> {
-                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
-                                return null;
-                            })
+            doAnswer(inv -> {
+                        resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                        return null;
+                    })
                     .when(resources)
                     .addResource(any(GridCoverageReaderResource.class));
             Object result = ppio.decode(is);
@@ -72,11 +71,10 @@ public class ArcGridPPIOTest {
     public void testDecodeValidString() throws Exception {
         try (InputStream is = getClass().getResourceAsStream("arcGrid.asc")) {
             String string = IOUtils.toString(is, StandardCharsets.UTF_8);
-            doAnswer(
-                            inv -> {
-                                resource = inv.getArgument(0, GridCoverageReaderResource.class);
-                                return null;
-                            })
+            doAnswer(inv -> {
+                        resource = inv.getArgument(0, GridCoverageReaderResource.class);
+                        return null;
+                    })
                     .when(resources)
                     .addResource(any(GridCoverageReaderResource.class));
             Object result = ppio.decode(string);

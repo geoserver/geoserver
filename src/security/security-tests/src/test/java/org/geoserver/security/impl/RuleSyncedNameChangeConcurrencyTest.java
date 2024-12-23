@@ -51,22 +51,20 @@ public class RuleSyncedNameChangeConcurrencyTest extends GeoServerSystemTestSupp
 
         ExecutorService es = Executors.newCachedThreadPool();
 
-        es.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // save to invoke listner
-                        catalog.save(resourceInfo1);
-                    }
-                });
-        es.execute(
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        // save to invoke listner
-                        catalog.save(resourceInfo2);
-                    }
-                });
+        es.execute(new Runnable() {
+            @Override
+            public void run() {
+                // save to invoke listner
+                catalog.save(resourceInfo1);
+            }
+        });
+        es.execute(new Runnable() {
+            @Override
+            public void run() {
+                // save to invoke listner
+                catalog.save(resourceInfo2);
+            }
+        });
         es.shutdown();
         assertTrue(es.awaitTermination(1, TimeUnit.MINUTES));
 

@@ -23,8 +23,7 @@ public abstract class MinMaxOp extends AggregationOp {
         for (Object o : values) {
             o = unpack(o);
             if (o != null && !Number.class.isAssignableFrom(o.getClass())) {
-                String msg =
-                        "Cannot compute min or max value of a list where there are non numeric values.";
+                String msg = "Cannot compute min or max value of a list where there are non numeric values.";
                 LOGGER.severe(msg);
                 throw new UnsupportedOperationException(msg);
             }

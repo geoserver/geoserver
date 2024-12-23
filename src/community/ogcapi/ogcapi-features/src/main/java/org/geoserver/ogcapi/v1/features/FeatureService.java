@@ -96,11 +96,7 @@ import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 
 /** Implementation of OGC Features API service */
-@APIService(
-        service = "Features",
-        version = "1.0.1",
-        landingPage = "ogc/features/v1",
-        serviceClass = WFSInfo.class)
+@APIService(service = "Features", version = "1.0.1", landingPage = "ogc/features/v1", serviceClass = WFSInfo.class)
 @RequestMapping(path = APIDispatcher.ROOT_PATH + "/features/v1")
 public class FeatureService {
 
@@ -108,17 +104,12 @@ public class FeatureService {
 
     public static final String CORE = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/core";
     public static final String HTML = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/html";
-    public static final String GEOJSON =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
-    public static final String GMLSF0 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0";
-    public static final String GMLSF2 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2";
-    public static final String OAS30 =
-            "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
+    public static final String GEOJSON = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/geojson";
+    public static final String GMLSF0 = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf0";
+    public static final String GMLSF2 = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/gmlsf2";
+    public static final String OAS30 = "http://www.opengis.net/spec/ogcapi-features-1/1.0/conf/oas30";
 
-    public static final String CRS_BY_REFERENCE =
-            "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs";
+    public static final String CRS_BY_REFERENCE = "http://www.opengis.net/spec/ogcapi-features-2/1.0/conf/crs";
 
     public static final String CRS_PREFIX = "http://www.opengis.net/def/crs/EPSG/0/";
     public static final String DEFAULT_CRS = "http://www.opengis.net/def/crs/OGC/1.3/CRS84";
@@ -140,14 +131,12 @@ public class FeatureService {
     }
 
     /** Returns the provided CRS list, unless the feature type has its own local override */
-    public static List<String> getFeatureTypeCRS(
-            FeatureTypeInfo featureType, List<String> defaultCRS) {
+    public static List<String> getFeatureTypeCRS(FeatureTypeInfo featureType, List<String> defaultCRS) {
         // by default use the provided list, unless there is an override
         if (featureType.isOverridingServiceSRS()) {
-            List<String> result =
-                    featureType.getResponseSRS().stream()
-                            .map(c -> mapResponseSRS(c))
-                            .collect(Collectors.toList());
+            List<String> result = featureType.getResponseSRS().stream()
+                    .map(c -> mapResponseSRS(c))
+                    .collect(Collectors.toList());
             result.remove(FeatureService.DEFAULT_CRS);
             result.add(0, FeatureService.DEFAULT_CRS);
             return result;
@@ -219,11 +208,7 @@ public class FeatureService {
     @GetMapping(
             path = {"openapi", "openapi.json", "openapi.yaml"},
             name = "getApi",
-            produces = {
-                OPEN_API_MEDIA_TYPE_VALUE,
-                APPLICATION_YAML_VALUE,
-                MediaType.TEXT_XML_VALUE
-            })
+            produces = {OPEN_API_MEDIA_TYPE_VALUE, APPLICATION_YAML_VALUE, MediaType.TEXT_XML_VALUE})
     @ResponseBody
     @HTMLResponseBody(templateName = "api.ftl", fileName = "api.html")
     public OpenAPI api() throws IOException {
@@ -247,8 +232,7 @@ public class FeatureService {
     @GetMapping(path = "collections/{collectionId}", name = "describeCollection")
     @ResponseBody
     @HTMLResponseBody(templateName = "collection.ftl", fileName = "collection.html")
-    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public CollectionDocument collection(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
         CollectionDocument collection =
                 new CollectionDocument(geoServer, ft, getFeatureTypeCRS(ft, getServiceCRSList()));
@@ -262,17 +246,13 @@ public class FeatureService {
             produces = JSONSchemaMessageConverter.SCHEMA_TYPE_VALUE)
     @ResponseBody
     @HTMLResponseBody(templateName = "queryables.ftl", fileName = "queryables.html")
-    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId)
-            throws IOException {
+    public Queryables queryables(@PathVariable(name = "collectionId") String collectionId) throws IOException {
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        String id =
-                ResponseUtils.buildURL(
-                        APIRequestInfo.get().getBaseURL(),
-                        "ogc/features/v1/collections/"
-                                + ResponseUtils.urlEncode(collectionId)
-                                + "/queryables",
-                        null,
-                        URLMangler.URLType.RESOURCE);
+        String id = ResponseUtils.buildURL(
+                APIRequestInfo.get().getBaseURL(),
+                "ogc/features/v1/collections/" + ResponseUtils.urlEncode(collectionId) + "/queryables",
+                null,
+                URLMangler.URLType.RESOURCE);
         Queryables queryables = new QueryablesBuilder(id).forType(ft).build();
         queryables.addSelfLinks("collections/" + collectionId + "/queryables");
         return queryables;
@@ -298,10 +278,7 @@ public class FeatureService {
         // single collection
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(collectionId);
         if (featureType == null) {
-            throw new APIException(
-                    APIException.NOT_FOUND,
-                    "Unknown collection " + collectionId,
-                    HttpStatus.NOT_FOUND);
+            throw new APIException(APIException.NOT_FOUND, "Unknown collection " + collectionId, HttpStatus.NOT_FOUND);
         }
         return featureType;
     }
@@ -310,32 +287,31 @@ public class FeatureService {
     @ResponseBody
     @HTMLResponseBody(templateName = "conformance.ftl", fileName = "conformance.html")
     public ConformanceDocument conformance() {
-        List<String> classes =
-                Arrays.asList(
-                        CORE,
-                        OAS30,
-                        HTML,
-                        GEOJSON,
-                        /* GMLSF0, GS does not use the gmlsf namespace */
-                        CRS_BY_REFERENCE,
-                        FEATURES_FILTER,
-                        FILTER,
-                        SEARCH,
-                        ECQL,
-                        ECQL_TEXT,
-                        CQL2_BASIC,
-                        CQL2_ADVANCED,
-                        CQL2_ARITHMETIC,
-                        CQL2_PROPERTY_PROPERTY,
-                        CQL2_BASIC_SPATIAL,
-                        CQL2_SPATIAL,
-                        CQL2_FUNCTIONS,
-                        /* CQL2_TEMPORAL excluded for now, no support for all operators */
-                        /* CQL2_ARRAY excluded, no support for array operations now */
-                        CQL2_TEXT,
-                        /* CQL2_JSON very different from the binding we have */
-                        SORTBY,
-                        IDS);
+        List<String> classes = Arrays.asList(
+                CORE,
+                OAS30,
+                HTML,
+                GEOJSON,
+                /* GMLSF0, GS does not use the gmlsf namespace */
+                CRS_BY_REFERENCE,
+                FEATURES_FILTER,
+                FILTER,
+                SEARCH,
+                ECQL,
+                ECQL_TEXT,
+                CQL2_BASIC,
+                CQL2_ADVANCED,
+                CQL2_ARITHMETIC,
+                CQL2_PROPERTY_PROPERTY,
+                CQL2_BASIC_SPATIAL,
+                CQL2_SPATIAL,
+                CQL2_FUNCTIONS,
+                /* CQL2_TEMPORAL excluded for now, no support for all operators */
+                /* CQL2_ARRAY excluded, no support for array operations now */
+                CQL2_TEXT,
+                /* CQL2_JSON very different from the binding we have */
+                SORTBY,
+                IDS);
         return new ConformanceDocument(DISPLAY_NAME, classes);
     }
 
@@ -344,8 +320,7 @@ public class FeatureService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse item(
             @PathVariable(name = "collectionId") String collectionId,
-            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
-                    BigInteger startIndex,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
@@ -374,8 +349,7 @@ public class FeatureService {
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse items(
             @PathVariable(name = "collectionId") String collectionId,
-            @RequestParam(name = "startIndex", required = false, defaultValue = "0")
-                    BigInteger startIndex,
+            @RequestParam(name = "startIndex", required = false, defaultValue = "0") BigInteger startIndex,
             @RequestParam(name = "limit", required = false) BigInteger limit,
             @RequestParam(name = "bbox", required = false) String bbox,
             @RequestParam(name = "bbox-crs", required = false) String bboxCRS,
@@ -390,8 +364,7 @@ public class FeatureService {
             throws Exception {
         // build the request in a way core WFS machinery can understand it
         FeatureTypeInfo ft = getFeatureType(collectionId);
-        GetFeatureRequest request =
-                GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
+        GetFeatureRequest request = GetFeatureRequest.adapt(Wfs20Factory.eINSTANCE.createGetFeatureType());
         Query query = request.createQuery();
         query.setTypeNames(Arrays.asList(new QName(ft.getNamespace().getURI(), ft.getName())));
         List<Filter> filters = new ArrayList<>();
@@ -451,8 +424,7 @@ public class FeatureService {
     @ResponseBody
     @DefaultContentType(OGCAPIMediaTypes.GEOJSON_VALUE)
     public FeaturesResponse search(
-            @PathVariable(name = "collectionId") String collectionId,
-            @RequestBody APISearchQuery query)
+            @PathVariable(name = "collectionId") String collectionId, @RequestBody APISearchQuery query)
             throws Exception {
 
         // WARNING:
@@ -476,8 +448,7 @@ public class FeatureService {
     }
 
     /** TODO: use DimensionInfo instead? It's used to return the time range in the collection */
-    private Filter buildTimeFilter(FeatureTypeInfo ft, String time)
-            throws ParseException, IOException {
+    private Filter buildTimeFilter(FeatureTypeInfo ft, String time) throws ParseException, IOException {
         Collection times = timeParser.parse(time);
         if (times.isEmpty() || times.size() > 1) {
             throw new ServiceException(
@@ -517,11 +488,10 @@ public class FeatureService {
     }
 
     private Id buildIdsFilter(List<String> ids) {
-        FeatureId[] featureIds =
-                ids.stream()
-                        .map((id) -> FF.featureId(id))
-                        .collect(Collectors.toList())
-                        .toArray(new FeatureId[ids.size()]);
+        FeatureId[] featureIds = ids.stream()
+                .map((id) -> FF.featureId(id))
+                .collect(Collectors.toList())
+                .toArray(new FeatureId[ids.size()]);
 
         return FF.id(featureIds);
     }

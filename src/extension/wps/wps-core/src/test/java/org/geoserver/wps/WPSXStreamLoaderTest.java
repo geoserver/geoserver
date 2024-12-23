@@ -75,9 +75,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         boolean found1 = false;
         boolean found2 = false;
         for (ProcessGroupInfo pg : wps.getProcessGroups()) {
-            if (pg.getFactoryClass()
-                    .getName()
-                    .equals("org.geoserver.wps.DeprecatedProcessFactory")) {
+            if (pg.getFactoryClass().getName().equals("org.geoserver.wps.DeprecatedProcessFactory")) {
                 assertFalse(pg.isEnabled());
                 found1 = true;
             }
@@ -85,18 +83,11 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
                 for (Object opi : pg.getFilteredProcesses()) {
                     assertTrue(opi instanceof ProcessInfo);
                 }
-                if (pg.getFactoryClass()
-                        .getName()
-                        .equals("org.geoserver.wps.jts.SpringBeanProcessFactory")) {
+                if (pg.getFactoryClass().getName().equals("org.geoserver.wps.jts.SpringBeanProcessFactory")) {
                     assertTrue(pg.isEnabled());
-                    assertEquals(
-                            pg.getFilteredProcesses().get(0).getName().toString(),
-                            "gs:GeorectifyCoverage");
-                    assertEquals(
-                            pg.getFilteredProcesses().get(1).getName().toString(),
-                            "gs:GetFullCoverage");
-                    assertEquals(
-                            pg.getFilteredProcesses().get(2).getName().toString(), "gs:Import");
+                    assertEquals(pg.getFilteredProcesses().get(0).getName().toString(), "gs:GeorectifyCoverage");
+                    assertEquals(pg.getFilteredProcesses().get(1).getName().toString(), "gs:GetFullCoverage");
+                    assertEquals(pg.getFilteredProcesses().get(2).getName().toString(), "gs:Import");
                     found2 = true;
                 }
             }
@@ -120,10 +111,7 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         ProcessInfo contour = new ProcessInfoImpl();
         contour.setEnabled(true);
         contour.setName(new NameImpl("ras", "Contour"));
-        contour.getValidators()
-                .put(
-                        "levels",
-                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
+        contour.getValidators().put("levels", new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasGroup.getFilteredProcesses().add(contour);
 
@@ -140,36 +128,27 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         Document dom = dom(xml);
 
         // geometry factory
-        String baseGeomPath =
-                "/wps/processGroups/processGroup[factoryClass='"
-                        + GeometryProcessFactory.class.getName()
-                        + "']/filteredProcesses/accessInfo";
+        String baseGeomPath = "/wps/processGroups/processGroup[factoryClass='"
+                + GeometryProcessFactory.class.getName()
+                + "']/filteredProcesses/accessInfo";
         XMLAssert.assertXpathExists(baseGeomPath, dom);
         String geoAreaBase = baseGeomPath + "[name='geo:Area']/validators/entry[@key='geom']";
         XMLAssert.assertXpathExists(geoAreaBase, dom);
         XMLAssert.assertXpathEvaluatesTo("10", geoAreaBase + "/maxSizeValidator/maxSizeMB", dom);
 
         // raster factory
-        String baseRasPath =
-                "/wps/processGroups/processGroup[factoryClass='"
-                        + RasterProcessFactory.class.getName()
-                        + "']/filteredProcesses/accessInfo";
+        String baseRasPath = "/wps/processGroups/processGroup[factoryClass='"
+                + RasterProcessFactory.class.getName()
+                + "']/filteredProcesses/accessInfo";
         XMLAssert.assertXpathExists(baseRasPath, dom);
         String rasContourBase = baseRasPath + "[name='ras:Contour']";
         XMLAssert.assertXpathExists(rasContourBase, dom);
         XMLAssert.assertXpathEvaluatesTo(
-                "3",
-                rasContourBase
-                        + "/validators/entry[@key='levels']/maxMultiplicityValidator/maxInstances",
-                dom);
+                "3", rasContourBase + "/validators/entry[@key='levels']/maxMultiplicityValidator/maxInstances", dom);
         XMLAssert.assertXpathEvaluatesTo(
-                "-8000.0",
-                rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/minValue",
-                dom);
+                "-8000.0", rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/minValue", dom);
         XMLAssert.assertXpathEvaluatesTo(
-                "8000.0",
-                rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/maxValue",
-                dom);
+                "8000.0", rasContourBase + "/validators/entry[@key='levels']/rangeValidator/range/maxValue", dom);
 
         // check unmarshalling
         WPSInfo wps2 = loader.load(getGeoServer(), Files.asResource(root));
@@ -201,18 +180,14 @@ public class WPSXStreamLoaderTest extends WPSTestSupport {
         boolean foundRasterFactory = false;
 
         for (ProcessGroupInfo pg : wpsInfo.getProcessGroups()) {
-            if (pg.getFactoryClass()
-                    .getName()
-                    .equals("org.geotools.process.geometry.GeometryProcessFactory")) {
+            if (pg.getFactoryClass().getName().equals("org.geotools.process.geometry.GeometryProcessFactory")) {
                 assertTrue(pg.isEnabled());
                 foundGeometryFactory = true;
             }
             if (pg.getFactoryClass().getName().equals("org.geoserver.wps.MissingProcessFactory")) {
                 foundMissingProcessFactory = true;
             }
-            if (pg.getFactoryClass()
-                    .getName()
-                    .equals("org.geotools.process.raster.RasterProcessFactory")) {
+            if (pg.getFactoryClass().getName().equals("org.geotools.process.raster.RasterProcessFactory")) {
                 assertTrue(pg.isEnabled());
                 foundRasterFactory = true;
             }

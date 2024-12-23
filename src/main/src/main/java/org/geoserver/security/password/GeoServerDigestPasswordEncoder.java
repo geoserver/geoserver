@@ -13,8 +13,8 @@ import org.jasypt.util.password.StrongPasswordEncryptor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Password encoder which uses digest encoding This encoder cannot be used for authentication
- * mechanisms needing the plain text password. (Http digest authentication as an example)
+ * Password encoder which uses digest encoding This encoder cannot be used for authentication mechanisms needing the
+ * plain text password. (Http digest authentication as an example)
  *
  * <p>The salt parameter is not used, this implementation computes a random salt as default.
  *
@@ -31,8 +31,7 @@ public class GeoServerDigestPasswordEncoder extends AbstractGeoserverPasswordEnc
     @Override
     protected PasswordEncoder createStringEncoder() {
         PasswordEncoder encoder = new JasyptPasswordEncoderWrapper();
-        ((JasyptPasswordEncoderWrapper) encoder)
-                .setPasswordEncryptor(new StrongPasswordEncryptor());
+        ((JasyptPasswordEncoderWrapper) encoder).setPasswordEncryptor(new StrongPasswordEncryptor());
         ((JasyptPasswordEncoderWrapper) encoder).setPrefix(getPrefix());
         return encoder;
     }

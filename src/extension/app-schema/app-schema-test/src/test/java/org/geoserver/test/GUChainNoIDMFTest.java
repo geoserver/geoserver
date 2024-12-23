@@ -24,24 +24,16 @@ public class GUChainNoIDMFTest extends AbstractAppSchemaTestSupport {
     @Test
     public void testInLineFeatureNoId() {
         Document doc = getAsDOM("wfs?request=GetFeature&typename=gsml:GeologicUnit&version=1.1.0");
-        LOGGER.info(
-                "WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n"
-                        + prettyString(doc));
+        LOGGER.info("WFS DescribeFeatureType, typename=gsml:GeologicUnit response:\n" + prettyString(doc));
         assertXpathEvaluatesTo(
                 "Olivine basalt",
                 "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:occurrence/gsml:MappedFeature/gml:description",
                 doc);
         assertXpathCount(
-                1,
-                "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:occurrence/gsml:MappedFeature/gml:description",
-                doc);
+                1, "//gsml:GeologicUnit[@gml:id='gu.25699']/gsml:occurrence/gsml:MappedFeature/gml:description", doc);
         assertXpathCount(
-                1,
-                "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature/gml:description",
-                doc);
+                1, "//gsml:GeologicUnit[@gml:id='gu.25678']/gsml:occurrence/gsml:MappedFeature/gml:description", doc);
         assertXpathCount(
-                1,
-                "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:occurrence/gsml:MappedFeature/gml:description",
-                doc);
+                1, "//gsml:GeologicUnit[@gml:id='gu.25682']/gsml:occurrence/gsml:MappedFeature/gml:description", doc);
     }
 }

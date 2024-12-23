@@ -31,29 +31,17 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @throws Exception if an error occurs
      */
     protected Mapml getWMSAsMapML(
-            String name,
-            Map kvp,
-            Locale locale,
-            String srs,
-            String styles,
-            boolean isFeatureRepresentation)
+            String name, Map kvp, Locale locale, String srs, String styles, boolean isFeatureRepresentation)
             throws Exception {
-        MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+        MockHttpServletRequest request = getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return mapml(response);
     }
 
     protected String getWMSAsMapMLString(
-            String name,
-            Map kvp,
-            Locale locale,
-            String srs,
-            String styles,
-            boolean isFeatureRepresentation)
+            String name, Map kvp, Locale locale, String srs, String styles, boolean isFeatureRepresentation)
             throws Exception {
-        MockHttpServletRequest request =
-                getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
+        MockHttpServletRequest request = getMapMLWMSRequest(name, kvp, locale, srs, styles, isFeatureRepresentation);
         MockHttpServletResponse response = dispatch(request);
         return response.getContentAsString();
     }
@@ -78,8 +66,7 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @throws JAXBException if an error occurs
      * @throws UnsupportedEncodingException if an error occurs
      */
-    protected Mapml mapml(MockHttpServletResponse response)
-            throws JAXBException, UnsupportedEncodingException {
+    protected Mapml mapml(MockHttpServletResponse response) throws JAXBException, UnsupportedEncodingException {
         MapMLEncoder encoder = new MapMLEncoder();
         StringReader reader = new StringReader(response.getContentAsString());
         Mapml mapml = null;
@@ -103,39 +90,32 @@ public class MapMLTestSupport extends WMSTestSupport {
      * @throws Exception if an error occurs
      */
     protected MockHttpServletRequest getMapMLWMSRequest(
-            String name,
-            Map kvp,
-            Locale locale,
-            String srs,
-            String styles,
-            boolean isFeatureRepresentation)
+            String name, Map kvp, Locale locale, String srs, String styles, boolean isFeatureRepresentation)
             throws Exception {
         String path = null;
         MockHttpServletRequest request = null;
-        String formatOptions =
-                isFeatureRepresentation
-                        ? MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS
-                        : MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
+        String formatOptions = isFeatureRepresentation
+                ? MapMLConstants.MAPML_FEATURE_FORMAT_OPTIONS
+                : MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png";
         if (kvp != null) {
             path = "wms";
             request = createRequest(path, kvp);
         } else {
-            path =
-                    "wms?LAYERS="
-                            + name
-                            + "&STYLES="
-                            + (styles != null ? styles : "")
-                            + "&FORMAT="
-                            + MapMLConstants.MAPML_MIME_TYPE
-                            + "&SERVICE=WMS&VERSION=1.3.0"
-                            + "&REQUEST=GetMap"
-                            + "&SRS="
-                            + srs
-                            + "&BBOX=0,0,1,1"
-                            + "&WIDTH=150"
-                            + "&HEIGHT=150"
-                            + "&format_options="
-                            + formatOptions;
+            path = "wms?LAYERS="
+                    + name
+                    + "&STYLES="
+                    + (styles != null ? styles : "")
+                    + "&FORMAT="
+                    + MapMLConstants.MAPML_MIME_TYPE
+                    + "&SERVICE=WMS&VERSION=1.3.0"
+                    + "&REQUEST=GetMap"
+                    + "&SRS="
+                    + srs
+                    + "&BBOX=0,0,1,1"
+                    + "&WIDTH=150"
+                    + "&HEIGHT=150"
+                    + "&format_options="
+                    + formatOptions;
             request = createRequest(path);
         }
 

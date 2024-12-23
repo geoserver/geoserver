@@ -29,13 +29,11 @@ public abstract class TestSupport {
     private static final File TEST_DIRECTORY =
             new File(System.getProperty("java.io.tmpdir"), "params-extractor-data-directory");
 
-    protected static final ApplicationContext APPLICATION_CONTEXT =
-            new FileSystemXmlApplicationContext(
-                    "file:"
-                            + TestSupport.class
-                                    .getClassLoader()
-                                    .getResource("testApplicationContext.xml")
-                                    .getFile());
+    protected static final ApplicationContext APPLICATION_CONTEXT = new FileSystemXmlApplicationContext("file:"
+            + TestSupport.class
+                    .getClassLoader()
+                    .getResource("testApplicationContext.xml")
+                    .getFile());
 
     protected ResourceStore resourceStore;
 
@@ -107,6 +105,9 @@ public abstract class TestSupport {
     }
 
     protected Rule findRule(String id, List<Rule> rules) {
-        return rules.stream().filter(rule -> rule.getId().equals(id)).findFirst().orElse(null);
+        return rules.stream()
+                .filter(rule -> rule.getId().equals(id))
+                .findFirst()
+                .orElse(null);
     }
 }

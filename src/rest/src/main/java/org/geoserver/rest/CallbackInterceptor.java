@@ -23,8 +23,7 @@ public class CallbackInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public boolean preHandle(
-            HttpServletRequest request, HttpServletResponse response, Object handler)
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
         List<DispatcherCallback> callbacks = getCallbacks();
         // for semi-backwards compatibility
@@ -39,8 +38,7 @@ public class CallbackInterceptor implements HandlerInterceptor {
     }
 
     @Override
-    public void afterCompletion(
-            HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
             throws Exception {
         List<DispatcherCallback> callbacks = getCallbacks();
 

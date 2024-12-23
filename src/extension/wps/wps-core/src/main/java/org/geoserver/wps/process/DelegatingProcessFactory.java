@@ -22,8 +22,8 @@ import org.geotools.process.Process;
 import org.geotools.process.ProcessFactory;
 
 /**
- * A simple process factory delegating to another factory. Meant to be a base class for process
- * factory wrappers that need to modify some of the wrapped process factory behavior.
+ * A simple process factory delegating to another factory. Meant to be a base class for process factory wrappers that
+ * need to modify some of the wrapped process factory behavior.
  */
 public abstract class DelegatingProcessFactory implements ProcessFactory {
 
@@ -94,10 +94,7 @@ public abstract class DelegatingProcessFactory implements ProcessFactory {
         return delegate;
     }
 
-    /**
-     * Returns the innermost delegate, this method can be used to check what the original factory
-     * was
-     */
+    /** Returns the innermost delegate, this method can be used to check what the original factory was */
     public ProcessFactory getInnermostDelegate() {
         ProcessFactory pf = delegate;
         while (pf instanceof DelegatingProcessFactory) {

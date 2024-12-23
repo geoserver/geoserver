@@ -21,8 +21,7 @@ import org.geotools.filter.FunctionFactory;
 // for the moment we implement both to make it testable, eventually this should
 // be driven by configuration only and at that point we'll really need it to
 // implement both
-public class QueryFunctionFactoryInitializer
-        implements GeoServerLifecycleHandler, GeoServerInitializer {
+public class QueryFunctionFactoryInitializer implements GeoServerLifecycleHandler, GeoServerInitializer {
 
     GeoServer geoServer;
 
@@ -42,10 +41,8 @@ public class QueryFunctionFactoryInitializer
     }
 
     private void configure() {
-        Integer maxFeatures =
-                parseInteger(GeoServerExtensions.getProperty("QUERY_LAYER_MAX_FEATURES"));
-        Long maxCoordinates =
-                parseLong(GeoServerExtensions.getProperty("GEOMETRY_COLLECT_MAX_COORDINATES"));
+        Integer maxFeatures = parseInteger(GeoServerExtensions.getProperty("QUERY_LAYER_MAX_FEATURES"));
+        Long maxCoordinates = parseLong(GeoServerExtensions.getProperty("GEOMETRY_COLLECT_MAX_COORDINATES"));
 
         Set<FunctionFactory> factories = CommonFactoryFinder.getFunctionFactories(null);
         for (FunctionFactory ff : factories) {

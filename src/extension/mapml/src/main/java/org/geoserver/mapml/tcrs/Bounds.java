@@ -70,8 +70,7 @@ public class Bounds {
         }
         if (splittArray == null || splittArray.length != 4) {
             throw new RuntimeException(
-                    "Invalid number of bounds parameters: "
-                            + (splittArray == null ? 0 : splittArray.length));
+                    "Invalid number of bounds parameters: " + (splittArray == null ? 0 : splittArray.length));
         }
         return Arrays.asList(splittArray);
     }

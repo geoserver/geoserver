@@ -8,14 +8,12 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.geoserver.web.ToolLinkExternalInfo;
 
 /**
- * Extension point for MapPreviewPage. Subclasses will implement getFormatLink which returns an
- * ExternalLink to a layer preview in the subclass format represented by the subclass e.g.
- * GMLFormatLink.
+ * Extension point for MapPreviewPage. Subclasses will implement getFormatLink which returns an ExternalLink to a layer
+ * preview in the subclass format represented by the subclass e.g. GMLFormatLink.
  *
  * @author prushforth
  */
-public abstract class CommonFormatLink extends ToolLinkExternalInfo
-        implements Comparable<CommonFormatLink> {
+public abstract class CommonFormatLink extends ToolLinkExternalInfo implements Comparable<CommonFormatLink> {
 
     private final String componentId = "theLink";
 
@@ -39,10 +37,7 @@ public abstract class CommonFormatLink extends ToolLinkExternalInfo
         return componentId;
     }
 
-    /**
-     * @param order orders the list of common formats, by default new formats will be added at the
-     *     of the list.
-     */
+    /** @param order orders the list of common formats, by default new formats will be added at the of the list. */
     public void setOrder(int order) {
         this.order = order;
     }

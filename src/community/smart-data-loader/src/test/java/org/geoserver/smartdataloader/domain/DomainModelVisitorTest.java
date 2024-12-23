@@ -31,8 +31,7 @@ public abstract class DomainModelVisitorTest extends AbstractJDBCSmartDataLoader
         LoggerDomainModelVisitor dmv = new LoggerDomainModelVisitor();
         dm.accept(dmv);
 
-        try (InputStream is =
-                DomainModelVisitorTest.class.getResourceAsStream("meteo-stations-logvisitor.txt")) {
+        try (InputStream is = DomainModelVisitorTest.class.getResourceAsStream("meteo-stations-logvisitor.txt")) {
             String expected = IOUtils.toString(is, StandardCharsets.UTF_8);
             assertTrue(dmv.getLog().contains(expected));
         }
@@ -49,9 +48,7 @@ public abstract class DomainModelVisitorTest extends AbstractJDBCSmartDataLoader
         LoggerDomainModelVisitor dmv = new LoggerDomainModelVisitor();
         dm.accept(dmv);
 
-        try (InputStream is =
-                DomainModelVisitorTest.class.getResourceAsStream(
-                        "meteo-observations-logvisitor.txt")) {
+        try (InputStream is = DomainModelVisitorTest.class.getResourceAsStream("meteo-observations-logvisitor.txt")) {
             String expected = IOUtils.toString(is, StandardCharsets.UTF_8);
             assertTrue(dmv.getLog().contains(expected));
         }

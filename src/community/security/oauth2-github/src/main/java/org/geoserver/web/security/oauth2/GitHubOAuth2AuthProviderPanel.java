@@ -13,8 +13,7 @@ import org.geoserver.security.oauth2.GitHubOAuth2FilterConfig;
  *
  * @author Alessio Fabiani, GeoSolutions S.A.S.
  */
-public class GitHubOAuth2AuthProviderPanel
-        extends GeoServerOAuth2AuthProviderPanel<GitHubOAuth2FilterConfig> {
+public class GitHubOAuth2AuthProviderPanel extends GeoServerOAuth2AuthProviderPanel<GitHubOAuth2FilterConfig> {
 
     public GitHubOAuth2AuthProviderPanel(String id, IModel<GitHubOAuth2FilterConfig> model) {
         super(id, model);

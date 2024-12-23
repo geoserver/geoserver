@@ -19,8 +19,7 @@ public class ArrayIncludeFlatBuilder extends DynamicJsonBuilder {
 
     private static Logger LOGGER = Logging.getLogger(DynamicIncludeFlatBuilder.class);
 
-    public ArrayIncludeFlatBuilder(
-            String key, String expression, NamespaceSupport namespaces, JsonNode node) {
+    public ArrayIncludeFlatBuilder(String key, String expression, NamespaceSupport namespaces, JsonNode node) {
         super(key, expression, namespaces, node);
     }
 
@@ -29,8 +28,7 @@ public class ArrayIncludeFlatBuilder extends DynamicJsonBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         if (canWrite(context)) {
             ArrayNode finalNode = getFinalJSON(context);
 
@@ -57,8 +55,7 @@ public class ArrayIncludeFlatBuilder extends DynamicJsonBuilder {
             DynamicValueBuilder dynamicBuilder = (DynamicValueBuilder) builder;
             Object evaluate = dynamicBuilder.evaluateDirective(context);
             if (!(evaluate instanceof ArrayNode) && evaluate != null) {
-                String message =
-                        "Cannot include flat a value different from a JSON Array into the containing array";
+                String message = "Cannot include flat a value different from a JSON Array into the containing array";
                 LOGGER.severe(() -> message);
                 throw new UnsupportedOperationException(message);
             } else if (evaluate != null) {
@@ -73,14 +70,11 @@ public class ArrayIncludeFlatBuilder extends DynamicJsonBuilder {
         return finalNode;
     }
 
-    private void doIncludeFlat(
-            ArrayNode finalNode, TemplateBuilderContext context, TemplateOutputWriter writer)
+    private void doIncludeFlat(ArrayNode finalNode, TemplateBuilderContext context, TemplateOutputWriter writer)
             throws IOException {
         if (hasDynamic(finalNode)) {
-            LOGGER.fine(
-                    () ->
-                            "Included Json object has property interpolation or expression."
-                                    + "Going to build a nested TemplateBuilder tree.");
+            LOGGER.fine(() -> "Included Json object has property interpolation or expression."
+                    + "Going to build a nested TemplateBuilder tree.");
             iterateAndEvaluateNestedTree(context, writer, finalNode);
         } else {
             LOGGER.fine(() -> "Writing the included flat Json Node.");
@@ -99,8 +93,7 @@ public class ArrayIncludeFlatBuilder extends DynamicJsonBuilder {
      * @param context the template context.
      * @throws IOException
      */
-    protected void iterateAndWrite(
-            ArrayNode arrayResult, TemplateOutputWriter writer, TemplateBuilderContext context)
+    protected void iterateAndWrite(ArrayNode arrayResult, TemplateOutputWriter writer, TemplateBuilderContext context)
             throws IOException {
         String key = getKey(context);
         writer.writeElementNameAndValue(key, arrayResult, getEncodingHints());

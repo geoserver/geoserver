@@ -34,12 +34,13 @@ import org.springframework.context.event.ContextRefreshedEvent;
 public class JMSActiveMQFactory extends JMSFactory
         implements ApplicationListener<ContextRefreshedEvent>, ApplicationContextAware {
 
-    private static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(JMSActiveMQFactory.class);
+    private static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSActiveMQFactory.class);
 
-    @Autowired private JMSConfiguration config;
+    @Autowired
+    private JMSConfiguration config;
 
-    @Autowired private JMSXBeanBrokerFactory bf;
+    @Autowired
+    private JMSXBeanBrokerFactory bf;
 
     // used to track changes to the configuration
     private String brokerURI;
@@ -87,13 +88,11 @@ public class JMSActiveMQFactory extends JMSFactory
     public Topic getTopic(Properties configuration) {
         // TODO move me to implementation jmsFactory implementation
         // if topicName is changed
-        final String topicConfiguredName =
-                configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY);
+        final String topicConfiguredName = configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY);
         if (topic == null || topicName.equals(topicConfiguredName)) {
             topicName = topicConfiguredName;
-            topic =
-                    new org.apache.activemq.command.ActiveMQTopic(
-                            configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY));
+            topic = new org.apache.activemq.command.ActiveMQTopic(
+                    configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY));
         }
         return topic;
     }
@@ -199,8 +198,7 @@ public class JMSActiveMQFactory extends JMSFactory
             LOGGER.info("Starting the embedded brokerURI");
         }
         if (brokerService == null) {
-            final String xBeanBroker =
-                    configuration.getProperty(ActiveMQEmbeddedBrokerConfiguration.BROKER_URL_KEY);
+            final String xBeanBroker = configuration.getProperty(ActiveMQEmbeddedBrokerConfiguration.BROKER_URL_KEY);
             // final XBeanBrokerFactory bf = new XBeanBrokerFactory();
             brokerService = bf.createBroker(new URI(xBeanBroker));
             brokerService.setEnableStatistics(false);
@@ -213,8 +211,7 @@ public class JMSActiveMQFactory extends JMSFactory
             brokerService.setVmConnectorURI(new URI("vm://" + brokerName));
         } else {
             if (LOGGER.isLoggable(Level.WARNING)) {
-                LOGGER.warning(
-                        "The embedded brokerURI service already exists, probably it is already started");
+                LOGGER.warning("The embedded brokerURI service already exists, probably it is already started");
             }
             if (brokerService.isStarted()) {
                 if (LOGGER.isLoggable(Level.WARNING)) {
@@ -237,8 +234,7 @@ public class JMSActiveMQFactory extends JMSFactory
                 Thread.sleep(maxWait);
             } catch (Exception e1) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.severe(
-                            "Unable to start the embedded brokerURI" + e1.getLocalizedMessage());
+                    LOGGER.severe("Unable to start the embedded brokerURI" + e1.getLocalizedMessage());
                 }
                 return false;
             }
@@ -278,8 +274,7 @@ public class JMSActiveMQFactory extends JMSFactory
                 Thread.sleep(maxWait);
             } catch (Exception e1) {
                 if (LOGGER.isLoggable(Level.SEVERE)) {
-                    LOGGER.severe(
-                            "Unable to start the embedded brokerURI" + e1.getLocalizedMessage());
+                    LOGGER.severe("Unable to start the embedded brokerURI" + e1.getLocalizedMessage());
                 }
                 return false;
             }
@@ -292,15 +287,11 @@ public class JMSActiveMQFactory extends JMSFactory
 
     private void init() {
         // // times to test (connection)
-        max =
-                Integer.parseInt(
-                        config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY)
-                                .toString());
+        max = Integer.parseInt(config.getConfiguration(ConnectionConfiguration.CONNECTION_RETRY_KEY)
+                .toString());
         // millisecs to wait between tests (connection)
-        maxWait =
-                Long.parseLong(
-                        config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY)
-                                .toString());
+        maxWait = Long.parseLong(config.getConfiguration(ConnectionConfiguration.CONNECTION_MAXWAIT_KEY)
+                .toString());
 
         // check configuration for connection and try to start if needed
         if (EmbeddedBrokerConfiguration.isEnabled(config)) {
@@ -308,8 +299,7 @@ public class JMSActiveMQFactory extends JMSFactory
                 try {
                     if (!startEmbeddedBroker(config.getConfigurations())) {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
-                            LOGGER.severe(
-                                    "Unable to start the embedded brokerURI, force status to disabled");
+                            LOGGER.severe("Unable to start the embedded brokerURI, force status to disabled");
                         }
 
                         // change configuration status
@@ -319,16 +309,14 @@ public class JMSActiveMQFactory extends JMSFactory
 
                     } else {
                         if (LOGGER.isLoggable(Level.SEVERE)) {
-                            LOGGER.info(
-                                    "Started the embedded brokerURI: " + brokerService.toString());
+                            LOGGER.info("Started the embedded brokerURI: " + brokerService.toString());
                         }
                     }
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     // change configuration status
                     config.putConfiguration(
-                            ConnectionConfiguration.CONNECTION_KEY,
-                            ConnectionConfigurationStatus.disabled.toString());
+                            ConnectionConfiguration.CONNECTION_KEY, ConnectionConfigurationStatus.disabled.toString());
                 }
                 // store changes to the configuration
                 try {

@@ -41,8 +41,7 @@ final class SimpleConveyor extends Conveyor {
     Object getParameter(String parameterName, boolean mandatory) {
         Object value = parameters.get(parameterName.toUpperCase());
         if (value == null && mandatory) {
-            throw new ServiceException(
-                    String.format("Mandatory '%s' parameter is missing.", parameterName));
+            throw new ServiceException(String.format("Mandatory '%s' parameter is missing.", parameterName));
         }
         return value;
     }

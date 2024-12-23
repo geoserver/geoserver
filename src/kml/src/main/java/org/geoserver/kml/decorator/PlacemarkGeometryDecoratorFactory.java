@@ -45,15 +45,13 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
     static final KmlCentroidBuilder CENTROIDS = new KmlCentroidBuilder();
 
     @Override
-    public KmlDecorator getDecorator(
-            Class<? extends Feature> featureClass, KmlEncodingContext context) {
+    public KmlDecorator getDecorator(Class<? extends Feature> featureClass, KmlEncodingContext context) {
         if (Placemark.class.isAssignableFrom(featureClass)) {
             boolean hasHeightTemplate = hasHeightTemplate(context);
             boolean isExtrudeEnabled = isExtrudeEnabled(context);
             KmlCentroidOptions centroidOpts = KmlCentroidOptions.create(context);
 
-            return new PlacemarkGeometryDecorator(
-                    hasHeightTemplate, isExtrudeEnabled, centroidOpts);
+            return new PlacemarkGeometryDecorator(hasHeightTemplate, isExtrudeEnabled, centroidOpts);
         } else {
             return null;
         }
@@ -67,8 +65,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
 
         try {
             SimpleFeatureType schema = context.getCurrentFeatureCollection().getSchema();
-            return !context.getTemplate()
-                    .isTemplateEmpty(schema, "height.ftl", FeatureTemplate.class, "0\n");
+            return !context.getTemplate().isTemplateEmpty(schema, "height.ftl", FeatureTemplate.class, "0\n");
         } catch (IOException e) {
             throw new ServiceException("Failed to apply height template during kml generation", e);
         }
@@ -99,9 +96,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         private KmlCentroidOptions centroidOpts;
 
         public PlacemarkGeometryDecorator(
-                boolean hasHeightTemplate,
-                boolean extrudeEnabled,
-                KmlCentroidOptions centroidOpts) {
+                boolean hasHeightTemplate, boolean extrudeEnabled, KmlCentroidOptions centroidOpts) {
             this.hasHeightTemplate = hasHeightTemplate;
             this.extrudeEnabled = extrudeEnabled;
             this.centroidOpts = centroidOpts;
@@ -116,14 +111,10 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             double height = Double.NaN;
             if (hasHeightTemplate) {
                 try {
-                    String output =
-                            context.getTemplate().template(sf, "height.ftl", FeatureTemplate.class);
+                    String output = context.getTemplate().template(sf, "height.ftl", FeatureTemplate.class);
                     height = Double.valueOf(output);
                 } catch (IOException ioe) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Couldn't render height template for " + sf.getID(),
-                            ioe);
+                    LOGGER.log(Level.WARNING, "Couldn't render height template for " + sf.getID(), ioe);
                 }
             }
 
@@ -140,8 +131,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             Geometry geom = (Geometry) sf.getDefaultGeometry();
 
             if (!Double.isNaN(height) && height != 0) {
-                geom.apply(
-                        (CoordinateFilter) c -> c.setCoordinate(new Coordinate(c.x, c.y, height)));
+                geom.apply((CoordinateFilter) c -> c.setCoordinate(new Coordinate(c.x, c.y, height)));
                 geom.geometryChanged();
             }
 
@@ -152,8 +142,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 Geometry geometry, KmlEncodingContext context, double height) {
             de.micromata.opengis.kml.v_2_2_0.Geometry kmlGeometry = toKmlGeometry(geometry);
             boolean isSinglePoint =
-                    geometry instanceof Point
-                            || (geometry instanceof MultiPoint) && geometry.getNumPoints() == 1;
+                    geometry instanceof Point || (geometry instanceof MultiPoint) && geometry.getNumPoints() == 1;
 
             // if is not a single point and is description enabled, we
             // add and extrude a centroid together with the geometry
@@ -161,9 +150,8 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 MultiGeometry mg = new MultiGeometry();
 
                 // centroid + full geometry
-                Coordinate c =
-                        CENTROIDS.geometryCentroid(
-                                geometry, context.getRequest().getBbox(), centroidOpts);
+                Coordinate c = CENTROIDS.geometryCentroid(
+                        geometry, context.getRequest().getBbox(), centroidOpts);
                 if (!Double.isNaN(height)) {
                     c.setOrdinate(2, height);
                 }
@@ -183,8 +171,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         }
 
         private de.micromata.opengis.kml.v_2_2_0.Point toKmlPoint(Coordinate c) {
-            de.micromata.opengis.kml.v_2_2_0.Point result =
-                    new de.micromata.opengis.kml.v_2_2_0.Point();
+            de.micromata.opengis.kml.v_2_2_0.Point result = new de.micromata.opengis.kml.v_2_2_0.Point();
             if (Double.isNaN(c.getZ())) {
                 result.addToCoordinates(c.x, c.y);
             } else {
@@ -216,23 +203,19 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             } else if (geometry instanceof LinearRing) {
                 return convertLinearRing((LinearRing) geometry);
             } else if (geometry instanceof LineString) {
-                de.micromata.opengis.kml.v_2_2_0.LineString kmlLine =
-                        new de.micromata.opengis.kml.v_2_2_0.LineString();
+                de.micromata.opengis.kml.v_2_2_0.LineString kmlLine = new de.micromata.opengis.kml.v_2_2_0.LineString();
                 List<de.micromata.opengis.kml.v_2_2_0.Coordinate> kmlCoordinates =
                         dumpCoordinateSequence(((LineString) geometry).getCoordinateSequence());
                 kmlLine.setCoordinates(kmlCoordinates);
                 return kmlLine;
             } else if (geometry instanceof Polygon) {
                 Polygon polygon = (Polygon) geometry;
-                de.micromata.opengis.kml.v_2_2_0.Polygon kmlPolygon =
-                        new de.micromata.opengis.kml.v_2_2_0.Polygon();
-                de.micromata.opengis.kml.v_2_2_0.LinearRing kmlOuterRing =
-                        convertLinearRing(polygon.getExteriorRing());
+                de.micromata.opengis.kml.v_2_2_0.Polygon kmlPolygon = new de.micromata.opengis.kml.v_2_2_0.Polygon();
+                de.micromata.opengis.kml.v_2_2_0.LinearRing kmlOuterRing = convertLinearRing(polygon.getExteriorRing());
                 kmlPolygon.createAndSetOuterBoundaryIs().setLinearRing(kmlOuterRing);
                 for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
                     LinearRing interior = polygon.getInteriorRingN(i);
-                    de.micromata.opengis.kml.v_2_2_0.LinearRing kmlInterior =
-                            convertLinearRing(interior);
+                    de.micromata.opengis.kml.v_2_2_0.LinearRing kmlInterior = convertLinearRing(interior);
                     kmlPolygon.createAndAddInnerBoundaryIs().setLinearRing(kmlInterior);
                 }
                 return kmlPolygon;
@@ -242,8 +225,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
         }
 
         private de.micromata.opengis.kml.v_2_2_0.LinearRing convertLinearRing(LinearRing geometry) {
-            de.micromata.opengis.kml.v_2_2_0.LinearRing kmlLine =
-                    new de.micromata.opengis.kml.v_2_2_0.LinearRing();
+            de.micromata.opengis.kml.v_2_2_0.LinearRing kmlLine = new de.micromata.opengis.kml.v_2_2_0.LinearRing();
             List<de.micromata.opengis.kml.v_2_2_0.Coordinate> kmlCoordinates =
                     dumpCoordinateSequence(geometry.getCoordinateSequence());
             kmlLine.setCoordinates(kmlCoordinates);
@@ -255,8 +237,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
             return kmlLine;
         }
 
-        private List<de.micromata.opengis.kml.v_2_2_0.Coordinate> dumpCoordinateSequence(
-                CoordinateSequence cs) {
+        private List<de.micromata.opengis.kml.v_2_2_0.Coordinate> dumpCoordinateSequence(CoordinateSequence cs) {
             List<de.micromata.opengis.kml.v_2_2_0.Coordinate> result = new ArrayList<>(cs.size());
             for (int i = 0; i < cs.size(); i++) {
                 double x = cs.getOrdinate(i, 0);
@@ -296,8 +277,7 @@ public class PlacemarkGeometryDecoratorFactory implements KmlDecoratorFactory {
                 ls.setTessellate(true);
                 ls.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if (kmlGeometry instanceof de.micromata.opengis.kml.v_2_2_0.Point) {
-                de.micromata.opengis.kml.v_2_2_0.Point point =
-                        (de.micromata.opengis.kml.v_2_2_0.Point) kmlGeometry;
+                de.micromata.opengis.kml.v_2_2_0.Point point = (de.micromata.opengis.kml.v_2_2_0.Point) kmlGeometry;
                 point.setExtrude(extrudeEnabled);
                 point.setAltitudeMode(AltitudeMode.RELATIVE_TO_GROUND);
             } else if (kmlGeometry instanceof MultiGeometry) {

@@ -10,8 +10,8 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.model.IModel;
 
 /**
- * Helper class to test components that need a form around them to be tested (typically custom
- * panels with form components inside).
+ * Helper class to test components that need a form around them to be tested (typically custom panels with form
+ * components inside).
  *
  * <p>The panel will be placed into a form named "form", the panel itself will be named "content"
  */

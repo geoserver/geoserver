@@ -35,12 +35,10 @@ import org.locationtech.jts.geom.PrecisionModel;
 
 public class TopoJSONEncoder {
 
-    private static class TopologyAdapter
-            implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
+    private static class TopologyAdapter implements JsonSerializer<Topology>, JsonDeserializer<Topology> {
 
         @Override
-        public JsonElement serialize(
-                Topology topology, Type typeOfSrc, JsonSerializationContext context) {
+        public JsonElement serialize(Topology topology, Type typeOfSrc, JsonSerializationContext context) {
 
             JsonObject root = new JsonObject();
             root.addProperty("type", "Topology");
@@ -96,10 +94,8 @@ public class TopoJSONEncoder {
                 if (topology.getScreenToWorldTransform().isIdentity()) {
                     jsonArc = TopoJSONEncoder.serialize(arc.getCoordinateSequence());
                 } else {
-                    jsonArc =
-                            TopoJSONEncoder.quantize(
-                                    arc.getCoordinateSequence(),
-                                    arc.getFactory().getPrecisionModel());
+                    jsonArc = TopoJSONEncoder.quantize(
+                            arc.getCoordinateSequence(), arc.getFactory().getPrecisionModel());
                 }
                 arcs.add(jsonArc);
             }
@@ -320,8 +316,7 @@ public class TopoJSONEncoder {
         return arc;
     }
 
-    public static JsonArray quantize(
-            final CoordinateSequence coords, PrecisionModel precisionModel) {
+    public static JsonArray quantize(final CoordinateSequence coords, PrecisionModel precisionModel) {
         JsonArray arc = new JsonArray();
         final int size = coords.size();
 

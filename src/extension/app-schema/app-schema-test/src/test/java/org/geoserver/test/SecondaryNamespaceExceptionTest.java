@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 /**
- * Test exception thrown during encoding of secondary (transitively imported) namespace without the
- * secondary namespace declared
+ * Test exception thrown during encoding of secondary (transitively imported) namespace without the secondary namespace
+ * declared
  *
  * @author Victor Tey, CSIRO Earth Science and Resource Engineering
  */

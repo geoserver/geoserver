@@ -23,7 +23,8 @@ public class Coverage extends CoverageJson {
     @JsonProperty(required = true)
     private Domain domain;
 
-    @JsonProperty private Map<String, Parameter> parameters;
+    @JsonProperty
+    private Map<String, Parameter> parameters;
 
     private GridCoverage2D coverage;
 
@@ -60,10 +61,7 @@ public class Coverage extends CoverageJson {
     }
 
     private NdArray buildRange(Parameter parameter, Domain domain, List<GridCoverage2D> coverages) {
-        return new NdArray(
-                referenceCoverage.getRenderedImage().getSampleModel().getDataType(),
-                domain,
-                coverages);
+        return new NdArray(referenceCoverage.getRenderedImage().getSampleModel().getDataType(), domain, coverages);
     }
 
     private Map<String, Parameter> buildParameters(GridCoverage2D coverage) {

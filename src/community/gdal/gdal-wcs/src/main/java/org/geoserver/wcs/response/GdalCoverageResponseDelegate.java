@@ -40,21 +40,20 @@ import org.geotools.util.Utilities;
 import org.vfny.geoserver.wcs.WcsException;
 
 /**
- * Implementation of {@link CoverageResponseDelegate} that leverages the gdal_translate utility to
- * encode coverages in any output format supported by the GDAL library available on the system where
- * GeoServer is running.
+ * Implementation of {@link CoverageResponseDelegate} that leverages the gdal_translate utility to encode coverages in
+ * any output format supported by the GDAL library available on the system where GeoServer is running.
  *
  * <p>The encoding process involves two steps:
  *
  * <ol>
- *   <li>the coverage passed as input to the <code>encode()</code> method is dumped to a temporary
- *       file on disk in GeoTIFF format
- *   <li>the <code>gdal_translate</code> command is invoked with the provided options to convert the
- *       dumped GeoTIFF file to the desired format
+ *   <li>the coverage passed as input to the <code>encode()</code> method is dumped to a temporary file on disk in
+ *       GeoTIFF format
+ *   <li>the <code>gdal_translate</code> command is invoked with the provided options to convert the dumped GeoTIFF file
+ *       to the desired format
  * </ol>
  *
- * <p>Configuration for the supported output formats must be passed to the class via its {@link
- * #addFormat(GdalFormat)} method.
+ * <p>Configuration for the supported output formats must be passed to the class via its {@link #addFormat(GdalFormat)}
+ * method.
  *
  * @author Stefano Costa, GeoSolutions
  */
@@ -70,8 +69,8 @@ public class GdalCoverageResponseDelegate
     ToolWrapperFactory gdalWrapperFactory;
 
     /**
-     * The fs path to gdal_translate. If null, we'll assume gdal_translate is in the PATH and that
-     * we can execute it just by running gdal_translate
+     * The fs path to gdal_translate. If null, we'll assume gdal_translate is in the PATH and that we can execute it
+     * just by running gdal_translate
      */
     String gdalTranslatePath = null;
 
@@ -91,8 +90,8 @@ public class GdalCoverageResponseDelegate
     private ReadWriteLock formatsLock;
 
     /**
-     * Supports caching and lazily computing the gdal_translate availability, and ability to clear
-     * the computed value on reset/reload
+     * Supports caching and lazily computing the gdal_translate availability, and ability to clear the computed value on
+     * reset/reload
      */
     private AtomicReference<Boolean> available = new AtomicReference<>(null);
 
@@ -111,8 +110,8 @@ public class GdalCoverageResponseDelegate
     }
 
     /**
-     * Sets the gdal_translate executable full path. The default value is simply "gdal_translate",
-     * which will work if gdal_translate is in the path.
+     * Sets the gdal_translate executable full path. The default value is simply "gdal_translate", which will work if
+     * gdal_translate is in the path.
      */
     @Override
     public void setExecutable(String gdalTranslate) {
@@ -126,8 +125,8 @@ public class GdalCoverageResponseDelegate
     }
 
     /**
-     * Provides the environment variables that are set prior to invoking gdal_translate (notably the
-     * GDAL_DATA variable, specifying the location of GDAL's data directory).
+     * Provides the environment variables that are set prior to invoking gdal_translate (notably the GDAL_DATA variable,
+     * specifying the location of GDAL's data directory).
      */
     @Override
     public void setEnvironment(Map<String, String> environment) {
@@ -286,10 +285,7 @@ public class GdalCoverageResponseDelegate
 
     @Override
     public void encode(
-            GridCoverage2D coverage,
-            String outputFormat,
-            Map<String, String> econdingParameters,
-            OutputStream output)
+            GridCoverage2D coverage, String outputFormat, Map<String, String> econdingParameters, OutputStream output)
             throws ServiceException, IOException {
         Utilities.ensureNonNull("sourceCoverage", coverage);
 
@@ -306,8 +302,7 @@ public class GdalCoverageResponseDelegate
         File tempGDAL = IOUtils.createTempDirectory("gdaltmpout");
 
         // build the gdal wrapper used to run the gdal_translate commands
-        ToolWrapper wrapper =
-                gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
+        ToolWrapper wrapper = gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
 
         // actually export the coverage
         try {
@@ -319,8 +314,7 @@ public class GdalCoverageResponseDelegate
             // convert with gdal_translate
             final CoordinateReferenceSystem crs = coverage.getCoordinateReferenceSystem();
             outputFile =
-                    wrapper.convert(
-                            intermediate, tempGDAL, coverage.getName().toString(), format, crs);
+                    wrapper.convert(intermediate, tempGDAL, coverage.getName().toString(), format, crs);
 
             // wipe out the input dir contents
             IOUtils.emptyDirectory(tempGS);
@@ -362,7 +356,8 @@ public class GdalCoverageResponseDelegate
 
             final ParameterValueGroup writerParams = GEOTIF_FORMAT.getWriteParameters();
             writerParams
-                    .parameter(AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
+                    .parameter(
+                            AbstractGridFormat.GEOTOOLS_WRITE_PARAMS.getName().toString())
                     .setValue(wp);
 
             WCSInfo wcsService = geoServer.getService(WCSInfo.class);
@@ -374,10 +369,8 @@ public class GdalCoverageResponseDelegate
 
             // write down
             if (writer != null)
-                writer.write(
-                        coverage,
-                        (GeneralParameterValue[])
-                                writerParams.values().toArray(new GeneralParameterValue[1]));
+                writer.write(coverage, (GeneralParameterValue[])
+                        writerParams.values().toArray(new GeneralParameterValue[1]));
         } finally {
             try {
                 if (writer != null) writer.dispose();
@@ -406,17 +399,14 @@ public class GdalCoverageResponseDelegate
 
     @Override
     public boolean isAvailable() {
-        return available.updateAndGet(
-                b -> {
-                    if (b == null) {
-                        ToolWrapper gdal =
-                                gdalWrapperFactory.createWrapper(
-                                        gdalTranslateExecutable, environment);
-                        return gdal.isAvailable();
-                    } else {
-                        return b;
-                    }
-                });
+        return available.updateAndGet(b -> {
+            if (b == null) {
+                ToolWrapper gdal = gdalWrapperFactory.createWrapper(gdalTranslateExecutable, environment);
+                return gdal.isAvailable();
+            } else {
+                return b;
+            }
+        });
     }
 
     @Override

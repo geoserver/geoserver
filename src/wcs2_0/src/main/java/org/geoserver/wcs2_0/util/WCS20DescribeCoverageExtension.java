@@ -14,8 +14,7 @@ import org.geoserver.catalog.CoverageInfo;
 public interface WCS20DescribeCoverageExtension {
 
     /**
-     * Returns a new coverageId value encoded for being accepted by the {@link NCNameResourceCodec}
-     * class
+     * Returns a new coverageId value encoded for being accepted by the {@link NCNameResourceCodec} class
      *
      * @param coverageId the provided CoverageId parameter
      * @return a newly encoded coverageId

@@ -31,9 +31,8 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 
 /**
- * Callback that controls the flow of OWS requests based on user specified rules and makes sure
- * GeoServer does not get overwhelmed by too many concurrent ones. Can also be used to provide
- * different quality of service on different users.
+ * Callback that controls the flow of OWS requests based on user specified rules and makes sure GeoServer does not get
+ * overwhelmed by too many concurrent ones. Can also be used to provide different quality of service on different users.
  *
  * @author Andrea Aime - OpenGeo
  */
@@ -41,17 +40,15 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
         implements ApplicationContextAware, GeoServerFilter {
 
     /**
-     * Header added to all responses to make it visible how much deplay was applied going thorough
-     * the flow controllers
+     * Header added to all responses to make it visible how much deplay was applied going thorough the flow controllers
      */
     static final String X_RATELIMIT_DELAY = "X-Control-flow-delay-ms";
 
     static final Logger LOGGER = Logging.getLogger(ControlFlowCallback.class);
 
     /**
-     * Container for the original Request object, the controllers and the timeout (to make sure we
-     * are playing with the same objects, regardless of what other machinery might do to mock up
-     * with the Dispatcher.REQUEST thread local).
+     * Container for the original Request object, the controllers and the timeout (to make sure we are playing with the
+     * same objects, regardless of what other machinery might do to mock up with the Dispatcher.REQUEST thread local).
      */
     static final class CallbackContext {
         List<FlowController> controllers;
@@ -127,36 +124,28 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
             try {
                 controllers = provider.getFlowControllers(requestWithOperation);
             } catch (Exception e) {
-                LOGGER.log(
-                        Level.SEVERE,
-                        "An error occurred setting up the flow controllers to this request",
-                        e);
+                LOGGER.log(Level.SEVERE, "An error occurred setting up the flow controllers to this request", e);
                 return operation;
             }
             if (controllers.isEmpty()) {
                 LOGGER.config("Control-flow inactive, there are no configured rules");
             } else {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Request ["
-                                    + requestWithOperation
-                                    + "] starting, processing through flow controllers");
+                    LOGGER.info("Request [" + requestWithOperation + "] starting, processing through flow controllers");
                 }
 
                 long timeout = provider.getTimeout(requestWithOperation);
-                CallbackContext context =
-                        new CallbackContext(requestWithOperation, controllers, timeout);
+                CallbackContext context = new CallbackContext(requestWithOperation, controllers, timeout);
                 REQUEST_CONTROLLERS.set(context);
                 long maxTime = timeout > 0 ? System.currentTimeMillis() + timeout : -1;
                 for (FlowController flowController : controllers) {
                     if (timeout > 0) {
                         long maxWait = maxTime - System.currentTimeMillis();
                         if (LOGGER.isLoggable(Level.FINE)) {
-                            LOGGER.fine(
-                                    "Request ["
-                                            + requestWithOperation
-                                            + "] checking flow controller "
-                                            + flowController);
+                            LOGGER.fine("Request ["
+                                    + requestWithOperation
+                                    + "] checking flow controller "
+                                    + flowController);
                         }
                         if (!flowController.requestIncoming(requestWithOperation, maxWait)) {
                             throw new HttpErrorCodeException(
@@ -165,10 +154,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                         }
                         if (LOGGER.isLoggable(Level.FINE)) {
                             LOGGER.fine(
-                                    "Request ["
-                                            + requestWithOperation
-                                            + "] passed flow controller "
-                                            + flowController);
+                                    "Request [" + requestWithOperation + "] passed flow controller " + flowController);
                         }
                     } else {
                         flowController.requestIncoming(requestWithOperation, -1);
@@ -185,11 +171,10 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
 
             if (REQUEST_CONTROLLERS.get() != null) {
                 if (LOGGER.isLoggable(Level.INFO)) {
-                    LOGGER.info(
-                            "Request control-flow performed, running requests: "
-                                    + getRunningRequests()
-                                    + ", blocked requests: "
-                                    + getBlockedRequests());
+                    LOGGER.info("Request control-flow performed, running requests: "
+                            + getRunningRequests()
+                            + ", blocked requests: "
+                            + getBlockedRequests());
                 }
             }
             if (request != null && request.getHttpResponse() != null) {
@@ -208,8 +193,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
             registDefaultBeansIfNeeded((ConfigurableApplicationContext) applicationContext);
         } else {
             // we cannot regist default beans, there is nothing else we can do about this
-            LOGGER.warning(
-                    "Application context not configurable, control-flow default beans will not be registered.");
+            LOGGER.warning("Application context not configurable, control-flow default beans will not be registered.");
         }
         provider = GeoServerExtensions.bean(FlowControllerProvider.class, applicationContext);
         // default beans may have not been registered
@@ -228,8 +212,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                 applicationContext.getBean(ControlFlowConfigurator.class, applicationContext);
             } catch (NoSuchBeanDefinitionException exception) {
                 // we need to use the default configurator
-                factory.registerSingleton(
-                        "defaultControlFlowConfigurator", new DefaultControlFlowConfigurator());
+                factory.registerSingleton("defaultControlFlowConfigurator", new DefaultControlFlowConfigurator());
                 LOGGER.fine("Default flow configurator bean dynamically registered.");
             }
             // handle the flow controller provider bean
@@ -238,8 +221,7 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
             } catch (NoSuchBeanDefinitionException exception) {
                 // we need to use the default flow controller provider
                 factory.registerSingleton(
-                        "defaultFlowControllerProvider",
-                        new DefaultFlowControllerProvider(applicationContext));
+                        "defaultFlowControllerProvider", new DefaultFlowControllerProvider(applicationContext));
                 LOGGER.fine("Default flow controller provider bean dynamically registered.");
             }
         }
@@ -292,19 +274,16 @@ public class ControlFlowCallback extends AbstractDispatcherCallback
                             // release controllers, it would eventually lead to deadlock
                             LOGGER.log(
                                     Level.SEVERE,
-                                    "Flow controller "
-                                            + flowController
-                                            + " failed to mark the request as complete",
+                                    "Flow controller " + flowController + " failed to mark the request as complete",
                                     t);
                         }
                     }
                     // provide some visibility that control flow is running
                     if (LOGGER.isLoggable(Level.INFO)) {
-                        LOGGER.info(
-                                "Request completed, running requests: "
-                                        + getRunningRequests()
-                                        + ", blocked requests: "
-                                        + getBlockedRequests());
+                        LOGGER.info("Request completed, running requests: "
+                                + getRunningRequests()
+                                + ", blocked requests: "
+                                + getBlockedRequests());
                     }
                 }
             }

@@ -22,7 +22,8 @@ import org.springframework.oxm.jaxb.Jaxb2Marshaller;
  */
 public class MapMLMessageConverter extends BaseMessageConverter<Object> {
 
-    @Autowired private Jaxb2Marshaller mapmlMarshaller;
+    @Autowired
+    private Jaxb2Marshaller mapmlMarshaller;
 
     /** */
     public MapMLMessageConverter() {
@@ -68,9 +69,8 @@ public class MapMLMessageConverter extends BaseMessageConverter<Object> {
     @Override
     protected void writeInternal(Object o, HttpOutputMessage outputMessage)
             throws UnsupportedEncodingException, IOException {
-        try (OutputStreamWriter osw =
-                new OutputStreamWriter(
-                        outputMessage.getBody(), geoServer.getSettings().getCharset())) {
+        try (OutputStreamWriter osw = new OutputStreamWriter(
+                outputMessage.getBody(), geoServer.getSettings().getCharset())) {
             Result result = new StreamResult(osw);
             mapmlMarshaller.marshal(o, result);
             osw.flush();

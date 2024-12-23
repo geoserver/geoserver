@@ -112,15 +112,13 @@ class EntityResolverToLSResourceResolver implements LSResourceResolver {
     EntityResolver entityResolver;
     LSResourceResolver delegate;
 
-    public EntityResolverToLSResourceResolver(
-            LSResourceResolver delegate, EntityResolver entityResolver) {
+    public EntityResolverToLSResourceResolver(LSResourceResolver delegate, EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
         this.delegate = delegate;
     }
 
     @Override
-    public LSInput resolveResource(
-            String type, String namespaceURI, String publicId, String systemId, String baseURI) {
+    public LSInput resolveResource(String type, String namespaceURI, String publicId, String systemId, String baseURI) {
         // give the entity resolver an opportunity (mostly to throw an exception)
         try {
             InputSource is = entityResolver.resolveEntity(publicId, systemId);

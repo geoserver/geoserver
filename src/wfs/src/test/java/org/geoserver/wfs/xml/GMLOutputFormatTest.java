@@ -33,8 +33,7 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     private static final QName INVALID_NAMESPACE =
             new QName("http://www.w3.org/1999/xhtml", "invalid_namespace", "xhtml");
 
-    private static final QName INVALID_PREFIX =
-            new QName("http://invalid/prefix", "BasicPolygons", "'");
+    private static final QName INVALID_PREFIX = new QName("http://invalid/prefix", "BasicPolygons", "'");
 
     private int defaultNumDecimals = -1;
     private boolean defaultForceDecimal = false;
@@ -43,14 +42,11 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     @Before
     public void saveDefaultFormattingOptions() {
         if (defaultNumDecimals < 0) {
-            FeatureTypeInfo info =
-                    getGeoServer()
-                            .getCatalog()
-                            .getResourceByName(
-                                    new NameImpl(
-                                            MockData.BASIC_POLYGONS.getPrefix(),
-                                            MockData.BASIC_POLYGONS.getLocalPart()),
-                                    FeatureTypeInfo.class);
+            FeatureTypeInfo info = getGeoServer()
+                    .getCatalog()
+                    .getResourceByName(
+                            new NameImpl(MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart()),
+                            FeatureTypeInfo.class);
             defaultNumDecimals = info.getNumDecimals();
             defaultForceDecimal = info.getForcedDecimal();
             defaultPadWithZeros = info.getPadWithZeros();
@@ -59,14 +55,11 @@ public class GMLOutputFormatTest extends WFSTestSupport {
 
     @After
     public void restoreDefaultFormattingOptions() {
-        FeatureTypeInfo info =
-                getGeoServer()
-                        .getCatalog()
-                        .getResourceByName(
-                                new NameImpl(
-                                        MockData.BASIC_POLYGONS.getPrefix(),
-                                        MockData.BASIC_POLYGONS.getLocalPart()),
-                                FeatureTypeInfo.class);
+        FeatureTypeInfo info = getGeoServer()
+                .getCatalog()
+                .getResourceByName(
+                        new NameImpl(MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart()),
+                        FeatureTypeInfo.class);
         info.setNumDecimals(defaultNumDecimals);
         info.setForcedDecimal(defaultForceDecimal);
         info.setPadWithZeros(defaultPadWithZeros);
@@ -75,56 +68,43 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     @Override
     protected void setUpInternal(SystemTestData testData) throws Exception {
         super.setUpInternal(testData);
-        testData.addVectorLayer(
-                INVALID_CHARACTER, Collections.emptyMap(), getClass(), getCatalog());
-        testData.addWorkspace(
-                INVALID_NAMESPACE.getPrefix(), INVALID_NAMESPACE.getNamespaceURI(), getCatalog());
-        testData.addVectorLayer(
-                INVALID_NAMESPACE, Collections.emptyMap(), getClass(), getCatalog());
-        testData.addWorkspace(
-                INVALID_PREFIX.getPrefix(), INVALID_PREFIX.getNamespaceURI(), getCatalog());
-        testData.addVectorLayer(
-                INVALID_PREFIX, Collections.emptyMap(), MockData.class, getCatalog());
+        testData.addVectorLayer(INVALID_CHARACTER, Collections.emptyMap(), getClass(), getCatalog());
+        testData.addWorkspace(INVALID_NAMESPACE.getPrefix(), INVALID_NAMESPACE.getNamespaceURI(), getCatalog());
+        testData.addVectorLayer(INVALID_NAMESPACE, Collections.emptyMap(), getClass(), getCatalog());
+        testData.addWorkspace(INVALID_PREFIX.getPrefix(), INVALID_PREFIX.getNamespaceURI(), getCatalog());
+        testData.addVectorLayer(INVALID_PREFIX, Collections.emptyMap(), MockData.class, getCatalog());
     }
 
     @Test
     public void testGML2() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNotNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.1.0&outputFormat=gml2&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.1.0&outputFormat=gml2&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNotNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=text/xml; subtype%3Dgml/2.1.2&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=text/xml; subtype%3Dgml/2.1.2&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNotNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.1.0&outputFormat=text/xml; subtype%3Dgml/2.1.2&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.1.0&outputFormat=text/xml; subtype%3Dgml/2.1.2&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNotNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNull(getFirstElementByTagName(dom, "gml:exterior"));
@@ -133,26 +113,21 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     @Test
     public void testGML2CoordinatesFormatting() throws Exception {
         enableCoordinatesFormatting();
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=gml2&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals(
                 "-2.0000,-1.0000 2.0000,6.0000",
                 dom.getElementsByTagName("gml:coordinates").item(0).getTextContent());
     }
 
     private void enableCoordinatesFormatting() {
-        FeatureTypeInfo info =
-                getGeoServer()
-                        .getCatalog()
-                        .getResourceByName(
-                                new NameImpl(
-                                        MockData.BASIC_POLYGONS.getPrefix(),
-                                        MockData.BASIC_POLYGONS.getLocalPart()),
-                                FeatureTypeInfo.class);
+        FeatureTypeInfo info = getGeoServer()
+                .getCatalog()
+                .getResourceByName(
+                        new NameImpl(MockData.BASIC_POLYGONS.getPrefix(), MockData.BASIC_POLYGONS.getLocalPart()),
+                        FeatureTypeInfo.class);
         info.setNumDecimals(4);
         info.setForcedDecimal(true);
         info.setPadWithZeros(true);
@@ -177,42 +152,34 @@ public class GMLOutputFormatTest extends WFSTestSupport {
 
     @Test
     public void testGML3() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=gml3&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=gml3&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNotNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.1.0&outputFormat=gml3&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.1.0&outputFormat=gml3&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNotNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=text/xml; subtype%3Dgml/3.1.1&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=text/xml; subtype%3Dgml/3.1.1&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNotNull(getFirstElementByTagName(dom, "gml:exterior"));
 
-        dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.1.0&outputFormat=text/xml; subtype%3Dgml/3.1.1&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        dom = getAsDOM("wfs?request=getfeature&version=1.1.0&outputFormat=text/xml; subtype%3Dgml/3.1.1&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
         assertNull(getFirstElementByTagName(dom, "gml:outerBoundaryIs"));
         assertNotNull(getFirstElementByTagName(dom, "gml:exterior"));
@@ -221,12 +188,10 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     @Test
     public void testGML3CoordinatesFormatting() throws Exception {
         enableCoordinatesFormatting();
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=gml3&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=gml3&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals(
                 "-1.0000 0.0000 0.0000 1.0000 1.0000 0.0000 0.0000 -1.0000 -1.0000 0.0000",
                 dom.getElementsByTagName("gml:posList").item(0).getTextContent());
@@ -234,12 +199,10 @@ public class GMLOutputFormatTest extends WFSTestSupport {
 
     @Test
     public void testGML32() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=2.0.0&outputFormat=gml32&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=2.0.0&outputFormat=gml32&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals(WFS.NAMESPACE, dom.getDocumentElement().getNamespaceURI());
         assertEquals("FeatureCollection", dom.getDocumentElement().getLocalName());
     }
@@ -247,12 +210,10 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     @Test
     public void testGML32CoordinatesFormatting() throws Exception {
         enableCoordinatesFormatting();
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=2.0.0&outputFormat=gml32&typename="
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=2.0.0&outputFormat=gml32&typename="
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart());
         assertEquals(
                 "0.0000 -1.0000 1.0000 0.0000 0.0000 1.0000 -1.0000 0.0000 0.0000 -1.0000",
                 dom.getElementsByTagName("gml:posList").item(0).getTextContent());
@@ -304,14 +265,12 @@ public class GMLOutputFormatTest extends WFSTestSupport {
     }
 
     private void testInvalidResponse(QName layer, int version, String message) throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?request=getfeature&version=1.0.0&outputFormat=gml"
-                                + version
-                                + "&typename="
-                                + layer.getPrefix()
-                                + ":"
-                                + layer.getLocalPart());
+        Document dom = getAsDOM("wfs?request=getfeature&version=1.0.0&outputFormat=gml"
+                + version
+                + "&typename="
+                + layer.getPrefix()
+                + ":"
+                + layer.getLocalPart());
         assertXpathValuesEqual("1", "count(/ogc:ServiceExceptionReport/ogc:ServiceException)", dom);
         String text = dom.getElementsByTagName("ServiceException").item(0).getTextContent();
         assertThat(text, containsString(message));

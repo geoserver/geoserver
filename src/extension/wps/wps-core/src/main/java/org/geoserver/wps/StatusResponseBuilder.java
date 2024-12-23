@@ -37,8 +37,7 @@ class StatusResponseBuilder {
             }
             if (execute == null) {
                 throw new WPSException(
-                        "Could not locate the original request for execution id: "
-                                + status.getExecutionId());
+                        "Could not locate the original request for execution id: " + status.getExecutionId());
             } else {
                 ExecuteResponseBuilder builder = new ExecuteResponseBuilder(execute, ctx, status);
                 return builder.build();

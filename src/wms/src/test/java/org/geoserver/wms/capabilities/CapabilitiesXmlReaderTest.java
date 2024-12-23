@@ -21,16 +21,14 @@ public class CapabilitiesXmlReaderTest {
 
     @Test
     public void testParseXmlGetCapabilities() throws Exception {
-        CapabilitiesXmlReader reader =
-                new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        CapabilitiesXmlReader reader = new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
 
-        String plainRequest =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
-                        + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
-                        + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
-                        + "         version=\"1.2.0\" updateSequence=\"1\" " //
-                        + "        service=\"WMS\"> " //
-                        + "</ogc:GetCapabilities>";
+        String plainRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
+                + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
+                + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
+                + "         version=\"1.2.0\" updateSequence=\"1\" " //
+                + "        service=\"WMS\"> " //
+                + "</ogc:GetCapabilities>";
 
         Reader input = new StringReader(plainRequest);
 
@@ -46,17 +44,15 @@ public class CapabilitiesXmlReaderTest {
 
     @Test
     public void testParseXmlGetCapabilitiesNoRootLayerTrue() throws Exception {
-        CapabilitiesXmlReader reader =
-                new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        CapabilitiesXmlReader reader = new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
 
-        String plainRequest =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
-                        + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
-                        + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
-                        + "         version=\"1.2.0\" updateSequence=\"1\" " //
-                        + "         rootLayer=\"true\" " //
-                        + "        service=\"WMS\"> " //
-                        + "</ogc:GetCapabilities>";
+        String plainRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
+                + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
+                + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
+                + "         version=\"1.2.0\" updateSequence=\"1\" " //
+                + "         rootLayer=\"true\" " //
+                + "        service=\"WMS\"> " //
+                + "</ogc:GetCapabilities>";
 
         Reader input = new StringReader(plainRequest);
 
@@ -72,17 +68,15 @@ public class CapabilitiesXmlReaderTest {
 
     @Test
     public void testParseXmlGetCapabilitiesNoRootLayerFalse() throws Exception {
-        CapabilitiesXmlReader reader =
-                new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
+        CapabilitiesXmlReader reader = new CapabilitiesXmlReader(EntityResolverProvider.RESOLVE_DISABLED_PROVIDER);
 
-        String plainRequest =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
-                        + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
-                        + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
-                        + "         version=\"1.2.0\" updateSequence=\"1\" " //
-                        + "         rootLayer=\"false\" " //
-                        + "        service=\"WMS\"> " //
-                        + "</ogc:GetCapabilities>";
+        String plainRequest = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" //
+                + "<ogc:GetCapabilities xmlns:ogc=\"http://www.opengis.net/ows\" " //
+                + "         xmlns:gml=\"http://www.opengis.net/gml\" " //
+                + "         version=\"1.2.0\" updateSequence=\"1\" " //
+                + "         rootLayer=\"false\" " //
+                + "        service=\"WMS\"> " //
+                + "</ogc:GetCapabilities>";
 
         Reader input = new StringReader(plainRequest);
 

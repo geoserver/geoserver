@@ -21,11 +21,10 @@ import org.geoserver.wms.WebMapService;
 /**
  * {@link WebMapService#getMap(GetMapRequest)} Spring's AOP method interceptor to seed a (meta)tile
  *
- * <p>{@link GeoServerTileLayer} issues a GetMap request that will be handled by this interceptor
- * instead of directly calling {@link WebMapService#getMap(GetMapRequest)} in order to respect the
- * normal flow of operations through the GeoServer {@link Dispatcher} and hence avoid overwhelming
- * the server with too many requests. That is, adheres to the expectations of the control-flow and
- * monitoring modules by not bypassing the dispatcher.
+ * <p>{@link GeoServerTileLayer} issues a GetMap request that will be handled by this interceptor instead of directly
+ * calling {@link WebMapService#getMap(GetMapRequest)} in order to respect the normal flow of operations through the
+ * GeoServer {@link Dispatcher} and hence avoid overwhelming the server with too many requests. That is, adheres to the
+ * expectations of the control-flow and monitoring modules by not bypassing the dispatcher.
  *
  * @author Gabriel Roldan
  */
@@ -37,8 +36,7 @@ public class CacheSeedingWebMapService implements MethodInterceptor {
      * Wraps {@link WebMapService#getMap(GetMapRequest)}, called by the {@link Dispatcher}
      *
      * @see WebMapService#getMap(GetMapRequest)
-     * @see
-     *     org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
+     * @see org.aopalliance.intercept.MethodInterceptor#invoke(org.aopalliance.intercept.MethodInvocation)
      */
     @Override
     public WebMap invoke(MethodInvocation invocation) throws Throwable {
@@ -57,8 +55,7 @@ public class CacheSeedingWebMapService implements MethodInterceptor {
         WebMap map = (WebMap) invocation.proceed();
 
         final Map<String, String> rawKvp = request.getRawKvp();
-        boolean isSeedingRequest =
-                rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
+        boolean isSeedingRequest = rawKvp != null && rawKvp.containsKey(GeoServerTileLayer.GWC_SEED_INTERCEPT_TOKEN);
         if (isSeedingRequest) {
             GeoServerTileLayer.WEB_MAP.set(map);
             GeoServerTileLayer.DIMENSION_WARNINGS.set(HTTPWarningAppender.getWarnings());

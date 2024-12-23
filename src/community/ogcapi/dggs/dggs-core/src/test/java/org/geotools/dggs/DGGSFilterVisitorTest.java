@@ -48,11 +48,7 @@ public class DGGSFilterVisitorTest {
     @Test
     public void testNeighbor() {
         Function neighbor =
-                FF.function(
-                        "neighbor",
-                        FF.literal("805bfffffffffff"),
-                        FF.literal("807ffffffffffff"),
-                        FF.literal(1));
+                FF.function("neighbor", FF.literal("805bfffffffffff"), FF.literal("807ffffffffffff"), FF.literal(1));
         assertNotNull(neighbor);
         Function clone = (Function) neighbor.accept(new DGGSFilterVisitor(DGGS), null);
         assertNotEquals(clone, neighbor);

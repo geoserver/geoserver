@@ -32,15 +32,13 @@ import org.springframework.mock.web.MockHttpServletResponse;
 public class CustomDimensionsTest extends CoverageTestSupport {
 
     private static final String DIMENSION_NAME = CustomFormat.CUSTOM_DIMENSION_NAME;
-    private static final QName CUST_WATTEMP =
-            new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
+    private static final QName CUST_WATTEMP = new QName(MockData.DEFAULT_URI, "watertemp", MockData.DEFAULT_PREFIX);
 
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
 
-        testData.addRasterLayer(
-                CUST_WATTEMP, "custwatertemp.zip", null, null, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(CUST_WATTEMP, "custwatertemp.zip", null, null, SystemTestData.class, getCatalog());
         setupRasterDimension(DIMENSION_NAME, DimensionPresentation.LIST);
     }
 
@@ -105,56 +103,54 @@ public class CustomDimensionsTest extends CoverageTestSupport {
     }
 
     private String getWaterTempRequestKVP(String dimensionValue) {
-        String url =
-                "wcs?service=WCS&version=1.0.0&request=GetCoverage"
-                        + "&sourceCoverage=%s&format=GEOTIFF&width=25&height=24"
-                        + "&crs=EPSG:4326&bbox=0.237,40.562,14.593,44.558&%s=%s";
+        String url = "wcs?service=WCS&version=1.0.0&request=GetCoverage"
+                + "&sourceCoverage=%s&format=GEOTIFF&width=25&height=24"
+                + "&crs=EPSG:4326&bbox=0.237,40.562,14.593,44.558&%s=%s";
         return String.format(url, getLayerId(CUST_WATTEMP), DIMENSION_NAME, dimensionValue);
     }
 
     private String getWaterTempRequest(String dimensionValue) {
-        String request =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<GetCoverage version=\"1.0.0\" service=\"WCS\"\n"
-                        + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n"
-                        + "  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n"
-                        + "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
-                        + "  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n"
-                        + "  <sourceCoverage>"
-                        + getLayerId(CUST_WATTEMP)
-                        + "</sourceCoverage>\n"
-                        + "  <domainSubset>\n"
-                        + "    <spatialSubset>\n"
-                        + "      <gml:Envelope srsName=\"EPSG:4326\">\n"
-                        + "        <gml:pos>0.237 40.562</gml:pos>\n"
-                        + "        <gml:pos>14.593 44.558</gml:pos>\n"
-                        + "      </gml:Envelope>\n"
-                        + "      <gml:Grid dimension=\"2\">\n"
-                        + "        <gml:limits>\n"
-                        + "          <gml:GridEnvelope>\n"
-                        + "            <gml:low>0 0</gml:low>\n"
-                        + "            <gml:high>25 24</gml:high>\n"
-                        + "          </gml:GridEnvelope>\n"
-                        + "        </gml:limits>\n"
-                        + "        <gml:axisName>x</gml:axisName>\n"
-                        + "        <gml:axisName>y</gml:axisName>\n"
-                        + "      </gml:Grid>\n"
-                        + "    </spatialSubset>\n"
-                        + "  </domainSubset>\n"
-                        + "  <rangeSubset>\n"
-                        + "    <axisSubset name=\""
-                        + DIMENSION_NAME
-                        + "\">\n"
-                        + "      <singleValue>"
-                        + dimensionValue
-                        + "</singleValue>\n"
-                        + "    </axisSubset>\n"
-                        + "  </rangeSubset>\n"
-                        + "  <output>\n"
-                        + "    <crs>EPSG:4326</crs>\n"
-                        + "    <format>GEOTIFF</format>\n"
-                        + "  </output>\n"
-                        + "</GetCoverage>";
+        String request = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<GetCoverage version=\"1.0.0\" service=\"WCS\"\n"
+                + "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.opengis.net/wcs\"\n"
+                + "  xmlns:ows=\"http://www.opengis.net/ows/1.1\" xmlns:gml=\"http://www.opengis.net/gml\"\n"
+                + "  xmlns:ogc=\"http://www.opengis.net/ogc\"\n"
+                + "  xsi:schemaLocation=\"http://www.opengis.net/wcs http://schemas.opengis.net/wcs/1.0.0/getCoverage.xsd\">\n"
+                + "  <sourceCoverage>"
+                + getLayerId(CUST_WATTEMP)
+                + "</sourceCoverage>\n"
+                + "  <domainSubset>\n"
+                + "    <spatialSubset>\n"
+                + "      <gml:Envelope srsName=\"EPSG:4326\">\n"
+                + "        <gml:pos>0.237 40.562</gml:pos>\n"
+                + "        <gml:pos>14.593 44.558</gml:pos>\n"
+                + "      </gml:Envelope>\n"
+                + "      <gml:Grid dimension=\"2\">\n"
+                + "        <gml:limits>\n"
+                + "          <gml:GridEnvelope>\n"
+                + "            <gml:low>0 0</gml:low>\n"
+                + "            <gml:high>25 24</gml:high>\n"
+                + "          </gml:GridEnvelope>\n"
+                + "        </gml:limits>\n"
+                + "        <gml:axisName>x</gml:axisName>\n"
+                + "        <gml:axisName>y</gml:axisName>\n"
+                + "      </gml:Grid>\n"
+                + "    </spatialSubset>\n"
+                + "  </domainSubset>\n"
+                + "  <rangeSubset>\n"
+                + "    <axisSubset name=\""
+                + DIMENSION_NAME
+                + "\">\n"
+                + "      <singleValue>"
+                + dimensionValue
+                + "</singleValue>\n"
+                + "    </axisSubset>\n"
+                + "  </rangeSubset>\n"
+                + "  <output>\n"
+                + "    <crs>EPSG:4326</crs>\n"
+                + "    <format>GEOTIFF</format>\n"
+                + "  </output>\n"
+                + "</GetCoverage>";
         return request;
     }
 

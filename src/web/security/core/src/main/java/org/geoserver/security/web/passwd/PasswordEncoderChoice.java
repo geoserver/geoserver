@@ -33,13 +33,8 @@ public class PasswordEncoderChoice extends DropDownChoice<String> {
         super(id, new PasswordEncoderNamesModel(encoders), new PasswordEncoderChoiceRenderer());
     }
 
-    public PasswordEncoderChoice(
-            String id, IModel<String> model, List<GeoServerPasswordEncoder> encoders) {
-        super(
-                id,
-                model,
-                new PasswordEncoderNamesModel(encoders),
-                new PasswordEncoderChoiceRenderer());
+    public PasswordEncoderChoice(String id, IModel<String> model, List<GeoServerPasswordEncoder> encoders) {
+        super(id, model, new PasswordEncoderNamesModel(encoders), new PasswordEncoderChoiceRenderer());
     }
 
     static class PasswordEncoderNamesModel implements IModel<List<String>> {

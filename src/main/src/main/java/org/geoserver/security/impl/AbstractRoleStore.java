@@ -123,8 +123,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
     public void addRole(GeoServerRole role) throws IOException {
 
         if (helper.roleMap.containsKey(role.getAuthority()))
-            throw new IllegalArgumentException(
-                    "The role " + role.getAuthority() + " already exists");
+            throw new IllegalArgumentException("The role " + role.getAuthority() + " already exists");
         else {
             helper.roleMap.put(role.getAuthority(), role);
             setModified(true);
@@ -140,9 +139,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
         if (helper.roleMap.containsKey(role.getAuthority())) {
             helper.roleMap.put(role.getAuthority(), role);
             setModified(true);
-        } else
-            throw new IllegalArgumentException(
-                    "The role " + role.getAuthority() + " does not exist");
+        } else throw new IllegalArgumentException("The role " + role.getAuthority() + " does not exist");
     }
 
     /* (non-Javadoc)
@@ -269,13 +266,8 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
     public void setParentRole(GeoServerRole role, GeoServerRole parentRole) throws IOException {
 
         RoleHierarchyHelper hhelper = new RoleHierarchyHelper(getParentMappings());
-        if (hhelper.isValidParent(
-                        role.getAuthority(), parentRole == null ? null : parentRole.getAuthority())
-                == false)
-            throw new IOException(
-                    parentRole.getAuthority()
-                            + " is not a valid parent for "
-                            + role.getAuthority());
+        if (hhelper.isValidParent(role.getAuthority(), parentRole == null ? null : parentRole.getAuthority()) == false)
+            throw new IOException(parentRole.getAuthority() + " is not a valid parent for " + role.getAuthority());
 
         checkRole(role);
         if (parentRole == null) {
@@ -403,8 +395,7 @@ public abstract class AbstractRoleStore implements GeoServerRoleStore {
 
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
         return service.personalizeRoleParams(roleName, roleParams, userName, userProps);
     }
 

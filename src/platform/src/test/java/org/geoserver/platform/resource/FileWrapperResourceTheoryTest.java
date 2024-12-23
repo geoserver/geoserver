@@ -17,18 +17,17 @@ import org.junit.rules.TemporaryFolder;
 /**
  * Test handling of file wrapper (Files.ResourceAdaptor) which works with absolute paths internally.
  *
- * <p>This ResourceAdaptor is intended to allow GeoServer to work with absolute paths outside of the
- * data direct. As a result stores an absolute file internally.
+ * <p>This ResourceAdaptor is intended to allow GeoServer to work with absolute paths outside of the data direct. As a
+ * result stores an absolute file internally.
  */
 public class FileWrapperResourceTheoryTest extends ResourceTheoryTest {
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @DataPoints
     public static String[] getTestPaths() {
-        return new String[] {
-            "FileA", "FileB", "DirC", "DirE", "DirC/FileD", "UndefF", "DirC/UndefF", "DirE/UndefF"
-        };
+        return new String[] {"FileA", "FileB", "DirC", "DirE", "DirC/FileD", "UndefF", "DirC/UndefF", "DirE/UndefF"};
     }
 
     /**

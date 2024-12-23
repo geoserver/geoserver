@@ -145,8 +145,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
     }
 
     @Override
-    public void initializeChildContext(
-            ElementInstance childInstance, Node node, MutablePicoContainer context) {
+    public void initializeChildContext(ElementInstance childInstance, Node node, MutablePicoContainer context) {
         // if an srsName is set for this geometry, put it in the context for
         // children, so they can use it as well
         if (node.hasAttribute("srsName")) {
@@ -180,8 +179,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         //   &lt;/xsd:sequence&gt;
         // &lt;/xsd:choice&gt;
         if (node.hasChild(FeatureCollection.class)) {
-            SimpleFeatureCollection fc =
-                    (SimpleFeatureCollection) node.getChildValue(FeatureCollection.class);
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) node.getChildValue(FeatureCollection.class);
             insertElement.getFeature().addAll(DataUtilities.list(fc));
         } else if (node.hasChild(SimpleFeature.class)) {
             insertElement.getFeature().addAll(node.getChildValues(SimpleFeature.class));
@@ -190,8 +188,7 @@ public class InsertElementTypeBinding extends AbstractComplexEMFBinding {
         // &lt;xsd:attribute default="GenerateNew" name="idgen"
         //		type="wfs:IdentifierGenerationOptionType" use="optional"&gt;
         if (node.hasAttribute("idgen")) {
-            insertElement.setIdgen(
-                    (IdentifierGenerationOptionType) node.getAttributeValue("idgen"));
+            insertElement.setIdgen((IdentifierGenerationOptionType) node.getAttributeValue("idgen"));
         }
 
         // &lt;xsd:attribute name="handle" type="xsd:string" use="optional"&gt;

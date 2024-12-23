@@ -16,14 +16,12 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class ModuleStatusTest {
     @Test
     public void test() {
-        try (ClassPathXmlApplicationContext context =
-                new ClassPathXmlApplicationContext("applicationContext.xml")) {
+        try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml")) {
             assertNotNull(context);
 
-            Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-wcs2_0-eo-core"))
-                            .findFirst();
+            Optional<ModuleStatus> status = GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
+                    .filter(s -> s.getModule().equalsIgnoreCase("gs-wcs2_0-eo-core"))
+                    .findFirst();
             assertTrue(status.isPresent());
         }
     }

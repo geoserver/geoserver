@@ -17,8 +17,7 @@ public class GeoFenceXStreamPersisterInitializer implements XStreamPersisterInit
     public void init(XStreamPersister persister) {
 
         XStream xs = persister.getXStream();
-        xs.alias(
-                "geoFenceAuthenticationProviderConfig", GeoFenceAuthenticationProviderConfig.class);
+        xs.alias("geoFenceAuthenticationProviderConfig", GeoFenceAuthenticationProviderConfig.class);
 
         xs.allowTypes(new Class[] {GeoFenceAuthenticationProviderConfig.class});
     }

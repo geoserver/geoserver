@@ -26,8 +26,7 @@ import org.geotools.util.logging.Logging;
 public abstract class JMSEventHandler<S extends Serializable, O> {
     private static final long serialVersionUID = 8208466391619901813L;
 
-    protected static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(JMSEventHandler.class);
+    protected static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSEventHandler.class);
 
     private final Class<JMSEventHandlerSPI<S, O>> generatorClass;
 
@@ -57,10 +56,8 @@ public abstract class JMSEventHandler<S extends Serializable, O> {
     }
 
     /**
-     * Its scope is to serialize from an object of type <O> to instance of a Serializable object.
-     * <br>
-     * That instance will be used by the {@link JMSPublisher} to send the object over a JMS topic.
-     * <br>
+     * Its scope is to serialize from an object of type <O> to instance of a Serializable object. <br>
+     * That instance will be used by the {@link JMSPublisher} to send the object over a JMS topic. <br>
      *
      * <p>This method is used exclusively on the Server side.
      *
@@ -71,8 +68,8 @@ public abstract class JMSEventHandler<S extends Serializable, O> {
 
     /**
      * Its scope is to create a new instance of type <O> de-serializing the object of type <S>.<br>
-     * That instance will be used by the {@link JMSSynchronizer} to obtain (from the JMS topic) an
-     * instance to pass to the synchronize method ( {@link #synchronize(Object)}).<br>
+     * That instance will be used by the {@link JMSSynchronizer} to obtain (from the JMS topic) an instance to pass to
+     * the synchronize method ( {@link #synchronize(Object)}).<br>
      *
      * <p>This method is used exclusively on the Client side
      *

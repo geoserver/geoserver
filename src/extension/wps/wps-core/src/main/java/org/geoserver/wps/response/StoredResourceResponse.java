@@ -48,31 +48,27 @@ public class StoredResourceResponse extends Response {
             return "text/xml";
         } else if (request instanceof GetExecutionResultType) {
             GetExecutionResultType ger = (GetExecutionResultType) request;
-            Resource mimeResource =
-                    manager.getOutputResource(ger.getExecutionId(), ger.getOutputId() + ".mime");
+            Resource mimeResource = manager.getOutputResource(ger.getExecutionId(), ger.getOutputId() + ".mime");
             if (mimeResource == null || mimeResource.getType() == Type.UNDEFINED) {
-                throw new WPSException(
-                        "Unknown output "
-                                + ger.getOutputId()
-                                + " for execution id "
-                                + ger.getExecutionId()
-                                + ", either the execution was never submitted or too much time "
-                                + "elapsed since the process completed");
+                throw new WPSException("Unknown output "
+                        + ger.getOutputId()
+                        + " for execution id "
+                        + ger.getExecutionId()
+                        + ", either the execution was never submitted or too much time "
+                        + "elapsed since the process completed");
             }
             try (InputStream input = mimeResource.in()) {
                 String mimeType = IOUtils.toString(input, StandardCharsets.UTF_8);
                 if (ger.getMimeType() == null || ger.getMimeType().equals(mimeType)) {
                     return mimeType;
                 }
-                throw new WPSException(
-                        "Requested mime type does not match the output resource mime type");
+                throw new WPSException("Requested mime type does not match the output resource mime type");
             } catch (IOException e) {
                 throw new WPSException("Error validating the output resource mime type", e);
             }
         } else {
-            throw new WPSException(
-                    "Trying to get a mime type for a unknown operation, "
-                            + "we should not have got here in the first place");
+            throw new WPSException("Trying to get a mime type for a unknown operation, "
+                    + "we should not have got here in the first place");
         }
     }
 
@@ -90,9 +86,8 @@ public class StoredResourceResponse extends Response {
                 return "result.dat";
             }
         } else {
-            throw new WPSException(
-                    "Trying to get a file name for a unknown operation, "
-                            + "we should not have got here in the first place");
+            throw new WPSException("Trying to get a file name for a unknown operation, "
+                    + "we should not have got here in the first place");
         }
     }
 

@@ -27,8 +27,7 @@ public class SectionKvpParser extends KvpParser {
     @Override
     public Object parse(String value) throws Exception {
         if (CapabilitiesSectionType.get(value) == null)
-            throw new WcsException(
-                    "Could not find section '" + value + "'", InvalidParameterValue, "section");
+            throw new WcsException("Could not find section '" + value + "'", InvalidParameterValue, "section");
 
         return CapabilitiesSectionType.get(value);
     }

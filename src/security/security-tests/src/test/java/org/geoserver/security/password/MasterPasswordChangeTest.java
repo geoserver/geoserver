@@ -32,8 +32,9 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
     @Override
     protected void setUpSpring(List<String> springContextLocations) {
         super.setUpSpring(springContextLocations);
-        springContextLocations.add(
-                getClass().getResource(getClass().getSimpleName() + "-context.xml").toString());
+        springContextLocations.add(getClass()
+                .getResource(getClass().getSimpleName() + "-context.xml")
+                .toString());
     }
 
     @Override
@@ -50,25 +51,19 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         // geoserver.jks
 
         // We need to enable Master Root login first
-        MasterPasswordProviderConfig masterPasswordConfig =
-                getSecurityManager()
-                        .loadMasterPassswordProviderConfig(
-                                getSecurityManager().getMasterPasswordConfig().getProviderName());
+        MasterPasswordProviderConfig masterPasswordConfig = getSecurityManager()
+                .loadMasterPassswordProviderConfig(
+                        getSecurityManager().getMasterPasswordConfig().getProviderName());
         masterPasswordConfig.setLoginEnabled(true);
         getSecurityManager().saveMasterPasswordProviderConfig(masterPasswordConfig);
 
         String masterPWAsString = getMasterPassword();
         MasterPasswordConfig config = getSecurityManager().getMasterPasswordConfig();
 
-        URLMasterPasswordProviderConfig mpConfig =
-                (URLMasterPasswordProviderConfig)
-                        getSecurityManager()
-                                .loadMasterPassswordProviderConfig(config.getProviderName());
+        URLMasterPasswordProviderConfig mpConfig = (URLMasterPasswordProviderConfig)
+                getSecurityManager().loadMasterPassswordProviderConfig(config.getProviderName());
 
-        assertTrue(
-                mpConfig.getURL()
-                        .toString()
-                        .endsWith(URLMasterPasswordProviderConfig.MASTER_PASSWD_FILENAME));
+        assertTrue(mpConfig.getURL().toString().endsWith(URLMasterPasswordProviderConfig.MASTER_PASSWD_FILENAME));
         getSecurityManager().getKeyStoreProvider().reloadKeyStore();
 
         try {
@@ -91,10 +86,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         config.setProviderName(mpConfig.getName());
         getSecurityManager()
                 .saveMasterPasswordConfig(
-                        config,
-                        masterPWAsString.toCharArray(),
-                        "geoserver1".toCharArray(),
-                        "geoserver1".toCharArray());
+                        config, masterPWAsString.toCharArray(), "geoserver1".toCharArray(), "geoserver1".toCharArray());
         assertEquals("geoserver1", getMasterPassword());
 
         getSecurityManager().getKeyStoreProvider().getConfigPasswordKey();
@@ -115,8 +107,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         config.setProviderName("ro");
 
         getSecurityManager()
-                .saveMasterPasswordConfig(
-                        config, "geoserver1".toCharArray(), null, "geoserver2".toCharArray());
+                .saveMasterPasswordConfig(config, "geoserver1".toCharArray(), null, "geoserver2".toCharArray());
 
         assertEquals("geoserver2", getMasterPassword());
         getSecurityManager().getKeyStoreProvider().getConfigPasswordKey();
@@ -132,10 +123,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
         config.setProviderName("test");
         getSecurityManager()
                 .saveMasterPasswordConfig(
-                        config,
-                        "geoserver2".toCharArray(),
-                        "geoserver3".toCharArray(),
-                        "geoserver3".toCharArray());
+                        config, "geoserver2".toCharArray(), "geoserver3".toCharArray(), "geoserver3".toCharArray());
 
         // now, a geoserver restart should appear, simulate with
         getSecurityManager().getKeyStoreProvider().commitMasterPasswordChange();
@@ -146,8 +134,7 @@ public class MasterPasswordChangeTest extends GeoServerSecurityTestSupport {
 
         /// Test root login after master password change
         Authentication auth = new UsernamePasswordAuthenticationToken("root", "geoserver3");
-        GeoServerRootAuthenticationProvider authProvider =
-                new GeoServerRootAuthenticationProvider();
+        GeoServerRootAuthenticationProvider authProvider = new GeoServerRootAuthenticationProvider();
         authProvider.setSecurityManager(getSecurityManager());
         auth = authProvider.authenticate(auth);
         assertTrue(auth.isAuthenticated());

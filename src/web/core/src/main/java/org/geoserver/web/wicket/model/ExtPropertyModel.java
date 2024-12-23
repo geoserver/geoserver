@@ -8,8 +8,8 @@ package org.geoserver.web.wicket.model;
 import org.apache.wicket.model.PropertyModel;
 
 /**
- * Extension of property model. Additional support for: - read-only properties (particularly for
- * disabled fields, otherwise a null is sent despite content)
+ * Extension of property model. Additional support for: - read-only properties (particularly for disabled fields,
+ * otherwise a null is sent despite content)
  *
  * @author Niels Charlier
  * @param <T>

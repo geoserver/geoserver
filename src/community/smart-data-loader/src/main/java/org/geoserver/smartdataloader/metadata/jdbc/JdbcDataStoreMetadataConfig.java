@@ -14,10 +14,7 @@ import org.geoserver.smartdataloader.metadata.jdbc.utils.JdbcUrlSplitter;
 import org.geotools.api.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 
-/**
- * Configuration class that keeps specific information related to DataStoreMetadata for JDBCs
- * connections.
- */
+/** Configuration class that keeps specific information related to DataStoreMetadata for JDBCs connections. */
 public class JdbcDataStoreMetadataConfig extends DataStoreMetadataConfig {
 
     public static final String TYPE = "JDBC";
@@ -28,8 +25,7 @@ public class JdbcDataStoreMetadataConfig extends DataStoreMetadataConfig {
     private final String catalog;
     private final String schema;
 
-    public JdbcDataStoreMetadataConfig(JDBCDataStore jdbcStore, String password)
-            throws IOException, SQLException {
+    public JdbcDataStoreMetadataConfig(JDBCDataStore jdbcStore, String password) throws IOException, SQLException {
         this.connection = jdbcStore.getConnection(Transaction.AUTO_COMMIT);
         this.name = jdbcStore.getDatabaseSchema();
         this.catalog = jdbcStore.getDataSource().getConnection().getCatalog();
@@ -38,8 +34,7 @@ public class JdbcDataStoreMetadataConfig extends DataStoreMetadataConfig {
         this.password = password;
     }
 
-    public JdbcDataStoreMetadataConfig(
-            String name, Connection connection, String catalog, String schema) {
+    public JdbcDataStoreMetadataConfig(String name, Connection connection, String catalog, String schema) {
         super();
         this.name = name;
         this.connection = connection;
@@ -85,7 +80,8 @@ public class JdbcDataStoreMetadataConfig extends DataStoreMetadataConfig {
     public Map<String, String> getParameters() {
         Map<String, String> out = new HashMap<>();
         try {
-            JdbcUrlSplitter urlFields = new JdbcUrlSplitter(connection.getMetaData().getURL());
+            JdbcUrlSplitter urlFields =
+                    new JdbcUrlSplitter(connection.getMetaData().getURL());
             String dbtype = urlFields.driverName;
             String host = urlFields.host;
             String port = urlFields.port;

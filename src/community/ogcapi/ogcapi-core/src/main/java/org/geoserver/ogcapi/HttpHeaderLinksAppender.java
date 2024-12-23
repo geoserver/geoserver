@@ -18,8 +18,7 @@ import org.geotools.util.logging.Logging;
 import org.springframework.stereotype.Component;
 
 /**
- * Adds links to the head of the current response. Normally called by LinksBuilder, but can be
- * invoked by others as well
+ * Adds links to the head of the current response. Normally called by LinksBuilder, but can be invoked by others as well
  */
 @Component
 public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
@@ -35,8 +34,7 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         // is it an OGC API request?
         APIRequestInfo ri = APIRequestInfo.get();
         if (ri == null) return response;
@@ -45,8 +43,7 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
         List<Link> links = LINKS.get();
         if (links.isEmpty()) return response;
 
-        List<String> allFormatted =
-                links.stream().map(this::formatLink).collect(Collectors.toList());
+        List<String> allFormatted = links.stream().map(this::formatLink).collect(Collectors.toList());
         int size = getLinksHeaderSize(allFormatted);
         if (size < MAX_LINKS_HEADER_SIZE) {
             allFormatted.forEach(l -> httpResponse.addHeader("Link", l));
@@ -56,16 +53,13 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
                 LOGGER.fine("Headers are too large, would have been: " + allFormatted);
                 LOGGER.fine("Providing only self/alternate links");
             }
-            List<String> selfFormatted =
-                    links.stream()
-                            .filter(
-                                    l -> {
-                                        String rel = l.getRel();
-                                        return rel.equals(Link.REL_SELF)
-                                                || rel.equals(Link.REL_ALTERNATE);
-                                    })
-                            .map(this::formatLink)
-                            .collect(Collectors.toList());
+            List<String> selfFormatted = links.stream()
+                    .filter(l -> {
+                        String rel = l.getRel();
+                        return rel.equals(Link.REL_SELF) || rel.equals(Link.REL_ALTERNATE);
+                    })
+                    .map(this::formatLink)
+                    .collect(Collectors.toList());
             selfFormatted.forEach(l -> httpResponse.addHeader("Link", l));
         }
 
@@ -74,8 +68,7 @@ public class HttpHeaderLinksAppender extends AbstractDispatcherCallback {
 
     private int getLinksHeaderSize(List<String> allFormatted) {
         // size of the links themselves, plus all the "link: " before them
-        return allFormatted.stream().mapToInt(l -> l.getBytes().length).sum()
-                + allFormatted.size() * 6;
+        return allFormatted.stream().mapToInt(l -> l.getBytes().length).sum() + allFormatted.size() * 6;
     }
 
     String formatLink(Link link) {

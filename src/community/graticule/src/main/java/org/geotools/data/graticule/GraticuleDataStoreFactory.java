@@ -29,22 +29,16 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
     public static final String DISPLAY_NAME = "Graticule";
 
     /** Optional - uri of the FeatureType's namespace */
-    public static final Param NAMESPACEP =
-            new Param(
-                    "namespace",
-                    URI.class,
-                    "uri to a the namespace",
-                    false,
-                    null, // not required
-                    new KVP(Param.LEVEL, "advanced"));
+    public static final Param NAMESPACEP = new Param(
+            "namespace",
+            URI.class,
+            "uri to a the namespace",
+            false,
+            null, // not required
+            new KVP(Param.LEVEL, "advanced"));
 
     public static Param STEPS =
-            new Param(
-                    "steps",
-                    List.class,
-                    "A list of steps for the grids to be produced for",
-                    true,
-                    null) {
+            new Param("steps", List.class, "A list of steps for the grids to be produced for", true, null) {
                 @Override
                 public Object parse(String text) throws Throwable {
                     return Arrays.stream(text.split("\\s*,\\s*"))
@@ -65,10 +59,9 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
                     // ReferencedEnvelope[-180.0 : 180.0, -90.0 : 90.0]
                     // DefaultGeographicCRS[EPSG:WGS 84] AXIS["Geodetic longitude", EAST]
                     // AXIS["Geodetic latitude", NORTH]
-                    Pattern pat =
-                            Pattern.compile(
-                                    "\\[([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+), ([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+)\\] \\{(.*)\\}",
-                                    Pattern.MULTILINE | Pattern.DOTALL);
+                    Pattern pat = Pattern.compile(
+                            "\\[([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+), ([-+]?[0-9]*\\.?[0-9]+) : ([-+]?[0-9]*\\.?[0-9]+)\\] \\{(.*)\\}",
+                            Pattern.MULTILINE | Pattern.DOTALL);
 
                     Matcher m = pat.matcher(text);
 
@@ -78,8 +71,7 @@ public class GraticuleDataStoreFactory implements DataStoreFactorySpi {
                     double minY = Double.parseDouble(m.group(3));
                     double maxY = Double.parseDouble(m.group(4));
                     try {
-                        CoordinateReferenceSystem crs =
-                                org.geotools.referencing.CRS.parseWKT(m.group(5));
+                        CoordinateReferenceSystem crs = org.geotools.referencing.CRS.parseWKT(m.group(5));
                         return new ReferencedEnvelope(minX, maxX, minY, maxY, crs);
                     } catch (FactoryException e) {
                         throw new RuntimeException(e);

@@ -41,8 +41,7 @@ import org.springframework.util.Assert;
  */
 public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServerRoleService {
 
-    private static final SortedSet<String> emptyStringSet =
-            Collections.unmodifiableSortedSet(new TreeSet<>());
+    private static final SortedSet<String> emptyStringSet = Collections.unmodifiableSortedSet(new TreeSet<>());
 
     private static final Map<String, String> emptyMap = Collections.emptyMap();
 
@@ -50,8 +49,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     protected Set<RoleLoadedListener> listeners = Collections.synchronizedSet(new HashSet<>());
 
     private String rolePrefix = LDAPBaseSecurityServiceConfig.ROLE_PREFIX_DEFAULT;
-    private boolean convertToUpperCase =
-            LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
+    private boolean convertToUpperCase = LDAPBaseSecurityServiceConfig.CONVERT_ROLE_UPPERCASE_DEFAULT;
 
     private String adminGroup;
     private String groupAdminGroup;
@@ -87,19 +85,13 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         return null;
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener)
-     */
+    /** @see org.geoserver.security.GeoServerRoleService#registerRoleLoadedListener(RoleLoadedListener) */
     @Override
     public void registerRoleLoadedListener(RoleLoadedListener listener) {
         listeners.add(listener);
     }
 
-    /**
-     * @see
-     *     org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener)
-     */
+    /** @see org.geoserver.security.GeoServerRoleService#unregisterRoleLoadedListener(RoleLoadedListener) */
     @Override
     public void unregisterRoleLoadedListener(RoleLoadedListener listener) {
         listeners.remove(listener);
@@ -123,8 +115,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
             Set<GeoServerRole> navigatedRoles = new HashSet<>();
             navigatedRoles.add(role);
             for (GeoServerRole erole : childrenRoles) {
-                SortedSet<String> userNamesForRole =
-                        getUserNamesForRoleNested(erole, navigatedRoles, 1);
+                SortedSet<String> userNamesForRole = getUserNamesForRoleNested(erole, navigatedRoles, 1);
                 users.addAll(userNamesForRole);
             }
         }
@@ -133,8 +124,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     }
 
     private SortedSet<String> getUserNamesForRoleNested(
-            GeoServerRole role, final Set<GeoServerRole> navigatedRoles, int depth)
-            throws IOException {
+            GeoServerRole role, final Set<GeoServerRole> navigatedRoles, int depth) throws IOException {
         final SortedSet<String> users = new TreeSet<>();
         if (isOutOfDepthBounds(depth)) return users;
 
@@ -146,8 +136,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
             for (GeoServerRole erole : childrenRoles) {
                 if (!navigatedRoles.contains(erole)) {
                     navigatedRoles.add(role);
-                    SortedSet<String> userNamesForRole =
-                            getUserNamesForRoleNested(erole, navigatedRoles, depth + 1);
+                    SortedSet<String> userNamesForRole = getUserNamesForRoleNested(erole, navigatedRoles, depth + 1);
                     users.addAll(userNamesForRole);
                 }
             }
@@ -159,8 +148,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     public SortedSet<GeoServerRole> getRolesForUser(final String username) throws IOException {
         final SortedSet<GeoServerRole> roles = new TreeSet<>();
         final String userDn = lookupDn(username);
-        authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) -> fillRolesForUser(ctx, username, userDn, roles));
+        authenticateIfNeeded((ctx, ldapEntryIdentification) -> fillRolesForUser(ctx, username, userDn, roles));
 
         if (useNestedGroups) {
             final SortedSet<GeoServerRole> parentRoles = new TreeSet<>(roles);
@@ -207,13 +195,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
     }
 
     private void fillAllRoles(DirContext ctx, SortedSet<GeoServerRole> roles) {
-        Set<String> roleNames =
-                LDAPUtils.getLdapTemplateInContext(ctx, template)
-                        .searchForSingleAttributeValues(
-                                groupSearchBase,
-                                allGroupsSearchFilter,
-                                new String[] {},
-                                groupNameAttribute);
+        Set<String> roleNames = LDAPUtils.getLdapTemplateInContext(ctx, template)
+                .searchForSingleAttributeValues(
+                        groupSearchBase, allGroupsSearchFilter, new String[] {}, groupNameAttribute);
         addRolesToSet(roles, roleNames);
     }
 
@@ -221,10 +205,8 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         String roleStr = normalizeGroupName(role.toString());
         String roleDn = getRoleDn(role);
 
-        DirContextOperations roleObj =
-                LDAPUtils.getLdapTemplateInContext(ctx, template)
-                        .searchForSingleEntry(
-                                groupSearchBase, groupNameFilter, new String[] {roleStr, roleDn});
+        DirContextOperations roleObj = LDAPUtils.getLdapTemplateInContext(ctx, template)
+                .searchForSingleEntry(groupSearchBase, groupNameFilter, new String[] {roleStr, roleDn});
         if (roleObj != null) {
             Object[] usernames = roleObj.getObjectAttributes(groupMembershipAttribute);
             if (usernames != null) {
@@ -235,9 +217,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
                         user = m.group(1);
                     }
                     // only if hierarchical groups are activated, filter for full user dn group
-                    if (!(useNestedGroups
-                            && !StringUtils.containsIgnoreCase(
-                                    username.toString(), userSearchBase))) {
+                    if (!(useNestedGroups && !StringUtils.containsIgnoreCase(username.toString(), userSearchBase))) {
                         user = removeBaseDN(user);
                         users.add(getUserNameFromMembership(user));
                     }
@@ -266,15 +246,10 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         }
     }
 
-    private void fillRolesForUser(
-            DirContext ctx, String username, String userDn, SortedSet<GeoServerRole> roles) {
-        Set<String> roleNames =
-                LDAPUtils.getLdapTemplateInContext(ctx, template)
-                        .searchForSingleAttributeValues(
-                                groupSearchBase,
-                                groupMembershipFilter,
-                                new String[] {username, userDn},
-                                groupNameAttribute);
+    private void fillRolesForUser(DirContext ctx, String username, String userDn, SortedSet<GeoServerRole> roles) {
+        Set<String> roleNames = LDAPUtils.getLdapTemplateInContext(ctx, template)
+                .searchForSingleAttributeValues(
+                        groupSearchBase, groupMembershipFilter, new String[] {username, userDn}, groupNameAttribute);
 
         addRolesToSet(roles, roleNames);
     }
@@ -303,14 +278,9 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         final String roleName = role;
         final SortedSet<String> roles = new TreeSet<>();
         authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) ->
-                        roles.addAll(
-                                LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                        .searchForSingleAttributeValues(
-                                                groupSearchBase,
-                                                groupNameFilter,
-                                                new String[] {roleName},
-                                                groupNameAttribute)));
+                (ctx, ldapEntryIdentification) -> roles.addAll(LDAPUtils.getLdapTemplateInContext(ctx, template)
+                        .searchForSingleAttributeValues(
+                                groupSearchBase, groupNameFilter, new String[] {roleName}, groupNameAttribute)));
         if (roles.size() == 1) {
             return createRoleObject(role);
         }
@@ -322,8 +292,7 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
 
     @Override
     public Properties personalizeRoleParams(
-            String roleName, Properties roleParams, String userName, Properties userProps)
-            throws IOException {
+            String roleName, Properties roleParams, String userName, Properties userProps) throws IOException {
         return null;
     }
 
@@ -356,13 +325,8 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         AtomicInteger count = new AtomicInteger(0);
 
         // search requires an escaped string
-        authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) ->
-                        LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                .search(
-                                        groupSearchBase,
-                                        LDAPUtils.escapeSearchString(allGroupsSearchFilter),
-                                        counter(count)));
+        authenticateIfNeeded((ctx, ldapEntryIdentification) -> LDAPUtils.getLdapTemplateInContext(ctx, template)
+                .search(groupSearchBase, LDAPUtils.escapeSearchString(allGroupsSearchFilter), counter(count)));
         return count.get();
     }
 
@@ -380,21 +344,15 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         String roleDn = getRoleDn(role);
         final Set<String> membersDns = new HashSet<>();
         final Set<GeoServerRole> childs = new HashSet<>();
-        authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) -> {
-                    SpringSecurityLdapTemplate authTemplate =
-                            LDAPUtils.getLdapTemplateInContext(ctx, template);
-                    membersDns.addAll(
-                            authTemplate
-                                    .searchForSingleAttributeValues(
-                                            groupSearchBase,
-                                            groupNameFilter,
-                                            new String[] {roleName, roleDn},
-                                            groupMembershipAttribute)
-                                    .stream()
-                                    .filter(x -> x.contains(groupSearchBase))
-                                    .collect(Collectors.toSet()));
-                });
+        authenticateIfNeeded((ctx, ldapEntryIdentification) -> {
+            SpringSecurityLdapTemplate authTemplate = LDAPUtils.getLdapTemplateInContext(ctx, template);
+            membersDns.addAll(authTemplate
+                    .searchForSingleAttributeValues(
+                            groupSearchBase, groupNameFilter, new String[] {roleName, roleDn}, groupMembershipAttribute)
+                    .stream()
+                    .filter(x -> x.contains(groupSearchBase))
+                    .collect(Collectors.toSet()));
+        });
         for (String dn : membersDns) {
             String cnFromDn = extractGroupCnFromDn(dn);
             if (StringUtils.isNotBlank(cnFromDn))
@@ -412,41 +370,30 @@ public class LDAPRoleService extends LDAPBaseSecurityService implements GeoServe
         final Set<GeoServerRole> parents = new HashSet<>();
         String roleDn = getRoleDn(role);
         String roleName = normalizeGroupName(role.getAuthority());
-        authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) -> {
-                    SpringSecurityLdapTemplate authTemplate =
-                            LDAPUtils.getLdapTemplateInContext(ctx, template);
-                    Set<String> parentGroupsNames =
-                            authTemplate.searchForSingleAttributeValues(
-                                    groupSearchBase,
-                                    nestedGroupSearchFilter,
-                                    new String[] {roleName, roleDn},
-                                    groupNameAttribute);
-                    for (String eparent : parentGroupsNames) {
-                        try {
-                            parents.add(createRoleObject(eparent));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                });
+        authenticateIfNeeded((ctx, ldapEntryIdentification) -> {
+            SpringSecurityLdapTemplate authTemplate = LDAPUtils.getLdapTemplateInContext(ctx, template);
+            Set<String> parentGroupsNames = authTemplate.searchForSingleAttributeValues(
+                    groupSearchBase, nestedGroupSearchFilter, new String[] {roleName, roleDn}, groupNameAttribute);
+            for (String eparent : parentGroupsNames) {
+                try {
+                    parents.add(createRoleObject(eparent));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
         return parents;
     }
 
     private String getRoleDn(GeoServerRole role) {
         String roleName = normalizeGroupName(role.getAuthority());
         final MutableObject<String> roleDnReference = new MutableObject<>(null);
-        authenticateIfNeeded(
-                (ctx, ldapEntryIdentification) -> {
-                    String dn =
-                            LDAPUtils.getLdapTemplateInContext(ctx, template)
-                                    .searchForSingleEntry(
-                                            groupSearchBase,
-                                            groupNameFilter,
-                                            new String[] {roleName})
-                                    .getNameInNamespace();
-                    roleDnReference.setValue(dn);
-                });
+        authenticateIfNeeded((ctx, ldapEntryIdentification) -> {
+            String dn = LDAPUtils.getLdapTemplateInContext(ctx, template)
+                    .searchForSingleEntry(groupSearchBase, groupNameFilter, new String[] {roleName})
+                    .getNameInNamespace();
+            roleDnReference.setValue(dn);
+        });
         return roleDnReference.getValue();
     }
 }

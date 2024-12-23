@@ -140,11 +140,8 @@ public class ReadOnlyDataStoreTest extends SecureObjectsTest {
 
     @Test
     public void testReadOnlySource() throws Exception {
-        ReadOnlyDataStore ro =
-                new ReadOnlyDataStore(
-                        ds,
-                        WrapperPolicy.readOnlyHide(
-                                new WorkspaceAccessLimits(CatalogMode.HIDE, true, false, false)));
+        ReadOnlyDataStore ro = new ReadOnlyDataStore(
+                ds, WrapperPolicy.readOnlyHide(new WorkspaceAccessLimits(CatalogMode.HIDE, true, false, false)));
         SimpleFeatureSource fs = ro.getFeatureSource("blah");
         // used to go boom here
         SimpleFeatureCollection fc = fs.getFeatures(Query.ALL);

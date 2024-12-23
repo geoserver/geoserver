@@ -16,11 +16,6 @@ public class MultiGeometryMockData extends AbstractAppSchemaMockData {
     @Override
     public void addContent() {
         putNamespace("ex", "http://example.com");
-        addFeatureType(
-                "ex",
-                "geomContainer",
-                "MultiGeometry.xml",
-                "MultiGeometry.properties",
-                "NestedGeometry.xsd");
+        addFeatureType("ex", "geomContainer", "MultiGeometry.xml", "MultiGeometry.properties", "NestedGeometry.xsd");
     }
 }

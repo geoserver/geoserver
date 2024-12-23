@@ -20,7 +20,8 @@ import org.junit.rules.TemporaryFolder;
 /** @author Niels Charlier */
 public abstract class AbstractResourceNotificationDispatcherTest {
 
-    @Rule public TemporaryFolder folder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder folder = new TemporaryFolder();
 
     protected FileSystemResourceStore store;
     protected ResourceNotificationDispatcher watcher;
@@ -83,11 +84,8 @@ public abstract class AbstractResourceNotificationDispatcherTest {
         watcher.addListener(res.get("DirC/FileC1").path(), chkFileC1);
         watcher.addListener(res.get("DirC/FileC2").path(), chkFileC2);
 
-        List<Event> events =
-                SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);
-        watcher.changed(
-                new ResourceNotification(
-                        "DirA", Kind.ENTRY_DELETE, System.currentTimeMillis(), events));
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_DELETE);
+        watcher.changed(new ResourceNotification("DirA", Kind.ENTRY_DELETE, System.currentTimeMillis(), events));
 
         // test that listeners received events
         assertTrue(chkDirA.isChecked());
@@ -110,22 +108,17 @@ public abstract class AbstractResourceNotificationDispatcherTest {
     public void testDeleteWhileListening() {
         Resource res = store.get("DirA");
 
-        final ResourceListener deletingListener =
-                new ResourceListener() {
-                    @Override
-                    public void changed(ResourceNotification notify) {
-                        assertTrue(watcher.removeListener(notify.getPath(), this));
-                    }
-                };
+        final ResourceListener deletingListener = new ResourceListener() {
+            @Override
+            public void changed(ResourceNotification notify) {
+                assertTrue(watcher.removeListener(notify.getPath(), this));
+            }
+        };
 
         watcher.addListener(res.path(), deletingListener);
 
-        watcher.changed(
-                new ResourceNotification(
-                        "DirA",
-                        Kind.ENTRY_DELETE,
-                        System.currentTimeMillis(),
-                        Collections.emptyList()));
+        watcher.changed(new ResourceNotification(
+                "DirA", Kind.ENTRY_DELETE, System.currentTimeMillis(), Collections.emptyList()));
 
         // verify already deleted
         assertFalse(watcher.removeListener(res.path(), deletingListener));
@@ -143,11 +136,9 @@ public abstract class AbstractResourceNotificationDispatcherTest {
         watcher.addListener(store.get("DirA/DirC").path(), chkDirC);
         watcher.addListener(store.get("DirA").path(), chkDirA);
 
-        List<Event> events =
-                SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_MODIFY);
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_MODIFY);
         watcher.changed(
-                new ResourceNotification(
-                        "DirA/DirC/FileC1", Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
+                new ResourceNotification("DirA/DirC/FileC1", Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
 
         // test that listeners received events
         assertFalse(chkDirA.isChecked());
@@ -174,14 +165,9 @@ public abstract class AbstractResourceNotificationDispatcherTest {
         watcher.addListener(store.get("DirA/DirC").path(), chkDirC);
         watcher.addListener(store.get("DirA").path(), chkDirA);
 
-        List<Event> events =
-                SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);
-        watcher.changed(
-                new ResourceNotification(
-                        "DirA/DirC/DirD/FileQ",
-                        Kind.ENTRY_CREATE,
-                        System.currentTimeMillis(),
-                        events));
+        List<Event> events = SimpleResourceNotificationDispatcher.createEvents(res, Kind.ENTRY_CREATE);
+        watcher.changed(new ResourceNotification(
+                "DirA/DirC/DirD/FileQ", Kind.ENTRY_CREATE, System.currentTimeMillis(), events));
 
         // test that listeners received events
         assertFalse(chkDirA.isChecked());

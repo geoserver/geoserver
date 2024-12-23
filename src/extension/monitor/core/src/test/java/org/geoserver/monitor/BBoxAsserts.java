@@ -18,7 +18,6 @@ public class BBoxAsserts {
         assertEquals(expected.getMinX(), result.getMinX(), delta);
         assertEquals(expected.getMaxY(), result.getMaxY(), delta);
         assertEquals(expected.getMinY(), result.getMinY(), delta);
-        assertEquals(
-                expected.getCoordinateReferenceSystem(), result.getCoordinateReferenceSystem());
+        assertEquals(expected.getCoordinateReferenceSystem(), result.getCoordinateReferenceSystem());
     }
 }

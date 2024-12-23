@@ -104,7 +104,8 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         Assert.assertNotNull(store);
         Assert.assertEquals("foobar", store.getName());
         Assert.assertEquals(
-                getCatalog().getDefaultWorkspace().getName(), store.getWorkspace().getName());
+                getCatalog().getDefaultWorkspace().getName(),
+                store.getWorkspace().getName());
     }
 
     @Test
@@ -116,9 +117,7 @@ public class ImportJSONIOTest extends ImporterTestSupport {
         JSONObject json = parseJson(outputStream);
 
         JSONArray transforms =
-                json.getJSONObject("task")
-                        .getJSONObject("transformChain")
-                        .getJSONArray("transforms");
+                json.getJSONObject("task").getJSONObject("transformChain").getJSONArray("transforms");
         JSONObject dateTransform = new JSONObject();
         dateTransform.put("type", "dateFormatTransform");
         dateTransform.put("field", "foobar");

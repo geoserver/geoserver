@@ -28,13 +28,9 @@ public class JDBCResourceStorePropertiesFactoryBean extends JDBCLoaderProperties
     private static final String PREFIX = "jdbcstore";
 
     /** DDL scripts copied to <data dir>/jdbcstore/scripts/ on first startup */
-    private static final String[] SCRIPTS = {
-        "drop.h2.sql", "drop.postgres.sql", "init.h2.sql", "init.postgres.sql"
-    };
+    private static final String[] SCRIPTS = {"drop.h2.sql", "drop.postgres.sql", "init.h2.sql", "init.postgres.sql"};
 
-    private static final String[] SAMPLE_CONFIGS = {
-        "jdbcstore.properties.h2", "jdbcstore.properties.postgres"
-    };
+    private static final String[] SAMPLE_CONFIGS = {"jdbcstore.properties.h2", "jdbcstore.properties.postgres"};
 
     public JDBCResourceStorePropertiesFactoryBean(ResourceStore resourceStore) {
         super(resourceStore, PREFIX);
@@ -76,12 +72,8 @@ public class JDBCResourceStorePropertiesFactoryBean extends JDBCLoaderProperties
     public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         for (Resource controlflow : getFileLocations()) {
-            Resource targetDir =
-                    Files.asResource(
-                            resourceLoader.findOrCreateDirectory(
-                                    Paths.convert(
-                                            loader.getBaseDirectory(),
-                                            controlflow.parent().dir())));
+            Resource targetDir = Files.asResource(resourceLoader.findOrCreateDirectory(Paths.convert(
+                    loader.getBaseDirectory(), controlflow.parent().dir())));
 
             Resources.copy(controlflow.file(), targetDir);
         }

@@ -31,19 +31,15 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
                 hasItems("application/x-yaml"));
 
         // check some of the basic tile matrix sets are there
-        assertThat(
-                json.read("tileMatrixSets[*].id"),
-                hasItems("GlobalCRS84Pixel", "EPSG:4326", "EPSG:900913"));
+        assertThat(json.read("tileMatrixSets[*].id"), hasItems("GlobalCRS84Pixel", "EPSG:4326", "EPSG:900913"));
 
         // verify a specific one
         assertThat(
-                json.read(
-                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
+                json.read("tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].href"),
                 contains(
                         "http://localhost:8080/geoserver/ogc/tiles/v1/tileMatrixSets/EPSG%3A4326?f=application%2Fjson"));
         assertThat(
-                json.read(
-                        "tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
+                json.read("tileMatrixSets[?(@.id == 'EPSG:4326')].links[?(@.type == 'application/json')].rel"),
                 contains("tileMatrixSet"));
     }
 
@@ -70,29 +66,23 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
 
         // check basic properties
         assertThat(json.read("id"), equalTo("EPSG:4326"));
-        assertThat(
-                json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
+        assertThat(json.read("supportedCRS"), equalTo("http://www.opengis.net/def/crs/OGC/1.3/CRS84"));
         assertThat(json.read("title"), startsWith("A default WGS84"));
 
         // check a tile matrix definitions
         assertThat(json.read("tileMatrices[0].id"), equalTo("EPSG:4326:0"));
-        assertThat(
-                json.read("tileMatrices[0].scaleDenominator", Double.class),
-                closeTo(2.7954112E8, 1e3));
+        assertThat(json.read("tileMatrices[0].scaleDenominator", Double.class), closeTo(2.7954112E8, 1e3));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].tileWidth"), equalTo(256));
         assertThat(json.read("tileMatrices[0].matrixWidth"), equalTo(2));
         assertThat(json.read("tileMatrices[0].matrixHeight"), equalTo(1));
-        assertThat(
-                json.read("tileMatrices[0].pointOfOrigin"),
-                contains(closeTo(90, 0), closeTo(-180, 0)));
+        assertThat(json.read("tileMatrices[0].pointOfOrigin"), contains(closeTo(90, 0), closeTo(-180, 0)));
     }
 
     @Test
     public void getDataTilesMetadata() throws Exception {
         String roadSegments = getLayerId(MockData.ROAD_SEGMENTS);
-        DocumentContext json =
-                getAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/tiles", 200);
+        DocumentContext json = getAsJSONPath("ogc/features/v1/collections/" + roadSegments + "/tiles", 200);
 
         // test self link and links to alternate formats and
         assertThat(
@@ -106,13 +96,11 @@ public class TilesetsDescriptionTest extends TiledFeaturesTestSupport {
 
         // check the tile matrices
         assertEquals(Integer.valueOf(2), json.read("$.tilesets.size()"));
-        String matrixDefinition =
-                "http://localhost:8080/geoserver/ogc/features/v1/tileMatrixSets/EPSG%3A4326";
+        String matrixDefinition = "http://localhost:8080/geoserver/ogc/features/v1/tileMatrixSets/EPSG%3A4326";
         assertEquals(matrixDefinition, json.read("$.tilesets[0].tileMatrixSetURI"));
         assertEquals(matrixDefinition, json.read("$.tilesets[0].tileMatrixSetDefinition"));
         assertEquals(Tileset.DataType.vector.toString(), json.read("$.tilesets[0].dataType"));
-        String tilesetLink =
-                readSingle(json, "$.tilesets[0].links[?(@.type == 'application/json')].href");
+        String tilesetLink = readSingle(json, "$.tilesets[0].links[?(@.type == 'application/json')].href");
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/features/v1/collections/cite:RoadSegments/tiles/EPSG:4326?f=application%2Fjson",
                 tilesetLink);

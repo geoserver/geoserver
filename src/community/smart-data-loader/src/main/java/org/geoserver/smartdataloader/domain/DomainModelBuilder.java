@@ -20,8 +20,8 @@ import org.geoserver.smartdataloader.metadata.EntityMetadata;
 import org.geoserver.smartdataloader.metadata.RelationMetadata;
 
 /**
- * Smart AppSchema model builder. Given a DomainModelConfig object and a DataStoreMetadata it allows
- * to get the Smart AppSchema model.
+ * Smart AppSchema model builder. Given a DomainModelConfig object and a DataStoreMetadata it allows to get the Smart
+ * AppSchema model.
  */
 public final class DomainModelBuilder {
 
@@ -31,20 +31,16 @@ public final class DomainModelBuilder {
     private final Map<String, DomainEntity> domainEntitiesIndex = new HashMap<>();
     private final Set<String> visitedEntities = new HashSet<>();
 
-    public DomainModelBuilder(
-            DataStoreMetadata dataStoreMetadata, DomainModelConfig domainModelConfig) {
+    public DomainModelBuilder(DataStoreMetadata dataStoreMetadata, DomainModelConfig domainModelConfig) {
         this.dataStoreMetadata = dataStoreMetadata;
         this.domainModelConfig = domainModelConfig;
     }
 
     public DomainModel buildDomainModel() {
-        EntityMetadata rootEntityMetadata =
-                dataStoreMetadata.getEntityMetadata(domainModelConfig.getRootEntityName());
+        EntityMetadata rootEntityMetadata = dataStoreMetadata.getEntityMetadata(domainModelConfig.getRootEntityName());
         if (rootEntityMetadata == null) {
             throw new RuntimeException(
-                    "Root entity name '"
-                            + domainModelConfig.getRootEntityName()
-                            + "' does not exists!");
+                    "Root entity name '" + domainModelConfig.getRootEntityName() + "' does not exists!");
         }
         DomainEntity rootEntity = this.buildRootDomainEntity(rootEntityMetadata.getName());
         DomainModel dm = new DomainModel(this.dataStoreMetadata, rootEntity);
@@ -74,8 +70,7 @@ public final class DomainModelBuilder {
     private DomainEntity buildDomainEntity(String entityName, DomainRelation fromRelation) {
         if (visitedEntities.contains(entityName)) {
             // we are dealing with a cyclic dependency, we currently don't support this
-            throw new RuntimeException(
-                    "Cyclic dependency detected for entity '" + entityName + "'");
+            throw new RuntimeException("Cyclic dependency detected for entity '" + entityName + "'");
         }
         visitedEntities.add(entityName);
         // retrieve the metadata for our entity
@@ -87,38 +82,28 @@ public final class DomainModelBuilder {
         // let's try to retrieve the domain entity or create it if needed
         DomainEntity entity = indexEntity(entityMetadata);
         // let's add the relations of our entity
-        entityMetadata
-                .getRelations()
-                .forEach(
-                        relation -> {
-                            if (fromRelation == null
-                                    || !relation.participatesInRelation(
-                                            fromRelation.getContainingEntity().getName())) {
-                                DomainRelation domainRelation =
-                                        buildDomainRelation(entity, relation, fromRelation);
-                                entity.add(domainRelation);
-                            }
-                        });
+        entityMetadata.getRelations().forEach(relation -> {
+            if (fromRelation == null
+                    || !relation.participatesInRelation(
+                            fromRelation.getContainingEntity().getName())) {
+                DomainRelation domainRelation = buildDomainRelation(entity, relation, fromRelation);
+                entity.add(domainRelation);
+            }
+        });
         // let's add attributes of our entity, excluding all attributes that are foreign keys
-        entityMetadata
-                .getAttributes()
-                .forEach(
-                        attribute -> {
-                            // exclude external attributes references
-                            if (!attribute.isExternalReference()) {
-                                DomainEntitySimpleAttribute domainAttribute =
-                                        buildDomainEntitySimpleAttribute(attribute);
-                                entity.add(domainAttribute);
-                            }
-                        });
+        entityMetadata.getAttributes().forEach(attribute -> {
+            // exclude external attributes references
+            if (!attribute.isExternalReference()) {
+                DomainEntitySimpleAttribute domainAttribute = buildDomainEntitySimpleAttribute(attribute);
+                entity.add(domainAttribute);
+            }
+        });
         visitedEntities.remove(entityName);
         return entity;
     }
 
     private DomainRelation buildDomainRelation(
-            DomainEntity containingDomainEntity,
-            RelationMetadata relationMetadata,
-            DomainRelation fromDomainRelation) {
+            DomainEntity containingDomainEntity, RelationMetadata relationMetadata, DomainRelation fromDomainRelation) {
         // retrieve the source and targeted attributes of the relation
         AttributeMetadata sourceAttribute = relationMetadata.getSourceAttribute();
         AttributeMetadata destinationAttribute = relationMetadata.getDestinationAttribute();
@@ -136,13 +121,11 @@ public final class DomainModelBuilder {
         DomainEntity destinationDomainEntity =
                 buildDomainEntity(destinationAttribute.getEntity().getName(), domainRelation);
         domainRelation.setDestinationEntity(destinationDomainEntity);
-        domainRelation.setDestinationKeyAttribute(
-                buildDomainEntitySimpleAttribute(destinationAttribute));
+        domainRelation.setDestinationKeyAttribute(buildDomainEntitySimpleAttribute(destinationAttribute));
         return domainRelation;
     }
 
-    private DomainEntitySimpleAttribute buildDomainEntitySimpleAttribute(
-            AttributeMetadata attributeMetadata) {
+    private DomainEntitySimpleAttribute buildDomainEntitySimpleAttribute(AttributeMetadata attributeMetadata) {
         DomainEntitySimpleAttribute domainAttribute = new DomainEntitySimpleAttribute();
         domainAttribute.setName(attributeMetadata.getName());
         String attribType = attributeMetadata.getType().toLowerCase();
@@ -189,10 +172,9 @@ public final class DomainModelBuilder {
                 domainAttribute.setType(DomainAttributeType.BOOLEAN);
                 break;
             default:
-                throw new RuntimeException(
-                        String.format(
-                                "Attribute type '%s' is unknown.",
-                                attributeMetadata.getType().toLowerCase()));
+                throw new RuntimeException(String.format(
+                        "Attribute type '%s' is unknown.",
+                        attributeMetadata.getType().toLowerCase()));
         }
         return domainAttribute;
     }

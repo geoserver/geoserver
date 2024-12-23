@@ -41,10 +41,7 @@ class H3ZoneIterator<R> implements Iterator<R> {
     R next = null;
 
     public H3ZoneIterator(
-            H3Core h3,
-            Function<Long, Boolean> drill,
-            Function<Long, Boolean> accept,
-            Function<Long, R> map) {
+            H3Core h3, Function<Long, Boolean> drill, Function<Long, Boolean> accept, Function<Long, R> map) {
         this(h3, drill, accept, map, h3.getRes0Indexes());
     }
 

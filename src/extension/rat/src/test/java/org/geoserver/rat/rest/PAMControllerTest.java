@@ -71,8 +71,7 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testGetPAMDataset() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
+                getAsServletResponse("rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
         assertEquals(200, response.getStatus());
         assertThat(response.getContentType(), Matchers.startsWith("application/xml"));
         Document doc = dom(getBinaryInputStream(response));
@@ -80,23 +79,18 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
         // just a quick check that some reasonable output is produced, the mapping is performed
         // via JAXB, correctness of the output should be tested somewhere else
         assertXpathEvaluatesTo("1", "count(/PAMDataset/PAMRasterBand)", doc);
-        assertXpathEvaluatesTo(
-                "1", "count(/PAMDataset/PAMRasterBand/GDALRasterAttributeTable)", doc);
+        assertXpathEvaluatesTo("1", "count(/PAMDataset/PAMRasterBand/GDALRasterAttributeTable)", doc);
     }
 
     @Test
     public void testReloadPAMDataset() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
+                getAsServletResponse("rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
         assertEquals(200, response.getStatus());
         assertThat(response.getContentType(), Matchers.startsWith("application/xml"));
         Document doc = dom(getBinaryInputStream(response));
         // check the first entry has green color
-        assertXpathEvaluatesTo(
-                "green",
-                "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]",
-                doc);
+        assertXpathEvaluatesTo("green", "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]", doc);
 
         // copy over a RAT with a different color
         GeoServerDataDirectory dd = getDataDirectory();
@@ -109,17 +103,12 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
         }
 
         // force reload
-        response =
-                postAsServletResponse(
-                        "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam/reload", "");
+        response = postAsServletResponse("rest/workspaces/cite/coveragestores/rat/coverages/rat/pam/reload", "");
         assertEquals(200, response.getStatus());
 
         // grab again and check color
         doc = getAsDOM("rest/workspaces/cite/coveragestores/rat/coverages/rat/pam.xml");
-        assertXpathEvaluatesTo(
-                "olive",
-                "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]",
-                doc);
+        assertXpathEvaluatesTo("olive", "/PAMDataset/PAMRasterBand/GDALRasterAttributeTable/Row[@index=0]/F[3]", doc);
     }
 
     @Test
@@ -131,17 +120,15 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
         assertEquals(201, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals(
-                "http://localhost:8080/geoserver/rest/workspaces/cite/styles/test123",
-                response.getHeader("Location"));
+                "http://localhost:8080/geoserver/rest/workspaces/cite/styles/test123", response.getHeader("Location"));
 
         // style is actually there, and associated to the layer
         StyleInfo si = getCatalog().getStyleByName("cite:test123");
         assertNotNull(si);
         assertThat(getCatalog().getLayerByName("cite:rat").getStyles(), Matchers.contains(si));
         Style style = si.getStyle();
-        RasterSymbolizer rs =
-                (RasterSymbolizer)
-                        style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
+        RasterSymbolizer rs = (RasterSymbolizer)
+                style.featureTypeStyles().get(0).rules().get(0).symbolizers().get(0);
         ColorMap cm = rs.getColorMap();
         assertEquals(ColorMap.TYPE_INTERVALS, cm.getType());
         RasterAttributeTableTest.assertRangesNoColor(cm);
@@ -151,14 +138,12 @@ public class PAMControllerTest extends CatalogRESTTestSupport {
         assertEquals(303, response.getStatus());
         assertEquals("text/plain", response.getContentType());
         assertEquals(
-                "http://localhost:8080/geoserver/rest/workspaces/cite/styles/test123",
-                response.getHeader("Location"));
+                "http://localhost:8080/geoserver/rest/workspaces/cite/styles/test123", response.getHeader("Location"));
     }
 
     @Test
     public void testCreateStyleNoName() throws Exception {
-        String createCommand =
-                "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam?band=0&&classification=test";
+        String createCommand = "rest/workspaces/cite/coveragestores/rat/coverages/rat/pam?band=0&&classification=test";
         MockHttpServletResponse response = postAsServletResponse(createCommand, "", null);
         // style creation response
         assertEquals(201, response.getStatus());

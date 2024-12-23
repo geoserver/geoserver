@@ -60,10 +60,7 @@ public class JSONFGSchemaTest extends FeaturesTestSupport {
 
     public void basicSchemaTest(String schemaId) throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/features/v1/collections/cite:Buildings/schemas/fg/"
-                                + schemaId
-                                + ".json");
+                getAsServletResponse("ogc/features/v1/collections/cite:Buildings/schemas/fg/" + schemaId + ".json");
         assertEquals(200, response.getStatus());
         assertEquals(SCHEMA_TYPE_VALUE, response.getContentType());
         String expected = getFixture(schemaId);
@@ -99,8 +96,7 @@ public class JSONFGSchemaTest extends FeaturesTestSupport {
 
     @Test
     public void featurePrimitives() throws Exception {
-        DocumentContext json =
-                basicFeatureChecks(getLayerId(MockData.PRIMITIVEGEOFEATURE), "Polygon");
+        DocumentContext json = basicFeatureChecks(getLayerId(MockData.PRIMITIVEGEOFEATURE), "Polygon");
 
         // no actual properties to check
         assertEquals("null", json.read("properties.properties.oneOf[0].type"));
@@ -118,24 +114,18 @@ public class JSONFGSchemaTest extends FeaturesTestSupport {
         assertEquals("boolean", props.read("booleanProperty.type"));
     }
 
-    private DocumentContext basicFeatureChecks(String typeName, String geometryType)
-            throws Exception {
+    private DocumentContext basicFeatureChecks(String typeName, String geometryType) throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/features/v1/collections/" + typeName + "/schemas/fg/feature.json");
+                getAsServletResponse("ogc/features/v1/collections/" + typeName + "/schemas/fg/feature.json");
         assertEquals(200, response.getStatus());
         assertEquals(SCHEMA_TYPE_VALUE, response.getContentType());
         DocumentContext json = getAsJSONPath(response);
 
         // geometry and place updated to match only MultiPolygon
         assertEquals("null", json.read("properties.geometry.oneOf[0].type"));
-        assertEquals(
-                "geometry-objects.json#/$defs/" + geometryType,
-                json.read("properties.geometry.oneOf[1].$ref"));
+        assertEquals("geometry-objects.json#/$defs/" + geometryType, json.read("properties.geometry.oneOf[1].$ref"));
         assertEquals("null", json.read("properties.place.oneOf[0].type"));
-        assertEquals(
-                "geometry-objects.json#/$defs/" + geometryType,
-                json.read("properties.place.oneOf[1].$ref"));
+        assertEquals("geometry-objects.json#/$defs/" + geometryType, json.read("properties.place.oneOf[1].$ref"));
         return json;
     }
 }

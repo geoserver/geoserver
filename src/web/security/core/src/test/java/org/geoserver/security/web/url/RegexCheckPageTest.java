@@ -105,8 +105,7 @@ public class RegexCheckPageTest extends GeoServerWicketTestSupport {
         form.setValue("enabled", true);
         form.setValue("regex", null); // has a default value, dodge it
         form.submit("submit");
-        tester.assertErrorMessages(
-                new String[] {"Field 'Name' is required.", "Field 'regex' is required."});
+        tester.assertErrorMessages(new String[] {"Field 'Name' is required.", "Field 'regex' is required."});
     }
 
     @Test
@@ -120,7 +119,6 @@ public class RegexCheckPageTest extends GeoServerWicketTestSupport {
         // this one should fail, same rule again
         fillNewRule(REGEX);
 
-        tester.assertErrorMessages(
-                new String[] {"Another rule with the same name already exists: 'tester'"});
+        tester.assertErrorMessages(new String[] {"Another rule with the same name already exists: 'tester'"});
     }
 }

@@ -19,9 +19,9 @@ import org.geoserver.security.impl.GeoServerUserGroup;
  * GeoserverUserGroupStore valStore = new UserGroupStoreValidationWrapper(store);
  * valStore.addUser(..);
  * valStore.store()
- * </code> Since the {@link GeoServerUserGroupStore} interface does not allow to throw {@link
- * UserGroupServiceException} objects directly, these objects a wrapped into an IOException. Use
- * {@link IOException#getCause()} to get the proper exception.
+ * </code> Since the {@link GeoServerUserGroupStore} interface does not allow to throw {@link UserGroupServiceException}
+ * objects directly, these objects a wrapped into an IOException. Use {@link IOException#getCause()} to get the proper
+ * exception.
  *
  * @author christian
  */
@@ -87,16 +87,14 @@ public class UserGroupStoreValidationWrapper extends UserGroupServiceValidationW
     }
 
     @Override
-    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void associateUserToGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         checkExistingUserName(user.getUsername());
         checkExistingGroupName(group.getGroupname());
         getStore().associateUserToGroup(user, group);
     }
 
     @Override
-    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group)
-            throws IOException {
+    public void disAssociateUserFromGroup(GeoServerUser user, GeoServerUserGroup group) throws IOException {
         checkExistingUserName(user.getUsername());
         checkExistingGroupName(group.getGroupname());
         getStore().disAssociateUserFromGroup(user, group);

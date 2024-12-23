@@ -44,8 +44,7 @@ public class ClassBreaksRenderer extends Renderer {
         this.classBreakInfos = classBreakInfos;
     }
 
-    public ClassBreaksRenderer(
-            String field, double minValue, List<ClassBreakInfo> classBreakInfos) {
+    public ClassBreaksRenderer(String field, double minValue, List<ClassBreakInfo> classBreakInfos) {
         super("classBreaks");
         this.field = field;
         this.minValue = minValue;

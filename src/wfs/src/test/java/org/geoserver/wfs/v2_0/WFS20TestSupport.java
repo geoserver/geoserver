@@ -27,9 +27,8 @@ public class WFS20TestSupport extends WFSTestSupport {
     }
 
     /**
-     * Helper method that just sets the GML 3.2 MIME type to force. If NULL is provided then GML
-     * MIME type overriding will be deactivated. This changes will be applied to WFS global
-     * configuration.
+     * Helper method that just sets the GML 3.2 MIME type to force. If NULL is provided then GML MIME type overriding
+     * will be deactivated. This changes will be applied to WFS global configuration.
      */
     protected void setGmlMimeTypeOverride(String mimeTypeToForce) {
         WFSInfo info = getGeoServer().getService(WFSInfo.class);

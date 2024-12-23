@@ -12,8 +12,8 @@ import org.geoserver.catalog.MetadataMap;
 /**
  * A model which backs onto an underlying {@link MetadataMap}
  *
- * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel}
- * except for that expressions map to keys of a map rather than java bean property names.
+ * <p>The semantics of this model are similar to {@link org.apache.wicket.model.PropertyModel} except for that
+ * expressions map to keys of a map rather than java bean property names.
  *
  * <p>Closely derived from {@link MapModel}
  *
@@ -32,9 +32,8 @@ public class MetadataMapModel<T> implements IModel<T> {
     protected Serializable value;
 
     /**
-     * @deprecated use @link{MetadataMapModel(IModel<MetadataMap>, String, Class<?>)} instead. This
-     *     constructor is not safe with (de)serialization and can cause bugs with for example the
-     *     hazelcast module.
+     * @deprecated use @link{MetadataMapModel(IModel<MetadataMap>, String, Class<?>)} instead. This constructor is not
+     *     safe with (de)serialization and can cause bugs with for example the hazelcast module.
      */
     @Deprecated
     public MetadataMapModel(MetadataMap map, String expression, Class<?> target) {

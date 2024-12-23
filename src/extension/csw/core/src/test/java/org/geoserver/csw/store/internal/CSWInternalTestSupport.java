@@ -14,9 +14,7 @@ public class CSWInternalTestSupport extends CSWTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
 
-        System.setProperty(
-                "DefaultCatalogStore",
-                "org.geoserver.csw.store.internal.GeoServerInternalCatalogStore");
+        System.setProperty("DefaultCatalogStore", "org.geoserver.csw.store.internal.GeoServerInternalCatalogStore");
 
         // copy all mappings into the data directory
         File root = testData.getDataDirectoryRoot();

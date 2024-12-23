@@ -39,8 +39,8 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 
 /**
- * A {@link CatalogListener} that enforce the file sandbox rules. Checks if the user is allowed to
- * access the file system in response to store modification events.
+ * A {@link CatalogListener} that enforce the file sandbox rules. Checks if the user is allowed to access the file
+ * system in response to store modification events.
  */
 public class FileSandboxEnforcer extends AbstractCatalogListener {
 
@@ -85,8 +85,7 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
         if (source instanceof DataStoreInfo) {
             Object params = getNewPropertyValue(event, "connectionParameters");
             if (params instanceof Map) {
-                checkDataStoreParameters(
-                        (DataStoreInfo) source, (Map<String, Serializable>) params);
+                checkDataStoreParameters((DataStoreInfo) source, (Map<String, Serializable>) params);
             }
         } else if (source instanceof CoverageStoreInfo) {
             CoverageStoreInfo store = (CoverageStoreInfo) source;
@@ -108,8 +107,7 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
         }
     }
 
-    private void checkDataStoreParameters(
-            DataStoreInfo store, Map<String, Serializable> connectionParameters) {
+    private void checkDataStoreParameters(DataStoreInfo store, Map<String, Serializable> connectionParameters) {
         try {
             GeoServerResourceLoader loader = resourcePool.getCatalog().getResourceLoader();
             // expand environment variables and data dir local references
@@ -181,10 +179,7 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
                     Path path = Paths.get(url);
                     checkAccess(path.toFile());
                 } catch (InvalidPathException ex) {
-                    LOGGER.log(
-                            Level.FINEST,
-                            "Not a valid URI/Path in coverage store, not validating it",
-                            ex);
+                    LOGGER.log(Level.FINEST, "Not a valid URI/Path in coverage store, not validating it", ex);
                 }
             }
         }

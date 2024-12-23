@@ -36,8 +36,7 @@ public class TemplateLinkFunction extends FunctionImpl {
         Request request = Dispatcher.REQUEST.get();
         if (request == null) return template; // just for testing purposes
         String baseURL = getHRefBase(request);
-        return QuickTemplate.replaceVariables(
-                template, Collections.singletonMap("${BASE_URL}", baseURL));
+        return QuickTemplate.replaceVariables(template, Collections.singletonMap("${BASE_URL}", baseURL));
     }
 
     private String getHRefBase(Request request) {

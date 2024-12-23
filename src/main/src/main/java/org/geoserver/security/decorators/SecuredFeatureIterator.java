@@ -10,8 +10,8 @@ import org.geotools.api.feature.Feature;
 import org.geotools.feature.FeatureIterator;
 
 /**
- * Feature iterators are read only by design, but just to make extra sure there are no write enabled
- * subclasses floating around we make the wrapping anyways, this will make instanceof
+ * Feature iterators are read only by design, but just to make extra sure there are no write enabled subclasses floating
+ * around we make the wrapping anyways, this will make instanceof
  *
  * @author Andrea Aime - GeoSolutions
  */

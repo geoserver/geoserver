@@ -15,8 +15,8 @@ import org.geotools.api.filter.expression.VolatileFunction;
 import org.geotools.filter.FunctionExpressionImpl;
 
 /**
- * A Function accepting as parameters an unlimited number of Expression that get concatenated so
- * that each of them receives as input the output of the previous expression.
+ * A Function accepting as parameters an unlimited number of Expression that get concatenated so that each of them
+ * receives as input the output of the previous expression.
  */
 public class StreamFunction extends FunctionExpressionImpl implements VolatileFunction {
 

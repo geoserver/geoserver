@@ -51,25 +51,20 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testDescribeProcess() throws Exception {
-        Document d =
-                getAsDOM(
-                        root()
-                                + "service=wps&request=describeprocess&identifier=gs:DownloadAnimation");
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:DownloadAnimation");
         // print(d);
         assertXpathExists("//ComplexOutput/Supported/Format[MimeType='video/mp4']", d);
     }
 
     @Test
     public void testAnimateBmTime() throws Exception {
-        String xml =
-                IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertAnimationMonths2345(response, this::assertDefaultFrames);
     }
 
     private void assertAnimationMonths2345(
-            MockHttpServletResponse response, ThrowingBiConsumer<File, FrameGrab> assertor)
-            throws Exception {
+            MockHttpServletResponse response, ThrowingBiConsumer<File, FrameGrab> assertor) throws Exception {
         assertEquals(200, response.getStatus());
         assertEquals("video/mp4", response.getContentType());
 
@@ -115,9 +110,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateBmTimeMetadata() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleMetadata.xml"), UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarbleMetadata.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(response, true);
@@ -125,15 +118,13 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
         // check the animation is produced as normal, de-referencing the link
         String fullLocation =
-                XMLUnit.newXpathEngine()
-                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+                XMLUnit.newXpathEngine().evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
         String testLocation = getTestReference(fullLocation);
         assertAnimationMonths2345(getAsServletResponse(testLocation), this::assertDefaultFrames);
 
         // the metadata is in-line and should be
         assertXpathExists(
-                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings",
-                dom);
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings", dom);
         assertXpathEvaluatesTo(
                 "0",
                 "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings/*)",
@@ -146,10 +137,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateBmTimeMetadataWarnings() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"),
-                        UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("application/xml", response.getContentType());
         Document dom = dom(response, true);
@@ -161,15 +149,10 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testAnimateBmTimeMetadataWarningsAsynch() throws Exception {
         // sync request
-        String base =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"),
-                        UTF_8);
+        String base = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarbleMetadataWarnings.xml"), UTF_8);
         // now asynch
-        String xml =
-                base.replace(
-                        "<wps:ResponseDocument>",
-                        "<wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">");
+        String xml = base.replace(
+                "<wps:ResponseDocument>", "<wps:ResponseDocument status=\"true\" storeExecuteResponse=\"true\">");
 
         Document doc = submitAsynchronous(xml, 60);
         checkAnimateBmTimeMetadataWarnings(doc);
@@ -178,33 +161,29 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     private void checkAnimateBmTimeMetadataWarnings(Document dom) throws Exception {
         // check the animation is produced as normal, de-referencing the link
         String fullLocation =
-                XMLUnit.newXpathEngine()
-                        .evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
+                XMLUnit.newXpathEngine().evaluate("//wps:Output[ows:Identifier='result']/wps:Reference/@href", dom);
         String testLocation = getTestReference(fullLocation);
-        assertAnimationMonths2345(
-                getAsServletResponse(testLocation),
-                (zip, grabber) -> {
-                    // first
-                    BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-                    BufferedImage expected1 = getImageFromZip(zip, "world.200402.3x5400x2700.tiff");
-                    ImageAssert.assertEquals(expected1, frame1, 100);
-                    // second is a missed match, should be empty
-                    BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-                    assertAlmostBlank(frame2);
-                    // third
-                    BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-                    BufferedImage expected3 = getImageFromZip(zip, "world.200404.3x5400x2700.tiff");
-                    ImageAssert.assertEquals(expected3, frame3, 100);
-                    // fourth
-                    BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
-                    BufferedImage expected4 = getImageFromZip(zip, "world.200405.3x5400x2700.tiff");
-                    ImageAssert.assertEquals(expected4, frame4, 100);
-                });
+        assertAnimationMonths2345(getAsServletResponse(testLocation), (zip, grabber) -> {
+            // first
+            BufferedImage frame1 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected1 = getImageFromZip(zip, "world.200402.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected1, frame1, 100);
+            // second is a missed match, should be empty
+            BufferedImage frame2 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            assertAlmostBlank(frame2);
+            // third
+            BufferedImage frame3 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected3 = getImageFromZip(zip, "world.200404.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected3, frame3, 100);
+            // fourth
+            BufferedImage frame4 = AWTUtil.toBufferedImage(grabber.getNativeFrame());
+            BufferedImage expected4 = getImageFromZip(zip, "world.200405.3x5400x2700.tiff");
+            ImageAssert.assertEquals(expected4, frame4, 100);
+        });
 
         // the metadata is in-line and should be
         assertXpathExists(
-                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings",
-                dom);
+                "//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings", dom);
         assertXpathEvaluatesTo(
                 "4",
                 "count(//wps:Output[ows:Identifier='metadata']/wps:Data/wps:ComplexData/AnimationMetadata/Warnings/*)",
@@ -230,9 +209,8 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     }
 
     /**
-     * Checks for an empty frame, accounting for lossy compression (so not all colors will be
-     * white). Uses a very rough manhattan distance in RGB, the output was also checked manually,
-     * there is a number of darker round spots in it)
+     * Checks for an empty frame, accounting for lossy compression (so not all colors will be white). Uses a very rough
+     * manhattan distance in RGB, the output was also checked manually, there is a number of darker round spots in it)
      *
      * @param image
      */
@@ -241,9 +219,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
             for (int x = 0; x < image.getWidth(); x++) {
                 Color rgb = new Color(image.getRGB(x, y));
                 double d =
-                        Math.abs(rgb.getRed() - 255)
-                                + Math.abs(rgb.getGreen() - 255)
-                                + Math.abs(rgb.getBlue() - 255);
+                        Math.abs(rgb.getRed() - 255) + Math.abs(rgb.getGreen() - 255) + Math.abs(rgb.getBlue() - 255);
                 assertTrue(d < 170);
             }
         }
@@ -257,16 +233,12 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         watcher.getConfiguration().setMaxAnimationFrames(1);
 
         try {
-            String xml =
-                    IOUtils.toString(
-                            getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
+            String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarble.xml"), UTF_8);
             Document dom = postAsDOM("wps", xml);
             // print(dom);
             XMLAssert.assertXpathExists("//wps:ProcessFailed", dom);
             String message = XMLUnit.newXpathEngine().evaluate("//ows:ExceptionText", dom);
-            assertThat(
-                    message,
-                    CoreMatchers.containsString("More than 1 times specified in the request"));
+            assertThat(message, CoreMatchers.containsString("More than 1 times specified in the request"));
         } finally {
             Resource config = getDataDirectory().get("download.properties");
             assertTrue("Failed to remove download configuration file", config.delete());
@@ -277,8 +249,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateDecoration() throws Exception {
-        String xml =
-                IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"), UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateDecoration.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -287,9 +258,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testAnimateTimestamped() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"), UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateBlueMarbleTimestamped.xml"), UTF_8);
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
         assertEquals("video/mp4", response.getContentType());
 
@@ -299,9 +268,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testDynamicDecorationDefault() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
+        String xml = IOUtils.toString(getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
 
         // as is, should be the same as testAnimateDecoration
         MockHttpServletResponse response = postAsServletResponse("wps", xml);
@@ -311,9 +278,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testDynamicDecorationLargeLogo() throws Exception {
-        String xmlTemplate =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
+        String xmlTemplate = IOUtils.toString(getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
 
         // change the logo size and run again
         String xml = xmlTemplate.replace("${env}", "size:64,64");
@@ -324,9 +289,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
 
     @Test
     public void testDynamicDecorationOsgeoLogo() throws Exception {
-        String xmlTemplate =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
+        String xmlTemplate = IOUtils.toString(getClass().getResourceAsStream("animateDynamicDecoration.xml"), UTF_8);
 
         // change the logo and its size
         String xml = xmlTemplate.replace("${env}", "size:64,64;logo:osgeo.png");
@@ -338,8 +301,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
     @Test
     public void testDynamicDecorationLayer() throws Exception {
         String xmlTemplate =
-                IOUtils.toString(
-                        getClass().getResourceAsStream("animateLayerDynamicDecoration.xml"), UTF_8);
+                IOUtils.toString(getClass().getResourceAsStream("animateLayerDynamicDecoration.xml"), UTF_8);
 
         // change the logo and its size
         String xml = xmlTemplate.replace("${env}", "size:64,64;logo:osgeo.png");
@@ -348,8 +310,7 @@ public class DownloadAnimationProcessTest extends BaseDownloadImageProcessTest {
         checkAnimation(response, 2, 2, "animateDecorateOsgeoLogo.png");
     }
 
-    private void checkAnimation(
-            MockHttpServletResponse response, int totalFrames, int totalDuration, String firstFrame)
+    private void checkAnimation(MockHttpServletResponse response, int totalFrames, int totalDuration, String firstFrame)
             throws IOException, JCodecException {
         // JCodec API works off files only...
         File testFile = new File("target/test.mp4");

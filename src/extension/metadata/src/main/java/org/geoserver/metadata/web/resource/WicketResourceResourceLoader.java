@@ -53,8 +53,7 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
         ResourceBundle resourceBundle = null;
         if (locale != null && key != null) {
             try {
-                Resource res =
-                        folder.get(resourceBundleName + "_" + locale.getLanguage() + EXTENSION);
+                Resource res = folder.get(resourceBundleName + "_" + locale.getLanguage() + EXTENSION);
                 // Try the specific resource
                 if (Resources.exists(res)) {
                     try (InputStream fis = res.in()) {
@@ -76,33 +75,27 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
                 }
             } catch (IOException | IllegalStateException e) {
                 if (shouldThrowExceptionForMissingResource()) {
-                    throw new WicketRuntimeException(
-                            String.format(
-                                    "Unable able to locate resource bundle for the specifed base name: %s",
-                                    resourceBundleName));
+                    throw new WicketRuntimeException(String.format(
+                            "Unable able to locate resource bundle for the specifed base name: %s",
+                            resourceBundleName));
                 }
-                LOGGER.fine(
-                        "Unable able to locate resource bundle for the specifed base name:"
-                                + resourceBundleName);
+                LOGGER.fine("Unable able to locate resource bundle for the specifed base name:" + resourceBundleName);
             }
         }
         return string;
     }
 
     private boolean shouldThrowExceptionForMissingResource() {
-        return Application.get().getResourceSettings().getThrowExceptionOnMissingResource()
-                && shouldThrowException;
+        return Application.get().getResourceSettings().getThrowExceptionOnMissingResource() && shouldThrowException;
     }
 
     @Override
-    public String loadStringResource(
-            Class<?> clazz, String key, Locale locale, String style, String variation) {
+    public String loadStringResource(Class<?> clazz, String key, Locale locale, String style, String variation) {
         return findResource(locale, key);
     }
 
     @Override
-    public String loadStringResource(
-            Component component, String key, Locale locale, String style, String variation) {
+    public String loadStringResource(Component component, String key, Locale locale, String style, String variation) {
         if (component != null) {
             return findResource(component.getLocale(), key);
         }
@@ -123,10 +116,8 @@ public class WicketResourceResourceLoader implements IStringResourceLoader {
 
         if (caught || string == null) {
             if (shouldThrowExceptionForMissingResource()) {
-                throw new WicketRuntimeException(
-                        String.format(
-                                "Unable able to locate resource bundle for the specifed base name: %s",
-                                resourceBundleName));
+                throw new WicketRuntimeException(String.format(
+                        "Unable able to locate resource bundle for the specifed base name: %s", resourceBundleName));
             }
 
             LOGGER.fine("No value found key " + key + " in resource bundle " + resourceBundleName);

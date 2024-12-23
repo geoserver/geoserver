@@ -40,8 +40,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         testData.addVectorLayer(PONDS, getCatalog());
         Map<SystemTestData.LayerProperty, Object> props = new HashMap<>();
 
-        testData.addRasterLayer(
-                MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
+        testData.addRasterLayer(MOSAIC, "raster-filter-test.zip", null, props, SystemTestData.class, getCatalog());
     }
 
     @Test
@@ -49,9 +48,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MockData.PONDS.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);
@@ -109,9 +106,7 @@ public class MapMLLayerConfigurationPanelTest extends GeoServerWicketTestSupport
         // get a test layer and instantiate the model
         final LayerInfo layer = getCatalog().getLayerByName(MOSAIC.getLocalPart());
         Model<LayerInfo> model = new Model<>(layer);
-        FormTestPage page =
-                new FormTestPage(
-                        (ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
+        FormTestPage page = new FormTestPage((ComponentBuilder) id -> new MapMLLayerConfigurationPanel(id, model));
         // let's start the page and check that the components are correctly instantiated
         tester.startPage(page);
         tester.assertRenderedPage(FormTestPage.class);

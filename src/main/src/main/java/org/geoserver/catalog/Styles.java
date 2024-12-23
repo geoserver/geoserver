@@ -46,8 +46,7 @@ public class Styles {
      * @param pretty Whether to format the style.
      * @return The encoded style.
      */
-    public static String string(
-            StyledLayerDescriptor sld, SLDHandler handler, Version ver, boolean pretty)
+    public static String string(StyledLayerDescriptor sld, SLDHandler handler, Version ver, boolean pretty)
             throws IOException {
 
         ByteArrayOutputStream bout = new ByteArrayOutputStream();
@@ -59,8 +58,7 @@ public class Styles {
     /**
      * Convenience method to pull a UserSyle from a StyledLayerDescriptor.
      *
-     * <p>This method will return the first UserStyle it encounters in the StyledLayerDescriptor
-     * tree.
+     * <p>This method will return the first UserStyle it encounters in the StyledLayerDescriptor tree.
      *
      * @param sld The StyledLayerDescriptor object.
      * @return The UserStyle, or <code>null</code> if no such style could be found.
@@ -92,8 +90,7 @@ public class Styles {
     /**
      * Convenience method to wrap a UserStyle in a StyledLayerDescriptor object.
      *
-     * <p>This method wraps the UserStyle in a NamedLayer, and wraps the result in a
-     * StyledLayerDescriptor.
+     * <p>This method wraps the UserStyle in a NamedLayer, and wraps the result in a StyledLayerDescriptor.
      *
      * @param style The UserStyle.
      * @return The StyledLayerDescriptor.
@@ -155,22 +152,17 @@ public class Styles {
             return matches.get(0);
         }
 
-        List<String> handlerNames =
-                Lists.transform(
-                        matches,
-                        new Function<StyleHandler, String>() {
-                            @Nullable
-                            @Override
-                            public String apply(@Nullable StyleHandler styleHandler) {
-                                if (styleHandler == null) {
-                                    throw new RuntimeException(
-                                            "Got a null style handler, unexpected");
-                                }
-                                return styleHandler.getName();
-                            }
-                        });
-        throw new IllegalArgumentException(
-                "Multiple style handlers: " + handlerNames + " found for format: " + format);
+        List<String> handlerNames = Lists.transform(matches, new Function<StyleHandler, String>() {
+            @Nullable
+            @Override
+            public String apply(@Nullable StyleHandler styleHandler) {
+                if (styleHandler == null) {
+                    throw new RuntimeException("Got a null style handler, unexpected");
+                }
+                return styleHandler.getName();
+            }
+        });
+        throw new IllegalArgumentException("Multiple style handlers: " + handlerNames + " found for format: " + format);
     }
 
     /** Returns all registered style handlers. */

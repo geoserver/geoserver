@@ -44,17 +44,16 @@ public abstract class SymbolizerFilteringVisitor extends DuplicatingStyleVisitor
         Description descCopy = rule.getDescription();
         descCopy = copy(descCopy);
 
-        Rule copy =
-                new StyleFactoryImpl()
-                        .createRule(
-                                symsCopy,
-                                descCopy,
-                                legendCopy,
-                                rule.getName(),
-                                filterCopy,
-                                rule.isElseFilter(),
-                                rule.getMaxScaleDenominator(),
-                                rule.getMinScaleDenominator());
+        Rule copy = new StyleFactoryImpl()
+                .createRule(
+                        symsCopy,
+                        descCopy,
+                        legendCopy,
+                        rule.getName(),
+                        filterCopy,
+                        rule.isElseFilter(),
+                        rule.getMaxScaleDenominator(),
+                        rule.getMinScaleDenominator());
 
         if (STRICT && !copy.equals(rule)) {
             throw new IllegalStateException("Was unable to duplicate provided Rule:" + rule);

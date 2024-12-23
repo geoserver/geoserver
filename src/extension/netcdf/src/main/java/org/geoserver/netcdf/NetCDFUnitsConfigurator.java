@@ -48,8 +48,7 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
 
         try {
             LinkedHashMap<String, String> replacements =
-                    getMapResource(
-                            NETCDF_UNIT_REPLACEMENTS, NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
+                    getMapResource(NETCDF_UNIT_REPLACEMENTS, NetCDFUnitFormat.NETCDF_UNIT_REPLACEMENTS);
             if (replacements != null) {
                 NetCDFUnitFormat.setReplacements(replacements);
             }
@@ -59,12 +58,11 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
     }
 
     /**
-     * Searches for a config file with an absolute path, or inside the NetCDF data dir, or inside
-     * the GeoServer data dir. Will return a map with the contents of the property file, with the
-     * same order as the file contents.
+     * Searches for a config file with an absolute path, or inside the NetCDF data dir, or inside the GeoServer data
+     * dir. Will return a map with the contents of the property file, with the same order as the file contents.
      */
-    private LinkedHashMap<String, String> getMapResource(
-            String absolutePathProperty, String defaultFileName) throws IOException {
+    private LinkedHashMap<String, String> getMapResource(String absolutePathProperty, String defaultFileName)
+            throws IOException {
         Resource aliasResource = getResource(absolutePathProperty, defaultFileName);
         if (aliasResource != null) {
             try (InputStream is = aliasResource.in()) {
@@ -76,9 +74,8 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
     }
 
     /**
-     * Searches for a config file with an absolute path, or inside the NetCDF data dir, or inside
-     * the GeoServer data dir. Will return a resource for the searched file, but only if it was
-     * found, null otherwise.
+     * Searches for a config file with an absolute path, or inside the NetCDF data dir, or inside the GeoServer data
+     * dir. Will return a resource for the searched file, but only if it was found, null otherwise.
      */
     private Resource getResource(String absolutePathProperty, String defaultFileName) {
         String source = GeoServerExtensions.getProperty(absolutePathProperty);
@@ -101,16 +98,14 @@ public class NetCDFUnitsConfigurator implements GeoServerLifecycleHandler {
     }
 
     /**
-     * Gets a Resource from file system building the necessary wrappers (if the file is found), or
-     * returns null instead.
+     * Gets a Resource from file system building the necessary wrappers (if the file is found), or returns null instead.
      */
     private Resource getResourceForPath(String path) {
         Resource resource = null;
         if (path != null) {
             File resourceFile = new File(path);
             if (resourceFile.exists()) {
-                FileSystemResourceStore store =
-                        new FileSystemResourceStore(resourceFile.getParentFile());
+                FileSystemResourceStore store = new FileSystemResourceStore(resourceFile.getParentFile());
                 resource = store.get(resourceFile.getName());
             } else {
                 LOGGER.fine("Could not locate " + path + ", moving on");

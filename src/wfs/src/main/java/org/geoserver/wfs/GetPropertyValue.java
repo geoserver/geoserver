@@ -61,10 +61,7 @@ public class GetPropertyValue {
             throw new WFSException(request, "No valueReference specified", "MissingParameterValue")
                     .locator("valueReference");
         } else if ("".equals(request.getValueReference().trim())) {
-            throw new WFSException(
-                            request,
-                            "ValueReference cannot be empty",
-                            ServiceException.INVALID_PARAMETER_VALUE)
+            throw new WFSException(request, "ValueReference cannot be empty", ServiceException.INVALID_PARAMETER_VALUE)
                     .locator("valueReference");
         }
 
@@ -77,31 +74,24 @@ public class GetPropertyValue {
         getFeature.setResolveTimeout(request.getResolveTimeout());
         getFeature.setCount(request.getCount());
 
-        FeatureCollectionType fc =
-                (FeatureCollectionType)
-                        delegate.run(GetFeatureRequest.adapt(getFeature)).getAdaptee();
+        FeatureCollectionType fc = (FeatureCollectionType)
+                delegate.run(GetFeatureRequest.adapt(getFeature)).getAdaptee();
 
         QueryType query = (QueryType) request.getAbstractQueryExpression();
         QName typeName = (QName) query.getTypeNames().iterator().next();
-        FeatureTypeInfo featureType =
-                catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
+        FeatureTypeInfo featureType = catalog.getFeatureTypeByName(typeName.getNamespaceURI(), typeName.getLocalPart());
 
         try {
 
-            PropertyName propertyName =
-                    filterFactory.property(request.getValueReference(), getNamespaceSupport());
-            PropertyName propertyNameNoIndexes =
-                    filterFactory.property(
-                            request.getValueReference().replaceAll("\\[.*\\]", ""),
-                            getNamespaceSupport());
+            PropertyName propertyName = filterFactory.property(request.getValueReference(), getNamespaceSupport());
+            PropertyName propertyNameNoIndexes = filterFactory.property(
+                    request.getValueReference().replaceAll("\\[.*\\]", ""), getNamespaceSupport());
             AttributeDescriptor descriptor =
-                    (AttributeDescriptor)
-                            propertyNameNoIndexes.evaluate(featureType.getFeatureType());
+                    (AttributeDescriptor) propertyNameNoIndexes.evaluate(featureType.getFeatureType());
             boolean featureIdRequest =
                     FEATURE_ID_PATTERN.matcher(request.getValueReference()).matches();
             if (descriptor == null && !featureIdRequest) {
-                throw new WFSException(
-                        request, "No such attribute: " + request.getValueReference());
+                throw new WFSException(request, "No such attribute: " + request.getValueReference());
             }
 
             // create value collection type from feature collection
@@ -110,9 +100,7 @@ public class GetPropertyValue {
             vc.setNumberMatched(fc.getNumberMatched());
             vc.setNumberReturned(fc.getNumberReturned());
             vc.getMember()
-                    .add(
-                            new PropertyValueCollection(
-                                    fc.getMember().iterator().next(), descriptor, propertyName));
+                    .add(new PropertyValueCollection(fc.getMember().iterator().next(), descriptor, propertyName));
             return vc;
         } catch (IOException e) {
             throw new WFSException(request, e);

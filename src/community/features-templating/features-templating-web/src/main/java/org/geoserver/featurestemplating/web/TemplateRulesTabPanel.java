@@ -34,20 +34,15 @@ public class TemplateRulesTabPanel extends PublishedEditTabPanel<LayerInfo> {
             configurationPanel.setEnabled(false);
         }
         TemplateInfoDAO infoDao = TemplateInfoDAO.get();
-        FeatureTypeTemplateDAOListener listener =
-                new FeatureTypeTemplateDAOListener((FeatureTypeInfo) ri);
+        FeatureTypeTemplateDAOListener listener = new FeatureTypeTemplateDAOListener((FeatureTypeInfo) ri);
         infoDao.addTemplateListener(listener);
         PropertyModel<ResourceInfo> resource = new PropertyModel<>(model, "resource");
         PropertyModel<MetadataMap> metadata = new PropertyModel<>(resource, "metadata");
         TemplateRulesTablePanel tablePanel = new TemplateRulesTablePanel("rulesTable", metadata);
         tablePanel.setOutputMarkupId(true);
         add(tablePanel);
-        configurationPanel =
-                new TemplateRuleConfigurationPanel(
-                        "ruleConfiguration",
-                        new CompoundPropertyModel<>(new TemplateRule()),
-                        false,
-                        li);
+        configurationPanel = new TemplateRuleConfigurationPanel(
+                "ruleConfiguration", new CompoundPropertyModel<>(new TemplateRule()), false, li);
         configurationPanel.setTemplateRuleTablePanel(tablePanel);
         configurationPanel.setOutputMarkupId(true);
         tablePanel.setConfigurationPanel(configurationPanel);

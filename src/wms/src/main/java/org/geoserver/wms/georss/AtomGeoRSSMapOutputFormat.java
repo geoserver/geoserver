@@ -23,8 +23,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
     /** mime type */
     public static String MIME_TYPE = "application/atom+xml";
 
-    static final MapProducerCapabilities ATOM_CAPABILITIES =
-            new MapProducerCapabilities(false, false, true);
+    static final MapProducerCapabilities ATOM_CAPABILITIES = new MapProducerCapabilities(false, false, true);
 
     /** format names/aliases */
     public static final Set<String> FORMAT_NAMES;
@@ -56,8 +55,7 @@ public class AtomGeoRSSMapOutputFormat implements GetMapOutputFormat {
 
     /** @see org.geoserver.wms.GetMapOutputFormat#produceMap(org.geoserver.wms.WMSMapContent) */
     @Override
-    public XMLTransformerMap produceMap(WMSMapContent mapContent)
-            throws ServiceException, IOException {
+    public XMLTransformerMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
 
         AtomGeoRSSTransformer tx = new AtomGeoRSSTransformer(wms);
         GetMapRequest request = mapContent.getRequest();

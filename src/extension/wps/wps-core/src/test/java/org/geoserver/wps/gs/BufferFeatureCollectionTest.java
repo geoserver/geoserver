@@ -122,8 +122,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                 j++;
             }
             array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+            LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             features.add(b.buildFeature(numFeatures + ""));
@@ -141,8 +140,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                     j++;
                 }
                 array[3] = new Coordinate(numFeatures, numFeatures);
-                LinearRing shell =
-                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
                 Geometry expected = gf.createPolygon(shell, null).buffer(distance);
 
                 SimpleFeature sf = iterator.next();
@@ -172,8 +170,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                 j++;
             }
             array[3] = new Coordinate(numFeatures, numFeatures);
-            LinearRing shell =
-                    new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+            LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
             b.add(gf.createPolygon(shell, null));
             b.add(0);
             b.add(500);
@@ -192,8 +189,7 @@ public class BufferFeatureCollectionTest extends WPSTestSupport {
                     j++;
                 }
                 array[3] = new Coordinate(numFeatures, numFeatures);
-                LinearRing shell =
-                        new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
+                LinearRing shell = new LinearRing(new CoordinateArraySequence(array), new GeometryFactory());
                 Geometry expected = gf.createPolygon(shell, null).buffer(500);
 
                 SimpleFeature sf = iterator.next();

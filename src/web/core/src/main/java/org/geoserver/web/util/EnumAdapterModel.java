@@ -8,8 +8,7 @@ package org.geoserver.web.util;
 import org.apache.wicket.model.IModel;
 
 /**
- * A Model that can wrap another model returning eventually a String and map it to the specified
- * Enum value.
+ * A Model that can wrap another model returning eventually a String and map it to the specified Enum value.
  *
  * @param <T>
  */

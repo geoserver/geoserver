@@ -83,8 +83,7 @@ public class CatalogStyleChangeListenerTest {
         when(mockTileLayer.getPublishedInfo()).thenReturn(mockLayerInfo);
         when(mockTileLayer.getInfo()).thenReturn(mockTileLayerInfo);
         when(mockTileLayer.getName()).thenReturn(PREFIXED_RESOURCE_NAME);
-        when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME)))
-                .thenReturn(Collections.singletonList(mockTileLayer));
+        when(mockMediator.getTileLayersForStyle(eq(STYLE_NAME))).thenReturn(Collections.singletonList(mockTileLayer));
 
         Catalog mockCatalog = mock(Catalog.class);
         listener = new CatalogStyleChangeListener(mockMediator, mockCatalog);
@@ -147,11 +146,8 @@ public class CatalogStyleChangeListenerTest {
         TileLayerInfoUtil.setCachedStyles(mockTileLayerInfo, null, ImmutableSet.of(STYLE_NAME));
 
         verify(mockTileLayerInfo)
-                .addParameterFilter(
-                        argThat(
-                                allOf(
-                                        hasProperty("key", is("STYLES")),
-                                        hasProperty("styles", is(ImmutableSet.of(STYLE_NAME))))));
+                .addParameterFilter(argThat(allOf(
+                        hasProperty("key", is("STYLES")), hasProperty("styles", is(ImmutableSet.of(STYLE_NAME))))));
 
         ImmutableSet<String> styles = ImmutableSet.of(STYLE_NAME);
         when(mockTileLayerInfo.cachedStyles()).thenReturn(styles);
@@ -159,32 +155,25 @@ public class CatalogStyleChangeListenerTest {
         listener.handleModifyEvent(styleNameModifyEvent);
 
         verify(mockTileLayerInfo)
-                .addParameterFilter(
-                        argThat(
-                                allOf(
-                                        hasProperty("key", is("STYLES")),
-                                        hasProperty(
-                                                "styles",
-                                                is(ImmutableSet.of(STYLE_NAME_MODIFIED))))));
+                .addParameterFilter(argThat(allOf(
+                        hasProperty("key", is("STYLES")),
+                        hasProperty("styles", is(ImmutableSet.of(STYLE_NAME_MODIFIED))))));
 
         verify(mockTileLayer, times(1)).resetParameterFilters();
-        verify(mockMediator, times(1))
-                .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
+        verify(mockMediator, times(1)).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
         verify(mockMediator, times(1)).save(same(mockTileLayer));
     }
 
     @Test
     public void testLayerInfoDefaultOrAlternateStyleChanged() throws Exception {
-        when(mockMediator.getLayerInfosFor(same(mockStyle)))
-                .thenReturn(Collections.singleton(mockLayerInfo));
+        when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.singleton(mockLayerInfo));
         when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.emptyList());
 
         CatalogPostModifyEventImpl postModifyEvent = new CatalogPostModifyEventImpl();
         postModifyEvent.setSource(mockStyle);
         listener.handlePostModifyEvent(postModifyEvent);
 
-        verify(mockMediator, times(1))
-                .truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
+        verify(mockMediator, times(1)).truncateByLayerAndStyle(eq(PREFIXED_RESOURCE_NAME), eq(STYLE_NAME));
     }
 
     @Test
@@ -193,8 +182,7 @@ public class CatalogStyleChangeListenerTest {
         when(GWC.tileLayerName(mockGroup)).thenReturn("mockGroup");
 
         when(mockMediator.getLayerInfosFor(same(mockStyle))).thenReturn(Collections.emptyList());
-        when(mockMediator.getLayerGroupsFor(same(mockStyle)))
-                .thenReturn(Collections.singleton(mockGroup));
+        when(mockMediator.getLayerGroupsFor(same(mockStyle))).thenReturn(Collections.singleton(mockGroup));
 
         CatalogPostModifyEventImpl postModifyEvent = new CatalogPostModifyEventImpl();
         postModifyEvent.setSource(mockStyle);

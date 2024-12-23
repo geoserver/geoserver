@@ -23,8 +23,7 @@ import org.geoserver.taskmanager.util.SqlUtil;
 /**
  * Default implementation for the Dialect interface.
  *
- * <p>This should work with most databases, but it also limits the functionality of the task
- * manager.
+ * <p>This should work with most databases, but it also limits the functionality of the task manager.
  *
  * @author Timothy De Bock
  */
@@ -42,10 +41,7 @@ public class DefaultDialectImpl implements Dialect {
 
     @Override
     public String createIndex(
-            String tableName,
-            Set<String> columnNames,
-            boolean isSpatialIndex,
-            boolean isUniqueIndex) {
+            String tableName, Set<String> columnNames, boolean isSpatialIndex, boolean isUniqueIndex) {
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE INDEX ");
         sb.append(" ON ");
@@ -62,8 +58,7 @@ public class DefaultDialectImpl implements Dialect {
     }
 
     @Override
-    public Set<String> getSpatialColumns(
-            Connection connection, String tableName, String defaultSchema) {
+    public Set<String> getSpatialColumns(Connection connection, String tableName, String defaultSchema) {
         return Collections.emptySet();
     }
 
@@ -85,8 +80,7 @@ public class DefaultDialectImpl implements Dialect {
     }
 
     @Override
-    public List<Column> getColumns(Connection connection, String tableName, ResultSet rs)
-            throws SQLException {
+    public List<Column> getColumns(Connection connection, String tableName, ResultSet rs) throws SQLException {
         List<Column> result = new ArrayList<>();
         ResultSetMetaData rsmd = rs.getMetaData();
 
@@ -94,41 +88,40 @@ public class DefaultDialectImpl implements Dialect {
 
         for (int i = 1; i <= columnCount; i++) {
             int col = i;
-            result.add(
-                    new Column() {
+            result.add(new Column() {
 
-                        @Override
-                        public String getName() throws SQLException {
-                            return rsmd.getColumnLabel(col);
-                        }
+                @Override
+                public String getName() throws SQLException {
+                    return rsmd.getColumnLabel(col);
+                }
 
-                        @Override
-                        public String getTypeEtc() throws SQLException {
-                            StringBuffer sb = new StringBuffer();
-                            JDBCType type = JDBCType.valueOf(rsmd.getColumnType(col));
-                            if (type == JDBCType.OTHER) {
-                                sb.append(rsmd.getColumnTypeName(col));
-                            } else {
-                                sb.append(type.name());
-                                if ((type == JDBCType.CHAR || type == JDBCType.VARCHAR)
-                                        && rsmd.getColumnDisplaySize(col) > 0
-                                        && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
-                                    sb.append(" (")
-                                            .append(rsmd.getColumnDisplaySize(col))
-                                            .append(" ) ");
-                                }
-                            }
-                            switch (isNullable(rsmd.isNullable(col))) {
-                                case ResultSetMetaData.columnNoNulls:
-                                    sb.append(" NOT NULL");
-                                    break;
-                                case ResultSetMetaData.columnNullable:
-                                    sb.append(" NULL");
-                                    break;
-                            }
-                            return sb.toString();
+                @Override
+                public String getTypeEtc() throws SQLException {
+                    StringBuffer sb = new StringBuffer();
+                    JDBCType type = JDBCType.valueOf(rsmd.getColumnType(col));
+                    if (type == JDBCType.OTHER) {
+                        sb.append(rsmd.getColumnTypeName(col));
+                    } else {
+                        sb.append(type.name());
+                        if ((type == JDBCType.CHAR || type == JDBCType.VARCHAR)
+                                && rsmd.getColumnDisplaySize(col) > 0
+                                && rsmd.getColumnDisplaySize(col) < Integer.MAX_VALUE) {
+                            sb.append(" (")
+                                    .append(rsmd.getColumnDisplaySize(col))
+                                    .append(" ) ");
                         }
-                    });
+                    }
+                    switch (isNullable(rsmd.isNullable(col))) {
+                        case ResultSetMetaData.columnNoNulls:
+                            sb.append(" NOT NULL");
+                            break;
+                        case ResultSetMetaData.columnNullable:
+                            sb.append(" NULL");
+                            break;
+                    }
+                    return sb.toString();
+                }
+            });
         }
 
         return result;
@@ -136,21 +129,19 @@ public class DefaultDialectImpl implements Dialect {
 
     @Override
     public Map<String, GeometryColumn> getRawSpatialColumns(
-            GeometryTable geometryTable, Connection connection, String tableName)
-            throws SQLException {
+            GeometryTable geometryTable, Connection connection, String tableName) throws SQLException {
         Map<String, GeometryColumn> result = new HashMap<>();
-        String sql =
-                "SELECT "
-                        + quote(geometryTable.getAttributeNameGeometry())
-                        + ", "
-                        + quote(geometryTable.getAttributeNameSrid())
-                        + ", "
-                        + quote(geometryTable.getAttributeNameType())
-                        + " FROM "
-                        + quote(geometryTable.getNameTable())
-                        + " WHERE "
-                        + quote(geometryTable.getAttributeNameTable())
-                        + " = ?";
+        String sql = "SELECT "
+                + quote(geometryTable.getAttributeNameGeometry())
+                + ", "
+                + quote(geometryTable.getAttributeNameSrid())
+                + ", "
+                + quote(geometryTable.getAttributeNameType())
+                + " FROM "
+                + quote(geometryTable.getNameTable())
+                + " WHERE "
+                + quote(geometryTable.getAttributeNameTable())
+                + " = ?";
         try (PreparedStatement stmt = connection.prepareStatement(sql)) {
             stmt.setString(1, tableName);
             try (ResultSet set = stmt.executeQuery()) {
@@ -158,19 +149,17 @@ public class DefaultDialectImpl implements Dialect {
                     String name = set.getString(1);
                     int srid = set.getInt(2);
                     String type = set.getString(3);
-                    result.put(
-                            name,
-                            new GeometryColumn() {
-                                @Override
-                                public int getSrid() {
-                                    return srid;
-                                }
+                    result.put(name, new GeometryColumn() {
+                        @Override
+                        public int getSrid() {
+                            return srid;
+                        }
 
-                                @Override
-                                public String getType() {
-                                    return type;
-                                }
-                            });
+                        @Override
+                        public String getType() {
+                            return type;
+                        }
+                    });
                 }
             }
         }

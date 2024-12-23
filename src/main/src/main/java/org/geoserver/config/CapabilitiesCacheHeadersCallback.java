@@ -20,11 +20,11 @@ import org.geotools.util.logging.Logging;
 import org.springframework.http.HttpHeaders;
 
 /**
- * Adds proper caching headers to capabilites response clients paying attention to HTTP headers do
- * not think they are cacheable
+ * Adds proper caching headers to capabilites response clients paying attention to HTTP headers do not think they are
+ * cacheable
  *
- * <p>The callback can be turned off by setting "CAPABILITIES_CACHE_CONTROL_ENABLED" to "false",
- * either as a system, environment or servlet context variable.
+ * <p>The callback can be turned off by setting "CAPABILITIES_CACHE_CONTROL_ENABLED" to "false", either as a system,
+ * environment or servlet context variable.
  *
  * @author Andrea Aime - GeoSolutions
  */
@@ -47,15 +47,13 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
             capabilitiesCacheHeadersEnabled = true;
         }
         if (LOGGER.isLoggable(Level.FINE)) {
-            LOGGER.fine(
-                    "Cache control for capabilities requests and 304 support is enabled: "
-                            + capabilitiesCacheHeadersEnabled);
+            LOGGER.fine("Cache control for capabilities requests and 304 support is enabled: "
+                    + capabilitiesCacheHeadersEnabled);
         }
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         if (handleCachingHeaders(request)) {
             return new RevalidateTagResponse(response);
         }
@@ -65,13 +63,10 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
 
     /** Returns true if the caching headers are enabled and the request is a GetCapabilities one */
     private boolean handleCachingHeaders(Request request) {
-        return capabilitiesCacheHeadersEnabled
-                && "GetCapabilities".equalsIgnoreCase(request.getRequest());
+        return capabilitiesCacheHeadersEnabled && "GetCapabilities".equalsIgnoreCase(request.getRequest());
     }
 
-    /**
-     * Returns true if the callback will handle cache headers in GetCapabilities requests/responses
-     */
+    /** Returns true if the callback will handle cache headers in GetCapabilities requests/responses */
     public boolean isCapabilitiesCacheHeadersEnabled() {
         return capabilitiesCacheHeadersEnabled;
     }
@@ -105,10 +100,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
             return delegate.getMimeType(value, operation);
         }
 
-        /**
-         * See if we have to add cache control headers. Won't alter them if the response already set
-         * them.
-         */
+        /** See if we have to add cache control headers. Won't alter them if the response already set them. */
         @Override
         public String[][] getHeaders(Object value, Operation operation) throws ServiceException {
             String[][] headers = delegate.getHeaders(value, operation);
@@ -133,8 +125,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
         }
 
         @Override
-        public void write(Object value, OutputStream output, Operation operation)
-                throws IOException, ServiceException {
+        public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
             delegate.write(value, output, operation);
         }
 

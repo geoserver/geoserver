@@ -28,17 +28,14 @@ public class CoverageAccessLimits extends DataAccessLimits {
     /**
      * Builds a raster limit
      *
-     * @param readFilter The read filter, this has two purposes: if set to Filter.EXCLUDE it makes
-     *     the entire layer non readable (hides, challenges), otherwise it's added to the reader
-     *     parameter should the reader have a filter among its params (mosaic does for example)
+     * @param readFilter The read filter, this has two purposes: if set to Filter.EXCLUDE it makes the entire layer non
+     *     readable (hides, challenges), otherwise it's added to the reader parameter should the reader have a filter
+     *     among its params (mosaic does for example)
      * @param rasterFilter Used as a ROI on the returned coverage
      * @param params Read parameters overrides
      */
     public CoverageAccessLimits(
-            CatalogMode mode,
-            Filter readFilter,
-            MultiPolygon rasterFilter,
-            GeneralParameterValue[] params) {
+            CatalogMode mode, Filter readFilter, MultiPolygon rasterFilter, GeneralParameterValue[] params) {
         super(mode, readFilter);
         this.rasterFilter = rasterFilter;
         this.params = params;

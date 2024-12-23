@@ -31,24 +31,15 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
     }
 
     public UserGroupPaletteFormComponent(
-            String id,
-            IModel<List<GeoServerUserGroup>> model,
-            final String ugServiceName,
-            GeoServerUser user) {
-        super(
-                id,
-                model,
-                new GroupsModel(ugServiceName),
-                new ChoiceRenderer<>("groupname", "groupname"));
+            String id, IModel<List<GeoServerUserGroup>> model, final String ugServiceName, GeoServerUser user) {
+        super(id, model, new GroupsModel(ugServiceName), new ChoiceRenderer<>("groupname", "groupname"));
 
-        add(
-                new SubmitLink("addGroup") {
-                    @Override
-                    public void onSubmit() {
-                        setResponsePage(
-                                new NewGroupPage(ugServiceName).setReturnPage(this.getPage()));
-                    }
-                });
+        add(new SubmitLink("addGroup") {
+            @Override
+            public void onSubmit() {
+                setResponsePage(new NewGroupPage(ugServiceName).setReturnPage(this.getPage()));
+            }
+        });
     }
 
     public List<GeoServerUserGroup> getSelectedGroups() {
@@ -76,9 +67,8 @@ public class UserGroupPaletteFormComponent extends PaletteFormComponent<GeoServe
         public SelectedGroupsModel(String ugServiceName, GeoServerUser user) {
             try {
                 GeoServerSecurityManager secMgr = GeoServerApplication.get().getSecurityManager();
-                setObject(
-                        new ArrayList<>(
-                                secMgr.loadUserGroupService(ugServiceName).getGroupsForUser(user)));
+                setObject(new ArrayList<>(
+                        secMgr.loadUserGroupService(ugServiceName).getGroupsForUser(user)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

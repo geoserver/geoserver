@@ -28,13 +28,8 @@ final class StaticRasterFormat extends AbstractGridFormat implements Format {
     StaticRasterFormat() {
         setInfo();
         // reader capabilities
-        readParameters =
-                new ParameterGroup(
-                        new DefaultParameterDescriptorGroup(
-                                mInfo,
-                                new GeneralParameterDescriptor[] {
-                                    AbstractGridFormat.READ_GRIDGEOMETRY2D, FILTER
-                                }));
+        readParameters = new ParameterGroup(new DefaultParameterDescriptorGroup(
+                mInfo, new GeneralParameterDescriptor[] {AbstractGridFormat.READ_GRIDGEOMETRY2D, FILTER}));
     }
 
     private void setInfo() {

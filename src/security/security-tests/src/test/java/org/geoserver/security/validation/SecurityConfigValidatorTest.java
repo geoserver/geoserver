@@ -304,16 +304,14 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         // test names
         try {
             validator.validateAddPasswordPolicy(
-                    createPolicyConfig(
-                            PasswordValidator.DEFAULT_NAME, PasswordValidatorImpl.class, 1, 10));
+                    createPolicyConfig(PasswordValidator.DEFAULT_NAME, PasswordValidatorImpl.class, 1, 10));
             fail("passwd policy already exists should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(PASSWD_POLICY_ALREADY_EXISTS_$1, ex.getId());
             assertEquals(ex.getArgs()[0], PasswordValidator.DEFAULT_NAME);
         }
 
-        PasswordPolicyConfig pwConfig =
-                createPolicyConfig("default2", PasswordValidatorImpl.class, 1, 10);
+        PasswordPolicyConfig pwConfig = createPolicyConfig("default2", PasswordValidatorImpl.class, 1, 10);
 
         try {
             validator.validateModifiedPasswordPolicy(pwConfig, pwConfig);
@@ -324,24 +322,22 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         }
 
         try {
-            validator.validateAddUserGroupService(
-                    createUGConfig(
-                            XMLUserGroupService.DEFAULT_NAME,
-                            GeoServerUserGroupService.class,
-                            getPlainTextPasswordEncoder().getName(),
-                            PasswordValidator.DEFAULT_NAME));
+            validator.validateAddUserGroupService(createUGConfig(
+                    XMLUserGroupService.DEFAULT_NAME,
+                    GeoServerUserGroupService.class,
+                    getPlainTextPasswordEncoder().getName(),
+                    PasswordValidator.DEFAULT_NAME));
             fail("user group service already exists should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(ex.getId(), USERGROUP_SERVICE_ALREADY_EXISTS_$1);
             assertEquals(ex.getArgs()[0], XMLUserGroupService.DEFAULT_NAME);
         }
 
-        SecurityUserGroupServiceConfig ugConfig =
-                createUGConfig(
-                        "default2",
-                        GeoServerUserGroupService.class,
-                        getPlainTextPasswordEncoder().getName(),
-                        PasswordValidator.DEFAULT_NAME);
+        SecurityUserGroupServiceConfig ugConfig = createUGConfig(
+                "default2",
+                GeoServerUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME);
         try {
             validator.validateModifiedUserGroupService(ugConfig, ugConfig);
             fail("unknown user group service should fail");
@@ -351,11 +347,8 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         }
 
         try {
-            validator.validateAddRoleService(
-                    createRoleConfig(
-                            XMLRoleService.DEFAULT_NAME,
-                            GeoServerRoleService.class,
-                            GeoServerRole.ADMIN_ROLE.getAuthority()));
+            validator.validateAddRoleService(createRoleConfig(
+                    XMLRoleService.DEFAULT_NAME, GeoServerRoleService.class, GeoServerRole.ADMIN_ROLE.getAuthority()));
             fail("role service already exists should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(ex.getId(), ROLE_SERVICE_ALREADY_EXISTS_$1);
@@ -363,10 +356,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         }
 
         SecurityRoleServiceConfig config =
-                createRoleConfig(
-                        "default2",
-                        GeoServerRoleService.class,
-                        GeoServerRole.ADMIN_ROLE.getAuthority());
+                createRoleConfig("default2", GeoServerRoleService.class, GeoServerRole.ADMIN_ROLE.getAuthority());
         try {
             validator.validateModifiedRoleService(config, config);
             fail("unknown role service should fail");
@@ -376,22 +366,18 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         }
 
         try {
-            validator.validateAddAuthProvider(
-                    createAuthConfig(
-                            GeoServerAuthenticationProvider.DEFAULT_NAME,
-                            UsernamePasswordAuthenticationProvider.class,
-                            XMLUserGroupService.DEFAULT_NAME));
+            validator.validateAddAuthProvider(createAuthConfig(
+                    GeoServerAuthenticationProvider.DEFAULT_NAME,
+                    UsernamePasswordAuthenticationProvider.class,
+                    XMLUserGroupService.DEFAULT_NAME));
             fail("auth provider already exists should fail");
         } catch (SecurityConfigException ex) {
             assertEquals(ex.getId(), AUTH_PROVIDER_ALREADY_EXISTS_$1);
             assertEquals(ex.getArgs()[0], GeoServerAuthenticationProvider.DEFAULT_NAME);
         }
 
-        SecurityAuthProviderConfig aConfig =
-                createAuthConfig(
-                        "default2",
-                        UsernamePasswordAuthenticationProvider.class,
-                        XMLUserGroupService.DEFAULT_NAME);
+        SecurityAuthProviderConfig aConfig = createAuthConfig(
+                "default2", UsernamePasswordAuthenticationProvider.class, XMLUserGroupService.DEFAULT_NAME);
         try {
             validator.validateModifiedAuthProvider(aConfig, aConfig);
             fail("unknown auth provider should fail");
@@ -401,8 +387,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         }
     }
 
-    protected SecurityAuthProviderConfig createAuthConfig(
-            String name, Class<?> aClass, String userGroupServiceName) {
+    protected SecurityAuthProviderConfig createAuthConfig(String name, Class<?> aClass, String userGroupServiceName) {
         SecurityAuthProviderConfig config = new UsernamePasswordAuthenticationProviderConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -432,8 +417,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         return config;
     }
 
-    protected SecurityRoleServiceConfig createRoleConfig(
-            String name, Class<?> aClass, String adminRole) {
+    protected SecurityRoleServiceConfig createRoleConfig(String name, Class<?> aClass, String adminRole) {
         SecurityRoleServiceConfig config = new MemoryRoleServiceConfigImpl();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -446,8 +430,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
         return config;
     }
 
-    protected PasswordPolicyConfig createPolicyConfig(
-            String name, Class<?> aClass, int min, int max) {
+    protected PasswordPolicyConfig createPolicyConfig(String name, Class<?> aClass, int min, int max) {
         PasswordPolicyConfig config = new PasswordPolicyConfig();
         config.setName(name);
         config.setClassName(aClass.getName());
@@ -468,8 +451,7 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
         PasswordPolicyConfig config =
-                createPolicyConfig(
-                        PasswordValidator.DEFAULT_NAME, PasswordValidatorImpl.class, -1, 10);
+                createPolicyConfig(PasswordValidator.DEFAULT_NAME, PasswordValidatorImpl.class, -1, 10);
 
         try {
             config.setName("default2");
@@ -547,11 +529,8 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     @Test
     public void testRoleConfig() throws IOException {
 
-        SecurityRoleServiceConfig config =
-                createRoleConfig(
-                        XMLRoleService.DEFAULT_NAME,
-                        MemoryRoleService.class,
-                        GeoServerRole.ADMIN_ROLE.getAuthority());
+        SecurityRoleServiceConfig config = createRoleConfig(
+                XMLRoleService.DEFAULT_NAME, MemoryRoleService.class, GeoServerRole.ADMIN_ROLE.getAuthority());
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
         try {
@@ -603,11 +582,8 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     @Test
     public void testAuthenticationProvider() throws IOException {
 
-        SecurityAuthProviderConfig config =
-                createAuthConfig(
-                        GeoServerAuthenticationProvider.DEFAULT_NAME,
-                        UsernamePasswordAuthenticationProvider.class,
-                        "default2");
+        SecurityAuthProviderConfig config = createAuthConfig(
+                GeoServerAuthenticationProvider.DEFAULT_NAME, UsernamePasswordAuthenticationProvider.class, "default2");
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
         try {
@@ -654,12 +630,11 @@ public class SecurityConfigValidatorTest extends GeoServerSystemTestSupport {
     @Test
     public void testUserGroupConfig() throws IOException {
 
-        SecurityUserGroupServiceConfig config =
-                createUGConfig(
-                        XMLUserGroupService.DEFAULT_NAME,
-                        MemoryUserGroupService.class,
-                        getPlainTextPasswordEncoder().getName(),
-                        PasswordValidator.DEFAULT_NAME);
+        SecurityUserGroupServiceConfig config = createUGConfig(
+                XMLUserGroupService.DEFAULT_NAME,
+                MemoryUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME);
 
         SecurityConfigValidator validator = new SecurityConfigValidator(getSecurityManager());
 

@@ -38,8 +38,7 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
 
     public S3FileServiceImpl() {}
 
-    public S3FileServiceImpl(
-            String endpoint, String user, String password, String alias, String rootFolder) {
+    public S3FileServiceImpl(String endpoint, String user, String password, String alias, String rootFolder) {
         this.endpoint = endpoint;
         this.user = user;
         this.password = password;
@@ -92,13 +91,11 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public URI getURI(String filePath) {
         try {
-            return new URI(
-                    alias
-                            + "://"
-                            + rootFolder
-                            + "/"
-                            + URLEncoder.encode(filePath.toString(), "UTF-8")
-                                    .replaceAll("%2F", "/"));
+            return new URI(alias
+                    + "://"
+                    + rootFolder
+                    + "/"
+                    + URLEncoder.encode(filePath.toString(), "UTF-8").replaceAll("%2F", "/"));
         } catch (URISyntaxException | UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
@@ -107,16 +104,13 @@ public class S3FileServiceImpl extends AbstractS3FileServiceImpl {
     @Override
     public AmazonS3 getS3Client() {
         if (user == null) {
-            throw new IllegalArgumentException(
-                    "The user is required, add a property: alias.s3.user");
+            throw new IllegalArgumentException("The user is required, add a property: alias.s3.user");
         }
         if (password == null) {
-            throw new IllegalArgumentException(
-                    "The password is required, add a property: alias.s3.password");
+            throw new IllegalArgumentException("The password is required, add a property: alias.s3.password");
         }
         if (rootFolder == null) {
-            throw new IllegalStateException(
-                    "The rootfolder is required, add a property: alias.s3.rootfolder");
+            throw new IllegalStateException("The rootfolder is required, add a property: alias.s3.rootfolder");
         }
 
         AmazonS3 s3;

@@ -59,8 +59,7 @@ public class RecordsTest {
                 "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
         rb.addElement("type", "dataset");
         rb.addElement("subject", "imagery", "baseMaps", "earthCover");
-        rb.addBoundingBox(
-                new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+        rb.addBoundingBox(new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
         Feature f = rb.build(null);
 
         assertRecordElement(f, "identifier", "00180e67-b7cf-40a3-861d-b3a09337b195");
@@ -72,8 +71,7 @@ public class RecordsTest {
                 "IMAGE2000 product 1 individual orthorectified scenes. IMAGE2000 was  produced from ETM+ Landsat 7 satellite data and provides a consistent European coverage of individual orthorectified scenes in national map projection systems.");
         assertRecordElement(f, "type", "dataset");
         assertRecordElement(f, "subject", "imagery", "baseMaps", "earthCover");
-        assertBBox(
-                f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
+        assertBBox(f, new ReferencedEnvelope(14.05, 17.24, 46.46, 28.42, DefaultGeographicCRS.WGS84));
     }
 
     private void assertBBox(Feature f, ReferencedEnvelope... envelopes) throws Exception {
@@ -81,8 +79,7 @@ public class RecordsTest {
         MultiPolygon geometry = (MultiPolygon) p.getValue();
         @SuppressWarnings("unchecked")
         List<ReferencedEnvelope> featureEnvelopes =
-                (List<ReferencedEnvelope>)
-                        p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
+                (List<ReferencedEnvelope>) p.getUserData().get(GenericRecordBuilder.ORIGINAL_BBOXES);
         ReferencedEnvelope total = null;
         for (int i = 0; i < envelopes.length; i++) {
             Assert.assertEquals(envelopes[i], featureEnvelopes.get(i));

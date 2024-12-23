@@ -41,8 +41,8 @@ import org.geotools.styling.StyleBuilder;
 import org.geotools.util.factory.GeoTools;
 
 /**
- * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer
- * Available Classification: Quantile,Unique Interval, Equal Interval & Standard Deviation
+ * Creates a List of Rule using different classification methods Sets up only filter not Symbolyzer Available
+ * Classification: Quantile,Unique Interval, Equal Interval & Standard Deviation
  *
  * @author kappu
  */
@@ -50,11 +50,9 @@ public class RulesBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(RulesBuilder.class.toString());
 
-    private static FilterFactory FF =
-            CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
+    private static FilterFactory FF = CommonFactoryFinder.getFilterFactory(GeoTools.getDefaultHints());
 
-    private static StyleFactory SF =
-            CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
+    private static StyleFactory SF = CommonFactoryFinder.getStyleFactory(GeoTools.getDefaultHints());
 
     private StyleBuilder sb;
 
@@ -106,41 +104,27 @@ public class RulesBuilder {
         try {
             final Function classify;
             if (functionName.equals("EqualArea")) {
-                classify =
-                        FF.function(
-                                functionName,
-                                FF.property(property),
-                                FF.literal(classNumber),
-                                FF.literal(""),
-                                FF.literal(outputPercentages));
+                classify = FF.function(
+                        functionName,
+                        FF.property(property),
+                        FF.literal(classNumber),
+                        FF.literal(""),
+                        FF.literal(outputPercentages));
             } else {
-                classify =
-                        FF.function(
-                                functionName,
-                                FF.property(property),
-                                FF.literal(classNumber),
-                                FF.literal(outputPercentages));
+                classify = FF.function(
+                        functionName, FF.property(property), FF.literal(classNumber), FF.literal(outputPercentages));
             }
             Classifier groups = (Classifier) classify.evaluate(features);
             if (groups instanceof RangedClassifier)
-                if (open)
-                    return openRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
-                else
-                    return closedRangedRules(
-                            (RangedClassifier) groups, property, propertyType, normalize);
+                if (open) return openRangedRules((RangedClassifier) groups, property, propertyType, normalize);
+                else return closedRangedRules((RangedClassifier) groups, property, propertyType, normalize);
             else if (groups instanceof ExplicitClassifier)
                 return this.explicitRules((ExplicitClassifier) groups, property, propertyType);
 
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
                 LOGGER.log(
-                        Level.INFO,
-                        "Failed to build "
-                                + functionName
-                                + " Classification"
-                                + e.getLocalizedMessage(),
-                        e);
+                        Level.INFO, "Failed to build " + functionName + " Classification" + e.getLocalizedMessage(), e);
         }
         return null;
     }
@@ -156,10 +140,7 @@ public class RulesBuilder {
         return getRules(features, property, propertyType, classNumber, open, normalize, "Quantile");
     }
 
-    /**
-     * Generate a List of rules using equal interval classification Sets up only filter not
-     * symbolizer
-     */
+    /** Generate a List of rules using equal interval classification Sets up only filter not symbolizer */
     public List<Rule> equalIntervalClassification(
             FeatureCollection features,
             String property,
@@ -167,8 +148,7 @@ public class RulesBuilder {
             int intervals,
             boolean open,
             boolean normalize) {
-        return getRules(
-                features, property, propertyType, intervals, open, normalize, "EqualInterval");
+        return getRules(features, property, propertyType, intervals, open, normalize, "EqualInterval");
     }
 
     public List<Rule> standardDeviationClassification(
@@ -178,22 +158,13 @@ public class RulesBuilder {
             int intervals,
             boolean open,
             boolean normalize) {
-        return getRules(
-                features, property, propertyType, intervals, open, normalize, "StandardDeviation");
+        return getRules(features, property, propertyType, intervals, open, normalize, "StandardDeviation");
     }
 
-    /**
-     * Generate a List of rules using unique interval classification Sets up only filter not
-     * symbolizer
-     */
+    /** Generate a List of rules using unique interval classification Sets up only filter not symbolizer */
     public List<Rule> uniqueIntervalClassification(
-            FeatureCollection features,
-            String property,
-            Class<?> propertyType,
-            int intervals,
-            boolean normalize) {
-        return uniqueIntervalClassification(
-                features, property, propertyType, intervals, normalize, MAX_UNIQUE_VALUES);
+            FeatureCollection features, String property, Class<?> propertyType, int intervals, boolean normalize) {
+        return uniqueIntervalClassification(features, property, propertyType, intervals, normalize, MAX_UNIQUE_VALUES);
     }
 
     List<Rule> uniqueIntervalClassification(
@@ -212,14 +183,7 @@ public class RulesBuilder {
         }
 
         List<Rule> rules =
-                getRules(
-                        features,
-                        property,
-                        propertyType,
-                        features.size(),
-                        false,
-                        normalize,
-                        "UniqueInterval");
+                getRules(features, property, propertyType, features.size(), false, normalize, "UniqueInterval");
         if (intervals > 0 && rules.size() > intervals) {
             throw new IllegalArgumentException("Intervals: " + rules.size());
         }
@@ -244,10 +208,7 @@ public class RulesBuilder {
         return numberOfDistinctValues > maxNumberOfDistinctValues;
     }
 
-    /**
-     * Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not
-     * symbolizer
-     */
+    /** Generate a List of rules using Jenks Natural Breaks classification Sets up only filter not symbolizer */
     public List<Rule> jenksClassification(
             FeatureCollection features,
             String property,
@@ -258,9 +219,7 @@ public class RulesBuilder {
         return getRules(features, property, propertyType, classNumber, open, normalize, "Jenks");
     }
 
-    /**
-     * Generate a List of rules using Equal Area classification. Sets up only filter not symbolizer.
-     */
+    /** Generate a List of rules using Equal Area classification. Sets up only filter not symbolizer. */
     public List<Rule> equalAreaClassification(
             FeatureCollection features,
             String property,
@@ -268,8 +227,7 @@ public class RulesBuilder {
             int classNumber,
             boolean open,
             boolean normalize) {
-        return getRules(
-                features, property, propertyType, classNumber, open, normalize, "EqualArea");
+        return getRules(features, property, propertyType, classNumber, open, normalize, "EqualArea");
     }
 
     /** Generate Polygon Symbolyzer for each rule in list Fill color is choose from rampcolor */
@@ -294,19 +252,13 @@ public class RulesBuilder {
                 rule = it.next();
                 rule.symbolizers().clear();
                 rule.symbolizers()
-                        .add(
-                                sb.createPolygonSymbolizer(
-                                        strokeWeight < 0
-                                                ? null
-                                                : sb.createStroke(strokeColor, strokeWeight),
-                                        sb.createFill(color)));
+                        .add(sb.createPolygonSymbolizer(
+                                strokeWeight < 0 ? null : sb.createStroke(strokeColor, strokeWeight),
+                                sb.createFill(color)));
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(Level.INFO, "Failed to build polygon Symbolizer" + e.getLocalizedMessage(), e);
         }
     }
 
@@ -332,25 +284,19 @@ public class RulesBuilder {
                 rule = it.next();
                 // sb.createStroke(Color.BLACK,1),
 
-                Mark mark =
-                        sb.createMark(
-                                StyleBuilder.MARK_CIRCLE,
-                                sb.createFill(color),
-                                includeStrokeForPoints && strokeWeight >= 0
-                                        ? sb.createStroke(strokeColor, strokeWeight)
-                                        : null);
+                Mark mark = sb.createMark(
+                        StyleBuilder.MARK_CIRCLE,
+                        sb.createFill(color),
+                        includeStrokeForPoints && strokeWeight >= 0
+                                ? sb.createStroke(strokeColor, strokeWeight)
+                                : null);
                 rule.symbolizers().clear();
                 rule.symbolizers()
-                        .add(
-                                sb.createPointSymbolizer(
-                                        sb.createGraphic(null, mark, null, 1.0, pointSize, 0.0)));
+                        .add(sb.createPointSymbolizer(sb.createGraphic(null, mark, null, 1.0, pointSize, 0.0)));
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build polygon Symbolizer" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(Level.INFO, "Failed to build polygon Symbolizer" + e.getLocalizedMessage(), e);
         }
     }
 
@@ -379,8 +325,7 @@ public class RulesBuilder {
             }
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO, "Failed to build Line Symbolizer" + e.getLocalizedMessage(), e);
+                LOGGER.log(Level.INFO, "Failed to build Line Symbolizer" + e.getLocalizedMessage(), e);
         }
     }
 
@@ -426,13 +371,9 @@ public class RulesBuilder {
                         percMan.collectRulePercentage(i);
                     }
                 } else {
-                    f =
-                            FF.and(
-                                    getNotOverlappingFilter(i, groups, att),
-                                    FF.less(att, FF.literal(max)));
+                    f = FF.and(getNotOverlappingFilter(i, groups, att), FF.less(att, FF.literal(max)));
                     if (!isDuplicatedClass(list, f, percMan, i)) {
-                        r.getDescription()
-                                .setTitle((" >= " + FF.literal(min) + " AND < " + FF.literal(max)));
+                        r.getDescription().setTitle((" >= " + FF.literal(min) + " AND < " + FF.literal(max)));
                         r.setFilter(f);
                         list.add(r);
                         percMan.collectRulePercentage(i);
@@ -456,19 +397,13 @@ public class RulesBuilder {
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build Open Ranged rules" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(Level.INFO, "Failed to build Open Ranged rules" + e.getLocalizedMessage(), e);
         }
         return null;
     }
 
-    private Expression normalizeProperty(
-            PropertyName property, Class<?> propertyType, boolean normalize) {
-        if (normalize
-                && (Integer.class.isAssignableFrom(propertyType)
-                        || Long.class.isAssignableFrom(propertyType))) {
+    private Expression normalizeProperty(PropertyName property, Class<?> propertyType, boolean normalize) {
+        if (normalize && (Integer.class.isAssignableFrom(propertyType) || Long.class.isAssignableFrom(propertyType))) {
             return FF.function("parseDouble", property);
         }
         return property;
@@ -508,21 +443,19 @@ public class RulesBuilder {
                         r.getDescription().setTitle((FF.literal(min).toString()));
                     }
                 } else {
-                    f =
-                            FF.and(
-                                    getNotOverlappingFilter(i, groups, att),
-                                    i == (groups.getSize() - 1)
-                                            ? FF.lessOrEqual(att, FF.literal(max))
-                                            : FF.less(att, FF.literal(max)));
+                    f = FF.and(
+                            getNotOverlappingFilter(i, groups, att),
+                            i == (groups.getSize() - 1)
+                                    ? FF.lessOrEqual(att, FF.literal(max))
+                                    : FF.less(att, FF.literal(max)));
                     isDuplicated = isDuplicatedClass(list, f, percMan, i);
                     if (!isDuplicated) {
                         r.getDescription()
-                                .setTitle(
-                                        (" >= "
-                                                + FF.literal(min)
-                                                + " AND "
-                                                + (i == (groups.getSize() - 1) ? "<=" : "<")
-                                                + FF.literal(max)));
+                                .setTitle((" >= "
+                                        + FF.literal(min)
+                                        + " AND "
+                                        + (i == (groups.getSize() - 1) ? "<=" : "<")
+                                        + FF.literal(max)));
                     }
                 }
                 if (!isDuplicated) {
@@ -535,17 +468,13 @@ public class RulesBuilder {
             return list;
         } catch (Exception e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO,
-                        "Failed to build closed Ranged Rules" + e.getLocalizedMessage(),
-                        e);
+                LOGGER.log(Level.INFO, "Failed to build closed Ranged Rules" + e.getLocalizedMessage(), e);
         }
         return null;
     }
 
     /** Generate Rules from Explicit classifier groups build a List of rules */
-    public List<Rule> explicitRules(
-            ExplicitClassifier groups, String property, Class<?> propertyType) {
+    public List<Rule> explicitRules(ExplicitClassifier groups, String property, Class<?> propertyType) {
 
         Rule r;
         Filter f;
@@ -580,8 +509,7 @@ public class RulesBuilder {
             return list;
         } catch (CQLException e) {
             if (LOGGER.isLoggable(Level.INFO))
-                LOGGER.log(
-                        Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(), e);
+                LOGGER.log(Level.INFO, "Failed to build explicit Rules" + e.getLocalizedMessage(), e);
         }
         return null;
     }
@@ -634,16 +562,15 @@ public class RulesBuilder {
         double[] percentages = new double[bins.length];
         for (int i = 0; i < bins.length; i++) {
             double classMembers = bins[i][0];
-            if (classMembers != 0d && totalSize != 0d)
-                percentages[i] = (classMembers / totalSize) * 100;
+            if (classMembers != 0d && totalSize != 0d) percentages[i] = (classMembers / totalSize) * 100;
             else percentages[i] = 0d;
         }
         return percentages;
     }
 
-    private boolean isDuplicatedClass(
-            List<Rule> rules, Filter f, PercentagesManager percMan, int currentIdx) {
-        Optional<Rule> opRule = rules.stream().filter(r -> r.getFilter().equals(f)).findFirst();
+    private boolean isDuplicatedClass(List<Rule> rules, Filter f, PercentagesManager percMan, int currentIdx) {
+        Optional<Rule> opRule =
+                rules.stream().filter(r -> r.getFilter().equals(f)).findFirst();
         boolean result = opRule.isPresent();
         if (percMan != null) {
             if (result) {
@@ -661,14 +588,12 @@ public class RulesBuilder {
      * @param att
      * @return
      */
-    private Filter getNotOverlappingFilter(
-            int currentIdx, RangedClassifier groups, Expression att) {
+    private Filter getNotOverlappingFilter(int currentIdx, RangedClassifier groups, Expression att) {
         Filter f;
         Object currMin = groups.getMin(currentIdx);
         if (currentIdx > 0) {
             Object prevMin = groups.getMin(currentIdx - 1);
-            if (prevMin == null || !prevMin.equals(currMin))
-                f = FF.greaterOrEqual(att, FF.literal(currMin));
+            if (prevMin == null || !prevMin.equals(currMin)) f = FF.greaterOrEqual(att, FF.literal(currMin));
             else f = FF.greater(att, FF.literal(currMin));
         } else {
             f = FF.greaterOrEqual(att, FF.literal(currMin));
@@ -706,15 +631,10 @@ public class RulesBuilder {
         public void appendPercentagesToLabels(List<Rule> rules) {
             if (outputPercentages) {
                 collapsedPercentages =
-                        new PercentagesRoundHandler(percentagesScale)
-                                .roundPercentages(collapsedPercentages);
+                        new PercentagesRoundHandler(percentagesScale).roundPercentages(collapsedPercentages);
                 for (int i = 0; i < rules.size(); i++) {
                     Rule rule = rules.get(i);
-                    String percLabel =
-                            rule.getDescription().getTitle()
-                                    + " ("
-                                    + collapsedPercentages.get(i)
-                                    + "%)";
+                    String percLabel = rule.getDescription().getTitle() + " (" + collapsedPercentages.get(i) + "%)";
                     rule.getDescription().setTitle(percLabel);
                 }
             }

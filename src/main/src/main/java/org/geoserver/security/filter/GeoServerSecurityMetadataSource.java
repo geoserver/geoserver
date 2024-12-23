@@ -21,8 +21,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
- * Justin, nasty hack to get rid of the spring bean "filterSecurityInterceptor"; I think, there is a
- * better was to solve this.
+ * Justin, nasty hack to get rid of the spring bean "filterSecurityInterceptor"; I think, there is a better was to solve
+ * this.
  *
  * @author mcr
  */
@@ -37,8 +37,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
      */
     static class LoginPageRequestMatcher implements RequestMatcher {
 
-        RequestMatcher webChainMatcher1 =
-                new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
+        RequestMatcher webChainMatcher1 = new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME);
 
         RequestMatcher webChainMatcher2 =
                 new AntPathRequestMatcher("/" + GeoServerSecurityFilterChain.WEB_CHAIN_NAME + "/");
@@ -47,8 +46,7 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
         public boolean matches(HttpServletRequest request) {
 
             // check if we are on the "web" chain
-            boolean isOnWebChain =
-                    webChainMatcher1.matches(request) || webChainMatcher2.matches(request);
+            boolean isOnWebChain = webChainMatcher1.matches(request) || webChainMatcher2.matches(request);
             if (isOnWebChain == false) return false;
 
             Map params = request.getParameterMap();
@@ -64,7 +62,8 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
 
             return true;
         }
-    };
+    }
+    ;
 
     static LinkedHashMap<RequestMatcher, Collection<ConfigAttribute>> requestMap;
 
@@ -85,7 +84,8 @@ public class GeoServerSecurityMetadataSource extends DefaultFilterInvocationSecu
         list = new ArrayList<>();
         list.add(new SecurityConfig("IS_AUTHENTICATED_ANONYMOUSLY"));
         requestMap.put(matcher, list);
-    };
+    }
+    ;
 
     public GeoServerSecurityMetadataSource() {
         super(requestMap);

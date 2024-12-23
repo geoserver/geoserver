@@ -105,8 +105,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
     /** Test method for {@link WFSPPIO#decode(InputStream)}. */
     @Test
     public void testDecodeInputStream() throws Exception {
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new GeoJSONPPIO.FeatureCollections().decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new GeoJSONPPIO.FeatureCollections().decode(is);
 
         assertEquals("Wrong number of states", 49, states.size());
         assertEquals("Wrong number of columns", 23, states.getSchema().getAttributeCount());
@@ -120,8 +119,7 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
 
     @Test
     public void testEncodeOutputStream() throws Exception {
-        SimpleFeatureCollection states =
-                (SimpleFeatureCollection) new GeoJSONPPIO.FeatureCollections().decode(is);
+        SimpleFeatureCollection states = (SimpleFeatureCollection) new GeoJSONPPIO.FeatureCollections().decode(is);
 
         assertEquals("Wrong number of states", 49, states.size());
 
@@ -135,11 +133,10 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
         JSONArray features = fc.getJSONArray("features");
         JSONObject state0 = features.getJSONObject(0);
         // random tests on the first state ordinates ...
-        JSONArray state0Ordinates =
-                state0.getJSONObject("geometry")
-                        .getJSONArray("coordinates")
-                        .getJSONArray(0)
-                        .getJSONArray(0);
+        JSONArray state0Ordinates = state0.getJSONObject("geometry")
+                .getJSONArray("coordinates")
+                .getJSONArray(0)
+                .getJSONArray(0);
         assertEquals(-88.087883, state0Ordinates.getJSONArray(1).getDouble(0), EPS);
         assertEquals(-88.311707, state0Ordinates.getJSONArray(2).getDouble(0), EPS);
         assertEquals(37.420292, state0Ordinates.getJSONArray(4).getDouble(1), EPS);
@@ -172,11 +169,10 @@ public class GeoJSONPPIOTest extends WPSTestSupport {
             JSONObject fc2 = (JSONObject) JSONSerializer.toJSON(json2);
             JSONArray features2 = fc2.getJSONArray("features");
             state0 = features2.getJSONObject(0);
-            state0Ordinates =
-                    state0.getJSONObject("geometry")
-                            .getJSONArray("coordinates")
-                            .getJSONArray(0)
-                            .getJSONArray(0);
+            state0Ordinates = state0.getJSONObject("geometry")
+                    .getJSONArray("coordinates")
+                    .getJSONArray(0)
+                    .getJSONArray(0);
             assertEquals(-88.09, state0Ordinates.getJSONArray(1).getDouble(0), EPS);
             assertEquals(-88.31, state0Ordinates.getJSONArray(2).getDouble(0), EPS);
             assertEquals(37.42, state0Ordinates.getJSONArray(4).getDouble(1), EPS);

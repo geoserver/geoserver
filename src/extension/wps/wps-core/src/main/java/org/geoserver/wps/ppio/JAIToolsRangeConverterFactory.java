@@ -27,12 +27,10 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     private static final String RE_CLOSE = "(\\)|\\])"; // char for closing range
     private static final String RE_NUM = "(\\-?\\d+(?:\\.\\d*)?)?"; // a nullable general number
 
-    private static final String RANGE_REGEX =
-            RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE; // + "\\z";
+    private static final String RANGE_REGEX = RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE; // + "\\z";
     private static final Pattern RANGE_PATTERN = Pattern.compile(RANGE_REGEX);
 
-    private static final String RANGELIST_REGEX =
-            "(" + RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE + ")+"; // "\\z";
+    private static final String RANGELIST_REGEX = "(" + RE_OPEN + RE_NUM + ";" + RE_NUM + RE_CLOSE + ")+"; // "\\z";
     private static final Pattern RANGELIST_PATTERN = Pattern.compile(RANGELIST_REGEX);
 
     @Override
@@ -62,8 +60,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
         Double max = null;
 
         if (m.groupCount() != 4) {
-            throw new IllegalStateException(
-                    "Range returned wrong group count (" + sRange + ") : " + m.groupCount());
+            throw new IllegalStateException("Range returned wrong group count (" + sRange + ") : " + m.groupCount());
         }
 
         if (m.group(2) != null) {
@@ -93,8 +90,7 @@ public class JAIToolsRangeConverterFactory implements ConverterFactory {
     public static List<Range<Double>> parseRanges(String sRangeList) {
         // check that the whole input string is a list of ranges
         Matcher m = RANGELIST_PATTERN.matcher(sRangeList);
-        if (!m.matches())
-            throw new IllegalArgumentException("Bad range definition '" + sRangeList + "'");
+        if (!m.matches()) throw new IllegalArgumentException("Bad range definition '" + sRangeList + "'");
 
         // fetch every single range
         m = RANGE_PATTERN.matcher(sRangeList);

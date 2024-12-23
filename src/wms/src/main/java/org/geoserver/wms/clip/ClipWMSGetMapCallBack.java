@@ -63,10 +63,8 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 // wrap around
                 FeatureLayer fl = (FeatureLayer) layer;
 
-                FeatureSource<?, ?> clippedFS =
-                        new ClippedFeatureSource<>(layer.getFeatureSource(), wktGeom);
-                FeatureLayer clippedLayer =
-                        new FeatureLayer(clippedFS, fl.getStyle(), fl.getTitle());
+                FeatureSource<?, ?> clippedFS = new ClippedFeatureSource<>(layer.getFeatureSource(), wktGeom);
+                FeatureLayer clippedLayer = new FeatureLayer(clippedFS, fl.getStyle(), fl.getTitle());
                 BeanUtilsBean2.getInstance().copyProperties(clippedLayer, fl);
                 fl.getUserData().putAll(layer.getUserData());
                 return clippedLayer;
@@ -77,11 +75,8 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
                 // wrap
                 CroppedGridCoverage2DReader croppedGridReader =
                         new CroppedGridCoverage2DReader(gr.getReader(), wktGeom);
-                CachedGridReaderLayer croppedGridLayer =
-                        new CachedGridReaderLayer(
-                                croppedGridReader,
-                                layer.getStyle(),
-                                ((GridReaderLayer) layer).getParams());
+                CachedGridReaderLayer croppedGridLayer = new CachedGridReaderLayer(
+                        croppedGridReader, layer.getStyle(), ((GridReaderLayer) layer).getParams());
                 BeanUtilsBean2.getInstance().copyProperties(croppedGridLayer, gr);
                 croppedGridLayer.getUserData().putAll(layer.getUserData());
                 return croppedGridLayer;
@@ -108,22 +103,20 @@ public class ClipWMSGetMapCallBack implements GetMapCallback {
     @Override
     public void failed(Throwable t) {}
 
-    public static synchronized Geometry readGeometry(
-            final String wkt, final CoordinateReferenceSystem mapCRS) throws Exception {
+    public static synchronized Geometry readGeometry(final String wkt, final CoordinateReferenceSystem mapCRS)
+            throws Exception {
         String[] wktContents = wkt.split(";");
         Geometry geom = reader.read(wktContents[wktContents.length - 1]);
-        if (!(geom.getClass().isAssignableFrom(Polygon.class)
-                || geom.getClass().isAssignableFrom(MultiPolygon.class)))
-            throw new ServiceException(
-                    "Clip must be a polygon or multipolygon", "InvalidParameterValue", "clip");
+        if (!(geom.getClass().isAssignableFrom(Polygon.class) || geom.getClass().isAssignableFrom(MultiPolygon.class)))
+            throw new ServiceException("Clip must be a polygon or multipolygon", "InvalidParameterValue", "clip");
         // parse SRID if passed
         // looking for a pattern srid=4326:Polygon(...)
-        if (wktContents.length == 2 && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
+        if (wktContents.length == 2
+                && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
             String sridString = wktContents[0].split("=")[1];
             // force xy. Forcing EPSG in this case is legit, as EWKT does not advertise an authority
             CoordinateReferenceSystem geomCRS = CRS.decode("EPSG:" + sridString, true);
-            CoordinateReferenceSystem mapCRSXY =
-                    CRS.decode("EPSG:" + CRS.lookupEpsgCode(mapCRS, false), true);
+            CoordinateReferenceSystem mapCRSXY = CRS.decode("EPSG:" + CRS.lookupEpsgCode(mapCRS, false), true);
             if (CRS.isTransformationRequired(mapCRSXY, geomCRS)) {
                 MathTransform transform = CRS.findMathTransform(geomCRS, mapCRSXY);
                 geom = JTS.transform(geom, transform);

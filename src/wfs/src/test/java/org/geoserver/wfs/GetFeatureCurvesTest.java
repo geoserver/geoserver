@@ -27,33 +27,25 @@ public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
     @Test
     public void testLinearizeWFS10() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.0&request=GetFeature&typeName="
-                                + getLayerId(CURVELINES));
+        Document dom = getAsDOM("wfs?service=wfs&version=1.0&request=GetFeature&typeName=" + getLayerId(CURVELINES));
         // print(dom);
 
         assertEquals(
                 "1",
                 xpath.evaluate(
-                        "count(//gml:featureMember/cite:curvelines[@fid='cp.1']/cite:geom/gml:LineString)",
-                        dom));
+                        "count(//gml:featureMember/cite:curvelines[@fid='cp.1']/cite:geom/gml:LineString)", dom));
         assertEquals(
                 "1",
                 xpath.evaluate(
-                        "count(//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString)",
-                        dom));
+                        "count(//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString)", dom));
         assertEquals(
                 "1",
                 xpath.evaluate(
-                        "count(//gml:featureMember/cite:curvelines[@fid='cp.3']/cite:geom/gml:LineString)",
-                        dom));
+                        "count(//gml:featureMember/cite:curvelines[@fid='cp.3']/cite:geom/gml:LineString)", dom));
 
         // compute number of coordinates
-        String coords =
-                xpath.evaluate(
-                        "//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString/gml:coordinates",
-                        dom);
+        String coords = xpath.evaluate(
+                "//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString/gml:coordinates", dom);
         int coordCountDefault = coords.split("\\s+").length;
 
         // now alter the feature type and set a linearization tolerance
@@ -62,21 +54,16 @@ public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
         ft.setLinearizationTolerance(new Measure(1, SI.METRE));
         getCatalog().save(ft);
 
-        dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.0&request=GetFeature&typeName="
-                                + getLayerId(CURVELINES));
+        dom = getAsDOM("wfs?service=wfs&version=1.0&request=GetFeature&typeName=" + getLayerId(CURVELINES));
         // print(dom);
-        int coordCount100m =
-                countCoordinates(
-                        dom,
-                        xpath,
-                        "//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString/gml:coordinates");
+        int coordCount100m = countCoordinates(
+                dom,
+                xpath,
+                "//gml:featureMember/cite:curvelines[@fid='cp.2']/cite:geom/gml:LineString/gml:coordinates");
         assertTrue(coordCount100m > coordCountDefault);
     }
 
-    private int countCoordinates(Document dom, XpathEngine xpath, String path)
-            throws XpathException {
+    private int countCoordinates(Document dom, XpathEngine xpath, String path) throws XpathException {
         String coords = xpath.evaluate(path, dom);
         int coordCount = coords.split("\\s+").length;
         return coordCount;
@@ -84,10 +71,7 @@ public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
     @Test
     public void testCurveLineWFS11() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.1&request=GetFeature&typeName="
-                                + getLayerId(CURVELINES));
+        Document dom = getAsDOM("wfs?service=wfs&version=1.1&request=GetFeature&typeName=" + getLayerId(CURVELINES));
         // print(dom);
 
         // check the compound curve
@@ -143,11 +127,9 @@ public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
     @Test
     public void testCurveMultiLineWFS11() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.1&request=GetFeature&typeName="
-                                + getLayerId(CURVEMULTILINES)
-                                + "&featureid=cp.1");
+        Document dom = getAsDOM("wfs?service=wfs&version=1.1&request=GetFeature&typeName="
+                + getLayerId(CURVEMULTILINES)
+                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve
@@ -175,11 +157,9 @@ public class GetFeatureCurvesTest extends WFSCurvesTestSupport {
 
     @Test
     public void testCurvePolygons() throws Exception {
-        Document dom =
-                getAsDOM(
-                        "wfs?service=wfs&version=1.1&request=GetFeature&typeName="
-                                + getLayerId(CURVEPOLYGONS)
-                                + "&featureid=cp.1");
+        Document dom = getAsDOM("wfs?service=wfs&version=1.1&request=GetFeature&typeName="
+                + getLayerId(CURVEPOLYGONS)
+                + "&featureid=cp.1");
         // print(dom);
 
         // check the compound curve

@@ -38,8 +38,7 @@ import org.xml.sax.helpers.NamespaceSupport;
  *
  * @author Andrea Aime, GeoSolutions
  */
-public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
-        implements ApplicationContextAware {
+public class GetRecordsKvpRequestReader extends CSWKvpRequestReader implements ApplicationContextAware {
 
     private static final String FILTER = "FILTER";
     private static final String CQL_TEXT = "CQL_TEXT";
@@ -60,8 +59,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         // fix distributed search before we get into EMF reflection mode
         String ds = (String) kvp.remove("distributedSearch");
         Integer hopCount = (Integer) kvp.remove("hopCount");
@@ -93,9 +91,7 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
         String typeNamesString = (String) kvp.get("typeNames");
         if (typeNamesString == null) {
             throw new ServiceException(
-                    "Mandatory parameter typeNames is missing",
-                    ServiceException.MISSING_PARAMETER_VALUE,
-                    "typeNames");
+                    "Mandatory parameter typeNames is missing", ServiceException.MISSING_PARAMETER_VALUE, "typeNames");
         }
         NamespaceSupport namespaces = (NamespaceSupport) kvp.get("namespace");
         if (namespaces == null) {
@@ -135,11 +131,10 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
                 try {
                     filter = CQL.toFilter(constraint);
                 } catch (Exception e) {
-                    ServiceException se =
-                            new ServiceException(
-                                    "Invalid CQL expression: " + constraint,
-                                    ServiceException.INVALID_PARAMETER_VALUE,
-                                    CONSTRAINT);
+                    ServiceException se = new ServiceException(
+                            "Invalid CQL expression: " + constraint,
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            CONSTRAINT);
                     se.initCause(e);
                     throw se;
                 }
@@ -156,11 +151,10 @@ public class GetRecordsKvpRequestReader extends CSWKvpRequestReader
                     query.getConstraint().setFilter(filter);
                     query.getConstraint().setVersion("1.1.0");
                 } catch (Exception e) {
-                    ServiceException se =
-                            new ServiceException(
-                                    "Invalid FILTER 1.1 expression: " + constraint,
-                                    ServiceException.INVALID_PARAMETER_VALUE,
-                                    CONSTRAINT);
+                    ServiceException se = new ServiceException(
+                            "Invalid FILTER 1.1 expression: " + constraint,
+                            ServiceException.INVALID_PARAMETER_VALUE,
+                            CONSTRAINT);
                     se.initCause(e);
                     throw se;
                 }

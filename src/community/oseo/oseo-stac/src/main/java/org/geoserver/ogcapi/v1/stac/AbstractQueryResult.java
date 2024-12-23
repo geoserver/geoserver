@@ -10,8 +10,8 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geotools.feature.FeatureCollection;
 
 /**
- * Wrapper for the returned FeatureCollection containing the STAC Items definitions, along with the
- * counts of numbers matched and returned
+ * Wrapper for the returned FeatureCollection containing the STAC Items definitions, along with the counts of numbers
+ * matched and returned
  */
 public abstract class AbstractQueryResult {
 

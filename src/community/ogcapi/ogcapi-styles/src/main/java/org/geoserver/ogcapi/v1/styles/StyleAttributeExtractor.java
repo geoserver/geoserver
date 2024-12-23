@@ -73,18 +73,15 @@ import org.geotools.renderer.style.ExpressionExtractor;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * A clone of StyleAttributeExtractor that can provide hints about the data type needed for
- * properties. Will be moved back to GeoTools once we have some time to write proper tests for it.
+ * A clone of StyleAttributeExtractor that can provide hints about the data type needed for properties. Will be moved
+ * back to GeoTools once we have some time to write proper tests for it.
  */
 public class StyleAttributeExtractor extends FilterAttributeExtractor implements StyleVisitor {
 
     /** if the default geometry is used, this will be true. See GEOS-469 */
     boolean defaultGeometryUsed = false;
 
-    /**
-     * Symbolizer geometry is enabled by default, but there are relevant cases in which we don't
-     * desire that
-     */
+    /** Symbolizer geometry is enabled by default, but there are relevant cases in which we don't desire that */
     boolean symbolizerGeometriesVisitEnabled = true;
 
     Map<PropertyName, Class<?>> propertyTypes = new LinkedHashMap<>();
@@ -429,10 +426,10 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
         visitCqlExpression(exgr.getFormat());
 
         try {
-            if (exgr.getLocation() != null) visitCqlExpression(exgr.getLocation().toString());
+            if (exgr.getLocation() != null)
+                visitCqlExpression(exgr.getLocation().toString());
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Errors while inspecting " + "the location of an external graphic", e);
+            throw new RuntimeException("Errors while inspecting " + "the location of an external graphic", e);
         }
     }
 
@@ -585,10 +582,9 @@ public class StyleAttributeExtractor extends FilterAttributeExtractor implements
     }
 
     /**
-     * Returns a map from PropertyName to its data type, either retrieved from the feature type if
-     * available, or guessed from the style property necessities, otherwise. When multiple types
-     * would be allowed thanks to converters, the most specific is used (e.g., Color instead of
-     * String)
+     * Returns a map from PropertyName to its data type, either retrieved from the feature type if available, or guessed
+     * from the style property necessities, otherwise. When multiple types would be allowed thanks to converters, the
+     * most specific is used (e.g., Color instead of String)
      */
     public Map<PropertyName, Class<?>> getPropertyTypes() {
         return Collections.unmodifiableMap(propertyTypes);

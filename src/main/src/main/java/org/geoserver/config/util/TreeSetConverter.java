@@ -27,13 +27,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
- * Converts a java.util.TreeSet to XML, and serializes the associated java.util.Comparator. The
- * converter assumes that the elements in the XML are already sorted according the comparator.
+ * Converts a java.util.TreeSet to XML, and serializes the associated java.util.Comparator. The converter assumes that
+ * the elements in the XML are already sorted according the comparator.
  *
- * <p>Cloned from XStream in order to avoid illegal reflective lookup warnings, might introduce
- * loading issues if there are circular references stored in the TreeSet. We don't have those right
- * now, the alternative would be open the java.util package for deep reflection from the command
- * line
+ * <p>Cloned from XStream in order to avoid illegal reflective lookup warnings, might introduce loading issues if there
+ * are circular references stored in the TreeSet. We don't have those right now, the alternative would be open the
+ * java.util package for deep reflection from the command line
  *
  * @author Joe Walnes
  * @author J&ouml;rg Schaible
@@ -44,8 +43,7 @@ public class TreeSetConverter extends CollectionConverter {
     }
 
     @Override
-    public void marshal(
-            Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+    public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
         SortedSet sortedSet = (SortedSet) source;
         TreeMapConverter.marshalComparator(mapper(), sortedSet.comparator(), writer, context);
         super.marshal(source, writer, context);
@@ -54,8 +52,7 @@ public class TreeSetConverter extends CollectionConverter {
     @Override
     @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-        Comparator unmarshalledComparator =
-                TreeMapConverter.unmarshalComparator(mapper(), reader, context, null);
+        Comparator unmarshalledComparator = TreeMapConverter.unmarshalComparator(mapper(), reader, context, null);
         boolean inFirstElement = unmarshalledComparator instanceof Mapper.Null;
         Comparator comparator = inFirstElement ? null : unmarshalledComparator;
         final PresortedSet set = new PresortedSet(comparator);

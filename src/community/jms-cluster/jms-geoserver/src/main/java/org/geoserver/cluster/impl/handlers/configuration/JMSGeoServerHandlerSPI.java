@@ -19,10 +19,7 @@ public class JMSGeoServerHandlerSPI extends JMSEventHandlerSPI<String, JMSGlobal
     final ToggleSwitch producer;
 
     public JMSGeoServerHandlerSPI(
-            final int priority,
-            final GeoServer geo,
-            final XStream xstream,
-            final ToggleSwitch producer) {
+            final int priority, final GeoServer geo, final XStream xstream, final ToggleSwitch producer) {
         super(priority);
         this.geoserver = geo;
         this.xstream = xstream;

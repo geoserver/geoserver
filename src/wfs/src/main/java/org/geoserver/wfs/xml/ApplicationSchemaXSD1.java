@@ -35,8 +35,7 @@ public class ApplicationSchemaXSD1 extends XSD {
     }
 
     public ApplicationSchemaXSD1(
-            FeatureTypeSchemaBuilder schemaBuilder,
-            Map<String, Set<FeatureTypeInfo>> featureTypes) {
+            FeatureTypeSchemaBuilder schemaBuilder, Map<String, Set<FeatureTypeInfo>> featureTypes) {
         this.schemaBuilder = schemaBuilder;
         this.featureTypes = featureTypes;
     }
@@ -100,9 +99,7 @@ public class ApplicationSchemaXSD1 extends XSD {
     @Override
     protected XSDSchema buildSchema() throws IOException {
         FeatureTypeInfo[] types =
-                this.featureTypes.values().stream()
-                        .flatMap(Collection::stream)
-                        .toArray(FeatureTypeInfo[]::new);
+                this.featureTypes.values().stream().flatMap(Collection::stream).toArray(FeatureTypeInfo[]::new);
         XSDSchema schema;
         if (containsComplexTypes(types)) {
             // we have complex features so we add all the available catalog feature types

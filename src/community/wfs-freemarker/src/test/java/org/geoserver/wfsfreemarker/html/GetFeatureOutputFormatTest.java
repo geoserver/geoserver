@@ -17,8 +17,7 @@ public class GetFeatureOutputFormatTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureResponseMimeType() throws Exception {
-        String request =
-                "wfs?version=1.1.0&request=GetFeature&typeName=cite:Forests&outputFormat=text/html";
+        String request = "wfs?version=1.1.0&request=GetFeature&typeName=cite:Forests&outputFormat=text/html";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -27,8 +26,7 @@ public class GetFeatureOutputFormatTest extends WFSTestSupport {
 
     @Test
     public void testGetFeatureHtmlDefaultTemplate() throws Exception {
-        String request =
-                "wfs?version=1.1.0&request=GetFeature&typeName=cite:Forests&outputFormat=text/html";
+        String request = "wfs?version=1.1.0&request=GetFeature&typeName=cite:Forests&outputFormat=text/html";
 
         Document dom = getAsDOM(request);
 

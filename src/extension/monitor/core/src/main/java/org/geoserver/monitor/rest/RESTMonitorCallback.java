@@ -48,8 +48,7 @@ public class RESTMonitorCallback extends DispatcherCallbackAdapter {
     }
 
     @Override
-    public void dispatched(
-            HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public void dispatched(HttpServletRequest request, HttpServletResponse response, Object handler) {
         RequestData data = monitor.current();
         if (data == null) {
             // will happen in cases where the filter is not active

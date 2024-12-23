@@ -10,8 +10,8 @@ public interface ObjectSizeEstimator {
     public static long UNKNOWN_SIZE = 0;
 
     /**
-     * Returns the size of the specified object, in bytes, or {@link #UNKNOWN_SIZE} if the
-     * estimation can not be performed
+     * Returns the size of the specified object, in bytes, or {@link #UNKNOWN_SIZE} if the estimation can not be
+     * performed
      */
     public long getSizeOf(Object object);
 }

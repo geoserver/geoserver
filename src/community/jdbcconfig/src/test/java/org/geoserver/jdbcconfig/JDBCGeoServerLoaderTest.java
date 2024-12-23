@@ -32,21 +32,20 @@ public class JDBCGeoServerLoaderTest {
     JDBCConfigTestSupport testSupport;
 
     public JDBCGeoServerLoaderTest(JDBCConfigTestSupport.DBConfig dbConfig) {
-        testSupport =
-                new JDBCConfigTestSupport(dbConfig) {
-                    @Override
-                    protected void configureAppContext(WebApplicationContext appContext) {
-                        expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
-                                .andReturn(new String[] {"wmsLoader"})
-                                .anyTimes();
-                        expect(appContext.getBeanNamesForType((Class<?>) anyObject()))
-                                .andReturn(new String[] {})
-                                .anyTimes();
-                        expect(appContext.getBean("wmsLoader"))
-                                .andReturn(new WMSXStreamLoader(getResourceLoader()))
-                                .anyTimes();
-                    }
-                };
+        testSupport = new JDBCConfigTestSupport(dbConfig) {
+            @Override
+            protected void configureAppContext(WebApplicationContext appContext) {
+                expect(appContext.getBeanNamesForType(XStreamServiceLoader.class))
+                        .andReturn(new String[] {"wmsLoader"})
+                        .anyTimes();
+                expect(appContext.getBeanNamesForType((Class<?>) anyObject()))
+                        .andReturn(new String[] {})
+                        .anyTimes();
+                expect(appContext.getBean("wmsLoader"))
+                        .andReturn(new WMSXStreamLoader(getResourceLoader()))
+                        .anyTimes();
+            }
+        };
     }
 
     @Parameters(name = "JDBCGeoServerLoaderTest-{0}")
@@ -72,14 +71,15 @@ public class JDBCGeoServerLoaderTest {
         expect(config.isImport()).andReturn(false).anyTimes();
         replay(config);
 
-        JDBCGeoServerLoader loader =
-                new JDBCGeoServerLoader(testSupport.getResourceLoader(), config);
+        JDBCGeoServerLoader loader = new JDBCGeoServerLoader(testSupport.getResourceLoader(), config);
         loader.setGeoServerFacade(new JDBCGeoServerFacade(testSupport.getDatabase()));
         loader.setApplicationContext(testSupport.getApplicationContext());
 
         // create a mock and ensure a global, logging, and service config are set
         GeoServerImpl geoServer = createNiceMock(GeoServerImpl.class);
-        expect(geoServer.getFactory()).andReturn(new GeoServerFactoryImpl(geoServer)).anyTimes();
+        expect(geoServer.getFactory())
+                .andReturn(new GeoServerFactoryImpl(geoServer))
+                .anyTimes();
 
         geoServer.setGlobal((GeoServerInfo) anyObject());
         expectLastCall().once();

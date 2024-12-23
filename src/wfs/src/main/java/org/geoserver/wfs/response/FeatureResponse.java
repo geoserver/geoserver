@@ -43,8 +43,7 @@ public class FeatureResponse extends WFSResponse {
     }
 
     @Override
-    public void write(Object value, OutputStream output, Operation operation)
-            throws IOException, ServiceException {
+    public void write(Object value, OutputStream output, Operation operation) throws IOException, ServiceException {
 
         // get the feature
         SimpleFeature feature = (SimpleFeature) value;
@@ -55,7 +54,8 @@ public class FeatureResponse extends WFSResponse {
 
         // create teh encoder
         Encoder encoder = new Encoder(configuration);
-        encoder.setEncoding(Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
+        encoder.setEncoding(
+                Charset.forName(getInfo().getGeoServer().getSettings().getCharset()));
         encoder.encode(feature, new QName(meta.getNamespace().getURI(), meta.getName()), output);
     }
 }

@@ -27,17 +27,13 @@ public class XMPPLoadAverageMessage extends XMPPOutputMessage {
     }
 
     @Override
-    public void handleSignal(
-            XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
+    public void handleSignal(XMPPClient xmppClient, Packet packet, Message message, Map<String, String> signalArgs) {
 
         final String serviceJID = (message != null ? message.getFrom() : packet.getFrom());
         final String pID = signalArgs.get("id");
         final String msg = signalArgs.get("message");
 
-        if (pID != null
-                && pID.equalsIgnoreCase("master")
-                && msg != null
-                && msg.equals(this.topic)) {
+        if (pID != null && pID.equalsIgnoreCase("master") && msg != null && msg.equals(this.topic)) {
             Map<String, Object> outputs = new HashMap<String, Object>();
             try {
                 final List<RemoteMachineDescriptor> registeredProcessingMachines =
@@ -60,29 +56,24 @@ public class XMPPLoadAverageMessage extends XMPPOutputMessage {
                                 final Object output = getOutPuts(xmppClient, result);
                                 // XMPP Output Visitor
                                 if (output instanceof Map) {
-                                    final Map<String, Object> resultParams =
-                                            (Map<String, Object>) output;
+                                    final Map<String, Object> resultParams = (Map<String, Object>) output;
                                     // transform the textual value into a real WPS
                                     // output
                                     try {
-                                        final Object value =
-                                                (resultParams.get(key + "_value") != null
-                                                        ? resultParams.get(key + "_value")
-                                                        : null);
+                                        final Object value = (resultParams.get(key + "_value") != null
+                                                ? resultParams.get(key + "_value")
+                                                : null);
                                         /**
-                                         * final String description = (resultParams.get(key +
-                                         * "_description") != null && resultParams.get(
-                                         * result.getKey() + "_description") instanceof String ?
+                                         * final String description = (resultParams.get(key + "_description") != null &&
+                                         * resultParams.get( result.getKey() + "_description") instanceof String ?
                                          * (String) resultParams.get( key + "_description") : null);
                                          */
                                         if ("vmem".equalsIgnoreCase(key)) {
-                                            registeredProcessingMachine.setMemPercUsed(
-                                                    (Double) value);
+                                            registeredProcessingMachine.setMemPercUsed((Double) value);
                                         }
 
                                         if ("loadavg".equalsIgnoreCase(key)) {
-                                            registeredProcessingMachine.setLoadAverage(
-                                                    (Double) value);
+                                            registeredProcessingMachine.setLoadAverage((Double) value);
                                         }
                                     } catch (Exception e) {
                                         LOGGER.log(

@@ -16,10 +16,7 @@ import org.geoserver.featurestemplating.readers.TemplateReaderProvider;
 import org.geoserver.platform.FileWatcher;
 import org.geoserver.platform.resource.Resource;
 
-/**
- * This class extends {@link FileWatcher} to provide functionalities to dynamically reload a
- * template
- */
+/** This class extends {@link FileWatcher} to provide functionalities to dynamically reload a template */
 public class TemplateWatcher extends FileWatcher<RootBuilder> {
 
     private TemplateReaderConfiguration configuration;
@@ -32,8 +29,7 @@ public class TemplateWatcher extends FileWatcher<RootBuilder> {
     /**
      * Reads the file updating the last check timestamp.
      *
-     * <p>Subclasses can override {@link #parseFileContents(InputStream)} to do something when the
-     * file is read.
+     * <p>Subclasses can override {@link #parseFileContents(InputStream)} to do something when the file is read.
      *
      * @return parsed file contents
      */
@@ -61,8 +57,7 @@ public class TemplateWatcher extends FileWatcher<RootBuilder> {
      */
     public RootBuilder parseResource(Resource resource) throws IOException {
         String extension = FilenameUtils.getExtension(resource.name());
-        TemplateReader reader =
-                TemplateReaderProvider.findReader(extension, resource, configuration);
+        TemplateReader reader = TemplateReaderProvider.findReader(extension, resource, configuration);
         return reader.getRootBuilder();
     }
 }

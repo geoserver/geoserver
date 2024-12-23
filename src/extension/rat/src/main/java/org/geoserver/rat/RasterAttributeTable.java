@@ -56,8 +56,7 @@ public abstract class RasterAttributeTable {
     protected final int bandIdx;
 
     private static final Set<FieldUsage> COLORS = Set.of(Red, Green, Blue);
-    private static final Set<FieldUsage> COLOR_RANGES =
-            Set.of(RedMin, RedMax, GreenMin, GreenMax, BlueMin, BlueMax);
+    private static final Set<FieldUsage> COLOR_RANGES = Set.of(RedMin, RedMax, GreenMin, GreenMax, BlueMin, BlueMax);
     private final boolean hasSingleColors;
     private final boolean hasRangeColors;
     private final Integer minField;
@@ -65,16 +64,14 @@ public abstract class RasterAttributeTable {
     public RasterAttributeTable(GDALRasterAttributeTable rat, int bandIdx) {
         this.rat = rat;
         this.bandIdx = bandIdx;
-        this.classifications =
-                rat.getFieldDefn().stream()
-                        .filter(fd -> fd.getUsage() == Name || fd.getUsage() == Generic)
-                        .collect(Collectors.toMap(fd -> fd.getName(), fd -> fd.getIndex()));
-        this.minField =
-                rat.getFieldDefn().stream()
-                        .filter(fd -> fd.getUsage() == MinMax || fd.getUsage() == Min)
-                        .map(f -> f.getIndex())
-                        .findFirst()
-                        .orElse(null);
+        this.classifications = rat.getFieldDefn().stream()
+                .filter(fd -> fd.getUsage() == Name || fd.getUsage() == Generic)
+                .collect(Collectors.toMap(fd -> fd.getName(), fd -> fd.getIndex()));
+        this.minField = rat.getFieldDefn().stream()
+                .filter(fd -> fd.getUsage() == MinMax || fd.getUsage() == Min)
+                .map(f -> f.getIndex())
+                .findFirst()
+                .orElse(null);
         Set<FieldUsage> fieldUsages =
                 rat.getFieldDefn().stream().map(f -> f.getUsage()).collect(Collectors.toSet());
         this.hasSingleColors = fieldUsages.containsAll(COLORS);
@@ -82,30 +79,23 @@ public abstract class RasterAttributeTable {
 
         this.rows = new ArrayList<>(rat.getRow());
         // TODO: make null safe?
-        Collections.sort(
-                rows,
-                (r1, r2) ->
-                        Double.valueOf(r1.getF().get(minField))
-                                .compareTo(Double.valueOf(r2.getF().get(minField))));
+        Collections.sort(rows, (r1, r2) -> Double.valueOf(r1.getF().get(minField))
+                .compareTo(Double.valueOf(r2.getF().get(minField))));
     }
 
     protected int getClassificationIndex(String classification) {
         Integer value = classifications.get(classification);
-        if (value == null)
-            throw new IllegalArgumentException("Unsupported classification: " + classification);
+        if (value == null) throw new IllegalArgumentException("Unsupported classification: " + classification);
         return value;
     }
 
-    protected Integer getFieldIndex(
-            GDALRasterAttributeTable rat, FieldUsage usage, boolean strict) {
-        Integer idx =
-                rat.getFieldDefn().stream()
-                        .filter(fd -> fd.getUsage() == usage)
-                        .findFirst()
-                        .map(f -> f.getIndex())
-                        .orElse(null);
-        if (strict && idx == null)
-            throw new RuntimeException("Could not find field for usage " + usage);
+    protected Integer getFieldIndex(GDALRasterAttributeTable rat, FieldUsage usage, boolean strict) {
+        Integer idx = rat.getFieldDefn().stream()
+                .filter(fd -> fd.getUsage() == usage)
+                .findFirst()
+                .map(f -> f.getIndex())
+                .orElse(null);
+        if (strict && idx == null) throw new RuntimeException("Could not find field for usage " + usage);
         return idx;
     }
 
@@ -123,15 +113,11 @@ public abstract class RasterAttributeTable {
 
         if (classifications.get(fieldName) == null)
             throw new IllegalArgumentException(
-                    "Cannot classify on the given field: "
-                            + fieldName
-                            + ", please use one of: "
-                            + classifications);
+                    "Cannot classify on the given field: " + fieldName + ", please use one of: " + classifications);
 
         ColorMapBuilder colorMapBuilder = raster.colorMap();
         if (hasSingleColors) buildClassificationColorMap(colorMapBuilder, fieldName);
-        else if (hasRangeColors)
-            throw new UnsupportedOperationException("Cannot classify on color ranges yet");
+        else if (hasRangeColors) throw new UnsupportedOperationException("Cannot classify on color ranges yet");
         else buildUniqueValuesColorMap(colorMapBuilder, fieldName);
 
         raster.option(RasterLayerIdentifier.INCLUDE_RAT, "true");
@@ -139,11 +125,9 @@ public abstract class RasterAttributeTable {
         return sb.build();
     }
 
-    protected abstract void buildUniqueValuesColorMap(
-            ColorMapBuilder colorMapBuilder, String fieldName);
+    protected abstract void buildUniqueValuesColorMap(ColorMapBuilder colorMapBuilder, String fieldName);
 
-    protected abstract void buildClassificationColorMap(
-            ColorMapBuilder colorMapBuilder, String classification);
+    protected abstract void buildClassificationColorMap(ColorMapBuilder colorMapBuilder, String classification);
 
     /** Build a decent color ramp for the given number of colors */
     @SuppressFBWarnings("DMI_RANDOM_USED_ONLY_ONCE")
@@ -197,8 +181,7 @@ public abstract class RasterAttributeTable {
             rows.forEach(row -> rowToColorMapEntry(fieldIdx, cmb, row, colorMap));
         }
 
-        protected void rowToColorMapEntry(
-                int classificationIdx, ColorMapBuilder cm, Row row, Map<String, Color> map) {
+        protected void rowToColorMapEntry(int classificationIdx, ColorMapBuilder cm, Row row, Map<String, Color> map) {
             ColorMapEntryBuilder entry = cm.entry();
             List<String> values = row.getF();
             Double quantity = Converters.convert(values.get(valueIdx), Double.class, SAFE);
@@ -237,12 +220,11 @@ public abstract class RasterAttributeTable {
     }
 
     protected Map<String, Color> getUniqueValuesColorMap(int fieldIdx) {
-        List<String> uniqueValues =
-                rows.stream()
-                        .map(r -> r.getF().get(fieldIdx))
-                        .distinct()
-                        .sorted()
-                        .collect(Collectors.toList());
+        List<String> uniqueValues = rows.stream()
+                .map(r -> r.getF().get(fieldIdx))
+                .distinct()
+                .sorted()
+                .collect(Collectors.toList());
         Map<String, Color> colorMap = new LinkedHashMap<>();
         List<Color> colors = randomColors(uniqueValues.size());
         for (int i = 0; i < uniqueValues.size(); i++) {
@@ -284,8 +266,7 @@ public abstract class RasterAttributeTable {
                 rowToColorMapEntry(fieldIdx, cmb, row, colors);
                 if (i < rows.size() - 1) {
                     Row nextRow = rows.get(i + 1);
-                    Double nextMin =
-                            Converters.convert(nextRow.getF().get(minIdx), Double.class, SAFE);
+                    Double nextMin = Converters.convert(nextRow.getF().get(minIdx), Double.class, SAFE);
 
                     if (lastMax < nextMin) {
                         ColorMapEntryBuilder entry = cmb.entry();
@@ -304,8 +285,7 @@ public abstract class RasterAttributeTable {
             }
         }
 
-        protected void rowToColorMapEntry(
-                int fieldIdx, ColorMapBuilder cm, Row row, Map<String, Color> colors) {
+        protected void rowToColorMapEntry(int fieldIdx, ColorMapBuilder cm, Row row, Map<String, Color> colors) {
             ColorMapEntryBuilder entry = cm.entry();
             List<String> values = row.getF();
             Double min = Converters.convert(values.get(minIdx), Double.class, SAFE);
@@ -331,8 +311,7 @@ public abstract class RasterAttributeTable {
                 rowToColorMapEntry(classificationIdx, cm, row);
                 if (i < rows.size() - 1) {
                     Row nextRow = rows.get(i + 1);
-                    Double nextMin =
-                            Converters.convert(nextRow.getF().get(minIdx), Double.class, SAFE);
+                    Double nextMin = Converters.convert(nextRow.getF().get(minIdx), Double.class, SAFE);
 
                     if (lastMax < nextMin) {
                         ColorMapEntryBuilder entry = cm.entry();

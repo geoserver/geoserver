@@ -26,9 +26,7 @@ public class RootBuilder implements TemplateBuilder {
 
     protected List<String> supportedOptions = new ArrayList<>();
 
-    /**
-     * List of template watchers for included template. Used to know if cache needs to be reloaded
-     */
+    /** List of template watchers for included template. Used to know if cache needs to be reloaded */
     private List<FileWatcher<Object>> watchers;
 
     public RootBuilder() {
@@ -43,8 +41,7 @@ public class RootBuilder implements TemplateBuilder {
     }
 
     @Override
-    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context)
-            throws IOException {
+    public void evaluate(TemplateOutputWriter writer, TemplateBuilderContext context) throws IOException {
         for (TemplateBuilder jb : children) {
             jb.evaluate(writer, context);
         }
@@ -80,8 +77,9 @@ public class RootBuilder implements TemplateBuilder {
     public boolean needsReload() {
         TemplateBuilder aChild = getChildren().get(0);
         boolean isCachedFlattened = aChild instanceof FlatBuilder;
-        boolean isFlatOutput =
-                vendorOptions.get(VendorOptions.FLAT_OUTPUT, Boolean.class, false).booleanValue();
+        boolean isFlatOutput = vendorOptions
+                .get(VendorOptions.FLAT_OUTPUT, Boolean.class, false)
+                .booleanValue();
         if (isCachedFlattened && !isFlatOutput) return true;
         else if (!isCachedFlattened && isFlatOutput) return true;
         else if (watchers != null && !watchers.isEmpty()) {

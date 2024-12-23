@@ -23,11 +23,7 @@ public interface VectorTileBuilder {
      * @param properties The non-geometry attributes of the feature
      */
     void addFeature(
-            String layerName,
-            String featureId,
-            String geometryName,
-            Geometry geometry,
-            Map<String, Object> properties);
+            String layerName, String featureId, String geometryName, Geometry geometry, Map<String, Object> properties);
 
     /**
      * Build the tile

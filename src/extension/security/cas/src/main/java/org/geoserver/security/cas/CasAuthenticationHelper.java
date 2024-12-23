@@ -43,15 +43,13 @@ public abstract class CasAuthenticationHelper {
     protected URL createURLFromCasURI(String casUri) {
         URL retValue = null;
         try {
-            retValue =
-                    new URL(
-                            casUrlPrefix.getProtocol(),
-                            casUrlPrefix.getHost(),
-                            casUrlPrefix.getPort(),
-                            casUrlPrefix.getPath() + casUri);
+            retValue = new URL(
+                    casUrlPrefix.getProtocol(),
+                    casUrlPrefix.getHost(),
+                    casUrlPrefix.getPort(),
+                    casUrlPrefix.getPath() + casUri);
         } catch (MalformedURLException e) {
-            throw new RuntimeException(
-                    "Cannot build url from " + casUrlPrefix.toExternalForm() + " and " + casUri);
+            throw new RuntimeException("Cannot build url from " + casUrlPrefix.toExternalForm() + " and " + casUri);
         }
         return retValue;
     }
@@ -104,15 +102,12 @@ public abstract class CasAuthenticationHelper {
         return null;
     }
 
-    protected void writeParamsForPostAndSend(HttpURLConnection conn, Map<String, String> paramMap)
-            throws IOException {
+    protected void writeParamsForPostAndSend(HttpURLConnection conn, Map<String, String> paramMap) throws IOException {
         try (DataOutputStream out = new DataOutputStream(conn.getOutputStream())) {
             StringBuffer buff = new StringBuffer();
             for (Entry<String, String> entry : paramMap.entrySet()) {
                 if (buff.length() > 0) buff.append("&");
-                buff.append(entry.getKey())
-                        .append("=")
-                        .append(URLEncoder.encode(entry.getValue(), "utf-8"));
+                buff.append(entry.getKey()).append("=").append(URLEncoder.encode(entry.getValue(), "utf-8"));
             }
 
             out.writeBytes(buff.toString());
@@ -138,7 +133,8 @@ public abstract class CasAuthenticationHelper {
         addCasCookies(conn);
         conn.getInputStream().close();
         extractCASCookies(getCookies(conn), conn);
-        return getTicketGrantingCookie() != null && "".equals(getTicketGrantingCookie().getValue());
+        return getTicketGrantingCookie() != null
+                && "".equals(getTicketGrantingCookie().getValue());
     }
 
     /** add Cas cookies to request */
@@ -166,8 +162,8 @@ public abstract class CasAuthenticationHelper {
     }
 
     /**
-     * The concrete login, after sucessful login, the cookies should be set using {@link
-     * #extractCASCookies(List, HttpURLConnection)}
+     * The concrete login, after sucessful login, the cookies should be set using {@link #extractCASCookies(List,
+     * HttpURLConnection)}
      */
     public abstract boolean ssoLogin() throws IOException;
 
@@ -178,13 +174,12 @@ public abstract class CasAuthenticationHelper {
      */
     public String getServiceTicket(URL service) throws IOException {
 
-        if (getTicketGrantingCookie() == null || getTicketGrantingCookie().getValue().isEmpty()) {
+        if (getTicketGrantingCookie() == null
+                || getTicketGrantingCookie().getValue().isEmpty()) {
             throw new IOException("not a valid TGC ");
         }
 
-        URL loginUrl =
-                createURLFromCasURI(
-                        GeoServerCasConstants.LOGIN_URI + "?service=" + service.toExternalForm());
+        URL loginUrl = createURLFromCasURI(GeoServerCasConstants.LOGIN_URI + "?service=" + service.toExternalForm());
         HttpURLConnection conn = (HttpURLConnection) loginUrl.openConnection();
         conn.setInstanceFollowRedirects(false);
         addCasCookies(conn);

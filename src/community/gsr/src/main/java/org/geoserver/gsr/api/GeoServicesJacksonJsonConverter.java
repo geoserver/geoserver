@@ -17,10 +17,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.springframework.stereotype.Component;
 
-/**
- * JSON converter using jackson. We mostly use spring's built in Jackson support. This persists for
- * legacy reasons.
- */
+/** JSON converter using jackson. We mostly use spring's built in Jackson support. This persists for legacy reasons. */
 @Component
 public class GeoServicesJacksonJsonConverter {
 

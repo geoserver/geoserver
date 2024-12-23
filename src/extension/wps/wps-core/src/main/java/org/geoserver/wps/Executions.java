@@ -24,8 +24,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
- * Retrieves the list of available executions from the ProcessStore accordingly to the request
- * parameters.
+ * Retrieves the list of available executions from the ProcessStore accordingly to the request parameters.
  *
  * @author Alessio Fabiani - GeoSolutions
  */
@@ -55,10 +54,7 @@ public class Executions {
     private ApplicationContext ctx;
 
     public Executions(
-            GeoServer gs,
-            ProcessStatusTracker statusTracker,
-            WPSResourceManager resources,
-            ApplicationContext ctx) {
+            GeoServer gs, ProcessStatusTracker statusTracker, WPSResourceManager resources, ApplicationContext ctx) {
         this.gs = gs;
         this.statusTracker = statusTracker;
         this.resources = resources;
@@ -69,21 +65,18 @@ public class Executions {
         // Check whether the user is authenticated or not and, in the second case, if it is an
         // Administrator or not
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        final Object principal =
-                auth != null && auth.getPrincipal() != null ? auth.getPrincipal() : null;
+        final Object principal = auth != null && auth.getPrincipal() != null ? auth.getPrincipal() : null;
         boolean isAdmin = getSecurityManager().checkAuthenticationForAdminRole(auth);
         if (!isAdmin) {
             // Anonymous users cannot access the list of executions at all
             if (principal == null) {
-                throw new WPSException(
-                        Executions.NO_SUCH_PROCESS_CODE, "No Process Execution available.");
+                throw new WPSException(Executions.NO_SUCH_PROCESS_CODE, "No Process Execution available.");
             }
             // Non-admins are not allowed to fetch executions from other users
             else if (request.owner != null
                     && !request.owner.isEmpty()
                     && !SecurityUtils.getUsername(principal).equalsIgnoreCase(request.owner)) {
-                throw new WPSException(
-                        Executions.NO_SUCH_PARAMETER_CODE, "Invalid parameter 'owner' specified.");
+                throw new WPSException(Executions.NO_SUCH_PARAMETER_CODE, "Invalid parameter 'owner' specified.");
             }
         }
 
@@ -150,20 +143,12 @@ public class Executions {
 
         List<ExecutionStatus> statuses = statusTracker.getStore().list(queryFilter);
         if (statuses == null) {
-            throw new WPSException(
-                    Executions.NO_SUCH_PROCESS_CODE, "No Process Execution available.");
+            throw new WPSException(Executions.NO_SUCH_PROCESS_CODE, "No Process Execution available.");
         }
 
         // Going to collect all the responses outputs
-        GetExecutionsTransformer executionsTransformer =
-                new GetExecutionsTransformer(
-                        gs.getService(WPSInfo.class),
-                        resources,
-                        ctx,
-                        request,
-                        total,
-                        startIndex,
-                        maxFeatures);
+        GetExecutionsTransformer executionsTransformer = new GetExecutionsTransformer(
+                gs.getService(WPSInfo.class), resources, ctx, request, total, startIndex, maxFeatures);
         if (!statuses.isEmpty()) {
             for (ExecutionStatus status : statuses) {
                 executionsTransformer.append(status);

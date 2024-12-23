@@ -261,8 +261,7 @@ public class GeoServerJwtHeadersFilterConfig extends PreAuthenticatedUserNameFil
     // Don't be surprised if the copies behave badly though.
     @Override
     public SecurityConfig clone(boolean allowEnvParametrization) {
-        final GeoServerEnvironment gsEnvironment =
-                GeoServerExtensions.bean(GeoServerEnvironment.class);
+        final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
         GeoServerJwtHeadersFilterConfig target;
         try {
             target = (GeoServerJwtHeadersFilterConfig) this.clone();

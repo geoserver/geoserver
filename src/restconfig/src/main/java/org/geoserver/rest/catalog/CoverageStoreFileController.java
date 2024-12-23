@@ -56,9 +56,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @ControllerAdvice
 @RequestMapping(
-        path =
-                RestBaseController.ROOT_PATH
-                        + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
+        path = RestBaseController.ROOT_PATH
+                + "/workspaces/{workspaceName}/coveragestores/{storeName}/{method}.{format}")
 public class CoverageStoreFileController extends AbstractStoreUploadController {
 
     /** Keys every known coverage format by lowercase name */
@@ -91,8 +90,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         // check the coverage store exists
         CoverageStoreInfo info = catalog.getCoverageStoreByName(workspaceName, storeName);
         if (info == null) {
-            throw new ResourceNotFoundException(
-                    "No such coverage store: " + workspaceName + "," + storeName);
+            throw new ResourceNotFoundException("No such coverage store: " + workspaceName + "," + storeName);
         }
 
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
@@ -100,13 +98,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
             if (sr.isReadOnly()) {
                 throw new RestException(
-                        "Coverage store found, but it cannot harvest extra resources",
-                        HttpStatus.METHOD_NOT_ALLOWED);
+                        "Coverage store found, but it cannot harvest extra resources", HttpStatus.METHOD_NOT_ALLOWED);
             }
         } else {
             throw new RestException(
-                    "Coverage store found, but it does not support resource harvesting",
-                    HttpStatus.METHOD_NOT_ALLOWED);
+                    "Coverage store found, but it does not support resource harvesting", HttpStatus.METHOD_NOT_ALLOWED);
         }
 
         StructuredGridCoverage2DReader sr = (StructuredGridCoverage2DReader) reader;
@@ -116,8 +112,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             harvestedResources.add(handleRemoteUrl(request));
 
         } else {
-            for (Resource res :
-                    doFileUpload(method, workspaceName, storeName, filename, format, request)) {
+            for (Resource res : doFileUpload(method, workspaceName, storeName, filename, format, request)) {
                 harvestedResources.add(Resources.find(res));
             }
         }
@@ -144,8 +139,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
         // doFileUpload returns a List of File but in the case of a Put operation the list contains
         // only a value
-        List<Resource> files =
-                doFileUpload(method, workspaceName, storeName, filename, format, request);
+        List<Resource> files = doFileUpload(method, workspaceName, storeName, filename, format, request);
         final Resource uploadedFile = files.get(0);
 
         // create a builder to help build catalog objects
@@ -176,11 +170,10 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
 
             StringBuilder urlBuilder;
             try {
-                urlBuilder =
-                        new StringBuilder(Resources.find(uploadedFile).toURI().toURL().toString());
+                urlBuilder = new StringBuilder(
+                        Resources.find(uploadedFile).toURI().toURL().toString());
             } catch (MalformedURLException e) {
-                throw new RestException(
-                        "Error create building coverage URL", HttpStatus.INTERNAL_SERVER_ERROR, e);
+                throw new RestException("Error create building coverage URL", HttpStatus.INTERNAL_SERVER_ERROR, e);
             }
 
             String url;
@@ -243,8 +236,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             Hints hints = new Hints(new RenderingHints(Hints.REPOSITORY, repository));
             reader = ((AbstractGridFormat) coverageFormat).getReader(uploadedFileURL, hints);
             if (reader == null) {
-                throw new RestException(
-                        "Could not acquire reader for coverage.", HttpStatus.INTERNAL_SERVER_ERROR);
+                throw new RestException("Could not acquire reader for coverage.", HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             // coverage read params
@@ -268,14 +260,11 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // case of single coverage reader
             if (names.length > 1) {
                 for (String name : names) {
-                    SingleGridCoverage2DReader singleReader =
-                            new SingleGridCoverage2DReader(reader, name);
-                    configureCoverageInfo(
-                            builder, info, add, name, name, singleReader, customParameters);
+                    SingleGridCoverage2DReader singleReader = new SingleGridCoverage2DReader(reader, name);
+                    configureCoverageInfo(builder, info, add, name, name, singleReader, customParameters);
                 }
             } else {
-                configureCoverageInfo(
-                        builder, info, add, names[0], coverageName, reader, customParameters);
+                configureCoverageInfo(builder, info, add, names[0], coverageName, reader, customParameters);
             }
 
             // poach the coverage store data format
@@ -283,8 +272,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         } catch (RestException e) {
             throw e;
         } catch (Exception e) {
-            throw new RestException(
-                    "Error auto-configuring coverage", HttpStatus.INTERNAL_SERVER_ERROR, e);
+            throw new RestException("Error auto-configuring coverage", HttpStatus.INTERNAL_SERVER_ERROR, e);
         } finally {
             if (reader != null) {
                 try {
@@ -312,8 +300,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             return CoverageStoreUtils.acquireFormat(coverageFormatName);
         } catch (Exception e) {
             throw new RestException(
-                    "Coveragestore format unavailable: " + coverageFormatName,
-                    HttpStatus.INTERNAL_SERVER_ERROR);
+                    "Coveragestore format unavailable: " + coverageFormatName, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -425,8 +412,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
     /**
      * Does the file upload based on the specified method.
      *
-     * @param method The method, one of 'file.' (inline), 'url.' (via url), or 'external.' (already
-     *     on server)
+     * @param method The method, one of 'file.' (inline), 'url.' (via url), or 'external.' (already on server)
      * @param storeName The name of the store being added
      * @param format The store format.
      */
@@ -440,8 +426,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             throws IOException {
         Resource directory = null;
 
-        boolean postRequest =
-                request != null && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
+        boolean postRequest = request != null && HttpMethod.POST.name().equalsIgnoreCase(request.getMethod());
 
         // Mapping of the input directory
         if (method == UploadMethod.url) {
@@ -452,8 +437,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
             // Prepare the directory for file upload or external upload of a zip file
             directory = RESTUtils.createUploadRoot(catalog, workspaceName, storeName, postRequest);
         }
-        return handleFileUpload(
-                storeName, workspaceName, filename, method, format, directory, request);
+        return handleFileUpload(storeName, workspaceName, filename, method, format, directory, request);
     }
 
     /** Return the remote URL provided in the request. */
@@ -465,8 +449,7 @@ public class CoverageStoreFileController extends AbstractStoreUploadController {
         } catch (RestException re) {
             throw re;
         } catch (Throwable t) {
-            throw new RestException(
-                    "Error while retrieving the remote URL:", HttpStatus.INTERNAL_SERVER_ERROR, t);
+            throw new RestException("Error while retrieving the remote URL:", HttpStatus.INTERNAL_SERVER_ERROR, t);
         }
     }
 }

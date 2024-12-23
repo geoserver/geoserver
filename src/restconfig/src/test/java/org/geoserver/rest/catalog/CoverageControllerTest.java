@@ -63,26 +63,24 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     public void testGetAllByWorkspaceXML() throws Exception {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.xml");
         assertEquals(
-                catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs")).size(),
+                catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs"))
+                        .size(),
                 dom.getElementsByTagName("coverage").getLength());
     }
 
     @Test
     public void testGetAllByWorkspaceJSON() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/wcs/coverages.json");
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
         assertEquals(
-                catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs")).size(),
+                catalog.getCoveragesByNamespace(catalog.getNamespaceByPrefix("wcs"))
+                        .size(),
                 coverages.size());
     }
 
     @Test
     public void testGetAllByWorkspaceJSON_no_coverages() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cite/coverages.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cite/coverages.json");
         // returns {"coverages": ""}
         assertEquals("", json.getString("coverages"));
     }
@@ -92,9 +90,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         QName tazDem = new QName(SystemTestData.CDF_URI, "tazdem", SystemTestData.CDF_PREFIX);
         getTestData().addRasterLayer(tazDem, "tazdem.tiff", null, getCatalog());
 
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cdf/coverages.json");
+        JSONObject json = (JSONObject) getAsJSON(RestBaseController.ROOT_PATH + "/workspaces/cdf/coverages.json");
 
         JSONArray coverages = json.getJSONObject("coverages").getJSONArray("coverage");
         assertEquals(1, coverages.size());
@@ -105,13 +101,12 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         URL zip = getClass().getResource("test-data/usa.zip");
         byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/gs/coveragestores/usaWorldImage/file.worldimage"
-                                + (!autoConfigureCoverage ? "?configure=none" : ""),
-                        bytes,
-                        "application/zip");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH
+                        + "/workspaces/gs/coveragestores/usaWorldImage/file.worldimage"
+                        + (!autoConfigureCoverage ? "?configure=none" : ""),
+                bytes,
+                "application/zip");
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
         assertEquals(201, response.getStatus());
     }
@@ -121,8 +116,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals(
                 405,
                 putAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages")
+                                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages")
                         .getStatus());
     }
 
@@ -131,17 +125,14 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals(
                 405,
                 deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages")
+                                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages")
                         .getStatus());
     }
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
 
         assertXpathEvaluatesTo("BlueMarble", "/coverage/name", dom);
         assertXpathEvaluatesTo("1", "count(//latLonBoundingBox)", dom);
@@ -152,10 +143,8 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json =
-                getAsJSON(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
+        JSON json = getAsJSON(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
         JSONObject coverage = ((JSONObject) json).getJSONObject("coverage");
         assertNotNull(coverage);
 
@@ -164,10 +153,8 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsHTML() throws Exception {
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html");
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.html");
         assertEquals("html", dom.getDocumentElement().getNodeName());
     }
 
@@ -178,17 +165,15 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         String cs = "BlueMarble";
         String c = "BlueMarblesssss";
         // Request path
-        String requestPath =
-                RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/coverages/" + c + ".html";
-        String requestPath2 =
-                RestBaseController.ROOT_PATH
-                        + "/workspaces/"
-                        + ws
-                        + "/coveragestores/"
-                        + cs
-                        + "/coverages/"
-                        + c
-                        + ".html";
+        String requestPath = RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/coverages/" + c + ".html";
+        String requestPath2 = RestBaseController.ROOT_PATH
+                + "/workspaces/"
+                + ws
+                + "/coveragestores/"
+                + cs
+                + "/coverages/"
+                + c
+                + ".html";
         // Exception path
         String exception = "No such coverage: " + ws + "," + c;
         String exception2 = "No such coverage: " + ws + "," + cs + "," + c;
@@ -224,17 +209,12 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutWithCalculation() throws Exception {
-        String path =
-                RestBaseController.ROOT_PATH
-                        + "/workspaces/wcs/coveragestores/DEM/coverages/DEM.xml";
+        String path = RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM.xml";
         String clearLatLonBoundingBox = "<coverage>" + "<latLonBoundingBox/>" + "</coverage>";
 
-        MockHttpServletResponse response =
-                putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(path, clearLatLonBoundingBox, "text/xml");
         assertEquals(
-                "Couldn't remove lat/lon bounding box: \n" + response.getContentAsString(),
-                200,
-                response.getStatus());
+                "Couldn't remove lat/lon bounding box: \n" + response.getContentAsString(), 200, response.getStatus());
 
         Document dom = getAsDOM(path);
         assertXpathEvaluatesTo("0.0", "/coverage/latLonBoundingBox/minx", dom);
@@ -245,9 +225,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         response = putAsServletResponse(path, updateNativeBounds, "text/xml");
 
         assertEquals(
-                "Couldn't update native bounding box: \n" + response.getContentAsString(),
-                200,
-                response.getStatus());
+                "Couldn't update native bounding box: \n" + response.getContentAsString(), 200, response.getStatus());
         dom = getAsDOM(path);
         print(dom);
         assertXpathExists("/coverage/nativeBoundingBox/minx[text()!='0.0']", dom);
@@ -294,30 +272,24 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     public void testPostToResource() throws Exception {
         String xml = "<coverage>" + "<name>foo</name>" + "</coverage>";
 
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = postAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                xml,
+                "text/xml");
         assertEquals(405, response.getStatus());
     }
 
     @Test
     public void testPutXML() throws Exception {
         String xml = "<coverage>" + "<title>new title</title>" + "</coverage>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                xml,
+                "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
+        Document dom = getAsDOM(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom);
 
         CoverageInfo c = catalog.getCoverageByName("wcs", "BlueMarble");
@@ -327,25 +299,15 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutJSON() throws Exception {
         // update the coverage title
-        String jsonPayload =
-                "{\n"
-                        + "    \"coverage\": {\n"
-                        + "        \"title\": \"new title 2\"\n"
-                        + "    }\n"
-                        + "}";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
-                        jsonPayload,
-                        "application/json");
+        String jsonPayload = "{\n" + "    \"coverage\": {\n" + "        \"title\": \"new title 2\"\n" + "    }\n" + "}";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                jsonPayload,
+                "application/json");
         assertEquals(200, response.getStatus());
         // check that the coverage title was correctly updated
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
+        JSONObject json = (JSONObject) getAsJSON(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble.json");
         assertThat(json.getJSONObject("coverage").getString("title"), is("new title 2"));
         CoverageInfo coverage = catalog.getCoverageByName("wcs", "BlueMarble");
         assertEquals("new title 2", coverage.getTitle());
@@ -359,12 +321,10 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         boolean isAdvertised = c.isAdvertised();
 
         String xml = "<coverage>" + "<title>new title</title>" + "</coverage>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble",
+                xml,
+                "text/xml");
         assertEquals(200, response.getStatus());
 
         c = catalog.getCoverageByName("wcs", "BlueMarble");
@@ -375,12 +335,10 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testPutNonExistant() throws Exception {
         String xml = "<coverage>" + "<title>new title</title>" + "</coverage>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant",
+                xml,
+                "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -392,9 +350,8 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         }
         assertEquals(
                 200,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble")
                         .getStatus());
         assertNull(catalog.getCoverageByName("wcs", "BlueMarble"));
     }
@@ -403,9 +360,8 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
     public void testDeleteNonExistant() throws Exception {
         assertEquals(
                 404,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/NonExistant")
                         .getStatus());
     }
 
@@ -417,15 +373,13 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
         assertEquals(
                 403,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble")
                         .getStatus());
         assertEquals(
                 200,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH
+                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?recurse=true")
                         .getStatus());
 
         assertNull(catalog.getCoverageByName("wcs", "BlueMarble"));
@@ -434,20 +388,13 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testCoverageWrapping() throws Exception {
-        String xml =
-                "<coverage>" + "<name>tazdem</name>" + "<title>new title</title>" + "</coverage>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/DEM/coverages/DEM",
-                        xml,
-                        "text/xml");
+        String xml = "<coverage>" + "<name>tazdem</name>" + "<title>new title</title>" + "</coverage>";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/DEM", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         Document dom =
-                getAsDOM(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
+                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem.xml");
         assertXpathEvaluatesTo("new title", "/coverage/title", dom);
 
         CoverageInfo c = catalog.getCoverageByName("wcs", "tazdem");
@@ -463,30 +410,25 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         assertEquals(-9999.0, nullValues.get(0), DELTA);
 
         // Updating dimension properties
-        xml =
-                "<coverage>"
-                        + "<name>tazdem</name>"
-                        + "<title>new title</title>"
-                        + "<dimensions>"
-                        + "<coverageDimension>"
-                        + "<name>Elevation</name>"
-                        + "<description>GridSampleDimension[-100.0,1000.0]</description>"
-                        + "<nullValues>"
-                        + "<double>-999</double>"
-                        + "</nullValues>"
-                        + "<range>"
-                        + "<min>-100</min>"
-                        + "<max>1000</max>"
-                        + "</range>"
-                        + "</coverageDimension>"
-                        + "</dimensions>"
-                        + "</coverage>";
-        response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem",
-                        xml,
-                        "text/xml");
+        xml = "<coverage>"
+                + "<name>tazdem</name>"
+                + "<title>new title</title>"
+                + "<dimensions>"
+                + "<coverageDimension>"
+                + "<name>Elevation</name>"
+                + "<description>GridSampleDimension[-100.0,1000.0]</description>"
+                + "<nullValues>"
+                + "<double>-999</double>"
+                + "</nullValues>"
+                + "<range>"
+                + "<min>-100</min>"
+                + "<max>1000</max>"
+                + "</range>"
+                + "</coverageDimension>"
+                + "</dimensions>"
+                + "</coverage>";
+        response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/wcs/coveragestores/DEM/coverages/tazdem", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         c = catalog.getCoverageByName("wcs", "tazdem");
@@ -500,8 +442,7 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         nullValues = dimension.getNullValues();
         assertEquals(-999.0, nullValues.get(0), DELTA);
 
-        CoverageStoreInfo coverageStore =
-                catalog.getStoreByName("wcs", "DEM", CoverageStoreInfo.class);
+        CoverageStoreInfo coverageStore = catalog.getStoreByName("wcs", "DEM", CoverageStoreInfo.class);
         GridCoverageReader reader = null;
         GridCoverage2D coverage = null;
         try {
@@ -538,17 +479,14 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dispose(gridCoverage);
 
         // now go and clear
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble/reset",
-                        "",
-                        null);
+        MockHttpServletResponse response = postAsServletResponse(
+                ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble/reset", "", null);
         assertEquals(200, response.getStatus());
 
         // copy over a different file, will change the bounds
         try (InputStream is = SystemTestData.class.getResourceAsStream("world.tiff");
-                OutputStream os = getDataDirectory().get("BlueMarble/tazbm.tiff").out()) {
+                OutputStream os =
+                        getDataDirectory().get("BlueMarble/tazbm.tiff").out()) {
             IOUtils.copy(is, os);
         }
 
@@ -572,28 +510,23 @@ public class CoverageControllerTest extends CatalogRESTTestSupport {
         dispose(gridCoverage);
 
         // now go and clear
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble/reset",
-                        "",
-                        null);
+        MockHttpServletResponse response = postAsServletResponse(
+                ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble/reset", "", null);
         assertEquals(200, response.getStatus());
 
         // copy over a different file, will change the coverage type structure enough (bands
         // included)
         try (InputStream is = SystemTestData.class.getResourceAsStream("tazdem.tiff");
-                OutputStream os = getDataDirectory().get("BlueMarble/tazbm.tiff").out()) {
+                OutputStream os =
+                        getDataDirectory().get("BlueMarble/tazbm.tiff").out()) {
             IOUtils.copy(is, os);
         }
 
         // force reload of the bands too
-        response =
-                putAsServletResponse(
-                        ROOT_PATH
-                                + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?calculate=dimensions",
-                        "<coverage/>",
-                        "text/xml");
+        response = putAsServletResponse(
+                ROOT_PATH + "/workspaces/wcs/coveragestores/BlueMarble/coverages/BlueMarble?calculate=dimensions",
+                "<coverage/>",
+                "text/xml");
         assertEquals(200, response.getStatus());
 
         // checking the envelope changed. Cannot check the bands, unlike features, their definition

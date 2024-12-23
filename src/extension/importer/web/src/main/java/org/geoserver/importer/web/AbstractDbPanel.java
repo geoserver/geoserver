@@ -95,41 +95,38 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     /** Switches between the types of param panels */
     Component connectionTypeChoice(final Map<String, Component> paramPanelMap) {
         ArrayList<String> connectionTypeList = new ArrayList<>(paramPanelMap.keySet());
-        DropDownChoice<String> choice =
-                new DropDownChoice<>(
-                        "connType",
-                        new PropertyModel<>(this, "connectionType"),
-                        new Model<>(connectionTypeList),
-                        new ChoiceRenderer<String>() {
-
-                            @Override
-                            public String getIdValue(String object, int index) {
-                                return object;
-                            }
-
-                            @Override
-                            public Object getDisplayValue(String object) {
-                                return new ParamResourceModel("ConnectionType." + object, null)
-                                        .getString();
-                            }
-                        });
-
-        choice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
+        DropDownChoice<String> choice = new DropDownChoice<>(
+                "connType",
+                new PropertyModel<>(this, "connectionType"),
+                new Model<>(connectionTypeList),
+                new ChoiceRenderer<String>() {
 
                     @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        updatePanelVisibility(target);
-                        target.add(paramPanelContainer);
+                    public String getIdValue(String object, int index) {
+                        return object;
+                    }
+
+                    @Override
+                    public Object getDisplayValue(String object) {
+                        return new ParamResourceModel("ConnectionType." + object, null).getString();
                     }
                 });
+
+        choice.add(new AjaxFormComponentUpdatingBehavior("change") {
+
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                updatePanelVisibility(target);
+                target.add(paramPanelContainer);
+            }
+        });
 
         return choice;
     }
 
     /**
-     * Updates the panel visibility to show only the currently selected one. Can also be used to
-     * perform actions when the panel visibility is updated
+     * Updates the panel visibility to show only the currently selected one. Can also be used to perform actions when
+     * the panel visibility is updated
      *
      * @param target Used when doing ajax updates, might be null
      */
@@ -214,8 +211,8 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
      * Builds and returns a map with parameter panels.
      *
      * <p>The keys are used to fill in the drop down choice and to look for the i18n key using the
-     * "ConnectionType.${key}" convention. The panels built should have ids made of digits only,
-     * otherwise Wicket will complain about non safe ids in repeater.
+     * "ConnectionType.${key}" convention. The panels built should have ids made of digits only, otherwise Wicket will
+     * complain about non safe ids in repeater.
      */
     protected abstract LinkedHashMap<String, Component> buildParamPanels();
 
@@ -225,15 +222,13 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
     }
 
     /**
-     * Populates the connection parameters needed to connect to the datastore and returns the data
-     * store factory.
+     * Populates the connection parameters needed to connect to the datastore and returns the data store factory.
      *
      * @param params Empty parameter map.
      */
     protected abstract DataStoreFactorySpi fillStoreParams(Map<String, Serializable> params);
 
-    protected void fillInConnPoolParams(
-            Map<String, Serializable> params, BasicDbParamPanel basicParamPanel) {
+    protected void fillInConnPoolParams(Map<String, Serializable> params, BasicDbParamPanel basicParamPanel) {
         params.put(MINCONN.key, basicParamPanel.connPoolPanel.minConnection);
         params.put(MAXCONN.key, basicParamPanel.connPoolPanel.maxConnection);
         params.put(FETCHSIZE.key, basicParamPanel.connPoolPanel.fetchSize);
@@ -242,8 +237,7 @@ public abstract class AbstractDbPanel extends ImportSourcePanel {
         params.put(PREPARED_STATEMENTS.key, basicParamPanel.connPoolPanel.preparedStatements);
     }
 
-    protected void fillInJndiParams(
-            Map<String, Serializable> params, JNDIDbParamPanel jndiParamPanel) {
+    protected void fillInJndiParams(Map<String, Serializable> params, JNDIDbParamPanel jndiParamPanel) {
         params.put(JNDI_REFNAME.key, jndiParamPanel.jndiReferenceName);
         params.put(JDBCDataStoreFactory.SCHEMA.key, jndiParamPanel.schema);
     }

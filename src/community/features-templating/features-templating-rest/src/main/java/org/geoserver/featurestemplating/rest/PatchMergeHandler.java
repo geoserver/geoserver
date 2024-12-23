@@ -31,9 +31,8 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
- * Helper class to apply partial updates to object of type T, setting values coming from an XML or
- * JSON representation. Support settings null values by using <elementName xsi:nil="true"/> for XML
- * or "attribute"=null for JSON.
+ * Helper class to apply partial updates to object of type T, setting values coming from an XML or JSON representation.
+ * Support settings null values by using <elementName xsi:nil="true"/> for XML or "attribute"=null for JSON.
  *
  * @param <T> the type of the object to which apply changes.
  */
@@ -105,8 +104,7 @@ class PatchMergeHandler<T> {
         return toPatch;
     }
 
-    private Optional<PropertyDescriptor> beanFieldFromJSON(
-            PropertyDescriptor[] descriptors, Object fieldName) {
+    private Optional<PropertyDescriptor> beanFieldFromJSON(PropertyDescriptor[] descriptors, Object fieldName) {
         return Stream.of(descriptors).filter(d -> d.getName().equals(fieldName)).findFirst();
     }
 

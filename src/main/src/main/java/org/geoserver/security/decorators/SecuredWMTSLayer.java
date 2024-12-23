@@ -20,8 +20,8 @@ import org.geotools.ows.wmts.model.TileMatrixSetLink;
 import org.geotools.ows.wmts.model.WMTSLayer;
 
 /**
- * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer}
- * can apply it while performing the requests
+ * A {@link Layer} wrapper carrying around the wrapper policy so that {@link SecuredWebMapServer} can apply it while
+ * performing the requests
  *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */

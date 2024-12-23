@@ -24,8 +24,7 @@ public class GraticuleFeatureSource extends ContentFeatureSource {
 
     private final ReferencedEnvelope bounds;
 
-    public GraticuleFeatureSource(
-            ContentEntry entry, List<Double> steps, ReferencedEnvelope bounds) {
+    public GraticuleFeatureSource(ContentEntry entry, List<Double> steps, ReferencedEnvelope bounds) {
         super(entry, Query.ALL);
 
         this.steps = steps;
@@ -50,8 +49,7 @@ public class GraticuleFeatureSource extends ContentFeatureSource {
     }
 
     @Override
-    protected FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query)
-            throws IOException {
+    protected FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query) throws IOException {
         return new GraticuleFeatureReader(this, query);
     }
 

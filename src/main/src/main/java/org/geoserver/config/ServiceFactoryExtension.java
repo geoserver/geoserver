@@ -10,8 +10,7 @@ package org.geoserver.config;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public abstract class ServiceFactoryExtension<T extends ServiceInfo>
-        implements GeoServerFactory.Extension {
+public abstract class ServiceFactoryExtension<T extends ServiceInfo> implements GeoServerFactory.Extension {
 
     Class<T> serviceClass;
 

@@ -74,8 +74,7 @@ public class InterpolationKvpParserTest extends GeoServerSystemTestSupport {
     @Test
     public void testUniformValue() throws Exception {
         InterpolationType it =
-                (InterpolationType)
-                        parser.parse("http://www.opengis.net/def/interpolation/OGC/1/linear");
+                (InterpolationType) parser.parse("http://www.opengis.net/def/interpolation/OGC/1/linear");
         assertEquals(
                 "http://www.opengis.net/def/interpolation/OGC/1/linear",
                 it.getInterpolationMethod().getInterpolationMethod());
@@ -83,11 +82,8 @@ public class InterpolationKvpParserTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testSingleAxis() throws Exception {
-        InterpolationType it =
-                (InterpolationType)
-                        parser.parse(
-                                axisPrefix
-                                        + "latitude:http://www.opengis.net/def/interpolation/OGC/1/linear");
+        InterpolationType it = (InterpolationType)
+                parser.parse(axisPrefix + "latitude:http://www.opengis.net/def/interpolation/OGC/1/linear");
         EList<InterpolationAxisType> axes = it.getInterpolationAxes().getInterpolationAxis();
         assertEquals(1, axes.size());
         assertEquals(axisPrefix + "latitude", axes.get(0).getAxis());
@@ -98,15 +94,12 @@ public class InterpolationKvpParserTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testMultiAxis() throws Exception {
-        InterpolationType it =
-                (InterpolationType)
-                        parser.parse(
-                                axisPrefix
-                                        + "latitude:"
-                                        + "http://www.opengis.net/def/interpolation/OGC/1/linear,"
-                                        + axisPrefix
-                                        + "longitude:"
-                                        + "http://www.opengis.net/def/interpolation/OGC/1/nearest");
+        InterpolationType it = (InterpolationType) parser.parse(axisPrefix
+                + "latitude:"
+                + "http://www.opengis.net/def/interpolation/OGC/1/linear,"
+                + axisPrefix
+                + "longitude:"
+                + "http://www.opengis.net/def/interpolation/OGC/1/nearest");
         EList<InterpolationAxisType> axes = it.getInterpolationAxes().getInterpolationAxis();
         assertEquals(2, axes.size());
         assertEquals(axisPrefix + "latitude", axes.get(0).getAxis());

@@ -35,14 +35,12 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.referencing.operation.transform.ProjectiveTransform;
 
 /**
- * Class delegate to parse coverageView information and computing consistency checks, resolution and
- * envelope computations
+ * Class delegate to parse coverageView information and computing consistency checks, resolution and envelope
+ * computations
  */
 class CoverageViewHandler {
 
-    /**
-     * Visit the a coverage and decide if its resolution is better than the ones previously visited
-     */
+    /** Visit the a coverage and decide if its resolution is better than the ones previously visited */
     abstract static class CoverageResolutionChooser {
 
         double[] resolution;
@@ -162,7 +160,8 @@ class CoverageViewHandler {
         void visit(GridCoverage2DReader reader);
 
         GeneralBounds getOriginalEnvelope();
-    };
+    }
+    ;
 
     abstract class AbstractEnvelopeComposer implements EnvelopeComposer {
         GeneralBounds env = null;
@@ -200,8 +199,7 @@ class CoverageViewHandler {
     }
 
     /**
-     * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which
-     * currently are:
+     * A CoveragesConsistencyChecker checks if the composing coverages respect the constraints which currently are:
      *
      * <UL>
      *   <LI>same CRS
@@ -231,8 +229,7 @@ class CoverageViewHandler {
 
         private boolean canSupportHeterogeneousCoverages = false;
 
-        public CoveragesConsistencyChecker(
-                GridCoverage2DReader reader, boolean canSupportHeterogeneousCoverages)
+        public CoveragesConsistencyChecker(GridCoverage2DReader reader, boolean canSupportHeterogeneousCoverages)
                 throws IOException {
             envelope = reader.getOriginalEnvelope();
             gridRange = reader.getOriginalGridRange();
@@ -243,10 +240,7 @@ class CoverageViewHandler {
             this.canSupportHeterogeneousCoverages = canSupportHeterogeneousCoverages;
         }
 
-        /**
-         * Check whether the coverages associated to the provided reader is consistent with the
-         * reference coverage.
-         */
+        /** Check whether the coverages associated to the provided reader is consistent with the reference coverage. */
         public boolean checkConsistency(GridCoverage2DReader reader) throws IOException {
             GeneralBounds envelope = reader.getOriginalEnvelope();
             GridEnvelope gridRange = reader.getOriginalGridRange();
@@ -258,35 +252,27 @@ class CoverageViewHandler {
 
                 // Throw an exception in case we are not supporting heterogeneous coverages
                 if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException(
-                            "The coverage envelope must be the same for all coverages");
+                    throw new IllegalArgumentException("The coverage envelope must be the same for all coverages");
                 }
 
                 // We won't support coverage views made of coverages having empty intersection
                 if (!envelope.intersects(this.envelope, true)) {
-                    throw new IllegalArgumentException(
-                            "The coverage envelopes need to intersect each other");
+                    throw new IllegalArgumentException("The coverage envelopes need to intersect each other");
                 }
                 return false;
             }
 
             // Checking gridRange equality
-            final Rectangle thisRectangle =
-                    new Rectangle(
-                            this.gridRange.getLow(0),
-                            this.gridRange.getLow(1),
-                            this.gridRange.getSpan(0),
-                            this.gridRange.getSpan(1));
+            final Rectangle thisRectangle = new Rectangle(
+                    this.gridRange.getLow(0),
+                    this.gridRange.getLow(1),
+                    this.gridRange.getSpan(0),
+                    this.gridRange.getSpan(1));
             final Rectangle thatRectangle =
-                    new Rectangle(
-                            gridRange.getLow(0),
-                            gridRange.getLow(1),
-                            gridRange.getSpan(0),
-                            gridRange.getSpan(1));
+                    new Rectangle(gridRange.getLow(0), gridRange.getLow(1), gridRange.getSpan(0), gridRange.getSpan(1));
             if (!thisRectangle.equals(thatRectangle)) {
                 if (!canSupportHeterogeneousCoverages) {
-                    throw new IllegalArgumentException(
-                            "The coverage gridRange should be the same for all coverages");
+                    throw new IllegalArgumentException("The coverage gridRange should be the same for all coverages");
                 }
                 return false;
             }
@@ -294,17 +280,14 @@ class CoverageViewHandler {
             // Checking dimensions
             if (metadataNames == null) {
                 if (this.metadataNames != null && this.metadataNames.length > 0) {
-                    throw new IllegalArgumentException(
-                            "The coverage metadataNames should have the same size");
+                    throw new IllegalArgumentException("The coverage metadataNames should have the same size");
                 }
             } else if (this.metadataNames == null) {
                 if (metadataNames != null && metadataNames.length > 0) {
-                    throw new IllegalArgumentException(
-                            "The coverage metadataNames should have the same size");
+                    throw new IllegalArgumentException("The coverage metadataNames should have the same size");
                 }
             } else if (metadataNames.length != this.metadataNames.length) {
-                throw new IllegalArgumentException(
-                        "The coverage metadataNames should have the same size");
+                throw new IllegalArgumentException("The coverage metadataNames should have the same size");
             } else {
                 final Set<String> metadataSet = new HashSet<>(Arrays.asList(metadataNames));
                 for (String metadataName : this.metadataNames) {
@@ -327,8 +310,7 @@ class CoverageViewHandler {
             }
 
             // now transform the requested envelope to source crs
-            if (destinationToSourceTransform != null
-                    && !destinationToSourceTransform.isIdentity()) {
+            if (destinationToSourceTransform != null && !destinationToSourceTransform.isIdentity()) {
                 throw new IllegalArgumentException(
                         "The coverage coordinateReferenceSystem should be the same for all coverages");
             }
@@ -336,8 +318,7 @@ class CoverageViewHandler {
             // Checking data type
             if (layout.getSampleModel(null).getDataType()
                     != this.layout.getSampleModel(null).getDataType()) {
-                throw new IllegalArgumentException(
-                        "The coverage dataType should be the same for all coverages");
+                throw new IllegalArgumentException("The coverage dataType should be the same for all coverages");
             }
             return true;
         }
@@ -346,9 +327,9 @@ class CoverageViewHandler {
     private GridCoverage2DReader delegate;
 
     /**
-     * The coverageName to be used as reference. It is used for homogeneous coverages case, to
-     * extract shared properties. It is used for heterogeneous coverages case, to access a specific
-     * coverage in order to get the resolutions
+     * The coverageName to be used as reference. It is used for homogeneous coverages case, to extract shared
+     * properties. It is used for heterogeneous coverages case, to access a specific coverage in order to get the
+     * resolutions
      */
     private String referenceName;
 
@@ -356,8 +337,8 @@ class CoverageViewHandler {
     private boolean homogeneousCoverages = true;
 
     /**
-     * specifying whether we can support heterogeneous coverages (JAI-EXT's BandMerge is required to
-     * support heterogeneous composition)
+     * specifying whether we can support heterogeneous coverages (JAI-EXT's BandMerge is required to support
+     * heterogeneous composition)
      */
     boolean supportHeterogeneousCoverages;
 
@@ -393,8 +374,7 @@ class CoverageViewHandler {
 
             try {
                 if (checker == null) {
-                    checker =
-                            new CoveragesConsistencyChecker(reader, supportHeterogeneousCoverages);
+                    checker = new CoveragesConsistencyChecker(reader, supportHeterogeneousCoverages);
                 } else {
                     homogeneousCoverages &= checker.checkConsistency(reader);
                 }
@@ -436,9 +416,7 @@ class CoverageViewHandler {
         try {
             res = getResolutionLevels()[0];
             return new GridEnvelope2D(
-                    new Rectangle(
-                            (int) (envelope.getSpan(0) / res[0]),
-                            (int) (envelope.getSpan(1) / res[1])));
+                    new Rectangle((int) (envelope.getSpan(0) / res[0]), (int) (envelope.getSpan(1) / res[1])));
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }
@@ -448,8 +426,7 @@ class CoverageViewHandler {
         if (homogeneousCoverages) {
             return delegate.getOriginalGridToWorld(referenceName, pixInCell);
         }
-        final GridToEnvelopeMapper geMapper =
-                new GridToEnvelopeMapper(getOriginalGridRange(), getOriginalEnvelope());
+        final GridToEnvelopeMapper geMapper = new GridToEnvelopeMapper(getOriginalGridRange(), getOriginalEnvelope());
         geMapper.setPixelAnchor(PixelInCell.CELL_CENTER);
         MathTransform2D coverageGridToWorld2D = (MathTransform2D) geMapper.createTransform();
 
@@ -489,8 +466,7 @@ class CoverageViewHandler {
         }
     }
 
-    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution)
-            throws IOException {
+    public double[] getReadingResolutions(OverviewPolicy policy, double[] requestedResolution) throws IOException {
         return delegate.getReadingResolutions(referenceName, policy, requestedResolution);
     }
 

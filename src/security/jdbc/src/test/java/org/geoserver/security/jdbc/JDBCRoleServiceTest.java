@@ -24,8 +24,7 @@ import org.junit.Test;
 
 public abstract class JDBCRoleServiceTest extends AbstractRoleServiceTest {
 
-    static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
+    static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.security.jdbc");
 
     protected abstract String getFixtureId();
 

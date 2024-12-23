@@ -62,8 +62,7 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
         // multiplex password encoder actually allows us to handle all types of passwords for
         // decoding purposes, regardless of whatever the current one used by the user group service
         // is
-        authProvider.setPasswordEncoder(
-                new GeoServerMultiplexingPasswordEncoder(getSecurityManager(), ugService));
+        authProvider.setPasswordEncoder(new GeoServerMultiplexingPasswordEncoder(getSecurityManager(), ugService));
 
         try {
             authProvider.afterPropertiesSet();
@@ -92,16 +91,14 @@ public class UsernamePasswordAuthenticationProvider extends GeoServerAuthenticat
         }
 
         if (auth.getDetails() instanceof GeoServerWebAuthenticationDetails) {
-            ((GeoServerWebAuthenticationDetails) auth.getDetails())
-                    .setUserGroupServiceName(userGroupServiceName);
+            ((GeoServerWebAuthenticationDetails) auth.getDetails()).setUserGroupServiceName(userGroupServiceName);
         }
         if (!auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {
             List<GrantedAuthority> roles = new ArrayList<>();
             roles.addAll(auth.getAuthorities());
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
             UsernamePasswordAuthenticationToken newAuth =
-                    new UsernamePasswordAuthenticationToken(
-                            auth.getPrincipal(), auth.getCredentials(), roles);
+                    new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), roles);
             newAuth.setDetails(auth.getDetails());
             return newAuth;
         }

@@ -58,12 +58,8 @@ public abstract class AbstractInputProvider implements InputProvider {
             } else {
                 int maxSizeMB = Validators.getMaxSizeMB(validators);
                 validators = Validators.filterOutClasses(validators, MaxSizeValidator.class);
-                provider =
-                        new RemoteRequestInputProvider(
-                                input,
-                                (ComplexPPIO) ppio,
-                                executor.getConnectionTimeout(),
-                                maxSizeMB * 1024 * 1024);
+                provider = new RemoteRequestInputProvider(
+                        input, (ComplexPPIO) ppio, executor.getConnectionTimeout(), maxSizeMB * 1024 * 1024);
             }
         } else {
             provider = new SimpleInputProvider(input, ppio);

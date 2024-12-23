@@ -59,7 +59,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequestMapping(path = RestBaseController.ROOT_PATH + "/services/wfs/transforms")
 public class TransformController extends AbstractCatalogController {
 
-    @Autowired private TransformRepository repository;
+    @Autowired
+    private TransformRepository repository;
 
     public TransformController(Catalog catalog) {
         super(catalog);
@@ -71,25 +72,21 @@ public class TransformController extends AbstractCatalogController {
                 MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE,
                 MediaType.APPLICATION_JSON_VALUE, MediaType.TEXT_HTML_VALUE
             })
-    public RestWrapper getTransformsInfo(
-            @PathVariable(name = "transform", required = false) String transformInfoName) {
+    public RestWrapper getTransformsInfo(@PathVariable(name = "transform", required = false) String transformInfoName) {
         if (transformInfoName == null) {
             // we need to return all transforms
             try {
                 return wrapList(repository.getAllTransforms(), TransformInfo.class);
             } catch (Exception exception) {
                 throw new RestException(
-                        "Error reading transforms info from repository.",
-                        HttpStatus.INTERNAL_SERVER_ERROR,
-                        exception);
+                        "Error reading transforms info from repository.", HttpStatus.INTERNAL_SERVER_ERROR, exception);
             }
         }
         return wrapObject(getTransformInfo(transformInfoName), TransformInfo.class);
     }
 
     @GetMapping(path = "{transform}", produces = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
-    public void getTransforms(
-            @PathVariable(name = "transform") String transformInfoName, OutputStream output) {
+    public void getTransforms(@PathVariable(name = "transform") String transformInfoName, OutputStream output) {
         try (InputStream transform = getTransform(transformInfoName)) {
             IOUtils.copy(transform, output);
         } catch (Exception exception) {
@@ -101,11 +98,7 @@ public class TransformController extends AbstractCatalogController {
     }
 
     @PostMapping(
-            consumes = {
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE
-            })
+            consumes = {MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public ResponseEntity<String> postTransformInfo(
             @RequestBody TransformInfo transformInfo, UriComponentsBuilder builder) {
         validate(transformInfo);
@@ -127,9 +120,7 @@ public class TransformController extends AbstractCatalogController {
             transformInfo = repository.getTransformInfo(transformInfoName);
         } catch (Exception exception) {
             throw new RestException(
-                    String.format(
-                            "Error reading transform '%s' info from repository.",
-                            transformInfoName),
+                    String.format("Error reading transform '%s' info from repository.", transformInfoName),
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     exception);
         }
@@ -150,22 +141,16 @@ public class TransformController extends AbstractCatalogController {
 
     @PutMapping(
             path = "{transform}",
-            consumes = {
-                MediaType.TEXT_XML_VALUE,
-                MediaType.APPLICATION_XML_VALUE,
-                MediaType.APPLICATION_JSON_VALUE
-            })
+            consumes = {MediaType.TEXT_XML_VALUE, MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public void putTransformInfo(
-            @RequestBody TransformInfo transformInfo,
-            @PathVariable(name = "transform") String transformInfoName) {
+            @RequestBody TransformInfo transformInfo, @PathVariable(name = "transform") String transformInfoName) {
         transformInfo.setName(transformInfoName);
         validate(transformInfo);
         saveTransFormInfo(transformInfo);
     }
 
     @PutMapping(path = "{transform}", consumes = MediaTypeExtensions.APPLICATION_XSLT_VALUE)
-    public void putTransform(
-            InputStream transform, @PathVariable(name = "transform") String transformInfoName) {
+    public void putTransform(InputStream transform, @PathVariable(name = "transform") String transformInfoName) {
         TransformInfo transformInfo = getTransformInfo(transformInfoName);
         saveTransForm(transformInfo, transform);
     }
@@ -188,9 +173,7 @@ public class TransformController extends AbstractCatalogController {
             repository.putTransformSheet(transformInfo, transform);
         } catch (Exception exception) {
             throw new RestException(
-                    String.format(
-                            "Error writing transform '%s' XSLT info to repository.",
-                            transformInfo.getName()),
+                    String.format("Error writing transform '%s' XSLT info to repository.", transformInfo.getName()),
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     exception);
         }
@@ -201,9 +184,7 @@ public class TransformController extends AbstractCatalogController {
             repository.putTransformInfo(transformInfo);
         } catch (Exception exception) {
             throw new RestException(
-                    String.format(
-                            "Error writing transform '%s' info to repository.",
-                            transformInfo.getName()),
+                    String.format("Error writing transform '%s' info to repository.", transformInfo.getName()),
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     exception);
         }
@@ -212,8 +193,7 @@ public class TransformController extends AbstractCatalogController {
     private ResponseEntity<String> buildResponse(
             UriComponentsBuilder builder, String transformInfoName, HttpStatus status) {
         UriComponents uriComponents =
-                builder.path("/services/wfs/transforms/{transform}")
-                        .buildAndExpand(transformInfoName);
+                builder.path("/services/wfs/transforms/{transform}").buildAndExpand(transformInfoName);
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(uriComponents.toUri());
         headers.setContentType(MediaType.TEXT_PLAIN);
@@ -222,12 +202,10 @@ public class TransformController extends AbstractCatalogController {
 
     private void validate(TransformInfo info) {
         if (info.getSourceFormat() == null) {
-            throw new RestException(
-                    "The transformation must have a source format", HttpStatus.BAD_REQUEST);
+            throw new RestException("The transformation must have a source format", HttpStatus.BAD_REQUEST);
         }
         if (info.getOutputFormat() == null) {
-            throw new RestException(
-                    "The transformation must have an output format", HttpStatus.BAD_REQUEST);
+            throw new RestException("The transformation must have an output format", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -237,15 +215,12 @@ public class TransformController extends AbstractCatalogController {
             transformInfo = repository.getTransformInfo(transformInfoName);
         } catch (Exception exception) {
             throw new RestException(
-                    String.format(
-                            "Error reading transform '%s' info from repository.",
-                            transformInfoName),
+                    String.format("Error reading transform '%s' info from repository.", transformInfoName),
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     exception);
         }
         if (transformInfo == null) {
-            throw new ResourceNotFoundException(
-                    String.format("Transform '%s' info not found.", transformInfoName));
+            throw new ResourceNotFoundException(String.format("Transform '%s' info not found.", transformInfoName));
         }
         return transformInfo;
     }
@@ -257,24 +232,19 @@ public class TransformController extends AbstractCatalogController {
             transform = repository.getTransformSheet(transformInfo);
         } catch (Exception exception) {
             throw new RestException(
-                    String.format(
-                            "Error reading transform '%s' XSLT from repository.",
-                            transformInfoName),
+                    String.format("Error reading transform '%s' XSLT from repository.", transformInfoName),
                     HttpStatus.INTERNAL_SERVER_ERROR,
                     exception);
         }
         if (transform == null) {
-            throw new ResourceNotFoundException(
-                    String.format("Transform '%s' XSLT not found.", transformInfoName));
+            throw new ResourceNotFoundException(String.format("Transform '%s' XSLT not found.", transformInfoName));
         }
         return transform;
     }
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return TransformInfo.class.isAssignableFrom(methodParameter.getParameterType());
     }
 
@@ -284,10 +254,7 @@ public class TransformController extends AbstractCatalogController {
         xs.alias("transforms", Collection.class);
         xs.alias("transform", TransformInfo.class);
         xs.registerConverter(new TransformConverter(xs.getMapper(), xs.getReflectionProvider()));
-        xs.registerLocalConverter(
-                TransformInfo.class,
-                "featureType",
-                new FeatureTypeLinkConverter(catalog, converter));
+        xs.registerLocalConverter(TransformInfo.class, "featureType", new FeatureTypeLinkConverter(catalog, converter));
         xs.addDefaultImplementation(FeatureTypeInfoImpl.class, FeatureTypeInfo.class);
 
         // setup security
@@ -306,8 +273,7 @@ public class TransformController extends AbstractCatalogController {
         }
 
         @Override
-        public void marshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             TransformInfo original = (TransformInfo) source;
             TransformInfo resolved = new TransformInfo(original);
             FeatureTypeInfo ft = resolved.getFeatureType();
@@ -334,8 +300,7 @@ public class TransformController extends AbstractCatalogController {
         }
 
         @Override
-        public void marshal(
-                Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
+        public void marshal(Object source, HierarchicalStreamWriter writer, MarshallingContext context) {
             FeatureTypeInfo ft = (FeatureTypeInfo) source;
             writer.startNode("name");
             writer.setValue(ft.prefixedName());

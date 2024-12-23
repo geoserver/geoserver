@@ -10,9 +10,7 @@ import org.geoserver.ows.Request;
 import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 
-/**
- * Similar to the {@link org.geoserver.ows.CiteComplianceHack}, but works on both "/wms" and "/ows"
- */
+/** Similar to the {@link org.geoserver.ows.CiteComplianceHack}, but works on both "/wms" and "/ows" */
 public class CiteComplianceCallback extends AbstractDispatcherCallback {
 
     GeoServer gs;
@@ -26,11 +24,8 @@ public class CiteComplianceCallback extends AbstractDispatcherCallback {
         if ("WMS".equals(request.getService())) {
             WMSInfo wms = gs.getService(WMSInfo.class);
             // version is mandatory in all requests but GetCapabilities
-            if (wms.isCiteCompliant()
-                    && !"GetCapabilities".equals(request.getRequest())
-                    && isVersionMissing(request)) {
-                throw new ServiceException(
-                        "Could not determine version", "MissingParameterValue", "version");
+            if (wms.isCiteCompliant() && !"GetCapabilities".equals(request.getRequest()) && isVersionMissing(request)) {
+                throw new ServiceException("Could not determine version", "MissingParameterValue", "version");
             }
         }
         return service;

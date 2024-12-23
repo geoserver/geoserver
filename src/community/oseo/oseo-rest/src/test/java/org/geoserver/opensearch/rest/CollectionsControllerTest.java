@@ -41,8 +41,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         // check the first (sorted alphabetically)
         assertEquals("ATMTEST", json.read("$.collections[0].name"));
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/ATMTEST",
-                json.read("$.collections[0].href"));
+                "http://localhost:8080/geoserver/rest/oseo/collections/ATMTEST", json.read("$.collections[0].href"));
         assertEquals(
                 "http://localhost:8080/geoserver/oseo/description?parentId=ATMTEST",
                 json.read("$.collections[0].search"));
@@ -54,8 +53,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(1, json.read("$.collections.*", List.class).size());
         assertEquals("LANDSAT8", json.read("$.collections[0].name"));
         assertEquals(
-                "http://localhost:8080/geoserver/rest/oseo/collections/LANDSAT8",
-                json.read("$.collections[0].href"));
+                "http://localhost:8080/geoserver/rest/oseo/collections/LANDSAT8", json.read("$.collections[0].href"));
         assertEquals(
                 "http://localhost:8080/geoserver/oseo/description?parentId=LANDSAT8",
                 json.read("$.collections[0].search"));
@@ -107,18 +105,14 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     @Test
     public void testCreateCollectionNotJson() throws Exception {
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections",
-                        "This is not JSON",
-                        MediaType.APPLICATION_JSON_VALUE);
+                postAsServletResponse("rest/oseo/collections", "This is not JSON", MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
     }
 
     @Test
     public void testCreateCollectionNotGeoJson() throws Exception {
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections", "{\"foo\": 45}", MediaType.APPLICATION_JSON_VALUE);
+                postAsServletResponse("rest/oseo/collections", "{\"foo\": 45}", MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
     }
 
@@ -128,8 +122,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         // inject an invalid attribute name
         String invalidTestData = testData.replace("primary", "1:2:primary");
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
+                postAsServletResponse("rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), containsString("1:2:primary"));
     }
@@ -140,8 +133,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         // inject an invalid attribute name
         String invalidTestData = testData.replace("eo:productType", "abc:productType");
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
+                postAsServletResponse("rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), containsString("abc:productType"));
     }
@@ -152,8 +144,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         // inject an invalid attribute name
         String invalidTestData = testData.replace("eo:productType", "eo:newProductType");
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
+                postAsServletResponse("rest/oseo/collections", invalidTestData, MediaType.APPLICATION_JSON_VALUE);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), containsString("eo:newProductType"));
     }
@@ -180,9 +171,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         workspaces.element(0, "cite");
 
         // send it back
-        response =
-                putAsServletResponse(
-                        "rest/oseo/collections/TEST123", feature.toString(), "application/json");
+        response = putAsServletResponse("rest/oseo/collections/TEST123", feature.toString(), "application/json");
         assertEquals(200, response.getStatus());
 
         // check the changes
@@ -207,11 +196,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         properties.element("enabled", "true");
 
         // send it back
-        response =
-                putAsServletResponse(
-                        "rest/oseo/collections/DISABLED_COLLECTION",
-                        feature.toString(),
-                        "application/json");
+        response = putAsServletResponse(
+                "rest/oseo/collections/DISABLED_COLLECTION", feature.toString(), "application/json");
         assertEquals(200, response.getStatus());
 
         // check the changes
@@ -239,9 +225,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     @Test
     public void testGetCollectionLinks() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections/SENTINEL2/ogcLinks", 200);
-        assertEquals(
-                "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
-                json.read("$.links[0].offering"));
+        assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms", json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));
         assertEquals("application/xml", json.read("$.links[0].type"));
@@ -256,11 +240,10 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         createTest123Collection();
 
         // create the links
-        response =
-                putAsServletResponse(
-                        "rest/oseo/collections/TEST123/ogcLinks",
-                        getTestData("/test123-links.json"),
-                        MediaType.APPLICATION_JSON_VALUE);
+        response = putAsServletResponse(
+                "rest/oseo/collections/TEST123/ogcLinks",
+                getTestData("/test123-links.json"),
+                MediaType.APPLICATION_JSON_VALUE);
         assertEquals(200, response.getStatus());
 
         // check they are there
@@ -269,9 +252,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
 
     private void assertTest123Links() throws Exception {
         DocumentContext json = getAsJSONPath("/rest/oseo/collections/TEST123/ogcLinks", 200);
-        assertEquals(
-                "http://www.opengis.net/spec/owc/1.0/req/atom/wms",
-                json.read("$.links[0].offering"));
+        assertEquals("http://www.opengis.net/spec/owc/1.0/req/atom/wms", json.read("$.links[0].offering"));
         assertEquals("GET", json.read("$.links[0].method"));
         assertEquals("GetCapabilities", json.read("$.links[0].code"));
         assertEquals("application/xml", json.read("$.links[0].type"));
@@ -281,7 +262,8 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals("123", json.read("$.links[0].intTest").toString());
         assertEquals("123.1", json.read("$.links[0].floatTest").toString());
         assertEquals("false", json.read("$.links[0].booleanTest").toString());
-        assertEquals("2015-07-01T00:00:00.000Z", json.read("$.links[0].dateTest").toString());
+        assertEquals(
+                "2015-07-01T00:00:00.000Z", json.read("$.links[0].dateTest").toString());
         assertEquals("text123", json.read("$.links[0].varcharTest").toString());
     }
 
@@ -290,8 +272,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         testPutCollectionLinks();
 
         // delete the links
-        MockHttpServletResponse response =
-                deleteAsServletResponse("rest/oseo/collections/TEST123/ogcLinks");
+        MockHttpServletResponse response = deleteAsServletResponse("rest/oseo/collections/TEST123/ogcLinks");
         assertEquals(200, response.getStatus());
 
         // check they are gone
@@ -302,8 +283,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     @Test
     public void testGetCollectionThumbnail() throws Exception {
         // missing from the DB right now
-        MockHttpServletResponse response =
-                getAsServletResponse("/rest/oseo/collections/SENTINEL2/thumbnail");
+        MockHttpServletResponse response = getAsServletResponse("/rest/oseo/collections/SENTINEL2/thumbnail");
         assertEquals(404, response.getStatus());
     }
 
@@ -311,9 +291,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
     public void testCreateCollectionAsZip() throws Exception {
         // build all possible combinations of elements in the zip and check they all work
         Set<Set<CollectionPart>> sets =
-                Sets.powerSet(
-                        new HashSet<>(
-                                Arrays.asList(CollectionPart.Collection, CollectionPart.OwsLinks)));
+                Sets.powerSet(new HashSet<>(Arrays.asList(CollectionPart.Collection, CollectionPart.OwsLinks)));
 
         for (Set<CollectionPart> parts : sets) {
             if (parts.isEmpty()) {
@@ -354,13 +332,11 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         }
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "rest/oseo/collections", zip, MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+                postAsServletResponse("rest/oseo/collections", zip, MediaTypeExtensions.APPLICATION_ZIP_VALUE);
         if (parts.contains(CollectionPart.Collection)) {
             assertEquals(201, response.getStatus());
             assertEquals(
-                    "http://localhost:8080/geoserver/rest/oseo/collections/TEST123",
-                    response.getHeader("location"));
+                    "http://localhost:8080/geoserver/rest/oseo/collections/TEST123", response.getHeader("location"));
 
             assertTest123CollectionCreated();
         } else {
@@ -394,8 +370,7 @@ public class CollectionsControllerTest extends OSEORestTestSupport {
         assertEquals(
                 "https://geoserver.org/stac-examples/test123.xml",
                 json.read("$.properties['assets'].metadata_iso_19139.href"));
-        assertEquals(
-                "ISO 19139 metadata", json.read("$.properties['assets'].metadata_iso_19139.title"));
+        assertEquals("ISO 19139 metadata", json.read("$.properties['assets'].metadata_iso_19139.title"));
 
         SimpleFeature sf = GeoJSONReader.parseFeature(json.jsonString());
         ReferencedEnvelope bounds = ReferencedEnvelope.reference(sf.getBounds());

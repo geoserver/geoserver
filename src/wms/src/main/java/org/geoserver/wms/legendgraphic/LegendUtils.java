@@ -53,8 +53,7 @@ import org.geotools.util.SuppressFBWarnings;
 /**
  * Utility class for building legends, it exposes many methods that could be reused anywhere.
  *
- * <p>I am not preventin people from subclassing this method so that they could add their own
- * utility methods.
+ * <p>I am not preventin people from subclassing this method so that they could add their own utility methods.
  *
  * @author Simone Giannecchini, GeoSolutions SAS
  */
@@ -151,18 +150,17 @@ public class LegendUtils {
     private static final int DEFAULT_ROWS = 0;
 
     /** shared package's logger */
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(LegendUtils.class.getPackage().getName());
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(
+            LegendUtils.class.getPackage().getName());
 
     public static final Color DEFAULT_BORDER_COLOR = Color.black;
 
     /**
      * Retrieves the legend layout from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract the {@link
-     *     LegendLayout} information.
-     * @return the {@link LegendLayout} specified in the provided {@link GetLegendGraphicRequest} or
-     *     a default DEFAULT_LAYOUT.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract the {@link LegendLayout} information.
+     * @return the {@link LegendLayout} specified in the provided {@link GetLegendGraphicRequest} or a default
+     *     DEFAULT_LAYOUT.
      */
     public static LegendLayout getLayout(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -180,10 +178,10 @@ public class LegendUtils {
     /**
      * Retrieves the group legend layout from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract the group {@link
-     *     LegendLayout} information.
-     * @return the group {@link LegendLayout} specified in the provided {@link
-     *     GetLegendGraphicRequest} or a default DEFAULT_LAYOUT.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract the group {@link LegendLayout}
+     *     information.
+     * @return the group {@link LegendLayout} specified in the provided {@link GetLegendGraphicRequest} or a default
+     *     DEFAULT_LAYOUT.
      */
     public static LegendLayout getGroupLayout(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -191,9 +189,7 @@ public class LegendUtils {
         LegendLayout layout = DEFAULT_LAYOUT;
         if (legendOptions != null && legendOptions.get("grouplayout") != null) {
             try {
-                layout =
-                        LegendLayout.valueOf(
-                                ((String) legendOptions.get("grouplayout")).toUpperCase());
+                layout = LegendLayout.valueOf(((String) legendOptions.get("grouplayout")).toUpperCase());
             } catch (IllegalArgumentException e) {
             }
         }
@@ -203,10 +199,9 @@ public class LegendUtils {
     /**
      * Retrieves column height of legend from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract column height
-     *     information.
-     * @return the column height specified in the provided {@link GetLegendGraphicRequest} or a
-     *     default DEFAULT_COLUMN_HEIGHT.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract column height information.
+     * @return the column height specified in the provided {@link GetLegendGraphicRequest} or a default
+     *     DEFAULT_COLUMN_HEIGHT.
      */
     public static int getColumnHeight(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -224,10 +219,8 @@ public class LegendUtils {
     /**
      * Retrieves row width of legend from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract row width
-     *     information.
-     * @return the row width specified in the provided {@link GetLegendGraphicRequest} or a default
-     *     DEFAULT_ROW_WIDTH.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract row width information.
+     * @return the row width specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_ROW_WIDTH.
      */
     public static int getRowWidth(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -245,10 +238,8 @@ public class LegendUtils {
     /**
      * Retrieves columns of legend from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract columns
-     *     information.
-     * @return the columns specified in the provided {@link GetLegendGraphicRequest} or a default
-     *     DEFAULT_COLUMNS.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract columns information.
+     * @return the columns specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_COLUMNS.
      */
     public static int getColumns(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -267,8 +258,7 @@ public class LegendUtils {
      * Retrieves rows of legend from the provided {@link GetLegendGraphicRequest}.
      *
      * @param req a {@link GetLegendGraphicRequest} from which we should extract rows information.
-     * @return the rows specified in the provided {@link GetLegendGraphicRequest} or a default
-     *     DEFAULT_ROWS.
+     * @return the rows specified in the provided {@link GetLegendGraphicRequest} or a default DEFAULT_ROWS.
      */
     public static int getRows(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -286,10 +276,8 @@ public class LegendUtils {
     /**
      * Retrieves the font from the provided {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract the {@link Font}
-     *     information.
-     * @return the {@link Font} specified in the provided {@link GetLegendGraphicRequest} or a
-     *     default {@link Font}.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract the {@link Font} information.
+     * @return the {@link Font} specified in the provided {@link GetLegendGraphicRequest} or a default {@link Font}.
      */
     public static Font getLabelFont(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -315,9 +303,7 @@ public class LegendUtils {
             try {
                 legendFontSize = Integer.valueOf((String) legendOptions.get("fontSize"));
             } catch (NumberFormatException e) {
-                LOGGER.warning(
-                        "Error trying to interpret legendOption 'fontSize': "
-                                + legendOptions.get("fontSize"));
+                LOGGER.warning("Error trying to interpret legendOption 'fontSize': " + legendOptions.get("fontSize"));
                 legendFontSize = LegendUtils.DEFAULT_FONT_SIZE;
             }
         }
@@ -331,8 +317,7 @@ public class LegendUtils {
 
         if (legendFontFamily == LegendUtils.DEFAULT_FONT_TYPE
                 && legendFontName.equalsIgnoreCase(LegendUtils.DEFAULT_FONT_NAME)
-                && (legendFontSize == LegendUtils.DEFAULT_FONT_SIZE || legendFontSize <= 0))
-            return DEFAULT_FONT;
+                && (legendFontSize == LegendUtils.DEFAULT_FONT_SIZE || legendFontSize <= 0)) return DEFAULT_FONT;
 
         Font f = FontCache.getDefaultInstance().getFont(legendFontName);
         if (f != null) {
@@ -342,15 +327,13 @@ public class LegendUtils {
     }
 
     /**
-     * Extracts the Label {@link Font} {@link Color} from the provided {@link
-     * GetLegendGraphicRequest}.
+     * Extracts the Label {@link Font} {@link Color} from the provided {@link GetLegendGraphicRequest}.
      *
-     * <p>If there is no label {@link Font} specified a default {@link Font} {@link Color} will be
-     * provided.
+     * <p>If there is no label {@link Font} specified a default {@link Font} {@link Color} will be provided.
      *
      * @param req the {@link GetLegendGraphicRequest} from which to extract label color information.
-     * @return the Label {@link Font} {@link Color} extracted from the provided {@link
-     *     GetLegendGraphicRequest} or a default {@link Font} {@link Color}.
+     * @return the Label {@link Font} {@link Color} extracted from the provided {@link GetLegendGraphicRequest} or a
+     *     default {@link Font} {@link Color}.
      */
     public static Color getLabelFontColor(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -366,10 +349,7 @@ public class LegendUtils {
         } catch (NumberFormatException e) {
             if (LOGGER.isLoggable(Level.WARNING))
                 LOGGER.warning(
-                        "Could not decode label color: "
-                                + color
-                                + ", default to "
-                                + DEFAULT_FONT_COLOR.toString());
+                        "Could not decode label color: " + color + ", default to " + DEFAULT_FONT_COLOR.toString());
             return DEFAULT_FONT_COLOR;
         }
     }
@@ -377,8 +357,7 @@ public class LegendUtils {
     /**
      * Checks if the graphics should be text antialiasing
      *
-     * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing
-     *     information.
+     * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing information.
      * @return true if the fontAntiAliasing is set to on
      */
     public static boolean isFontAntiAliasing(final GetLegendGraphicRequest req) {
@@ -397,8 +376,7 @@ public class LegendUtils {
     /**
      * Checks if the label should be word wrapped
      *
-     * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing
-     *     information.
+     * @param req the {@link GetLegendGraphicRequest} from which to extract font antialiasing information.
      * @return true if the wrap is set to on
      */
     public static boolean isWrap(final GetLegendGraphicRequest req) {
@@ -432,11 +410,10 @@ public class LegendUtils {
     /**
      * Returns the image background color for the given {@link GetLegendGraphicRequest}.
      *
-     * @param req a {@link GetLegendGraphicRequest} from which we should extract the background
-     *     color.
-     * @return the Color for the hexadecimal value passed as the <code>BGCOLOR</code> {@link
-     *     GetLegendGraphicRequest#getLegendOptions() legend option}, or the default background
-     *     color if no bgcolor were passed.
+     * @param req a {@link GetLegendGraphicRequest} from which we should extract the background color.
+     * @return the Color for the hexadecimal value passed as the <code>BGCOLOR</code>
+     *     {@link GetLegendGraphicRequest#getLegendOptions() legend option}, or the default background color if no
+     *     bgcolor were passed.
      */
     public static Color getBackgroundColor(final GetLegendGraphicRequest req) {
         ensureNotNull(req, "GetLegendGraphicRequestre");
@@ -453,11 +430,7 @@ public class LegendUtils {
         try {
             return color((String) clr);
         } catch (NumberFormatException e) {
-            LOGGER.warning(
-                    "Could not decode background color: "
-                            + clr
-                            + ", default to "
-                            + DEFAULT_BG_COLOR.toString());
+            LOGGER.warning("Could not decode background color: " + clr + ", default to " + DEFAULT_BG_COLOR.toString());
             return DEFAULT_BG_COLOR;
         }
     }
@@ -492,9 +465,7 @@ public class LegendUtils {
             opacity = ExpressionExtractor.extractCqlExpressions(opacityExp);
             opacityValue = opacity.evaluate(null, Double.class);
         }
-        if (opacityValue == null
-                || (opacityValue.doubleValue() - 1) > 0
-                || opacityValue.doubleValue() < 0) {
+        if (opacityValue == null || (opacityValue.doubleValue() - 1) > 0 || opacityValue.doubleValue() < 0) {
             throw new IllegalArgumentException(
                     MessageFormat.format(ErrorKeys.ILLEGAL_ARGUMENT_$2, "Opacity", opacityValue));
         }
@@ -502,8 +473,7 @@ public class LegendUtils {
     }
 
     /**
-     * Tries to decode the provided {@link String} into an HEX color definition in RRGGBB, 0xRRGGBB
-     * or #RRGGBB format
+     * Tries to decode the provided {@link String} into an HEX color definition in RRGGBB, 0xRRGGBB or #RRGGBB format
      *
      * <p>In case the {@link String} is not correct a {@link NumberFormatException} will be thrown.
      *
@@ -529,9 +499,7 @@ public class LegendUtils {
      * @return the {@link Color} out of this {@link ColorMapEntry}.
      * @throws NumberFormatException in case the color string is badly formatted.
      */
-    @SuppressFBWarnings({
-        "NP_NULL_ON_SOME_PATH",
-        "NP_NULL_PARAM_DEREF"
+    @SuppressFBWarnings({"NP_NULL_ON_SOME_PATH", "NP_NULL_PARAM_DEREF"
     }) // SP does not recognize the check in ensureNotNull
     public static Color color(final ColorMapEntry entry) {
         ensureNotNull(entry, "entry");
@@ -549,8 +517,7 @@ public class LegendUtils {
     /**
      * Extracts the quantity part from the provided {@link ColorMapEntry}.
      *
-     * @param entry the provided {@link ColorMapEntry} from which we should extract the quantity
-     *     part.
+     * @param entry the provided {@link ColorMapEntry} from which we should extract the quantity part.
      * @return the quantity part for the provided {@link ColorMapEntry}.
      */
     @SuppressFBWarnings("NP_NULL_ON_SOME_PATH") // SP does not recognize the check in ensureNotNull
@@ -589,8 +556,7 @@ public class LegendUtils {
      *
      * @return an array of {@link Rule}s.
      */
-    public static Rule[] getApplicableRules(
-            final FeatureTypeStyle[] ftStyles, double scaleDenominator) {
+    public static Rule[] getApplicableRules(final FeatureTypeStyle[] ftStyles, double scaleDenominator) {
         ensureNotNull(ftStyles, "FeatureTypeStyle array ");
         /** Holds both the rules that apply and the ElseRule's if any, in the order they appear */
         final List<Rule> ruleList = new ArrayList<>();
@@ -621,30 +587,26 @@ public class LegendUtils {
      * Checks if a rule can be triggered at the current scale level
      *
      * @param r The rule
-     * @param scaleDenominator the scale denominator to check if it is between the rule's scale
-     *     range. -1 means that it allways is.
+     * @param scaleDenominator the scale denominator to check if it is between the rule's scale range. -1 means that it
+     *     allways is.
      * @return true if the scale is compatible with the rule settings
      */
     public static boolean isWithInScale(final Rule r, final double scaleDenominator) {
         return (scaleDenominator == -1)
-                || (((r.getMinScaleDenominator() - LegendGraphicBuilder.TOLERANCE)
-                                <= scaleDenominator)
-                        && ((r.getMaxScaleDenominator() + LegendGraphicBuilder.TOLERANCE)
-                                > scaleDenominator));
+                || (((r.getMinScaleDenominator() - LegendGraphicBuilder.TOLERANCE) <= scaleDenominator)
+                        && ((r.getMaxScaleDenominator() + LegendGraphicBuilder.TOLERANCE) > scaleDenominator));
     }
 
     /**
-     * Return a {@link BufferedImage} representing this label. The characters '\n' '\r' and '\f' are
-     * interpreted as line breaks, as is the character combination "\n" (as opposed to the actual
-     * '\n' character). This allows people to force line breaks in their labels by including the
-     * character "\" followed by "n" in their label.
+     * Return a {@link BufferedImage} representing this label. The characters '\n' '\r' and '\f' are interpreted as line
+     * breaks, as is the character combination "\n" (as opposed to the actual '\n' character). This allows people to
+     * force line breaks in their labels by including the character "\" followed by "n" in their label.
      *
      * @param label - the label to render
      * @param g - the Graphics2D that will be used to render this label
      * @return a {@link BufferedImage} of the properly rendered label.
      */
-    public static BufferedImage renderLabel(
-            String label, final Graphics2D g, final GetLegendGraphicRequest req) {
+    public static BufferedImage renderLabel(String label, final Graphics2D g, final GetLegendGraphicRequest req) {
 
         ensureNotNull(label);
         ensureNotNull(g);
@@ -685,11 +647,10 @@ public class LegendUtils {
             }
 
             // make the actual label image
-            renderedLabel =
-                    new BufferedImage(
-                            (int) Math.ceil(bounds.getWidth()),
-                            (int) Math.ceil(bounds.getHeight()),
-                            BufferedImage.TYPE_INT_ARGB);
+            renderedLabel = new BufferedImage(
+                    (int) Math.ceil(bounds.getWidth()),
+                    (int) Math.ceil(bounds.getHeight()),
+                    BufferedImage.TYPE_INT_ARGB);
 
             st = new StringTokenizer(realLabel, "\n\r\f");
 
@@ -697,11 +658,9 @@ public class LegendUtils {
             rlg.setColor(labelColor);
             rlg.setFont(g.getFont());
             rlg.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
+                    RenderingHints.KEY_TEXT_ANTIALIASING, g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
             rlg.setRenderingHint(
-                    RenderingHints.KEY_FRACTIONALMETRICS,
-                    g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
+                    RenderingHints.KEY_FRACTIONALMETRICS, g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
             int y = 0 - g.getFontMetrics().getDescent();
             int c = 0;
 
@@ -713,19 +672,19 @@ public class LegendUtils {
         } else {
             // this is a traditional 'regular-old' label.  Just figure the
             // size and act accordingly.
-            int height = (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getHeight());
-            int width = (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getWidth());
+            int height =
+                    (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getHeight());
+            int width =
+                    (int) Math.ceil(g.getFontMetrics().getStringBounds(label, g).getWidth());
             renderedLabel = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
             Graphics2D rlg = renderedLabel.createGraphics();
             rlg.setColor(labelColor);
             rlg.setFont(g.getFont());
             rlg.setRenderingHint(
-                    RenderingHints.KEY_TEXT_ANTIALIASING,
-                    g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
+                    RenderingHints.KEY_TEXT_ANTIALIASING, g.getRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING));
             if (g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS) != null) {
                 rlg.setRenderingHint(
-                        RenderingHints.KEY_FRACTIONALMETRICS,
-                        g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
+                        RenderingHints.KEY_FRACTIONALMETRICS, g.getRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS));
             }
             rlg.drawString(label, 0, height - rlg.getFontMetrics().getDescent());
             rlg.dispose();
@@ -735,8 +694,8 @@ public class LegendUtils {
     }
 
     /**
-     * This method tries to merge horizontally 3 {@link BufferedImage}. The first one must be not
-     * null, the others can be null.
+     * This method tries to merge horizontally 3 {@link BufferedImage}. The first one must be not null, the others can
+     * be null.
      *
      * @param left first {@link BufferedImage} to merge.
      * @param center second {@link BufferedImage} to merge.
@@ -757,25 +716,18 @@ public class LegendUtils {
             final double dx) {
         if (right == null && center == null) return left;
         if (left == null) throw new NullPointerException("Left image cannot be null");
-        int totalHeight =
-                (int)
-                        (Math.max(
-                                        left.getHeight(),
-                                        Math.max(
-                                                (center != null
-                                                        ? center.getHeight()
-                                                        : Double.NEGATIVE_INFINITY),
-                                                right != null ? right.getHeight() : 0))
-                                + 0.5);
-        final int totalWidth =
-                (int)
-                        (left.getWidth()
-                                + (center != null ? center.getWidth() : 0)
-                                + (right != null ? right.getWidth() : 0)
-                                + 2 * dx
-                                + 0.5);
-        final BufferedImage finalImage =
-                ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
+        int totalHeight = (int) (Math.max(
+                        left.getHeight(),
+                        Math.max(
+                                (center != null ? center.getHeight() : Double.NEGATIVE_INFINITY),
+                                right != null ? right.getHeight() : 0))
+                + 0.5);
+        final int totalWidth = (int) (left.getWidth()
+                + (center != null ? center.getWidth() : 0)
+                + (right != null ? right.getWidth() : 0)
+                + 2 * dx
+                + 0.5);
+        final BufferedImage finalImage = ImageUtils.createImage(totalWidth, totalHeight, null, transparent);
         final Graphics2D finalGraphics =
                 ImageUtils.prepareTransparency(transparent, backgroundColor, finalImage, hintsMap);
 
@@ -800,12 +752,10 @@ public class LegendUtils {
     }
 
     /**
-     * Checks if the provided {@link FeatureType} contains a coverage as per used by the {@link
-     * StreamingRenderer}.
+     * Checks if the provided {@link FeatureType} contains a coverage as per used by the {@link StreamingRenderer}.
      *
      * @param layer a {@link FeatureType} to check if it contains a grid.
-     * @return <code>true</code> if this layer contains a gridcoverage, <code>false</code>
-     *     otherwise.
+     * @return <code>true</code> if this layer contains a gridcoverage, <code>false</code> otherwise.
      */
     public static boolean checkGridLayer(final FeatureType layer) {
         if (!(layer instanceof SimpleFeatureType)) return false;
@@ -846,8 +796,9 @@ public class LegendUtils {
                 if (rule.equalsIgnoreCase(r.getName())) {
                     sldRule = r;
                     if (LOGGER.isLoggable(Level.FINE)) {
-                        LOGGER.fine(
-                                new StringBuffer("found requested rule: ").append(rule).toString());
+                        LOGGER.fine(new StringBuffer("found requested rule: ")
+                                .append(rule)
+                                .toString());
                     }
 
                     break;

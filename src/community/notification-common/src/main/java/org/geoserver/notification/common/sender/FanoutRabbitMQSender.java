@@ -10,11 +10,11 @@ import java.io.IOException;
 import org.geoserver.notification.common.NotificationXStreamDefaultInitializer;
 
 /**
- * Fanout exchange sender implementation: routes messages to all of the queues that are bound to it
- * and the routing key is ignore (ideal for the broadcast routing of messages)
+ * Fanout exchange sender implementation: routes messages to all of the queues that are bound to it and the routing key
+ * is ignore (ideal for the broadcast routing of messages)
  *
- * <p>The broker connection parameters are populated by {@link XStream} deserialization, using the
- * configuration provided by {@link NotificationXStreamDefaultInitializer}
+ * <p>The broker connection parameters are populated by {@link XStream} deserialization, using the configuration
+ * provided by {@link NotificationXStreamDefaultInitializer}
  *
  * <p>
  *

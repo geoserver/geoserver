@@ -105,12 +105,11 @@ class GeoServerConfigLoader {
 
         LOGGER.config("Loading workspace services...");
 
-        Long count =
-                fileWalk.workspaces().stream()
-                        .parallel()
-                        .map(this::loadWorkspaceServices)
-                        .reduce((c1, c2) -> c1 + c2)
-                        .orElse(0L);
+        Long count = fileWalk.workspaces().stream()
+                .parallel()
+                .map(this::loadWorkspaceServices)
+                .reduce((c1, c2) -> c1 + c2)
+                .orElse(0L);
         config("Loaded {0} workspace-specific services.", count);
     }
 
@@ -148,8 +147,7 @@ class GeoServerConfigLoader {
         }
     }
 
-    Optional<ServiceInfo> loadService(
-            XStreamServiceLoader<ServiceInfo> serviceLoader, Resource directory) {
+    Optional<ServiceInfo> loadService(XStreamServiceLoader<ServiceInfo> serviceLoader, Resource directory) {
         ServiceInfo s = null;
         try {
             s = serviceLoader.load(geoServer, directory);
@@ -188,17 +186,16 @@ class GeoServerConfigLoader {
 
     private void loadSettings() {
         LOGGER.config("Loading workspace settings...");
-        long count =
-                fileWalk.workspaces().stream()
-                        .parallel()
-                        .map(wd -> wd.settings)
-                        .map(this::depersist)
-                        .filter(Optional::isPresent)
-                        .map(Optional::get)
-                        .map(SettingsInfo.class::cast)
-                        .map(this::save)
-                        .filter(Optional::isPresent)
-                        .count();
+        long count = fileWalk.workspaces().stream()
+                .parallel()
+                .map(wd -> wd.settings)
+                .map(this::depersist)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .map(SettingsInfo.class::cast)
+                .map(this::save)
+                .filter(Optional::isPresent)
+                .count();
         config("Loaded {0} workspace-specific settings.", count);
     }
 
@@ -217,10 +214,9 @@ class GeoServerConfigLoader {
         } catch (Exception e) {
             final String name = (String) OwsUtils.get(info, "id");
             String err = e.getMessage();
-            LOGGER.log(
-                    Level.WARNING,
-                    "Error saving {0} {1}: {2}",
-                    new Object[] {info.getClass().getSimpleName(), name, err});
+            LOGGER.log(Level.WARNING, "Error saving {0} {1}: {2}", new Object[] {
+                info.getClass().getSimpleName(), name, err
+            });
         }
         return Optional.empty();
     }

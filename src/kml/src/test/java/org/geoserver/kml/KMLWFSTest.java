@@ -57,26 +57,24 @@ public class KMLWFSTest extends WFSTestSupport {
     @Test
     public void testGetFeature() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
-                                + getLayerId(MockData.AGGREGATEGEOFEATURE)
-                                + "&outputFormat="
-                                + KMLMapOutputFormat.MIME_TYPE.replace("+", "%2B"));
+                getAsServletResponse("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                        + getLayerId(MockData.AGGREGATEGEOFEATURE)
+                        + "&outputFormat="
+                        + KMLMapOutputFormat.MIME_TYPE.replace("+", "%2B"));
         assertEquals(200, response.getStatus());
         assertEquals(
                 "inline; filename=" + MockData.AGGREGATEGEOFEATURE.getLocalPart() + ".kml",
                 response.getHeader("Content-Disposition"));
-        Document doc = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document doc =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         checkAggregateGeoFeatureKmlContents(doc);
     }
 
     @Test
     public void testGetFeatureKMLAlias() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
-                                + getLayerId(MockData.AGGREGATEGEOFEATURE)
-                                + "&outputFormat=KML");
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                + getLayerId(MockData.AGGREGATEGEOFEATURE)
+                + "&outputFormat=KML");
         checkAggregateGeoFeatureKmlContents(doc);
     }
 
@@ -86,45 +84,27 @@ public class KMLWFSTest extends WFSTestSupport {
         // there is one schema
         XMLAssert.assertXpathEvaluatesTo("1", "count(//kml:Document/kml:Schema)", doc);
         // check we only have the non geom properties
+        XMLAssert.assertXpathEvaluatesTo("6", "count(//kml:Document/kml:Schema/kml:SimpleField)", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "6", "count(//kml:Document/kml:Schema/kml:SimpleField)", doc);
+                "0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiPointProperty'])", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "0",
-                "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiPointProperty'])",
-                doc);
+                "0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiCurveProperty'])", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "0",
-                "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiCurveProperty'])",
-                doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "0",
-                "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiSurfaceProperty'])",
-                doc);
+                "0", "count(//kml:Document/kml:Schema/kml:SimpleField[@name='multiSurfaceProperty'])", doc);
         // check the type mapping
         XMLAssert.assertXpathEvaluatesTo(
-                "string",
-                "//kml:Document/kml:Schema/kml:SimpleField[@name='description']/@type",
-                doc);
+                "string", "//kml:Document/kml:Schema/kml:SimpleField[@name='description']/@type", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "double",
-                "//kml:Document/kml:Schema/kml:SimpleField[@name='doubleProperty']/@type",
-                doc);
+                "double", "//kml:Document/kml:Schema/kml:SimpleField[@name='doubleProperty']/@type", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "int",
-                "//kml:Document/kml:Schema/kml:SimpleField[@name='intRangeProperty']/@type",
-                doc);
+                "int", "//kml:Document/kml:Schema/kml:SimpleField[@name='intRangeProperty']/@type", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "string",
-                "//kml:Document/kml:Schema/kml:SimpleField[@name='strProperty']/@type",
-                doc);
+                "string", "//kml:Document/kml:Schema/kml:SimpleField[@name='strProperty']/@type", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "string",
-                "//kml:Document/kml:Schema/kml:SimpleField[@name='featureCode']/@type",
-                doc);
+                "string", "//kml:Document/kml:Schema/kml:SimpleField[@name='featureCode']/@type", doc);
 
         // check the extended data of one feature
-        String sd =
-                "//kml:Placemark[@id='AggregateGeoFeature.f005']/kml:ExtendedData/kml:SchemaData/kml:SimpleData";
+        String sd = "//kml:Placemark[@id='AggregateGeoFeature.f005']/kml:ExtendedData/kml:SchemaData/kml:SimpleData";
         XMLAssert.assertXpathEvaluatesTo("description-f005", sd + "[@name='description']", doc);
         XMLAssert.assertXpathEvaluatesTo("name-f005", sd + "[@name='name']", doc);
         XMLAssert.assertXpathEvaluatesTo("2012.78", sd + "[@name='doubleProperty']", doc);
@@ -139,11 +119,9 @@ public class KMLWFSTest extends WFSTestSupport {
 
     @Test
     public void testForceWGS84() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
-                                + getLayerId(MockData.MPOINTS)
-                                + "&outputFormat=KML");
+        Document doc = getAsDOM("wfs?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                + getLayerId(MockData.MPOINTS)
+                + "&outputFormat=KML");
 
         // print(doc);
 
@@ -167,60 +145,58 @@ public class KMLWFSTest extends WFSTestSupport {
         FeatureSource fs = fti.getFeatureSource(null, null);
         SimpleFeatureCollection fc = (SimpleFeatureCollection) fs.getFeatures();
         final AtomicInteger openIterators = new AtomicInteger(0);
-        FeatureCollection decorated =
-                new org.geotools.feature.collection.DecoratingSimpleFeatureCollection(fc) {
+        FeatureCollection decorated = new org.geotools.feature.collection.DecoratingSimpleFeatureCollection(fc) {
+            @Override
+            public SimpleFeatureIterator features() {
+                openIterators.incrementAndGet();
+                final SimpleFeature f = DataUtilities.first(delegate);
+                return new SimpleFeatureIterator() {
+
                     @Override
-                    public SimpleFeatureIterator features() {
-                        openIterators.incrementAndGet();
-                        final SimpleFeature f = DataUtilities.first(delegate);
-                        return new SimpleFeatureIterator() {
+                    public SimpleFeature next() throws NoSuchElementException {
+                        return f;
+                    }
 
-                            @Override
-                            public SimpleFeature next() throws NoSuchElementException {
-                                return f;
-                            }
+                    @Override
+                    public boolean hasNext() {
+                        return true;
+                    }
 
-                            @Override
-                            public boolean hasNext() {
-                                return true;
-                            }
-
-                            @Override
-                            public void close() {
-                                openIterators.decrementAndGet();
-                            }
-                        };
+                    @Override
+                    public void close() {
+                        openIterators.decrementAndGet();
                     }
                 };
+            }
+        };
         FeatureCollectionResponse fcResponse = getFeatureCollectionResponse(decorated);
 
         WFSKMLOutputFormat outputFormat = GeoServerExtensions.bean(WFSKMLOutputFormat.class);
-        FilterOutputStream fos =
-                new FilterOutputStream(new ByteArrayOutputStream()) {
+        FilterOutputStream fos = new FilterOutputStream(new ByteArrayOutputStream()) {
 
-                    int count = 0;
+            int count = 0;
 
-                    @Override
-                    public void write(byte[] b) throws IOException {
-                        write(b, 0, b.length);
-                    }
+            @Override
+            public void write(byte[] b) throws IOException {
+                write(b, 0, b.length);
+            }
 
-                    @Override
-                    public void write(byte[] b, int off, int len) throws IOException {
-                        for (int i = off; i < len; i++) {
-                            write(b[i]);
-                        }
-                    }
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                for (int i = off; i < len; i++) {
+                    write(b[i]);
+                }
+            }
 
-                    @Override
-                    public void write(int b) throws IOException {
-                        count++;
-                        if (count > 100) {
-                            throw new IOException("Simularing client shutting down connection");
-                        }
-                        super.write(b);
-                    }
-                };
+            @Override
+            public void write(int b) throws IOException {
+                count++;
+                if (count > 100) {
+                    throw new IOException("Simularing client shutting down connection");
+                }
+                super.write(b);
+            }
+        };
         try {
             outputFormat.write(fcResponse, fos, null);
         } catch (Exception e) {

@@ -50,42 +50,39 @@ import org.xml.sax.EntityResolver;
 /**
  * Configure various aspects of Spring MVC, in particular message converters
  *
- * @implNote this class extends {@link DelegatingWebMvcConfiguration} in order to allow other
- *     modules to extend the WebMvc configuration by contributing a {@link WebMvcConfigurer} to the
- *     application context. {@link DelegatingWebMvcConfiguration} is a subclass of {@code
- *     WebMvcConfigurationSupport} that detects and delegates to all beans of type {@link
- *     WebMvcConfigurer} allowing them to customize the configuration provided by {@code
- *     WebMvcConfigurationSupport}. This is the class actually imported by {@link
- *     EnableWebMvc @EnableWebMvc}.
+ * @implNote this class extends {@link DelegatingWebMvcConfiguration} in order to allow other modules to extend the
+ *     WebMvc configuration by contributing a {@link WebMvcConfigurer} to the application context.
+ *     {@link DelegatingWebMvcConfiguration} is a subclass of {@code WebMvcConfigurationSupport} that detects and
+ *     delegates to all beans of type {@link WebMvcConfigurer} allowing them to customize the configuration provided by
+ *     {@code WebMvcConfigurationSupport}. This is the class actually imported by {@link EnableWebMvc @EnableWebMvc}.
  */
 @Configuration
 public class RestConfiguration extends DelegatingWebMvcConfiguration {
 
     private ContentNegotiationManager contentNegotiationManager;
 
-    @Autowired private ApplicationContext applicationContext;
+    @Autowired
+    private ApplicationContext applicationContext;
 
-    @Autowired private GeoServer geoServer;
+    @Autowired
+    private GeoServer geoServer;
 
     /**
-     * Return a {@link ContentNegotiationManager} instance to use to determine requested {@linkplain
-     * MediaType media types} in a given request.
+     * Return a {@link ContentNegotiationManager} instance to use to determine requested {@linkplain MediaType media
+     * types} in a given request.
      */
     @Override
     @Bean
     public ContentNegotiationManager mvcContentNegotiationManager() {
         if (this.contentNegotiationManager == null) {
             this.contentNegotiationManager = super.mvcContentNegotiationManager();
-            this.contentNegotiationManager
-                    .getStrategies()
-                    .add(0, new DelegatingContentNegotiationStrategy());
+            this.contentNegotiationManager.getStrategies().add(0, new DelegatingContentNegotiationStrategy());
         }
         return this.contentNegotiationManager;
     }
 
     /** Allows extension point configuration of {@link ContentNegotiationStrategy}s */
-    private static class DelegatingContentNegotiationStrategy
-            implements ContentNegotiationStrategy {
+    private static class DelegatingContentNegotiationStrategy implements ContentNegotiationStrategy {
         @Override
         public List<MediaType> resolveMediaTypes(NativeWebRequest webRequest)
                 throws HttpMediaTypeNotAcceptableException {
@@ -109,8 +106,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Catalog catalog = (Catalog) applicationContext.getBean("catalog");
 
-        List<BaseMessageConverter> gsConverters =
-                GeoServerExtensions.extensions(BaseMessageConverter.class);
+        List<BaseMessageConverter> gsConverters = GeoServerExtensions.extensions(BaseMessageConverter.class);
 
         // Add default converters
         gsConverters.add(new FreemarkerHTMLMessageConverter("UTF-8"));
@@ -124,8 +120,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         EntityResolver entityResolver = catalog.getResourcePool().getEntityResolver();
         for (StyleHandler sh : Styles.handlers()) {
             for (Version ver : sh.getVersions()) {
-                gsConverters.add(
-                        new StyleReaderConverter(sh.mimeType(ver), ver, sh, entityResolver));
+                gsConverters.add(new StyleReaderConverter(sh.mimeType(ver), ver, sh, entityResolver));
                 gsConverters.add(new StyleWriterConverter(sh.mimeType(ver), ver, sh));
             }
         }
@@ -176,8 +171,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
                 // latest
                 List<Version> versions = handler.getVersions();
                 final Version firstVersion = versions.get(versions.size() - 1);
-                configurer.mediaType(
-                        handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
+                configurer.mediaType(handler.getFormat(), MediaType.valueOf(handler.mimeType(firstVersion)));
             }
         }
         // manually force SLD to v10 for backwards compatibility
@@ -218,11 +212,10 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         helper.setAlwaysUseFullPath(true);
         configurer.setUrlPathHelper(helper);
         configurer.setUseSuffixPatternMatch(true);
-        configurer.setUseTrailingSlashMatch(
-                Optional.ofNullable(geoServer)
-                        .map(g -> g.getGlobal())
-                        .map(g -> g.isTrailingSlashMatch())
-                        .orElse(true));
+        configurer.setUseTrailingSlashMatch(Optional.ofNullable(geoServer)
+                .map(g -> g.getGlobal())
+                .map(g -> g.isTrailingSlashMatch())
+                .orElse(true));
         // finally, allow any other WebMvcConfigurer in the application context to do its thing
         super.configurePathMatch(configurer);
     }

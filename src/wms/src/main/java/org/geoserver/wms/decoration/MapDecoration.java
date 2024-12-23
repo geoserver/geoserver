@@ -13,16 +13,16 @@ import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.filter.expression.Expression;
 
 /**
- * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a
- * WMS response. Decorations know how to determine their appropriate size, and how to render into a
- * given area, but leave the actual layout calculations to the {MapDecorationLayout} class.
+ * The MapDecoration class encapsulates the rendering code for an overlay to be used to enhance a WMS response.
+ * Decorations know how to determine their appropriate size, and how to render into a given area, but leave the actual
+ * layout calculations to the {MapDecorationLayout} class.
  *
  * @author David Winslow <dwinslow@opengeo.org>
  */
 public interface MapDecoration {
     /**
-     * Load in configuration parameters from a map. All subsequent paint operations should use the
-     * provided parameters. Implementations do not need to respect multiple calls to this method.
+     * Load in configuration parameters from a map. All subsequent paint operations should use the provided parameters.
+     * Implementations do not need to respect multiple calls to this method.
      *
      * @param options a Map<String,Expression> containing the configuration parameters
      * @throws Exception if required parameters are missing from the configuration
@@ -39,9 +39,8 @@ public interface MapDecoration {
     public Dimension findOptimalSize(Graphics2D g2d, WMSMapContent mapContent) throws Exception;
 
     /**
-     * Render the contents of this decoration onto the provided graphics object within the specified
-     * bounds. The WMSMapContext object can be used to provide additional info about the map for
-     * context-sensitive decorations.
+     * Render the contents of this decoration onto the provided graphics object within the specified bounds. The
+     * WMSMapContext object can be used to provide additional info about the map for context-sensitive decorations.
      *
      * @param g2d the Graphics2D object onto which the decoration should be drawn
      * @param paintArea the bounds within the graphics object where the decoration should be drawn

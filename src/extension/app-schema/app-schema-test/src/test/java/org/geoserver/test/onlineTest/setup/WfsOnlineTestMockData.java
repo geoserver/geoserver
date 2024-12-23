@@ -15,8 +15,6 @@ public class WfsOnlineTestMockData extends AbstractAppSchemaMockData {
                 "ShearDisplacementStructure",
                 "WfsOnlineTest/gsml_ShearDisplacementStructure/gsml_ShearDisplacementStructure.xml");
         addFeatureType(
-                GSML_PREFIX,
-                "DisplacementEvent",
-                "WfsOnlineTest/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
+                GSML_PREFIX, "DisplacementEvent", "WfsOnlineTest/gsml_DisplacementEvent/gsml_DisplacementEvent.xml");
     }
 }

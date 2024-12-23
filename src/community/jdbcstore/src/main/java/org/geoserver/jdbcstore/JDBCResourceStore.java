@@ -43,8 +43,7 @@ import org.geoserver.platform.resource.SimpleResourceNotificationDispatcher;
  */
 public class JDBCResourceStore implements ResourceStore {
 
-    private static final Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger(JDBCResourceStore.class);
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger(JDBCResourceStore.class);
 
     /** LockProvider used to secure resources for exclusive access */
     protected LockProvider lockProvider = new NullLockProvider();
@@ -88,43 +87,37 @@ public class JDBCResourceStore implements ResourceStore {
         dir.setResourceNotificationDispatcher(resourceNotificationDispatcher);
     }
 
-    public JDBCResourceStore(
-            DataSource ds, JDBCResourceStoreProperties config, ResourceStore oldResourceStore) {
+    public JDBCResourceStore(DataSource ds, JDBCResourceStoreProperties config, ResourceStore oldResourceStore) {
         this(ds, config);
         this.oldResourceStore = oldResourceStore;
     }
 
     public void addCachingEvents(Resource resource, boolean forceAsDir) {
         if (forceAsDir || resource.getType() == Type.DIRECTORY) {
-            resource.addListener(
-                    new ResourceListener() {
-                        @Override
-                        public void changed(ResourceNotification notify) {
-                            if (notify.getKind() == Kind.ENTRY_MODIFY
-                                    || notify.getKind() == Kind.ENTRY_CREATE) {
-                                for (Event event : notify.events()) {
-                                    if (event.getKind() == Kind.ENTRY_CREATE) {
-                                        addCachingEvents(
-                                                (JDBCResource) resource.get(event.getPath()),
-                                                false);
-                                    }
-                                }
+            resource.addListener(new ResourceListener() {
+                @Override
+                public void changed(ResourceNotification notify) {
+                    if (notify.getKind() == Kind.ENTRY_MODIFY || notify.getKind() == Kind.ENTRY_CREATE) {
+                        for (Event event : notify.events()) {
+                            if (event.getKind() == Kind.ENTRY_CREATE) {
+                                addCachingEvents((JDBCResource) resource.get(event.getPath()), false);
                             }
                         }
-                    });
+                    }
+                }
+            });
             for (Resource child : resource.list()) {
                 addCachingEvents(child, false);
             }
         } else if (resource.getType() == Type.RESOURCE) {
-            resource.addListener(
-                    new ResourceListener() {
-                        @Override
-                        public void changed(ResourceNotification notify) {
-                            if (notify.getKind() == Kind.ENTRY_MODIFY) {
-                                resource.file();
-                            }
-                        }
-                    });
+            resource.addListener(new ResourceListener() {
+                @Override
+                public void changed(ResourceNotification notify) {
+                    if (notify.getKind() == Kind.ENTRY_MODIFY) {
+                        resource.file();
+                    }
+                }
+            });
         }
     }
 
@@ -222,15 +215,10 @@ public class JDBCResourceStore implements ResourceStore {
         @Override
         public OutputStream out() {
             List<ResourceNotification.Event> events =
-                    SimpleResourceNotificationDispatcher.createEvents(
-                            this, ResourceNotification.Kind.ENTRY_CREATE);
+                    SimpleResourceNotificationDispatcher.createEvents(this, ResourceNotification.Kind.ENTRY_CREATE);
             if (entry.createResource()) {
-                resourceNotificationDispatcher.changed(
-                        new ResourceNotification(
-                                path(),
-                                ResourceNotification.Kind.ENTRY_CREATE,
-                                System.currentTimeMillis(),
-                                events));
+                resourceNotificationDispatcher.changed(new ResourceNotification(
+                        path(), ResourceNotification.Kind.ENTRY_CREATE, System.currentTimeMillis(), events));
             }
             try {
                 return new CachingOutputStreamWrapper(File.createTempFile("out.", entry.getName()));
@@ -333,15 +321,10 @@ public class JDBCResourceStore implements ResourceStore {
             lockRecursively(locks);
             try {
                 List<ResourceNotification.Event> events =
-                        SimpleResourceNotificationDispatcher.createEvents(
-                                this, ResourceNotification.Kind.ENTRY_DELETE);
+                        SimpleResourceNotificationDispatcher.createEvents(this, ResourceNotification.Kind.ENTRY_DELETE);
                 if (entry.delete()) {
-                    resourceNotificationDispatcher.changed(
-                            new ResourceNotification(
-                                    path(),
-                                    ResourceNotification.Kind.ENTRY_DELETE,
-                                    System.currentTimeMillis(),
-                                    events));
+                    resourceNotificationDispatcher.changed(new ResourceNotification(
+                            path(), ResourceNotification.Kind.ENTRY_DELETE, System.currentTimeMillis(), events));
                     return true;
                 } else {
                     return false;
@@ -363,8 +346,7 @@ public class JDBCResourceStore implements ResourceStore {
         @Override
         public boolean renameTo(Resource dest) {
             List<ResourceNotification.Event> eventsDelete =
-                    SimpleResourceNotificationDispatcher.createEvents(
-                            this, ResourceNotification.Kind.ENTRY_DELETE);
+                    SimpleResourceNotificationDispatcher.createEvents(this, ResourceNotification.Kind.ENTRY_DELETE);
             List<ResourceNotification.Event> eventsRename =
                     SimpleResourceNotificationDispatcher.createRenameEvents(this, dest);
             boolean result;
@@ -374,18 +356,10 @@ public class JDBCResourceStore implements ResourceStore {
                 result = Resources.renameByCopy(this, dest);
             }
             if (result) {
-                resourceNotificationDispatcher.changed(
-                        new ResourceNotification(
-                                path(),
-                                ResourceNotification.Kind.ENTRY_DELETE,
-                                System.currentTimeMillis(),
-                                eventsDelete));
-                resourceNotificationDispatcher.changed(
-                        new ResourceNotification(
-                                dest.path(),
-                                eventsRename.get(0).getKind(),
-                                System.currentTimeMillis(),
-                                eventsRename));
+                resourceNotificationDispatcher.changed(new ResourceNotification(
+                        path(), ResourceNotification.Kind.ENTRY_DELETE, System.currentTimeMillis(), eventsDelete));
+                resourceNotificationDispatcher.changed(new ResourceNotification(
+                        dest.path(), eventsRename.get(0).getKind(), System.currentTimeMillis(), eventsRename));
             }
             return result;
         }
@@ -418,18 +392,13 @@ public class JDBCResourceStore implements ResourceStore {
             public void close() throws IOException {
                 final Lock lock = lock();
                 try {
-                    List<ResourceNotification.Event> events =
-                            SimpleResourceNotificationDispatcher.createEvents(
-                                    JDBCResource.this, ResourceNotification.Kind.ENTRY_MODIFY);
+                    List<ResourceNotification.Event> events = SimpleResourceNotificationDispatcher.createEvents(
+                            JDBCResource.this, ResourceNotification.Kind.ENTRY_MODIFY);
 
                     entry.setContent(new FileInputStream(tempFile));
 
-                    resourceNotificationDispatcher.changed(
-                            new ResourceNotification(
-                                    path(),
-                                    ResourceNotification.Kind.ENTRY_MODIFY,
-                                    System.currentTimeMillis(),
-                                    events));
+                    resourceNotificationDispatcher.changed(new ResourceNotification(
+                            path(), ResourceNotification.Kind.ENTRY_MODIFY, System.currentTimeMillis(), events));
                 } finally {
                     lock.release();
                 }

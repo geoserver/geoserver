@@ -24,8 +24,7 @@ public class CheckBoxParamPanel extends Panel implements ParamPanel<Boolean> {
 
     private CheckBox checkBox;
 
-    public CheckBoxParamPanel(
-            final String id, final IModel<Boolean> model, final IModel paramLabelModel) {
+    public CheckBoxParamPanel(final String id, final IModel<Boolean> model, final IModel paramLabelModel) {
         super(id, model);
         Label label = new Label("paramName", paramLabelModel);
         checkBox = new CheckBox("paramValue", model);

@@ -25,15 +25,10 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
     private static final long serialVersionUID = -4030117120916582767L;
 
     public CoverageViewNewPage(PageParameters params) throws IOException {
-        this(
-                params.get(WORKSPACE).toOptionalString(),
-                params.get(COVERAGESTORE).toString(),
-                null,
-                null);
+        this(params.get(WORKSPACE).toOptionalString(), params.get(COVERAGESTORE).toString(), null, null);
     }
 
-    public CoverageViewNewPage(
-            String workspaceName, String storeName, String coverageName, CoverageInfo coverageInfo)
+    public CoverageViewNewPage(String workspaceName, String storeName, String coverageName, CoverageInfo coverageInfo)
             throws IOException {
         super(workspaceName, storeName, coverageName, coverageInfo);
     }
@@ -43,8 +38,7 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
         try {
             if (name.equalsIgnoreCase(COVERAGE_VIEW_NAME)) {
                 throw new IllegalArgumentException(
-                        "Make sure to specify a proper coverage name, different that "
-                                + COVERAGE_VIEW_NAME);
+                        "Make sure to specify a proper coverage name, different that " + COVERAGE_VIEW_NAME);
             }
             final Catalog catalog = getCatalog();
             final CatalogBuilder builder = new CatalogBuilder(catalog);
@@ -54,15 +48,12 @@ public class CoverageViewNewPage extends CoverageViewAbstractPage {
             if (coverageBands == null || coverageBands.isEmpty()) {
                 throw new IllegalArgumentException("No output bands have been specified ");
             }
-            CoverageInfo coverageInfo =
-                    coverageView.createCoverageInfo(name, coverageStoreInfo, builder);
+            CoverageInfo coverageInfo = coverageView.createCoverageInfo(name, coverageStoreInfo, builder);
             final LayerInfo layerInfo = builder.buildLayer(coverageInfo);
             setResponsePage(new ResourceConfigurationPage(layerInfo, true));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Failed to create Coverage View", e);
-            error(
-                    new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e))
-                            .getString());
+            error(new ParamResourceModel("creationFailure", this, getFirstErrorMessage(e)).getString());
         }
     }
 

@@ -23,8 +23,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.util.StringUtils;
 
 /**
- * Uses the property file <code>$GEOSERVER_DATA_DIR/security/authkey.properties</code> as the source
- * for unique user identifiers. The file format is:
+ * Uses the property file <code>$GEOSERVER_DATA_DIR/security/authkey.properties</code> as the source for unique user
+ * identifiers. The file format is:
  *
  * <ul>
  *   <li>userkey1=username1
@@ -72,21 +72,12 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         try {
             theUser = (GeoServerUser) getUserGroupService().loadUserByUsername(userName);
         } catch (UsernameNotFoundException ex) {
-            LOGGER.warning(
-                    "Cannot find user: "
-                            + userName
-                            + " in user/group service: "
-                            + getUserGroupServiceName());
+            LOGGER.warning("Cannot find user: " + userName + " in user/group service: " + getUserGroupServiceName());
             return null;
         }
 
         if (!theUser.isEnabled()) {
-            LOGGER.info(
-                    "Found user "
-                            + theUser.getUsername()
-                            + " for key "
-                            + key
-                            + ", but this user is disabled");
+            LOGGER.info("Found user " + theUser.getUsername() + " for key " + key + ", but this user is disabled");
             return null;
         }
 
@@ -103,14 +94,12 @@ public class PropertyAuthenticationKeyMapper extends AbstractAuthenticationKeyMa
         File propFile = new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         propFile = new File(propFile, AUTHKEYS_FILE);
 
-        File backupFile =
-                new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
+        File backupFile = new File(getSecurityManager().userGroup().dir(), getUserGroupServiceName());
         backupFile = new File(backupFile, AUTHKEYS_FILE + ".backup");
 
         // check if the previous synchronizing failed
         if (backupFile.exists())
-            throw new IOException(
-                    "The file: " + backupFile.getCanonicalPath() + " has to be removed first");
+            throw new IOException("The file: " + backupFile.getCanonicalPath() + " has to be removed first");
 
         // Clear the local cache
         resetUserCache();

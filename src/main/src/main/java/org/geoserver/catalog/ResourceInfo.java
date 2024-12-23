@@ -68,8 +68,8 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The native name of the resource.
      *
-     * <p>This name corresponds to the physical resource the feature type is derived from: a
-     * shapefile name, a database table, etc...
+     * <p>This name corresponds to the physical resource the feature type is derived from: a shapefile name, a database
+     * table, etc...
      */
     String getNativeName();
 
@@ -217,8 +217,8 @@ public interface ResourceInfo extends CatalogInfo {
      *
      * <p>This value represents a "fixed value" and is not calculated on the underlying dataset.
      *
-     * <p>This value is combined with {@link #getProjectionPolicy()}, {@link #getNativeCRS()} by
-     * {@link #boundingBox()} to determine user supplied bounds in native crs.
+     * <p>This value is combined with {@link #getProjectionPolicy()}, {@link #getNativeCRS()} by {@link #boundingBox()}
+     * to determine user supplied bounds in native crs.
      *
      * @return Records the bounds of the resource in native crs, or <code>null</code> if not set.
      * @uml.property name="boundingBox"
@@ -236,12 +236,12 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Returns the bounds of the resource in its declared CRS.
      *
-     * <p>This value is derived from {@link #getNativeBoundingBox()}, {@link #getNativeCRS()},
-     * {@link #getCRS()}, and {@link #getProjectionPolicy()}.
+     * <p>This value is derived from {@link #getNativeBoundingBox()}, {@link #getNativeCRS()}, {@link #getCRS()}, and
+     * {@link #getProjectionPolicy()}.
      *
-     * <p>In the case where the native bounding box is unset, {@link #getLatLonBoundingBox()} should
-     * be reprojected to {@link #getCRS()}. If the reprojection fails, null should be returned. So
-     * clients calling this method should be prepared to handle null.
+     * <p>In the case where the native bounding box is unset, {@link #getLatLonBoundingBox()} should be reprojected to
+     * {@link #getCRS()}. If the reprojection fails, null should be returned. So clients calling this method should be
+     * prepared to handle null.
      *
      * @return bounds of resource in declared CRS, or {@code null} if unable to reproject
      * @throws Exception If the bounding box can not be calculated.
@@ -284,26 +284,23 @@ public interface ResourceInfo extends CatalogInfo {
     CoordinateReferenceSystem getCRS();
 
     /**
-     * The policy that should be used with the native projection of the resource with respect to the
-     * declare projection.
+     * The policy that should be used with the native projection of the resource with respect to the declare projection.
      */
     ProjectionPolicy getProjectionPolicy();
 
     /**
-     * Sets the policy that should be used with the native projection of the resource with respect
-     * to the declare projection.
+     * Sets the policy that should be used with the native projection of the resource with respect to the declare
+     * projection.
      */
     void setProjectionPolicy(ProjectionPolicy policy);
 
     /**
      * A persistent map of metadata.
      *
-     * <p>Data in this map is intended to be persisted. Common case of use is to have services
-     * associate various bits of data with a particular resource. An example might include caching
-     * information.
+     * <p>Data in this map is intended to be persisted. Common case of use is to have services associate various bits of
+     * data with a particular resource. An example might include caching information.
      *
-     * <p>The key values of this map are of type {@link String} and values are of type {@link
-     * Serializable}.
+     * <p>The key values of this map are of type {@link String} and values are of type {@link Serializable}.
      *
      * @uml.property name="metadata"
      */
@@ -319,8 +316,8 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * Derived property indicating whether both this ResourceInfo and its StoreInfo are enabled.
      *
-     * <p>Note this is a derived property and hence not part of the model. Consider it equal to
-     * {@code getStore() != null && getStore().isEnabled() && this.isEnabled()}
+     * <p>Note this is a derived property and hence not part of the model. Consider it equal to {@code getStore() !=
+     * null && getStore().isEnabled() && this.isEnabled()}
      *
      * @return the chained enabled status considering this object and it's StoreInfo parent
      * @see #getStore()
@@ -365,18 +362,15 @@ public interface ResourceInfo extends CatalogInfo {
     /**
      * The handle to the live resource.
      *
-     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> is used to report
-     * the progress of obtaining the resource and to report any warnings / errors that occur during.
+     * <p>This method does I/O and is potentially blocking. The <tt>listener</tt> is used to report the progress of
+     * obtaining the resource and to report any warnings / errors that occur during.
      *
      * @uml.property name="resource"
      * @uml.associationEnd inverse="resourceInfo:org.geoserver.catalog.Resource"
      */
     // Resource getResource(ProgressListener listener) throws IOException;
 
-    /**
-     * Returns true if the resource existence should be advertised (true by default, unless
-     * otherwise set)
-     */
+    /** Returns true if the resource existence should be advertised (true by default, unless otherwise set) */
     boolean isAdvertised();
 
     /** Set to true if the resource should be advertised, false otherwise */
@@ -394,15 +388,12 @@ public interface ResourceInfo extends CatalogInfo {
     /** Set the list of disabled services names for this resource */
     void setDisabledServices(List<String> disabledServices);
 
-    /**
-     * Flag that determines if complex features will be converted to simple feature for compatible
-     * output formats.
-     */
+    /** Flag that determines if complex features will be converted to simple feature for compatible output formats. */
     boolean isSimpleConversionEnabled();
 
     /**
-     * Sets the flag that determines if complex features will be converted to simple feature for
-     * compatible output formats.
+     * Sets the flag that determines if complex features will be converted to simple feature for compatible output
+     * formats.
      */
     void setSimpleConversionEnabled(boolean activateComplexToSimpleOutput);
 }

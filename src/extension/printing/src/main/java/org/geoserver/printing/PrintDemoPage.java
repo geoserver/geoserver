@@ -17,23 +17,15 @@ public class PrintDemoPage extends GeoServerBasePage implements IHeaderContribut
 
     @Override
     public void renderHead(IHeaderResponse response) {
-        response.render(
-                CssHeaderItem.forUrl(
-                        "http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css", null));
-        response.render(
-                CssHeaderItem.forUrl(
-                        "http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css", null));
-        response.render(
-                JavaScriptHeaderItem.forUrl("http://extjs.cachefly.net/builds/ext-cdn-771.js"));
+        response.render(CssHeaderItem.forUrl("http://extjs.cachefly.net/ext-2.2.1/resources/css/ext-all.css", null));
+        response.render(CssHeaderItem.forUrl("http://extjs.cachefly.net/ext-2.2.1/examples/shared/examples.css", null));
+        response.render(JavaScriptHeaderItem.forUrl("http://extjs.cachefly.net/builds/ext-cdn-771.js"));
         response.render(JavaScriptHeaderItem.forUrl("http://openlayers.org/api/2.8/OpenLayers.js"));
         response.render(
-                JavaScriptHeaderItem.forReference(
-                        new JavaScriptResourceReference(PrintDemoPage.class, "GeoExt.js")));
+                JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(PrintDemoPage.class, "GeoExt.js")));
+        response.render(JavaScriptHeaderItem.forReference(
+                new JavaScriptResourceReference(PrintDemoPage.class, "GeoExtPrinting.js")));
         response.render(
-                JavaScriptHeaderItem.forReference(
-                        new JavaScriptResourceReference(PrintDemoPage.class, "GeoExtPrinting.js")));
-        response.render(
-                JavaScriptHeaderItem.forReference(
-                        new JavaScriptResourceReference(PrintDemoPage.class, "Printing.js")));
+                JavaScriptHeaderItem.forReference(new JavaScriptResourceReference(PrintDemoPage.class, "Printing.js")));
     }
 }

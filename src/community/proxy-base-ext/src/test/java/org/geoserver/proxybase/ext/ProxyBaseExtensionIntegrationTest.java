@@ -21,13 +21,13 @@ public class ProxyBaseExtensionIntegrationTest extends ProxyBaseExtensionTestSup
 
     @Test
     public void testMangleWithHeader() throws Exception {
-        MockHttpServletRequest request =
-                createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        MockHttpServletRequest request = createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader("fixedCollection", "exampleCollection");
         MockHttpServletResponse response = dispatch(request);
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document dom =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         assertEquals(
                 "https://wfs.example.com/exampleCollection?request=GetCapabilities",
                 dom.getElementsByTagName("Get")
@@ -39,13 +39,13 @@ public class ProxyBaseExtensionIntegrationTest extends ProxyBaseExtensionTestSup
 
     @Test
     public void testMangleWithNotEnoughHeaders() throws Exception {
-        MockHttpServletRequest request =
-                createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        MockHttpServletRequest request = createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader("fixedCollection", "exampleCollection");
         MockHttpServletResponse response = dispatch(request);
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document dom =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         Element root = dom.getDocumentElement();
         assertEquals(
                 "http://www.opengis.net/wfs http://localhost:8080/geoserver/schemas/wfs/1.0.0/WFS-capabilities.xsd",
@@ -54,14 +54,14 @@ public class ProxyBaseExtensionIntegrationTest extends ProxyBaseExtensionTestSup
 
     @Test
     public void testMangleWithEnoughHeaders() throws Exception {
-        MockHttpServletRequest request =
-                createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
+        MockHttpServletRequest request = createRequest("wfs?service=WFS&version=1.0.0&request=getCapabilities");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         request.addHeader("fixedCollection", "exampleCollection");
         request.addHeader("fixedFeature", "exampleFeature");
         MockHttpServletResponse response = dispatch(request);
-        Document dom = dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        Document dom =
+                dom(new ByteArrayInputStream(response.getContentAsString().getBytes()));
         Element root = dom.getDocumentElement();
         assertEquals(
                 "http://www.opengis.net/wfs https://wfs.example.com/exampleCollection/exampleFeature",

@@ -51,17 +51,12 @@ public class EditUserPageTest extends AbstractUserPageTest {
 
         tester.assertModelValue("form:username", "user1");
         GeoServerPasswordEncoder encoder =
-                (GeoServerPasswordEncoder)
-                        GeoServerExtensions.bean(ugService.getPasswordEncoderName());
-        String enc =
-                (String)
-                        tester.getComponentFromLastRenderedPage("form:password")
-                                .getDefaultModelObject();
+                (GeoServerPasswordEncoder) GeoServerExtensions.bean(ugService.getPasswordEncoderName());
+        String enc = (String)
+                tester.getComponentFromLastRenderedPage("form:password").getDefaultModelObject();
         assertTrue(encoder.isPasswordValid(enc, "11111", null));
-        enc =
-                (String)
-                        tester.getComponentFromLastRenderedPage("form:confirmPassword")
-                                .getDefaultModelObject();
+        enc = (String)
+                tester.getComponentFromLastRenderedPage("form:confirmPassword").getDefaultModelObject();
         assertTrue(encoder.isPasswordValid(enc, "11111", null));
         tester.assertModelValue("form:enabled", Boolean.TRUE);
 
@@ -80,8 +75,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
 
         // reopen new role dialog again to ensure that the current state is not lost
         openCloseRolePanel(EditUserPage.class);
-        assertCalculatedRoles(
-                new String[] {"ROLE_AUTHENTICATED", "ROLE_NEW", "ROLE_WFS", "ROLE_WMS"});
+        assertCalculatedRoles(new String[] {"ROLE_AUTHENTICATED", "ROLE_NEW", "ROLE_WFS", "ROLE_WMS"});
 
         addNewGroup("testgroup");
         assignGroup("testgroup");
@@ -122,15 +116,14 @@ public class EditUserPageTest extends AbstractUserPageTest {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getROUserGroupServiceName());
         current = ugService.getUserByUsername("user1");
         tester.startPage(
-                page =
-                        (AbstractUserPage)
-                                new EditUserPage(getROUserGroupServiceName(), current)
-                                        .setReturnPage(returnPage));
+                page = (AbstractUserPage)
+                        new EditUserPage(getROUserGroupServiceName(), current).setReturnPage(returnPage));
         tester.assertRenderedPage(EditUserPage.class);
 
         assertFalse(tester.getComponentFromLastRenderedPage("form:username").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:password").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
+        assertFalse(
+                tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:enabled").isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("form:roles").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:groups").isEnabled());
@@ -143,9 +136,7 @@ public class EditUserPageTest extends AbstractUserPageTest {
 
         SortedSet<GeoServerRole> roleList = gaService.getRolesForUser("user1");
         assertEquals(1, roleList.size());
-        assertTrue(
-                roleList.contains(
-                        gaService.getRoleByName(GeoServerRole.ADMIN_ROLE.getAuthority())));
+        assertTrue(roleList.contains(gaService.getRoleByName(GeoServerRole.ADMIN_ROLE.getAuthority())));
     }
 
     @Override
@@ -162,7 +153,8 @@ public class EditUserPageTest extends AbstractUserPageTest {
         tester.assertRenderedPage(EditUserPage.class);
         assertFalse(tester.getComponentFromLastRenderedPage("form:username").isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("form:password").isEnabled());
-        assertTrue(tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
+        assertTrue(
+                tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("form:enabled").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:roles").isEnabled());
         assertTrue(tester.getComponentFromLastRenderedPage("form:groups").isEnabled());
@@ -187,14 +179,13 @@ public class EditUserPageTest extends AbstractUserPageTest {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getROUserGroupServiceName());
         current = ugService.getUserByUsername("user1");
         tester.startPage(
-                page =
-                        (AbstractUserPage)
-                                new EditUserPage(getROUserGroupServiceName(), current)
-                                        .setReturnPage(returnPage));
+                page = (AbstractUserPage)
+                        new EditUserPage(getROUserGroupServiceName(), current).setReturnPage(returnPage));
         tester.assertRenderedPage(EditUserPage.class);
         assertFalse(tester.getComponentFromLastRenderedPage("form:username").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:password").isEnabled());
-        assertFalse(tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
+        assertFalse(
+                tester.getComponentFromLastRenderedPage("form:confirmPassword").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:enabled").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:roles").isEnabled());
         assertFalse(tester.getComponentFromLastRenderedPage("form:groups").isEnabled());
@@ -207,10 +198,8 @@ public class EditUserPageTest extends AbstractUserPageTest {
     protected void initializeTester() {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(
-                page =
-                        (AbstractUserPage)
-                                new EditUserPage(getUserGroupServiceName(), current)
-                                        .setReturnPage(returnPage));
+                page = (AbstractUserPage)
+                        new EditUserPage(getUserGroupServiceName(), current).setReturnPage(returnPage));
     }
 
     @Test

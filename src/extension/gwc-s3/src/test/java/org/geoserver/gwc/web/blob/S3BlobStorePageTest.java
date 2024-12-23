@@ -57,8 +57,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         tester.assertInvisible("blobConfigContainer:blobStoreForm");
 
         DropDownChoice typeOfBlobStore =
-                (DropDownChoice)
-                        tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
+                (DropDownChoice) tester.getComponentFromLastRenderedPage("selector:typeOfBlobStore");
         assertEquals(2, typeOfBlobStore.getChoices().size());
         assertEquals("File BlobStore", typeOfBlobStore.getChoices().get(0).toString());
         assertEquals("S3 BlobStore", typeOfBlobStore.getChoices().get(1).toString());
@@ -66,12 +65,10 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "0");
 
         tester.assertVisible("blobConfigContainer:blobStoreForm");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", FileBlobStorePanel.class);
 
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
     }
 
     @Test
@@ -80,8 +77,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         executeAjaxEventBehavior("selector:typeOfBlobStore", "change", "1");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "myblobstore");
         formTester.setValue("enabled", false);
@@ -160,8 +156,7 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
 
         tester.startPage(page);
         tester.assertVisible("blobConfigContainer:blobStoreForm");
-        tester.assertComponent(
-                "blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
+        tester.assertComponent("blobConfigContainer:blobStoreForm:blobSpecificPanel", S3BlobStorePanel.class);
 
         FormTester formTester = tester.newFormTester("blobConfigContainer:blobStoreForm");
         formTester.setValue("name", "yourblobstore");
@@ -184,8 +179,8 @@ public class S3BlobStorePageTest extends GeoServerWicketTestSupport {
     }
 
     /**
-     * Test for the S3 BlobStore Panel when no credentials are given and authorization follows AWS
-     * Default Credential Chain Based on testNew test case
+     * Test for the S3 BlobStore Panel when no credentials are given and authorization follows AWS Default Credential
+     * Chain Based on testNew test case
      *
      * @author Mikko Kolehmainen
      */

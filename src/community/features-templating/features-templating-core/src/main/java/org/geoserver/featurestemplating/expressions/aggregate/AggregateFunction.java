@@ -15,17 +15,16 @@ import org.geotools.filter.capability.FunctionNameImpl;
 import org.geotools.util.logging.Logging;
 
 /**
- * Function capable of performing aggregate operations over a List of values. Supported aggregate
- * operations are: MAX,MIN,AVG,UNIQUE,JOIN.
+ * Function capable of performing aggregate operations over a List of values. Supported aggregate operations are:
+ * MAX,MIN,AVG,UNIQUE,JOIN.
  */
 public class AggregateFunction extends FunctionExpressionImpl implements VolatileFunction {
 
-    private static FunctionName NAME =
-            new FunctionNameImpl(
-                    "aggregate",
-                    parameter("result", Object.class),
-                    parameter("value", Object.class),
-                    parameter("aggregationType", String.class, 1, 1));
+    private static FunctionName NAME = new FunctionNameImpl(
+            "aggregate",
+            parameter("result", Object.class),
+            parameter("value", Object.class),
+            parameter("aggregationType", String.class, 1, 1));
 
     public AggregateFunction() {
         super(NAME);

@@ -59,10 +59,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
                         }
                     }
                 } catch (Exception e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "Error converting \"" + value + "\" to " + target.getName(),
-                            e);
+                    LOGGER.log(Level.WARNING, "Error converting \"" + value + "\" to " + target.getName(), e);
                 }
             }
 
@@ -71,8 +68,7 @@ public class GeoToolsConverterLocator implements IConverterLocator {
 
         @Override
         public String convertToString(Object value, Locale locale) {
-            Set<ConverterFactory> rconverters =
-                    Converters.getConverterFactories(target, String.class);
+            Set<ConverterFactory> rconverters = Converters.getConverterFactories(target, String.class);
             for (ConverterFactory cf : rconverters) {
                 try {
                     Converter converter = cf.createConverter(value.getClass(), String.class, null);

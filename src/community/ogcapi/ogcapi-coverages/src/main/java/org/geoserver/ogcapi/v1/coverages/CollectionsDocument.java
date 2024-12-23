@@ -23,8 +23,8 @@ import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 
 /**
- * A class representing the Coverages server "collections" in a way that Jackson can easily
- * translate to JSON/YAML (and can be used as a Freemarker template model)
+ * A class representing the Coverages server "collections" in a way that Jackson can easily translate to JSON/YAML (and
+ * can be used as a Freemarker template model)
  */
 @JsonPropertyOrder({"links", "collections"})
 public class CollectionsDocument extends AbstractDocument {
@@ -43,8 +43,7 @@ public class CollectionsDocument extends AbstractDocument {
         String path = "ogc/coverages/v1/collections/";
         addSelfLinks(path);
         skipInvalid =
-                geoServer.getGlobal().getResourceErrorHandling()
-                        == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
+                geoServer.getGlobal().getResourceErrorHandling() == ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS;
     }
 
     @Override
@@ -56,8 +55,7 @@ public class CollectionsDocument extends AbstractDocument {
     @JacksonXmlProperty(localName = "Collection")
     @SuppressWarnings("PMD.CloseResource")
     public Iterator<CollectionDocument> getCollections() {
-        CloseableIterator<CoverageInfo> coverages =
-                geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
+        CloseableIterator<CoverageInfo> coverages = geoServer.getCatalog().list(CoverageInfo.class, Filter.INCLUDE);
         return new Iterator<CollectionDocument>() {
 
             CollectionDocument next;
@@ -72,24 +70,17 @@ public class CollectionsDocument extends AbstractDocument {
                     CoverageInfo coverage = coverages.next();
                     try {
                         List<String> crs =
-                                CoveragesService.getCoverageCRS(
-                                        coverage, Collections.singletonList("#/crs"));
+                                CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
                         CollectionDocument collection = getCollectionDocument(coverage, coverages);
                         next = collection;
                         return next != null;
                     } catch (Exception e) {
                         if (skipInvalid) {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Skipping coverage type " + coverage.prefixedName());
+                            LOGGER.log(Level.WARNING, "Skipping coverage type " + coverage.prefixedName());
                         } else {
-                            LOGGER.log(
-                                    Level.WARNING,
-                                    "Failed to build collection for " + coverage.prefixedName(),
-                                    e);
+                            LOGGER.log(Level.WARNING, "Failed to build collection for " + coverage.prefixedName(), e);
                             coverages.close();
-                            throw new ServiceException(
-                                    "Failed to iterate over the coverage types in the catalog", e);
+                            throw new ServiceException("Failed to iterate over the coverage types in the catalog", e);
                         }
                     }
                 }
@@ -107,10 +98,9 @@ public class CollectionsDocument extends AbstractDocument {
         };
     }
 
-    private CollectionDocument getCollectionDocument(
-            CoverageInfo coverage, CloseableIterator<CoverageInfo> coverages) throws IOException {
-        List<String> crs =
-                CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
+    private CollectionDocument getCollectionDocument(CoverageInfo coverage, CloseableIterator<CoverageInfo> coverages)
+            throws IOException {
+        List<String> crs = CoveragesService.getCoverageCRS(coverage, Collections.singletonList("#/crs"));
         CollectionDocument collection = new CollectionDocument(geoServer, coverage, crs);
         return collection;
     }

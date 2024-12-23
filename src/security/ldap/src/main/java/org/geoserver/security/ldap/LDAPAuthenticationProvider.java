@@ -25,8 +25,7 @@ import org.springframework.security.ldap.authentication.LdapAuthenticationProvid
 /**
  * LDAP authentication provider.
  *
- * <p>This class doesn't really do anything, it delegates fully to {@link
- * LdapAuthenticationProvider}.
+ * <p>This class doesn't really do anything, it delegates fully to {@link LdapAuthenticationProvider}.
  *
  * @author Justin Deoliveira, OpenGeo
  */
@@ -38,8 +37,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
     // optional role to be remapped to ROLE_ADMINISTRATOR
     private String groupAdminRole;
 
-    public LDAPAuthenticationProvider(
-            AuthenticationProvider authProvider, String adminRole, String groupAdminRole) {
+    public LDAPAuthenticationProvider(AuthenticationProvider authProvider, String adminRole, String groupAdminRole) {
         super(authProvider);
         this.adminRole = adminRole;
         this.groupAdminRole = groupAdminRole;
@@ -51,8 +49,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
     }
 
     @Override
-    protected Authentication doAuthenticate(
-            Authentication authentication, HttpServletRequest request)
+    protected Authentication doAuthenticate(Authentication authentication, HttpServletRequest request)
             throws AuthenticationException {
 
         UsernamePasswordAuthenticationToken auth =
@@ -76,9 +73,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
         if (!auth.getAuthorities().contains(GeoServerRole.AUTHENTICATED_ROLE)) {
             roles.add(GeoServerRole.AUTHENTICATED_ROLE);
         }
-        if (adminRole != null
-                && !adminRole.equals("")
-                && !roles.contains(GeoServerRole.ADMIN_ROLE)) {
+        if (adminRole != null && !adminRole.equals("") && !roles.contains(GeoServerRole.ADMIN_ROLE)) {
             for (GrantedAuthority authority : auth.getAuthorities()) {
                 if (authority.getAuthority().equalsIgnoreCase("ROLE_" + adminRole)) {
                     roles.add(GeoServerRole.ADMIN_ROLE);
@@ -86,9 +81,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
                 }
             }
         }
-        if (groupAdminRole != null
-                && !groupAdminRole.equals("")
-                && !roles.contains(GeoServerRole.GROUP_ADMIN_ROLE)) {
+        if (groupAdminRole != null && !groupAdminRole.equals("") && !roles.contains(GeoServerRole.GROUP_ADMIN_ROLE)) {
             for (GrantedAuthority authority : auth.getAuthorities()) {
                 if (authority.getAuthority().equalsIgnoreCase("ROLE_" + groupAdminRole)) {
                     roles.add(GeoServerRole.GROUP_ADMIN_ROLE);
@@ -97,8 +90,7 @@ public class LDAPAuthenticationProvider extends DelegatingAuthenticationProvider
             }
         }
         UsernamePasswordAuthenticationToken newAuth =
-                new UsernamePasswordAuthenticationToken(
-                        auth.getPrincipal(), auth.getCredentials(), roles);
+                new UsernamePasswordAuthenticationToken(auth.getPrincipal(), auth.getCredentials(), roles);
         newAuth.setDetails(auth.getDetails());
         return newAuth;
     }

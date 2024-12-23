@@ -20,8 +20,7 @@ public class KMLMap extends WebMap {
 
     KmlEncodingContext kmlEncodingContext;
 
-    public KMLMap(
-            WMSMapContent map, KmlEncodingContext kmlEncodingContext, Kml kml, String mimeType) {
+    public KMLMap(WMSMapContent map, KmlEncodingContext kmlEncodingContext, Kml kml, String mimeType) {
         super(map);
         this.kml = kml;
         this.kmlEncodingContext = kmlEncodingContext;

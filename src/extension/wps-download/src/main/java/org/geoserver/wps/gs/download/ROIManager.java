@@ -16,8 +16,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 
 /**
- * This class is used for managing ROI and its CRS. ROIManager provides utility method like
- * reprojecting the ROI in the desired CRS.
+ * This class is used for managing ROI and its CRS. ROIManager provides utility method like reprojecting the ROI in the
+ * desired CRS.
  *
  * @author Simone Giannecchini, GeoSolutions
  */
@@ -59,8 +59,8 @@ final class ROIManager {
      * Constructor.
      *
      * @param roi original ROI as a JTS geometry
-     * @param roiCRS {@link CoordinateReferenceSystem} for the provided geometry. If this is null
-     *     the CRS must be provided with the USerData of the roi
+     * @param roiCRS {@link CoordinateReferenceSystem} for the provided geometry. If this is null the CRS must be
+     *     provided with the USerData of the roi
      */
     public ROIManager(Geometry roi, CoordinateReferenceSystem roiCRS) {
         this.originalRoi = roi;
@@ -80,8 +80,7 @@ final class ROIManager {
     }
 
     /**
-     * Reproject the initial roi to the provided CRS which is supposedly the native CRS of the data
-     * to clip.
+     * Reproject the initial roi to the provided CRS which is supposedly the native CRS of the data to clip.
      *
      * @param nativeCRS a valid instance of {@link CoordinateReferenceSystem}
      * @throws IOException in case something bad happens.
@@ -109,17 +108,15 @@ final class ROIManager {
     }
 
     /**
-     * Reproject the initial roi to the provided CRS which is supposedly the target CRS as per the
-     * request.
+     * Reproject the initial roi to the provided CRS which is supposedly the target CRS as per the request.
      *
-     * <p>This method should be called once the native CRS has been set, that is the {@link
-     * #useNativeCRS(CoordinateReferenceSystem)} has been called.
+     * <p>This method should be called once the native CRS has been set, that is the
+     * {@link #useNativeCRS(CoordinateReferenceSystem)} has been called.
      *
      * @param targetCRS a valid instance of {@link CoordinateReferenceSystem}
      * @throws IOException in case something bad happens.
      */
-    public void useTargetCRS(final CoordinateReferenceSystem targetCRS)
-            throws IOException, FactoryException {
+    public void useTargetCRS(final CoordinateReferenceSystem targetCRS) throws IOException, FactoryException {
         if (targetCRS == null) {
             throw new IllegalArgumentException("The provided targetCRS is null");
         }
@@ -145,9 +142,7 @@ final class ROIManager {
 
             // Back to the minimal roiInTargetCrs for future clipping if needed.
             roiInTargetCRS =
-                    roiCrsEqualsTargetCrs
-                            ? originalRoi
-                            : DownloadUtilities.transformGeometry(originalRoi, targetCRS);
+                    roiCrsEqualsTargetCrs ? originalRoi : DownloadUtilities.transformGeometry(originalRoi, targetCRS);
 
             // touch safeRoiInNativeCRS
             safeRoiInNativeCRS = DownloadUtilities.transformGeometry(safeRoiInTargetCRS, nativeCRS);

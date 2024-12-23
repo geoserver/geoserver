@@ -189,11 +189,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         }
         if (dao == null) {
             LOGGER.warning(
-                    "monitoring storage "
-                            + storage
-                            + " not found, falling back to '"
-                            + MemoryMonitorDAO.NAME
-                            + "'");
+                    "monitoring storage " + storage + " not found, falling back to '" + MemoryMonitorDAO.NAME + "'");
             dao = new MemoryMonitorDAO();
         }
 
@@ -202,8 +198,8 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     }
 
     /**
-     * Allows to retrieve a generic property from the configuration. Extensions and plugins are
-     * supposed to use the plugin.property naming convention, passing both a prefix and a name
+     * Allows to retrieve a generic property from the configuration. Extensions and plugins are supposed to use the
+     * plugin.property naming convention, passing both a prefix and a name
      *
      * @param prefix namespace prefix
      * @param name name
@@ -213,15 +209,10 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         String key = prefix == null ? name : prefix + "." + name;
         Object value = props().get(key);
         if (value != null) {
-            T converted =
-                    Converters.convert(
-                            value, target, new Hints(ConverterFactory.SAFE_CONVERSION, true));
+            T converted = Converters.convert(value, target, new Hints(ConverterFactory.SAFE_CONVERSION, true));
             if (converted == null) {
                 throw new IllegalArgumentException(
-                        "Object "
-                                + value
-                                + " could not be converted to the target class "
-                                + target);
+                        "Object " + value + " could not be converted to the target class " + target);
             }
             return converted;
         } else {
@@ -266,9 +257,7 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
     public Resource getConfigurationFile(GeoServerResourceLoader loader) throws IOException {
         Resource f = loader.get(Paths.path("monitoring", MonitorConfig.PROPERTYFILENAME));
         if (!Resources.exists(f)) {
-            IOUtils.copy(
-                    MonitorConfig.class.getResourceAsStream(MonitorConfig.PROPERTYFILENAME),
-                    f.out());
+            IOUtils.copy(MonitorConfig.class.getResourceAsStream(MonitorConfig.PROPERTYFILENAME), f.out());
         }
         return f;
     }
@@ -278,17 +267,14 @@ public class MonitorConfig implements GeoServerPluginConfigurator, ApplicationCo
         if (loader != null) {
             Resource f = getConfigurationFile(loader);
 
-            Resource targetDir =
-                    Files.asResource(
-                            resourceLoader.findOrCreateDirectory(
-                                    Paths.convert(loader.getBaseDirectory(), f.parent().dir())));
+            Resource targetDir = Files.asResource(resourceLoader.findOrCreateDirectory(
+                    Paths.convert(loader.getBaseDirectory(), f.parent().dir())));
 
             Resources.copy(f.file(), targetDir);
         } else if (fw != null && fw.getResource() != null) {
             Resources.copy(fw.getFile(), Files.asResource(resourceLoader.getBaseDirectory()));
         } else if (props != null) {
-            File monitoringConfigurationFile =
-                    Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
+            File monitoringConfigurationFile = Resources.file(resourceLoader.get(MonitorConfig.PROPERTYFILENAME), true);
             try (OutputStream out = Files.out(monitoringConfigurationFile)) {
                 props.store(out, "");
                 out.flush();

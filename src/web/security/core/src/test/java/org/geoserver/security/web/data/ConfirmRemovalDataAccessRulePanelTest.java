@@ -16,8 +16,7 @@ import org.geoserver.web.ComponentBuilder;
 import org.geoserver.web.FormTestPage;
 import org.junit.Test;
 
-public class ConfirmRemovalDataAccessRulePanelTest
-        extends AbstractConfirmRemovalPanelTest<DataAccessRule> {
+public class ConfirmRemovalDataAccessRulePanelTest extends AbstractConfirmRemovalPanelTest<DataAccessRule> {
     private static final long serialVersionUID = 1L;
 
     @Test
@@ -28,25 +27,22 @@ public class ConfirmRemovalDataAccessRulePanelTest
 
     @Override
     protected void setupPanel(final List<DataAccessRule> roots) {
-        tester.startPage(
-                new FormTestPage(
-                        new ComponentBuilder() {
-                            private static final long serialVersionUID = 1L;
+        tester.startPage(new FormTestPage(new ComponentBuilder() {
+            private static final long serialVersionUID = 1L;
 
-                            @Override
-                            public Component buildComponent(String id) {
-                                return new ConfirmRemovalDataAccessRulePanel(id, roots) {
-                                    @Override
-                                    protected IModel<String> canRemove(DataAccessRule data) {
-                                        SelectionDataRuleRemovalLink link =
-                                                new SelectionDataRuleRemovalLink("XXX", null, null);
-                                        return link.canRemove(data);
-                                    }
+            @Override
+            public Component buildComponent(String id) {
+                return new ConfirmRemovalDataAccessRulePanel(id, roots) {
+                    @Override
+                    protected IModel<String> canRemove(DataAccessRule data) {
+                        SelectionDataRuleRemovalLink link = new SelectionDataRuleRemovalLink("XXX", null, null);
+                        return link.canRemove(data);
+                    }
 
-                                    private static final long serialVersionUID = 1L;
-                                };
-                            }
-                        }));
+                    private static final long serialVersionUID = 1L;
+                };
+            }
+        }));
     }
 
     @Override

@@ -144,32 +144,26 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         GeoServerInfo global = geoServer.getFactory().createGlobal();
         geoServer.setGlobal(global);
 
-        Executors.newSingleThreadExecutor()
-                .execute(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                testSupport
-                                        .getFacade()
-                                        .getConfigDatabase()
-                                        .lock(geoServer.getGlobal().getId(), 60000);
-                            }
-                        });
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                testSupport
+                        .getFacade()
+                        .getConfigDatabase()
+                        .lock(geoServer.getGlobal().getId(), 60000);
+            }
+        });
 
-        RunnableFuture<Void> future =
-                new FutureTask<Void>(
-                        new Callable<Void>() {
-                            @Override
-                            public Void call() throws Exception {
-                                geoServer.save(geoServer.getGlobal());
-                                return null;
-                            }
-                        });
-        assertThrows(
-                TimeoutException.class,
-                () -> {
-                    future.get(5, TimeUnit.SECONDS);
-                });
+        RunnableFuture<Void> future = new FutureTask<Void>(new Callable<Void>() {
+            @Override
+            public Void call() throws Exception {
+                geoServer.save(geoServer.getGlobal());
+                return null;
+            }
+        });
+        assertThrows(TimeoutException.class, () -> {
+            future.get(5, TimeUnit.SECONDS);
+        });
     }
 
     // Would have put this on GeoServerImplTest, but it depends on WMS and WFS InfoImpl classes
@@ -250,9 +244,7 @@ public class JDBCGeoServerImplTest extends GeoServerImplTest {
         super.testServiceWithWorkspace();
 
         // check removing workspace
-        geoServer
-                .getCatalog()
-                .remove(geoServer.getCatalog().getWorkspaceByName("TEST-WORKSPACE-1"));
+        geoServer.getCatalog().remove(geoServer.getCatalog().getWorkspaceByName("TEST-WORKSPACE-1"));
 
         assertNull(geoServer.getServiceByName("SERVICE-1-WS-1", ServiceInfo.class));
     }

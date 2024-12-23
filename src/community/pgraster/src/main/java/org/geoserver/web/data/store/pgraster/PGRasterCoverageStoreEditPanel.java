@@ -44,19 +44,14 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
         configsContainer.setOutputMarkupId(true);
         add(configsContainer);
 
-        final PGRasterPanel advancedConfigPanel =
-                new PGRasterPanel("pgpanel", paramsModel, storeEditForm);
+        final PGRasterPanel advancedConfigPanel = new PGRasterPanel("pgpanel", paramsModel, storeEditForm);
         advancedConfigPanel.setOutputMarkupId(true);
         advancedConfigPanel.setVisible(false);
         configsContainer.add(advancedConfigPanel);
 
         // TODO: Check whether this constructor is properly setup
-        final TextParamPanel url =
-                new TextParamPanel(
-                        "urlPanel",
-                        new PropertyModel(paramsModel, "URL"),
-                        new ResourceModel("url", "URL"),
-                        true);
+        final TextParamPanel url = new TextParamPanel(
+                "urlPanel", new PropertyModel(paramsModel, "URL"), new ResourceModel("url", "URL"), true);
         final FormComponent urlFormComponent = url.getFormComponent();
         urlFormComponent.add(new FileExistsValidator());
         add(url);
@@ -65,45 +60,43 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
         IModel<Boolean> enabledModel = new Model<Boolean>(false);
         enabled = new CheckBox("enabled", enabledModel);
         add(enabled);
-        enabled.add(
-                new AjaxFormComponentUpdatingBehavior("click") {
+        enabled.add(new AjaxFormComponentUpdatingBehavior("click") {
 
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        Boolean visible = enabled.getModelObject();
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                Boolean visible = enabled.getModelObject();
 
-                        advancedConfigPanel.setVisible(visible);
-                        target.add(configsContainer);
-                    }
-                });
+                advancedConfigPanel.setVisible(visible);
+                target.add(configsContainer);
+            }
+        });
 
         /*
          * Listen to form submission and update the model's URL
          */
-        storeEditForm.add(
-                new IFormValidator() {
-                    private static final long serialVersionUID = 1L;
+        storeEditForm.add(new IFormValidator() {
+            private static final long serialVersionUID = 1L;
 
-                    @Override
-                    public FormComponent[] getDependentFormComponents() {
-                        if (enabled.getModelObject()) {
-                            return advancedConfigPanel.getDependentFormComponents();
-                        } else {
-                            return new FormComponent[] {urlFormComponent};
-                        }
-                    }
+            @Override
+            public FormComponent[] getDependentFormComponents() {
+                if (enabled.getModelObject()) {
+                    return advancedConfigPanel.getDependentFormComponents();
+                } else {
+                    return new FormComponent[] {urlFormComponent};
+                }
+            }
 
-                    @Override
-                    public void validate(final Form form) {
-                        CoverageStoreInfo storeInfo = (CoverageStoreInfo) form.getModelObject();
-                        String coverageUrl = urlFormComponent.getValue();
-                        if (enabled.getModelObject()) {
-                            coverageUrl = advancedConfigPanel.buildURL() + coverageUrl;
-                        }
+            @Override
+            public void validate(final Form form) {
+                CoverageStoreInfo storeInfo = (CoverageStoreInfo) form.getModelObject();
+                String coverageUrl = urlFormComponent.getValue();
+                if (enabled.getModelObject()) {
+                    coverageUrl = advancedConfigPanel.buildURL() + coverageUrl;
+                }
 
-                        storeInfo.setURL(coverageUrl);
-                    }
-                });
+                storeInfo.setURL(coverageUrl);
+            }
+        });
     }
 
     private FormComponent addTextPanel(final IModel paramsModel, final String paramName) {
@@ -112,12 +105,8 @@ public final class PGRasterCoverageStoreEditPanel extends StoreEditPanel {
 
         final boolean required = true;
 
-        final TextParamPanel textParamPanel =
-                new TextParamPanel(
-                        paramName,
-                        new MapModel(paramsModel, paramName),
-                        new ResourceModel(resourceKey, paramName),
-                        required);
+        final TextParamPanel textParamPanel = new TextParamPanel(
+                paramName, new MapModel(paramsModel, paramName), new ResourceModel(resourceKey, paramName), required);
         textParamPanel.getFormComponent().setType(String.class);
 
         String defaultTitle = paramName;

@@ -27,10 +27,10 @@ import org.springframework.web.util.WebUtils;
 public final class JMSConfiguration {
     public static final String DEFAULT_GROUP = "geoserver-cluster";
 
-    protected static final java.util.logging.Logger LOGGER =
-            Logging.getLogger(JMSConfiguration.class);
+    protected static final java.util.logging.Logger LOGGER = Logging.getLogger(JMSConfiguration.class);
 
-    @Autowired public List<JMSConfigurationExt> exts;
+    @Autowired
+    public List<JMSConfigurationExt> exts;
 
     public static final String INSTANCE_NAME_KEY = "instanceName";
 
@@ -40,8 +40,8 @@ public final class JMSConfiguration {
     public static final String CONFIG_FILE_NAME = "cluster.properties";
 
     /**
-     * This variable stores the configuration path dir. the default initialization will set this to
-     * the webapp temp dir. If you need to store it to a new path use the setter to change it.
+     * This variable stores the configuration path dir. the default initialization will set this to the webapp temp dir.
+     * If you need to store it to a new path use the setter to change it.
      */
     private static Resource configPathDir = Files.asResource(getTempDir());
 
@@ -80,8 +80,7 @@ public final class JMSConfiguration {
             String topicName = configuration.getProperty(TopicConfiguration.TOPIC_NAME_KEY);
             if (topicName.equalsIgnoreCase("VirtualTopic.>")) {
                 // override topic name with the default topic name
-                configuration.put(
-                        TopicConfiguration.TOPIC_NAME_KEY, TopicConfiguration.DEFAULT_TOPIC_NAME);
+                configuration.put(TopicConfiguration.TOPIC_NAME_KEY, TopicConfiguration.DEFAULT_TOPIC_NAME);
                 storeConfig();
             }
             // if configuration is changed (since last boot) store changes
@@ -123,8 +122,8 @@ public final class JMSConfiguration {
     }
 
     /**
-     * check if instance name is changed since last application boot, if so set the overridden value
-     * into configuration and returns true
+     * check if instance name is changed since last application boot, if so set the overridden value into configuration
+     * and returns true
      *
      * @return true if some parameter is overridden by an Extension property
      */
@@ -133,8 +132,8 @@ public final class JMSConfiguration {
     }
 
     /**
-     * check if instance name is changed since last application boot, if so set the overridden value
-     * into configuration and returns true
+     * check if instance name is changed since last application boot, if so set the overridden value into configuration
+     * and returns true
      */
     public final boolean override(String nameKey, Object defaultVal) {
         boolean override = false;
@@ -181,10 +180,9 @@ public final class JMSConfiguration {
     }
 
     public static final File getTempDir() {
-        String tempPath =
-                (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null
-                        ? ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE)
-                        : System.getProperty("java.io.tmpdir"));
+        String tempPath = (ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE) != null
+                ? ApplicationProperties.getProperty(WebUtils.TEMP_DIR_CONTEXT_ATTRIBUTE)
+                : System.getProperty("java.io.tmpdir"));
         if (tempPath == null) {
             return null;
         }

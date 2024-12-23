@@ -57,8 +57,8 @@ import org.springframework.security.web.authentication.preauth.PreAuthenticatedA
 
 /**
  * A {@link Filter} which will use Keycloak to provide an {@link Authentication} to the active
- * {@link SecurityContextHolder}. This class should not be created as a Spring Bean, or it will
- * interfere with the existing GeoServer filter construction.
+ * {@link SecurityContextHolder}. This class should not be created as a Spring Bean, or it will interfere with the
+ * existing GeoServer filter construction.
  */
 public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFilter
         implements AuthenticationCachingFilter, GeoServerAuthenticationFilter, LogoutHandler {
@@ -92,8 +92,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.initializeFromConfig ENTRY");
         super.initializeFromConfig(config);
         GeoServerKeycloakFilterConfig keycloakConfig = (GeoServerKeycloakFilterConfig) config;
-        KeycloakDeployment deployment =
-                KeycloakDeploymentBuilder.build(keycloakConfig.readAdapterConfig());
+        KeycloakDeployment deployment = KeycloakDeploymentBuilder.build(keycloakConfig.readAdapterConfig());
         deployment.setScope("openid");
         this.keycloakContext = new AdapterDeploymentContext(deployment);
         this.enableRedirectEntryPoint = keycloakConfig.isEnableRedirectEntryPoint();
@@ -101,10 +100,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
 
     /** Helper for setting up GeoServer-style logout actions. */
     @Override
-    public void logout(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            Authentication authentication) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.logout ENTRY");
         // do some setup and get the deployment
         HttpFacade exchange = new SimpleHttpFacade(request, response);
@@ -114,10 +110,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         String referer = request.getHeader(HttpHeaders.REFERER);
         String refererNoParams = referer.split("\\?")[0];
 
-        if (authentication
-                .getDetails()
-                .getClass()
-                .isAssignableFrom(org.keycloak.adapters.OidcKeycloakAccount.class)) {
+        if (authentication.getDetails().getClass().isAssignableFrom(org.keycloak.adapters.OidcKeycloakAccount.class)) {
             // let geoserver know what to do with this
             request.setAttribute(
                     GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR,
@@ -126,8 +119,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
                             .queryParam(OAuth2Constants.REDIRECT_URI, refererNoParams)
                             .queryParam(
                                     ID_TOKEN_HINT,
-                                    ((org.keycloak.adapters.OidcKeycloakAccount)
-                                                    authentication.getDetails())
+                                    ((org.keycloak.adapters.OidcKeycloakAccount) authentication.getDetails())
                                             .getKeycloakSecurityContext()
                                             .getIdTokenString())
                             .build()
@@ -155,8 +147,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         return null;
     }
 
-    protected Authentication getPreAuthentication(
-            HttpServletRequest request, HttpServletResponse response) {
+    protected Authentication getPreAuthentication(HttpServletRequest request, HttpServletResponse response) {
         AuthResults authResults = loadAuthn(request);
         Authentication result = null;
         // if the cache failed, then attempt auth normally
@@ -185,9 +176,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
             if (postAuthentication != null && cacheKey != null) {
                 LOG.log(Level.FINER, "GeoServerKeycloakFilter.cacheAuthn ENTRY");
                 if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                    getSecurityManager()
-                            .getAuthenticationCache()
-                            .put(getName(), cacheKey, postAuthentication);
+                    getSecurityManager().getAuthenticationCache().put(getName(), cacheKey, postAuthentication);
                 }
             }
         }
@@ -211,17 +200,15 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         LOG.log(Level.FINEST, "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
     }
 
-    private Authentication buildAuthentication(
-            HttpServletRequest request, Authentication keycloakAuth) {
+    private Authentication buildAuthentication(HttpServletRequest request, Authentication keycloakAuth) {
         PreAuthenticatedAuthenticationToken result = null;
         Object principal = keycloakAuth.getPrincipal();
         String userName = null;
         if (principal instanceof UserDetails) userName = ((UserDetails) principal).getUsername();
         else userName = principal.toString();
         if (GeoServerUser.ROOT_USERNAME.equals(principal)) {
-            result =
-                    new PreAuthenticatedAuthenticationToken(
-                            principal, null, Collections.singleton(GeoServerRole.ADMIN_ROLE));
+            result = new PreAuthenticatedAuthenticationToken(
+                    principal, null, Collections.singleton(GeoServerRole.ADMIN_ROLE));
         } else {
             Collection<GeoServerRole> roles = null;
             try {
@@ -230,8 +217,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
                 LOG.log(Level.SEVERE, "Error while retrieving roles for user.", e);
                 throw new RuntimeException(e);
             }
-            if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false)
-                roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+            if (roles.contains(GeoServerRole.AUTHENTICATED_ROLE) == false) roles.add(GeoServerRole.AUTHENTICATED_ROLE);
             enrichWithKeycloakRoles(keycloakAuth, roles);
             result = new PreAuthenticatedAuthenticationToken(principal, null, roles);
         }
@@ -239,8 +225,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
         return result;
     }
 
-    private void enrichWithKeycloakRoles(
-            Authentication keycloakAuth, Collection<GeoServerRole> roles) {
+    private void enrichWithKeycloakRoles(Authentication keycloakAuth, Collection<GeoServerRole> roles) {
         GeoServerRoleService roleService = getSecurityManager().getActiveRoleService();
 
         for (GrantedAuthority authoritity : keycloakAuth.getAuthorities()) {
@@ -272,11 +257,9 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
     }
 
     @Override
-    protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal)
-            throws IOException {
+    protected Collection<GeoServerRole> getRoles(HttpServletRequest request, String principal) throws IOException {
         Collection<GeoServerRole> roles = super.getRoles(request, principal);
-        if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE))
-            roles.add(GeoServerRole.AUTHENTICATED_ROLE);
+        if (!roles.contains(GeoServerRole.AUTHENTICATED_ROLE)) roles.add(GeoServerRole.AUTHENTICATED_ROLE);
 
         RoleCalculator calc = new RoleCalculator(getSecurityManager().getActiveRoleService());
         if (calc != null) {
@@ -303,9 +286,8 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
     }
 
     /**
-     * Perform authentication against Keycloak tokens. A challenge may be added to the response if
-     * the request fails and may be re-attempted. This method guarantees that after execution, the
-     * response status will be set.
+     * Perform authentication against Keycloak tokens. A challenge may be added to the response if the request fails and
+     * may be re-attempted. This method guarantees that after execution, the response status will be set.
      *
      * @param request the HTTP request provided
      * @param response the HTTP response that will be returned
@@ -314,27 +296,24 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
     protected AuthResults getNewAuthn(HttpServletRequest request, HttpServletResponse response) {
         LOG.log(Level.FINER, "GeoServerKeycloakFilter.getNewAuthn ENTRY");
         // do some setup and create the authenticator
-        request =
-                new HttpServletRequestWrapper(request) {
-                    @Override
-                    public StringBuffer getRequestURL() {
-                        String url = super.getRequestURL().toString();
-                        String proto = super.getHeader("x-forwarded-proto");
+        request = new HttpServletRequestWrapper(request) {
+            @Override
+            public StringBuffer getRequestURL() {
+                String url = super.getRequestURL().toString();
+                String proto = super.getHeader("x-forwarded-proto");
 
-                        if (proto != null && url.startsWith("http://") && proto.equals("https")) {
-                            url = url.replaceAll("^http", "https");
-                        }
-                        return new StringBuffer(url);
-                    }
-                };
+                if (proto != null && url.startsWith("http://") && proto.equals("https")) {
+                    url = url.replaceAll("^http", "https");
+                }
+                return new StringBuffer(url);
+            }
+        };
         HttpFacade exchange = new SimpleHttpFacade(request, response);
         KeycloakDeployment deployment = keycloakContext.resolveDeployment(exchange);
         deployment.setDelegateBearerErrorResponseSending(true);
-        AdapterTokenStore tokenStore =
-                adapterTokenStoreFactory.createAdapterTokenStore(deployment, request, response);
+        AdapterTokenStore tokenStore = adapterTokenStoreFactory.createAdapterTokenStore(deployment, request, response);
         RequestAuthenticator authenticator =
-                new SpringSecurityRequestAuthenticator(
-                        exchange, request, deployment, tokenStore, -1);
+                new SpringSecurityRequestAuthenticator(exchange, request, deployment, tokenStore, -1);
         // perform the authentication operation
         AuthOutcome result = authenticator.authenticate();
         AuthChallenge challenge = authenticator.getChallenge();
@@ -363,8 +342,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
             HttpServletRequest request, HttpServletResponse response, AuthChallenge challenge) {
         AuthResults results = new AuthResults(challenge);
         if (enableRedirectEntryPoint) {
-            request.setAttribute(
-                    GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, results);
+            request.setAttribute(GeoServerSecurityFilter.AUTHENTICATION_ENTRY_POINT_HEADER, results);
         } else if (redirectFromLoginBtn(request)) {
             try {
                 results.commence(request, response, null);
@@ -491,9 +469,7 @@ public class GeoServerKeycloakFilter extends GeoServerPreAuthenticatedUserNameFi
     public RoleSource getRoleSource() {
         RoleSource roleSource = super.getRoleSource();
         if (roleSource == null)
-            roleSource =
-                    PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                            .RoleService;
+            roleSource = PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.RoleService;
         return roleSource;
     }
 }

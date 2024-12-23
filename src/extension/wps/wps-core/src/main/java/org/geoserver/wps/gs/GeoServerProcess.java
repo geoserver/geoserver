@@ -6,8 +6,8 @@
 package org.geoserver.wps.gs;
 
 /**
- * A marker interface used to lookup the processes. GeoServer processes use the GeoServer internal
- * machinery and cannot be donated back to GeoTools.
+ * A marker interface used to lookup the processes. GeoServer processes use the GeoServer internal machinery and cannot
+ * be donated back to GeoTools.
  *
  * @author Andrea Aime - OpenGeo
  */

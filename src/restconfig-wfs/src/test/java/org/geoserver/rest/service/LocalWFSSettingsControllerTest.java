@@ -53,9 +53,7 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsJSON() throws Exception {
-        JSON json =
-                getAsJSON(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
@@ -69,8 +67,7 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testGetAsXML() throws Exception {
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
         assertEquals("wfs", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wfs/workspace/name", dom);
@@ -87,17 +84,11 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testCreateAsJSON() throws Exception {
         removeLocalWorkspace();
-        String input =
-                "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
-                        input,
-                        "text/json");
+        String input = "{'wfs': {'id' : 'wfs', 'name' : 'WFS', 'workspace': {'name': 'sf'},'enabled': 'true'}}";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings", input, "text/json");
         assertEquals(200, response.getStatus());
-        JSON json =
-                getAsJSON(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
+        JSON json = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) json;
         assertNotNull(jsonObject);
         JSONObject wmsinfo = (JSONObject) jsonObject.get("wfs");
@@ -110,24 +101,19 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
     @Test
     public void testCreateAsXML() throws Exception {
         removeLocalWorkspace();
-        String xml =
-                "<wfs>"
-                        + "<id>wfs</id>"
-                        + "<workspace>"
-                        + "<name>sf</name>"
-                        + "</workspace>"
-                        + "<name>OGC:WFS</name>"
-                        + "<enabled>false</enabled>"
-                        + "</wfs>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
-                        xml,
-                        "text/xml");
+        String xml = "<wfs>"
+                + "<id>wfs</id>"
+                + "<workspace>"
+                + "<name>sf</name>"
+                + "</workspace>"
+                + "<name>OGC:WFS</name>"
+                + "<enabled>false</enabled>"
+                + "</wfs>";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
         assertEquals("wfs", dom.getDocumentElement().getLocalName());
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
         assertXpathEvaluatesTo("sf", "/wfs/workspace/name", dom);
@@ -136,17 +122,11 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsJSON() throws Exception {
-        String json =
-                "{'wfs': {'id':'wfs','workspace':{'name':'sf'},'enabled':'false','name':'WFS'}}";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
-                        json,
-                        "text/json");
+        String json = "{'wfs': {'id':'wfs','workspace':{'name':'sf'},'enabled':'false','name':'WFS'}}";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings", json, "text/json");
         assertEquals(200, response.getStatus());
-        JSON jsonMod =
-                getAsJSON(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
+        JSON jsonMod = getAsJSON(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.json");
         JSONObject jsonObject = (JSONObject) jsonMod;
         assertNotNull(jsonObject);
         JSONObject wfsinfo = (JSONObject) jsonObject.get("wfs");
@@ -155,39 +135,28 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPutAsXML() throws Exception {
-        String xml =
-                "<wfs>"
-                        + "<id>wfs</id>"
-                        + "<workspace>"
-                        + "<name>sf</name>"
-                        + "</workspace>"
-                        + "<enabled>false</enabled>"
-                        + "</wfs>";
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
-                        xml,
-                        "text/xml");
+        String xml = "<wfs>"
+                + "<id>wfs</id>"
+                + "<workspace>"
+                + "<name>sf</name>"
+                + "</workspace>"
+                + "<enabled>false</enabled>"
+                + "</wfs>";
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("false", "/wfs/enabled", dom);
     }
 
     @Test
     public void testPutFullAsXML() throws Exception {
-        String xml =
-                IOUtils.toString(
-                        LocalWFSSettingsControllerTest.class.getResourceAsStream("wfs.xml"),
-                        StandardCharsets.UTF_8);
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings",
-                        xml,
-                        "text/xml");
+        String xml = IOUtils.toString(
+                LocalWFSSettingsControllerTest.class.getResourceAsStream("wfs.xml"), StandardCharsets.UTF_8);
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings", xml, "text/xml");
         assertEquals(200, response.getStatus());
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings.xml");
         assertXpathEvaluatesTo("true", "/wfs/enabled", dom);
     }
 
@@ -195,9 +164,7 @@ public class LocalWFSSettingsControllerTest extends CatalogRESTTestSupport {
     public void testDelete() throws Exception {
         assertEquals(
                 200,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/services/wfs/workspaces/sf/settings")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/services/wfs/workspaces/sf/settings")
                         .getStatus());
         boolean thrown = false;
         try {

@@ -32,9 +32,7 @@ public class ClasspathPublisherTest {
         MockHttpServletRequest request = new MockHttpServletRequest("GET", path);
         MockHttpServletResponse response = new MockHttpServletResponse();
         IllegalArgumentException exception =
-                assertThrows(
-                        IllegalArgumentException.class,
-                        () -> publisher.handleRequest(request, response));
+                assertThrows(IllegalArgumentException.class, () -> publisher.handleRequest(request, response));
         assertThat(exception.getMessage(), startsWith("Contains invalid '..' path: "));
     }
 }

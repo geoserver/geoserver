@@ -14,17 +14,8 @@ import org.geoserver.featurestemplating.builders.visitors.AbstractPropertySelect
 public class STACPropertySelection extends AbstractPropertySelection {
 
     // default fields always included.
-    private Set<String> DEFAULT_INCLUDE =
-            new HashSet<>(
-                    Arrays.asList(
-                            "id",
-                            "type",
-                            "geometry",
-                            "bbox",
-                            "links",
-                            "assets",
-                            "properties.datetime",
-                            "properties.created"));
+    private Set<String> DEFAULT_INCLUDE = new HashSet<>(Arrays.asList(
+            "id", "type", "geometry", "bbox", "links", "assets", "properties.datetime", "properties.created"));
     private Set<String> excludedFields;
 
     private static final String EXCLUDE_PREFIX = "-";

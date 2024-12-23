@@ -47,8 +47,7 @@ public class ImportTaskJSONMessageConverter extends BaseMessageConverter<ImportT
     // Reading
     //
     @Override
-    protected ImportTask readInternal(
-            Class<? extends ImportTask> clazz, HttpInputMessage inputMessage)
+    protected ImportTask readInternal(Class<? extends ImportTask> clazz, HttpInputMessage inputMessage)
             throws IOException, HttpMessageNotReadableException {
         try (InputStream in = inputMessage.getBody()) {
             ImportJSONReader reader = new ImportJSONReader(importer);

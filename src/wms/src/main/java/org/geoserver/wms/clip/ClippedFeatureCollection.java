@@ -28,9 +28,7 @@ public class ClippedFeatureCollection<T extends FeatureType, F extends Feature>
     public ClippedFeatureCollection(FeatureCollection<T, F> delegate, Geometry clipGeometry) {
         super(delegate);
 
-        this.clip =
-                ClippedFeatureSource.reproject(
-                        delegate.getSchema().getCoordinateReferenceSystem(), clipGeometry);
+        this.clip = ClippedFeatureSource.reproject(delegate.getSchema().getCoordinateReferenceSystem(), clipGeometry);
     }
 
     @Override
@@ -47,9 +45,7 @@ public class ClippedFeatureCollection<T extends FeatureType, F extends Feature>
     @SuppressWarnings("unchecked")
     private FeatureIterator<F> getClippedCollection(FeatureCollection<T, F> fc, Geometry clipGeom) {
         if (fc instanceof SimpleFeatureCollection) {
-            return ((FeatureCollection<T, F>)
-                            new ClipProcess()
-                                    .execute((SimpleFeatureCollection) fc, clipGeom, false))
+            return ((FeatureCollection<T, F>) new ClipProcess().execute((SimpleFeatureCollection) fc, clipGeom, false))
                     .features();
         }
         return fc.features();

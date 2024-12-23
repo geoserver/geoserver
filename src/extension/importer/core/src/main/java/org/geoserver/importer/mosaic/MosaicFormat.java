@@ -28,8 +28,7 @@ public class MosaicFormat extends GridFormat {
     }
 
     @Override
-    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog)
-            throws IOException {
+    public CoverageStoreInfo createStore(ImportData data, WorkspaceInfo workspace, Catalog catalog) throws IOException {
         MosaicIndex index = new MosaicIndex((Mosaic) data);
         index.write();
 
@@ -39,8 +38,7 @@ public class MosaicFormat extends GridFormat {
     }
 
     @Override
-    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor)
-            throws IOException {
+    public List<ImportTask> list(ImportData data, Catalog catalog, ProgressMonitor monitor) throws IOException {
 
         List<ImportTask> tasks = super.list(data, catalog, monitor);
 

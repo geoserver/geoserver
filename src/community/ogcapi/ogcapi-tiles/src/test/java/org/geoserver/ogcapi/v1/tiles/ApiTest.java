@@ -38,11 +38,9 @@ public class ApiTest extends TilesTestSupport {
 
     @Test
     public void testApiJson() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/tiles/v1/openapi", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/v1/openapi", 200);
         assertThat(
-                response.getContentType(),
-                CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
+                response.getContentType(), CoreMatchers.startsWith(OpenAPIMessageConverter.OPEN_API_MEDIA_TYPE_VALUE));
         String json = response.getContentAsString();
         LOGGER.log(Level.INFO, json);
 
@@ -53,8 +51,7 @@ public class ApiTest extends TilesTestSupport {
 
     @Test
     public void testApiHTML() throws Exception {
-        MockHttpServletResponse response =
-                getAsMockHttpServletResponse("ogc/tiles/v1/openapi?f=text/html", 200);
+        MockHttpServletResponse response = getAsMockHttpServletResponse("ogc/tiles/v1/openapi?f=text/html", 200);
         assertEquals("text/html", response.getContentType());
         String html = response.getContentAsString();
         LOGGER.info(html);
@@ -70,8 +67,7 @@ public class ApiTest extends TilesTestSupport {
                         "<link rel=\"icon\" type=\"image/png\" href=\"http://localhost:8080/geoserver/swagger-ui/favicon-16x16.png\" sizes=\"16x16\" />"));
         assertThat(
                 html,
-                containsString(
-                        "<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
+                containsString("<script src=\"http://localhost:8080/geoserver/swagger-ui/swagger-ui-bundle.js\">"));
         assertThat(
                 html,
                 containsString(
@@ -101,7 +97,8 @@ public class ApiTest extends TilesTestSupport {
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
         assertThat(response.getContentType(), CoreMatchers.startsWith("application/x-yaml"));
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        String yaml =
+                string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
@@ -112,8 +109,7 @@ public class ApiTest extends TilesTestSupport {
         // only one server
         List<Server> servers = api.getServers();
         assertThat(servers, hasSize(1));
-        assertThat(
-                servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/tiles/v1"));
+        assertThat(servers.get(0).getUrl(), equalTo("http://localhost:8080/geoserver/ogc/tiles/v1"));
 
         // info version is spec version
         assertEquals("1.0.0", api.getInfo().getVersion());
@@ -143,10 +139,10 @@ public class ApiTest extends TilesTestSupport {
 
         // check the styleId parameter contains actual style names from this server
         Parameter collectionId = api.getComponents().getParameters().get("collectionId");
-        List<String> expectedCollectionIds =
-                Streams.stream(applicationContext.getBean(GWC.class).getTileLayers())
-                        .map(tl -> tl.getName())
-                        .collect(Collectors.toList());
+        List<String> expectedCollectionIds = Streams.stream(
+                        applicationContext.getBean(GWC.class).getTileLayers())
+                .map(tl -> tl.getName())
+                .collect(Collectors.toList());
         assertThat(collectionId.getSchema().getEnum(), equalTo(expectedCollectionIds));
     }
 
@@ -160,7 +156,8 @@ public class ApiTest extends TilesTestSupport {
         MockHttpServletResponse response = dispatch(request);
         assertEquals(200, response.getStatus());
         assertEquals("application/x-yaml", response.getContentType());
-        String yaml = string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
+        String yaml =
+                string(new ByteArrayInputStream(response.getContentAsString().getBytes()));
 
         ObjectMapper mapper = Yaml.mapper();
         OpenAPI api = mapper.readValue(yaml, OpenAPI.class);
@@ -169,8 +166,6 @@ public class ApiTest extends TilesTestSupport {
         List<String> collectionIdValues = collectionId.getSchema().getEnum();
         assertThat(
                 collectionIdValues,
-                containsInAnyOrder(
-                        "Other", "Inserts", "Nulls", "Fifteen", "Locks", "Seven", "Updates",
-                        "Deletes"));
+                containsInAnyOrder("Other", "Inserts", "Nulls", "Fifteen", "Locks", "Seven", "Updates", "Deletes"));
     }
 }

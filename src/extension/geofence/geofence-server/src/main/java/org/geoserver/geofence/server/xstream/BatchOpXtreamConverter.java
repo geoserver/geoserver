@@ -28,22 +28,19 @@ public class BatchOpXtreamConverter extends AbstractReflectionConverter {
     }
 
     @Override
-    protected Object instantiateNewInstance(
-            HierarchicalStreamReader reader, UnmarshallingContext context) {
+    protected Object instantiateNewInstance(HierarchicalStreamReader reader, UnmarshallingContext context) {
         return new BatchOperation();
     }
 
     @Override
-    public Object doUnmarshal(
-            Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
+    public Object doUnmarshal(Object result, HierarchicalStreamReader reader, UnmarshallingContext context) {
 
         BatchOperation operation = (BatchOperation) result;
         String srv = reader.getAttribute("service");
         String type = reader.getAttribute("type");
         String id = reader.getAttribute("id");
 
-        if (!StringUtils.isBlank(srv))
-            operation.setService(BatchOperation.ServiceName.valueOf(srv));
+        if (!StringUtils.isBlank(srv)) operation.setService(BatchOperation.ServiceName.valueOf(srv));
         if (!StringUtils.isBlank(type)) operation.setType(BatchOperation.TypeName.valueOf(type));
         if (!StringUtils.isBlank(id)) operation.setId(Long.valueOf(id));
         while (reader.hasMoreChildren()) {

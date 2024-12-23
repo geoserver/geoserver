@@ -86,12 +86,10 @@ public class GetFeatureInfo {
                         wms.checkMaxDimensions(layer, times, elevations, true);
                     }
                 }
-                List<FeatureCollection> identifiedCollections =
-                        identifier.identify(requestParams, maxFeatures);
+                List<FeatureCollection> identifiedCollections = identifier.identify(requestParams, maxFeatures);
                 if (identifiedCollections != null) {
                     for (FeatureCollection identifierCollection : identifiedCollections) {
-                        FeatureCollection fc =
-                                selectProperties(requestParams, identifierCollection);
+                        FeatureCollection fc = selectProperties(requestParams, identifierCollection);
                         maxFeatures = addToResults(fc, results, layer, request, maxFeatures);
                     }
 
@@ -102,8 +100,7 @@ public class GetFeatureInfo {
                 }
             } catch (Exception e) {
                 if (e instanceof ServiceException) throw e;
-                throw new ServiceException(
-                        "Failed to run GetFeatureInfo on layer " + layer.getName(), e);
+                throw new ServiceException("Failed to run GetFeatureInfo on layer " + layer.getName(), e);
             }
 
             requestParams.nextLayer();
@@ -111,19 +108,17 @@ public class GetFeatureInfo {
         return results;
     }
 
-    private LayerIdentifier getLayerIdentifier(
-            MapLayerInfo layer, List<LayerIdentifier> identifiers) {
+    private LayerIdentifier getLayerIdentifier(MapLayerInfo layer, List<LayerIdentifier> identifiers) {
         for (LayerIdentifier identifier : identifiers) {
             if (identifier.canHandle(layer)) {
                 return identifier;
             }
         }
 
-        throw new ServiceException(
-                "Could not find any identifier that can handle layer "
-                        + layer.getLayerInfo().prefixedName()
-                        + " among these identifiers: "
-                        + identifiers);
+        throw new ServiceException("Could not find any identifier that can handle layer "
+                + layer.getLayerInfo().prefixedName()
+                + " among these identifiers: "
+                + identifiers);
     }
 
     private int addToResults(
@@ -135,10 +130,9 @@ public class GetFeatureInfo {
         if (collection != null) {
             if (!(collection.getSchema() instanceof SimpleFeatureType)) {
                 // put wrapper around it with layer name
-                Name name =
-                        new NameImpl(
-                                layer.getFeature().getNamespace().getName(),
-                                layer.getFeature().getName());
+                Name name = new NameImpl(
+                        layer.getFeature().getNamespace().getName(),
+                        layer.getFeature().getName());
                 collection = new FeatureCollectionDecorator(name, collection);
             }
 
@@ -173,13 +167,11 @@ public class GetFeatureInfo {
         return maxFeatures;
     }
 
-    protected FeatureCollection selectProperties(
-            FeatureInfoRequestParameters params, FeatureCollection collection) throws IOException {
+    protected FeatureCollection selectProperties(FeatureInfoRequestParameters params, FeatureCollection collection)
+            throws IOException {
         // no general way to reduce attribute names in complex features yet
         String[] names = params.getPropertyNames();
-        if (names != Query.ALL_NAMES
-                && collection != null
-                && collection.getSchema() instanceof SimpleFeatureType) {
+        if (names != Query.ALL_NAMES && collection != null && collection.getSchema() instanceof SimpleFeatureType) {
             // some collection wrappers can be made of simple features without being a
             // SimpleFeatureCollection, e.g. FilteringFeatureCollection
             @SuppressWarnings("unchecked")

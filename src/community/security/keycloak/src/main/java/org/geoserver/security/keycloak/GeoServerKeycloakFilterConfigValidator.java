@@ -17,8 +17,7 @@ import org.keycloak.adapters.KeycloakDeploymentBuilder;
 /** Validates {@link GeoServerKeycloakFilterConfig} instances. */
 public class GeoServerKeycloakFilterConfigValidator extends FilterConfigValidator {
 
-    private static final Logger LOG =
-            Logging.getLogger(GeoServerKeycloakFilterConfigValidator.class);
+    private static final Logger LOG = Logging.getLogger(GeoServerKeycloakFilterConfigValidator.class);
 
     /**
      * Default constructor.
@@ -32,8 +31,7 @@ public class GeoServerKeycloakFilterConfigValidator extends FilterConfigValidato
 
     /** Validates the configuration type and content. */
     @Override
-    public void validateFilterConfig(SecurityNamedServiceConfig config)
-            throws FilterConfigException {
+    public void validateFilterConfig(SecurityNamedServiceConfig config) throws FilterConfigException {
         LOG.log(Level.FINER, "GeoServerKeycloakFilterConfigValidator.validateFilterConfig ENTRY");
         if (config instanceof GeoServerKeycloakFilterConfig) {
             LOG.log(Level.FINE, "valid config type");
@@ -50,14 +48,13 @@ public class GeoServerKeycloakFilterConfigValidator extends FilterConfigValidato
     }
 
     /**
-     * Validates the configuration content. This builds a dummy deployment, and recasts and
-     * exceptions so that GeoServer can process them as security-related.
+     * Validates the configuration content. This builds a dummy deployment, and recasts and exceptions so that GeoServer
+     * can process them as security-related.
      *
      * @param config the configuration to validate
      * @throws FilterConfigException if the configuration is invalid
      */
-    public void validateKeycloakConfig(GeoServerKeycloakFilterConfig config)
-            throws FilterConfigException {
+    public void validateKeycloakConfig(GeoServerKeycloakFilterConfig config) throws FilterConfigException {
         try {
             KeycloakDeploymentBuilder.build(config.readAdapterConfig());
             LOG.log(Level.FINE, "valid Keycloak config");

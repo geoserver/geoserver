@@ -14,9 +14,8 @@ package org.geoserver.wps.ppio.gpx;
 import java.util.Calendar;
 
 /**
- * Information about the copyright holder and any license governing use of this file. By linking to
- * an appropriate license, you may place your data into the public domain or grant additional usage
- * rights.
+ * Information about the copyright holder and any license governing use of this file. By linking to an appropriate
+ * license, you may place your data into the public domain or grant additional usage rights.
  *
  * <p>Java class for copyrightType complex type.
  *

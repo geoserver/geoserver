@@ -41,15 +41,14 @@ import org.geotools.util.factory.Hints;
  *
  * @author Daniele Romagnoli - GeoSolutions
  */
-public class StructuredCoverageViewReader extends CoverageViewReader
-        implements StructuredGridCoverage2DReader {
+public class StructuredCoverageViewReader extends CoverageViewReader implements StructuredGridCoverage2DReader {
 
     private static final Logger LOGGER =
             org.geotools.util.logging.Logging.getLogger(StructuredCoverageViewReader.class);
 
     /**
-     * Pass this hint to {@link #getGranules(String, boolean)} in order to get back information from
-     * a single band of the coverage view
+     * Pass this hint to {@link #getGranules(String, boolean)} in order to get back information from a single band of
+     * the coverage view
      */
     public static Hints.Key QUERY_FIRST_BAND = new Hints.Key(Boolean.class);
 
@@ -70,17 +69,15 @@ public class StructuredCoverageViewReader extends CoverageViewReader
         @Override
         public Object visit(Id filter, Object extraData) {
             Set<Identifier> identifiers = filter.getIdentifiers();
-            Set<Identifier> renamedIdentifiers =
-                    identifiers.stream()
-                            .map(
-                                    id -> {
-                                        String name = id.getID().toString();
-                                        if (name.startsWith(prefix)) {
-                                            name = name.substring(prefix.length());
-                                        }
-                                        return getFactory(extraData).featureId(name);
-                                    })
-                            .collect(Collectors.toSet());
+            Set<Identifier> renamedIdentifiers = identifiers.stream()
+                    .map(id -> {
+                        String name = id.getID().toString();
+                        if (name.startsWith(prefix)) {
+                            name = name.substring(prefix.length());
+                        }
+                        return getFactory(extraData).featureId(name);
+                    })
+                    .collect(Collectors.toSet());
             return getFactory(extraData).id(renamedIdentifiers);
         }
     }
@@ -112,15 +109,12 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             List<CoverageBand> bands = coverageView.getCoverageBands();
             Query renamedQuery = q != null ? new Query(q) : new Query();
             if (q != null && q.getFilter() != null) {
-                Filter unmapped =
-                        GranuleStoreViewFilterVisitor.unmapIdentifiers(
-                                q.getFilter(), coverageView.getName());
+                Filter unmapped = GranuleStoreViewFilterVisitor.unmapIdentifiers(q.getFilter(), coverageView.getName());
                 renamedQuery.setFilter(unmapped);
             }
             List<SimpleFeatureCollection> collections = new ArrayList<>();
             boolean returnOnlyFirst =
-                    Boolean.TRUE.equals(
-                            renamedQuery.getHints().getOrDefault(QUERY_FIRST_BAND, false));
+                    Boolean.TRUE.equals(renamedQuery.getHints().getOrDefault(QUERY_FIRST_BAND, false));
             Set<String> queriesCoverages = new HashSet<>();
             for (CoverageBand band : bands) {
                 String coverageName = band.getInputCoverageBands().get(0).getCoverageName();
@@ -139,13 +133,11 @@ public class StructuredCoverageViewReader extends CoverageViewReader
             // aggregate and return
             SimpleFeatureCollection result;
             if (collections.isEmpty()) {
-                throw new IllegalStateException(
-                        "Unexpected, there is not a single band in the definition?");
+                throw new IllegalStateException("Unexpected, there is not a single band in the definition?");
             } else {
                 // need to composite the collections
                 SimpleFeatureType schema = collections.get(0).getSchema();
-                result =
-                        DataUtilities.simple(new CompositeFeatureCollection<>(collections, schema));
+                result = DataUtilities.simple(new CompositeFeatureCollection<>(collections, schema));
                 // cannot use a simple retyper here, all features need a unique feature id
                 SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
                 tb.init(schema);
@@ -204,8 +196,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
         @Override
         public int removeGranules(Filter filter, Hints hints) {
             // unmap the feature identifiers
-            Filter unmapped =
-                    GranuleStoreViewFilterVisitor.unmapIdentifiers(filter, coverageView.getName());
+            Filter unmapped = GranuleStoreViewFilterVisitor.unmapIdentifiers(filter, coverageView.getName());
 
             List<CoverageBand> bands = coverageView.getCoverageBands();
             int removed = 0;
@@ -226,8 +217,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
         }
 
         @Override
-        public void updateGranules(
-                String[] attributeNames, Object[] attributeValues, Filter filter) {
+        public void updateGranules(String[] attributeNames, Object[] attributeValues, Filter filter) {
             throw new UnsupportedOperationException();
         }
 
@@ -286,8 +276,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader
     }
 
     @Override
-    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName)
-            throws IOException {
+    public List<DimensionDescriptor> getDimensionDescriptors(String coverageName) throws IOException {
         return structuredDelegate.getDimensionDescriptors(referenceName);
     }
 }

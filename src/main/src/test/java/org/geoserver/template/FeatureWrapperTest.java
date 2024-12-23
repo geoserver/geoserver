@@ -43,40 +43,21 @@ public class FeatureWrapperTest {
         // create some data
         GeometryFactory gf = new GeometryFactory();
         SimpleFeatureType featureType =
-                DataUtilities.createType(
-                        "testType", "string:String,int:Integer,double:Double,geom:Point");
+                DataUtilities.createType("testType", "string:String,int:Integer,double:Double,geom:Point");
 
         features = new DefaultFeatureCollection() {};
-        features.add(
-                SimpleFeatureBuilder.build(
-                        featureType,
-                        new Object[] {
-                            "one",
-                            Integer.valueOf(1),
-                            Double.valueOf(1.1),
-                            gf.createPoint(new Coordinate(1, 1))
-                        },
-                        "fid.1"));
-        features.add(
-                SimpleFeatureBuilder.build(
-                        featureType,
-                        new Object[] {
-                            "two",
-                            Integer.valueOf(2),
-                            Double.valueOf(2.2),
-                            gf.createPoint(new Coordinate(2, 2))
-                        },
-                        "fid.2"));
-        features.add(
-                SimpleFeatureBuilder.build(
-                        featureType,
-                        new Object[] {
-                            "three",
-                            Integer.valueOf(3),
-                            Double.valueOf(3.3),
-                            gf.createPoint(new Coordinate(3, 3))
-                        },
-                        "fid.3"));
+        features.add(SimpleFeatureBuilder.build(
+                featureType,
+                new Object[] {"one", Integer.valueOf(1), Double.valueOf(1.1), gf.createPoint(new Coordinate(1, 1))},
+                "fid.1"));
+        features.add(SimpleFeatureBuilder.build(
+                featureType,
+                new Object[] {"two", Integer.valueOf(2), Double.valueOf(2.2), gf.createPoint(new Coordinate(2, 2))},
+                "fid.2"));
+        features.add(SimpleFeatureBuilder.build(
+                featureType,
+                new Object[] {"three", Integer.valueOf(3), Double.valueOf(3.3), gf.createPoint(new Coordinate(3, 3))},
+                "fid.3"));
         cfg = TemplateUtils.getSafeConfiguration();
         cfg.setClassForTemplateLoading(getClass(), "");
         cfg.setObjectWrapper(createWrapper());
@@ -94,8 +75,7 @@ public class FeatureWrapperTest {
         template.process(features, out);
 
         assertEquals(
-                "fid.1\nfid.2\nfid.3\n",
-                out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
+                "fid.1\nfid.2\nfid.3\n", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
     @Test
@@ -131,8 +111,7 @@ public class FeatureWrapperTest {
         StringWriter out = new StringWriter();
         template.process(features, out);
 
-        assertEquals(
-                "three\none\n3", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
+        assertEquals("three\none\n3", out.toString().replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
     @Test
@@ -144,11 +123,7 @@ public class FeatureWrapperTest {
         template.process(f, out);
 
         assertEquals(
-                "\n"
-                        + "Name: string_value\n"
-                        + "Value: string1\n"
-                        + "Name: string_value\n"
-                        + "Value: string2\n",
+                "\n" + "Name: string_value\n" + "Value: string1\n" + "Name: string_value\n" + "Value: string2\n",
                 out.toString().replace(',', '.').replaceAll("\r\n", "\n").replaceAll("\r", "\n"));
     }
 
@@ -162,20 +137,18 @@ public class FeatureWrapperTest {
                 .maxOccurs(2)
                 .minOccurs(1);
         AttributeType attrType = typeBuilder.buildType();
-        AttributeDescriptor attrDescriptor =
-                typeBuilder.buildDescriptor(attrType.getName(), attrType);
+        AttributeDescriptor attrDescriptor = typeBuilder.buildDescriptor(attrType.getName(), attrType);
         AttributeBuilder builder = new AttributeBuilder(new LenientFeatureFactoryImpl());
         builder.setDescriptor(attrDescriptor);
         ComplexFeatureTypeFactoryImpl ftBuilder = new ComplexFeatureTypeFactoryImpl();
-        FeatureType complexType =
-                ftBuilder.createFeatureType(
-                        new NameImpl(nsURI, "ComplexUnboundedType"),
-                        Arrays.asList(attrDescriptor),
-                        null,
-                        false,
-                        null,
-                        null,
-                        null);
+        FeatureType complexType = ftBuilder.createFeatureType(
+                new NameImpl(nsURI, "ComplexUnboundedType"),
+                Arrays.asList(attrDescriptor),
+                null,
+                false,
+                null,
+                null,
+                null);
         ComplexFeatureBuilder complexFeatureBuilder = new ComplexFeatureBuilder(complexType);
         Attribute attribute1 = builder.buildSimple(null, "string1");
         Attribute attribute2 = builder.buildSimple(null, "string2");

@@ -24,46 +24,43 @@ import org.geowebcache.filter.parameters.StringParameterFilter;
  *
  * @author Kevin Smith, OpenGeo
  */
-public class StringParameterFilterSubform
-        extends AbstractParameterFilterSubform<StringParameterFilter> {
+public class StringParameterFilterSubform extends AbstractParameterFilterSubform<StringParameterFilter> {
 
     private static final long serialVersionUID = -3815153551079914831L;
 
-    private static final IConverter<List<String>> CONVERT =
-            new IConverter<List<String>>() {
+    private static final IConverter<List<String>> CONVERT = new IConverter<List<String>>() {
 
-                private static final long serialVersionUID = -7486127358227242772L;
+        private static final long serialVersionUID = -7486127358227242772L;
 
-                @Override
-                public List<String> convertToObject(String value, Locale locale) {
-                    if (value == null) {
-                        return null;
-                    } else {
-                        String[] strings = StringUtils.split(value, "\r\n");
-                        return Arrays.asList(strings);
-                    }
-                }
+        @Override
+        public List<String> convertToObject(String value, Locale locale) {
+            if (value == null) {
+                return null;
+            } else {
+                String[] strings = StringUtils.split(value, "\r\n");
+                return Arrays.asList(strings);
+            }
+        }
 
-                @Override
-                public String convertToString(List<String> value, Locale locale) {
-                    Iterator<String> i = value.iterator();
-                    StringBuilder sb = new StringBuilder();
-                    if (i.hasNext()) {
-                        sb.append(i.next());
-                    }
-                    while (i.hasNext()) {
-                        sb.append("\r\n");
-                        sb.append(i.next());
-                    }
-                    return sb.toString();
-                }
-            };
+        @Override
+        public String convertToString(List<String> value, Locale locale) {
+            Iterator<String> i = value.iterator();
+            StringBuilder sb = new StringBuilder();
+            if (i.hasNext()) {
+                sb.append(i.next());
+            }
+            while (i.hasNext()) {
+                sb.append("\r\n");
+                sb.append(i.next());
+            }
+            return sb.toString();
+        }
+    };
 
     public StringParameterFilterSubform(String id, IModel<StringParameterFilter> model) {
         super(id, model);
 
-        final Component defaultValue =
-                new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
+        final Component defaultValue = new TextField<>("defaultValue", new PropertyModel<>(model, "defaultValue"));
         add(defaultValue);
 
         final TextArea<List<String>> values =

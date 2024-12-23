@@ -38,7 +38,9 @@ public class ConformanceTest extends StylesTestSupport {
     @Test
     public void testConformanceHTML() throws Exception {
         org.jsoup.nodes.Document document = getAsJSoup("ogc/styles/v1/conformance?f=text/html");
-        assertEquals("GeoServer OGC API Styles Conformance", document.select("#title").text());
+        assertEquals(
+                "GeoServer OGC API Styles Conformance",
+                document.select("#title").text());
         assertEquals(StylesService.CORE, document.select("#content li:eq(0)").text());
         assertEquals(StylesService.HTML, document.select("#content li:eq(1)").text());
         assertEquals(StylesService.JSON, document.select("#content li:eq(2)").text());

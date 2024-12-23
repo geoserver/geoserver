@@ -27,9 +27,8 @@ public class RoleConverter {
     }
 
     /**
-     * convert a list of external roles (i.e. from and IDP) into internal (GS) roles using the
-     * roleConverter in the configuration. Also, pays attention to the
-     * config#isOnlyExternalListedRoles setting.
+     * convert a list of external roles (i.e. from and IDP) into internal (GS) roles using the roleConverter in the
+     * configuration. Also, pays attention to the config#isOnlyExternalListedRoles setting.
      *
      * @param externalRoles
      * @return

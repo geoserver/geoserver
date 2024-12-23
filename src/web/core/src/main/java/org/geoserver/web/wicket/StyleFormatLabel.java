@@ -25,8 +25,7 @@ public class StyleFormatLabel extends Panel {
         String formatDisplayName = getFormatDisplayName(formatModel);
         String majorMinorVersion = getMajorMinorVersionString(versionModel);
 
-        String formatNameAndVersion =
-                concateFormatNameAndVersion(formatDisplayName, majorMinorVersion);
+        String formatNameAndVersion = concateFormatNameAndVersion(formatDisplayName, majorMinorVersion);
 
         Label formatLabel = new Label("styleFormatLabel", formatNameAndVersion);
         formatLabel.add(new AttributeModifier("title", formatNameAndVersion));
@@ -55,10 +54,7 @@ public class StyleFormatLabel extends Panel {
         try {
             return Styles.handler(format).getName();
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.FINE,
-                    "Go an exception looking up the style handler, using the raw format instead",
-                    e);
+            LOGGER.log(Level.FINE, "Go an exception looking up the style handler, using the raw format instead", e);
             return format;
         }
     }

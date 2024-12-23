@@ -17,9 +17,8 @@ import org.geoserver.web.wicket.WicketHierarchyPrinter;
 import org.junit.Before;
 
 /**
- * Base class for testing GeoServer Wicket components in isolation (not full Spring context init, no
- * data dir). Useful for quick testing of components that do not interact with other GeoServer core
- * components.
+ * Base class for testing GeoServer Wicket components in isolation (not full Spring context init, no data dir). Useful
+ * for quick testing of components that do not interact with other GeoServer core components.
  */
 public class GeoServerWicketUnitTestSupport {
     protected WicketTester tester;
@@ -47,8 +46,8 @@ public class GeoServerWicketUnitTestSupport {
     }
 
     /**
-     * A {@link WebApplication} with just enough initialization to test components meant to run in
-     * GeoServer, but not really depending on a application context
+     * A {@link WebApplication} with just enough initialization to test components meant to run in GeoServer, but not
+     * really depending on a application context
      */
     protected static class TestWebApplication extends WebApplication {
         @Override
@@ -64,8 +63,7 @@ public class GeoServerWicketUnitTestSupport {
             ResourceSettings resourceSettings = getResourceSettings();
             resourceSettings.setUseMinifiedResources(false);
             resourceSettings.setResourceStreamLocator(new GeoServerResourceStreamLocator());
-            List<IStringResourceLoader> stringResourceLoaders =
-                    resourceSettings.getStringResourceLoaders();
+            List<IStringResourceLoader> stringResourceLoaders = resourceSettings.getStringResourceLoaders();
             stringResourceLoaders.add(0, new GeoServerStringResourceLoader());
             stringResourceLoaders.add(0, new ClassStringResourceLoader(GeoServerApplication.class));
         }

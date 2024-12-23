@@ -40,11 +40,7 @@ public class CollectionTest extends TilesTestSupport {
 
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:Lakes/map/tiles?f=application%2Fjson",
-                readSingle(
-                        json,
-                        "$.links[?(@.rel=='"
-                                + REL_TILESETS_MAP
-                                + "' && @.type=='application/json')].href"));
+                readSingle(json, "$.links[?(@.rel=='" + REL_TILESETS_MAP + "' && @.type=='application/json')].href"));
     }
 
     @Test
@@ -57,10 +53,7 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:Forests/tiles?f=application%2Fjson",
                 readSingle(
-                        json,
-                        "$.links[?(@.rel=='"
-                                + REL_TILESETS_VECTOR
-                                + "' && @.type=='application/json')].href"));
+                        json, "$.links[?(@.rel=='" + REL_TILESETS_VECTOR + "' && @.type=='application/json')].href"));
     }
 
     private void testRoadsCollectionJson(DocumentContext json) {
@@ -70,26 +63,17 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals(-0.0024, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0d);
         assertEquals(0.0042, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0d);
         assertEquals(0.0024, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0d);
-        assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                json.read("$.extent.spatial.crs", String.class));
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.extent.spatial.crs", String.class));
 
         // check the tiles link (both data and map tiles)
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/map/tiles?f=application%2Fjson",
-                readSingle(
-                        json,
-                        "$.links[?(@.rel=='"
-                                + REL_TILESETS_MAP
-                                + "' && @.type=='application/json')].href"));
+                readSingle(json, "$.links[?(@.rel=='" + REL_TILESETS_MAP + "' && @.type=='application/json')].href"));
         // check the tiles link (both data and map tiles)
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/tiles?f=application%2Fjson",
                 readSingle(
-                        json,
-                        "$.links[?(@.rel=='"
-                                + REL_TILESETS_VECTOR
-                                + "' && @.type=='application/json')].href"));
+                        json, "$.links[?(@.rel=='" + REL_TILESETS_VECTOR + "' && @.type=='application/json')].href"));
 
         // styles
         assertEquals(Integer.valueOf(2), json.read("$.styles.size()"));
@@ -100,26 +84,19 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals("Generic", json.read("$.styles[1].title"));
 
         // queryables
-        String queryablesLink =
-                readSingle(
-                        json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
+        String queryablesLink = readSingle(json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/tiles/v1/collections/cite:RoadSegments/queryables?f=application%2Fjson",
                 queryablesLink);
         String queryablesTitle =
-                readSingle(
-                        json,
-                        "$.links[?(@.rel=='queryables' && @.type=='application/json')].title");
+                readSingle(json, "$.links[?(@.rel=='queryables' && @.type=='application/json')].title");
         assertEquals("Collection queryables as application/json", queryablesTitle);
     }
 
     @Test
     public void testRoadsCollectionYaml() throws Exception {
         String yaml =
-                getAsString(
-                        "ogc/tiles/v1/collections/"
-                                + getLayerId(MockData.ROAD_SEGMENTS)
-                                + "?f=application/x-yaml");
+                getAsString("ogc/tiles/v1/collections/" + getLayerId(MockData.ROAD_SEGMENTS) + "?f=application/x-yaml");
         DocumentContext json = convertYamlToJsonPath(yaml);
         testRoadsCollectionJson(json);
     }
@@ -135,16 +112,11 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals(-44.5, json.read("$.extent.spatial.bbox[0][1]", Double.class), 0.1d);
         assertEquals(148, json.read("$.extent.spatial.bbox[0][2]", Double.class), 0.1d);
         assertEquals(-43, json.read("$.extent.spatial.bbox[0][3]", Double.class), 0.1d);
-        assertEquals(
-                "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
-                json.read("$.extent.spatial.crs", String.class));
+        assertEquals("http://www.opengis.net/def/crs/OGC/1.3/CRS84", json.read("$.extent.spatial.crs", String.class));
 
         // check the tiles link (only map tiles for the time being)
         List<String> tilesLinks =
-                json.read(
-                        "$.links[?(@.rel=='"
-                                + REL_TILESETS_MAP
-                                + "' && @.type=='application/json')].href");
+                json.read("$.links[?(@.rel=='" + REL_TILESETS_MAP + "' && @.type=='application/json')].href");
         assertEquals(1, tilesLinks.size());
         assertThat(
                 tilesLinks,
@@ -156,8 +128,7 @@ public class CollectionTest extends TilesTestSupport {
         assertEquals("raster", json.read("$.styles[0].id"));
 
         // no queryable links
-        List<String> items =
-                json.read("$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
+        List<String> items = json.read("$.links[?(@.rel=='queryables' && @.type=='application/json')].href");
         assertThat(items, Matchers.empty());
     }
 }

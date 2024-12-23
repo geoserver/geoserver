@@ -49,8 +49,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
 
     Map<String, DefaultParameterDescriptor> parameterDescriptorMap;
 
-    public CoverageResourceConfigurationPanel(
-            final String panelId, final IModel<CoverageInfo> model) {
+    public CoverageResourceConfigurationPanel(final String panelId, final IModel<CoverageInfo> model) {
         super(panelId, model);
         initParameterDescriptors();
 
@@ -62,50 +61,39 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
         List<String> keys = new ArrayList<>(keySet);
 
         final IModel paramsModel = new PropertyModel<>(model, "parameters");
-        ListView<String> paramsList =
-                new ListView<String>("parameters", keys) {
+        ListView<String> paramsList = new ListView<String>("parameters", keys) {
 
-                    @Override
-                    protected void populateItem(ListItem item) {
-                        Component inputComponent =
-                                getInputComponent(
-                                        "parameterPanel",
-                                        paramsModel,
-                                        item.getDefaultModelObjectAsString());
-                        item.add(inputComponent);
-                    }
-                };
+            @Override
+            protected void populateItem(ListItem item) {
+                Component inputComponent =
+                        getInputComponent("parameterPanel", paramsModel, item.getDefaultModelObjectAsString());
+                item.add(inputComponent);
+            }
+        };
 
-        WebMarkupContainer coverageViewContainer =
-                new WebMarkupContainer("editCoverageViewContainer");
+        WebMarkupContainer coverageViewContainer = new WebMarkupContainer("editCoverageViewContainer");
         add(coverageViewContainer);
-        final CoverageView coverageView =
-                coverage.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
-        coverageViewContainer.add(
-                new Link("editCoverageView") {
+        final CoverageView coverageView = coverage.getMetadata().get(CoverageView.COVERAGE_VIEW, CoverageView.class);
+        coverageViewContainer.add(new Link("editCoverageView") {
 
-                    @Override
-                    public void onClick() {
-                        CoverageInfo coverageInfo = model.getObject();
-                        try {
-                            CoverageStoreInfo store = coverageInfo.getStore();
-                            WorkspaceInfo workspace = store.getWorkspace();
-                            setResponsePage(
-                                    new CoverageViewEditPage(
-                                            workspace.getName(),
-                                            store.getName(),
-                                            coverageInfo.getName(),
-                                            coverageInfo,
-                                            ((ResourceConfigurationPage) this.getPage())));
-                        } catch (Exception e) {
-                            LOGGER.log(
-                                    Level.SEVERE,
-                                    "Failure opening the Virtual Coverage edit page",
-                                    e);
-                            error(e.toString());
-                        }
-                    }
-                });
+            @Override
+            public void onClick() {
+                CoverageInfo coverageInfo = model.getObject();
+                try {
+                    CoverageStoreInfo store = coverageInfo.getStore();
+                    WorkspaceInfo workspace = store.getWorkspace();
+                    setResponsePage(new CoverageViewEditPage(
+                            workspace.getName(),
+                            store.getName(),
+                            coverageInfo.getName(),
+                            coverageInfo,
+                            ((ResourceConfigurationPage) this.getPage())));
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, "Failure opening the Virtual Coverage edit page", e);
+                    error(e.toString());
+                }
+            }
+        });
 
         coverageViewContainer.setVisible(coverageView != null);
 
@@ -117,19 +105,18 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
     }
 
     /**
-     * Adds into the keySet any read parameter key that's missing (due to reader growing new
-     * parameters over time/releases
+     * Adds into the keySet any read parameter key that's missing (due to reader growing new parameters over
+     * time/releases
      */
     private void addMissingParameters(TreeSet<String> keySet, CoverageInfo coverage) {
         AbstractGridFormat format = coverage.getStore().getFormat();
         ParameterValueGroup readParameters = format.getReadParameters();
         List<GeneralParameterValue> parameterValues = readParameters.values();
-        List<String> paramNames =
-                parameterValues.stream()
-                        .map(p -> p.getDescriptor())
-                        .filter(p -> p instanceof DefaultParameterDescriptor)
-                        .map(p -> p.getName().getCode())
-                        .collect(Collectors.toList());
+        List<String> paramNames = parameterValues.stream()
+                .map(p -> p.getDescriptor())
+                .filter(p -> p instanceof DefaultParameterDescriptor)
+                .map(p -> p.getName().getCode())
+                .collect(Collectors.toList());
         keySet.addAll(paramNames);
     }
 
@@ -139,19 +126,15 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
             AbstractGridFormat format = coverage.getStore().getFormat();
             ParameterValueGroup readParameters = format.getReadParameters();
             List<GeneralParameterValue> parameterValues = readParameters.values();
-            parameterDescriptorMap =
-                    parameterValues.stream()
-                            .map(p -> p.getDescriptor())
-                            .filter(p -> p instanceof DefaultParameterDescriptor)
-                            .map(p -> (DefaultParameterDescriptor) p)
-                            .collect(
-                                    Collectors.toMap(
-                                            p -> p.getName().getCode(), Function.identity()));
+            parameterDescriptorMap = parameterValues.stream()
+                    .map(p -> p.getDescriptor())
+                    .filter(p -> p instanceof DefaultParameterDescriptor)
+                    .map(p -> (DefaultParameterDescriptor) p)
+                    .collect(Collectors.toMap(p -> p.getName().getCode(), Function.identity()));
         } catch (Exception e) {
             LOGGER.log(
                     Level.INFO,
-                    "Failed to initialize parameter descriptors, the UI will use generic text "
-                            + "editors",
+                    "Failed to initialize parameter descriptors, the UI will use generic text " + "editors",
                     e);
         }
     }
@@ -160,8 +143,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
     private Component getInputComponent(String id, IModel paramsModel, String keyName) {
         ResourceModel labelModel = new ResourceModel(keyName, keyName);
         if (keyName.contains("Color")) {
-            return new ColorPickerPanel(
-                    id, new MapModel<>(paramsModel, keyName), labelModel, false);
+            return new ColorPickerPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
         }
 
         DefaultParameterDescriptor descriptor = parameterDescriptorMap.get(keyName);
@@ -176,10 +158,10 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
             // dropdown for enumerations (don't use the enum value but its name to avoid
             // breaking configuration save (XStream whitelist) and backwards compatibility
             if (descriptor.getValueClass().isEnum()) {
-                List<? extends Serializable> values =
-                        Arrays.stream(descriptor.getValueClass().getEnumConstants())
-                                .map(v -> ((Enum) v).name())
-                                .collect(Collectors.toList());
+                List<? extends Serializable> values = Arrays.stream(
+                                descriptor.getValueClass().getEnumConstants())
+                        .map(v -> ((Enum) v).name())
+                        .collect(Collectors.toList());
                 return new DropDownChoiceParamPanel(
                         id, new MapModel<>(paramsModel, keyName), labelModel, values, false);
             }
@@ -195,8 +177,7 @@ public class CoverageResourceConfigurationPanel extends ResourceConfigurationPan
             }
 
             // anything else is a text, with some target type and eventual validation
-            TextParamPanel panel =
-                    new TextParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
+            TextParamPanel panel = new TextParamPanel(id, new MapModel<>(paramsModel, keyName), labelModel, false);
             if (Number.class.isAssignableFrom(valueClass)) {
                 panel.getFormComponent().setType(valueClass);
 

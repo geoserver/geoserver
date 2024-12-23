@@ -27,10 +27,7 @@ public interface DispatcherCallback {
      */
     void finished(HttpServletRequest request, HttpServletResponse response);
 
-    /**
-     * Attempts to unwrap the Controller in case the handler is annotation driven, returns the
-     * handler otherwise
-     */
+    /** Attempts to unwrap the Controller in case the handler is annotation driven, returns the handler otherwise */
     static Object getControllerBean(Object handler) {
         if (handler instanceof HandlerMethod) {
             return ((HandlerMethod) handler).getBean();

@@ -32,24 +32,19 @@ public class CoverageJsonTest extends WCSTestSupport {
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
         System.setProperty("user.timezone", "UTC");
-        testData.addRasterLayer(
-                WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
-        setupRasterDimension(
-                getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
-        setupRasterDimension(
-                getLayerId(WATTEMP), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, null, SystemTestData.class, getCatalog());
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.TIME, DimensionPresentation.LIST, null);
+        setupRasterDimension(getLayerId(WATTEMP), ResourceInfo.ELEVATION, DimensionPresentation.LIST, null);
     }
 
     @Test
     public void getPointSeries() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=watertemp"
-                                + "&subset=Lat(41)&subset=Long(1)"
-                                + "&subset=elevation(0)"
-                                + "&subset=time(\"2008-10-31T00:00:00Z\",\"2008-11-01T00:00:00Z\")"
-                                + "&format=application/prs.coverage%2Bjson");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=watertemp"
+                + "&subset=Lat(41)&subset=Long(1)"
+                + "&subset=elevation(0)"
+                + "&subset=time(\"2008-10-31T00:00:00Z\",\"2008-11-01T00:00:00Z\")"
+                + "&format=application/prs.coverage%2Bjson");
 
         DocumentContext json = getAsJSONPath(response);
         assertEquals("Coverage", json.read("type"));
@@ -68,14 +63,12 @@ public class CoverageJsonTest extends WCSTestSupport {
 
     @Test
     public void getGrid() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "wcs?request=GetCoverage&service=WCS&version=2.0.1"
-                                + "&coverageId=watertemp"
-                                + "&subset=Lat(41,43)&subset=Long(1,4)"
-                                + "&subset=elevation(0)"
-                                + "&subset=time(\"2008-10-31T00:00:00Z\")"
-                                + "&format=application/prs.coverage%2Bjson");
+        MockHttpServletResponse response = getAsServletResponse("wcs?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=watertemp"
+                + "&subset=Lat(41,43)&subset=Long(1,4)"
+                + "&subset=elevation(0)"
+                + "&subset=time(\"2008-10-31T00:00:00Z\")"
+                + "&format=application/prs.coverage%2Bjson");
 
         DocumentContext json = getAsJSONPath(response);
         assertEquals("Coverage", json.read("type"));
@@ -88,8 +81,7 @@ public class CoverageJsonTest extends WCSTestSupport {
         assertThat(json.read("domain.axes.y.stop"), not(empty()));
     }
 
-    protected DocumentContext getAsJSONPath(MockHttpServletResponse response)
-            throws UnsupportedEncodingException {
+    protected DocumentContext getAsJSONPath(MockHttpServletResponse response) throws UnsupportedEncodingException {
         assertThat(response.getContentType(), containsString("json"));
         JsonContext json = (JsonContext) JsonPath.parse(response.getContentAsString());
         if (!isQuietTests()) {

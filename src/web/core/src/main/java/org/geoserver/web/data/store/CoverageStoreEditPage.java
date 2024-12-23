@@ -44,13 +44,8 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
         if (csi == null) {
             getSession()
-                    .error(
-                            new ParamResourceModel(
-                                            "CoverageStoreEditPage.notFound",
-                                            this,
-                                            storeName,
-                                            wsName)
-                                    .getString());
+                    .error(new ParamResourceModel("CoverageStoreEditPage.notFound", this, storeName, wsName)
+                            .getString());
             doReturn(StorePage.class);
             return;
         }
@@ -86,15 +81,12 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             String workspaceId = store.getWorkspace().getId();
             workspacePanel
                     .getFormComponent()
-                    .add(
-                            new CheckExistingResourcesInWorkspaceValidator(
-                                    store.getId(), workspaceId));
+                    .add(new CheckExistingResourcesInWorkspaceValidator(store.getId(), workspaceId));
         }
     }
 
     @Override
-    protected final void onSave(
-            final CoverageStoreInfo info, final AjaxRequestTarget requestTarget, boolean doReturn)
+    protected final void onSave(final CoverageStoreInfo info, final AjaxRequestTarget requestTarget, boolean doReturn)
             throws IllegalArgumentException {
 
         if (null == info.getType()) {
@@ -110,27 +102,21 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
         if (info.isEnabled()) {
             // store's enabled, make sure it works
             LOGGER.finer(
-                    "Store "
-                            + info.getName()
-                            + " is enabled, verifying factory availability "
-                            + "before saving it...");
+                    "Store " + info.getName() + " is enabled, verifying factory availability " + "before saving it...");
             AbstractGridFormat gridFormat = resourcePool.getGridCoverageFormat(info);
 
             if (gridFormat == null) {
-                throw new IllegalArgumentException(
-                        "No grid format found capable of connecting to the provided URL."
-                                + " To save the store disable it, and check the required libraries are in place");
+                throw new IllegalArgumentException("No grid format found capable of connecting to the provided URL."
+                        + " To save the store disable it, and check the required libraries are in place");
             }
             try {
                 // get the reader through ResourcePool so it resolves relative URL's for us
-                GridCoverageReader reader =
-                        resourcePool.getGridCoverageReader(info, GeoTools.getDefaultHints());
-                LOGGER.info(
-                        "Connection to store "
-                                + info.getName()
-                                + " validated. Got a "
-                                + reader.getClass().getName()
-                                + ". Saving store");
+                GridCoverageReader reader = resourcePool.getGridCoverageReader(info, GeoTools.getDefaultHints());
+                LOGGER.info("Connection to store "
+                        + info.getName()
+                        + " validated. Got a "
+                        + reader.getClass().getName()
+                        + ". Saving store");
                 if (!doSaveStore(info)) return;
                 if (doReturn) {
                     doReturn(StorePage.class);
@@ -149,42 +135,37 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
 
     @SuppressWarnings("serial")
     private void confirmSaveOnConnectionFailure(
-            final CoverageStoreInfo info,
-            final AjaxRequestTarget requestTarget,
-            final Exception error) {
+            final CoverageStoreInfo info, final AjaxRequestTarget requestTarget, final Exception error) {
         final String exceptionMessage = error.getMessage();
 
-        dialog.showOkCancel(
-                requestTarget,
-                new GeoServerDialog.DialogDelegate() {
+        dialog.showOkCancel(requestTarget, new GeoServerDialog.DialogDelegate() {
 
-                    boolean accepted = false;
+            boolean accepted = false;
 
-                    @Override
-                    protected Component getContents(String id) {
-                        return new StoreConnectionFailedInformationPanel(
-                                id, info.getName(), exceptionMessage);
-                    }
+            @Override
+            protected Component getContents(String id) {
+                return new StoreConnectionFailedInformationPanel(id, info.getName(), exceptionMessage);
+            }
 
-                    @Override
-                    protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
-                        doSaveStore(info);
-                        accepted = true;
-                        return true;
-                    }
+            @Override
+            protected boolean onSubmit(AjaxRequestTarget target, Component contents) {
+                doSaveStore(info);
+                accepted = true;
+                return true;
+            }
 
-                    @Override
-                    protected boolean onCancel(AjaxRequestTarget target) {
-                        return true;
-                    }
+            @Override
+            protected boolean onCancel(AjaxRequestTarget target) {
+                return true;
+            }
 
-                    @Override
-                    public void onClose(AjaxRequestTarget target) {
-                        if (accepted) {
-                            doReturn(StorePage.class);
-                        }
-                    }
-                });
+            @Override
+            public void onClose(AjaxRequestTarget target) {
+                if (accepted) {
+                    doReturn(StorePage.class);
+                }
+            }
+        });
     }
 
     /**
@@ -199,8 +180,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             final String prefix = info.getWorkspace().getName();
             final NamespaceInfo namespace = catalog.getNamespaceByPrefix(prefix);
 
-            List<CoverageInfo> alreadyConfigured =
-                    catalog.getResourcesByStore(info, CoverageInfo.class);
+            List<CoverageInfo> alreadyConfigured = catalog.getResourcesByStore(info, CoverageInfo.class);
 
             for (CoverageInfo coverage : alreadyConfigured) {
                 coverage.setNamespace(namespace);
@@ -221,9 +201,7 @@ public class CoverageStoreEditPage extends AbstractCoverageStorePage {
             LOGGER.finer("Saved store " + info.getName());
         } catch (FileSandboxEnforcer.SandboxException e) {
             // this one is non recoverable, give up and inform the user
-            error(
-                    new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath())
-                            .getString());
+            error(new ParamResourceModel("sandboxError", this, e.getFile().getAbsolutePath()).getString());
             return false;
         } catch (RuntimeException e) {
             LOGGER.log(Level.WARNING, "Saving the store for " + info.getURL(), e);

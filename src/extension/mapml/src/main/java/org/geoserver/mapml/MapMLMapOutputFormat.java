@@ -28,8 +28,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
     private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(new HashSet<>(List.of(MapMLConstants.MAPML_MIME_TYPE)));
-    static final MapProducerCapabilities MAPML_CAPABILITIES =
-            new MapProducerCapabilities(false, true, true);
+    static final MapProducerCapabilities MAPML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
 
     /**
      * Constructor
@@ -55,8 +54,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
         HttpServletRequest httpServletRequest = request.getHttpRequest();
         String formatOptions = httpServletRequest.getParameter("format_options");
         if (formatOptions != null && formatOptions.contains(MAPML_FEATURE_FORMAT_OPTIONS)) {
-            MapMLFeaturesBuilder mapMLFeaturesBuilder =
-                    new MapMLFeaturesBuilder(mapContent, geoServer);
+            MapMLFeaturesBuilder mapMLFeaturesBuilder = new MapMLFeaturesBuilder(mapContent, geoServer);
             return new MapMLMap(mapContent, mapMLFeaturesBuilder.getMapMLDocument());
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =

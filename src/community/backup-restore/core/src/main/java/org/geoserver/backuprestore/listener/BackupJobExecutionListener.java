@@ -23,8 +23,7 @@ import org.springframework.batch.core.launch.NoSuchJobExecutionException;
 /**
  * Implements a Spring Batch {@link JobExecutionListener}.
  *
- * <p>It's used to perform operations accordingly to the {@link Backup} batch {@link JobExecution}
- * status.
+ * <p>It's used to perform operations accordingly to the {@link Backup} batch {@link JobExecution} status.
  *
  * @author Alessio Fabiani, GeoSolutions
  */
@@ -72,8 +71,7 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                 this.backupFacade.getBackupExecutions().remove(id);
 
                 this.backupExecution =
-                        new BackupExecutionAdapter(
-                                jobExecution, backupFacade.getTotalNumberOfBackupSteps());
+                        new BackupExecutionAdapter(jobExecution, backupFacade.getTotalNumberOfBackupSteps());
                 this.backupExecution.setArchiveFile(archiveFile);
                 this.backupExecution.setOverwrite(overwrite);
                 this.backupExecution.setWsFilter(bkp.getWsFilter());
@@ -81,9 +79,7 @@ public class BackupJobExecutionListener implements JobExecutionListener {
                 this.backupExecution.setLiFilter(bkp.getLiFilter());
                 this.backupExecution.getOptions().addAll(options);
 
-                this.backupFacade
-                        .getBackupExecutions()
-                        .put(jobExecution.getId(), this.backupExecution);
+                this.backupFacade.getBackupExecutions().put(jobExecution.getId(), this.backupExecution);
             }
         }
     }
@@ -92,15 +88,9 @@ public class BackupJobExecutionListener implements JobExecutionListener {
     @Override
     public void afterJob(JobExecution jobExecution) {
         boolean dryRun =
-                Boolean.parseBoolean(
-                        jobExecution
-                                .getJobParameters()
-                                .getString(Backup.PARAM_DRY_RUN_MODE, "false"));
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_DRY_RUN_MODE, "false"));
         boolean bestEffort =
-                Boolean.parseBoolean(
-                        jobExecution
-                                .getJobParameters()
-                                .getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
+                Boolean.parseBoolean(jobExecution.getJobParameters().getString(Backup.PARAM_BEST_EFFORT_MODE, "false"));
 
         try {
             final Long executionId = jobExecution.getId();
@@ -108,23 +98,16 @@ public class BackupJobExecutionListener implements JobExecutionListener {
             LOGGER.fine("Running Executions IDs : " + executionId);
 
             if (jobExecution.getStatus() != BatchStatus.STOPPED) {
+                LOGGER.fine("Executions Step Summaries : "
+                        + backupFacade.getJobOperator().getStepExecutionSummaries(executionId));
+                LOGGER.fine("Executions Parameters : "
+                        + backupFacade.getJobOperator().getParameters(executionId));
                 LOGGER.fine(
-                        "Executions Step Summaries : "
-                                + backupFacade
-                                        .getJobOperator()
-                                        .getStepExecutionSummaries(executionId));
-                LOGGER.fine(
-                        "Executions Parameters : "
-                                + backupFacade.getJobOperator().getParameters(executionId));
-                LOGGER.fine(
-                        "Executions Summary : "
-                                + backupFacade.getJobOperator().getSummary(executionId));
+                        "Executions Summary : " + backupFacade.getJobOperator().getSummary(executionId));
 
                 if (jobExecution.getStatus() == BatchStatus.COMPLETED) {
                     JobParameters jobParameters = backupExecution.getJobParameters();
-                    Resource sourceFolder =
-                            Resources.fromURL(
-                                    jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
+                    Resource sourceFolder = Resources.fromURL(jobParameters.getString(Backup.PARAM_OUTPUT_FILE_PATH));
 
                     // Cleanup Temporary Resources
                     String cleanUpTempFolders = jobParameters.getString(Backup.PARAM_CLEANUP_TEMP);

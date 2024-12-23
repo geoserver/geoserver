@@ -20,27 +20,23 @@ import org.geotools.util.Converters;
 import org.geotools.util.logging.Logging;
 
 /**
- * Default implementation for selecting the default values for dimensions of coverage (raster)
- * resources using the maximum domain value strategy.
+ * Default implementation for selecting the default values for dimensions of coverage (raster) resources using the
+ * maximum domain value strategy.
  *
  * @author Ilkka Rinne / Spatineo Inc for the Finnish Meteorological Institute
  */
-public class CoverageMaximumValueSelectionStrategyImpl
-        extends AbstractDefaultValueSelectionStrategy {
-    private static final Logger LOGGER =
-            Logging.getLogger(CoverageMaximumValueSelectionStrategyImpl.class);
+public class CoverageMaximumValueSelectionStrategyImpl extends AbstractDefaultValueSelectionStrategy {
+    private static final Logger LOGGER = Logging.getLogger(CoverageMaximumValueSelectionStrategyImpl.class);
 
     /** Default constructor. */
     public CoverageMaximumValueSelectionStrategyImpl() {}
 
     @Override
-    public Object getDefaultValue(
-            ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
+    public Object getDefaultValue(ResourceInfo resource, String dimensionName, DimensionInfo dimension, Class<?> clz) {
         Object retval = null;
         try {
             GridCoverage2DReader reader =
-                    (GridCoverage2DReader)
-                            ((CoverageInfo) resource).getGridCoverageReader(null, null);
+                    (GridCoverage2DReader) ((CoverageInfo) resource).getGridCoverageReader(null, null);
             ReaderDimensionsAccessor dimAccessor = new ReaderDimensionsAccessor(reader);
 
             if (dimensionName.equals(ResourceInfo.TIME)) {
@@ -48,11 +44,9 @@ public class CoverageMaximumValueSelectionStrategyImpl
             } else if (dimensionName.equals(ResourceInfo.ELEVATION)) {
                 retval = dimAccessor.getMaxElevation();
             } else if (dimensionName.startsWith(ResourceInfo.CUSTOM_DIMENSION_PREFIX)) {
-                String custDimName =
-                        dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
+                String custDimName = dimensionName.substring(ResourceInfo.CUSTOM_DIMENSION_PREFIX.length());
                 // see if we have an optimize way to get the minimum
-                String maximum =
-                        reader.getMetadataValue(custDimName.toUpperCase() + "_DOMAIN_MAXIMUM");
+                String maximum = reader.getMetadataValue(custDimName.toUpperCase() + "_DOMAIN_MAXIMUM");
                 if (maximum != null) {
                     retval = maximum;
                 } else {

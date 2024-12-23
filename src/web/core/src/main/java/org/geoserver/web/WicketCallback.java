@@ -28,8 +28,7 @@ public interface WicketCallback {
     void onRequestTargetSet(RequestCycle cycle, Class<? extends IRequestablePage> requestTarget);
 
     /**
-     * Called when a runtime exception is thrown, just before the actual handling of the runtime
-     * exception.
+     * Called when a runtime exception is thrown, just before the actual handling of the runtime exception.
      *
      * @param cycle The request cycle
      * @param ex The exception

@@ -52,8 +52,7 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
     public FeatureSource<FeatureType, Feature> getFeatureSource(Name typeName) throws IOException {
         if (!getCollectionNames().contains(typeName.getLocalPart()))
             throw new IOException("Type with name " + typeName.getLocalPart() + " not found");
-        MongoCollection<DBObject> collection =
-                database.getCollection(typeName.getLocalPart(), DBObject.class);
+        MongoCollection<DBObject> collection = database.getCollection(typeName.getLocalPart(), DBObject.class);
         return new MongoSchemalessFeatureSource(typeName, collection, this);
     }
 
@@ -69,8 +68,7 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
         }
         ConnectionString connectionString = new ConnectionString(dataStoreURI);
         if (connectionString == null) {
-            throw new RuntimeException(
-                    "unable to obtain a MongoDB connectionString from URI " + dataStoreURI);
+            throw new RuntimeException("unable to obtain a MongoDB connectionString from URI " + dataStoreURI);
         }
         return connectionString;
     }
@@ -79,8 +77,7 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
         try {
             return MongoClients.create(connectionString);
         } catch (Exception e) {
-            throw new IllegalArgumentException(
-                    "Unknown mongodb host(s): " + connectionString.toString(), e);
+            throw new IllegalArgumentException("Unknown mongodb host(s): " + connectionString.toString(), e);
         }
     }
 
@@ -90,8 +87,7 @@ public class MongoComplexContentDataAccess extends ComplexContentDataAccess {
             database = client.getDatabase(databaseName);
             if (database == null) {
                 client.close();
-                throw new IllegalArgumentException(
-                        "Unknown mongodb database, \"" + databaseName + "\"");
+                throw new IllegalArgumentException("Unknown mongodb database, \"" + databaseName + "\"");
             }
         }
         return database;

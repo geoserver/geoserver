@@ -48,11 +48,10 @@ public class ShapeZipPPIOTest {
     @Test
     public void testDecodeValid() throws Exception {
         try (InputStream is = getClass().getResourceAsStream("empty-shapefile.zip")) {
-            doAnswer(
-                            inv -> {
-                                resource = inv.getArgument(0, ShapefileResource.class);
-                                return null;
-                            })
+            doAnswer(inv -> {
+                        resource = inv.getArgument(0, ShapefileResource.class);
+                        return null;
+                    })
                     .when(resources)
                     .addResource(any(ShapefileResource.class));
             Object result = ppio.decode(is);
@@ -65,9 +64,7 @@ public class ShapeZipPPIOTest {
     public void testDecodeNoShapefiles() throws Exception {
         try (InputStream input = getClass().getResourceAsStream("invalid.zip")) {
             IOException exception = assertThrows(IOException.class, () -> ppio.decode(input));
-            assertEquals(
-                    "Could not find any file with .shp extension in the zip file",
-                    exception.getMessage());
+            assertEquals("Could not find any file with .shp extension in the zip file", exception.getMessage());
             verify(resources, never()).addResource(any());
         }
     }
@@ -76,8 +73,7 @@ public class ShapeZipPPIOTest {
     public void testDecodeBadEntryName() throws Exception {
         try (InputStream input = ZipTestUtil.getZipSlipInput()) {
             IOException exception = assertThrows(IOException.class, () -> ppio.decode(input));
-            assertThat(
-                    exception.getMessage(), startsWith("Entry is outside of the target directory"));
+            assertThat(exception.getMessage(), startsWith("Entry is outside of the target directory"));
             verify(resources, never()).addResource(any());
         }
     }

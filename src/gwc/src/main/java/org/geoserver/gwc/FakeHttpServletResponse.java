@@ -173,9 +173,7 @@ public class FakeHttpServletResponse implements HttpServletResponse {
 
     @Override
     public Collection<String> getHeaders(String name) {
-        return headers.containsKey(name)
-                ? Arrays.asList(headers.get(name))
-                : Collections.emptyList();
+        return headers.containsKey(name) ? Arrays.asList(headers.get(name)) : Collections.emptyList();
     }
 
     @Override

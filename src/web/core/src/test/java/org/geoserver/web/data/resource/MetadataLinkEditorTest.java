@@ -43,9 +43,7 @@ public class MetadataLinkEditorTest extends GeoServerWicketTestSupport {
         FeatureTypeInfo featureType = getCatalog().getFeatureTypeByName(getLayerId(ROAD_SEGMENTS));
         assertEquals(0, featureType.getMetadataLinks().size());
         tester.startPage(
-                new FormTestPage(
-                        (ComponentBuilder)
-                                id -> new MetadataLinkEditor(id, new Model<>(featureType))));
+                new FormTestPage((ComponentBuilder) id -> new MetadataLinkEditor(id, new Model<>(featureType))));
 
         tester.executeAjaxEvent("form:panel:addlink", "click");
         print(tester.getLastRenderedPage(), true, true, true);
@@ -53,9 +51,7 @@ public class MetadataLinkEditorTest extends GeoServerWicketTestSupport {
         ft.setValue("panel:container:table:links:0:type", METADATA_TYPE);
         ft.setValue("panel:container:table:links:0:about", ABOUT);
         ft.setValue("panel:container:table:links:0:format", FORMAT);
-        ft.setValue(
-                "panel:container:table:links:0:urlBorder:urlBorder_body:metadataLinkURL",
-                METADATA_LINK);
+        ft.setValue("panel:container:table:links:0:urlBorder:urlBorder_body:metadataLinkURL", METADATA_LINK);
         ft.submit();
 
         // check the link as edited

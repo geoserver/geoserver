@@ -3,9 +3,7 @@ package org.geoserver.featurestemplating.builders;
 import java.util.HashMap;
 import org.geotools.api.filter.expression.Expression;
 
-/**
- * Class listing the supported options a user can specify from a template to customize the output.
- */
+/** Class listing the supported options a user can specify from a template to customize the output. */
 public class VendorOptions extends HashMap<String, Object> {
 
     // encoding hint to retrieve the json-ld context

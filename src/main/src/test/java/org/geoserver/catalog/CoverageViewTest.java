@@ -62,8 +62,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
     protected static QName S2REDUCED = new QName(MockData.SF_URI, "s2reduced", MockData.SF_PREFIX);
     protected static QName IR_RGB = new QName(MockData.SF_URI, "ir-rgb", MockData.SF_PREFIX);
-    protected static QName BANDS_FLAGS =
-            new QName(MockData.SF_URI, "bands-flags", MockData.SF_PREFIX);
+    protected static QName BANDS_FLAGS = new QName(MockData.SF_URI, "bands-flags", MockData.SF_PREFIX);
 
     @Before
     public void cleanupCatalog() {
@@ -99,8 +98,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         coverageInfo.getDimensions().get(0).setName("Red");
         coverageInfo.getDimensions().get(1).setName("Green");
@@ -115,39 +113,21 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(BANDS_FLAGS_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(BANDS_FLAGS_VIEW, storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
     }
 
     private CoverageView buildRgbIRView() {
-        final CoverageBand rBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "0")),
-                        "rband",
-                        0,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand gBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "1")),
-                        "gband",
-                        1,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand bBand =
-                new CoverageBand(
-                        Arrays.asList(new InputCoverageBand("rgb", "2")),
-                        "bband",
-                        2,
-                        CompositionType.BAND_SELECT);
-        final CoverageBand irBand =
-                new CoverageBand(
-                        Collections.singletonList(new InputCoverageBand("ir", "0")),
-                        "irband",
-                        3,
-                        CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
+        final CoverageBand rBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "0")), "rband", 0, CompositionType.BAND_SELECT);
+        final CoverageBand gBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "1")), "gband", 1, CompositionType.BAND_SELECT);
+        final CoverageBand bBand = new CoverageBand(
+                Arrays.asList(new InputCoverageBand("rgb", "2")), "bband", 2, CompositionType.BAND_SELECT);
+        final CoverageBand irBand = new CoverageBand(
+                Collections.singletonList(new InputCoverageBand("ir", "0")), "irband", 3, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView(RGB_IR_VIEW, Arrays.asList(rBand, gBand, bBand, irBand));
         // old coverage views deserialize with null in these fields, force it to test backwards
         // compatibility
         coverageView.setEnvelopeCompositionType(null);
@@ -157,33 +137,22 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     private CoverageView buildBandsFlagsView() {
         String[] sources = {
-            "SWIR",
-            "VNIR",
-            "QUALITY_CLASSES",
-            "QUALITY_CLOUD",
-            "QUALITY_CLOUDSHADOW",
-            "QUALITY_HAZE",
-            "QUALITY_SNOW"
+            "SWIR", "VNIR", "QUALITY_CLASSES", "QUALITY_CLOUD", "QUALITY_CLOUDSHADOW", "QUALITY_HAZE", "QUALITY_SNOW"
         };
 
         List<CoverageBand> bands = new ArrayList<>();
         for (String source : sources) {
             if (source.startsWith("QUALITY_")) {
-                CoverageBand band =
-                        new CoverageBand(
-                                Arrays.asList(new InputCoverageBand(source, "0")),
-                                source,
-                                0,
-                                CompositionType.BAND_SELECT);
+                CoverageBand band = new CoverageBand(
+                        Arrays.asList(new InputCoverageBand(source, "0")), source, 0, CompositionType.BAND_SELECT);
                 bands.add(band);
             } else {
                 for (int i = 0; i < 3; i++) {
-                    CoverageBand band =
-                            new CoverageBand(
-                                    Arrays.asList(new InputCoverageBand(source, "" + i)),
-                                    source + "_" + i,
-                                    i,
-                                    CompositionType.BAND_SELECT);
+                    CoverageBand band = new CoverageBand(
+                            Arrays.asList(new InputCoverageBand(source, "" + i)),
+                            source + "_" + i,
+                            i,
+                            CompositionType.BAND_SELECT);
                     bands.add(band);
                 }
             }
@@ -201,8 +170,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo(RGB_IR_VIEW, storeInfo, builder);
         List<CoverageDimensionInfo> dimensions = coverageInfo.getDimensions();
         assertEquals("rband", dimensions.get(0).getName());
         assertEquals("gband", dimensions.get(1).getName());
@@ -218,29 +186,21 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         final InputCoverageBand band = new InputCoverageBand("watertemp", "0");
         final CoverageBand outputBand =
-                new CoverageBand(
-                        Collections.singletonList(band),
-                        "watertemp@0",
-                        0,
-                        CompositionType.BAND_SELECT);
-        final CoverageView coverageView =
-                new CoverageView("waterView", Collections.singletonList(outputBand));
+                new CoverageBand(Collections.singletonList(band), "watertemp@0", 0, CompositionType.BAND_SELECT);
+        final CoverageView coverageView = new CoverageView("waterView", Collections.singletonList(outputBand));
         final CatalogBuilder builder = new CatalogBuilder(cat);
         builder.setStore(storeInfo);
 
-        final CoverageInfo coverageInfo =
-                coverageView.createCoverageInfo("waterView", storeInfo, builder);
+        final CoverageInfo coverageInfo = coverageView.createCoverageInfo("waterView", storeInfo, builder);
         coverageInfo.getParameters().put("USE_JAI_IMAGEREAD", "false");
         cat.add(coverageInfo);
         final MetadataMap metadata = coverageInfo.getMetadata();
-        final CoverageView metadataCoverageView =
-                (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
+        final CoverageView metadataCoverageView = (CoverageView) metadata.get(CoverageView.COVERAGE_VIEW);
         assertEquals(metadataCoverageView, coverageView);
 
         final ResourcePool resPool = cat.getResourcePool();
         final ReferencedEnvelope bbox = coverageInfo.getLatLonBoundingBox();
-        final GridCoverage coverage =
-                resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
+        final GridCoverage coverage = resPool.getGridCoverage(coverageInfo, "waterView", bbox, null);
         assertEquals(coverage.getNumSampleDimensions(), 1);
 
         disposeCoverage(coverage);
@@ -275,8 +235,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         // Test output bands
         final CoverageBand outputBandU =
-                new CoverageBand(
-                        Collections.singletonList(u), "u@1", 0, CompositionType.BAND_SELECT);
+                new CoverageBand(Collections.singletonList(u), "u@1", 0, CompositionType.BAND_SELECT);
 
         final CoverageBand outputBandV = new CoverageBand();
         outputBandV.setInputCoverageBands(Collections.singletonList(v));
@@ -318,8 +277,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, RGB_IR_VIEW, null);
 
         // no transparency due to footprint
-        GeneralParameterValue[] params =
-                buildFootprintBandParams(FootprintBehavior.None, new int[] {0, 1, 2});
+        GeneralParameterValue[] params = buildFootprintBandParams(FootprintBehavior.None, new int[] {0, 1, 2});
         GridCoverage solidCoverage = reader.read(params);
         try {
             // System.out.println(solidCoverage);
@@ -347,8 +305,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, RGB_IR_VIEW, null);
 
         // get IR, no transparency due to footprint
-        GeneralParameterValue[] params =
-                buildFootprintBandParams(FootprintBehavior.None, new int[] {3});
+        GeneralParameterValue[] params = buildFootprintBandParams(FootprintBehavior.None, new int[] {3});
         GridCoverage solidCoverage = reader.read(RGB_IR_VIEW, params);
         try {
             // System.out.println(solidCoverage);
@@ -376,8 +333,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, RGB_IR_VIEW, null);
 
         // get IR, no transparency due to footprint
-        GeneralParameterValue[] params =
-                buildFootprintBandParams(FootprintBehavior.None, new int[] {3, 1, 2});
+        GeneralParameterValue[] params = buildFootprintBandParams(FootprintBehavior.None, new int[] {3, 1, 2});
         GridCoverage solidCoverage = reader.read(RGB_IR_VIEW, params);
         try {
             // System.out.println(solidCoverage);
@@ -405,8 +361,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         GridCoverageReader reader = rp.getGridCoverageReader(coverageInfo, RGB_IR_VIEW, null);
 
         // get IR, no transparency due to footprint
-        GeneralParameterValue[] params =
-                buildFootprintBandParams(FootprintBehavior.None, new int[] {0});
+        GeneralParameterValue[] params = buildFootprintBandParams(FootprintBehavior.None, new int[] {0});
         GridCoverage solidCoverage = reader.read(RGB_IR_VIEW, params);
         try {
             // System.out.println(solidCoverage);
@@ -435,52 +390,45 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         }
     }
 
-    private GeneralParameterValue[] buildFootprintBandParams(
-            FootprintBehavior footprintBehavior, int[] bands) {
+    private GeneralParameterValue[] buildFootprintBandParams(FootprintBehavior footprintBehavior, int[] bands) {
         final List<ParameterValue<?>> parameters = new ArrayList<>();
-        parameters.add(
-                new DefaultParameterDescriptor<>(
-                                AbstractGridFormat.FOOTPRINT_BEHAVIOR.getName().toString(),
-                                AbstractGridFormat.FOOTPRINT_BEHAVIOR.getValueClass(),
-                                null,
-                                footprintBehavior.name())
-                        .createValue());
-        parameters.add(
-                new DefaultParameterDescriptor<>(
-                                AbstractGridFormat.BANDS.getName().toString(),
-                                AbstractGridFormat.BANDS.getValueClass(),
-                                null,
-                                bands)
-                        .createValue());
+        parameters.add(new DefaultParameterDescriptor<>(
+                        AbstractGridFormat.FOOTPRINT_BEHAVIOR.getName().toString(),
+                        AbstractGridFormat.FOOTPRINT_BEHAVIOR.getValueClass(),
+                        null,
+                        footprintBehavior.name())
+                .createValue());
+        parameters.add(new DefaultParameterDescriptor<>(
+                        AbstractGridFormat.BANDS.getName().toString(),
+                        AbstractGridFormat.BANDS.getValueClass(),
+                        null,
+                        bands)
+                .createValue());
         return parameters.toArray(new GeneralParameterValue[parameters.size()]);
     }
 
-    /**
-     * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
-     */
+    /** Tests a heterogeneous view without setting any extra configuration (falling back on defaults) */
     @Test
     public void testHeterogeneousViewDefaults() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsDefaults",
-                        cv -> {},
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsDefaults",
+                cv -> {},
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
         GridCoverage2D coverage = null;
         try {
             // default resolution policy is "best"
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
             assertEquals(1007, reader.getResolutionLevels()[0][0], 1);
             assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
 
@@ -504,34 +452,30 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
         }
     }
 
-    /**
-     * Tests a heterogeneous view without setting any extra configuration (falling back on defaults)
-     */
+    /** Tests a heterogeneous view without setting any extra configuration (falling back on defaults) */
     @Test
     public void testHeterogeneousViewIntersectionEnvelope() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsIntersection",
-                        cv -> {
-                            cv.setEnvelopeCompositionType(EnvelopeCompositionType.INTERSECTION);
-                        },
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsIntersection",
+                cv -> {
+                    cv.setEnvelopeCompositionType(EnvelopeCompositionType.INTERSECTION);
+                },
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
         GridCoverage2D coverage = null;
         try {
             // default resolution policy is "best"
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
             assertEquals(1007, reader.getResolutionLevels()[0][0], 1);
             assertEquals(1007, reader.getResolutionLevels()[0][1], 1);
 
@@ -562,28 +506,26 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHeterogeneousViewResolutionLowest() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsLowest",
-                        cv -> {
-                            cv.setSelectedResolution(SelectedResolution.WORST);
-                        },
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsLowest",
+                cv -> {
+                    cv.setSelectedResolution(SelectedResolution.WORST);
+                },
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
         GridCoverage2D coverage = null;
         try {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
             assertEquals(6100, reader.getResolutionLevels()[0][0], 1);
             assertEquals(6100, reader.getResolutionLevels()[0][1], 1);
 
@@ -607,32 +549,27 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     /** Hit the view outside its bounds, should return null */
     @Test
     public void testHeterogeneousViewOutsideBounds() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsOutsideBounds",
-                        cv -> {},
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsOutsideBounds",
+                cv -> {},
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
         GridCoverage2D coverage = null;
         try {
-            ParameterValue<GridGeometry2D> gg =
-                    AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
-            gg.setValue(
-                    new GridGeometry2D(
-                            new GridEnvelope2D(0, 0, 10, 10),
-                            new ReferencedEnvelope(0, 1000, 0, 1000, UTM32N)));
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            ParameterValue<GridGeometry2D> gg = AbstractGridFormat.READ_GRIDGEOMETRY2D.createValue();
+            gg.setValue(new GridGeometry2D(
+                    new GridEnvelope2D(0, 0, 10, 10), new ReferencedEnvelope(0, 1000, 0, 1000, UTM32N)));
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
             coverage = reader.read(new GeneralParameterValue[] {gg});
             assertNull(coverage);
         } finally {
@@ -645,24 +582,23 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHeterogeneousViewBandSelectionBestResolution() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsBest",
-                        cv -> {
-                            // use the default: BEST
-                        },
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsBest",
+                cv -> {
+                    // use the default: BEST
+                },
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
 
         // check band resolutions with specific band selections
         checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
@@ -674,24 +610,23 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testHeterogeneousViewBandSelectionWorstResolution() throws Exception {
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        "s2AllBandsWorst",
-                        cv -> {
-                            cv.setSelectedResolution(SelectedResolution.WORST);
-                        },
-                        "B01",
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B05",
-                        "B06",
-                        "B07",
-                        "B08",
-                        "B09",
-                        "B10",
-                        "B11",
-                        "B12");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                "s2AllBandsWorst",
+                cv -> {
+                    cv.setSelectedResolution(SelectedResolution.WORST);
+                },
+                "B01",
+                "B02",
+                "B03",
+                "B04",
+                "B05",
+                "B06",
+                "B07",
+                "B08",
+                "B09",
+                "B10",
+                "B11",
+                "B12");
 
         // check band resolutions with specific band selections
         checkBandSelectionResolution(info, new int[] {0}, 6100, 6100);
@@ -704,12 +639,10 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     public void checkBandSelectionResolution(
-            CoverageInfo info, int[] bands, double expectedResolutionX, double expectedResolutionY)
-            throws IOException {
+            CoverageInfo info, int[] bands, double expectedResolutionX, double expectedResolutionY) throws IOException {
         GridCoverage2D coverage = null;
         try {
-            GridCoverage2DReader reader =
-                    (GridCoverage2DReader) info.getGridCoverageReader(null, null);
+            GridCoverage2DReader reader = (GridCoverage2DReader) info.getGridCoverageReader(null, null);
 
             ParameterValue<int[]> bandsValue = AbstractGridFormat.BANDS.createValue();
             bandsValue.setValue(bands);
@@ -725,17 +658,15 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     }
 
     private CoverageInfo buildHeterogeneousResolutionView(
-            String name, Consumer<CoverageView> viewCustomizer, String... coverageNames)
-            throws Exception {
+            String name, Consumer<CoverageView> viewCustomizer, String... coverageNames) throws Exception {
         List<CoverageBand> bands = new ArrayList<>();
         int bandIdx = 0;
         for (String coverageName : coverageNames) {
-            CoverageBand band =
-                    new CoverageBand(
-                            Arrays.asList(new InputCoverageBand(coverageName, "0")),
-                            coverageName,
-                            bandIdx++,
-                            CompositionType.BAND_SELECT);
+            CoverageBand band = new CoverageBand(
+                    Arrays.asList(new InputCoverageBand(coverageName, "0")),
+                    coverageName,
+                    bandIdx++,
+                    CompositionType.BAND_SELECT);
             bands.add(band);
         }
         final CoverageView coverageView = new CoverageView(name, bands);
@@ -756,18 +687,16 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     @Test
     public void testCoverageViewGranuleSource() throws Exception {
         final String VIEW_NAME = "view";
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        VIEW_NAME,
-                        cv -> {
-                            cv.setSelectedResolution(SelectedResolution.BEST);
-                        },
-                        "B02",
-                        "B03",
-                        "B04");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                VIEW_NAME,
+                cv -> {
+                    cv.setSelectedResolution(SelectedResolution.BEST);
+                },
+                "B02",
+                "B03",
+                "B04");
 
-        StructuredGridCoverage2DReader reader =
-                (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
         GranuleSource source = reader.getGranules(VIEW_NAME, true);
         Query query = new Query(VIEW_NAME);
         // used to throw exception here
@@ -781,19 +710,17 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     @Test
     public void testCoverageViewGranuleSourceAggregation() throws Exception {
         final String VIEW_NAME = "viewAggregate";
-        CoverageInfo info =
-                buildHeterogeneousResolutionView(
-                        VIEW_NAME,
-                        cv -> {
-                            cv.setSelectedResolution(SelectedResolution.BEST);
-                        },
-                        "B02",
-                        "B03",
-                        "B04",
-                        "B01");
+        CoverageInfo info = buildHeterogeneousResolutionView(
+                VIEW_NAME,
+                cv -> {
+                    cv.setSelectedResolution(SelectedResolution.BEST);
+                },
+                "B02",
+                "B03",
+                "B04",
+                "B01");
 
-        StructuredGridCoverage2DReader reader =
-                (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
+        StructuredGridCoverage2DReader reader = (StructuredGridCoverage2DReader) info.getGridCoverageReader(null, null);
         GranuleSource source = reader.getGranules(VIEW_NAME, true);
         Query query = new Query(VIEW_NAME);
         // used to throw exception here

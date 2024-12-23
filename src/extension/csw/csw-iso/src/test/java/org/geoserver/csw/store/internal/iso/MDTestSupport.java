@@ -50,7 +50,8 @@ public class MDTestSupport extends CSWInternalTestSupport {
         namespaces.put("gml", GML.NAMESPACE);
 
         XMLUnit.setXpathNamespaceContext(new SimpleNamespaceContext(namespaces));
-    };
+    }
+    ;
 
     // Lazy Loading.
     private static Validator validator;
@@ -60,13 +61,9 @@ public class MDTestSupport extends CSWInternalTestSupport {
             SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
             Schema schema;
             try {
-                schema =
-                        factory.newSchema(
-                                new StreamSource(
-                                        MDTestSupport.class
-                                                .getResource(
-                                                        "/net/opengis/schemas/iso/19139/20070417/gmd/metadataEntity.xsd")
-                                                .toString()));
+                schema = factory.newSchema(new StreamSource(MDTestSupport.class
+                        .getResource("/net/opengis/schemas/iso/19139/20070417/gmd/metadataEntity.xsd")
+                        .toString()));
             } catch (SAXException e) {
                 throw new RuntimeException(e);
             }

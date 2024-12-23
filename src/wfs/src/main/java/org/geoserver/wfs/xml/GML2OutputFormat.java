@@ -55,20 +55,17 @@ import org.geotools.wfs.WFS;
  * @author Gabriel Rold?n
  * @version $Id$
  */
-public class GML2OutputFormat extends WFSGetFeatureOutputFormat
-        implements ComplexFeatureAwareFormat {
+public class GML2OutputFormat extends WFSGetFeatureOutputFormat implements ComplexFeatureAwareFormat {
     private static final int NO_FORMATTING = -1;
     private static final int INDENT_SIZE = 2;
     public static final String formatName = "GML2";
     public static final String MIME_TYPE = "text/xml; subtype=gml/2.1.2";
 
     /**
-     * This is a "magic" class provided by GeoTools that writes out GML for an array of
-     * FeatureCollections.
+     * This is a "magic" class provided by GeoTools that writes out GML for an array of FeatureCollections.
      *
-     * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt
-     * it down. We supply all of the header information in the execute method, and work through the
-     * featureList in the writeTo method.
+     * <p>This class seems to do all the work, if you have a problem with GML you will need to hunt it down. We supply
+     * all of the header information in the execute method, and work through the featureList in the writeTo method.
      *
      * <p>This value will be <code>null</code> until execute is called.
      */
@@ -100,8 +97,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
 
     /** prepares for encoding into GML2 format */
     @SuppressWarnings("unchecked")
-    public void prepare(
-            String outputFormat, FeatureCollectionResponse results, GetFeatureRequest request)
+    public void prepare(String outputFormat, FeatureCollectionResponse results, GetFeatureRequest request)
             throws IOException {
         transformer = createTransformer();
 
@@ -119,8 +115,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
             FeatureCollection features = results.getFeature().get(i);
             SimpleFeatureType featureType = (SimpleFeatureType) features.getSchema();
 
-            ResourceInfo meta =
-                    catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
+            ResourceInfo meta = catalog.getResourceByName(featureType.getName(), ResourceInfo.class);
 
             String prefix = meta.getNamespace().getPrefix();
             String uri = meta.getNamespace().getURI();
@@ -136,10 +131,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
                 // meaning it might be a coverage or a remote wms layer
                 if (meta instanceof FeatureTypeInfo) {
                     String location =
-                            typeSchemaLocation(
-                                    geoServer.getGlobal(),
-                                    (FeatureTypeInfo) meta,
-                                    request.getBaseUrl());
+                            typeSchemaLocation(geoServer.getGlobal(), (FeatureTypeInfo) meta, request.getBaseUrl());
                     ftNamespaces.put(uri, location);
                 }
             }
@@ -167,8 +159,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
             if (meta instanceof FeatureTypeInfo) {
                 int ftiDecimals = ((FeatureTypeInfo) meta).getNumDecimals();
                 if (ftiDecimals > 0) {
-                    numDecimals =
-                            numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
+                    numDecimals = numDecimals == -1 ? ftiDecimals : Math.max(numDecimals, ftiDecimals);
                 }
                 boolean pad = ((FeatureTypeInfo) meta).getPadWithZeros();
                 if (pad) {
@@ -223,12 +214,10 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
     }
 
     /** */
-    public void encode(
-            OutputStream output, FeatureCollectionResponse results, GetFeatureRequest request)
+    public void encode(OutputStream output, FeatureCollectionResponse results, GetFeatureRequest request)
             throws ServiceException, IOException {
         if (results == null) {
-            throw new IllegalStateException(
-                    "It seems prepare() has not been called" + " or has not succeed");
+            throw new IllegalStateException("It seems prepare() has not been called" + " or has not succeed");
         }
 
         // execute should of set all the header information
@@ -236,8 +225,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         //
         // execute should also fail if all of the locks could not be aquired
         List<FeatureCollection> resultsList = results.getFeature();
-        FeatureCollection[] featureResults =
-                resultsList.toArray(new FeatureCollection[resultsList.size()]);
+        FeatureCollection[] featureResults = resultsList.toArray(new FeatureCollection[resultsList.size()]);
 
         try {
             transformer.transform(featureResults, output);
@@ -248,8 +236,7 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
     }
 
     @Override
-    protected void write(
-            FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
+    protected void write(FeatureCollectionResponse featureCollection, OutputStream output, Operation getFeature)
             throws IOException, ServiceException {
         GetFeatureRequest request = GetFeatureRequest.adapt(getFeature.getParameters()[0]);
 
@@ -269,18 +256,16 @@ public class GML2OutputFormat extends WFSGetFeatureOutputFormat
         return org.geoserver.wfs.xml.v1_0_0.WFS.CANONICAL_SCHEMA_LOCATION_BASIC;
     }
 
-    protected String typeSchemaLocation(
-            GeoServerInfo global, FeatureTypeInfo meta, String baseUrl) {
-        Map<String, String> params =
-                params(
-                        "service",
-                        "WFS",
-                        "version",
-                        "1.0.0",
-                        "request",
-                        "DescribeFeatureType",
-                        "typeName",
-                        meta.prefixedName());
+    protected String typeSchemaLocation(GeoServerInfo global, FeatureTypeInfo meta, String baseUrl) {
+        Map<String, String> params = params(
+                "service",
+                "WFS",
+                "version",
+                "1.0.0",
+                "request",
+                "DescribeFeatureType",
+                "typeName",
+                meta.prefixedName());
         return buildURL(baseUrl, "wfs", params, URLType.SERVICE);
     }
 

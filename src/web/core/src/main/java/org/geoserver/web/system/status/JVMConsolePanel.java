@@ -23,35 +23,30 @@ public class JVMConsolePanel extends Panel {
     public JVMConsolePanel(String id) {
         super(id);
 
-        add(
-                new Link<String>("dumpThread") {
-                    private static final long serialVersionUID = 9014754243470867547L;
+        add(new Link<String>("dumpThread") {
+            private static final long serialVersionUID = 9014754243470867547L;
 
-                    @Override
-                    public void onClick() {
-                        dumpLog = getThreadsInfo(lockedMonitors, lockedSynchronizers);
-                    }
-                });
+            @Override
+            public void onClick() {
+                dumpLog = getThreadsInfo(lockedMonitors, lockedSynchronizers);
+            }
+        });
 
-        add(
-                new Link<String>("dumpHeap") {
-                    private static final long serialVersionUID = 9014754243470867547L;
+        add(new Link<String>("dumpHeap") {
+            private static final long serialVersionUID = 9014754243470867547L;
 
-                    @Override
-                    public void onClick() {
-                        dumpLog = getHistoMemoryDump();
-                    }
-                });
+            @Override
+            public void onClick() {
+                dumpLog = getHistoMemoryDump();
+            }
+        });
 
-        final TextArea<String> logs =
-                new TextArea<>(
-                        "dumpContent",
-                        new LoadableDetachableModel<String>() {
-                            @Override
-                            protected String load() {
-                                return dumpLog;
-                            }
-                        });
+        final TextArea<String> logs = new TextArea<>("dumpContent", new LoadableDetachableModel<String>() {
+            @Override
+            protected String load() {
+                return dumpLog;
+            }
+        });
         logs.setOutputMarkupId(true);
         logs.setMarkupId("dumpContent");
         add(logs);

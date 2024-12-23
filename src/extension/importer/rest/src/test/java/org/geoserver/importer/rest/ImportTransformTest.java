@@ -89,10 +89,7 @@ public class ImportTransformTest extends ImporterTestSupport {
         int id = lastId();
         String json = "{\"type\": \"ReprojectTransform\", \"target\": \"EPSG:3005\"}";
         MockHttpServletResponse resp =
-                postAsServletResponse(
-                        BASEPATH + "/imports/" + id + "/tasks/0/transforms",
-                        json,
-                        "application/json");
+                postAsServletResponse(BASEPATH + "/imports/" + id + "/tasks/0/transforms", json, "application/json");
 
         assertEquals(HttpStatus.CREATED.value(), resp.getStatus());
 
@@ -104,8 +101,7 @@ public class ImportTransformTest extends ImporterTestSupport {
     @Test
     public void testDeleteTransform() throws Exception {
         int id = lastId();
-        MockHttpServletResponse resp =
-                deleteAsServletResponse(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0");
+        MockHttpServletResponse resp = deleteAsServletResponse(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0");
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
         // Make sure it was deleted
@@ -119,10 +115,7 @@ public class ImportTransformTest extends ImporterTestSupport {
 
         int id = lastId();
         MockHttpServletResponse resp =
-                putAsServletResponse(
-                        BASEPATH + "/imports/" + id + "/tasks/0/transforms/0",
-                        json,
-                        "application/json");
+                putAsServletResponse(BASEPATH + "/imports/" + id + "/tasks/0/transforms/0", json, "application/json");
 
         assertEquals(HttpStatus.OK.value(), resp.getStatus());
 
@@ -133,8 +126,8 @@ public class ImportTransformTest extends ImporterTestSupport {
     }
 
     /**
-     * Parses the transforms list out of a /transforms response (example below), asserting that the
-     * structure and types are as expected.
+     * Parses the transforms list out of a /transforms response (example below), asserting that the structure and types
+     * are as expected.
      *
      * <pre>
      *
@@ -179,8 +172,7 @@ public class ImportTransformTest extends ImporterTestSupport {
     List<JSONObject> parseTransformObjectsFromResponse(JSON transformsResponse) {
         assertTrue(transformsResponse instanceof JSONObject);
         JSONObject jo = (JSONObject) transformsResponse;
-        assertTrue(
-                jo.containsKey("transformChain") && jo.get("transformChain") instanceof JSONObject);
+        assertTrue(jo.containsKey("transformChain") && jo.get("transformChain") instanceof JSONObject);
         JSONObject tco = (JSONObject) jo.get("transformChain");
         assertTrue(tco.containsKey("transforms") && tco.get("transforms") instanceof JSONArray);
         JSONArray array = (JSONArray) tco.get("transforms");

@@ -15,10 +15,7 @@ import org.geotools.data.ows.URLCheckers;
 import org.geotools.util.logging.Logging;
 import org.springframework.beans.factory.DisposableBean;
 
-/**
- * Checks the provided URL is contained in data directory global styles folder, or a workspace
- * styles folder.
- */
+/** Checks the provided URL is contained in data directory global styles folder, or a workspace styles folder. */
 public class StyleURLChecker implements URLChecker, DisposableBean {
 
     static final Logger LOGGER = Logging.getLogger(StyleURLChecker.class);
@@ -61,8 +58,7 @@ public class StyleURLChecker implements URLChecker, DisposableBean {
             Path relative = dataDirectory.relativize(resource);
 
             // is it inside the global styles directory?
-            if (relative.getNameCount() > 1 && relative.getName(0).toString().equals("styles"))
-                return true;
+            if (relative.getNameCount() > 1 && relative.getName(0).toString().equals("styles")) return true;
 
             // is it inside a workspace then?
             if (relative.getNameCount() > 3

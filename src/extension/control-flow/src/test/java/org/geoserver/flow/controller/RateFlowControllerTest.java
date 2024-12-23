@@ -20,8 +20,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testCookieRateControl() {
         RateFlowController controller =
-                new RateFlowController(
-                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new CookieKeyGenerator());
+                new RateFlowController(new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new CookieKeyGenerator());
 
         // run the first request
         Request firstRequest = buildCookieRequest(null);
@@ -53,18 +52,14 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
     private void checkHeaders(Request request, String context, int limit, int remaining) {
         MockHttpServletResponse response = (MockHttpServletResponse) request.getHttpResponse();
         assertEquals(context, response.getHeader(RateFlowController.X_RATE_LIMIT_CONTEXT));
-        assertEquals(
-                String.valueOf(limit), response.getHeader(RateFlowController.X_RATE_LIMIT_LIMIT));
-        assertEquals(
-                String.valueOf(remaining),
-                response.getHeader(RateFlowController.X_RATE_LIMIT_REMAINING));
+        assertEquals(String.valueOf(limit), response.getHeader(RateFlowController.X_RATE_LIMIT_LIMIT));
+        assertEquals(String.valueOf(remaining), response.getHeader(RateFlowController.X_RATE_LIMIT_REMAINING));
     }
 
     @Test
     public void testCookie429() {
         RateFlowController controller =
-                new RateFlowController(
-                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new CookieKeyGenerator());
+                new RateFlowController(new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new CookieKeyGenerator());
 
         // run the first request
         Request firstRequest = buildCookieRequest(null);
@@ -89,8 +84,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testIpRateControl() {
         RateFlowController controller =
-                new RateFlowController(
-                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new IpKeyGenerator());
+                new RateFlowController(new OWSRequestMatcher(), 2, Long.MAX_VALUE, 1000, new IpKeyGenerator());
 
         // run two requests
         Request request = buildIpRequest("127.0.0.1", "");
@@ -111,8 +105,7 @@ public class RateFlowControllerTest extends AbstractFlowControllerTest {
     @Test
     public void testIp429() {
         RateFlowController controller =
-                new RateFlowController(
-                        new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new IpKeyGenerator());
+                new RateFlowController(new OWSRequestMatcher(), 2, Long.MAX_VALUE, 0, new IpKeyGenerator());
 
         // run two requests
         Request request = buildIpRequest("127.0.0.1", "");

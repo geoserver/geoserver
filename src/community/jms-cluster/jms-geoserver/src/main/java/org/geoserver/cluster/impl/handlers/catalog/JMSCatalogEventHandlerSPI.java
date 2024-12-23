@@ -18,8 +18,7 @@ public abstract class JMSCatalogEventHandlerSPI extends JMSEventHandlerSPI<Strin
     protected final XStream xstream;
     protected final ToggleSwitch producer;
 
-    public JMSCatalogEventHandlerSPI(
-            int priority, Catalog catalog, XStream xstream, ToggleSwitch producer) {
+    public JMSCatalogEventHandlerSPI(int priority, Catalog catalog, XStream xstream, ToggleSwitch producer) {
         super(priority);
         this.catalog = catalog;
         this.xstream = xstream;

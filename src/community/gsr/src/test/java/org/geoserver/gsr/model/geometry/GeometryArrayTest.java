@@ -31,10 +31,8 @@ public class GeometryArrayTest {
         Polygon polygon = new Polygon(rings, spatialRef);
         Geometry[] geometries1 = {point1, point2};
         Geometry[] geometries2 = {point1, point2, polygon};
-        GeometryArray geometryArray1 =
-                new GeometryArray(GeometryTypeEnum.POINT, geometries1, spatialRef);
-        GeometryArray geometryArray2 =
-                new GeometryArray(GeometryTypeEnum.POINT, geometries2, spatialRef);
+        GeometryArray geometryArray1 = new GeometryArray(GeometryTypeEnum.POINT, geometries1, spatialRef);
+        GeometryArray geometryArray2 = new GeometryArray(GeometryTypeEnum.POINT, geometries2, spatialRef);
 
         assertEquals(true, geometryArray1.isValidGeometryTypes());
         assertEquals(false, geometryArray2.isValidGeometryTypes());

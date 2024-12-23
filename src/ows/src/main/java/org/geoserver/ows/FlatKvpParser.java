@@ -12,19 +12,18 @@ import org.geoserver.ows.util.KvpUtils;
 /**
  * A kvp parser which parses a value consisting of tokens in a flat list.
  *
- * <p>A value in flat form is a list of tokens separated by a single delimiter. The default
- * delimiter is a comma ( , ). Example:
+ * <p>A value in flat form is a list of tokens separated by a single delimiter. The default delimiter is a comma ( , ).
+ * Example:
  *
  * <pre><code>
  *         key=token1,token2,...,tokenN
  * </code></pre>
  *
- * <p>Upon processing of each token, the token is parsed into an instance of {@link #getBinding()}.
- * Subclasses should override the method {@link #parseToken(String)}.
+ * <p>Upon processing of each token, the token is parsed into an instance of {@link #getBinding()}. Subclasses should
+ * override the method {@link #parseToken(String)}.
  *
- * <p>By default, the {@link #parse(String)} method returns an list which contains instances of
- * {@link #getBinding()}. The {@link #parse(List)} method may be overidden to return a differnt type
- * of object.
+ * <p>By default, the {@link #parse(String)} method returns an list which contains instances of {@link #getBinding()}.
+ * The {@link #parse(List)} method may be overidden to return a differnt type of object.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
@@ -71,8 +70,7 @@ public class FlatKvpParser extends KvpParser {
     /**
      * Parses the token into an instance of {@link #getBinding()}.
      *
-     * <p>Subclasses should override this method, the default implementation just returns token
-     * passed in.
+     * <p>Subclasses should override this method, the default implementation just returns token passed in.
      *
      * @param token Part of the value being parsed.
      * @return The token parsed into an object.
@@ -84,8 +82,7 @@ public class FlatKvpParser extends KvpParser {
     /**
      * Parses the parsed tokens into a final representation.
      *
-     * <p>Subclasses may choose to override this method. The default implementation just return the
-     * array passed in.
+     * <p>Subclasses may choose to override this method. The default implementation just return the array passed in.
      *
      * @param values The parsed tokens, each value is an instance of {@link #getBinding()}.
      * @return The final object.

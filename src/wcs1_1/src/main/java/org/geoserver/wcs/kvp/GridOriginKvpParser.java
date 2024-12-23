@@ -39,9 +39,7 @@ public class GridOriginKvpParser extends KvpParser {
                 origins[i] = Double.parseDouble((String) values.get(i));
             } catch (NumberFormatException e) {
                 throw new WcsException(
-                        "Invalid ordinate " + origins[i],
-                        WcsExceptionCode.InvalidParameterValue,
-                        "GridOrigin");
+                        "Invalid ordinate " + origins[i], WcsExceptionCode.InvalidParameterValue, "GridOrigin");
             }
         }
 

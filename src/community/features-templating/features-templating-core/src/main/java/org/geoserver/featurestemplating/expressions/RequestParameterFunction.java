@@ -17,10 +17,7 @@ import org.geotools.util.Converters;
 public class RequestParameterFunction extends RequestFunction {
 
     public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "requestParam",
-                    parameter("result", String.class),
-                    parameter("name", String.class));
+            new FunctionNameImpl("requestParam", parameter("result", String.class), parameter("name", String.class));
 
     public RequestParameterFunction() {
         super(NAME);

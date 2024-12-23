@@ -43,8 +43,7 @@ public class CreateComplexViewTaskTest extends AbstractTaskManagerTest {
     private static final String DB_NAME = "testsourcedb";
     private static final String TABLE_NAME = "gw_beleid.grondwaterlichamen_new";
     private static final String VIEW_NAME = "gw_beleid.vw_grondwaterlichamen";
-    private static final String DEFINITION =
-            " select dataengine_id from ${table_name} where gwl like 'BL%'";
+    private static final String DEFINITION = " select dataengine_id from ${table_name} where gwl like 'BL%'";
     private static final int NUMBER_OF_RECORDS = 7;
     private static final int NUMBER_OF_COLUMNS = 1;
 
@@ -55,19 +54,26 @@ public class CreateComplexViewTaskTest extends AbstractTaskManagerTest {
     private static final String ATT_DEFINITION = "definition";
     private static final String ATT_FAIL = "fail";
 
-    @Autowired private TaskManagerDao dao;
+    @Autowired
+    private TaskManagerDao dao;
 
-    @Autowired private TaskManagerFactory fac;
+    @Autowired
+    private TaskManagerFactory fac;
 
-    @Autowired private TaskManagerDataUtil dataUtil;
+    @Autowired
+    private TaskManagerDataUtil dataUtil;
 
-    @Autowired private TaskManagerTaskUtil taskUtil;
+    @Autowired
+    private TaskManagerTaskUtil taskUtil;
 
-    @Autowired private BatchJobService bjService;
+    @Autowired
+    private BatchJobService bjService;
 
-    @Autowired private LookupService<DbSource> dbSources;
+    @Autowired
+    private LookupService<DbSource> dbSources;
 
-    @Autowired private Scheduler scheduler;
+    @Autowired
+    private Scheduler scheduler;
 
     private Configuration config;
 
@@ -82,12 +88,9 @@ public class CreateComplexViewTaskTest extends AbstractTaskManagerTest {
         Task task1 = fac.createTask();
         task1.setName("task1");
         task1.setType(CreateComplexViewTaskTypeImpl.NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CreateComplexViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CreateComplexViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
-        dataUtil.setTaskParameterToAttribute(
-                task1, CreateComplexViewTaskTypeImpl.PARAM_DEFINITION, ATT_DEFINITION);
+        dataUtil.setTaskParameterToAttribute(task1, CreateComplexViewTaskTypeImpl.PARAM_DB_NAME, ATT_DB_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, CreateComplexViewTaskTypeImpl.PARAM_VIEW_NAME, ATT_VIEW_NAME);
+        dataUtil.setTaskParameterToAttribute(task1, CreateComplexViewTaskTypeImpl.PARAM_DEFINITION, ATT_DEFINITION);
         dataUtil.addTaskToConfiguration(config, task1);
 
         config = dao.save(config);
@@ -118,8 +121,10 @@ public class CreateComplexViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.setConfigurationAttribute(config, ATT_DEFINITION, DEFINITION);
         config = dao.save(config);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}
@@ -150,8 +155,10 @@ public class CreateComplexViewTaskTest extends AbstractTaskManagerTest {
         dataUtil.addBatchElement(batch, task2);
         batch = bjService.saveAndSchedule(batch);
 
-        Trigger trigger =
-                TriggerBuilder.newTrigger().forJob(batch.getId().toString()).startNow().build();
+        Trigger trigger = TriggerBuilder.newTrigger()
+                .forJob(batch.getId().toString())
+                .startNow()
+                .build();
         scheduler.scheduleJob(trigger);
 
         while (scheduler.getTriggerState(trigger.getKey()) != TriggerState.NONE) {}

@@ -15,8 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * rte represents route - an ordered list of waypoints representing a series of turn points leading
- * to a destination.
+ * rte represents route - an ordered list of waypoints representing a series of turn points leading to a destination.
  *
  * <p>Java class for rteType complex type.
  *
@@ -136,9 +135,9 @@ public class RteType {
     /**
      * Gets the value of the link property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the link property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the link property.
      *
      * <p>For example, to add a new item, do as follows:
      *
@@ -213,9 +212,9 @@ public class RteType {
     /**
      * Gets the value of the rtept property.
      *
-     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any
-     * modification you make to the returned list will be present inside the JAXB object. This is
-     * why there is not a <CODE>set</CODE> method for the rtept property.
+     * <p>This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make
+     * to the returned list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method
+     * for the rtept property.
      *
      * <p>For example, to add a new item, do as follows:
      *

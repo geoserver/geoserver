@@ -65,8 +65,7 @@ public class ProxyBaseExtensionRulesController extends AbstractCatalogController
      */
     @GetMapping
     public RestListWrapper<ProxyBaseExtensionRule> getRules() {
-        return new RestListWrapper<>(
-                ProxyBaseExtRuleDAO.getRules(), ProxyBaseExtensionRule.class, this, "id", null);
+        return new RestListWrapper<>(ProxyBaseExtRuleDAO.getRules(), ProxyBaseExtensionRule.class, this, "id", null);
     }
 
     /**
@@ -77,15 +76,10 @@ public class ProxyBaseExtensionRulesController extends AbstractCatalogController
      */
     @GetMapping(path = "{id}")
     public RestWrapper<ProxyBaseExtensionRule> getRule(@PathVariable String id) {
-        ProxyBaseExtensionRule result =
-                ProxyBaseExtRuleDAO.getRules().stream()
-                        .filter(r -> id.equals(r.getId()))
-                        .findFirst()
-                        .orElseThrow(
-                                () ->
-                                        new RestException(
-                                                "Rule with id " + id + " not found",
-                                                HttpStatus.NOT_FOUND));
+        ProxyBaseExtensionRule result = ProxyBaseExtRuleDAO.getRules().stream()
+                .filter(r -> id.equals(r.getId()))
+                .findFirst()
+                .orElseThrow(() -> new RestException("Rule with id " + id + " not found", HttpStatus.NOT_FOUND));
         return new RestWrapperAdapter<>(result, ProxyBaseExtensionRule.class, this);
     }
 
@@ -103,11 +97,11 @@ public class ProxyBaseExtensionRulesController extends AbstractCatalogController
                 MediaType.APPLICATION_XML_VALUE,
                 MediaType.TEXT_XML_VALUE
             })
-    public ResponseEntity<String> postRule(@RequestBody ProxyBaseExtensionRule newValue)
-            throws URISyntaxException {
+    public ResponseEntity<String> postRule(@RequestBody ProxyBaseExtensionRule newValue) throws URISyntaxException {
         // force a new id like the UI would, using a random UUID
         String newId = UUID.randomUUID().toString();
-        newValue = new ProxyBaseExtensionRuleBuilder().copy(newValue).withId(newId).build();
+        newValue =
+                new ProxyBaseExtensionRuleBuilder().copy(newValue).withId(newId).build();
         ProxyBaseExtRuleDAO.saveOrUpdateProxyBaseExtRule(newValue);
 
         // return the location of the created echo parameter
@@ -149,13 +143,13 @@ public class ProxyBaseExtensionRulesController extends AbstractCatalogController
         getRule(id);
         // validate consistency
         if (newValue.getId() == null) {
-            newValue = new ProxyBaseExtensionRuleBuilder().copy(newValue).withId(id).build();
+            newValue = new ProxyBaseExtensionRuleBuilder()
+                    .copy(newValue)
+                    .withId(id)
+                    .build();
         } else if (!newValue.getId().equals(id)) {
             throw new RestException(
-                    "Incosistent identifier, body uses "
-                            + newValue.getId()
-                            + " but REST API path has "
-                            + id,
+                    "Incosistent identifier, body uses " + newValue.getId() + " but REST API path has " + id,
                     HttpStatus.BAD_REQUEST);
         }
         // overwrite
@@ -177,9 +171,7 @@ public class ProxyBaseExtensionRulesController extends AbstractCatalogController
 
     @Override
     public boolean supports(
-            MethodParameter methodParameter,
-            Type targetType,
-            Class<? extends HttpMessageConverter<?>> converterType) {
+            MethodParameter methodParameter, Type targetType, Class<? extends HttpMessageConverter<?>> converterType) {
         return ProxyBaseExtensionRule.class.isAssignableFrom(methodParameter.getParameterType());
     }
 }

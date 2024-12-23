@@ -19,9 +19,7 @@ public class SecurityContextUserResolverTest {
         SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
 
         // When and Then
-        Assert.assertThrows(
-                IllegalStateException.class,
-                () -> securityContextUserResolver.existsUser("some-user"));
+        Assert.assertThrows(IllegalStateException.class, () -> securityContextUserResolver.existsUser("some-user"));
     }
 
     @Test
@@ -30,9 +28,7 @@ public class SecurityContextUserResolverTest {
         SecurityContextUserResolver securityContextUserResolver = new SecurityContextUserResolver();
 
         // When and Then
-        Assert.assertThrows(
-                IllegalStateException.class,
-                () -> securityContextUserResolver.existsRole("some-role"));
+        Assert.assertThrows(IllegalStateException.class, () -> securityContextUserResolver.existsRole("some-role"));
     }
 
     @Test

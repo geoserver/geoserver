@@ -35,8 +35,7 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
     @SuppressWarnings("unchecked")
     @Test
     public void testOnSaveAssignsNativeName() throws Exception {
-        ElasticConfigurationPanel elasticConfigurationPanel =
-                getPanel(getModel(getFeatureTypeInfo()));
+        ElasticConfigurationPanel elasticConfigurationPanel = getPanel(getModel(getFeatureTypeInfo()));
         elasticConfigurationPanel.onSave();
         FeatureTypeInfo featureTypeInfo = getFeatureTypeInfo();
         ResourceInfo ri = ((ResourceInfo) featureTypeInfo);
@@ -51,18 +50,14 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
         FeatureTypeInfo featureTypeInfo = spy(new FeatureTypeInfoImpl(null));
         featureTypeInfo.setName("testType");
         featureTypeInfo.setNativeName("testType");
-        ElasticLayerConfiguration elasticLayerConfiguration =
-                new ElasticLayerConfiguration("testDocType");
+        ElasticLayerConfiguration elasticLayerConfiguration = new ElasticLayerConfiguration("testDocType");
         elasticLayerConfiguration.getAttributes().add(new ElasticAttribute("testAttr"));
         featureTypeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, elasticLayerConfiguration);
         DataStoreInfo dataStoreInfo = mock(DataStoreInfo.class);
         ElasticDataStore elasticDataStore = mock(ElasticDataStore.class);
         ElasticAttribute elasticAttribute = new ElasticAttribute("testAttr");
-        when(elasticDataStore.getElasticAttributes(isA(Name.class)))
-                .thenReturn(List.of(elasticAttribute));
-        doReturn(elasticDataStore)
-                .when(dataStoreInfo)
-                .getDataStore(isA(NullProgressListener.class));
+        when(elasticDataStore.getElasticAttributes(isA(Name.class))).thenReturn(List.of(elasticAttribute));
+        doReturn(elasticDataStore).when(dataStoreInfo).getDataStore(isA(NullProgressListener.class));
         when(featureTypeInfo.getStore()).thenReturn(dataStoreInfo);
         return featureTypeInfo;
     }
@@ -71,8 +66,7 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
         FeatureTypeInfo featureTypeInfo = spy(new FeatureTypeInfoImpl(null));
         featureTypeInfo.setName("testType2");
         featureTypeInfo.setNativeName("defaultType2");
-        ElasticLayerConfiguration elasticLayerConfiguration =
-                new ElasticLayerConfiguration("testDocType2");
+        ElasticLayerConfiguration elasticLayerConfiguration = new ElasticLayerConfiguration("testDocType2");
         elasticLayerConfiguration.getAttributes().add(new ElasticAttribute("testAttr"));
         elasticLayerConfiguration.getAttributes().add(new ElasticAttribute("testAttr2"));
         featureTypeInfo.getMetadata().put(ElasticLayerConfiguration.KEY, elasticLayerConfiguration);
@@ -82,9 +76,7 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
         ElasticAttribute elasticAttribute2 = new ElasticAttribute("testAttr2");
         when(elasticDataStore.getElasticAttributes(isA(Name.class)))
                 .thenReturn(List.of(elasticAttribute, elasticAttribute2));
-        doReturn(elasticDataStore)
-                .when(dataStoreInfo)
-                .getDataStore(isA(NullProgressListener.class));
+        doReturn(elasticDataStore).when(dataStoreInfo).getDataStore(isA(NullProgressListener.class));
         when(featureTypeInfo.getStore()).thenReturn(dataStoreInfo);
         return featureTypeInfo;
     }
@@ -104,22 +96,17 @@ public class ElasticConfigurationPanelTest extends GeoServerWicketTestSupport {
 
         FormTestPage page = new FormTestPage(id -> elasticConfigurationPanel);
         tester.startPage(page);
-        AjaxLink launchModalLink =
-                (AjaxLink) tester.getLastRenderedPage().get("form:panel:esPanel:edit");
+        AjaxLink launchModalLink = (AjaxLink) tester.getLastRenderedPage().get("form:panel:esPanel:edit");
         tester.executeAjaxEvent(launchModalLink, "click");
         Form esForm = (Form) tester.getLastRenderedPage().get("form:panel:modal:content:es_form");
-        assertEquals(
-                1, ((WebMarkupContainer) esForm.get("esAttributes:listContainer:items")).size());
+        assertEquals(1, ((WebMarkupContainer) esForm.get("esAttributes:listContainer:items")).size());
         FeatureTypeInfo featureTypeInfo2 = getFeatureTypeInfo2();
         IModel panelModel = elasticConfigurationPanel.getDefaultModel();
         when(panelModel.getObject()).thenReturn(featureTypeInfo2);
         AjaxButton refreshButton =
-                (AjaxButton)
-                        tester.getLastRenderedPage()
-                                .get("form:panel:modal:content:es_form:es_refresh");
+                (AjaxButton) tester.getLastRenderedPage().get("form:panel:modal:content:es_form:es_refresh");
         tester.executeAjaxEvent(refreshButton, "click");
         Form esForm2 = (Form) tester.getLastRenderedPage().get("form:panel:modal:content:es_form");
-        assertEquals(
-                2, ((WebMarkupContainer) esForm2.get("esAttributes:listContainer:items")).size());
+        assertEquals(2, ((WebMarkupContainer) esForm2.get("esAttributes:listContainer:items")).size());
     }
 }

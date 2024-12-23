@@ -9,8 +9,7 @@ import org.geoserver.wcs.CoverageCleanerCallback;
 import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
- * A resource managing the lifecycle of a {@link GridCoverage} and disposing of it when the process
- * is complete
+ * A resource managing the lifecycle of a {@link GridCoverage} and disposing of it when the process is complete
  *
  * @author Andrea Aime - GeoSolutions
  */

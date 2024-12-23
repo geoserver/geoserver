@@ -15,9 +15,8 @@ import org.geotools.map.Layer;
 import org.locationtech.jts.geom.Point;
 
 /**
- * Make a best guess as to the appropriate strategy to use for a featuretype and do it
- * automatically. The heuristic is pretty simple; it's based entirely on the default geometry of the
- * featuretype:
+ * Make a best guess as to the appropriate strategy to use for a featuretype and do it automatically. The heuristic is
+ * pretty simple; it's based entirely on the default geometry of the featuretype:
  *
  * <ol>
  *   <li>For polygons, use the area.
@@ -42,8 +41,7 @@ public class BestGuessRegionatingStrategy implements RegionatingStrategy {
         SimpleFeatureType type = ((SimpleFeatureSource) layer.getFeatureSource()).getSchema();
         Class<?> geomtype = type.getGeometryDescriptor().getType().getBinding();
 
-        if (Point.class.isAssignableFrom(geomtype))
-            return new RandomRegionatingStrategy(gs).getFilter(context, layer);
+        if (Point.class.isAssignableFrom(geomtype)) return new RandomRegionatingStrategy(gs).getFilter(context, layer);
 
         return new GeometryRegionatingStrategy(gs).getFilter(context, layer);
     }

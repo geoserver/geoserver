@@ -44,10 +44,7 @@ public abstract class LDAPBaseSecurityServiceConfig extends BaseSecurityNamedSer
     /** Pattern used for nested group filtering */
     private String nestedGroupSearchFilter = "(member={0})";
 
-    /**
-     * bind to the server before extracting groups some LDAP server require this (e.g.
-     * ActiveDirectory)
-     */
+    /** bind to the server before extracting groups some LDAP server require this (e.g. ActiveDirectory) */
     Boolean bindBeforeGroupSearch;
 
     String adminGroup;

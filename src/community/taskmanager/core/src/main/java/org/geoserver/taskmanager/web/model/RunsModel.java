@@ -15,8 +15,7 @@ public class RunsModel extends GeoServerDataProvider<Run> {
 
     private static final long serialVersionUID = -5237816029300683075L;
 
-    public static final Property<Run> NAME =
-            new BeanProperty<Run>("name", "batchElement.task.fullName");
+    public static final Property<Run> NAME = new BeanProperty<Run>("name", "batchElement.task.fullName");
     public static final Property<Run> START = new BeanProperty<Run>("start", "start");
     public static final Property<Run> END = new BeanProperty<Run>("end", "end");
     public static final Property<Run> STATUS = new BeanProperty<Run>("status", "status");

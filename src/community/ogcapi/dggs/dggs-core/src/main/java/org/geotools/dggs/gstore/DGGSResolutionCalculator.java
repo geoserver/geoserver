@@ -81,10 +81,9 @@ public class DGGSResolutionCalculator {
     public int getTargetResolution(Query query, int defaultResolution) {
         Hints hints = query.getHints();
 
-        Optional<Map> viewParams =
-                Optional.ofNullable(hints.get(Hints.VIRTUAL_TABLE_PARAMETERS))
-                        .filter(Map.class::isInstance)
-                        .map(Map.class::cast);
+        Optional<Map> viewParams = Optional.ofNullable(hints.get(Hints.VIRTUAL_TABLE_PARAMETERS))
+                .filter(Map.class::isInstance)
+                .map(Map.class::cast);
 
         // did the user ask for a specific resolution?
         Optional<Integer> requestedResolution =
@@ -98,8 +97,7 @@ public class DGGSResolutionCalculator {
         // switches and excess zone generation. Try something more stable and predictable first,
         // like the OGC scale denominator.
         Optional<Double> distance;
-        Double sd =
-                safeConvert(EnvFunction.getLocalValues().get(WMS_SCALE_DENOMINATOR), Double.class);
+        Double sd = safeConvert(EnvFunction.getLocalValues().get(WMS_SCALE_DENOMINATOR), Double.class);
         if (sd != null) {
             distance = Optional.of(scaleToDistance(DefaultGeographicCRS.WGS84, sd));
         } else {
@@ -108,9 +106,7 @@ public class DGGSResolutionCalculator {
 
         // do we have a resoution delta?
         Optional<Integer> resolutionDelta =
-                viewParams
-                        .map(m -> m.get(VP_RESOLUTION_DELTA))
-                        .map(n -> safeConvert(n, Integer.class));
+                viewParams.map(m -> m.get(VP_RESOLUTION_DELTA)).map(n -> safeConvert(n, Integer.class));
         // if not available through the request, try the values coming from the configuration
         if (!resolutionDelta.isPresent()) {
             resolutionDelta = getIntegerHint(hints, OFFSET_HINTS_KEY);
@@ -118,9 +114,8 @@ public class DGGSResolutionCalculator {
         int resOffset = resolutionDelta.orElse(0);
 
         // compute resolution and eventually apply delta
-        int resolution =
-                distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resOffset)
-                        .orElse(defaultResolution);
+        int resolution = distance.map(n -> getResolutionFromThresholds(n.doubleValue()) + resOffset)
+                .orElse(defaultResolution);
 
         // see if there is a min/max resolution set, if so, use it (don't limit to 0 on purpose,
         // if a resolution has been forced to an invalid value, it should not return zones)
@@ -130,25 +125,18 @@ public class DGGSResolutionCalculator {
         return resolution;
     }
 
-    /**
-     * Given the hints and a key, returns the integer value associated with the key, as an {@link
-     * Optional}.
-     */
+    /** Given the hints and a key, returns the integer value associated with the key, as an {@link Optional}. */
     private Optional<Integer> getIntegerHint(Hints hints, Object key) {
         return Optional.ofNullable(hints.get(key)).map(n -> safeConvert(n, Integer.class));
     }
 
-    /**
-     * Given the hints and a key, returns the double value associated with the key, as an {@link
-     * Optional}.
-     */
+    /** Given the hints and a key, returns the double value associated with the key, as an {@link Optional}. */
     private Optional<Double> getDoubleHint(Hints hints, Object key) {
         return Optional.ofNullable(hints.get(key)).map(n -> safeConvert(n, Double.class));
     }
 
     /**
-     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator
-     * computation rules
+     * Converts a scale denominator to a generalization distance using the OGC SLD scale denominator computation rules
      *
      * @param crs The CRS of the data
      * @param scaleDenominator The target scale denominator
@@ -169,11 +157,10 @@ public class DGGSResolutionCalculator {
 
     private int validateResolution(int resolution) {
         if (resolution < 0 || resolution >= levelThresholds.length) {
-            throw new IllegalArgumentException(
-                    "Requested resolution "
-                            + resolution
-                            + " is not valid, please provide a value between 0 and "
-                            + (levelThresholds.length - 1));
+            throw new IllegalArgumentException("Requested resolution "
+                    + resolution
+                    + " is not valid, please provide a value between 0 and "
+                    + (levelThresholds.length - 1));
         }
 
         return resolution;

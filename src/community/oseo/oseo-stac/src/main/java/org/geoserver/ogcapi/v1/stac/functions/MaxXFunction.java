@@ -14,8 +14,7 @@ import org.locationtech.jts.geom.Geometry;
 /** Returns the maximum X value of the given geometry */
 public class MaxXFunction extends FunctionImpl {
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("maxx", Double.class, parameter("geometry", Geometry.class));
+    public static FunctionName NAME = new FunctionNameImpl("maxx", Double.class, parameter("geometry", Geometry.class));
 
     public MaxXFunction() {
         this.functionName = NAME;

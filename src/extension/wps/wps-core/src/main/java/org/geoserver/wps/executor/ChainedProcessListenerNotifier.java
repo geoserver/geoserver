@@ -9,8 +9,8 @@ import org.geoserver.wps.ChainedProcessListener;
 import org.geoserver.wps.WPSException;
 
 /**
- * A notifier to fire events when processes are submitted and completed. Events are fired for both
- * root process and internal chained processes.
+ * A notifier to fire events when processes are submitted and completed. Events are fired for both root process and
+ * internal chained processes.
  *
  * @author etj (Emanuele Tajariol @ GeoSolutions)
  */
@@ -22,10 +22,7 @@ class ChainedProcessListenerNotifier {
     private boolean chained;
 
     public ChainedProcessListenerNotifier(
-            String executionId,
-            String processName,
-            boolean chained,
-            List<ChainedProcessListener> listeners) {
+            String executionId, String processName, boolean chained, List<ChainedProcessListener> listeners) {
         this.listeners = listeners;
         this.executionId = executionId;
         this.processName = processName;

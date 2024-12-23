@@ -53,25 +53,11 @@ public class DefaultContainerAccessResolver implements ContainerAccessResolver {
             Collection<LayerGroupContainmentCache.LayerGroupSummary> summaries) {
         ContainerLimitResolver resolver;
         if (summaries != null) {
-            resolver =
-                    new ContainerLimitResolver(
-                            summaries,
-                            ruleReaderService,
-                            user,
-                            layer,
-                            workspace,
-                            callerIp,
-                            configuration);
+            resolver = new ContainerLimitResolver(
+                    summaries, ruleReaderService, user, layer, workspace, callerIp, configuration);
         } else {
-            resolver =
-                    new ContainerLimitResolver(
-                            containers,
-                            ruleReaderService,
-                            user,
-                            layer,
-                            workspace,
-                            callerIp,
-                            configuration);
+            resolver = new ContainerLimitResolver(
+                    containers, ruleReaderService, user, layer, workspace, callerIp, configuration);
         }
 
         ContainerLimitResolver.ProcessingResult result = resolver.resolveResourceInGroupLimits();

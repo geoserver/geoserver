@@ -17,8 +17,8 @@ import org.geoserver.ogcapi.AbstractAPIExceptionHandler;
 import org.springframework.stereotype.Component;
 
 /**
- * Handles exception encoding for OGC API - Features (not the same as OGC API - Commons), which is
- * adopted as a base for STAC
+ * Handles exception encoding for OGC API - Features (not the same as OGC API - Commons), which is adopted as a base for
+ * STAC
  */
 @Component
 public class STACExceptionHandler extends AbstractAPIExceptionHandler {
@@ -35,8 +35,7 @@ public class STACExceptionHandler extends AbstractAPIExceptionHandler {
     }
 
     @Override
-    protected void writeResponse(
-            HttpServletResponse response, Throwable t, String type, String title) {
+    protected void writeResponse(HttpServletResponse response, Throwable t, String type, String title) {
         Map<String, String> error = new LinkedHashMap<>();
         error.put("code", type);
         error.put("description", title);
@@ -45,10 +44,7 @@ public class STACExceptionHandler extends AbstractAPIExceptionHandler {
             mapper.writeValue(os, error);
             os.flush();
         } catch (Exception ex) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Problem writing exception information back to calling client:",
-                    ex);
+            LOGGER.log(Level.INFO, "Problem writing exception information back to calling client:", ex);
         }
     }
 }

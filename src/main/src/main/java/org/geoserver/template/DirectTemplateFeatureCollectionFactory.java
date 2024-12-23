@@ -21,9 +21,8 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.util.logging.Logging;
 
 /**
- * Create FeatureCollection Template Model without copying features to memory When using this in a
- * FeatureWrapper, it is necessary to call purge() method after processing template, to close any
- * open database connections
+ * Create FeatureCollection Template Model without copying features to memory When using this in a FeatureWrapper, it is
+ * necessary to call purge() method after processing template, to close any open database connections
  *
  * @author Niels Charlier, Curtin University of Technology
  */
@@ -54,13 +53,11 @@ public class DirectTemplateFeatureCollectionFactory
     public DirectTemplateFeatureCollectionFactory() {}
 
     @Override
-    public TemplateCollectionModel createTemplateFeatureCollection(
-            FeatureCollection collection, BeansWrapper wrapper) {
+    public TemplateCollectionModel createTemplateFeatureCollection(FeatureCollection collection, BeansWrapper wrapper) {
         return new TemplateFeatureCollection(collection, wrapper);
     }
 
-    protected class TemplateFeatureCollection
-            implements TemplateCollectionModel, TemplateSequenceModel {
+    protected class TemplateFeatureCollection implements TemplateCollectionModel, TemplateSequenceModel {
         protected BeansWrapper wrapper;
 
         protected FeatureCollection collection;
@@ -78,8 +75,7 @@ public class DirectTemplateFeatureCollectionFactory
 
         @Override
         public TemplateModelIterator iterator() throws TemplateModelException {
-            TemplateFeatureIterator it =
-                    new TemplateFeatureIterator(collection.features(), wrapper);
+            TemplateFeatureIterator it = new TemplateFeatureIterator(collection.features(), wrapper);
             List<TemplateFeatureIterator> open = ITERATORS.get();
             if (open == null) {
                 open = new LinkedList<>();

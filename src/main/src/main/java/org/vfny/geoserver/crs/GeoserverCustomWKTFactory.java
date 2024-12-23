@@ -20,8 +20,8 @@ public class GeoserverCustomWKTFactory extends FactoryUsingWKT {
     public static final String SYSTEM_DEFAULT_USER_PROJ_FILE = "user.projections.file";
 
     /**
-     * Returns the URL to the property file that contains CRS definitions. The default
-     * implementation returns the URL to the {@value #FILENAME} file.
+     * Returns the URL to the property file that contains CRS definitions. The default implementation returns the URL to
+     * the {@value #FILENAME} file.
      *
      * @return The URL, or {@code null} if none.
      */
@@ -29,10 +29,8 @@ public class GeoserverCustomWKTFactory extends FactoryUsingWKT {
     protected URL getDefinitionsURL() {
         String cust_proj_file = System.getProperty(SYSTEM_DEFAULT_USER_PROJ_FILE);
         if (cust_proj_file == null) {
-            GeoServerResourceLoader loader =
-                    GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            if (loader
-                    != null) { // not available during construction SystemTestData - call CRS reset
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            if (loader != null) { // not available during construction SystemTestData - call CRS reset
                 // to fix
                 Resource custom_proj = loader.get("user_projections/epsg.properties");
                 if (custom_proj.getType() == Type.RESOURCE) {

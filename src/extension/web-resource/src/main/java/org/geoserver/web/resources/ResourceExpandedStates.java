@@ -14,9 +14,8 @@ import org.geoserver.platform.resource.ResourceNotification;
 import org.geoserver.platform.resource.ResourceNotification.Event;
 
 /**
- * Model with information about which nodes are expanded and which aren't. By keeping a single
- * object for this information, there can be several instances of the same node that are consistent
- * in their expanded state.
+ * Model with information about which nodes are expanded and which aren't. By keeping a single object for this
+ * information, there can be several instances of the same node that are consistent in their expanded state.
  *
  * @author Niels Charlier
  */

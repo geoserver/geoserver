@@ -25,11 +25,9 @@ import org.geoserver.security.web.auth.RoleSourceChoiceRenderer;
 import org.geoserver.web.wicket.HelpLink;
 
 /** Jwt Headers auth panel Wicket */
-public class JwtHeadersAuthFilterPanel
-        extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
+public class JwtHeadersAuthFilterPanel extends PreAuthenticatedUserNameFilterPanel<GeoServerJwtHeadersFilterConfig> {
 
-    protected DropDownChoice<GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat>
-            userNameFormatChoice;
+    protected DropDownChoice<GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat> userNameFormatChoice;
 
     public JwtHeadersAuthFilterPanel(String id, IModel<GeoServerJwtHeadersFilterConfig> model) {
         super(id, model);
@@ -55,12 +53,10 @@ public class JwtHeadersAuthFilterPanel
         add(new TextField("validateTokenAudienceClaimName").setRequired(false));
         add(new TextField("validateTokenAudienceClaimValue").setRequired(false));
 
-        userNameFormatChoice =
-                new DropDownChoice(
-                        "userNameFormatChoice",
-                        Arrays.asList(
-                                GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.values()),
-                        new UserNameFormatChoiceRenderer());
+        userNameFormatChoice = new DropDownChoice(
+                "userNameFormatChoice",
+                Arrays.asList(GeoServerJwtHeadersFilterConfig.UserNameHeaderFormat.values()),
+                new UserNameFormatChoiceRenderer());
 
         add(userNameFormatChoice);
     }
@@ -68,13 +64,8 @@ public class JwtHeadersAuthFilterPanel
     @Override
     protected DropDownChoice<RoleSource> createRoleSourceDropDown() {
         List<RoleSource> sources =
-                new ArrayList<>(
-                        Arrays.asList(
-                                GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
-        sources.addAll(
-                Arrays.asList(
-                        PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource
-                                .values()));
+                new ArrayList<>(Arrays.asList(GeoServerJwtHeadersFilterConfig.JWTHeaderRoleSource.values()));
+        sources.addAll(Arrays.asList(PreAuthenticatedUserNameFilterConfig.PreAuthenticatedUserNameRoleSource.values()));
         return new DropDownChoice<>("roleSource", sources, new RoleSourceChoiceRenderer());
     }
 

@@ -13,8 +13,7 @@ package org.geoserver.test;
  */
 public class SpecimenMockData extends AbstractAppSchemaMockData {
 
-    public static final String GSML_SCHEMA_LOCATION =
-            "http://schemas.opengis.net/samplingSpecimen/2.0/specimen.xsd";
+    public static final String GSML_SCHEMA_LOCATION = "http://schemas.opengis.net/samplingSpecimen/2.0/specimen.xsd";
 
     public SpecimenMockData() {
         super(GML32_NAMESPACES);
@@ -23,7 +22,6 @@ public class SpecimenMockData extends AbstractAppSchemaMockData {
     /** @see org.geoserver.test.AbstractAppSchemaMockData#addContent() */
     @Override
     public void addContent() {
-        addFeatureType(
-                SPEC_PREFIX, "SF_Specimen", "SpecimenWfsTest.xml", "SpecimenWfsTest.properties");
+        addFeatureType(SPEC_PREFIX, "SF_Specimen", "SpecimenWfsTest.xml", "SpecimenWfsTest.properties");
     }
 }

@@ -20,8 +20,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class SecuredSimpleFeatureSource
-        extends SecuredFeatureSource<SimpleFeatureType, SimpleFeature>
+public class SecuredSimpleFeatureSource extends SecuredFeatureSource<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureSource {
 
     protected SecuredSimpleFeatureSource(SimpleFeatureSource delegate, WrapperPolicy policy) {

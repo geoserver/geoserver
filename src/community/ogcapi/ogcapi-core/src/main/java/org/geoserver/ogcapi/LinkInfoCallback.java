@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * Adds links to the OGC API documents, based on the {@link LinkInfo} objects attached to either the
- * {@link ResourceInfo}, the {@link PublishedInfo} object, or the {@link SettingsInfo} object.
- * Filters out links that are not applicable to the current service.
+ * {@link ResourceInfo}, the {@link PublishedInfo} object, or the {@link SettingsInfo} object. Filters out links that
+ * are not applicable to the current service.
  */
 @Component
 public class LinkInfoCallback implements DocumentCallback {

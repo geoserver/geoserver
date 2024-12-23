@@ -24,8 +24,7 @@ public class STACPathVisitor extends DuplicatingFilterVisitor {
     private final Set<String> queryables;
     private final Set<String> notIncluded;
 
-    public STACPathVisitor(
-            Map<String, Expression> propertyMap, Set<String> queryables, Set<String> notIncluded) {
+    public STACPathVisitor(Map<String, Expression> propertyMap, Set<String> queryables, Set<String> notIncluded) {
         this.propertyMap = propertyMap;
         this.queryables = queryables;
         this.notIncluded = notIncluded;

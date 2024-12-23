@@ -21,8 +21,7 @@ public class ReferencedEnvelopeConverter implements Converter<String, Referenced
         try {
             return (ReferencedEnvelope) parser.parse(source);
         } catch (Exception e) {
-            throw new RestException(
-                    "Invalid bounding box specification ", HttpStatus.BAD_REQUEST, e);
+            throw new RestException("Invalid bounding box specification ", HttpStatus.BAD_REQUEST, e);
         }
     }
 }

@@ -16,17 +16,16 @@ import org.vfny.geoserver.util.PartialBufferedOutputStream2;
  * <b>PartialBufferStrategy</b><br>
  * Oct 19, 2005<br>
  * <b>Purpose:</b><br>
- * This strategy will buffer the response before it starts streaming it to the user. This will allow
- * for errors to be caught early so a proper error message can be sent to the user. Right now it
- * buffers the first 20KB, enough for a full getCapabilities document.
+ * This strategy will buffer the response before it starts streaming it to the user. This will allow for errors to be
+ * caught early so a proper error message can be sent to the user. Right now it buffers the first 20KB, enough for a
+ * full getCapabilities document.
  *
  * @author Brent Owens (The Open Planning Project)
  * @version
  */
 public class PartialBufferStrategy2 implements ServiceStrategy {
     /** Class logger */
-    protected static Logger LOGGER =
-            org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
+    protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.servlets");
 
     public static final int DEFAULT_BUFFER_SIZE = 50;
     private PartialBufferedOutputStream2 out = null;

@@ -23,8 +23,7 @@ public class RemoteProcessFactoryConfiguration {
     private final Map<String, String> configKvPs;
 
     /** Constructor */
-    public RemoteProcessFactoryConfiguration(
-            long remoteProcessStubCycleSleepTime, Map<String, String> configKvPs) {
+    public RemoteProcessFactoryConfiguration(long remoteProcessStubCycleSleepTime, Map<String, String> configKvPs) {
         this.remoteProcessStubCycleSleepTime = remoteProcessStubCycleSleepTime;
 
         this.configKvPs = configKvPs;

@@ -40,16 +40,16 @@ import org.xml.sax.XMLReader;
 /**
  * OWS {@link Response} bean to handle WMS {@link GetCapabilities} results.
  *
- * <p>Note since the XSLT API does not support declaring internal DTDs, and we may need to in order
- * for {@link ExtendedCapabilitiesProvider}s to contribute to the document type definition, if
- * there's any {@code ExtendedCapabilitiesProvider} that contributes to this capabilities document,
- * the plain document as created by {@link CapabilitiesTransformer} is gonna be run through an XSLT
- * transformation that will insert the proper internal DTD declaration.
+ * <p>Note since the XSLT API does not support declaring internal DTDs, and we may need to in order for
+ * {@link ExtendedCapabilitiesProvider}s to contribute to the document type definition, if there's any
+ * {@code ExtendedCapabilitiesProvider} that contributes to this capabilities document, the plain document as created by
+ * {@link CapabilitiesTransformer} is gonna be run through an XSLT transformation that will insert the proper internal
+ * DTD declaration.
  *
- * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()} is added to the
- * list of direct children of the {@code VendorSpecificCapabilities} element, and each {@link
- * ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()} is added to the list of
- * internal DTD elements, like in the following example:
+ * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()} is added to the list of direct
+ * children of the {@code VendorSpecificCapabilities} element, and each
+ * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()} is added to the list of internal DTD
+ * elements, like in the following example:
  *
  * <pre>
  * <code>
@@ -61,9 +61,9 @@ import org.xml.sax.XMLReader;
  * </code>
  * </pre>
  *
- * Where BASE_URL is the {@link GetMapRequest#getBaseUrl()}, {@code TileSet*} and {@code Test?} are
- * contributed through {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()},
- * and {@code <!ELEMENT Resolutions (#PCDATA) >} and {@code <!ELEMENT TestChild (#PCDATA) >} through
+ * Where BASE_URL is the {@link GetMapRequest#getBaseUrl()}, {@code TileSet*} and {@code Test?} are contributed through
+ * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()}, and {@code <!ELEMENT Resolutions (#PCDATA)
+ * >} and {@code <!ELEMENT TestChild (#PCDATA) >} through
  * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()}
  *
  * @author groldan
@@ -73,8 +73,8 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
     private WMS wms;
 
     /**
-     * @param wms needed for {@link WMS#getAvailableExtendedCapabilitiesProviders()} in order to
-     *     check of internal DTD elements shall be added to the output document
+     * @param wms needed for {@link WMS#getAvailableExtendedCapabilitiesProviders()} in order to check of internal DTD
+     *     elements shall be added to the output document
      */
     public GetCapabilitiesResponse(final WMS wms) {
         super(GetCapabilitiesTransformer.class, GetCapabilitiesTransformer.WMS_CAPS_DEFAULT_MIME);
@@ -85,8 +85,7 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      * @param value {@link GetCapabilitiesTransformer}
      * @param output destination
      * @param operation The operation identifier which resulted in <code>value</code>
-     * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream,
-     *     org.geoserver.platform.Operation)
+     * @see org.geoserver.ows.Response#write(java.lang.Object, java.io.OutputStream, org.geoserver.platform.Operation)
      */
     @Override
     public void write(final Object value, final OutputStream output, final Operation operation)
@@ -151,23 +150,16 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
                 spf.setNamespaceAware(true); // xslt _needs_ namespace aware input source
                 SAXParser sp = spf.newSAXParser();
                 XMLReader rawCapsReader = sp.getXMLReader();
-                rawCapsReader.setEntityResolver(
-                        new EntityResolver() {
-                            @Override
-                            public InputSource resolveEntity(String publicId, String systemId)
-                                    throws SAXException {
-                                final String dtdLocation =
-                                        "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";
-                                String dtdSystemId =
-                                        getClass().getResource(dtdLocation).toExternalForm();
-                                return new InputSource(dtdSystemId);
-                            }
-                        });
+                rawCapsReader.setEntityResolver(new EntityResolver() {
+                    @Override
+                    public InputSource resolveEntity(String publicId, String systemId) throws SAXException {
+                        final String dtdLocation = "/schemas/wms/1.1.1/WMS_MS_Capabilities.dtd";
+                        String dtdSystemId = getClass().getResource(dtdLocation).toExternalForm();
+                        return new InputSource(dtdSystemId);
+                    }
+                });
 
-                source =
-                        new SAXSource(
-                                rawCapsReader,
-                                new InputSource(new ByteArrayInputStream(rawCapabilities)));
+                source = new SAXSource(rawCapsReader, new InputSource(new ByteArrayInputStream(rawCapabilities)));
             } catch (Exception e) {
                 throw new ServiceException(e);
             }
@@ -184,10 +176,10 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      * Builds a full WMS 1.1.1 GetCapabilities internal DTD declaration by asking the configured
      * {@link ExtendedCapabilitiesProvider}s for the elements to contribute to the DTD.
      *
-     * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()} is added to
-     * the list of direct children of the {@code VendorSpecificCapabilities} element, and each
-     * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()} is added to
-     * the list of internal DTD elements, like in the following example:
+     * <p>Each {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()} is added to the list of direct
+     * children of the {@code VendorSpecificCapabilities} element, and each
+     * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()} is added to the list of internal
+     * DTD elements, like in the following example:
      *
      * <pre>
      * <code>
@@ -199,20 +191,17 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
      * </code>
      * </pre>
      *
-     * Where BASE_URL is the {@link GetMapRequest#getBaseUrl()}, {@code TileSet*} and {@code Test?}
-     * are contributed through {@link
-     * ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()}, and {@code <!ELEMENT
-     * Resolutions (#PCDATA) >} and {@code <!ELEMENT TestChild (#PCDATA) >} through {@link
-     * ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()}
+     * Where BASE_URL is the {@link GetMapRequest#getBaseUrl()}, {@code TileSet*} and {@code Test?} are contributed
+     * through {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesRoots()}, and {@code <!ELEMENT
+     * Resolutions (#PCDATA) >} and {@code <!ELEMENT TestChild (#PCDATA) >} through
+     * {@link ExtendedCapabilitiesProvider#getVendorSpecificCapabilitiesChildDecls()}
      */
     private String getInternalDTDDeclaration(final GetCapabilitiesRequest request) {
 
         // do we need to add internal DTD declarations?
-        List<ExtendedCapabilitiesProvider> providers =
-                wms.getAvailableExtendedCapabilitiesProviders();
+        List<ExtendedCapabilitiesProvider> providers = wms.getAvailableExtendedCapabilitiesProviders();
 
-        StringBuilder vendorSpecificCapsElements =
-                new StringBuilder("<!ELEMENT VendorSpecificCapabilities (");
+        StringBuilder vendorSpecificCapsElements = new StringBuilder("<!ELEMENT VendorSpecificCapabilities (");
         StringBuilder internalDTDElements = new StringBuilder();
 
         int numRoots = 0;
@@ -258,10 +247,8 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
         // check that we have a valid value (same check as the super method)
         if (value == null || !value.getClass().isAssignableFrom(super.getBinding())) {
             // this is not good (same error message as the super method)
-            String message =
-                    String.format(
-                            "%s/%s",
-                            value == null ? "null" : value.getClass().getName(), operation.getId());
+            String message = String.format(
+                    "%s/%s", value == null ? "null" : value.getClass().getName(), operation.getId());
             throw new IllegalArgumentException(message);
         }
         // search for the get capabilities object
@@ -291,7 +278,6 @@ public class GetCapabilitiesResponse extends BaseCapabilitiesResponse {
             }
         }
         // the requested format is not supported, throw an exception
-        throw new RuntimeException(
-                String.format("The request format '%s' is not supported.", format));
+        throw new RuntimeException(String.format("The request format '%s' is not supported.", format));
     }
 }

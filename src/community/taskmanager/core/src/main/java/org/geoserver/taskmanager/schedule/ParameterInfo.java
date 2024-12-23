@@ -52,8 +52,7 @@ public class ParameterInfo {
 
     public ParameterInfo dependsOn(boolean enforced, ParameterInfo... infos) {
         if (enforced && enforcedDependsOn < dependsOn.size()) {
-            throw new IllegalArgumentException(
-                    "Enforced dependencies must come before non-enforced dependencies.");
+            throw new IllegalArgumentException("Enforced dependencies must come before non-enforced dependencies.");
         }
         for (ParameterInfo info : infos) {
             dependsOn.add(info);

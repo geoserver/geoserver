@@ -38,8 +38,7 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
     }
 
     @Override
-    protected void write(
-            FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
+    protected void write(FeatureTypeInfo[] featureTypeInfos, OutputStream output, Operation describeFeatureType)
             throws IOException {
 
         if (featureTypeInfos.length == 0) {
@@ -50,8 +49,7 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
                         new OutputStreamWriter(output, gs.getSettings().getCharset());
                 Writer outWriter = new BufferedWriter(osw)) {
             // jsonp?
-            final boolean jsonp =
-                    JSONType.useJsonp(getMimeType(featureTypeInfos, describeFeatureType));
+            final boolean jsonp = JSONType.useJsonp(getMimeType(featureTypeInfos, describeFeatureType));
             if (jsonp) {
                 outWriter.write(getCallbackFunction() + "(");
             }
@@ -105,8 +103,7 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
         return JSONType.getCallbackFunction(request.getKvp());
     }
 
-    private static void describeProperty(
-            String name, AttributeDescriptor ad, GeoJSONBuilder jw, boolean isGeometry) {
+    private static void describeProperty(String name, AttributeDescriptor ad, GeoJSONBuilder jw, boolean isGeometry) {
         jw.object();
         jw.key("name").value(name);
         jw.key("maxOccurs").value(ad.getMaxOccurs());
@@ -148,6 +145,8 @@ public class JSONDescribeFeatureTypeResponse extends WFSDescribeFeatureTypeOutpu
 
     @Override
     public String getMimeType(Object value, Operation operation) throws ServiceException {
-        return getOutputFormats().isEmpty() ? null : getOutputFormats().iterator().next();
+        return getOutputFormats().isEmpty()
+                ? null
+                : getOutputFormats().iterator().next();
     }
 }

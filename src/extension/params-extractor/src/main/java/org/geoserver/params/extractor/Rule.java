@@ -75,8 +75,7 @@ public final class Rule {
             return urlTransform;
         }
         urlTransform.removeMatch(matcher.group(remove != null ? remove : 1));
-        urlTransform.addParameter(
-                parameter, urlDecode(matcher.replaceAll(transform)), combine, repeat);
+        urlTransform.addParameter(parameter, urlDecode(matcher.replaceAll(transform)), combine, repeat);
         return urlTransform;
     }
 

@@ -11,8 +11,6 @@ class ElasticXStreamPersisterInitializer implements XStreamPersisterInitializer 
 
     @Override
     public void init(XStreamPersister persister) {
-        persister
-                .getXStream()
-                .allowTypes(new String[] {"org.geotools.data.elasticsearch.ElasticAttribute"});
+        persister.getXStream().allowTypes(new String[] {"org.geotools.data.elasticsearch.ElasticAttribute"});
     }
 }

@@ -10,8 +10,7 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
 import org.geoserver.security.config.SecurityAuthProviderConfig;
 
 /** @author Imran Rajjad - Geo Solutions */
-public class WebAuthenticationConfig extends BaseSecurityNamedServiceConfig
-        implements SecurityAuthProviderConfig {
+public class WebAuthenticationConfig extends BaseSecurityNamedServiceConfig implements SecurityAuthProviderConfig {
 
     /** serialVersionUID */
     private static final long serialVersionUID = -41214123098267966L;
@@ -26,10 +25,7 @@ public class WebAuthenticationConfig extends BaseSecurityNamedServiceConfig
     public static final String AUTHORIZATION_RADIO_OPTION_SERVICE = "Existing Role Service";
 
     public static final List<String> AUTHORIZATION_RADIO_OPTIONS =
-            Arrays.asList(
-                    new String[] {
-                        AUTHORIZATION_RADIO_OPTION_SERVICE, AUTHORIZATION_RADIO_OPTION_WEB
-                    });
+            Arrays.asList(new String[] {AUTHORIZATION_RADIO_OPTION_SERVICE, AUTHORIZATION_RADIO_OPTION_WEB});
 
     private String connectionURL;
     private int readTimeoutOut = DEFAULT_READTIME_OUT;

@@ -20,13 +20,9 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
 import org.springframework.stereotype.Component;
 
-/**
- * Converter for the {@link CollectionResponse} that will encode STAC collections using a feature
- * template
- */
+/** Converter for the {@link CollectionResponse} that will encode STAC collections using a feature template */
 @Component
-public class TemplatedCollectionsConverter
-        extends AbstractHttpMessageConverter<CollectionsResponse> {
+public class TemplatedCollectionsConverter extends AbstractHttpMessageConverter<CollectionsResponse> {
 
     private final STACTemplates templates;
 
@@ -48,19 +44,17 @@ public class TemplatedCollectionsConverter
     }
 
     @Override
-    protected void writeInternal(
-            CollectionsResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
+    protected void writeInternal(CollectionsResponse collectionsResponse, HttpOutputMessage httpOutputMessage)
             throws IOException, HttpMessageNotWritableException {
 
-        try (STACCollectionWriter writer =
-                new STACCollectionWriter(
-                        new JsonFactory()
-                                .createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
+        try (STACCollectionWriter writer = new STACCollectionWriter(
+                new JsonFactory().createGenerator(httpOutputMessage.getBody(), JsonEncoding.UTF8))) {
             writer.startTemplateOutput(null);
             try (FeatureIterator features = collectionsResponse.getCollections().features()) {
                 while (features.hasNext()) {
                     Feature collection = features.next();
-                    String collectionId = (String) collection.getProperty("identifier").getValue();
+                    String collectionId =
+                            (String) collection.getProperty("identifier").getValue();
                     RootBuilder builder = templates.getCollectionTemplate(collectionId);
                     builder.evaluate(writer, new TemplateBuilderContext(collection));
                 }

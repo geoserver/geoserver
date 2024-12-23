@@ -57,22 +57,18 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
     @Override
     protected void setupTestData(ClickHouseDGGSDataStore dataStore) throws Exception {
-        try (Connection cx =
-                        ((JDBCDataStore) dataStore.getDelegate())
-                                .getConnection(Transaction.AUTO_COMMIT);
+        try (Connection cx = ((JDBCDataStore) dataStore.getDelegate()).getConnection(Transaction.AUTO_COMMIT);
                 Statement st = cx.createStatement();
-                PreparedStatement ps =
-                        cx.prepareStatement("INSERT INTO \"rpix\" VALUES (?, ?, ?)")) {
+                PreparedStatement ps = cx.prepareStatement("INSERT INTO \"rpix\" VALUES (?, ?, ?)")) {
             // cleanup
             st.execute("DROP TABLE IF EXISTS rpix");
             st.execute("DROP TABLE IF EXISTS not_dggs");
 
-            st.execute(
-                    "CREATE TABLE \"rpix\"(\"zoneId\" String, "
-                            + "\"resolution\" Int32, \"value\" Float64) "
-                            + "ENGINE = MergeTree() "
-                            + "PARTITION BY substring(zoneId, 1, 1)\n"
-                            + "ORDER BY (resolution, zoneId)");
+            st.execute("CREATE TABLE \"rpix\"(\"zoneId\" String, "
+                    + "\"resolution\" Int32, \"value\" Float64) "
+                    + "ENGINE = MergeTree() "
+                    + "PARTITION BY substring(zoneId, 1, 1)\n"
+                    + "ORDER BY (resolution, zoneId)");
 
             // populate first 3 levels of the zone hierarchy with zones
             String[] zones = {"N", "O", "P", "Q", "R", "S"};
@@ -103,12 +99,11 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
             ps.executeBatch();
 
             // create a table that does not qualify as a DGGS source
-            st.execute(
-                    "CREATE TABLE \"not_dggs\"(\"fid\" String, "
-                            + "\"test\" Int32) "
-                            + "ENGINE = MergeTree() "
-                            + "PARTITION BY fid\n"
-                            + "ORDER BY fid");
+            st.execute("CREATE TABLE \"not_dggs\"(\"fid\" String, "
+                    + "\"test\" Int32) "
+                    + "ENGINE = MergeTree() "
+                    + "PARTITION BY fid\n"
+                    + "ORDER BY fid");
         }
     }
 
@@ -129,7 +124,8 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
     }
 
     public void testFeatureCollectionSchema() throws IOException {
-        SimpleFeatureType schema = dataStore.getFeatureSource("rpix").getFeatures().getSchema();
+        SimpleFeatureType schema =
+                dataStore.getFeatureSource("rpix").getFeatures().getSchema();
         assertRPixSchema(schema);
     }
 
@@ -160,18 +156,16 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
     public void testCountFilterResolution() throws Exception {
         DGGSFeatureSource fs = dataStore.getFeatureSource("rpix");
-        PropertyIsEqualTo eq =
-                FF.equals(FF.property(ClickHouseDGGSDataStore.RESOLUTION), FF.literal(2));
+        PropertyIsEqualTo eq = FF.equals(FF.property(ClickHouseDGGSDataStore.RESOLUTION), FF.literal(2));
         assertEquals(54 * 2, fs.getCount(new Query(null, eq)));
     }
 
     public void testCountSouthPolar() throws Exception {
         DGGSFeatureSource fs = dataStore.getFeatureSource("rpix");
 
-        BBOX bbox =
-                FF.bbox(
-                        FF.property(ClickHouseDGGSDataStore.GEOMETRY),
-                        new ReferencedEnvelope(-180, 180, -90, -60, DefaultGeographicCRS.WGS84));
+        BBOX bbox = FF.bbox(
+                FF.property(ClickHouseDGGSDataStore.GEOMETRY),
+                new ReferencedEnvelope(-180, 180, -90, -60, DefaultGeographicCRS.WGS84));
         // no way to run this one fast right now
         assertEquals(-1, fs.getCount(new Query(null, bbox)));
     }
@@ -179,10 +173,9 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
     public void testCountSouthPolarResolutionOne() throws Exception {
         DGGSFeatureSource fs = dataStore.getFeatureSource("rpix");
 
-        BBOX bbox =
-                FF.bbox(
-                        FF.property(ClickHouseDGGSDataStore.GEOMETRY),
-                        new ReferencedEnvelope(-180, 180, -90, -60, DefaultGeographicCRS.WGS84));
+        BBOX bbox = FF.bbox(
+                FF.property(ClickHouseDGGSDataStore.GEOMETRY),
+                new ReferencedEnvelope(-180, 180, -90, -60, DefaultGeographicCRS.WGS84));
         // force usage of resolution 1 to get a count
         Query q = new Query(null, bbox);
         addResolutionHint(q, 1);
@@ -220,10 +213,7 @@ public class ClickHouseRHealPixOnlineTest extends ClickHouseOnlineTestCase {
 
         Query q = new Query();
         // bbox slighltly smaller than R area
-        q.setFilter(
-                FF.bbox(
-                        FF.property(""),
-                        new ReferencedEnvelope(-37, 47, -39, 40, DefaultGeographicCRS.WGS84)));
+        q.setFilter(FF.bbox(FF.property(""), new ReferencedEnvelope(-37, 47, -39, 40, DefaultGeographicCRS.WGS84)));
         addResolutionHint(q, 2);
         q.setSortBy(new SortBy[] {FF.sort("zoneId", SortOrder.ASCENDING)});
         q.setMaxFeatures(2);

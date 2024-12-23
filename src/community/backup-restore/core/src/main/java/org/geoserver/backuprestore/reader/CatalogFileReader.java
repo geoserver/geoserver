@@ -61,9 +61,9 @@ import org.springframework.util.StringUtils;
 /**
  * Item reader for reading XML input based on StAX.
  *
- * <p>It extracts fragments from the input XML document which correspond to records for processing.
- * The fragments are wrapped with StartDocument and EndDocument events so that the fragments can be
- * further processed like standalone XML documents.
+ * <p>It extracts fragments from the input XML document which correspond to records for processing. The fragments are
+ * wrapped with StartDocument and EndDocument events so that the fragments can be further processed like standalone XML
+ * documents.
  *
  * <p>The implementation is <b>not</b> thread-safe.
  *
@@ -102,8 +102,8 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * In strict mode the reader will throw an exception on {@link
-     * #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
+     * In strict mode the reader will throw an exception on
+     * {@link #open(org.springframework.batch.item.ExecutionContext)} if the input resource does not exist.
      *
      * @param strict false by default
      */
@@ -125,18 +125,16 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     public void setFragmentRootElementNames(String[] fragmentRootElementNames) {
         this.fragmentRootElementNames = new ArrayList<QName>();
         for (String fragmentRootElementName : fragmentRootElementNames) {
-            this.fragmentRootElementNames.add(
-                    parseFragmentRootElementName(fragmentRootElementName));
+            this.fragmentRootElementNames.add(parseFragmentRootElementName(fragmentRootElementName));
         }
     }
 
     /**
-     * Ensure that all required dependencies for the ItemReader to run are provided after all
-     * properties have been set.
+     * Ensure that all required dependencies for the ItemReader to run are provided after all properties have been set.
      *
      * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet()
-     * @throws IllegalArgumentException if the Resource, FragmentDeserializer or
-     *     FragmentRootElementName is null, or if the root element is empty.
+     * @throws IllegalArgumentException if the Resource, FragmentDeserializer or FragmentRootElementName is null, or if
+     *     the root element is empty.
      * @throws IllegalStateException if the Resource does not exist.
      */
     @Override
@@ -152,13 +150,12 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     /**
      * Responsible for moving the cursor before the StartElement of the fragment root.
      *
-     * <p>This implementation simply looks for the next corresponding element, it does not care
-     * about element nesting. You will need to override this method to correctly handle composite
-     * fragments.
+     * <p>This implementation simply looks for the next corresponding element, it does not care about element nesting.
+     * You will need to override this method to correctly handle composite fragments.
      *
      * @return <code>true</code> if next fragment was found, <code>false</code> otherwise.
-     * @throws NonTransientResourceException if the cursor could not be moved. This will be treated
-     *     as fatal and subsequent calls to read will return null.
+     * @throws NonTransientResourceException if the cursor could not be moved. This will be treated as fatal and
+     *     subsequent calls to read will return null.
      */
     protected boolean moveCursorToNextFragment(XMLEventReader reader) {
         try {
@@ -177,8 +174,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
             }
         } catch (XMLStreamException e) {
             return logValidationExceptions(
-                    (T) null,
-                    new NonTransientResourceException("Error while reading from event reader", e));
+                    (T) null, new NonTransientResourceException("Error while reading from event reader", e));
         }
     }
 
@@ -207,16 +203,14 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
             noInput = true;
             if (!resource.exists()) {
                 if (strict) {
-                    throw new IllegalStateException(
-                            "Input resource must exist (reader is in 'strict' mode)");
+                    throw new IllegalStateException("Input resource must exist (reader is in 'strict' mode)");
                 }
                 logger.warning("Input resource does not exist " + resource.getDescription());
                 return;
             }
             if (!resource.isReadable()) {
                 if (strict) {
-                    throw new IllegalStateException(
-                            "Input resource must be readable (reader is in 'strict' mode)");
+                    throw new IllegalStateException("Input resource must be readable (reader is in 'strict' mode)");
                 }
                 logger.warning("Input resource is not readable " + resource.getDescription());
                 return;
@@ -260,8 +254,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
                     } catch (IOException e) {
                         logValidationExceptions(
                                 (ValidationResult) null,
-                                new UnexpectedInputException(
-                                        "Could not write data.  The file may be corrupt.", e));
+                                new UnexpectedInputException("Could not write data.  The file may be corrupt.", e));
                     }
                 } finally {
                     fragmentReader.markFragmentProcessed();
@@ -275,8 +268,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     }
 
     /**
-     * This is the core of the Class. The XML fragment will be unmarshalled via the GeoServer {@link
-     * XStreamPersister}.
+     * This is the core of the Class. The XML fragment will be unmarshalled via the GeoServer {@link XStreamPersister}.
      */
     private Object unmarshal(Source source)
             throws TransformerException, XMLStreamException, UnsupportedEncodingException {
@@ -319,8 +311,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     private QName readToStartFragment() throws XMLStreamException {
         while (true) {
             XMLEvent nextEvent = eventReader.nextEvent();
-            if (nextEvent.isStartElement()
-                    && isFragmentRootElementName(((StartElement) nextEvent).getName())) {
+            if (nextEvent.isStartElement() && isFragmentRootElementName(((StartElement) nextEvent).getName())) {
                 return ((StartElement) nextEvent).getName();
             }
         }
@@ -333,8 +324,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
     private void readToEndFragment(QName fragmentRootElementName) throws XMLStreamException {
         while (true) {
             XMLEvent nextEvent = eventReader.nextEvent();
-            if (nextEvent.isEndElement()
-                    && fragmentRootElementName.equals(((EndElement) nextEvent).getName())) {
+            if (nextEvent.isEndElement() && fragmentRootElementName.equals(((EndElement) nextEvent).getName())) {
                 return;
             }
         }
@@ -344,9 +334,7 @@ public class CatalogFileReader<T> extends CatalogReader<T> {
         for (QName fragmentRootElementName : fragmentRootElementNames) {
             if (fragmentRootElementName.getLocalPart().equals(name.getLocalPart())) {
                 if (!StringUtils.hasText(fragmentRootElementName.getNamespaceURI())
-                        || fragmentRootElementName
-                                .getNamespaceURI()
-                                .equals(name.getNamespaceURI())) {
+                        || fragmentRootElementName.getNamespaceURI().equals(name.getNamespaceURI())) {
                     return true;
                 }
             }

@@ -45,8 +45,7 @@ public class WCSDisabledTest extends WCSTestSupport {
         getCatalog().save(cinfo);
 
         Document doc = getAsDOM("wcs?service=WCS&request=getCapabilities");
-        assertXpathEvaluatesTo(
-                "0", "count(//wcs:Contents/wcs:CoverageSummary/ows:Title[.='BlueMarble'])", doc);
+        assertXpathEvaluatesTo("0", "count(//wcs:Contents/wcs:CoverageSummary/ows:Title[.='BlueMarble'])", doc);
     }
 
     /** Tests WCS service enabled on layer-resource */
@@ -59,8 +58,7 @@ public class WCSDisabledTest extends WCSTestSupport {
         getCatalog().save(cinfo);
 
         Document doc = getAsDOM("wcs?service=WCS&request=getCapabilities");
-        assertXpathEvaluatesTo(
-                "1", "count(//wcs:Contents/wcs:CoverageSummary/ows:Title[.='BlueMarble'])", doc);
+        assertXpathEvaluatesTo("1", "count(//wcs:Contents/wcs:CoverageSummary/ows:Title[.='BlueMarble'])", doc);
     }
 
     private void enableWCS() {

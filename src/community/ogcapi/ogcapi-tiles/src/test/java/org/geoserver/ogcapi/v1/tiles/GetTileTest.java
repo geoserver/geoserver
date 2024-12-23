@@ -50,18 +50,15 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testPngIntegration() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         checkRootTileHeaders(sr, "cite:BasicPolygons");
     }
 
-    public void checkRootTileHeaders(MockHttpServletResponse sr, String layerName)
-            throws IOException {
+    public void checkRootTileHeaders(MockHttpServletResponse sr, String layerName) throws IOException {
         // check the headers
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-gridset"));
         assertEquals("EPSG:4326", sr.getHeader("geowebcache-crs"));
@@ -78,12 +75,10 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testPngIntegrationWorkspaceSpecific() throws Exception {
         String layerId = MockData.BASIC_POLYGONS.getLocalPart();
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        MockData.BASIC_POLYGONS.getPrefix()
-                                + "/ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+        MockHttpServletResponse sr = getAsServletResponse(MockData.BASIC_POLYGONS.getPrefix()
+                + "/ogc/tiles/v1/collections/"
+                + layerId
+                + "/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
 
@@ -93,10 +88,9 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testPngMissHit() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        String path =
-                "ogc/tiles/v1/collections/"
-                        + layerId
-                        + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+        String path = "ogc/tiles/v1/collections/"
+                + layerId
+                + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -116,10 +110,9 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testEtagIfNoneMatch() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        String path =
-                "ogc/tiles/v1/collections/"
-                        + layerId
-                        + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
+        String path = "ogc/tiles/v1/collections/"
+                + layerId
+                + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng";
 
         // first request, it's a miss, tile was not there
         MockHttpServletResponse sr1 = getAsServletResponse(path);
@@ -148,35 +141,28 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testPngOnRawTilesIntegration() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
+        MockHttpServletResponse sr = getAsServletResponse(
+                "ogc/tiles/v1/collections/" + layerId + "/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(400, sr.getStatus());
     }
 
     @Test
     public void testMapxboNotEnabled() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:4326/EPSG:4326:0/0/0?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/tiles/EPSG:4326/EPSG:4326:0/0/0?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE);
         assertEquals(400, sr.getStatus());
     }
 
     @Test
     public void testMapboxTile() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE);
         assertEquals(200, sr.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
@@ -184,8 +170,7 @@ public class GetTileTest extends TilesTestSupport {
         checkGwcHeaders(layerId, sr);
 
         // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        VectorTileDecoder.FeatureIterable features = new VectorTileDecoder().decode(sr.getContentAsByteArray());
         // one road is before greenwich, not included in this tile
         assertEquals(5, features.asList().size());
     }
@@ -193,12 +178,10 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testJsonTile() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
-                                + ApplicationMime.geojson.getFormat());
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                + ApplicationMime.geojson.getFormat());
         assertEquals(200, sr.getStatus());
         assertEquals(ApplicationMime.json.getFormat(), sr.getContentType());
 
@@ -213,11 +196,9 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testPng8Tile() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/styles/RoadSegments/map/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png8");
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/styles/RoadSegments/map/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png8");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
 
@@ -226,19 +207,17 @@ public class GetTileTest extends TilesTestSupport {
         assertNotBlank("testPng8Tile", image, null);
 
         // check it looks as expected, with the roads actually filtered
-        File expectedFile =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/rs_full.png");
+        File expectedFile = new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/rs_full.png");
         ImageAssert.assertEquals(expectedFile, image, 100);
     }
 
     @Test
     public void testCacheableFilteredPNGTile() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        String request =
-                "ogc/tiles/v1/collections/"
-                        + layerId
-                        + "/map/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png"
-                        + "&filter=NAME='Route 5'&filter-lang=cql-text";
+        String request = "ogc/tiles/v1/collections/"
+                + layerId
+                + "/map/tiles/EPSG:900913/EPSG:900913:15/16383/16384?f=image/png"
+                + "&filter=NAME='Route 5'&filter-lang=cql-text";
         MockHttpServletResponse sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
@@ -258,8 +237,7 @@ public class GetTileTest extends TilesTestSupport {
         assertNotBlank("testPng8Tile", image, null);
 
         // check it looks as expected, with the roads actually filtered
-        File expectedFile =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/rs_filtered.png");
+        File expectedFile = new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/rs_filtered.png");
         ImageAssert.assertEquals(expectedFile, image, 100);
     }
 
@@ -267,16 +245,12 @@ public class GetTileTest extends TilesTestSupport {
     public void testNonCacheableFilteredPNGTile() throws Exception {
         String layerId = getLayerId(MockData.STREAMS);
         String request =
-                "ogc/tiles/v1/collections/"
-                        + layerId
-                        + "/map/tiles/EPSG:900913/EPSG:900913:15/16384/16384?f=image/png";
+                "ogc/tiles/v1/collections/" + layerId + "/map/tiles/EPSG:900913/EPSG:900913:15/16384/16384?f=image/png";
         RenderedImage fullImage = getAsImage(request, "image/png");
-        File expectedFile =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/streams_full.png");
+        File expectedFile = new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/streams_full.png");
         ImageAssert.assertEquals(expectedFile, fullImage, 100);
 
-        MockHttpServletResponse resp =
-                getAsServletResponse(request + "&filter=NAME='Cam Stream'&filter-lang=cql-text");
+        MockHttpServletResponse resp = getAsServletResponse(request + "&filter=NAME='Cam Stream'&filter-lang=cql-text");
         assertEquals("image/png", resp.getContentType());
         assertEquals("MISS", resp.getHeader("geowebcache-cache-result"));
         assertEquals(
@@ -286,36 +260,33 @@ public class GetTileTest extends TilesTestSupport {
         try (InputStream is = getBinaryInputStream(resp)) {
             RenderedImage filteredImage = ImageIO.read(is);
             File expectedFilteredFile =
-                    new File(
-                            "src/test/resources/org/geoserver/ogcapi/v1/tiles/streams_filterd.png");
+                    new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/streams_filterd.png");
             ImageAssert.assertEquals(expectedFilteredFile, filteredImage, 100);
         }
     }
 
     @Test
     public void testEmtpyMVTTile() throws Exception {
-        String request =
-                "wms?service=WMS&version=1.1.0&request=GetMap&layers="
-                        + getLayerId(MockData.ROAD_SEGMENTS)
-                        + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
-                        + "&CQL_FILTER=1=0&format="
-                        + MapBoxTileBuilderFactory.MIME_TYPE;
+        String request = "wms?service=WMS&version=1.1.0&request=GetMap&layers="
+                + getLayerId(MockData.ROAD_SEGMENTS)
+                + "&styles=&bbox=-1,-1,1,1&width=768&height=330&srs=EPSG:4326"
+                + "&CQL_FILTER=1=0&format="
+                + MapBoxTileBuilderFactory.MIME_TYPE;
         MockHttpServletResponse response = getAsServletResponse(request);
         assertEquals(200, response.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, response.getContentType());
         byte[] responseBytes = response.getContentAsByteArray();
         VectorTileDecoder decoder = new VectorTileDecoder();
-        List<VectorTileDecoder.Feature> featuresList = decoder.decode(responseBytes).asList();
+        List<VectorTileDecoder.Feature> featuresList =
+                decoder.decode(responseBytes).asList();
         assertEquals(0, featuresList.size());
 
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE
-                                + "&filter=1=0&filter-lang=cql-text");
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE
+                + "&filter=1=0&filter-lang=cql-text");
         assertEquals(200, sr.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
@@ -323,8 +294,7 @@ public class GetTileTest extends TilesTestSupport {
         checkGwcHeaders(layerId, sr);
 
         // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        VectorTileDecoder.FeatureIterable features = new VectorTileDecoder().decode(sr.getContentAsByteArray());
         // one road is before greenwich, not included in this tile
         assertEquals(0, features.asList().size());
     }
@@ -335,9 +305,7 @@ public class GetTileTest extends TilesTestSupport {
         assertEquals("EPSG:900913", sr.getHeader("geowebcache-crs"));
         // gwc has y axis inverted, mind
         assertEquals("[512, 512, 10]", sr.getHeader("geowebcache-tile-index"));
-        assertEquals(
-                "0.0,0.0,39135.7584765628,39135.7584765628",
-                sr.getHeader("geowebcache-tile-bounds"));
+        assertEquals("0.0,0.0,39135.7584765628,39135.7584765628", sr.getHeader("geowebcache-tile-bounds"));
         assertEquals(layerId, sr.getHeader("geowebcache-layer"));
         assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-Control"));
         assertNotNull(sr.getHeader("ETag"));
@@ -347,23 +315,19 @@ public class GetTileTest extends TilesTestSupport {
     @Test
     public void testTileOutOfRange() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + layerId
-                                + "/tiles/EPSG:900913/EPSG:900913:10/0/0?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + layerId
+                + "/tiles/EPSG:900913/EPSG:900913:10/0/0?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE);
         assertEquals(404, sr.getStatus());
     }
 
     @Test
     public void testNatureGroupMVT() throws Exception {
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + NATURE_GROUP
-                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + NATURE_GROUP
+                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE);
         assertEquals(200, sr.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
@@ -371,8 +335,7 @@ public class GetTileTest extends TilesTestSupport {
         checkGwcHeaders(NATURE_GROUP, sr);
 
         // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        VectorTileDecoder.FeatureIterable features = new VectorTileDecoder().decode(sr.getContentAsByteArray());
         assertThat(features.getLayerNames(), Matchers.containsInAnyOrder("Lakes", "Forests"));
         // data has just one lake and one forest
         assertEquals(2, features.asList().size());
@@ -380,25 +343,21 @@ public class GetTileTest extends TilesTestSupport {
 
     @Test
     public void testNatureGroupPNG() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "ogc/tiles/v1/collections/"
-                                + NATURE_GROUP
-                                + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
-                        "image/png");
-        File expected =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/nature_tile_16.png");
+        BufferedImage image = getAsImage(
+                "ogc/tiles/v1/collections/"
+                        + NATURE_GROUP
+                        + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
+                "image/png");
+        File expected = new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/nature_tile_16.png");
         ImageAssert.assertEquals(expected, image, 120);
     }
 
     @Test
     public void testStyleGroupMVT() throws Exception {
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "ogc/tiles/v1/collections/"
-                                + BASIC_STYLE_GROUP
-                                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
-                                + MapBoxTileBuilderFactory.MIME_TYPE);
+        MockHttpServletResponse sr = getAsServletResponse("ogc/tiles/v1/collections/"
+                + BASIC_STYLE_GROUP
+                + "/tiles/EPSG:900913/EPSG:900913:10/511/512?f="
+                + MapBoxTileBuilderFactory.MIME_TYPE);
         assertEquals(200, sr.getStatus());
         assertEquals(MapBoxTileBuilderFactory.MIME_TYPE, sr.getContentType());
 
@@ -406,8 +365,7 @@ public class GetTileTest extends TilesTestSupport {
         checkGwcHeaders(BASIC_STYLE_GROUP, sr);
 
         // check it can actually be read as a vector tile
-        VectorTileDecoder.FeatureIterable features =
-                new VectorTileDecoder().decode(sr.getContentAsByteArray());
+        VectorTileDecoder.FeatureIterable features = new VectorTileDecoder().decode(sr.getContentAsByteArray());
         assertThat(features.getLayerNames(), Matchers.containsInAnyOrder("BasicPolygons", "Lakes"));
         // data has 3 basic polygons and one lake
         assertEquals(2, features.asList().size());
@@ -415,34 +373,29 @@ public class GetTileTest extends TilesTestSupport {
 
     @Test
     public void testStyleGroupPNG() throws Exception {
-        BufferedImage image =
-                getAsImage(
-                        "ogc/tiles/v1/collections/"
-                                + BASIC_STYLE_GROUP
-                                + "/styles/"
-                                + BASIC_STYLE_GROUP_STYLE
-                                + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
-                        "image/png");
-        File expected =
-                new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/styleGrup_tile_16.png");
+        BufferedImage image = getAsImage(
+                "ogc/tiles/v1/collections/"
+                        + BASIC_STYLE_GROUP
+                        + "/styles/"
+                        + BASIC_STYLE_GROUP_STYLE
+                        + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
+                "image/png");
+        File expected = new File("src/test/resources/org/geoserver/ogcapi/v1/tiles/styleGrup_tile_16.png");
         ImageAssert.assertEquals(expected, image, 100);
     }
 
     @Test
     public void testStyleGroupInvalidStyleName() throws Exception {
-        DocumentContext json =
-                getAsJSONPath(
-                        "ogc/tiles/v1/collections/"
-                                + BASIC_STYLE_GROUP
-                                + "/styles/"
-                                + "_"
-                                + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
-                        400);
+        DocumentContext json = getAsJSONPath(
+                "ogc/tiles/v1/collections/"
+                        + BASIC_STYLE_GROUP
+                        + "/styles/"
+                        + "_"
+                        + "/map/tiles/EPSG:900913/EPSG:900913:16/32768/32768?f=image/png",
+                400);
         assertEquals("InvalidParameterValue", json.read("type"));
         assertThat(
                 json.read("title"),
-                CoreMatchers.allOf(
-                        containsString("Invalid style name"),
-                        containsString("BasicStyleGroupStyle")));
+                CoreMatchers.allOf(containsString("Invalid style name"), containsString("BasicStyleGroupStyle")));
     }
 }

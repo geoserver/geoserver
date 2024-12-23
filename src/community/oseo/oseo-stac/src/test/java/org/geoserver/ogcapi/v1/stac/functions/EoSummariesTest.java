@@ -46,8 +46,7 @@ public class EoSummariesTest extends STACTestSupport {
         visited = false;
         ff = CommonFactoryFinder.getFilterFactory();
         eoSummaries = spy(new EoSummaries());
-        OpenSearchAccessProvider provider =
-                GeoServerExtensions.bean(OpenSearchAccessProvider.class);
+        OpenSearchAccessProvider provider = GeoServerExtensions.bean(OpenSearchAccessProvider.class);
         collectionSource = provider.getOpenSearchAccess().getCollectionSource();
         aggregatesCache = spy(new AggregatesCache(getGeoServer(), provider));
         when(eoSummaries.getAggregatesCache()).thenReturn(aggregatesCache);
@@ -57,8 +56,7 @@ public class EoSummariesTest extends STACTestSupport {
 
     @Test
     public void testCache() throws Exception {
-        List<Expression> parameters =
-                List.of(ff.literal("max"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
+        List<Expression> parameters = List.of(ff.literal("max"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         eoSummaries.evaluate(null);
         verify(aggregatesCache, times(1)).getWrappedAggregate(key);
@@ -67,16 +65,14 @@ public class EoSummariesTest extends STACTestSupport {
 
     @Test
     public void testMin() {
-        List<Expression> parameters =
-                List.of(ff.literal("min"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
+        List<Expression> parameters = List.of(ff.literal("min"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(65, eoSummaries.evaluate(null));
     }
 
     @Test
     public void testMax() {
-        List<Expression> parameters =
-                List.of(ff.literal("max"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
+        List<Expression> parameters = List.of(ff.literal("max"), ff.literal("SENTINEL2"), ff.literal("orbitNumber"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(122, eoSummaries.evaluate(null));
     }
@@ -91,43 +87,35 @@ public class EoSummariesTest extends STACTestSupport {
 
     @Test
     public void testBoundsX() {
-        List<Expression> parameters =
-                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("x"));
+        List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("x"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
-        assertEquals(
-                Double.valueOf(-119.173780060482),
-                ((List<Double>) eoSummaries.evaluate(null)).get(0),
-                0.1);
+        assertEquals(Double.valueOf(-119.173780060482), ((List<Double>) eoSummaries.evaluate(null)).get(0), 0.1);
     }
 
     @Test
     public void testBoundsXMin() {
-        List<Expression> parameters =
-                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmin"));
+        List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmin"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(Double.valueOf(-119.173780060482), (Double) eoSummaries.evaluate(null), 0.1);
     }
 
     @Test
     public void testBoundsYMin() {
-        List<Expression> parameters =
-                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymin"));
+        List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymin"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(Double.valueOf(33.3327671071438), (Double) eoSummaries.evaluate(null), 0.1);
     }
 
     @Test
     public void testBoundsXMax() {
-        List<Expression> parameters =
-                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmax"));
+        List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("xmax"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(Double.valueOf(16.3544473299751), (Double) eoSummaries.evaluate(null), 0.1);
     }
 
     @Test
     public void testBoundsYMax() {
-        List<Expression> parameters =
-                List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymax"));
+        List<Expression> parameters = List.of(ff.literal("bounds"), ff.literal("SENTINEL2"), ff.literal("ymax"));
         when(eoSummaries.getParameters()).thenReturn(parameters);
         assertEquals(Double.valueOf(44.2465509344875), (Double) eoSummaries.evaluate(null), 0.1);
     }
@@ -195,15 +183,8 @@ public class EoSummariesTest extends STACTestSupport {
         collectionSource.getFeatures(query).accepts(visitor, null);
         assertFalse(visited);
         assertEquals(
-                new HashSet<>(
-                        Arrays.asList(
-                                "LANDSAT8",
-                                "SENTINEL2",
-                                "SENTINEL1",
-                                "ATMTEST2",
-                                "GS_TEST",
-                                "ATMTEST",
-                                "DISABLED_COLLECTION")),
+                new HashSet<>(Arrays.asList(
+                        "LANDSAT8", "SENTINEL2", "SENTINEL1", "ATMTEST2", "GS_TEST", "ATMTEST", "DISABLED_COLLECTION")),
                 visitor.getResult().getValue());
     }
 }

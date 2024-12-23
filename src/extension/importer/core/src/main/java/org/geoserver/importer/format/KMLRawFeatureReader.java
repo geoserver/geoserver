@@ -32,8 +32,7 @@ public class KMLRawFeatureReader implements FeatureReader<SimpleFeatureType, Sim
     }
 
     @Override
-    public SimpleFeature next()
-            throws IOException, IllegalArgumentException, NoSuchElementException {
+    public SimpleFeature next() throws IOException, IllegalArgumentException, NoSuchElementException {
         return (SimpleFeature) reader.next();
     }
 

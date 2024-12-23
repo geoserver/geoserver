@@ -15,8 +15,7 @@ import org.geoserver.security.web.auth.AuthenticationProviderPanelInfo;
  * @author Justin Deoliveira, OpenGeo
  */
 public class JDBCAuthProviderPanelInfo
-        extends AuthenticationProviderPanelInfo<
-                JDBCConnectAuthProviderConfig, JDBCAuthProviderPanel> {
+        extends AuthenticationProviderPanelInfo<JDBCConnectAuthProviderConfig, JDBCAuthProviderPanel> {
 
     public JDBCAuthProviderPanelInfo() {
         setComponentClass(JDBCAuthProviderPanel.class);

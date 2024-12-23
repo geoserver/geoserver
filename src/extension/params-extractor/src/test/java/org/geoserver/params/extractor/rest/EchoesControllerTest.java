@@ -64,9 +64,7 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testGetEchoesListJSON() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON("/rest/params-extractor/echoes.json", "application/json", 200);
+        JSONObject json = (JSONObject) getAsJSON("/rest/params-extractor/echoes.json", "application/json", 200);
         JSONObject wrapper = json.getJSONObject("EchoParameters");
         assertNotNull(wrapper);
         JSONArray array = wrapper.getJSONArray("EchoParameter");
@@ -95,9 +93,7 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testGetEchoJSON() throws Exception {
-        JSONObject json =
-                (JSONObject)
-                        getAsJSON("/rest/params-extractor/echoes/0.json", "application/json", 200);
+        JSONObject json = (JSONObject) getAsJSON("/rest/params-extractor/echoes/0.json", "application/json", 200);
         print(json);
         JSONObject param = json.getJSONObject("EchoParameter");
         assertEquals(0, param.get("id"));
@@ -107,23 +103,23 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testDeleteEcho() throws Exception {
-        MockHttpServletResponse response =
-                deleteAsServletResponse("/rest/params-extractor/echoes/0");
+        MockHttpServletResponse response = deleteAsServletResponse("/rest/params-extractor/echoes/0");
         assertEquals(200, response.getStatus());
 
         // checking it was removed
-        assertEquals(404, getAsServletResponse("/rest/params-extractor/echoes/0").getStatus());
+        assertEquals(
+                404, getAsServletResponse("/rest/params-extractor/echoes/0").getStatus());
         // but the other one is still there
-        assertEquals(200, getAsServletResponse("/rest/params-extractor/echoes/1").getStatus());
+        assertEquals(
+                200, getAsServletResponse("/rest/params-extractor/echoes/1").getStatus());
     }
 
     @Test
     public void testPutEchoXML() throws Exception {
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        "/rest/params-extractor/echoes/0",
-                        "<EchoParameter id=\"0\" parameter=\"abcd\" activated=\"false\"/>",
-                        "application/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                "/rest/params-extractor/echoes/0",
+                "<EchoParameter id=\"0\" parameter=\"abcd\" activated=\"false\"/>",
+                "application/xml");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDom("/rest/params-extractor/echoes/0", "application/xml", 200);
@@ -137,15 +133,13 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPutEchoJSON() throws Exception {
-        String jsonBody =
-                "{\"EchoParameter\": {\n"
-                        + "  \"id\": 1,\n"
-                        + "  \"parameter\": \"test123\",\n"
-                        + "  \"activated\": true\n"
-                        + "}}";
+        String jsonBody = "{\"EchoParameter\": {\n"
+                + "  \"id\": 1,\n"
+                + "  \"parameter\": \"test123\",\n"
+                + "  \"activated\": true\n"
+                + "}}";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        "/rest/params-extractor/echoes/1", jsonBody, "application/json");
+                putAsServletResponse("/rest/params-extractor/echoes/1", jsonBody, "application/json");
         assertEquals(200, response.getStatus());
 
         Document dom = getAsDom("/rest/params-extractor/echoes/1", "application/xml", 200);
@@ -159,33 +153,25 @@ public class EchoesControllerTest extends ParamsExtractorRestTestSupport {
 
     @Test
     public void testPostEchoXML() throws Exception {
-        MockHttpServletResponse response =
-                postAsServletResponse(
-                        "/rest/params-extractor/echoes",
-                        "<EchoParameter parameter=\"zxw\" activated=\"true\"/>",
-                        "application/xml");
+        MockHttpServletResponse response = postAsServletResponse(
+                "/rest/params-extractor/echoes",
+                "<EchoParameter parameter=\"zxw\" activated=\"true\"/>",
+                "application/xml");
         checkCreateWithPost(response);
     }
 
     @Test
     public void testPostEchoJSON() throws Exception {
-        String jsonBody =
-                "{\"EchoParameter\": {\n"
-                        + "  \"parameter\": \"zxw\",\n"
-                        + "  \"activated\": true\n"
-                        + "}}";
+        String jsonBody = "{\"EchoParameter\": {\n" + "  \"parameter\": \"zxw\",\n" + "  \"activated\": true\n" + "}}";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "/rest/params-extractor/echoes", jsonBody, "application/json");
+                postAsServletResponse("/rest/params-extractor/echoes", jsonBody, "application/json");
         checkCreateWithPost(response);
     }
 
     private void checkCreateWithPost(MockHttpServletResponse response) throws Exception {
         assertEquals(HttpStatus.CREATED.value(), response.getStatus());
         String location = response.getHeader(HttpHeaders.LOCATION);
-        Pattern pattern =
-                Pattern.compile(
-                        "http://localhost:8080/geoserver/rest/params-extractor/echoes/(.+)");
+        Pattern pattern = Pattern.compile("http://localhost:8080/geoserver/rest/params-extractor/echoes/(.+)");
         Matcher matcher = pattern.matcher(location);
         assertTrue(matcher.matches());
         String id = matcher.group(1);

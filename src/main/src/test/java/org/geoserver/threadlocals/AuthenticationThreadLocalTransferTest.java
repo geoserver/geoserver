@@ -27,18 +27,17 @@ public class AuthenticationThreadLocalTransferTest extends AbstractThreadLocalTr
         final Authentication auth = new UsernamePasswordAuthenticationToken("user", "password");
         SecurityContextHolder.getContext().setAuthentication(auth);
         // test it's transferred properly using the base class machinery
-        testThreadLocalTransfer(
-                new ThreadLocalTransferCallable(new AuthenticationThreadLocalTransfer()) {
+        testThreadLocalTransfer(new ThreadLocalTransferCallable(new AuthenticationThreadLocalTransfer()) {
 
-                    @Override
-                    void assertThreadLocalCleaned() {
-                        assertNull(SecurityContextHolder.getContext().getAuthentication());
-                    }
+            @Override
+            void assertThreadLocalCleaned() {
+                assertNull(SecurityContextHolder.getContext().getAuthentication());
+            }
 
-                    @Override
-                    void assertThreadLocalApplied() {
-                        assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
-                    }
-                });
+            @Override
+            void assertThreadLocalApplied() {
+                assertSame(auth, SecurityContextHolder.getContext().getAuthentication());
+            }
+        });
     }
 }

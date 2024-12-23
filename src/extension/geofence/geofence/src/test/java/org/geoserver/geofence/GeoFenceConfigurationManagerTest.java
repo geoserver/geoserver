@@ -39,9 +39,8 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
         try {
             super.oneTimeSetUp();
         } catch (Exception e) {
-            LOGGER.severe(
-                    "Error in OneTimeSetup: it may be due to GeoFence not running, please check the logs -- "
-                            + e.getMessage());
+            LOGGER.severe("Error in OneTimeSetup: it may be due to GeoFence not running, please check the logs -- "
+                    + e.getMessage());
             LOGGER.log(
                     Level.FINE,
                     "Error in OneTimeSetup: it may be due to GeoFence not running, please check the logs",
@@ -65,15 +64,10 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
         // manager = (GeofenceAccessManager)
         // applicationContext.getBean("geofenceRuleAccessManager");
         // geofenceService = (RuleReaderService) applicationContext.getBean("ruleReaderService");
-        manager =
-                (GeoFenceConfigurationManager)
-                        applicationContext.getBean("geofenceConfigurationManager");
+        manager = (GeoFenceConfigurationManager) applicationContext.getBean("geofenceConfigurationManager");
 
-        configurer =
-                (GeoFencePropertyPlaceholderConfigurer)
-                        applicationContext.getBean("geofence-configurer");
-        configurer.setLocation(
-                new UrlResource(this.getClass().getResource("/test-config.properties")));
+        configurer = (GeoFencePropertyPlaceholderConfigurer) applicationContext.getBean("geofence-configurer");
+        configurer.setLocation(new UrlResource(this.getClass().getResource("/test-config.properties")));
     }
 
     @Test
@@ -92,8 +86,7 @@ public class GeoFenceConfigurationManagerTest extends GeoServerTestSupport {
 
         Resource configurationFile = configurer.getConfigFile();
 
-        try (BufferedWriter writer =
-                new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
+        try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(configurationFile.out()))) {
             writer.write("newUserProperty=custom_property_value\n");
         }
 

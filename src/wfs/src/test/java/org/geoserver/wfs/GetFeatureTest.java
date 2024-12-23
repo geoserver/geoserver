@@ -41,8 +41,7 @@ public class GetFeatureTest extends WFSTestSupport {
     public static QName NULL_GEOMETRIES =
             new QName(SystemTestData.CITE_URI, "NullGeometries", SystemTestData.CITE_PREFIX);
 
-    public static QName FIFTEEN_DUPLICATE =
-            new QName(SystemTestData.CITE_URI, "Fifteen", SystemTestData.CITE_PREFIX);
+    public static QName FIFTEEN_DUPLICATE = new QName(SystemTestData.CITE_URI, "Fifteen", SystemTestData.CITE_PREFIX);
 
     @Override
     protected void setUpInternal(SystemTestData data) throws Exception {
@@ -78,8 +77,7 @@ public class GetFeatureTest extends WFSTestSupport {
         request.addParameter("service", "wfs");
         request.setContentType(contentType);
         MockHttpServletResponse response = dispatch(request);
-        try (ByteArrayInputStream bis =
-                new ByteArrayInputStream(response.getContentAsByteArray())) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(response.getContentAsByteArray())) {
             Document doc = dom(bis);
             assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
@@ -90,26 +88,22 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetPropertyNameEmpty() throws Exception {
-        testGetFifteenAll(
-                "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=");
     }
 
     @Test
     public void testGetFilterEmpty() throws Exception {
-        testGetFifteenAll(
-                "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&filter=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&filter=");
     }
 
     @Test
     public void testGetCqlFilterEmpty() throws Exception {
-        testGetFifteenAll(
-                "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&cql_filter=");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&cql_filter=");
     }
 
     @Test
     public void testGetPropertyNameStar() throws Exception {
-        testGetFifteenAll(
-                "wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
+        testGetFifteenAll("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs&propertyname=*");
     }
 
     private void testGetFifteenAll(String request) throws Exception {
@@ -123,90 +117,70 @@ public class GetFeatureTest extends WFSTestSupport {
     // see GEOS-1893
     @Test
     public void testGetMissingParams() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeNameWrongParam=cdf:Fifteen&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typeNameWrongParam=cdf:Fifteen&version=1.0.0&service=wfs");
         // trick: the document specifies a namespace with schema reference, as a result xpath
         // expressions
         // do work only if fully qualified
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "MissingParameterValue", "//ogc:ServiceException/@code", doc);
+        XMLAssert.assertXpathEvaluatesTo("MissingParameterValue", "//ogc:ServiceException/@code", doc);
     }
 
     @Test
     public void testAlienNamespace() throws Exception {
         // if the namespace is not known, complain with a service exception
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typename=youdontknowme:Fifteen&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=youdontknowme:Fifteen&version=1.0.0&service=wfs");
         assertEquals("ServiceExceptionReport", doc.getDocumentElement().getNodeName());
     }
 
     @Test
     public void testGetNullGeometies() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName="
-                                + getLayerId(NULL_GEOMETRIES)
-                                + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&typeName=" + getLayerId(NULL_GEOMETRIES) + "&version=1.0.0&service=wfs");
         // print(doc);
 
         XMLAssert.assertXpathEvaluatesTo(
-                "1",
-                "count(//cite:NullGeometries[@fid=\"NullGeometries.1107531701010\"]/gml:boundedBy)",
-                doc);
+                "1", "count(//cite:NullGeometries[@fid=\"NullGeometries.1107531701010\"]/gml:boundedBy)", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "0",
-                "count(//cite:NullGeometries[@fid=\"NullGeometries.1107531701011\"]/boundedBy)",
-                doc);
+                "0", "count(//cite:NullGeometries[@fid=\"NullGeometries.1107531701011\"]/boundedBy)", doc);
     }
 
     // see GEOS-1287
     @Test
     public void testGetWithFeatureId() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.0"
-                                + ".0&service=wfs&featureid=Fifteen.2");
+        Document doc = getAsDOM(
+                "wfs?request=GetFeature&typeName=cdf:Fifteen&version=1.0" + ".0&service=wfs&featureid=Fifteen.2");
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
-        XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//wfs:FeatureCollection/gml:featureMember)", doc);
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:featureMember)", doc);
         XMLAssert.assertXpathEvaluatesTo(
                 "Fifteen.2", "//wfs:FeatureCollection/gml:featureMember/cdf:Fifteen/@fid", doc);
 
-        doc =
-                getAsDOM(
-                        "wfs?request=GetFeature&typeName=cite:NamedPlaces&version=1.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
+        doc = getAsDOM(
+                "wfs?request=GetFeature&typeName=cite:NamedPlaces&version=1.0.0&service=wfs&featureId=NamedPlaces.1107531895891");
 
         // super.print(doc);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
+        XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection/gml:featureMember)", doc);
         XMLAssert.assertXpathEvaluatesTo(
-                "1", "count(//wfs:FeatureCollection/gml:featureMember)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "NamedPlaces.1107531895891",
-                "//wfs:FeatureCollection/gml:featureMember/cite:NamedPlaces/@fid",
-                doc);
+                "NamedPlaces.1107531895891", "//wfs:FeatureCollection/gml:featureMember/cite:NamedPlaces/@fid", doc);
     }
 
     @Test
     public void testPost() throws Exception {
 
-        String xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query typeName=\"cdf:Other\"> "
-                        + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query typeName=\"cdf:Other\"> "
+                + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
 
@@ -219,27 +193,26 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testPostWithFilter() throws Exception {
 
-        String xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "outputFormat=\"GML2\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
-                        + "<wfs:Query typeName=\"cdf:Other\"> "
-                        + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
-                        + "<ogc:Filter> "
-                        + "<ogc:PropertyIsEqualTo> "
-                        + "<ogc:PropertyName>cdf:integers</ogc:PropertyName> "
-                        + "<ogc:Add> "
-                        + "<ogc:Literal>4</ogc:Literal> "
-                        + "<ogc:Literal>3</ogc:Literal> "
-                        + "</ogc:Add> "
-                        + "</ogc:PropertyIsEqualTo> "
-                        + "</ogc:Filter> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "outputFormat=\"GML2\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" > "
+                + "<wfs:Query typeName=\"cdf:Other\"> "
+                + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
+                + "<ogc:Filter> "
+                + "<ogc:PropertyIsEqualTo> "
+                + "<ogc:PropertyName>cdf:integers</ogc:PropertyName> "
+                + "<ogc:Add> "
+                + "<ogc:Literal>4</ogc:Literal> "
+                + "<ogc:Literal>3</ogc:Literal> "
+                + "</ogc:Add> "
+                + "</ogc:PropertyIsEqualTo> "
+                + "</ogc:Filter> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
 
@@ -251,20 +224,19 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testLax() throws Exception {
-        String xml =
-                "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
-                        + " <Query typeName=\""
-                        + SystemTestData.BUILDINGS.getLocalPart()
-                        + "\">"
-                        + "   <PropertyName>ADDRESS</PropertyName>"
-                        + "   <Filter>"
-                        + "     <PropertyIsEqualTo>"
-                        + "       <PropertyName>ADDRESS</PropertyName>"
-                        + "       <Literal>123 Main Street</Literal>"
-                        + "     </PropertyIsEqualTo>"
-                        + "   </Filter>"
-                        + " </Query>"
-                        + "</GetFeature>";
+        String xml = "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
+                + " <Query typeName=\""
+                + SystemTestData.BUILDINGS.getLocalPart()
+                + "\">"
+                + "   <PropertyName>ADDRESS</PropertyName>"
+                + "   <Filter>"
+                + "     <PropertyIsEqualTo>"
+                + "       <PropertyName>ADDRESS</PropertyName>"
+                + "       <Literal>123 Main Street</Literal>"
+                + "     </PropertyIsEqualTo>"
+                + "   </Filter>"
+                + " </Query>"
+                + "</GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
         // print( doc );
@@ -276,18 +248,17 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testMixed() throws Exception {
-        String xml =
-                "<wfs:GetFeature "
-                        + "service=\"WFS\" "
-                        + "version=\"1.0.0\" "
-                        + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
-                        + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
-                        + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
-                        + "> "
-                        + "<wfs:Query typeName=\"cdf:Other\"> "
-                        + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
-                        + "</wfs:Query> "
-                        + "</wfs:GetFeature>";
+        String xml = "<wfs:GetFeature "
+                + "service=\"WFS\" "
+                + "version=\"1.0.0\" "
+                + "xmlns:cdf=\"http://www.opengis.net/cite/data\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "> "
+                + "<wfs:Query typeName=\"cdf:Other\"> "
+                + "<ogc:PropertyName>cdf:string2</ogc:PropertyName> "
+                + "</wfs:Query> "
+                + "</wfs:GetFeature>";
 
         Document doc = postAsDOM("wfs?request=GetFeature", xml);
 
@@ -300,20 +271,19 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testLikeMatchCase() throws Exception {
         // first run, without matching case, should match both buildings
-        String xml =
-                "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
-                        + " <Query typeName=\""
-                        + SystemTestData.BUILDINGS.getLocalPart()
-                        + "\">"
-                        + "   <PropertyName>ADDRESS</PropertyName>"
-                        + "   <Filter>"
-                        + "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"false\">"
-                        + "       <PropertyName>ADDRESS</PropertyName>"
-                        + "       <Literal>* MAIN STREET</Literal>"
-                        + "     </PropertyIsLike>"
-                        + "   </Filter>"
-                        + " </Query>"
-                        + "</GetFeature>";
+        String xml = "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
+                + " <Query typeName=\""
+                + SystemTestData.BUILDINGS.getLocalPart()
+                + "\">"
+                + "   <PropertyName>ADDRESS</PropertyName>"
+                + "   <Filter>"
+                + "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"false\">"
+                + "       <PropertyName>ADDRESS</PropertyName>"
+                + "       <Literal>* MAIN STREET</Literal>"
+                + "     </PropertyIsLike>"
+                + "   </Filter>"
+                + " </Query>"
+                + "</GetFeature>";
 
         Document doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
@@ -322,20 +292,19 @@ public class GetFeatureTest extends WFSTestSupport {
         assertEquals(2, featureMembers.getLength());
 
         // second run, with match case, should match none
-        xml =
-                "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
-                        + " <Query typeName=\""
-                        + SystemTestData.BUILDINGS.getLocalPart()
-                        + "\">"
-                        + "   <PropertyName>ADDRESS</PropertyName>"
-                        + "   <Filter>"
-                        + "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"true\">"
-                        + "       <PropertyName>ADDRESS</PropertyName>"
-                        + "       <Literal>* MAIN STREET</Literal>"
-                        + "     </PropertyIsLike>"
-                        + "   </Filter>"
-                        + " </Query>"
-                        + "</GetFeature>";
+        xml = "<GetFeature version='1.1.0' xmlns:gml=\"http://www.opengis.net/gml\">"
+                + " <Query typeName=\""
+                + SystemTestData.BUILDINGS.getLocalPart()
+                + "\">"
+                + "   <PropertyName>ADDRESS</PropertyName>"
+                + "   <Filter>"
+                + "     <PropertyIsLike wildCard=\"*\" singleChar=\".\" escapeChar=\"\\\" matchCase=\"true\">"
+                + "       <PropertyName>ADDRESS</PropertyName>"
+                + "       <Literal>* MAIN STREET</Literal>"
+                + "     </PropertyIsLike>"
+                + "   </Filter>"
+                + " </Query>"
+                + "</GetFeature>";
         doc = postAsDOM("wfs", xml);
         assertEquals("wfs:FeatureCollection", doc.getDocumentElement().getNodeName());
 
@@ -345,38 +314,29 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testWorkspaceQualified() throws Exception {
-        testGetFifteenAll(
-                "cdf/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        testGetFifteenAll("cdf/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         testGetFifteenAll("cdf/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
 
-        Document doc =
-                getAsDOM(
-                        "sf/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("sf/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
     }
 
     @Test
     public void testLayerQualified() throws Exception {
-        testGetFifteenAll(
-                "cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
-        testGetFifteenAll(
-                "cdf/Fifteen/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
+        testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        testGetFifteenAll("cdf/Fifteen/wfs?request=GetFeature&typename=Fifteen&version=1.0.0&service=wfs");
 
-        Document doc =
-                getAsDOM(
-                        "cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Seven&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("cdf/Fifteen/wfs?request=GetFeature&typename=cdf:Seven&version=1.0.0&service=wfs");
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
     }
 
     @Test
     public void testMultiLayer() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "/wfs?request=GetFeature&typename="
-                                + getLayerId(SystemTestData.BASIC_POLYGONS)
-                                + ","
-                                + getLayerId(SystemTestData.BRIDGES)
-                                + "&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("/wfs?request=GetFeature&typename="
+                + getLayerId(SystemTestData.BASIC_POLYGONS)
+                + ","
+                + getLayerId(SystemTestData.BRIDGES)
+                + "&version=1.0.0&service=wfs");
         // print(doc);
 
         XpathEngine engine = XMLUnit.newXpathEngine();
@@ -408,10 +368,9 @@ public class GetFeatureTest extends WFSTestSupport {
 
             final QName typeName = MockData.FORESTS;
             // used to throw an error since it was not accounting for the bbox epsg code
-            String path =
-                    "ows?service=WFS&version=1.1.0&request=GetFeature&typeName="
-                            + getLayerId(typeName)
-                            + "&bbox=1818131,6142575,1818198,6142642,EPSG:3857&srsName=EPSG:4326";
+            String path = "ows?service=WFS&version=1.1.0&request=GetFeature&typeName="
+                    + getLayerId(typeName)
+                    + "&bbox=1818131,6142575,1818198,6142642,EPSG:3857&srsName=EPSG:4326";
             Document doc = getAsDOM(path);
             print(doc);
             XMLAssert.assertXpathEvaluatesTo("1", "count(//wfs:FeatureCollection)", doc);
@@ -424,17 +383,14 @@ public class GetFeatureTest extends WFSTestSupport {
     @Test
     public void testRequestDisabledResource() throws Exception {
         Catalog catalog = getCatalog();
-        ResourceInfo fifteen =
-                catalog.getResourceByName(getLayerId(MockData.FIFTEEN), ResourceInfo.class);
+        ResourceInfo fifteen = catalog.getResourceByName(getLayerId(MockData.FIFTEEN), ResourceInfo.class);
         fifteen.setEnabled(false);
         catalog.save(fifteen);
 
-        Document doc =
-                getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=cdf:Fifteen&version=1.0.0&service=wfs");
         // print(doc);
         XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
-        XMLAssert.assertXpathEvaluatesTo(
-                "InvalidParameterValue", "//ogc:ServiceException/@code", doc);
+        XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "//ogc:ServiceException/@code", doc);
         XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
     }
 
@@ -446,13 +402,10 @@ public class GetFeatureTest extends WFSTestSupport {
         try {
             store.setEnabled(false);
             catalog.save(store);
-            Document doc =
-                    getAsDOM(
-                            "wfs?service=WFS&version=1.0.0&request=GetFeature&typename=cdf:Fifteen");
+            Document doc = getAsDOM("wfs?service=WFS&version=1.0.0&request=GetFeature&typename=cdf:Fifteen");
             // print(doc);
             XMLAssert.assertXpathEvaluatesTo("1", "count(//ogc:ServiceException)", doc);
-            XMLAssert.assertXpathEvaluatesTo(
-                    "InvalidParameterValue", "//ogc:ServiceException/@code", doc);
+            XMLAssert.assertXpathEvaluatesTo("InvalidParameterValue", "//ogc:ServiceException/@code", doc);
             XMLAssert.assertXpathEvaluatesTo("typeName", "//ogc:ServiceException/@locator", doc);
         } finally {
             store.setEnabled(true);
@@ -483,8 +436,7 @@ public class GetFeatureTest extends WFSTestSupport {
 
     @Test
     public void testGetIAULayer() throws Exception {
-        Document doc =
-                getAsDOM("wfs?request=GetFeature&typename=iau:MarsPoi&version=1.0.0&service=wfs");
+        Document doc = getAsDOM("wfs?request=GetFeature&typename=iau:MarsPoi&version=1.0.0&service=wfs");
         assertXpathExists("/wfs:FeatureCollection", doc);
 
         // check each feature has the expected CRS

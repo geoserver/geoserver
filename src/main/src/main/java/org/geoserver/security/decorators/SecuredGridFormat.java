@@ -47,10 +47,9 @@ public class SecuredGridFormat extends DecoratingGridFormat {
     }
 
     /**
-     * Notifies the caller the requested operation is not supported, using a plain {@link
-     * UnsupportedOperationException} in case we have to conceal the fact the data is actually
-     * writable, using an Spring Security security exception otherwise to force an authentication
-     * from the user
+     * Notifies the caller the requested operation is not supported, using a plain {@link UnsupportedOperationException}
+     * in case we have to conceal the fact the data is actually writable, using an Spring Security security exception
+     * otherwise to force an authentication from the user
      */
     RuntimeException notifyUnsupportedOperation() {
         if (policy.response == Response.CHALLENGE) {

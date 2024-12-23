@@ -17,10 +17,8 @@ import org.geoserver.ogcapi.OGCApiTestSupport;
 import org.junit.BeforeClass;
 
 public class MapsTestSupport extends OGCApiTestSupport {
-    protected static final QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
-    static final QName TIME_WITH_START_END =
-            new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
+    protected static final QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    static final QName TIME_WITH_START_END = new QName(MockData.SF_URI, "TimeWithStartEnd", MockData.SF_PREFIX);
 
     static final QName TIME_WITH_START_END_DATE =
             new QName(MockData.SF_URI, "TimeWithStartEndDate", MockData.SF_PREFIX);
@@ -55,8 +53,7 @@ public class MapsTestSupport extends OGCApiTestSupport {
                 getCatalog());
     }
 
-    protected void setupStartEndTimeDimension(
-            QName typeName, String dimension, String start, String end) {
+    protected void setupStartEndTimeDimension(QName typeName, String dimension, String start, String end) {
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName(typeName.getLocalPart());
         DimensionInfo di = new DimensionInfoImpl();
         di.setEnabled(true);

@@ -16,8 +16,7 @@ public class MappingJackson2YAMLMessageConverter extends AbstractJackson2HttpMes
 
     public static final String APPLICATION_YAML_VALUE = "application/x-yaml";
 
-    public static final MediaType APPLICATION_YAML =
-            MediaType.parseMediaType(APPLICATION_YAML_VALUE);
+    public static final MediaType APPLICATION_YAML = MediaType.parseMediaType(APPLICATION_YAML_VALUE);
 
     protected MappingJackson2YAMLMessageConverter() {
         super(Yaml.mapper(), APPLICATION_YAML);
@@ -35,8 +34,7 @@ public class MappingJackson2YAMLMessageConverter extends AbstractJackson2HttpMes
         // reading wise, the converters are called with simple types (not wrappers),
         // limit this to the OGC API controllers, while the REST ones handle all the
         // other classes, for backwards compatibility
-        if (contextClass != null
-                && !contextClass.getPackage().getName().startsWith("org.geoserver.ogcapi"))
+        if (contextClass != null && !contextClass.getPackage().getName().startsWith("org.geoserver.ogcapi"))
             return false;
 
         return super.canRead(type, contextClass, mediaType);
@@ -50,7 +48,6 @@ public class MappingJackson2YAMLMessageConverter extends AbstractJackson2HttpMes
     }
 
     static boolean canJacksonHandle(Class<?> clazz) {
-        return clazz.getAnnotation(JsonIgnoreType.class) == null
-                && !RestWrapper.class.isAssignableFrom(clazz);
+        return clazz.getAnnotation(JsonIgnoreType.class) == null && !RestWrapper.class.isAssignableFrom(clazz);
     }
 }

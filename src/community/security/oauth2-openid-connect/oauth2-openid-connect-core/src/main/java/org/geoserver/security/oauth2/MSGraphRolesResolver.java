@@ -23,14 +23,13 @@ import org.geotools.util.logging.Logging;
 /**
  * Verify role using Azure graph.
  *
- * <p>Make sure your Azure AD application has "GroupMember.Read.All" permission: a) go to your
- * application in Azure AD (in the portal) b) On the left, go to "API permissions" c) click "Add a
- * permission" d) press "Microsoft Graph" e) press "Delegated permission" f) Scroll down to
- * "GroupMember" g) Choose "GroupMemeber.Read.All" h) press "Add permission" i) on the API
- * Permission screen, press the "Grant admin consent for ..." text
+ * <p>Make sure your Azure AD application has "GroupMember.Read.All" permission: a) go to your application in Azure AD
+ * (in the portal) b) On the left, go to "API permissions" c) click "Add a permission" d) press "Microsoft Graph" e)
+ * press "Delegated permission" f) Scroll down to "GroupMember" g) Choose "GroupMemeber.Read.All" h) press "Add
+ * permission" i) on the API Permission screen, press the "Grant admin consent for ..." text
  *
- * <p>This class will go to the "https://graph.microsoft.com/v1.0/me/memberOf" and attach your
- * access token. It will then read the response and find all the user's groups.
+ * <p>This class will go to the "https://graph.microsoft.com/v1.0/me/memberOf" and attach your access token. It will
+ * then read the response and find all the user's groups.
  *
  * <p>NOTE: to be consistent with the rest of Azure, we use the Groups OID (guid) NOT its name.
  */
@@ -63,8 +62,8 @@ public class MSGraphRolesResolver {
     }
 
     /**
-     * talk to the actual azure graph api to get user's group memberships. 1. attaches the access
-     * token to the request. 2. sets the Accepts header to "application/json" (required)
+     * talk to the actual azure graph api to get user's group memberships. 1. attaches the access token to the request.
+     * 2. sets the Accepts header to "application/json" (required)
      *
      * @param accessToken
      * @return
@@ -75,10 +74,9 @@ public class MSGraphRolesResolver {
 
         try {
             http = createHTTPRequest(accessToken);
-            String result =
-                    new BufferedReader(new InputStreamReader(http.getInputStream()))
-                            .lines()
-                            .collect(Collectors.joining("\n"));
+            String result = new BufferedReader(new InputStreamReader(http.getInputStream()))
+                    .lines()
+                    .collect(Collectors.joining("\n"));
             return result;
         } finally {
             if (http != null) http.disconnect();
@@ -100,8 +98,7 @@ public class MSGraphRolesResolver {
     }
 
     /**
-     * call the MS Graph API and get a list of object ids (guid strings) - one for each group the
-     * user is a member of.
+     * call the MS Graph API and get a list of object ids (guid strings) - one for each group the user is a member of.
      *
      * @param accessToken - access token (from MS azure ad)
      * @return list of groups (guid strings) the user is a member of

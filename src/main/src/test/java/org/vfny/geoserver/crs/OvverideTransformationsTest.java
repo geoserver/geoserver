@@ -52,15 +52,12 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
                 OvverideTransformationsTest.class.getResourceAsStream("test_epsg.properties"),
                 "user_projections/epsg.properties");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream(
-                        "test_epsg_operations.properties"),
+                OvverideTransformationsTest.class.getResourceAsStream("test_epsg_operations.properties"),
                 "user_projections/epsg_operations.properties");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"),
-                "user_projections/stgeorge.las");
+                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.las"), "user_projections/stgeorge.las");
         testData.copyTo(
-                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"),
-                "user_projections/stgeorge.los");
+                OvverideTransformationsTest.class.getResourceAsStream("stgeorge.los"), "user_projections/stgeorge.los");
 
         CRS.reset("all");
     }
@@ -101,8 +98,7 @@ public class OvverideTransformationsTest extends GeoServerSystemTestSupport {
         // Test CRSs
         CoordinateReferenceSystem source = CRS.decode("EPSG:3002");
         CoordinateReferenceSystem target = CRS.decode("EPSG:4326");
-        CoordinateOperation co =
-                CRS.getCoordinateOperationFactory(true).createOperation(source, target);
+        CoordinateOperation co = CRS.getCoordinateOperationFactory(true).createOperation(source, target);
         ConcatenatedOperation cco = (ConcatenatedOperation) co;
         // the EPSG one only has two steps, the non EPSG one 4
         assertEquals(2, cco.getOperations().size());

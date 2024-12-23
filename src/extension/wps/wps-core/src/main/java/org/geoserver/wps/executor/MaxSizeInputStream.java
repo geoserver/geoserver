@@ -36,10 +36,7 @@ class MaxSizeInputStream extends ProxyInputStream {
         }
         if (count > maxSize) {
             throw new WPSException(
-                    "Exceeded maximum input size of "
-                            + maxSize
-                            + " bytes while reading input "
-                            + inputId,
+                    "Exceeded maximum input size of " + maxSize + " bytes while reading input " + inputId,
                     "NoApplicableCode",
                     inputId);
         }

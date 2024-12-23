@@ -38,11 +38,9 @@ public class OWSResponseFactory {
     }
 
     /**
-     * Return a {@link BaseTemplateGetFeatureResponse} in case the identifier matches one of the
-     * supported format.
+     * Return a {@link BaseTemplateGetFeatureResponse} in case the identifier matches one of the supported format.
      *
-     * @param identifier the {@link TemplateIdentifier} for which build the corresponding Response
-     *     object.
+     * @param identifier the {@link TemplateIdentifier} for which build the corresponding Response object.
      * @return a {@link BaseTemplateGetFeatureResponse} matching the {@link TemplateIdentifier}.
      */
     public BaseTemplateGetFeatureResponse getFeatureResponse(TemplateIdentifier identifier) {
@@ -72,24 +70,18 @@ public class OWSResponseFactory {
     /**
      * Return a {@link GetFeatureInfoResponse} supporting templating.
      *
-     * @param identifier the {@link TemplateIdentifier} for which build the corresponding Response
-     *     object.
+     * @param identifier the {@link TemplateIdentifier} for which build the corresponding Response object.
      * @param origFormat the request output format.
-     * @return a {@link GetFeatureInfoResponse} matching the {@link TemplateIdentifier} and
-     *     origFormat param.
+     * @return a {@link GetFeatureInfoResponse} matching the {@link TemplateIdentifier} and origFormat param.
      */
-    public GetFeatureInfoResponse featureInfoResponse(
-            TemplateIdentifier identifier, String origFormat) {
+    public GetFeatureInfoResponse featureInfoResponse(TemplateIdentifier identifier, String origFormat) {
         if (identifier == null) return null;
         TemplateFeatureInfoOutputFormat resp = null;
-        if (identifier.equals(TemplateIdentifier.HTML))
-            resp = new HTMLTemplateFeatureInfo(origFormat);
-        else if (identifier.equals(TemplateIdentifier.GEOJSON)
-                || identifier.equals(TemplateIdentifier.JSON)) {
+        if (identifier.equals(TemplateIdentifier.HTML)) resp = new HTMLTemplateFeatureInfo(origFormat);
+        else if (identifier.equals(TemplateIdentifier.GEOJSON) || identifier.equals(TemplateIdentifier.JSON)) {
             resp = new GeoJSONTemplateFeatureInfo(identifier, origFormat);
         } else if (isGML(identifier)) resp = new GMLTemplateFeatureInfo(identifier, origFormat);
-        else if (identifier.equals(TemplateIdentifier.JSONLD))
-            resp = new JSONLDTemplateFeatureInfo();
+        else if (identifier.equals(TemplateIdentifier.JSONLD)) resp = new JSONLDTemplateFeatureInfo();
 
         WMS wms = GeoServerExtensions.bean(WMS.class);
         GetFeatureInfoResponse response = new TemplateGetFeatureInfoResponse(wms, resp);

@@ -17,15 +17,14 @@ import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Abstraction for a DynamicBuilder which needs to perform dynamic operations over piece of JSON
- * templates and JSON values.
+ * Abstraction for a DynamicBuilder which needs to perform dynamic operations over piece of JSON templates and JSON
+ * values.
  */
 public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
 
     protected JsonNode node;
 
-    protected DynamicJsonBuilder(
-            String key, String expression, NamespaceSupport namespaces, JsonNode node) {
+    protected DynamicJsonBuilder(String key, String expression, NamespaceSupport namespaces, JsonNode node) {
         super(key, expression, namespaces);
         this.node = node;
     }
@@ -38,9 +37,9 @@ public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
     }
 
     /**
-     * Iterate an ObjectNode and create a Builder from every attribute. Then each builder is
-     * evaluate and its result is written. Use this if the ObjectNode being passed as one or more
-     * property interpolation or expression directive and it cannot be written as it is.
+     * Iterate an ObjectNode and create a Builder from every attribute. Then each builder is evaluate and its result is
+     * written. Use this if the ObjectNode being passed as one or more property interpolation or expression directive
+     * and it cannot be written as it is.
      *
      * @param context the current evaluation context.
      * @param writer the writer.
@@ -48,12 +47,10 @@ public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
      * @throws IOException
      */
     protected void iterateAndEvaluateNestedTree(
-            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node)
-            throws IOException {
+            TemplateBuilderContext context, TemplateOutputWriter writer, JsonNode node) throws IOException {
         TemplateBuilder builder = getNestedTree(node, context);
         List<TemplateBuilder> children = builder.getChildren();
-        if (!children.isEmpty())
-            for (TemplateBuilder child : children) child.evaluate(writer, context);
+        if (!children.isEmpty()) for (TemplateBuilder child : children) child.evaluate(writer, context);
     }
 
     /**
@@ -70,16 +67,13 @@ public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
      *
      * @param node the JsonNode node from which building the nested builders' tree.
      * @param context the builder context.
-     * @param topLevelComplex a flag telling if the CompositeBuilder at the root of the tree should
-     *     be considered as a topLevelComplex builder, hence without its own output or not.
+     * @param topLevelComplex a flag telling if the CompositeBuilder at the root of the tree should be considered as a
+     *     topLevelComplex builder, hence without its own output or not.
      * @return the builder tree.
      */
-    protected TemplateBuilder getNestedTree(
-            JsonNode node, TemplateBuilderContext context, boolean topLevelComplex) {
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(getNamespaces());
-        JSONTemplateReader jsonTemplateReader =
-                new JSONTemplateReader(node, configuration, new ArrayList<>());
+    protected TemplateBuilder getNestedTree(JsonNode node, TemplateBuilderContext context, boolean topLevelComplex) {
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(getNamespaces());
+        JSONTemplateReader jsonTemplateReader = new JSONTemplateReader(node, configuration, new ArrayList<>());
 
         TemplateBuilderMaker maker = configuration.getBuilderMaker();
         maker.namespaces(configuration.getNamespaces());
@@ -109,8 +103,7 @@ public abstract class DynamicJsonBuilder extends DynamicValueBuilder {
     }
 
     /**
-     * Validate the JsonNode obtained from the Feature to be sure doesn't hold any template
-     * directive.
+     * Validate the JsonNode obtained from the Feature to be sure doesn't hold any template directive.
      *
      * @param node the JsonNode to validate.
      */

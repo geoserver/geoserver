@@ -18,20 +18,18 @@ public class CompositeFeatureCollection extends AbstractFeatureCollection<Featur
 
     private List<FeatureCollection<FeatureType, Feature>> collections;
 
-    protected CompositeFeatureCollection(
-            List<FeatureCollection<FeatureType, Feature>> collections) {
+    protected CompositeFeatureCollection(List<FeatureCollection<FeatureType, Feature>> collections) {
         super(collections.get(0).getSchema());
         this.collections = collections;
 
         // check consistency
         for (FeatureCollection<FeatureType, Feature> fc : collections) {
             if (!getSchema().equals(fc.getSchema())) {
-                throw new IllegalArgumentException(
-                        "All feature collections must have the same type, found "
-                                + getSchema()
-                                + " and "
-                                + fc.getSchema()
-                                + " instead");
+                throw new IllegalArgumentException("All feature collections must have the same type, found "
+                        + getSchema()
+                        + " and "
+                        + fc.getSchema()
+                        + " instead");
             }
         }
     }

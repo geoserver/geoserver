@@ -76,26 +76,14 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
 
         testData.setUp();
 
-        addUser(
-                "area",
-                "area",
-                Collections.singletonList("USERS"),
-                Collections.singletonList("ROLE_AUTHENTICATED"));
-        addUser(
-                "cite",
-                "cite",
-                Collections.singletonList("USERS"),
-                Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser("area", "area", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
+        addUser("cite", "cite", Collections.singletonList("USERS"), Collections.singletonList("ROLE_AUTHENTICATED"));
         addUser(
                 "wms_user",
                 "wms_user",
                 Collections.singletonList("USERS"),
                 Collections.singletonList("ROLE_AUTHENTICATED"));
-        addUser(
-                "sf",
-                "sf",
-                Collections.singletonList("USERS"),
-                Arrays.asList("ROLE_AUTHENTICATED", "ROLE_SF_ADMIN"));
+        addUser("sf", "sf", Collections.singletonList("USERS"), Arrays.asList("ROLE_AUTHENTICATED", "ROLE_SF_ADMIN"));
 
         catalog = getCatalog();
 
@@ -104,13 +92,9 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
         GeoServerExtensionsHelper.singleton("dataDirectory", dd, GeoServerDataDirectory.class);
 
         // get the beans we use for testing
-        accessManager =
-                applicationContext.getBean(
-                        "geofenceRuleAccessManager", GeofenceAccessManager.class);
+        accessManager = applicationContext.getBean("geofenceRuleAccessManager", GeofenceAccessManager.class);
 
-        configManager =
-                applicationContext.getBean(
-                        "geofenceConfigurationManager", GeoFenceConfigurationManager.class);
+        configManager = applicationContext.getBean("geofenceConfigurationManager", GeoFenceConfigurationManager.class);
 
         Assert.assertNotNull(accessManager);
         Assert.assertNotNull(configManager);
@@ -119,11 +103,10 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
             IS_GEOFENCE_AVAILABLE = true;
             System.setProperty("IS_GEOFENCE_AVAILABLE", "True");
         } else {
-            LOGGER.warning(
-                    "Skipping test in "
-                            + getClass().getSimpleName()
-                            + " as GeoFence service is down: "
-                            + "in order to run this test you need the services to be running on port 9191");
+            LOGGER.warning("Skipping test in "
+                    + getClass().getSimpleName()
+                    + " as GeoFence service is down: "
+                    + "in order to run this test you need the services to be running on port 9191");
         }
     }
 
@@ -147,27 +130,19 @@ public abstract class GeofenceBaseTest extends GeoServerSystemTestSupport {
                 System.clearProperty("IS_GEOFENCE_AVAILABLE");
             }
         } catch (Exception e) {
-            LOGGER.log(
-                    Level.WARNING,
-                    "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}",
-                    e);
+            LOGGER.log(Level.WARNING, "Could not remove System ENV variable {IS_GEOFENCE_AVAILABLE}", e);
         }
     }
 
     protected boolean isGeoFenceAvailable() {
-        geofenceService =
-                (RuleReaderService)
-                        applicationContext.getBean(
-                                applicationContext
-                                        .getBeanFactory()
-                                        .resolveEmbeddedValue("${ruleReaderBackend}"));
+        geofenceService = (RuleReaderService) applicationContext.getBean(
+                applicationContext.getBeanFactory().resolveEmbeddedValue("${ruleReaderBackend}"));
         try {
             /**
-             * In order to run live tests, you will need to run an instance of GeoFence on port 9191
-             * and create two rules:
+             * In order to run live tests, you will need to run an instance of GeoFence on port 9191 and create two
+             * rules:
              *
-             * <p>1) User: admin - grant ALLOW ALL 2) User: * - grant Service: "WMS" ALLOW 3) * -
-             * DENY
+             * <p>1) User: admin - grant ALLOW ALL 2) User: * - grant Service: "WMS" ALLOW 3) * - DENY
              */
             final RuleFilter ruleFilter = new RuleFilter();
             ruleFilter.setService("WMS");

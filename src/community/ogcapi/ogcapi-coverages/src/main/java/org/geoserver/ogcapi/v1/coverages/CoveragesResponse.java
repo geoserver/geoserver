@@ -12,8 +12,8 @@ import org.geoserver.ogcapi.AbstractDocument;
 import org.geotools.api.coverage.grid.GridCoverage;
 
 /**
- * A Coverages response that contains both the WCS request and response, to help reusing the
- * traditional WCS output formats
+ * A Coverages response that contains both the WCS request and response, to help reusing the traditional WCS output
+ * formats
  */
 @JsonIgnoreType // not meant for jackson serialization
 @XmlTransient

@@ -13,8 +13,7 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.security.WrapperPolicy;
 
 /**
- * Utility class that provides easy and fast access to the registered {@link SecuredObjectFactory}
- * implementations
+ * Utility class that provides easy and fast access to the registered {@link SecuredObjectFactory} implementations
  *
  * @author Andrea Aime - TOPP
  */
@@ -23,9 +22,9 @@ public class SecuredObjects {
     static final Map<Class<?>, SecuredObjectFactory> FACTORY_CACHE = new ConcurrentHashMap<>();
 
     /**
-     * Given an object to secure and a wrapping policy, scans the extension points for a factory
-     * that can do the proper wrapping and invokes it, or simply gives up and throws an {@link
-     * IllegalArgumentException} if no factory can deal with securing the specified object.
+     * Given an object to secure and a wrapping policy, scans the extension points for a factory that can do the proper
+     * wrapping and invokes it, or simply gives up and throws an {@link IllegalArgumentException} if no factory can deal
+     * with securing the specified object.
      *
      * @param object the raw object to be secured
      * @param policy the wrapping policy (how the secured wrapper should behave)
@@ -50,8 +49,7 @@ public class SecuredObjects {
         // otherwise scan and store (or complain)
         if (candidate == null) {
             // scan the application context
-            List<SecuredObjectFactory> factories =
-                    GeoServerExtensions.extensions(SecuredObjectFactory.class);
+            List<SecuredObjectFactory> factories = GeoServerExtensions.extensions(SecuredObjectFactory.class);
             for (SecuredObjectFactory factory : factories) {
                 if (factory.canSecure(clazz)) {
                     candidate = factory;
@@ -60,9 +58,7 @@ public class SecuredObjects {
             }
             if (candidate == null)
                 throw new IllegalArgumentException(
-                        "Could not find a security wrapper for class "
-                                + clazz
-                                + ", cannot secure the object");
+                        "Could not find a security wrapper for class " + clazz + ", cannot secure the object");
             FACTORY_CACHE.put(clazz, candidate);
         }
 

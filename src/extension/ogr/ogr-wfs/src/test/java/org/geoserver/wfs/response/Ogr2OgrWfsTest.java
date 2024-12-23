@@ -80,10 +80,9 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testSimpleRequest() throws Exception {
-        String request =
-                "wfs?request=GetFeature&typename="
-                        + getLayerId(MockData.BUILDINGS)
-                        + "&version=1.0.0&service=wfs&outputFormat=OGR-KML";
+        String request = "wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&outputFormat=OGR-KML";
         MockHttpServletResponse resp = getAsServletResponse(request);
 
         // check content type
@@ -104,10 +103,9 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
     @Test
     public void testSimpleRequestGeopackage() throws Exception {
         Assume.assumeTrue(Ogr2OgrOutputFormat.formats.containsKey("OGR-GPKG"));
-        String request =
-                "wfs?request=GetFeature&typename="
-                        + getLayerId(MockData.BUILDINGS)
-                        + "&version=1.0.0&service=wfs&outputFormat=OGR-GPKG";
+        String request = "wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=1.0.0&service=wfs&outputFormat=OGR-GPKG";
         MockHttpServletResponse resp = getAsServletResponse(request);
 
         // check content type
@@ -117,10 +115,9 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testSimpleRequest20() throws Exception {
-        String request =
-                "wfs?request=GetFeature&typename="
-                        + getLayerId(MockData.BUILDINGS)
-                        + "&version=2.0.0&service=wfs&outputFormat=OGR-KML&srsName=EPSG:4326";
+        String request = "wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + "&version=2.0.0&service=wfs&outputFormat=OGR-KML&srsName=EPSG:4326";
         MockHttpServletResponse resp = getAsServletResponse(request);
 
         // check content type
@@ -139,12 +136,11 @@ public class Ogr2OgrWfsTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testDoubleRequest() throws Exception {
-        String request =
-                "wfs?request=GetFeature&typename="
-                        + getLayerId(MockData.BUILDINGS)
-                        + ","
-                        + getLayerId(MockData.BRIDGES)
-                        + "&version=1.0.0&service=wfs&outputFormat=OGR-KML";
+        String request = "wfs?request=GetFeature&typename="
+                + getLayerId(MockData.BUILDINGS)
+                + ","
+                + getLayerId(MockData.BRIDGES)
+                + "&version=1.0.0&service=wfs&outputFormat=OGR-KML";
         MockHttpServletResponse resp = getAsServletResponse(request);
 
         // check content type

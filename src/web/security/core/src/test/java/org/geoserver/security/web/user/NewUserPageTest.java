@@ -28,10 +28,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
     protected void initializeTester() {
         AbstractSecurityPage returnPage = initializeForUGServiceNamed(getUserGroupServiceName());
         tester.startPage(
-                page =
-                        (AbstractUserPage)
-                                new NewUserPage(getUserGroupServiceName())
-                                        .setReturnPage(returnPage));
+                page = (AbstractUserPage) new NewUserPage(getUserGroupServiceName()).setReturnPage(returnPage));
     }
 
     @Before
@@ -147,8 +144,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
 
         user = (GeoServerUser) ugService.loadUserByUsername("testuser");
         assertEquals(2, user.getAuthorities().size());
-        assertTrue(
-                user.getAuthorities().contains(gaService.createRoleObject("ROLE_AUTHENTICATED")));
+        assertTrue(user.getAuthorities().contains(gaService.createRoleObject("ROLE_AUTHENTICATED")));
         assertTrue(user.getAuthorities().contains(gaService.createRoleObject("ROLE_WMS")));
     }
 
@@ -195,8 +191,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
 
         user = (GeoServerUser) ugService.loadUserByUsername("testuser");
         assertEquals(3, user.getAuthorities().size());
-        assertTrue(
-                user.getAuthorities().contains(gaService.createRoleObject("ROLE_AUTHENTICATED")));
+        assertTrue(user.getAuthorities().contains(gaService.createRoleObject("ROLE_AUTHENTICATED")));
         assertTrue(user.getAuthorities().contains(gaService.createRoleObject("ROLE_WFS")));
         assertTrue(user.getAuthorities().contains(gaService.createRoleObject("ROLE_WMS")));
     }
@@ -226,10 +221,7 @@ public class NewUserPageTest extends AbstractUserPageTest {
         boolean fail = true;
         try {
             tester.startPage(
-                    page =
-                            (AbstractUserPage)
-                                    new NewUserPage(getROUserGroupServiceName())
-                                            .setReturnPage(returnPage));
+                    page = (AbstractUserPage) new NewUserPage(getROUserGroupServiceName()).setReturnPage(returnPage));
         } catch (RuntimeException ex) {
             fail = false;
         }

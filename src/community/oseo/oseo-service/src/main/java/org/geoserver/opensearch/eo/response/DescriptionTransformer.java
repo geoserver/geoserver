@@ -56,16 +56,12 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             OSEODescription description = (OSEODescription) o;
             Map<String, String> namespaces = new LinkedHashMap<>();
             namespaces.put("xmlns", "http://a9.com/-/spec/opensearch/1.1/");
-            namespaces.put(
-                    "xmlns:param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
+            namespaces.put("xmlns:param", "http://a9.com/-/spec/opensearch/extensions/parameters/1.0/");
             namespaces.put("xmlns:geo", "http://a9.com/-/opensearch/extensions/geo/1.0/");
             namespaces.put("xmlns:time", "http://a9.com/-/opensearch/extensions/time/1.0/");
             namespaces.put("xmlns:eo", "http://a9.com/-/opensearch/extensions/eo/1.0/");
             namespaces.put("xmlns:atom", "http://www.w3.org/2005/Atom");
-            element(
-                    "OpenSearchDescription",
-                    () -> describeOpenSearch(description),
-                    attributes(namespaces));
+            element("OpenSearchDescription", () -> describeOpenSearch(description), attributes(namespaces));
         }
 
         private void describeOpenSearch(OSEODescription description) {
@@ -78,10 +74,7 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             element("Description", oseo.getAbstract());
             GeoServerInfo gs = description.getGeoserverInfo();
             element("Contact", gs.getSettings().getContact().getContactEmail());
-            String tags =
-                    oseo.getKeywords().stream()
-                            .map(k -> k.getValue())
-                            .collect(Collectors.joining(" "));
+            String tags = oseo.getKeywords().stream().map(k -> k.getValue()).collect(Collectors.joining(" "));
             tags = tags + " " + CEOS_SUPPORTED_VERSION;
             element("Tags", tags);
             element(
@@ -150,24 +143,19 @@ public class DescriptionTransformer extends LambdaTransformerBase {
             Map<String, String> params = buildParentIdParams(description);
             String base = buildURL(baseURL, "oseo/search", params, URLType.SERVICE);
             // the template must not be url encoded instead
-            String paramSpec =
-                    description.getSearchParameters().stream()
-                            .map(
-                                    p -> {
-                                        String spec = p.key + "={";
-                                        spec +=
-                                                OpenSearchParameters.getQualifiedParamName(
-                                                        oseo, p, false);
-                                        if (!p.required) {
-                                            spec += "?";
-                                        }
-                                        spec += "}";
-                                        return spec;
-                                    })
-                            .collect(Collectors.joining("&"));
+            String paramSpec = description.getSearchParameters().stream()
+                    .map(p -> {
+                        String spec = p.key + "={";
+                        spec += OpenSearchParameters.getQualifiedParamName(oseo, p, false);
+                        if (!p.required) {
+                            spec += "?";
+                        }
+                        spec += "}";
+                        return spec;
+                    })
+                    .collect(Collectors.joining("&"));
 
-            return appendQueryString(
-                    base, paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
+            return appendQueryString(base, paramSpec + "&httpAccept=" + ResponseUtils.urlEncode(format));
         }
 
         public String buildSearchTermsDocLink(OSEODescription description) {
@@ -185,54 +173,39 @@ public class DescriptionTransformer extends LambdaTransformerBase {
                 // visible or pass a lexical handler
                 if ("searchTerms".equals(param.getName())) {
                     String searchTermsDocLink = buildSearchTermsDocLink(description);
-                    contentsEncoder =
-                            () -> {
-                                element(
-                                        "atom:link",
-                                        (Runnable) null,
-                                        attributes( //
-                                                "rel", "profile", //
-                                                "href", searchTermsDocLink, //
-                                                "title",
-                                                        "Simple search term parameter specification"));
-                            };
+                    contentsEncoder = () -> {
+                        element(
+                                "atom:link",
+                                (Runnable) null,
+                                attributes( //
+                                        "rel", "profile", //
+                                        "href", searchTermsDocLink, //
+                                        "title", "Simple search term parameter specification"));
+                    };
                 } else if ("geometry".equals(param.getName())) {
-                    contentsEncoder =
-                            () -> {
-                                for (String type :
-                                        new String[] {
-                                            "LINESTRING",
-                                            "POINT",
-                                            "POLYGON",
-                                            "MULTILINESTRING",
-                                            "MULTIPOINT",
-                                            "MULTIPOLYGON"
-                                        }) {
-                                    element(
-                                            "atom:link",
-                                            (Runnable) null,
-                                            attributes(
-                                                    "rel", "profile", //
-                                                    "href",
-                                                            "http://www.opengis.net/wkt/"
-                                                                    + type, //
-                                                    "title", "This service accepts WKT " + type));
-                                }
-                            };
+                    contentsEncoder = () -> {
+                        for (String type : new String[] {
+                            "LINESTRING", "POINT", "POLYGON", "MULTILINESTRING", "MULTIPOINT", "MULTIPOLYGON"
+                        }) {
+                            element(
+                                    "atom:link",
+                                    (Runnable) null,
+                                    attributes(
+                                            "rel", "profile", //
+                                            "href", "http://www.opengis.net/wkt/" + type, //
+                                            "title", "This service accepts WKT " + type));
+                        }
+                    };
                 }
 
                 final Map<String, String> map = new LinkedHashMap<>();
                 map.put("name", param.key);
-                map.put(
-                        "value",
-                        "{" + OpenSearchParameters.getQualifiedParamName(oseo, param, false) + "}");
+                map.put("value", "{" + OpenSearchParameters.getQualifiedParamName(oseo, param, false) + "}");
                 if (!param.isRequired()) {
                     map.put("minimum", "0");
                 }
                 if (param.metadata != null) {
-                    String[] keys = {
-                        OpenSearchParameters.MIN_INCLUSIVE, OpenSearchParameters.MAX_INCLUSIVE
-                    };
+                    String[] keys = {OpenSearchParameters.MIN_INCLUSIVE, OpenSearchParameters.MAX_INCLUSIVE};
                     for (String key : keys) {
                         Object value = param.metadata.get(key);
                         if (value != null) {

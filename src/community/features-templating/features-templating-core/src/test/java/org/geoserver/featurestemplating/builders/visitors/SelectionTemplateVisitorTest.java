@@ -41,10 +41,8 @@ public class SelectionTemplateVisitorTest {
 
     @Before
     public void setup() {
-        store =
-                new FileSystemResourceStore(
-                        new File(
-                                "src/test/resources/org/geoserver/featurestemplating/builders/visitors"));
+        store = new FileSystemResourceStore(
+                new File("src/test/resources/org/geoserver/featurestemplating/builders/visitors"));
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         tb.add("geometry", Geometry.class);
         tb.add("one", String.class);
@@ -66,8 +64,7 @@ public class SelectionTemplateVisitorTest {
     public void testPropertySelectionVisitor() throws IOException {
         PropertySelectionHandler propertySelectionHandler = handler();
         RootBuilder root = getBuilderTree("testTemplate.json");
-        PropertySelectionVisitor visitor =
-                new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
+        PropertySelectionVisitor visitor = new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
         root = (RootBuilder) root.accept(visitor, null);
         List<TemplateBuilder> children = root.getChildren();
         // iterating builder
@@ -103,11 +100,11 @@ public class SelectionTemplateVisitorTest {
     public void testPropertySelectionWithMerge() throws IOException {
         PropertySelectionHandler propertySelectionHandler = handler();
         RootBuilder root = getBuilderTree("testTemplateOvr.json");
-        PropertySelectionVisitor visitor =
-                new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
+        PropertySelectionVisitor visitor = new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
         root = (RootBuilder) root.accept(visitor, null);
         List<TemplateBuilder> children = root.getChildren();
-        TemplateBuilder builder = children.get(0).getChildren().get(0).getChildren().get(1);
+        TemplateBuilder builder =
+                children.get(0).getChildren().get(0).getChildren().get(1);
         assertEquals(6, builder.getChildren().size());
         for (TemplateBuilder child : builder.getChildren()) {
             AbstractTemplateBuilder abstractBuilder = (AbstractTemplateBuilder) child;
@@ -132,8 +129,7 @@ public class SelectionTemplateVisitorTest {
     public void testPropertySelectionRootDynamicIncludeFlat() throws IOException {
         PropertySelectionHandler propertySelectionHandler = handler();
         RootBuilder root = getBuilderTree("testTemplateOvr2.json");
-        PropertySelectionVisitor visitor =
-                new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
+        PropertySelectionVisitor visitor = new PropertySelectionVisitor(propertySelectionHandler, simpleFeatureType);
         root = (RootBuilder) root.accept(visitor, null);
         List<TemplateBuilder> children = root.getChildren();
         TemplateBuilder builder = children.get(0).getChildren().get(0);
@@ -150,25 +146,22 @@ public class SelectionTemplateVisitorTest {
     }
 
     private PropertySelectionHandler handler() {
-        PropertySelectionHandler propertySelectionHandler =
-                new AbstractPropertySelection() {
+        PropertySelectionHandler propertySelectionHandler = new AbstractPropertySelection() {
 
-                    @Override
-                    public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
-                        if ("b".equals(builder.getKey(null))) return true;
-                        return false;
-                    }
+            @Override
+            public boolean hasSelectableJsonValue(AbstractTemplateBuilder builder) {
+                if ("b".equals(builder.getKey(null))) return true;
+                return false;
+            }
 
-                    @Override
-                    protected boolean isKeySelected(String key) {
-                        if (key != null
-                                && (key.contains("two")
-                                        || key.contains("a")
-                                        || key.contains("four")
-                                        || key.contains("five"))) return false;
-                        return true;
-                    }
-                };
+            @Override
+            protected boolean isKeySelected(String key) {
+                if (key != null
+                        && (key.contains("two") || key.contains("a") || key.contains("four") || key.contains("five")))
+                    return false;
+                return true;
+            }
+        };
         return propertySelectionHandler;
     }
 
@@ -176,11 +169,8 @@ public class SelectionTemplateVisitorTest {
         Resource resource = store.get(resourceName);
         RecursiveJSONParser parser = new RecursiveJSONParser(resource);
         parser.parse();
-        JSONTemplateReader templateReader =
-                new JSONTemplateReader(
-                        parser.parse(),
-                        new TemplateReaderConfiguration(new NamespaceSupport()),
-                        parser.getWatchers());
+        JSONTemplateReader templateReader = new JSONTemplateReader(
+                parser.parse(), new TemplateReaderConfiguration(new NamespaceSupport()), parser.getWatchers());
         return templateReader.getRootBuilder();
     }
 }

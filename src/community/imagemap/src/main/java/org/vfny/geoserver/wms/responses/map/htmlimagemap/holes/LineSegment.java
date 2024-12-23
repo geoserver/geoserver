@@ -24,24 +24,16 @@ public class LineSegment {
         B = b;
     }
 
-    /**
-     * Checks if the segment intersects a "ray "starting from the given origin and "going" in the
-     * given direction.
-     */
+    /** Checks if the segment intersects a "ray "starting from the given origin and "going" in the given direction. */
     public Float intersectsWithRay(Coordinate origin, Coordinate direction) {
         float largestDistance =
-                Math.max(
-                                (float) (A.getPosition().x - origin.x),
-                                (float) (B.getPosition().x - origin.x))
-                        * 2f;
+                Math.max((float) (A.getPosition().x - origin.x), (float) (B.getPosition().x - origin.x)) * 2f;
         GVector v = new GVector(new double[] {origin.x, origin.y});
         GVector d = new GVector(new double[] {direction.x, direction.y});
         d.scale(largestDistance);
         v.add(d);
         LineSegment raySegment =
-                new LineSegment(
-                        new Vertex(origin, 0),
-                        new Vertex(new Coordinate(v.getElement(0), v.getElement(1)), 0));
+                new LineSegment(new Vertex(origin, 0), new Vertex(new Coordinate(v.getElement(0), v.getElement(1)), 0));
         Coordinate intersection = findIntersection(this, raySegment);
         Float value = null;
 

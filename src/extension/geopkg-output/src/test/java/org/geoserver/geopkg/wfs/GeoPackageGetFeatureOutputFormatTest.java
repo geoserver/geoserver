@@ -69,8 +69,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
 
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
 
         fct.getFeature().add(fs.getFeatures());
 
@@ -82,8 +81,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
 
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                getFeatureSource(SystemTestData.LAKES);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.LAKES);
         fct.getFeature().add(fs.getFeatures());
 
         fs = getFeatureSource(SystemTestData.STREAMS);
@@ -97,13 +95,11 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
 
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                getFeatureSource(SystemTestData.LAKES);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.LAKES);
         fct.getFeature().add(fs.getFeatures());
 
         fs = getFeatureSource(SystemTestData.STREAMS);
-        FeatureCollection coll =
-                fs.getFeatures(ff.equals(ff.property("NAME"), ff.literal("Cam Stream")));
+        FeatureCollection coll = fs.getFeatures(ff.equals(ff.property("NAME"), ff.literal("Cam Stream")));
         assertEquals(1, coll.size());
 
         fct.getFeature().add(coll);
@@ -116,8 +112,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         FeatureCollectionResponse fct =
                 FeatureCollectionResponse.adapt(WfsFactory.eINSTANCE.createFeatureCollectionType());
 
-        FeatureSource<? extends FeatureType, ? extends Feature> fs =
-                getFeatureSource(SystemTestData.BASIC_POLYGONS);
+        FeatureSource<? extends FeatureType, ? extends Feature> fs = getFeatureSource(SystemTestData.BASIC_POLYGONS);
         fct.getFeature().add(fs.getFeatures());
 
         validateGetFeature(fct, true);
@@ -129,37 +124,27 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
     public void testHttpStuff() throws Exception {
         String layerName = SystemTestData.BASIC_POLYGONS.getLocalPart();
         MockHttpServletResponse resp =
-                getAsServletResponse(
-                        "wfs?request=getfeature&typename="
-                                + layerName
-                                + "&outputformat=geopackage");
+                getAsServletResponse("wfs?request=getfeature&typename=" + layerName + "&outputformat=geopackage");
         Assert.assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
 
-        assertEquals(
-                "attachment; filename=" + layerName + ".gpkg",
-                resp.getHeader("Content-Disposition"));
+        assertEquals("attachment; filename=" + layerName + ".gpkg", resp.getHeader("Content-Disposition"));
 
-        resp =
-                getAsServletResponse(
-                        "wfs?request=getfeature&typename="
-                                + layerName
-                                + "&outputformat=geopackage"
-                                + "&format_options=filename:test");
+        resp = getAsServletResponse("wfs?request=getfeature&typename="
+                + layerName
+                + "&outputformat=geopackage"
+                + "&format_options=filename:test");
         assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
         assertEquals("attachment; filename=test.gpkg", resp.getHeader("Content-Disposition"));
 
-        resp =
-                getAsServletResponse(
-                        "wfs?request=getfeature&typename="
-                                + layerName
-                                + "&outputformat=geopackage"
-                                + "&format_options=filename:TEST.GPKG");
+        resp = getAsServletResponse("wfs?request=getfeature&typename="
+                + layerName
+                + "&outputformat=geopackage"
+                + "&format_options=filename:TEST.GPKG");
         assertEquals(GeoPkg.MIME_TYPE, resp.getContentType());
         assertEquals("attachment; filename=TEST.GPKG", resp.getHeader("Content-Disposition"));
     }
 
-    public void validateGetFeature(FeatureCollectionResponse fct, boolean indexed)
-            throws IOException {
+    public void validateGetFeature(FeatureCollectionResponse fct, boolean indexed) throws IOException {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         format.write(fct, os, op);
 
@@ -182,12 +167,16 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                     // compare type
                     SimpleFeatureType type1 = reader.getFeatureType();
                     SimpleFeatureType type2 = sCollection.getSchema();
-                    assertEquals(type1.getDescriptors().size(), type2.getDescriptors().size());
+                    assertEquals(
+                            type1.getDescriptors().size(),
+                            type2.getDescriptors().size());
                     for (int i = 0; i < type1.getDescriptors().size(); i++) {
                         assertEquals(
-                                type1.getDescriptor(i).getName(), type2.getDescriptor(i).getName());
+                                type1.getDescriptor(i).getName(),
+                                type2.getDescriptor(i).getName());
                         assertEquals(
-                                type1.getDescriptor(i).getType(), type2.getDescriptor(i).getType());
+                                type1.getDescriptor(i).getType(),
+                                type2.getDescriptor(i).getType());
                     }
 
                     // compare data
@@ -202,8 +191,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
                         while (it.hasNext()) {
                             SimpleFeature sf = it.next();
                             for (int i = 0; i < type1.getDescriptors().size(); i++) {
-                                assertTrue(
-                                        findFeatureAttribute(memCollection, i, sf.getAttribute(i)));
+                                assertTrue(findFeatureAttribute(memCollection, i, sf.getAttribute(i)));
                             }
                         }
                     }
@@ -212,8 +200,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         }
     }
 
-    protected boolean findFeatureAttribute(
-            SimpleFeatureCollection collection, int indexProp, Object value) {
+    protected boolean findFeatureAttribute(SimpleFeatureCollection collection, int indexProp, Object value) {
         try (SimpleFeatureIterator it = collection.features()) {
             while (it.hasNext()) {
                 SimpleFeature sf = it.next();
@@ -247,9 +234,8 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
     }
 
     /**
-     * Tests that the CUSTOM_TEMP_DIR_PROPERTY property is being respected. This creates a temp dir
-     * and verifies where the temp file is being created (standard java temp dir or our custom temp
-     * dir).
+     * Tests that the CUSTOM_TEMP_DIR_PROPERTY property is being respected. This creates a temp dir and verifies where
+     * the temp file is being created (standard java temp dir or our custom temp dir).
      */
     @Test
     public void testTempDir() throws Exception {
@@ -297,10 +283,7 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
         }
     }
 
-    /**
-     * GEOS-11015: Check tmp file not orphaned when write operation interrupted due to closed
-     * outputstream
-     */
+    /** GEOS-11015: Check tmp file not orphaned when write operation interrupted due to closed outputstream */
     @Test
     public void testTempFileCleanup() throws IOException {
         final FeatureSource<? extends FeatureType, ? extends Feature> basicPolygons =
@@ -325,11 +308,8 @@ public class GeoPackageGetFeatureOutputFormatTest extends WFSTestSupport {
 
     private int tempGeoPackageFileCount() {
         File tmp = new File(System.getProperty("java.io.tmpdir"));
-        File files[] =
-                tmp.listFiles(
-                        pathname ->
-                                pathname.getName().startsWith("geopkg")
-                                        && pathname.getName().endsWith(".tmp.gpkg"));
+        File files[] = tmp.listFiles(pathname ->
+                pathname.getName().startsWith("geopkg") && pathname.getName().endsWith(".tmp.gpkg"));
         return files.length;
     }
 }

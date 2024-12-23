@@ -12,8 +12,7 @@ import org.geoserver.ogcapi.LinksBuilder;
 public class TilesLandingPage extends AbstractLandingPageDocument {
 
     public static final String TILES_SERVICE_BASE = "ogc/tiles/v1";
-    public static final String REL_TILING_SCHEMES =
-            "http://www.opengis.net/def/rel/ogc/1.0/tiling-schemes";
+    public static final String REL_TILING_SCHEMES = "http://www.opengis.net/def/rel/ogc/1.0/tiling-schemes";
 
     public TilesLandingPage(String title, String description) {
         super(title, description, TILES_SERVICE_BASE);

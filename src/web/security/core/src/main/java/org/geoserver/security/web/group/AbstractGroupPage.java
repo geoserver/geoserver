@@ -33,7 +33,8 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
         this.userGroupServiceName = userGroupServiceName;
 
         boolean hasUserGroupStore = hasUserGroupStore(userGroupServiceName);
-        boolean hasRoleStore = hasRoleStore(getSecurityManager().getActiveRoleService().getName());
+        boolean hasRoleStore =
+                hasRoleStore(getSecurityManager().getActiveRoleService().getName());
 
         Form<GeoServerUserGroup> form = new Form<>("form", new CompoundPropertyModel<>(group));
         add(form);
@@ -43,11 +44,7 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
 
         List<GeoServerRole> roles;
         try {
-            roles =
-                    new ArrayList<>(
-                            getSecurityManager()
-                                    .getActiveRoleService()
-                                    .getRolesForGroup(group.getGroupname()));
+            roles = new ArrayList<>(getSecurityManager().getActiveRoleService().getRolesForGroup(group.getGroupname()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,18 +63,14 @@ public abstract class AbstractGroupPage extends AbstractSecurityPage {
                             if (e.getCause() instanceof AbstractSecurityException) {
                                 error(e.getCause());
                             } else {
-                                error(
-                                        new ParamResourceModel(
-                                                        "saveError", getPage(), e.getMessage())
-                                                .getObject());
+                                error(new ParamResourceModel("saveError", getPage(), e.getMessage()).getObject());
                             }
                             LOGGER.log(Level.SEVERE, "Error occurred while saving group", e);
                         }
                     }
-                }.setEnabled(
-                        hasUserGroupStore
-                                || hasRoleStore(
-                                        getSecurityManager().getActiveRoleService().getName())));
+                }.setEnabled(hasUserGroupStore
+                        || hasRoleStore(
+                                getSecurityManager().getActiveRoleService().getName())));
 
         // build the submit/cancel
         form.add(getCancelLink());

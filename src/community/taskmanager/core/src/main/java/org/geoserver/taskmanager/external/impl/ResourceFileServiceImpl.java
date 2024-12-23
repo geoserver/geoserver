@@ -133,25 +133,18 @@ public class ResourceFileServiceImpl extends SecuredImpl implements FileService 
         Resource parent = rootFolder.get(path).parent();
 
         SortedSet<Integer> set = new TreeSet<Integer>();
-        Pattern pattern =
-                Pattern.compile(
-                        Pattern.quote(path).replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
+        Pattern pattern = Pattern.compile(Pattern.quote(path).replace(FileService.PLACEHOLDER_VERSION, "\\E(.*)\\Q"));
         for (Resource res : parent.list()) {
             Matcher matcher = pattern.matcher(res.name());
             if (matcher.matches()) {
                 try {
                     set.add(Integer.parseInt(matcher.group(1)));
                 } catch (NumberFormatException e) {
-                    LOGGER.log(
-                            Level.WARNING,
-                            "could not parse version in versioned file " + res.name(),
-                            e);
+                    LOGGER.log(Level.WARNING, "could not parse version in versioned file " + res.name(), e);
                 }
             } else {
                 LOGGER.log(
-                        Level.WARNING,
-                        "this shouldn't happen: couldn't find version in versioned file "
-                                + res.name());
+                        Level.WARNING, "this shouldn't happen: couldn't find version in versioned file " + res.name());
             }
         }
         int last = set.isEmpty() ? 0 : set.last();
@@ -164,10 +157,8 @@ public class ResourceFileServiceImpl extends SecuredImpl implements FileService 
     @Override
     public URI getURI(String path) {
         try {
-            return new URI(
-                    "resource:"
-                            + URLEncoder.encode(rootFolder.get(path).path(), "UTF-8")
-                                    .replaceAll("%2F", "/"));
+            return new URI("resource:"
+                    + URLEncoder.encode(rootFolder.get(path).path(), "UTF-8").replaceAll("%2F", "/"));
         } catch (UnsupportedEncodingException | URISyntaxException e) {
             throw new IllegalStateException(e);
         }

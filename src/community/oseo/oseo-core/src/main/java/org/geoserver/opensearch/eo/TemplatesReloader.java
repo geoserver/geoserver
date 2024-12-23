@@ -14,12 +14,10 @@ import org.springframework.context.ApplicationListener;
 /**
  * Forces reload of the templates on big configuration changes.
  *
- * <p>To be considered: reload also when the OSEOInfo is modified (could be pointing at a different
- * database) or when the OpenSearchAccess is modified, or when the datastore that
- * JDBCOpenSearchAccess is modified.
+ * <p>To be considered: reload also when the OSEOInfo is modified (could be pointing at a different database) or when
+ * the OpenSearchAccess is modified, or when the datastore that JDBCOpenSearchAccess is modified.
  */
-public class TemplatesReloader
-        implements GeoServerLifecycleHandler, ApplicationListener<ContextLoadedEvent> {
+public class TemplatesReloader implements GeoServerLifecycleHandler, ApplicationListener<ContextLoadedEvent> {
     static final Logger LOGGER = Logging.getLogger(TemplatesReloader.class);
 
     AbstractTemplates templates;

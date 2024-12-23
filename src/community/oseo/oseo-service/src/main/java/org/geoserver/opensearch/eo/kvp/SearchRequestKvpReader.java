@@ -74,8 +74,7 @@ import org.springframework.util.StringUtils;
  */
 public class SearchRequestKvpReader extends KvpRequestReader {
 
-    static final Pattern FULL_RANGE_PATTERN =
-            Pattern.compile("^(\\[|\\])([^,\\[\\]]+),([^,\\\\[\\\\]]+)(\\[|\\])$");
+    static final Pattern FULL_RANGE_PATTERN = Pattern.compile("^(\\[|\\])([^,\\[\\]]+),([^,\\\\[\\\\]]+)(\\[|\\])$");
 
     static final Pattern LEFT_RANGE_PATTERN = Pattern.compile("^(\\[|\\])([^,\\[\\]]+)$");
 
@@ -83,8 +82,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
     static final Pattern COMMA_SEPARATED = Pattern.compile("\\s*,\\s*");
 
-    private static final Hints SAFE_CONVERSION_HINTS =
-            new Hints(ConverterFactory.SAFE_CONVERSION, true);
+    private static final Hints SAFE_CONVERSION_HINTS = new Hints(ConverterFactory.SAFE_CONVERSION, true);
 
     private static final GeometryFactory GF = new GeometryFactory();
 
@@ -134,14 +132,12 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             int ic = count.intValue();
             if (ic < 0) {
                 throw new OWS20Exception(
-                        "Invalid 'count' value, should be positive or zero",
-                        OWSExceptionCode.InvalidParameterValue);
+                        "Invalid 'count' value, should be positive or zero", OWSExceptionCode.InvalidParameterValue);
             }
             int configuredMaxFeatures = getConfiguredMaxFeatures();
             if (ic > configuredMaxFeatures) {
                 throw new OWS20Exception(
-                        "Invalid 'count' value, should not be greater than "
-                                + configuredMaxFeatures,
+                        "Invalid 'count' value, should not be greater than " + configuredMaxFeatures,
                         OWSExceptionCode.InvalidParameterValue);
             }
             query.setMaxFeatures(ic);
@@ -180,8 +176,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
     }
 
-    private Map<Parameter, String> getSearchParameterValues(
-            Map rawKvp, Collection<Parameter<?>> parameters) {
+    private Map<Parameter, String> getSearchParameterValues(Map rawKvp, Collection<Parameter<?>> parameters) {
         Map<Parameter, String> result = new LinkedHashMap<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
@@ -198,9 +193,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         List<Filter> filters = new ArrayList<>();
         for (Parameter<?> parameter : parameters) {
             Object value = rawKvp.get(parameter.key);
-            if (value != null
-                    && StringUtils.hasText(value.toString())
-                    && !NOT_FILTERS.contains(parameter.key)) {
+            if (value != null && StringUtils.hasText(value.toString()) && !NOT_FILTERS.contains(parameter.key)) {
                 Filter filter = null;
                 if (SEARCH_TERMS.key.equals(parameter.key)) {
                     filter = buildSearchTermsFilter(value);
@@ -247,9 +240,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         DateRelation relation = Converters.convert(rawRelation, DateRelation.class);
         if (relation == null && rawRelation != null) {
             final List<String> dateRelationNames =
-                    Arrays.stream(DateRelation.values())
-                            .map(k -> k.name())
-                            .collect(Collectors.toList());
+                    Arrays.stream(DateRelation.values()).map(k -> k.name()).collect(Collectors.toList());
             throw new OWS20Exception(
                     "Invalid value for relation, possible values are " + dateRelationNames,
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue,
@@ -257,8 +248,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
         if (start == null && rawStart != null) {
             throw new OWS20Exception(
-                    "Invalid expression for start time, use a ISO time or date instead: "
-                            + rawStart,
+                    "Invalid expression for start time, use a ISO time or date instead: " + rawStart,
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue,
                     TIME_START.key);
         }
@@ -331,14 +321,8 @@ public class SearchRequestKvpReader extends KvpRequestReader {
 
             case intersects:
                 // the resource overlaps the specified range
-                fStart =
-                        FF.or(
-                                FF.greaterOrEqual(endProperty, FF.literal(start)),
-                                FF.isNull(endProperty));
-                fEnd =
-                        FF.or(
-                                FF.lessOrEqual(startProperty, FF.literal(end)),
-                                FF.isNull(startProperty));
+                fStart = FF.or(FF.greaterOrEqual(endProperty, FF.literal(start)), FF.isNull(endProperty));
+                fEnd = FF.or(FF.lessOrEqual(startProperty, FF.literal(end)), FF.isNull(startProperty));
 
                 if (start == null) {
                     return fEnd;
@@ -363,8 +347,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                 return FF.and(fStart, fEnd);
 
             default:
-                throw new RuntimeException(
-                        "Time relation of type " + relation + " not covered yet");
+                throw new RuntimeException("Time relation of type " + relation + " not covered yet");
         }
     }
 
@@ -392,16 +375,13 @@ public class SearchRequestKvpReader extends KvpRequestReader {
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue);
         }
 
-        throw new UnsupportedOperationException(
-                "Still have to code or or more ways to geocode a name");
+        throw new UnsupportedOperationException("Still have to code or or more ways to geocode a name");
     }
 
     private Filter buildDistanceWithin(double lon, double lat, double radius) {
         if (radius <= 0) {
             throw new OWS20Exception(
-                    "Search radius must be positive",
-                    OWS20Exception.OWSExceptionCode.InvalidParameterValue,
-                    "radius");
+                    "Search radius must be positive", OWS20Exception.OWSExceptionCode.InvalidParameterValue, "radius");
         }
         final Point point = GF.createPoint(new Coordinate(lon, lat));
         DWithin dwithin = FF.dwithin(DEFAULT_GEOMETRY, FF.literal(point), radius, "m");
@@ -437,8 +417,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             geometry = new WKTReader().read(rawGeometry);
         } catch (Exception e) {
             throw new OWS20Exception(
-                    "Could not parse geometry parameter, expecting valid WKT syntax: "
-                            + e.getMessage(),
+                    "Could not parse geometry parameter, expecting valid WKT syntax: " + e.getMessage(),
                     e,
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue,
                     "geometry");
@@ -448,9 +427,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         GeometryRelation relation = Converters.convert(rawRelation, GeometryRelation.class);
         if (relation == null && rawRelation != null) {
             final List<String> geoRelationNames =
-                    Arrays.stream(GeometryRelation.values())
-                            .map(k -> k.name())
-                            .collect(Collectors.toList());
+                    Arrays.stream(GeometryRelation.values()).map(k -> k.name()).collect(Collectors.toList());
             throw new OWS20Exception(
                     "Invalid value for relation, possible values are " + geoRelationNames,
                     OWS20Exception.OWSExceptionCode.InvalidParameterValue,
@@ -469,15 +446,12 @@ public class SearchRequestKvpReader extends KvpRequestReader {
             case disjoint:
                 return FF.disjoint(DEFAULT_GEOMETRY, FF.literal(geometry));
             default:
-                throw new RuntimeException(
-                        "Geometry relation of type " + relation + " not covered yet");
+                throw new RuntimeException("Geometry relation of type " + relation + " not covered yet");
         }
     }
 
     private PropertyIsEqualTo buildUidFilter(Object value) {
-        return FF.equals(
-                FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")),
-                FF.literal(value));
+        return FF.equals(FF.property(new NameImpl(OpenSearchAccess.EO_NAMESPACE, "identifier")), FF.literal(value));
     }
 
     private Filter buildSearchTermsFilter(Object value) {
@@ -495,10 +469,9 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
         // turn into a list of Like filters
         // TODO: actually implement a full text search function
-        List<Filter> filters =
-                keywords.stream()
-                        .map(s -> FF.like(FF.property("htmlDescription"), "%" + s + "%"))
-                        .collect(Collectors.toList());
+        List<Filter> filters = keywords.stream()
+                .map(s -> FF.like(FF.property("htmlDescription"), "%" + s + "%"))
+                .collect(Collectors.toList());
         // combine and return
         Filter result = Predicates.or(filters);
         return result;
@@ -550,9 +523,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         // support two types of filters, equality and range filters
         Class<?> type = parameter.getType();
 
-        PropertyName pn =
-                OpenSearchParameters.getFilterPropertyFor(
-                        gs.getService(OSEOInfo.class), FF, parameter);
+        PropertyName pn = OpenSearchParameters.getFilterPropertyFor(gs.getService(OSEOInfo.class), FF, parameter);
 
         if (value instanceof String[]) {
             String[] values = (String[]) value;
@@ -567,8 +538,7 @@ public class SearchRequestKvpReader extends KvpRequestReader {
         }
     }
 
-    private Filter buildEOFilterForSingleValue(
-            Parameter<?> parameter, String value, Class<?> type, PropertyName pn) {
+    private Filter buildEOFilterForSingleValue(Parameter<?> parameter, String value, Class<?> type, PropertyName pn) {
         // for numeric and range parameters check the range syntax
         String input = value;
         Class<?> target = type;

@@ -12,15 +12,14 @@ public abstract class PanelListPanel<T> extends Panel {
 
     public PanelListPanel(final String id, final List<T> list) {
         super(id);
-        add(
-                new ListView<T>("listview", list) {
-                    private static final long serialVersionUID = -4770841274788269473L;
+        add(new ListView<T>("listview", list) {
+            private static final long serialVersionUID = -4770841274788269473L;
 
-                    @Override
-                    protected void populateItem(ListItem<T> item) {
-                        item.add(PanelListPanel.this.populateItem("panel", item.getModel()));
-                    }
-                });
+            @Override
+            protected void populateItem(ListItem<T> item) {
+                item.add(PanelListPanel.this.populateItem("panel", item.getModel()));
+            }
+        });
     }
 
     protected abstract Panel populateItem(String id, IModel<T> item);

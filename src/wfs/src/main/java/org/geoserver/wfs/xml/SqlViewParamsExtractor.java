@@ -27,8 +27,8 @@ public class SqlViewParamsExtractor {
     }
 
     /**
-     * Fix the node object to store a parsed list of viewParams instead of a raw string. This
-     * prevents the parse() method choking later on...
+     * Fix the node object to store a parsed list of viewParams instead of a raw string. This prevents the parse()
+     * method choking later on...
      */
     @SuppressWarnings("unchecked") // no generics in EMF model
     public static void fixNodeObject(Node node) throws Exception {

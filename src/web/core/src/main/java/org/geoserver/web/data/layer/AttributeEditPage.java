@@ -44,52 +44,45 @@ public class AttributeEditPage extends GeoServerSecuredPage {
 
     private CRSPanel crsField;
 
-    public AttributeEditPage(
-            final AttributeDescription attribute, final NewFeatureTypePage previousPage) {
+    public AttributeEditPage(final AttributeDescription attribute, final NewFeatureTypePage previousPage) {
         this(attribute, previousPage, false);
     }
 
     AttributeEditPage(
-            final AttributeDescription attribute,
-            final NewFeatureTypePage previousPage,
-            final boolean newAttribute) {
+            final AttributeDescription attribute, final NewFeatureTypePage previousPage, final boolean newAttribute) {
         this.previousPage = previousPage;
         this.newAttribute = newAttribute;
         this.attribute = attribute;
         this.size = String.valueOf(attribute.getSize());
 
-        final Form<AttributeDescription> form =
-                new Form<>("form", new CompoundPropertyModel<>(attribute));
+        final Form<AttributeDescription> form = new Form<>("form", new CompoundPropertyModel<>(attribute));
         form.setOutputMarkupId(true);
         add(form);
 
         form.add(nameField = new TextField<>("name"));
         DropDownChoice<Class<?>> binding =
-                new DropDownChoice<>(
-                        "binding", AttributeDescription.BINDINGS, new BindingChoiceRenderer());
-        binding.add(
-                new AjaxFormSubmitBehavior("change") {
+                new DropDownChoice<>("binding", AttributeDescription.BINDINGS, new BindingChoiceRenderer());
+        binding.add(new AjaxFormSubmitBehavior("change") {
 
-                    @Override
-                    protected void onError(AjaxRequestTarget target) {
-                        updateVisibility(target);
-                    }
+            @Override
+            protected void onError(AjaxRequestTarget target) {
+                updateVisibility(target);
+            }
 
-                    private void updateVisibility(AjaxRequestTarget target) {
-                        sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
-                        crsContainer.setVisible(
-                                attribute.getBinding() != null
-                                        && Geometry.class.isAssignableFrom(attribute.getBinding()));
+            private void updateVisibility(AjaxRequestTarget target) {
+                sizeContainer.setVisible(String.class.equals(attribute.getBinding()));
+                crsContainer.setVisible(
+                        attribute.getBinding() != null && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-                        addFeedbackPanels(target);
-                        target.add(form);
-                    }
+                addFeedbackPanels(target);
+                target.add(form);
+            }
 
-                    @Override
-                    protected void onSubmit(AjaxRequestTarget target) {
-                        updateVisibility(target);
-                    }
-                });
+            @Override
+            protected void onSubmit(AjaxRequestTarget target) {
+                updateVisibility(target);
+            }
+        });
         form.add(binding);
         form.add(new CheckBox("nullable"));
 
@@ -104,37 +97,31 @@ public class AttributeEditPage extends GeoServerSecuredPage {
         form.add(crsContainer);
         crsContainer.add(crsField = new CRSPanel("crs"));
         crsContainer.setVisible(
-                attribute.getBinding() != null
-                        && Geometry.class.isAssignableFrom(attribute.getBinding()));
+                attribute.getBinding() != null && Geometry.class.isAssignableFrom(attribute.getBinding()));
 
-        SubmitLink submit =
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        if (validate()) {
-                            if (newAttribute) {
-                                previousPage.attributesProvider.addNewAttribute(attribute);
-                            }
-                            setResponsePage(previousPage);
-                        }
+        SubmitLink submit = new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                if (validate()) {
+                    if (newAttribute) {
+                        previousPage.attributesProvider.addNewAttribute(attribute);
                     }
-                };
+                    setResponsePage(previousPage);
+                }
+            }
+        };
         form.setDefaultButton(submit);
         form.add(submit);
-        form.add(
-                new Link<Void>("cancel") {
+        form.add(new Link<Void>("cancel") {
 
-                    @Override
-                    public void onClick() {
-                        setResponsePage(previousPage);
-                    }
-                });
+            @Override
+            public void onClick() {
+                setResponsePage(previousPage);
+            }
+        });
     }
 
-    /**
-     * We have to resort to manual validation otherwise the ajax tricks performed by the drop down
-     * won't work
-     */
+    /** We have to resort to manual validation otherwise the ajax tricks performed by the drop down won't work */
     protected boolean validate() {
         boolean valid = true;
         if (attribute.getName() == null || attribute.getName().trim().equals("")) {

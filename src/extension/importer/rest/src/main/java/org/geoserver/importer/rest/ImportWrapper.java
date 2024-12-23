@@ -11,6 +11,5 @@ import org.geoserver.importer.rest.converters.ImportJSONWriter.FlushableJSONBuil
 
 /** Wrapper used by {@link ImportJSONWriter} to write custom json content */
 public interface ImportWrapper {
-    void write(Writer writer, FlushableJSONBuilder json, ImportJSONWriter builder)
-            throws IOException;
+    void write(Writer writer, FlushableJSONBuilder json, ImportJSONWriter builder) throws IOException;
 }

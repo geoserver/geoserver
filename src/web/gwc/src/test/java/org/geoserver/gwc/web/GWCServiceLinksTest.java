@@ -32,31 +32,29 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
         Page lastPage = tester.getLastRenderedPage();
         final List<String> services = new ArrayList<>();
-        lastPage.visitChildren(
-                ExternalLink.class,
-                (component, visit) -> {
-                    String url = (String) component.getDefaultModelObject();
-                    if (url != null) {
-                        if (url.startsWith("../gwc/service/")) {
-                            int idx = url.indexOf("?");
-                            String service;
-                            if (idx > 0) {
-                                service = url.substring("./gwc/service/".length() + 1, idx);
-                            } else {
-                                service = url.substring("./gwc/service/".length() + 1);
-                            }
-                            if (service != null) {
-                                services.add(service);
-                            }
-                        } else if (url.contains("GetCapabilities")) {
-                            Map<String, Object> params = KvpUtils.parseQueryString(url);
-                            String service = (String) params.get("service");
-                            if (service != null) {
-                                services.add(service);
-                            }
-                        }
+        lastPage.visitChildren(ExternalLink.class, (component, visit) -> {
+            String url = (String) component.getDefaultModelObject();
+            if (url != null) {
+                if (url.startsWith("../gwc/service/")) {
+                    int idx = url.indexOf("?");
+                    String service;
+                    if (idx > 0) {
+                        service = url.substring("./gwc/service/".length() + 1, idx);
+                    } else {
+                        service = url.substring("./gwc/service/".length() + 1);
                     }
-                });
+                    if (service != null) {
+                        services.add(service);
+                    }
+                } else if (url.contains("GetCapabilities")) {
+                    Map<String, Object> params = KvpUtils.parseQueryString(url);
+                    String service = (String) params.get("service");
+                    if (service != null) {
+                        services.add(service);
+                    }
+                }
+            }
+        });
 
         // GEOS-5886
         assertFalse(services.contains("gwc"));
@@ -68,8 +66,7 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
 
     @Test
     public void serviceDescriptorAndLinks() {
-        GWCServiceDescriptionProvider provider =
-                GeoServerExtensions.bean(GWCServiceDescriptionProvider.class);
+        GWCServiceDescriptionProvider provider = GeoServerExtensions.bean(GWCServiceDescriptionProvider.class);
 
         List<ServiceDescription> services = provider.getServices(null, null);
         List<ServiceLinkDescription> links = provider.getServiceLinks(null, null);

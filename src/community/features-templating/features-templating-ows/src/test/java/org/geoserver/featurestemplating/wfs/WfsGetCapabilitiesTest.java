@@ -18,8 +18,7 @@ import org.w3c.dom.NodeList;
 public class WfsGetCapabilitiesTest extends WFSTestSupport {
 
     /**
-     * Checks if features templating specific result formats are present in output and represented
-     * correctly.
+     * Checks if features templating specific result formats are present in output and represented correctly.
      *
      * @throws Exception
      */

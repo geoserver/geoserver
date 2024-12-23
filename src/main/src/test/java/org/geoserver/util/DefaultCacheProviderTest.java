@@ -27,11 +27,11 @@ import org.junit.Test;
 
 public class DefaultCacheProviderTest {
 
-    @Rule public ExtensionsHelperRule extensions = new ExtensionsHelperRule();
+    @Rule
+    public ExtensionsHelperRule extensions = new ExtensionsHelperRule();
 
     @Rule
-    public LoggerRule logging =
-            new LoggerRule(Logging.getLogger(DefaultCacheProvider.class), Level.WARNING);
+    public LoggerRule logging = new LoggerRule(Logging.getLogger(DefaultCacheProvider.class), Level.WARNING);
 
     @Test
     public void testDefault() {
@@ -69,28 +69,25 @@ public class DefaultCacheProviderTest {
 
         CacheProvider provider = DefaultCacheProvider.findProvider();
 
-        assertThat(
-                provider,
-                anyOf(sameInstance(testCacheProvider1), sameInstance(testCacheProvider2)));
+        assertThat(provider, anyOf(sameInstance(testCacheProvider1), sameInstance(testCacheProvider2)));
 
         String providerName = "testCacheProvider2";
         if (provider == testCacheProvider1) {
             providerName = "testCacheProvider1";
         }
-        logging.assertLogged(
-                allOf(
-                        hasProperty("level", is(Level.WARNING)),
-                        hasProperty(
-                                "parameters",
-                                arrayContainingInAnyOrder(
-                                        // Name of the provider being used
-                                        equalTo(providerName),
-                                        // Available providers
-                                        anyOf(
-                                                equalTo("testCacheProvider1, testCacheProvider2"),
-                                                equalTo("testCacheProvider2, testCacheProvider1")),
-                                        // The system property to override
-                                        equalTo("GEOSERVER_DEFAULT_CACHE_PROVIDER")))));
+        logging.assertLogged(allOf(
+                hasProperty("level", is(Level.WARNING)),
+                hasProperty(
+                        "parameters",
+                        arrayContainingInAnyOrder(
+                                // Name of the provider being used
+                                equalTo(providerName),
+                                // Available providers
+                                anyOf(
+                                        equalTo("testCacheProvider1, testCacheProvider2"),
+                                        equalTo("testCacheProvider2, testCacheProvider1")),
+                                // The system property to override
+                                equalTo("GEOSERVER_DEFAULT_CACHE_PROVIDER")))));
         verify(testCacheProvider1, testCacheProvider2);
     }
 
@@ -133,8 +130,7 @@ public class DefaultCacheProviderTest {
         // Test that the bean specified in the property is used
 
         extensions.property(
-                DefaultCacheProvider.BEAN_NAME_PROPERTY,
-                "testCacheProvider1,testCacheProvider2,testCacheProvider3");
+                DefaultCacheProvider.BEAN_NAME_PROPERTY, "testCacheProvider1,testCacheProvider2,testCacheProvider3");
 
         replay(testCacheProvider3, testCacheProvider2);
 

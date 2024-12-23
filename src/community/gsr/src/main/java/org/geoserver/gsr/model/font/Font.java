@@ -65,12 +65,7 @@ public class Font {
         this.decoration = decoration;
     }
 
-    public Font(
-            String family,
-            int size,
-            FontStyleEnum style,
-            FontWeightEnum weight,
-            FontDecorationEnum decoration) {
+    public Font(String family, int size, FontStyleEnum style, FontWeightEnum weight, FontDecorationEnum decoration) {
         super();
         this.family = family;
         this.size = size;

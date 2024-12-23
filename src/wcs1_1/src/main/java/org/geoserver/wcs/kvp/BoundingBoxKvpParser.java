@@ -19,8 +19,8 @@ import org.vfny.geoserver.wcs.WcsException;
 import org.vfny.geoserver.wcs.WcsException.WcsExceptionCode;
 
 /**
- * This and wfs BBoxKvpParser share a lot, it's just they don't share the same output type. Find a
- * way to create one common superclass.
+ * This and wfs BBoxKvpParser share a lot, it's just they don't share the same output type. Find a way to create one
+ * common superclass.
  *
  * @author Andrea Aime
  */
@@ -88,8 +88,7 @@ public class BoundingBoxKvpParser extends KvpParser {
                                 "BoundingBox");
                 }
             } catch (Exception e) {
-                throw new WcsException(
-                        "Could not recognize crs " + crsName, InvalidParameterValue, "BoundingBox");
+                throw new WcsException("Could not recognize crs " + crsName, InvalidParameterValue, "BoundingBox");
             }
         }
 

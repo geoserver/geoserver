@@ -13,10 +13,8 @@ public class NetCDFContainerXStreamInitializer implements XStreamPersisterInitia
 
     @Override
     public void init(XStreamPersister persister) {
-        persister.registerBreifMapComplexType(
-                "netcdfSettingsContainer", NetCDFSettingsContainer.class);
-        persister.registerBreifMapComplexType(
-                "netcdfLayerSettingsContainer", NetCDFLayerSettingsContainer.class);
+        persister.registerBreifMapComplexType("netcdfSettingsContainer", NetCDFSettingsContainer.class);
+        persister.registerBreifMapComplexType("netcdfLayerSettingsContainer", NetCDFLayerSettingsContainer.class);
         XStream xs = persister.getXStream();
         xs.alias("netCDFSettings", NetCDFSettingsContainer.class);
         xs.alias("netCDFLayerSettings", NetCDFLayerSettingsContainer.class);

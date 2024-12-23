@@ -28,17 +28,16 @@ import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 
 /**
- * Provides methods to load both the {@link Catalog} and the {@link GeoServer} config from a data
- * directory, returning new instances of each.
+ * Provides methods to load both the {@link Catalog} and the {@link GeoServer} config from a data directory, returning
+ * new instances of each.
  *
- * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose
- * parallelism is determined by an heuristic resolving to the minimum between {@code 16} and the
- * number of available processors as reported by {@link Runtime#availableProcessors()}, or
- * overridden by the value passed through the environment variable or system property {@literal
- * DATADIR_LOAD_PARALLELISM}.
+ * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose parallelism is determined
+ * by an heuristic resolving to the minimum between {@code 16} and the number of available processors as reported by
+ * {@link Runtime#availableProcessors()}, or overridden by the value passed through the environment variable or system
+ * property {@literal DATADIR_LOAD_PARALLELISM}.
  *
- * @implNote a {@link DataDirectoryWalker} is created and used to delegate the actual loading logic
- *     to the {@link CatalogConfigLoader} and {@link GeoServerConfigLoader} collaborators.
+ * @implNote a {@link DataDirectoryWalker} is created and used to delegate the actual loading logic to the
+ *     {@link CatalogConfigLoader} and {@link GeoServerConfigLoader} collaborators.
  * @see DataDirectoryWalker
  * @see CatalogConfigLoader
  * @see GeoServerConfigLoader
@@ -63,16 +62,13 @@ public class DataDirectoryLoader {
     private final XStreamLoader xstreamLoader;
 
     public DataDirectoryLoader(
-            FileSystemResourceStore resourceStore,
-            List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
+            FileSystemResourceStore resourceStore, List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
 
         this.resourceStore = resourceStore;
         this.serviceLoaders = serviceLoaders;
         Path dataDirRoot = resourceStore.get("").dir().toPath();
         List<String> serviceFileNames =
-                serviceLoaders.stream()
-                        .map(XStreamServiceLoader::getFilename)
-                        .collect(Collectors.toList());
+                serviceLoaders.stream().map(XStreamServiceLoader::getFilename).collect(Collectors.toList());
         this.fileWalk = new DataDirectoryWalker(dataDirRoot, serviceFileNames);
         this.executor = executor();
         this.xstreamLoader = new XStreamLoader();
@@ -82,8 +78,7 @@ public class DataDirectoryLoader {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
         final int poolIndex = threadPoolId.incrementAndGet();
-        return new ForkJoinPool(
-                parallelism, threadFactory(poolIndex), uncaughtExceptionHandler(), asyncMode);
+        return new ForkJoinPool(parallelism, threadFactory(poolIndex), uncaughtExceptionHandler(), asyncMode);
     }
 
     private ForkJoinWorkerThreadFactory threadFactory(final int poolIndex) {
@@ -91,30 +86,23 @@ public class DataDirectoryLoader {
         final AtomicInteger threadIndex = new AtomicInteger();
 
         return pool -> {
-            ForkJoinWorkerThread worker =
-                    ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(executor);
+            ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(executor);
 
-            worker.setName(
-                    String.format(
-                            "DatadirLoader-%d-worker-%d",
-                            poolIndex, threadIndex.incrementAndGet()));
+            worker.setName(String.format("DatadirLoader-%d-worker-%d", poolIndex, threadIndex.incrementAndGet()));
             return worker;
         };
     }
 
     private UncaughtExceptionHandler uncaughtExceptionHandler() {
         return (t, ex) -> {
-            String msg =
-                    String.format(
-                            "Uncaught exception loading catalog or config at thread %s: %s",
-                            t.getName(), ex.getMessage());
+            String msg = String.format(
+                    "Uncaught exception loading catalog or config at thread %s: %s", t.getName(), ex.getMessage());
             LOGGER.log(Level.SEVERE, msg, ex);
         };
     }
 
     public CatalogImpl loadCatalog(CatalogImpl catalogImpl) throws Exception {
-        CatalogConfigLoader loader =
-                new CatalogConfigLoader(catalogImpl, fileWalk, xstreamLoader, executor);
+        CatalogConfigLoader loader = new CatalogConfigLoader(catalogImpl, fileWalk, xstreamLoader, executor);
         try {
             CatalogImpl catalog = loader.loadCatalog();
             this.catalogLoaded = true;
@@ -134,8 +122,7 @@ public class DataDirectoryLoader {
         gs.setCatalog(realCatalog);
 
         GeoServerConfigLoader loader =
-                new GeoServerConfigLoader(
-                        fileWalk, xstreamLoader, executor, gs, resourceStore, serviceLoaders);
+                new GeoServerConfigLoader(fileWalk, xstreamLoader, executor, gs, resourceStore, serviceLoaders);
 
         try {
             GeoServerImpl geoserver = loader.loadGeoServer();
@@ -178,21 +165,16 @@ public class DataDirectoryLoader {
                 parallelism = defParallelism;
                 LOGGER.log(
                         Level.WARNING,
-                        () ->
-                                String.format(
-                                        "Configured parallelism is invalid: %s=%s, using default of %d",
-                                        DATADIR_LOAD_PARALLELISM,
-                                        configuredParallelism,
-                                        defParallelism));
+                        () -> String.format(
+                                "Configured parallelism is invalid: %s=%s, using default of %d",
+                                DATADIR_LOAD_PARALLELISM, configuredParallelism, defParallelism));
             } else {
-                logTailMessage =
-                        "as indicated by the " + DATADIR_LOAD_PARALLELISM + " environment variable";
+                logTailMessage = "as indicated by the " + DATADIR_LOAD_PARALLELISM + " environment variable";
             }
         }
-        LOGGER.log(
-                Level.CONFIG,
-                "Catalog and configuration loader uses {0} threads {1}",
-                new Object[] {parallelism, logTailMessage});
+        LOGGER.log(Level.CONFIG, "Catalog and configuration loader uses {0} threads {1}", new Object[] {
+            parallelism, logTailMessage
+        });
         return parallelism;
     }
 }

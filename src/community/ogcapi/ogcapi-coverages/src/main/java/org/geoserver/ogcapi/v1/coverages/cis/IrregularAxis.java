@@ -7,8 +7,8 @@ package org.geoserver.ogcapi.v1.coverages.cis;
 import java.util.List;
 
 /**
- * An irregular axis enumerates all possible direct position coordinates. Coordinates are Objects as
- * they can be both numbers and ISO times too.
+ * An irregular axis enumerates all possible direct position coordinates. Coordinates are Objects as they can be both
+ * numbers and ISO times too.
  */
 public class IrregularAxis extends Axis {
 

@@ -25,11 +25,7 @@ public class LayerAttributesTest extends SLDServiceBaseTest {
     public void testListAttributesForFeatureXml() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("cite:Buildings");
         assertEquals("Buildings", l.getDefaultStyle().getName());
-        final String restPath =
-                RestBaseController.ROOT_PATH
-                        + "/sldservice/cite:Buildings/"
-                        + getServiceUrl()
-                        + ".xml";
+        final String restPath = RestBaseController.ROOT_PATH + "/sldservice/cite:Buildings/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         // Randomly cannot find REST path
         if (response.getStatus() == 200) {
@@ -46,10 +42,7 @@ public class LayerAttributesTest extends SLDServiceBaseTest {
         LayerInfo l = getCatalog().getLayerByName("cite:Buildings");
         assertEquals("Buildings", l.getDefaultStyle().getName());
         final String restPath =
-                RestBaseController.ROOT_PATH
-                        + "/sldservice/cite:Buildings/"
-                        + getServiceUrl()
-                        + ".json";
+                RestBaseController.ROOT_PATH + "/sldservice/cite:Buildings/" + getServiceUrl() + ".json";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         // Randomly cannot find REST path
         if (response.getStatus() == 200) {
@@ -68,8 +61,7 @@ public class LayerAttributesTest extends SLDServiceBaseTest {
     public void testListAttributesForCoverageIsEmpty() throws Exception {
         LayerInfo l = getCatalog().getLayerByName("World");
         assertEquals("raster", l.getDefaultStyle().getName());
-        final String restPath =
-                RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
+        final String restPath = RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         // Randomly cannot find REST path
         if (response.getStatus() == 200) {

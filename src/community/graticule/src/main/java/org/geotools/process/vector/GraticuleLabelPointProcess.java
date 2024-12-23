@@ -106,10 +106,8 @@ public class GraticuleLabelPointProcess implements VectorProcess {
         PreparedGeometry clipper = null;
         if (bounds != null) {
             if (CRS.isTransformationRequired(
-                    bounds.getCoordinateReferenceSystem(),
-                    features.getSchema().getCoordinateReferenceSystem())) {
-                bounds =
-                        bounds.transform(features.getSchema().getCoordinateReferenceSystem(), true);
+                    bounds.getCoordinateReferenceSystem(), features.getSchema().getCoordinateReferenceSystem())) {
+                bounds = bounds.transform(features.getSchema().getCoordinateReferenceSystem(), true);
             }
             clipper = PreparedGeometryFactory.prepare(JTS.toGeometry(bounds));
         }
@@ -205,8 +203,7 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                 ps[1] = ((LineString) points).getEndPoint();
 
                 // get left most
-                if (log.isLoggable(Level.FINEST))
-                    log.finest("Got a multipoint intersection " + ps[0] + " " + ps[1]);
+                if (log.isLoggable(Level.FINEST)) log.finest("Got a multipoint intersection " + ps[0] + " " + ps[1]);
                 Point left = null;
                 Point right = null;
                 Point top = null;
@@ -274,24 +271,21 @@ public class GraticuleLabelPointProcess implements VectorProcess {
                         }
                         break;
                 }
-                if (log.isLoggable(Level.FINEST))
-                    log.finest("produced " + p + " " + feature.getAttribute("label"));
+                if (log.isLoggable(Level.FINEST)) log.finest("produced " + p + " " + feature.getAttribute("label"));
             } else {
                 // no intersection
                 log.finest("No intersection");
             }
         }
         if (p != null) {
-            if (log.isLoggable(Level.FINEST))
-                log.finest("buiding point at " + p + " " + feature.getAttribute("label"));
+            if (log.isLoggable(Level.FINEST)) log.finest("buiding point at " + p + " " + feature.getAttribute("label"));
             SimpleFeature result = buildFeature(p, feature, position, offset);
             return result;
         }
         return null;
     }
 
-    private SimpleFeature buildFeature(
-            Point p, SimpleFeature feature, PositionEnum position, double offset) {
+    private SimpleFeature buildFeature(Point p, SimpleFeature feature, PositionEnum position, double offset) {
         log.finest("building Feature at " + p + " pos:" + position);
         Collection<Property> atts = feature.getProperties();
         for (Property prop : atts) {
@@ -350,11 +344,10 @@ public class GraticuleLabelPointProcess implements VectorProcess {
         builder.set(LineFeatureBuilder.OFFSET_Y, offsetY);
 
         SimpleFeature output = builder.buildFeature(null);
-        log.finest(
-                "Feature builder - left:"
-                        + output.getAttribute(LineFeatureBuilder.LEFT)
-                        + " top:"
-                        + output.getAttribute(LineFeatureBuilder.TOP));
+        log.finest("Feature builder - left:"
+                + output.getAttribute(LineFeatureBuilder.LEFT)
+                + " top:"
+                + output.getAttribute(LineFeatureBuilder.TOP));
         return output;
     }
 }

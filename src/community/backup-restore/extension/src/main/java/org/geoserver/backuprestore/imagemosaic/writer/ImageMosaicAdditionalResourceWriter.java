@@ -37,11 +37,9 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
     }
 
     @Override
-    public void writeAdditionalResources(Backup backupFacade, Resource base, StoreInfo item)
-            throws IOException {
+    public void writeAdditionalResources(Backup backupFacade, Resource base, StoreInfo item) throws IOException {
 
-        final Resource targetBackupFolder =
-                BackupUtils.dir(base.parent(), IMAGEMOSAIC_INDEXES_FOLDER);
+        final Resource targetBackupFolder = BackupUtils.dir(base.parent(), IMAGEMOSAIC_INDEXES_FOLDER);
 
         // Create folder if not exists
         Resources.directory(targetBackupFolder, !Resources.exists(targetBackupFolder));
@@ -53,34 +51,29 @@ public class ImageMosaicAdditionalResourceWriter extends ImageMosaicAdditionalRe
 
         final Resource mosaicIndexBase = Resources.fromURL(mosaicUrlBase);
 
-        final Resource mosaicBaseFolder =
-                Files.asResource(
-                        (Resources.directory(mosaicIndexBase) != null
-                                ? Resources.directory(mosaicIndexBase)
-                                : Resources.directory(mosaicIndexBase.parent())));
+        final Resource mosaicBaseFolder = Files.asResource(
+                (Resources.directory(mosaicIndexBase) != null
+                        ? Resources.directory(mosaicIndexBase)
+                        : Resources.directory(mosaicIndexBase.parent())));
 
         // Create the target mosaic folder
-        Resource targetMosaicBaseFolder =
-                BackupUtils.dir(targetBackupFolder, mosaicBaseFolder.name());
+        Resource targetMosaicBaseFolder = BackupUtils.dir(targetBackupFolder, mosaicBaseFolder.name());
 
         if (Resources.exists(mosaicIndexBase)) {
             for (Entry<String, Filter<Resource>> entry : resources.entrySet()) {
-                List<Resource> mosaicIndexerResources =
-                        Resources.list(mosaicIndexBase, entry.getValue(), true);
+                List<Resource> mosaicIndexerResources = Resources.list(mosaicIndexBase, entry.getValue(), true);
 
                 for (Resource res : mosaicIndexerResources) {
                     if (!FilenameUtils.getBaseName(res.name()).equals(mosaicName)
-                            && !FilenameUtils.getBaseName(res.name())
-                                    .equals(mosaicBaseFolder.name())
+                            && !FilenameUtils.getBaseName(res.name()).equals(mosaicBaseFolder.name())
                             && Resources.exists(res)
                             && Resources.canRead(res)) {
-                        final String relative =
-                                mosaicIndexBase
-                                        .parent()
-                                        .dir()
-                                        .toURI()
-                                        .relativize(res.file().toURI())
-                                        .getPath();
+                        final String relative = mosaicIndexBase
+                                .parent()
+                                .dir()
+                                .toURI()
+                                .relativize(res.file().toURI())
+                                .getPath();
 
                         Resource targetFtl = Resources.fromPath(relative, targetBackupFolder);
 

@@ -30,8 +30,7 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         target.add(auth);
     }
 
-    private void addIdentifier(
-            final String authName, final String id, List<LayerIdentifierInfo> target) {
+    private void addIdentifier(final String authName, final String id, List<LayerIdentifierInfo> target) {
         LayerIdentifierInfo identifier = new LayerIdentifier();
         identifier.setAuthority(authName);
         identifier.setIdentifier(id);
@@ -55,33 +54,27 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
 
         Document doc = getAsDOM("/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
-        assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth1']",
-                doc);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth1']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth1",
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth1']/wms:OnlineResource/@xlink:href",
                 doc);
 
-        assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth2']",
-                doc);
+        assertXpathExists("/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth2']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth2",
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:AuthorityURL[@name = 'rootAuth2']/wms:OnlineResource/@xlink:href",
                 doc);
 
         assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth1']",
-                doc);
+                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth1']", doc);
         assertXpathEvaluatesTo(
                 "rootId1",
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth1']",
                 doc);
 
         assertXpathExists(
-                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth2']",
-                doc);
+                "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth2']", doc);
         assertXpathEvaluatesTo(
                 "rootId2",
                 "/wms:WMS_Capabilities/wms:Capability/wms:Layer/wms:Identifier[@authority = 'rootAuth2']",
@@ -97,15 +90,10 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
         addIdentifier("layerAuth1", "layerId1", layer.getIdentifiers());
         getCatalog().save(layer);
 
-        Document doc =
-                getAsDOM(
-                        "sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0",
-                        true);
+        Document doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.3.0", true);
 
         String layerName = MockData.PRIMITIVEGEOFEATURE.getLocalPart();
-        assertXpathExists(
-                "//wms:Layer[wms:Name='" + layerName + "']/wms:AuthorityURL[@name = 'layerAuth1']",
-                doc);
+        assertXpathExists("//wms:Layer[wms:Name='" + layerName + "']/wms:AuthorityURL[@name = 'layerAuth1']", doc);
         assertXpathEvaluatesTo(
                 "http://geoserver/wms/auth1",
                 "//wms:Layer[wms:Name='"
@@ -113,16 +101,8 @@ public class CapabilitiesAuthorityURLAndIdentifierTest extends WMSTestSupport {
                         + "']/wms:AuthorityURL[@name = 'layerAuth1']/wms:OnlineResource/@xlink:href",
                 doc);
 
-        assertXpathExists(
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:Identifier[@authority = 'layerAuth1']",
-                doc);
+        assertXpathExists("//wms:Layer[wms:Name='" + layerName + "']/wms:Identifier[@authority = 'layerAuth1']", doc);
         assertXpathEvaluatesTo(
-                "layerId1",
-                "//wms:Layer[wms:Name='"
-                        + layerName
-                        + "']/wms:Identifier[@authority = 'layerAuth1']",
-                doc);
+                "layerId1", "//wms:Layer[wms:Name='" + layerName + "']/wms:Identifier[@authority = 'layerAuth1']", doc);
     }
 }

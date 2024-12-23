@@ -30,7 +30,8 @@ public class ParameterImpl extends BaseImpl implements Parameter {
     @Column(nullable = false)
     private String name;
 
-    @Column private String value;
+    @Column
+    private String value;
 
     @ManyToOne
     @JoinColumn(name = "task")

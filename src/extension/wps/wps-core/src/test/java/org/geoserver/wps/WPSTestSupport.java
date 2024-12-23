@@ -141,8 +141,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     /** Validates a document against the */
-    protected void checkValidationErrors(Document dom, Configuration configuration)
-            throws Exception {
+    protected void checkValidationErrors(Document dom, Configuration configuration) throws Exception {
         Parser p = new Parser(configuration);
         p.setValidating(true);
         p.parse(new DOMSource(dom));
@@ -150,8 +149,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         if (!p.getValidationErrors().isEmpty()) {
             for (Exception exception : p.getValidationErrors()) {
                 SAXParseException ex = (SAXParseException) exception;
-                LOGGER.warning(
-                        ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
+                LOGGER.warning(ex.getLineNumber() + "," + ex.getColumnNumber() + " -" + ex.toString());
             }
             fail("Document did not validate.");
         }
@@ -178,12 +176,9 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         props.put(LayerProperty.STYLE, styleName);
 
         // wcs 1.1
-        testData.addRasterLayer(
-                TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
-        testData.addRasterLayer(
-                ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_DEM, "tazdem.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(TASMANIA_BM, "tazbm.tiff", TIFF, props, MockData.class, getCatalog());
+        testData.addRasterLayer(ROTATED_CAD, "rotated.tiff", TIFF, props, MockData.class, getCatalog());
         testData.addRasterLayer(WORLD, "world.tiff", TIFF, props, MockData.class, getCatalog());
     }
 
@@ -198,30 +193,25 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
     }
 
     protected Document waitForProcess(
-            String statusLocation,
-            long maxWaitSeconds,
-            ThrowingFunction<Document, Boolean> exitCondition)
+            String statusLocation, long maxWaitSeconds, ThrowingFunction<Document, Boolean> exitCondition)
             throws Exception {
-        await().atMost(maxWaitSeconds, SECONDS)
-                .until(
-                        () -> {
-                            MockHttpServletResponse response = getAsServletResponse(statusLocation);
-                            String contents = response.getContentAsString();
-                            // super weird... and I believe related to the testing harness... just
-                            // ignoring it for the moment.
-                            if ("".equals(contents)) {
-                                return false;
-                            }
-                            Document dom = dom(new ByteArrayInputStream(contents.getBytes()));
-                            // print(dom);
-                            return exitCondition.apply(dom);
-                        });
+        await().atMost(maxWaitSeconds, SECONDS).until(() -> {
+            MockHttpServletResponse response = getAsServletResponse(statusLocation);
+            String contents = response.getContentAsString();
+            // super weird... and I believe related to the testing harness... just
+            // ignoring it for the moment.
+            if ("".equals(contents)) {
+                return false;
+            }
+            Document dom = dom(new ByteArrayInputStream(contents.getBytes()));
+            // print(dom);
+            return exitCondition.apply(dom);
+        });
 
         return getAsDOM(statusLocation);
     }
 
-    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds)
-            throws Exception {
+    protected Document waitForProcessEnd(String statusLocation, long maxWaitSeconds) throws Exception {
         return waitForProcess(statusLocation, maxWaitSeconds, this::executionComplete);
     }
 
@@ -235,8 +225,7 @@ public abstract class WPSTestSupport extends GeoServerSystemTestSupport {
         return xp.getMatchingNodes(xpath, d).getLength();
     }
 
-    protected Document waitForProcessStart(String statusLocation, long maxWaitSeconds)
-            throws Exception {
+    protected Document waitForProcessStart(String statusLocation, long maxWaitSeconds) throws Exception {
         return waitForProcess(statusLocation, maxWaitSeconds, this::executionStarted);
     }
 

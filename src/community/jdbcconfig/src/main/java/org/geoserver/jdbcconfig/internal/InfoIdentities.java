@@ -30,17 +30,16 @@ public final class InfoIdentities {
         return SINGLETON;
     }
 
-    private static final Class<?>[] ROOT_CLASSES =
-            new Class<?>[] {
-                MapInfo.class,
-                NamespaceInfo.class,
-                LayerInfo.class,
-                LayerGroupInfo.class,
-                ResourceInfo.class,
-                StoreInfo.class,
-                StyleInfo.class,
-                WorkspaceInfo.class
-            };
+    private static final Class<?>[] ROOT_CLASSES = new Class<?>[] {
+        MapInfo.class,
+        NamespaceInfo.class,
+        LayerInfo.class,
+        LayerGroupInfo.class,
+        ResourceInfo.class,
+        StoreInfo.class,
+        StyleInfo.class,
+        WorkspaceInfo.class
+    };
 
     @SuppressWarnings("unchecked")
     public static <T extends Info> Class<? extends Info> root(Class<T> clazz) {
@@ -64,13 +63,11 @@ public final class InfoIdentities {
                 String[] idValues = new String[descriptor.length];
                 for (int i = 0; i < descriptor.length; i++) {
                     try {
-                        idValues[i] =
-                                PropertyUtils.getNestedProperty(info, descriptor[i]).toString();
+                        idValues[i] = PropertyUtils.getNestedProperty(info, descriptor[i])
+                                .toString();
                     } catch (NestedNullException e) {
                         idValues[i] = null;
-                    } catch (IllegalAccessException
-                            | InvocationTargetException
-                            | NoSuchMethodException e) {
+                    } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         throw new IllegalStateException(e);
                     }
                 }

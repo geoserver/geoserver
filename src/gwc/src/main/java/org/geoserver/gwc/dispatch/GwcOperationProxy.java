@@ -9,8 +9,8 @@ import java.util.Map;
 import org.geoserver.ows.Dispatcher;
 
 /**
- * A simple bean acting as the response for the {@link GwcServiceProxy#dispatch} operation, in order
- * to make a call to a GWC service fit into the GeoServer {@link Dispatcher} framework.
+ * A simple bean acting as the response for the {@link GwcServiceProxy#dispatch} operation, in order to make a call to a
+ * GWC service fit into the GeoServer {@link Dispatcher} framework.
  *
  * <p>See the package documentation for more insights on how these all fit together.
  */
@@ -22,10 +22,7 @@ public class GwcOperationProxy {
 
     private Map<String, String> responseHeaders;
 
-    public GwcOperationProxy(
-            final String contentType,
-            final Map<String, String> headers,
-            final byte[] responseContent)
+    public GwcOperationProxy(final String contentType, final Map<String, String> headers, final byte[] responseContent)
             throws Exception {
         this.contentType = contentType;
         this.responseContent = responseContent;

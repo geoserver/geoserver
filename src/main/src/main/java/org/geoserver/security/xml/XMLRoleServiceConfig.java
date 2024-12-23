@@ -8,8 +8,7 @@ package org.geoserver.security.xml;
 
 import org.geoserver.security.config.SecurityRoleServiceConfig;
 
-public class XMLRoleServiceConfig extends XMLSecurityServiceConfig
-        implements SecurityRoleServiceConfig {
+public class XMLRoleServiceConfig extends XMLSecurityServiceConfig implements SecurityRoleServiceConfig {
 
     private static final long serialVersionUID = 1L;
 

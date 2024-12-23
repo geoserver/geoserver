@@ -164,11 +164,9 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
         super.visit(gr);
         Expression sizeExpression = gr.getSize();
         if (!dynamic) {
-            dynamic =
-                    !(sizeExpression != null
-                                    && (sizeExpression instanceof Literal
-                                            || sizeExpression instanceof NilExpression))
-                            || hasDynamicGraphic(gr);
+            dynamic = !(sizeExpression != null
+                            && (sizeExpression instanceof Literal || sizeExpression instanceof NilExpression))
+                    || hasDynamicGraphic(gr);
         }
     }
 
@@ -190,16 +188,12 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
                             return true;
                         }
 
-                        Iterator<ExternalGraphicFactory> it =
-                                DynamicSymbolFactoryFinder.getExternalGraphicFactories();
+                        Iterator<ExternalGraphicFactory> it = DynamicSymbolFactoryFinder.getExternalGraphicFactories();
                         while (it.hasNext()) {
                             try {
                                 icon = it.next().getIcon(null, expanded, eg.getFormat(), 16);
                             } catch (Exception e) {
-                                LOGGER.log(
-                                        Level.FINE,
-                                        "Error occurred evaluating external graphic",
-                                        e);
+                                LOGGER.log(Level.FINE, "Error occurred evaluating external graphic", e);
                             }
                         }
 
@@ -210,10 +204,7 @@ class DynamicSizeStyleExtractor extends DuplicatingStyleVisitor {
                         }
                     }
                 } catch (MalformedURLException e) {
-                    LOGGER.log(
-                            Level.FINE,
-                            "Failed to check graphics for attribute embedded in the path " + eg,
-                            e);
+                    LOGGER.log(Level.FINE, "Failed to check graphics for attribute embedded in the path " + eg, e);
                 }
             }
         }

@@ -28,9 +28,9 @@ import org.geowebcache.filter.parameters.ParameterException;
 import org.geowebcache.filter.parameters.ParameterFilter;
 
 /**
- * ParameterFilter which allows the styles of the back end layer as legal values. Maintains a set of
- * allowed layers which are intersected with those available on the layer. The default specified by
- * the layer can be overridden and will be expended to its name rather than left null.
+ * ParameterFilter which allows the styles of the back end layer as legal values. Maintains a set of allowed layers
+ * which are intersected with those available on the layer. The default specified by the layer can be overridden and
+ * will be expended to its name rather than left null.
  *
  * @author Kevin Smith, OpenGeo
  */
@@ -68,8 +68,7 @@ public class StyleParameterFilter extends ParameterFilter {
             return false;
         }
         StyleParameterFilter s = (StyleParameterFilter) o;
-        return Objects.equals(getKey(), s.getKey())
-                && Objects.equals(allowedStyles, s.allowedStyles);
+        return Objects.equals(getKey(), s.getKey()) && Objects.equals(allowedStyles, s.allowedStyles);
     }
 
     @Override
@@ -107,10 +106,7 @@ public class StyleParameterFilter extends ParameterFilter {
             }
             // no match so fail
             throw new ParameterException(
-                    400,
-                    "InvalidParameterValue",
-                    "Style",
-                    String.format("Style '%s' is invalid.", str));
+                    400, "InvalidParameterValue", "Style", String.format("Style '%s' is invalid.", str));
         }
     }
 
@@ -122,9 +118,7 @@ public class StyleParameterFilter extends ParameterFilter {
     @Override
     public void setDefaultValue(String defaultValue) {
         if (defaultValue == null) defaultValue = "";
-        if (!defaultValue.isEmpty()
-                && availableStyles != null
-                && !availableStyles.contains(defaultValue)) {
+        if (!defaultValue.isEmpty() && availableStyles != null && !availableStyles.contains(defaultValue)) {
             LOGGER.log(
                     Level.WARNING,
                     "Selected default style "
@@ -136,9 +130,7 @@ public class StyleParameterFilter extends ParameterFilter {
         super.setDefaultValue(defaultValue);
     }
 
-    /**
-     * Returns the default style name, or an empty string if set to use the layer specified default
-     */
+    /** Returns the default style name, or an empty string if set to use the layer specified default */
     public String getRealDefault() {
         // Bypass the special processing this class normally does on the default value
         return super.getDefaultValue();
@@ -153,8 +145,7 @@ public class StyleParameterFilter extends ParameterFilter {
     @Override
     public StyleParameterFilter clone() {
         StyleParameterFilter clone = new StyleParameterFilter();
-        clone.setDefaultValue(
-                super.getDefaultValue()); // Want to get the configured value so use super
+        clone.setDefaultValue(super.getDefaultValue()); // Want to get the configured value so use super
         clone.setKey(getKey());
         clone.allowedStyles = getStyles();
         clone.availableStyles = availableStyles != null ? new TreeSet<>(availableStyles) : null;
@@ -230,8 +221,7 @@ public class StyleParameterFilter extends ParameterFilter {
     protected Object readResolve() {
         super.readResolve();
         Preconditions.checkState(
-                this.getKey().equalsIgnoreCase("STYLES"),
-                "StyleParameterFilter must have a key of \"STYLES\"");
+                this.getKey().equalsIgnoreCase("STYLES"), "StyleParameterFilter must have a key of \"STYLES\"");
         return this;
     }
 }

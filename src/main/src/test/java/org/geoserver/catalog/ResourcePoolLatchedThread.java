@@ -12,8 +12,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A thread holding both a latch to start a task and a latch to wait for the thread to complete.
- * Accepts a BiFunction where one of the parameter is the ResourceLoader and execute it.
+ * A thread holding both a latch to start a task and a latch to wait for the thread to complete. Accepts a BiFunction
+ * where one of the parameter is the ResourceLoader and execute it.
  *
  * @param <P> the Parameter type.
  * @param <R> the Result type.

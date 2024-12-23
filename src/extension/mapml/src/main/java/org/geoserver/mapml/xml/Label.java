@@ -38,7 +38,8 @@ import javax.xml.bind.annotation.XmlValue;
 @XmlRootElement(name = "map-label", namespace = "http://www.w3.org/1999/xhtml")
 public class Label {
 
-    @XmlValue protected String content;
+    @XmlValue
+    protected String content;
 
     @XmlAttribute(name = "for", required = true)
     @XmlSchemaType(name = "anySimpleType")

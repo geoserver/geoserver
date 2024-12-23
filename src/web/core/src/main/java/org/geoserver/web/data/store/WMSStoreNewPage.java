@@ -41,8 +41,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
 
             initUI(store);
 
-            final GeoServerEnvironment gsEnvironment =
-                    GeoServerExtensions.bean(GeoServerEnvironment.class);
+            final GeoServerEnvironment gsEnvironment = GeoServerExtensions.bean(GeoServerEnvironment.class);
 
             // AF: Disable Binding if GeoServer Env Parametrization is enabled!
             if (gsEnvironment == null || !GeoServerEnvironment.allowEnvParametrization()) {
@@ -54,8 +53,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
     }
 
     @Override
-    protected void onSave(WMSStoreInfo info, AjaxRequestTarget target)
-            throws IllegalArgumentException {
+    protected void onSave(WMSStoreInfo info, AjaxRequestTarget target) throws IllegalArgumentException {
         /*
          * Try saving a copy of it so if the process fails somehow the original "info" does not end
          * up with an id set
@@ -76,8 +74,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             getCatalog().save(savedStore);
         } catch (RuntimeException e) {
             LOGGER.log(Level.INFO, "Adding the store for " + info.getCapabilitiesURL(), e);
-            throw new IllegalArgumentException(
-                    "The WMS store could not be saved. Failure message: " + e.getMessage());
+            throw new IllegalArgumentException("The WMS store could not be saved. Failure message: " + e.getMessage());
         }
 
         // the StoreInfo save succeeded... try to present the list of coverages (well, _the_
@@ -87,10 +84,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
             // The ID is assigned by the catalog and therefore cannot be cloned
             layerChooserPage = new NewLayerPage(savedStore.getId());
         } catch (RuntimeException e) {
-            LOGGER.log(
-                    Level.INFO,
-                    "Getting list of layers for the WMS store " + info.getCapabilitiesURL(),
-                    e);
+            LOGGER.log(Level.INFO, "Getting list of layers for the WMS store " + info.getCapabilitiesURL(), e);
             // doh, can't present the list of coverages, means saving the StoreInfo is meaningless.
             try { // be extra cautious
                 getCatalog().remove(expandedStore);
@@ -123,8 +117,7 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 Map<String, Object> hints = new HashMap<>();
                 hints.put(DocumentHandler.DEFAULT_NAMESPACE_HINT_KEY, WMSSchema.getInstance());
                 hints.put(DocumentFactory.VALIDATION_HINT, Boolean.FALSE);
-                EntityResolverProvider provider =
-                        getCatalog().getResourcePool().getEntityResolverProvider();
+                EntityResolverProvider provider = getCatalog().getResourcePool().getEntityResolverProvider();
                 if (provider != null) {
                     EntityResolver entityResolver = provider.getEntityResolver();
                     if (entityResolver != null) {
@@ -135,10 +128,9 @@ public class WMSStoreNewPage extends AbstractWMSStorePage {
                 WebMapServer server = new WebMapServer(new URL(url), client, hints);
                 server.getCapabilities();
             } catch (IOException | ServiceException e) {
-                IValidationError err =
-                        new ValidationError("WMSCapabilitiesValidator.connectionFailure")
-                                .addKey("WMSCapabilitiesValidator.connectionFailure")
-                                .setVariable("error", e.getMessage());
+                IValidationError err = new ValidationError("WMSCapabilitiesValidator.connectionFailure")
+                        .addKey("WMSCapabilitiesValidator.connectionFailure")
+                        .setVariable("error", e.getMessage());
                 validatable.error(err);
             }
         }

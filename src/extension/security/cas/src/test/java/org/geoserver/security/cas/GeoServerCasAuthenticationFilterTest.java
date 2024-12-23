@@ -25,12 +25,7 @@ public class GeoServerCasAuthenticationFilterTest extends GeoServerSystemTestSup
             setSystemProperty("PROXY_BASE_URL", null);
 
             MockHttpServletRequest request =
-                    buildMockRequest(
-                            "http",
-                            "localhost",
-                            8080,
-                            "/geoserver",
-                            "/geoserver/myworkspace/wms?SERVICE=WMS");
+                    buildMockRequest("http", "localhost", 8080, "/geoserver", "/geoserver/myworkspace/wms?SERVICE=WMS");
 
             String serviceUrl = GeoServerCasAuthenticationFilter.retrieveService(request);
 
@@ -49,12 +44,7 @@ public class GeoServerCasAuthenticationFilterTest extends GeoServerSystemTestSup
             setSystemProperty("PROXY_BASE_URL", "https://example.com/geoserver");
 
             MockHttpServletRequest request =
-                    buildMockRequest(
-                            "http",
-                            "localhost",
-                            8080,
-                            "/geoserver",
-                            "/geoserver/myworkspace/wms?SERVICE=WMS");
+                    buildMockRequest("http", "localhost", 8080, "/geoserver", "/geoserver/myworkspace/wms?SERVICE=WMS");
 
             String serviceUrl = GeoServerCasAuthenticationFilter.retrieveService(request);
 
@@ -72,12 +62,7 @@ public class GeoServerCasAuthenticationFilterTest extends GeoServerSystemTestSup
             setProxyBase(geoServer, "https://example.com/geoserver");
 
             MockHttpServletRequest request =
-                    buildMockRequest(
-                            "http",
-                            "localhost",
-                            8080,
-                            "/geoserver",
-                            "/geoserver/myworkspace/wms?SERVICE=WMS");
+                    buildMockRequest("http", "localhost", 8080, "/geoserver", "/geoserver/myworkspace/wms?SERVICE=WMS");
 
             String serviceUrl = GeoServerCasAuthenticationFilter.retrieveService(request);
 
@@ -94,16 +79,10 @@ public class GeoServerCasAuthenticationFilterTest extends GeoServerSystemTestSup
             setProxyBase(geoServer, "https://${X-Forwarded-Host}/geoserver");
 
             MockHttpServletRequest request =
-                    buildMockRequest(
-                            "http",
-                            "localhost",
-                            8080,
-                            "/geoserver",
-                            "/geoserver/myworkspace/wms?SERVICE=WMS");
+                    buildMockRequest("http", "localhost", 8080, "/geoserver", "/geoserver/myworkspace/wms?SERVICE=WMS");
 
             // Add headers
-            request.addHeader(
-                    ProxifyingURLMangler.Headers.FORWARDED_HOST.asString(), "example.com");
+            request.addHeader(ProxifyingURLMangler.Headers.FORWARDED_HOST.asString(), "example.com");
             HTTPHeadersCollector filter = new HTTPHeadersCollector();
             filter.collectHeaders(request);
 

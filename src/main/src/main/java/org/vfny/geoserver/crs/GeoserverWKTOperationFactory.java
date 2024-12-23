@@ -18,8 +18,7 @@ import org.geotools.util.URLs;
 import org.geotools.util.factory.Hints;
 
 /**
- * Authority allowing users to define their own CoordinateOperations in a separate file. Will
- * override EPSG definitions.
+ * Authority allowing users to define their own CoordinateOperations in a separate file. Will override EPSG definitions.
  *
  * @author Oscar Fonts
  */
@@ -54,10 +53,9 @@ public class GeoserverWKTOperationFactory extends CoordinateOperationFactoryUsin
                     LOGGER.log(Level.SEVERE, "Had troubles converting file name to URL");
                 }
             } else {
-                LOGGER.info(
-                        definition.path()
-                                + " was not found, using the default set of "
-                                + "coordinate operation overrides (normally empty)");
+                LOGGER.info(definition.path()
+                        + " was not found, using the default set of "
+                        + "coordinate operation overrides (normally empty)");
             }
         }
         return GeoserverOverridingWKTFactory.class.getResource(FILENAME);

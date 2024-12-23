@@ -29,8 +29,7 @@ public class DataDirectoryLoaderConfiguration {
 
     @Bean
     public ModuleStatusImpl moduleStatus() {
-        ModuleStatusImpl module =
-                new ModuleStatusImpl("gs-datadir-catalog-loader", "DataDirectory loader");
+        ModuleStatusImpl module = new ModuleStatusImpl("gs-datadir-catalog-loader", "DataDirectory loader");
         module.setAvailable(true);
         module.setEnabled(true);
         return module;

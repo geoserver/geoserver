@@ -16,15 +16,7 @@ public class NodePanel extends Panel {
     public NodePanel(String id, final JMSConfiguration configuration) {
         super(id);
 
-        add(
-                new Label(
-                        "instance",
-                        (String)
-                                configuration.getConfiguration(
-                                        JMSConfiguration.INSTANCE_NAME_KEY)));
-        add(
-                new Label(
-                        "group",
-                        (String) configuration.getConfiguration(JMSConfiguration.GROUP_KEY)));
+        add(new Label("instance", (String) configuration.getConfiguration(JMSConfiguration.INSTANCE_NAME_KEY)));
+        add(new Label("group", (String) configuration.getConfiguration(JMSConfiguration.GROUP_KEY)));
     }
 }

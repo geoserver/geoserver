@@ -23,13 +23,11 @@ public class ModuleStatusTest {
         } else {
             expect = Boolean.FALSE;
         }
-        try (ClassPathXmlApplicationContext context =
-                new ClassPathXmlApplicationContext("applicationContext.xml")) {
+        try (ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml")) {
 
-            Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-mysql"))
-                            .findFirst();
+            Optional<ModuleStatus> status = GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
+                    .filter(s -> s.getModule().equalsIgnoreCase("gs-mysql"))
+                    .findFirst();
             assertEquals(expect, status.isPresent());
         }
     }

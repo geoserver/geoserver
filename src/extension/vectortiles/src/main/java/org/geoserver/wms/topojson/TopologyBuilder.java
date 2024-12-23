@@ -105,12 +105,11 @@ public class TopologyBuilder implements VectorTileBuilder {
         Topology topology = new Topology(screenToWorld, arcs, layers);
 
         final int threshold = 8096;
-        try (DeferredFileOutputStream out =
-                        DeferredFileOutputStream.builder()
-                                .setThreshold(threshold)
-                                .setPrefix("topology")
-                                .setSuffix(".topojson")
-                                .get();
+        try (DeferredFileOutputStream out = DeferredFileOutputStream.builder()
+                        .setThreshold(threshold)
+                        .setPrefix("topology")
+                        .setSuffix(".topojson")
+                        .get();
                 Writer writer = new OutputStreamWriter(out, Charsets.UTF_8)) {
             TopoJSONEncoder encoder = new TopoJSONEncoder();
 

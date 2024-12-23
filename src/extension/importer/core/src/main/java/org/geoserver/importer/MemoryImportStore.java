@@ -64,14 +64,12 @@ public class MemoryImportStore implements ImportStore {
 
     void clearCompletedImports() {
         LOGGER.log(Level.FINE, "Clearing all completed imports from storage");
-        List<ImportContext> completed =
-                collect(
-                        new ImportCollector() {
-                            @Override
-                            protected boolean capture(ImportContext context) {
-                                return context.getState() == ImportContext.State.COMPLETE;
-                            }
-                        });
+        List<ImportContext> completed = collect(new ImportCollector() {
+            @Override
+            protected boolean capture(ImportContext context) {
+                return context.getState() == ImportContext.State.COMPLETE;
+            }
+        });
         imports.removeAll(completed);
     }
 
@@ -109,25 +107,23 @@ public class MemoryImportStore implements ImportStore {
 
     @Override
     public Iterator<ImportContext> allNonCompleteImports() {
-        return collect(
-                        new ImportCollector() {
-                            @Override
-                            protected boolean capture(ImportContext context) {
-                                return context.getState() != ImportContext.State.COMPLETE;
-                            }
-                        })
+        return collect(new ImportCollector() {
+                    @Override
+                    protected boolean capture(ImportContext context) {
+                        return context.getState() != ImportContext.State.COMPLETE;
+                    }
+                })
                 .iterator();
     }
 
     @Override
     public Iterator<ImportContext> importsByUser(final String user) {
-        return collect(
-                        new ImportCollector() {
-                            @Override
-                            protected boolean capture(ImportContext context) {
-                                return user.equals(context.getUser());
-                            }
-                        })
+        return collect(new ImportCollector() {
+                    @Override
+                    protected boolean capture(ImportContext context) {
+                        return user.equals(context.getUser());
+                    }
+                })
                 .iterator();
     }
 

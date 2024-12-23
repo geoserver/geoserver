@@ -57,44 +57,36 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
     @Test
     public void testElevationList() throws Exception {
         Catalog catalog = getCatalog();
-        ResourceInfo layerMeta = catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
         assertTrue(layerMeta instanceof FeatureTypeInfo);
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) layerMeta;
         // layer has no dimension yet
         assertNull(typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class));
-        setupVectorDimension(
-                ResourceInfo.ELEVATION,
-                "elevation",
-                DimensionPresentation.LIST,
-                null,
-                UNITS,
-                UNIT_SYMBOL);
+        setupVectorDimension(ResourceInfo.ELEVATION, "elevation", DimensionPresentation.LIST, null, UNITS, UNIT_SYMBOL);
 
         // re-query the catalog for the updated info
-        typeInfo =
-                (FeatureTypeInfo)
-                        catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
+        typeInfo = (FeatureTypeInfo)
+                catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
         // get the diminsion info fromt the metadata map
-        DimensionInfo elevationInfo =
-                typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
+        DimensionInfo elevationInfo = typeInfo.getMetadata().get(ResourceInfo.ELEVATION, DimensionInfo.class);
         // prove it's enabled, but not yet known to mapml
         assertTrue(elevationInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path =
-                "wms?LAYERS="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&STYLES=&FORMAT="
-                        + MapMLConstants.MAPML_MIME_TYPE
-                        + "&SERVICE=WMS&VERSION=1.3.0"
-                        + "&REQUEST=GetMap"
-                        + "&SRS=EPSG:3857"
-                        + "&BBOX=0,0,1,1"
-                        + "&WIDTH=150"
-                        + "&HEIGHT=150"
-                        + "&format_options="
-                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":image/png";
+        String path = "wms?LAYERS="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_MIME_TYPE
+                + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=EPSG:3857"
+                + "&BBOX=0,0,1,1"
+                + "&WIDTH=150"
+                + "&HEIGHT=150"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                + ":image/png";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -122,49 +114,44 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         vars = parseQuery(url);
         assertTrue(vars.get("elevation").equalsIgnoreCase("{elevation}"));
 
+        assertXpathEvaluatesTo("1", "count(//html:map-select[@name='elevation'][@id='elevation'])", doc);
         assertXpathEvaluatesTo(
-                "1", "count(//html:map-select[@name='elevation'][@id='elevation'])", doc);
-        assertXpathEvaluatesTo(
-                "4",
-                "count(//html:map-select[@name='elevation'][@id='elevation']/html:map-option)",
-                doc);
+                "4", "count(//html:map-select[@name='elevation'][@id='elevation']/html:map-option)", doc);
     }
 
     @Test
     public void testTimeList() throws Exception {
         Catalog catalog = getCatalog();
-        ResourceInfo layerMeta = catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
+        ResourceInfo layerMeta =
+                catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
         assertTrue(layerMeta instanceof FeatureTypeInfo);
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) layerMeta;
         // layer has no dimension yet
         assertNull(typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class));
-        setupVectorDimension(
-                ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
+        setupVectorDimension(ResourceInfo.TIME, "time", DimensionPresentation.LIST, null, null, null);
 
         // re-query the catalog for the updated info
-        typeInfo =
-                (FeatureTypeInfo)
-                        catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
+        typeInfo = (FeatureTypeInfo)
+                catalog.getLayerByName(getLayerId(V_TIME_ELEVATION)).getResource();
         // get the diminsion info fromt the metadata map
         DimensionInfo timeInfo = typeInfo.getMetadata().get(ResourceInfo.TIME, DimensionInfo.class);
         // prove it's enabled, but not yet known to mapml
         assertTrue(timeInfo.isEnabled());
 
         // get the mapml doc for the layer
-        String path =
-                "wms?LAYERS="
-                        + getLayerId(V_TIME_ELEVATION)
-                        + "&STYLES=&FORMAT="
-                        + MapMLConstants.MAPML_MIME_TYPE
-                        + "&SERVICE=WMS&VERSION=1.3.0"
-                        + "&REQUEST=GetMap"
-                        + "&SRS=EPSG:3857"
-                        + "&BBOX=0,0,1,1"
-                        + "&WIDTH=150"
-                        + "&HEIGHT=150"
-                        + "&format_options="
-                        + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                        + ":image/png";
+        String path = "wms?LAYERS="
+                + getLayerId(V_TIME_ELEVATION)
+                + "&STYLES=&FORMAT="
+                + MapMLConstants.MAPML_MIME_TYPE
+                + "&SERVICE=WMS&VERSION=1.3.0"
+                + "&REQUEST=GetMap"
+                + "&SRS=EPSG:3857"
+                + "&BBOX=0,0,1,1"
+                + "&WIDTH=150"
+                + "&HEIGHT=150"
+                + "&format_options="
+                + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
+                + ":image/png";
         org.w3c.dom.Document doc = getMapML(path);
         // assure us it's actually working as a document
         assertXpathEvaluatesTo("1", "count(//html:map-link[@rel='image'][@tref])", doc);
@@ -193,8 +180,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
         assertTrue(vars.get("time").equalsIgnoreCase("{time}"));
 
         assertXpathEvaluatesTo("1", "count(//html:map-select[@name='time'][@id='time'])", doc);
-        assertXpathEvaluatesTo(
-                "4", "count(//html:map-select[@name='time'][@id='time']/html:map-option)", doc);
+        assertXpathEvaluatesTo("4", "count(//html:map-select[@name='time'][@id='time']/html:map-option)", doc);
     }
 
     /**
@@ -204,8 +190,7 @@ public class MapMLDimensionsTest extends WMSDimensionsTestSupport {
      * @param query A map representing kvp to be used by the request.
      * @return A result of the request parsed into a dom.
      */
-    protected org.w3c.dom.Document getMapML(final String path, HashMap<String, String> query)
-            throws Exception {
+    protected org.w3c.dom.Document getMapML(final String path, HashMap<String, String> query) throws Exception {
         MockHttpServletRequest request = createRequest(path, query);
         request.addHeader("Accept", "text/mapml");
         request.setMethod("GET");

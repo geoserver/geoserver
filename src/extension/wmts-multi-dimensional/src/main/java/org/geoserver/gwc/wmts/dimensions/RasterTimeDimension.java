@@ -20,12 +20,7 @@ import org.geotools.feature.FeatureCollection;
 public class RasterTimeDimension extends RasterDimension {
 
     public RasterTimeDimension(WMS wms, LayerInfo layerInfo, DimensionInfo dimensionInfo) {
-        super(
-                wms,
-                ResourceInfo.TIME,
-                layerInfo,
-                dimensionInfo,
-                CoverageDimensionsReader.DataType.TEMPORAL);
+        super(wms, ResourceInfo.TIME, layerInfo, dimensionInfo, CoverageDimensionsReader.DataType.TEMPORAL);
     }
 
     @Override
@@ -40,14 +35,9 @@ public class RasterTimeDimension extends RasterDimension {
 
     @Override
     protected FeatureCollection getDomain(Query query) {
-        CoverageDimensionsReader reader =
-                CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
-        Tuple<String, FeatureCollection> values =
-                reader.getValues(
-                        this.dimensionName,
-                        query,
-                        CoverageDimensionsReader.DataType.TEMPORAL,
-                        SortOrder.ASCENDING);
+        CoverageDimensionsReader reader = CoverageDimensionsReader.instantiateFrom((CoverageInfo) resourceInfo);
+        Tuple<String, FeatureCollection> values = reader.getValues(
+                this.dimensionName, query, CoverageDimensionsReader.DataType.TEMPORAL, SortOrder.ASCENDING);
 
         return values.second;
     }

@@ -34,9 +34,7 @@ public class JDBCConfigPropertiesFactoryBean extends JDBCLoaderPropertiesFactory
         "initdb.postgres.sql"
     };
 
-    private static final String[] SAMPLE_CONFIGS = {
-        "jdbcconfig.properties.h2", "jdbcconfig.properties.postgres"
-    };
+    private static final String[] SAMPLE_CONFIGS = {"jdbcconfig.properties.h2", "jdbcconfig.properties.postgres"};
 
     public JDBCConfigPropertiesFactoryBean(ResourceStore resourceStore) {
         super(resourceStore, PREFIX);
@@ -78,12 +76,8 @@ public class JDBCConfigPropertiesFactoryBean extends JDBCLoaderPropertiesFactory
     public void saveConfiguration(GeoServerResourceLoader resourceLoader) throws IOException {
         final Resource baseDirectory = getBaseDir();
         for (Resource jdbcConfig : getFileLocations()) {
-            Resource targetDir =
-                    Files.asResource(
-                            resourceLoader.findOrCreateDirectory(
-                                    Paths.convert(
-                                            baseDirectory.parent().dir(),
-                                            jdbcConfig.parent().dir())));
+            Resource targetDir = Files.asResource(resourceLoader.findOrCreateDirectory(Paths.convert(
+                    baseDirectory.parent().dir(), jdbcConfig.parent().dir())));
 
             Resources.copy(jdbcConfig.file(), targetDir);
         }

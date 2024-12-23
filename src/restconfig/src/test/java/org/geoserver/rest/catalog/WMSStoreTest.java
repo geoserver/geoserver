@@ -47,7 +47,9 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
 public class WMSStoreTest extends CatalogRESTTestSupport {
-    @ClassRule public static TestHttpClientRule clientMocker = new TestHttpClientRule();
+    @ClassRule
+    public static TestHttpClientRule clientMocker = new TestHttpClientRule();
+
     private static String capabilities;
 
     @Override
@@ -67,13 +69,10 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
 
     @BeforeClass
     public static void mockServer() throws Exception {
-        capabilities =
-                clientMocker.getServer()
-                        + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
+        capabilities = clientMocker.getServer() + "/geoserver/wms?REQUEST=GetCapabilities&VERSION=1.3.0&SERVICE=WMS";
         MockHttpClient client = new MockHttpClient();
         client.expectGet(
-                new URL(capabilities),
-                new MockHttpResponse(WMSStoreTest.class.getResource("caps130.xml"), "text/xml"));
+                new URL(capabilities), new MockHttpResponse(WMSStoreTest.class.getResource("caps130.xml"), "text/xml"));
         clientMocker.bind(client, capabilities);
     }
 
@@ -102,11 +101,10 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         assertNotNull(stores);
 
         if (stores instanceof JSONArray) {
-            assertEquals(
-                    catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size(),
-                    ((JSONArray) stores).size());
+            assertEquals(catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size(), ((JSONArray) stores).size());
         } else {
-            assertEquals(1, catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size());
+            assertEquals(
+                    1, catalog.getStoresByWorkspace("sf", WMSStoreInfo.class).size());
         }
     }
 
@@ -158,8 +156,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         List<WMSLayerInfo> resources = catalog.getResourcesByStore(store, WMSLayerInfo.class);
         assertThat(resources, not(empty()));
 
-        Document dom =
-                getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo.html");
+        Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo.html");
 
         WMSStoreInfo wms = catalog.getStoreByName("demo", WMSStoreInfo.class);
 
@@ -182,8 +179,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         String ws = "sf";
         String wms = "sfssssss";
         // Request path
-        String requestPath =
-                RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/wmsstores/" + wms + ".html";
+        String requestPath = RestBaseController.ROOT_PATH + "/workspaces/" + ws + "/wmsstores/" + wms + ".html";
         // Exception path
         String exception = "No such wms store: " + ws + "," + wms;
         // First request should thrown an exception
@@ -201,19 +197,16 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     @Test
     public void testPostAsXML() throws Exception {
 
-        String xml =
-                "<wmsStore>"
-                        + "<name>newWMSStore</name>"
-                        + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
-                        + "<workspace>sf</workspace>"
-                        + "</wmsStore>";
+        String xml = "<wmsStore>"
+                + "<name>newWMSStore</name>"
+                + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
+                + "<workspace>sf</workspace>"
+                + "</wmsStore>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
-        assertThat(
-                response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")));
+        assertThat(response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")));
 
         WMSStoreInfo newStore = catalog.getStoreByName("newWMSStore", WMSStoreInfo.class);
         assertNotNull(newStore);
@@ -224,18 +217,15 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     @Test
     public void testPostAsXMLNoWorkspace() throws Exception {
 
-        String xml =
-                "<wmsStore>"
-                        + "<name>newWMSStore</name>"
-                        + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
-                        + "</wmsStore>";
+        String xml = "<wmsStore>"
+                + "<name>newWMSStore</name>"
+                + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
+                + "</wmsStore>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
-        assertThat(
-                response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")));
+        assertThat(response, hasHeader("Location", endsWith("/workspaces/sf/wmsstores/newWMSStore")));
 
         WMSStoreInfo newStore = catalog.getStoreByName("newWMSStore", WMSStoreInfo.class);
         assertNotNull(newStore);
@@ -258,18 +248,14 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     @Test
     public void testPostAsJSON() throws Exception {
         removeStore("sf", "newWMSStore");
-        String json =
-                "{'wmsStore':{"
-                        + "'capabilitiesURL': 'http://somehost/wms?',"
-                        + "'workspace':'sf',"
-                        + "'name':'newWMSStore',"
-                        + "}"
-                        + "}";
+        String json = "{'wmsStore':{"
+                + "'capabilitiesURL': 'http://somehost/wms?',"
+                + "'workspace':'sf',"
+                + "'name':'newWMSStore',"
+                + "}"
+                + "}";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores",
-                        json,
-                        "text/json");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", json, "text/json");
 
         assertEquals(201, response.getStatus());
         assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
@@ -284,14 +270,10 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostToResource() throws Exception {
-        String xml =
-                "<wmsStore>" + "<name>demo</name>" + "<enabled>false</enabled>" + "</wmsStore>";
+        String xml = "<wmsStore>" + "<name>demo</name>" + "<enabled>false</enabled>" + "</wmsStore>";
 
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo",
-                        xml,
-                        "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
         assertEquals(405, response.getStatus());
     }
 
@@ -300,14 +282,10 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         Document dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo.xml");
         assertXpathEvaluatesTo("true", "/wmsStore/enabled", dom);
 
-        String xml =
-                "<wmsStore>" + "<name>demo</name>" + "<enabled>false</enabled>" + "</wmsStore>";
+        String xml = "<wmsStore>" + "<name>demo</name>" + "<enabled>false</enabled>" + "</wmsStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo",
-                        xml,
-                        "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         dom = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo.xml");
@@ -330,10 +308,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         String xml = "<wmsStore>" + "<name>demo</name>" + "</wmsStore>";
 
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo",
-                        xml,
-                        "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
         assertEquals(200, response.getStatus());
 
         wsi = catalog.getStoreByName("sf", "demo", WMSStoreInfo.class);
@@ -349,11 +324,8 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     public void testPutNonExistant() throws Exception {
         String xml = "<wmsStore>" + "<name>changed</name>" + "</wmsStore>";
 
-        MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/nonExistant",
-                        xml,
-                        "text/xml");
+        MockHttpServletResponse response = putAsServletResponse(
+                RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/nonExistant", xml, "text/xml");
         assertEquals(404, response.getStatus());
     }
 
@@ -361,9 +333,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     public void testDeleteNonExistant() throws Exception {
         assertEquals(
                 404,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/datastores/nonExistant")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/datastores/nonExistant")
                         .getStatus());
     }
 
@@ -375,9 +345,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
 
         assertEquals(
                 200,
-                deleteAsServletResponse(
-                                RestBaseController.ROOT_PATH
-                                        + "/workspaces/sf/wmsstores/newWMSStore")
+                deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/newWMSStore")
                         .getStatus());
         assertNull(catalog.getStoreByName("sf", "newWMSStore", WMSStoreInfo.class));
     }
@@ -392,10 +360,7 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
         String xml = "<wmsStore>" + "<name>newName</name>" + "</wmsStore>";
         assertEquals(
                 403,
-                putAsServletResponse(
-                                RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo",
-                                xml,
-                                "text/xml")
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml")
                         .getStatus());
     }
 
@@ -403,26 +368,21 @@ public class WMSStoreTest extends CatalogRESTTestSupport {
     public void testPutWorkspaceChangeForbidden() throws Exception {
         String xml = "<wmsStore>" + "<workspace>gs</workspace>" + "</wmsStore>";
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo",
-                        xml,
-                        "text/xml");
+                putAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores/demo", xml, "text/xml");
         assertThat(response, hasStatus(HttpStatus.FORBIDDEN));
     }
 
     @Test
     public void testPostWithDisableOnConnFailure() throws Exception {
 
-        String xml =
-                "<wmsStore>"
-                        + "<name>autodisableWMSStore</name>"
-                        + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
-                        + "<workspace>sf</workspace>"
-                        + "<disableOnConnFailure>true</disableOnConnFailure>"
-                        + "</wmsStore>";
+        String xml = "<wmsStore>"
+                + "<name>autodisableWMSStore</name>"
+                + "<capabilitiesURL>http://somehost/wms?</capabilitiesURL>"
+                + "<workspace>sf</workspace>"
+                + "<disableOnConnFailure>true</disableOnConnFailure>"
+                + "</wmsStore>";
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
+                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/sf/wmsstores", xml, "text/xml");
 
         assertThat(response, hasStatus(HttpStatus.CREATED));
         WMSStoreInfo newStore = catalog.getStoreByName("autodisableWMSStore", WMSStoreInfo.class);

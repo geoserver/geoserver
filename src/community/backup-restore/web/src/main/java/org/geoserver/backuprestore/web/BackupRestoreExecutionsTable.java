@@ -18,23 +18,18 @@ import org.geoserver.web.wicket.SimpleBookmarkableLink;
 import org.ocpsoft.pretty.time.PrettyTime;
 
 /** @author Alessio Fabiani, GeoSolutions */
-public class BackupRestoreExecutionsTable<T extends AbstractExecutionAdapter>
-        extends GeoServerTablePanel<T> {
+public class BackupRestoreExecutionsTable<T extends AbstractExecutionAdapter> extends GeoServerTablePanel<T> {
 
     static PrettyTime PRETTY_TIME = new PrettyTime();
     private Class<T> clazz;
 
-    public BackupRestoreExecutionsTable(
-            String id, BackupRestoreExecutionsProvider dataProvider, Class<T> clazz) {
+    public BackupRestoreExecutionsTable(String id, BackupRestoreExecutionsProvider dataProvider, Class<T> clazz) {
         super(id, (GeoServerDataProvider<T>) dataProvider);
         this.clazz = clazz;
     }
 
     public BackupRestoreExecutionsTable(
-            String id,
-            BackupRestoreExecutionsProvider dataProvider,
-            boolean selectable,
-            Class<T> clazz) {
+            String id, BackupRestoreExecutionsProvider dataProvider, boolean selectable, Class<T> clazz) {
         super(id, (GeoServerDataProvider<T>) dataProvider, selectable);
         this.clazz = clazz;
     }
@@ -50,8 +45,7 @@ public class BackupRestoreExecutionsTable<T extends AbstractExecutionAdapter>
             pp.add("id", property.getModel(itemModel).getObject());
             pp.add("clazz", getType().getSimpleName());
 
-            return new SimpleBookmarkableLink(
-                    id, BackupRestorePage.class, property.getModel(itemModel), pp);
+            return new SimpleBookmarkableLink(id, BackupRestorePage.class, property.getModel(itemModel), pp);
         } else if (BackupRestoreExecutionsProvider.STARTED == property) {
             Date date = (Date) property.getModel(itemModel).getObject();
             String pretty = PRETTY_TIME.format(date);

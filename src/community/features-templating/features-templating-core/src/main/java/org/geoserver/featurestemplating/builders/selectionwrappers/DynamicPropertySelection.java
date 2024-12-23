@@ -15,32 +15,26 @@ import org.geoserver.featurestemplating.writers.TemplateOutputWriter;
 public class DynamicPropertySelection extends PropertySelectionWrapper {
 
     public DynamicPropertySelection(
-            DynamicValueBuilder templateBuilder,
-            PropertySelectionHandler propertySelectionHandler) {
+            DynamicValueBuilder templateBuilder, PropertySelectionHandler propertySelectionHandler) {
         super(templateBuilder, propertySelectionHandler);
     }
 
     @Override
     protected AbstractTemplateBuilder retypeBuilder(AbstractTemplateBuilder templateBuilder) {
-        DynamicValueBuilder dynamic =
-                new DynamicValueBuilder((DynamicValueBuilder) templateBuilder, true) {
-                    @Override
-                    protected void writeValue(
-                            String name,
-                            TemplateOutputWriter writer,
-                            Object value,
-                            TemplateBuilderContext context)
-                            throws IOException {
-                        value = pruneJsonNodeIfNeeded(context, value);
-                        super.writeValue(name, writer, value, context);
-                    }
+        DynamicValueBuilder dynamic = new DynamicValueBuilder((DynamicValueBuilder) templateBuilder, true) {
+            @Override
+            protected void writeValue(
+                    String name, TemplateOutputWriter writer, Object value, TemplateBuilderContext context)
+                    throws IOException {
+                value = pruneJsonNodeIfNeeded(context, value);
+                super.writeValue(name, writer, value, context);
+            }
 
-                    @Override
-                    public boolean canWrite(TemplateBuilderContext context) {
-                        return DynamicPropertySelection.this.canWrite(context)
-                                && super.canWrite(context);
-                    }
-                };
+            @Override
+            public boolean canWrite(TemplateBuilderContext context) {
+                return DynamicPropertySelection.this.canWrite(context) && super.canWrite(context);
+            }
+        };
         return dynamic;
     }
 }

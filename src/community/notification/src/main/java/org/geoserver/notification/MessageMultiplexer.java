@@ -29,17 +29,17 @@ public class MessageMultiplexer implements Runnable {
     }
 
     public MessageMultiplexer(NotificationConfiguration notifierConfig) {
-        mainQueue = new ArrayBlockingQueue<Notification>(notifierConfig.getQueueSize().intValue());
+        mainQueue = new ArrayBlockingQueue<Notification>(
+                notifierConfig.getQueueSize().intValue());
         messageProcessors =
                 new ArrayList<MessageProcessor>(notifierConfig.getNotificators().size());
         // Create destination queue, and thread pools one for each processor
         for (Notificator notificator : notifierConfig.getNotificators()) {
-            messageProcessors.add(
-                    new MessageProcessor(
-                            notificator.getQueueSize().intValue(),
-                            notificator.getProcessorThreads().intValue(),
-                            notificator.getMessageFilter(),
-                            notificator.getGenericProcessor()));
+            messageProcessors.add(new MessageProcessor(
+                    notificator.getQueueSize().intValue(),
+                    notificator.getProcessorThreads().intValue(),
+                    notificator.getMessageFilter(),
+                    notificator.getGenericProcessor()));
         }
     }
 

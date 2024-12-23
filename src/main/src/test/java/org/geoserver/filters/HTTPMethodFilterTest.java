@@ -76,28 +76,25 @@ public class HTTPMethodFilterTest {
         assertEquals(405, response.getStatus());
     }
 
-    private MockHttpServletResponse getResponseByMethod(String method)
-            throws ServletException, IOException {
-        MockHttpServletRequest request =
-                new MockHttpServletRequest(method, "http://www.geoserver.org");
+    private MockHttpServletResponse getResponseByMethod(String method) throws ServletException, IOException {
+        MockHttpServletRequest request = new MockHttpServletRequest(method, "http://www.geoserver.org");
         MockHttpServletResponse response = new MockHttpServletResponse();
         response.setContentType("text/plain");
 
         // run the filter
         HTTPMethodFilter filter = new HTTPMethodFilter();
-        MockFilterChain chain =
-                new MockFilterChain() {
-                    @Override
-                    @SuppressWarnings("PMD.CloseResource")
-                    public void doFilter(ServletRequest request, ServletResponse response)
-                            throws IOException, ServletException {
-                        ServletOutputStream os = response.getOutputStream();
-                        os.print("Some random text");
-                        os.close();
-                        // ka-blam! (or not?)
-                        os.flush();
-                    }
-                };
+        MockFilterChain chain = new MockFilterChain() {
+            @Override
+            @SuppressWarnings("PMD.CloseResource")
+            public void doFilter(ServletRequest request, ServletResponse response)
+                    throws IOException, ServletException {
+                ServletOutputStream os = response.getOutputStream();
+                os.print("Some random text");
+                os.close();
+                // ka-blam! (or not?)
+                os.flush();
+            }
+        };
         filter.doFilter(request, response, chain);
         return response;
     }

@@ -30,26 +30,24 @@ public class XStreamUtil {
     private XStreamUtil() {}
 
     public static XStream xs() {
-        final SecureXStream xs =
-                new SecureXStream(new PureJavaReflectionProvider()) {
-                    @Override
-                    protected MapperWrapper wrapMapper(final MapperWrapper next) {
-                        return new HibernateMapper(next);
-                    }
-                };
-        xs.allowTypes(
-                new Class[] {
-                    ConfigurationImpl.class,
-                    BatchImpl.class,
-                    TaskImpl.class,
-                    AttributeImpl.class,
-                    BatchElementImpl.class,
-                    ParameterImpl.class,
-                    PersistentCollection.class,
-                    PersistentMap.class,
-                    PersistentSortedMap.class,
-                    PersistentSortedSet.class
-                });
+        final SecureXStream xs = new SecureXStream(new PureJavaReflectionProvider()) {
+            @Override
+            protected MapperWrapper wrapMapper(final MapperWrapper next) {
+                return new HibernateMapper(next);
+            }
+        };
+        xs.allowTypes(new Class[] {
+            ConfigurationImpl.class,
+            BatchImpl.class,
+            TaskImpl.class,
+            AttributeImpl.class,
+            BatchElementImpl.class,
+            ParameterImpl.class,
+            PersistentCollection.class,
+            PersistentMap.class,
+            PersistentSortedMap.class,
+            PersistentSortedSet.class
+        });
 
         xs.autodetectAnnotations(true);
         xs.registerConverter(new HibernateProxyConverter());

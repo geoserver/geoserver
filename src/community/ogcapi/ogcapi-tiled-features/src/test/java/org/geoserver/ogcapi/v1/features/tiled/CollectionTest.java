@@ -27,11 +27,7 @@ public class CollectionTest extends TiledFeaturesTestSupport {
 
         // check the tiles link has been added
         assertThat(
-                readSingle(
-                        json,
-                        "links[?(@.rel=='"
-                                + REL_TILESETS_VECTOR
-                                + "' && @.type=='application/json')].href"),
+                readSingle(json, "links[?(@.rel=='" + REL_TILESETS_VECTOR + "' && @.type=='application/json')].href"),
                 equalTo(
                         "http://localhost:8080/geoserver/ogc/features/v1/collections/cite:RoadSegments/tiles?f=application%2Fjson"));
     }

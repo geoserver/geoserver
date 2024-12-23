@@ -69,9 +69,7 @@ public class JAIEXTInfoImpl implements JAIEXTInfo {
 
     private static void populateOperations(Set<String> jaiExtOp) {
         List<OperationItem> jaiextOps =
-                ImageWorker.isJaiExtEnabled()
-                        ? JAIExt.getJAIEXTOperations()
-                        : JAIExt.getJAIOperations();
+                ImageWorker.isJaiExtEnabled() ? JAIExt.getJAIEXTOperations() : JAIExt.getJAIOperations();
         for (OperationItem item : jaiextOps) {
             String name = item.getName();
             if (name.equalsIgnoreCase("algebric")

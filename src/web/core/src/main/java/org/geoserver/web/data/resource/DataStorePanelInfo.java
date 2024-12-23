@@ -11,8 +11,8 @@ import org.geotools.api.coverage.grid.Format;
 import org.geotools.api.data.DataAccessFactory;
 
 /**
- * Used to declare a data store panel information and its icon. Both are optional, you can specify
- * the configuration panel but not the icon, or the opposite.
+ * Used to declare a data store panel information and its icon. Both are optional, you can specify the configuration
+ * panel but not the icon, or the opposite.
  *
  * @author aaime
  */
@@ -36,10 +36,7 @@ public class DataStorePanelInfo extends ComponentInfo<StoreEditPanel> {
         return iconBase;
     }
 
-    /**
-     * Used as the reference class to locate the datastore icon (since the component might not be
-     * there)
-     */
+    /** Used as the reference class to locate the datastore icon (since the component might not be there) */
     public void setIconBase(Class<?> iconBase) {
         this.iconBase = iconBase;
     }

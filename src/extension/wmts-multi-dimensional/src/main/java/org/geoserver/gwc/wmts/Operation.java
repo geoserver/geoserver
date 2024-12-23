@@ -17,8 +17,7 @@ enum Operation {
     GET_FEATURE;
 
     /**
-     * If the requested operation matches a supported operation we return a conveyor for it
-     * otherwise we return NULL.
+     * If the requested operation matches a supported operation we return a conveyor for it otherwise we return NULL.
      *
      * @param operationName name of the operation to match, maybe NULL
      * @param request received HTTP request
@@ -40,17 +39,13 @@ enum Operation {
         }
         switch (operationName.toUpperCase()) {
             case "DESCRIBEDOMAINS":
-                return new SimpleConveyor(
-                        Operation.DESCRIBE_DOMAINS, request, response, storageBroker, parameters);
+                return new SimpleConveyor(Operation.DESCRIBE_DOMAINS, request, response, storageBroker, parameters);
             case "GETDOMAINVALUES":
-                return new SimpleConveyor(
-                        Operation.GET_DOMAIN_VALUES, request, response, storageBroker, parameters);
+                return new SimpleConveyor(Operation.GET_DOMAIN_VALUES, request, response, storageBroker, parameters);
             case "GETHISTOGRAM":
-                return new SimpleConveyor(
-                        Operation.GET_HISTOGRAM, request, response, storageBroker, parameters);
+                return new SimpleConveyor(Operation.GET_HISTOGRAM, request, response, storageBroker, parameters);
             case "GETFEATURE":
-                return new SimpleConveyor(
-                        Operation.GET_FEATURE, request, response, storageBroker, parameters);
+                return new SimpleConveyor(Operation.GET_FEATURE, request, response, storageBroker, parameters);
             default:
                 // operation not supported
                 return null;

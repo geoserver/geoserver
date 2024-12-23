@@ -23,7 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
 
-    @Autowired CustomNativeMappingService cnmService;
+    @Autowired
+    CustomNativeMappingService cnmService;
 
     @After
     public void after() throws Exception {
@@ -35,11 +36,8 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Serializable> underlying =
-                (HashMap<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        HashMap<String, Serializable> underlying = (HashMap<String, Serializable>)
+                layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
         map.get(String.class, "refsystem-as-list", 0).setValue("foo");
@@ -109,11 +107,8 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Serializable> underlying =
-                (HashMap<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        HashMap<String, Serializable> underlying = (HashMap<String, Serializable>)
+                layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         underlying.clear();
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
@@ -126,10 +121,7 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         layer.getResource().getKeywords().add(new Keyword("KEY_Vlaanderen"));
         layer.getResource().getKeywords().get(3).setVocabulary("VOCABULARY_B");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());
-        layer.getResource()
-                .getMetadataLinks()
-                .get(0)
-                .setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
+        layer.getResource().getMetadataLinks().get(0).setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
         layer.getResource().getMetadataLinks().get(0).setType("text/html");
         layer.getResource().getMetadataLinks().get(0).setMetadataType("ISO191156:2003");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());
@@ -154,21 +146,30 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         assertEquals("bar", map.get(String.class, "refsystem-as-list", 1).getValue());
         assertEquals(2, map.size("contact"));
         assertEquals("DOV", map.subMap("contact", 0).get(String.class, "name").getValue());
-        assertEquals("Vlaanderen", map.subMap("contact", 1).get(String.class, "name").getValue());
+        assertEquals(
+                "Vlaanderen", map.subMap("contact", 1).get(String.class, "name").getValue());
         assertEquals("1234", map.get(String.class, "identifier-single").getValue());
         assertEquals(2, map.size("referencesystem-object"));
         assertEquals(
                 "abcde",
-                map.subMap("referencesystem-object", 0).get(String.class, "code").getValue());
+                map.subMap("referencesystem-object", 0)
+                        .get(String.class, "code")
+                        .getValue());
         assertEquals(
                 "DOV-be",
-                map.subMap("referencesystem-object", 0).get(String.class, "code-space").getValue());
+                map.subMap("referencesystem-object", 0)
+                        .get(String.class, "code-space")
+                        .getValue());
         assertEquals(
                 "fghi",
-                map.subMap("referencesystem-object", 1).get(String.class, "code").getValue());
+                map.subMap("referencesystem-object", 1)
+                        .get(String.class, "code")
+                        .getValue());
         assertEquals(
                 "EOV-ce",
-                map.subMap("referencesystem-object", 1).get(String.class, "code-space").getValue());
+                map.subMap("referencesystem-object", 1)
+                        .get(String.class, "code-space")
+                        .getValue());
     }
 
     @Test
@@ -176,11 +177,8 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         LayerInfo layer = geoServer.getCatalog().getLayers().get(0);
 
         @SuppressWarnings("unchecked")
-        HashMap<String, Serializable> underlying =
-                (HashMap<String, Serializable>)
-                        layer.getResource()
-                                .getMetadata()
-                                .get(MetadataConstants.CUSTOM_METADATA_KEY);
+        HashMap<String, Serializable> underlying = (HashMap<String, Serializable>)
+                layer.getResource().getMetadata().get(MetadataConstants.CUSTOM_METADATA_KEY);
         underlying.clear();
         ComplexMetadataMap map = new ComplexMetadataMapImpl(underlying);
 
@@ -193,10 +191,7 @@ public class CustomNativeMappingServiceTest extends AbstractMetadataTest {
         layer.getResource().getKeywords().add(new Keyword("KEY_Vlaanderen"));
         layer.getResource().getKeywords().get(3).setVocabulary("VOCABULARY_B");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());
-        layer.getResource()
-                .getMetadataLinks()
-                .get(0)
-                .setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
+        layer.getResource().getMetadataLinks().get(0).setContent("https://www.dov.vlaanderen.be/geonetwork/?uuid=1234");
         layer.getResource().getMetadataLinks().get(0).setType("text/html");
         layer.getResource().getMetadataLinks().get(0).setMetadataType("ISO191156:2003");
         layer.getResource().getMetadataLinks().add(new MetadataLinkInfoImpl());

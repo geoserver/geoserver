@@ -54,12 +54,10 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     @Override
     public CapabilitiesType getCapabilities(GetCapabilitiesType request) throws ServiceException {
         checkStore();
-        CapabilitiesType caps =
-                new GetCapabilities(getServiceInfo(), this.store, context).run(request);
+        CapabilitiesType caps = new GetCapabilities(getServiceInfo(), this.store, context).run(request);
 
         // check for decorator extensions
-        for (CapabilitiesDecorator decorator :
-                GeoServerExtensions.extensions(CapabilitiesDecorator.class)) {
+        for (CapabilitiesDecorator decorator : GeoServerExtensions.extensions(CapabilitiesDecorator.class)) {
             caps = decorator.decorate(caps, this.store);
         }
 
@@ -67,8 +65,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     }
 
     @Override
-    public AttributeDescriptor[] describeRecord(DescribeRecordType request)
-            throws ServiceException {
+    public AttributeDescriptor[] describeRecord(DescribeRecordType request) throws ServiceException {
         checkStore();
 
         return new DescribeRecord(getServiceInfo(), store).run(request);
@@ -77,16 +74,14 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     @Override
     public CSWRecordsResult getRecords(GetRecordsType request) throws ServiceException {
         checkStore();
-        List<RecordDescriptor> descriptors =
-                GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
         return new GetRecords(getServiceInfo(), store, descriptors).run(request);
     }
 
     @Override
     public CSWRecordsResult getRecordById(GetRecordByIdType request) throws ServiceException {
         checkStore();
-        List<RecordDescriptor> descriptors =
-                GeoServerExtensions.extensions(RecordDescriptor.class, context);
+        List<RecordDescriptor> descriptors = GeoServerExtensions.extensions(RecordDescriptor.class, context);
         return new GetRecordById(getServiceInfo(), store, descriptors).run(request);
     }
 
@@ -133,8 +128,7 @@ public class DefaultWebCatalogService implements WebCatalogService, ApplicationC
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
         // pick the implementation of CatalogStore that has the higher priority
-        List<CatalogStore> storeCandidates =
-                GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
+        List<CatalogStore> storeCandidates = GeoServerExtensions.extensions(CatalogStore.class, applicationContext);
 
         if (storeCandidates != null && !storeCandidates.isEmpty()) {
             String defaultStore = System.getProperty("DefaultCatalogStore");

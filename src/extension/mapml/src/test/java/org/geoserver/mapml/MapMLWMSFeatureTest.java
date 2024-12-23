@@ -65,9 +65,7 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         li.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(li);
 
-        Mapml mapmlFeatures =
-                getWMSAsMapML(
-                        MockData.POLYGONS.getLocalPart(), null, null, "EPSG:3857", null, true);
+        Mapml mapmlFeatures = getWMSAsMapML(MockData.POLYGONS.getLocalPart(), null, null, "EPSG:3857", null, true);
 
         assertEquals(
                 "Polygons layer has one feature, so one should show up in the conversion",
@@ -76,14 +74,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         assertEquals(
                 "Polygons layer coordinates should be reprojected to EPSG:3857 from EPSG:32615",
                 "-1.035248685501953E7,504109.89366969,-1.035248685487942E7,504160.40501648,-1.035243667965507E7,504135.14918251,-1.035243667974068E7,504109.89351299,-1.035248685501953E7,504109.89366969",
-                ((Polygon)
-                                mapmlFeatures
-                                        .getBody()
-                                        .getFeatures()
-                                        .get(0)
-                                        .getGeometry()
-                                        .getGeometryContent()
-                                        .getValue())
+                ((Polygon) mapmlFeatures
+                                .getBody()
+                                .getFeatures()
+                                .get(0)
+                                .getGeometry()
+                                .getGeometryContent()
+                                .getValue())
                         .getThreeOrMoreCoordinatePairs().get(0).getValue().stream()
                                 .collect(Collectors.joining(",")));
     }
@@ -99,19 +96,12 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         lgi.getMetadata().put(MAPML_USE_FEATURES, true);
         lgi.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(lgi);
-        String response =
-                getWMSAsMapMLString(
-                        "layerGroup" + "," + MockData.POLYGONS.getLocalPart(),
-                        null,
-                        null,
-                        "EPSG:3857",
-                        null,
-                        true);
+        String response = getWMSAsMapMLString(
+                "layerGroup" + "," + MockData.POLYGONS.getLocalPart(), null, null, "EPSG:3857", null, true);
 
         assertTrue(
                 "MapML response contains an exception due to multiple feature types",
-                response.contains(
-                        "MapML WMS Feature format does not currently support Multiple Feature Type output."));
+                response.contains("MapML WMS Feature format does not currently support Multiple Feature Type output."));
     }
 
     @Test
@@ -121,13 +111,10 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         liRaster.getMetadata().put(MAPML_USE_FEATURES, true);
         liRaster.getMetadata().put(MAPML_USE_TILES, false);
         cat.save(liRaster);
-        String response =
-                getWMSAsMapMLString(
-                        MockData.WORLD.getLocalPart(), null, null, "EPSG:3857", null, true);
+        String response = getWMSAsMapMLString(MockData.WORLD.getLocalPart(), null, null, "EPSG:3857", null, true);
 
         assertTrue(
                 "MapML response contains an exception due to non-vector type",
-                response.contains(
-                        "MapML WMS Feature format does not currently support non-vector layers."));
+                response.contains("MapML WMS Feature format does not currently support non-vector layers."));
     }
 }

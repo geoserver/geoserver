@@ -42,7 +42,8 @@ import org.junit.rules.TemporaryFolder;
 
 public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest {
 
-    @Rule public TemporaryFolder tempFolder = new TemporaryFolder();
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
 
     protected static Logger LOGGER = Logging.getLogger("org.geoserver.security");
 
@@ -75,13 +76,11 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
 
         super.testRoleConfig();
 
-        XMLRoleServiceConfig config =
-                (XMLRoleServiceConfig)
-                        createRoleConfig(
-                                XMLRoleService.DEFAULT_NAME,
-                                XMLRoleService.class,
-                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                XMLConstants.FILE_RR);
+        XMLRoleServiceConfig config = (XMLRoleServiceConfig) createRoleConfig(
+                XMLRoleService.DEFAULT_NAME,
+                XMLRoleService.class,
+                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
+                XMLConstants.FILE_RR);
 
         XMLSecurityConfigValidator validator = new XMLSecurityConfigValidator(getSecurityManager());
 
@@ -108,13 +107,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
 
         config.setCheckInterval(0);
 
-        XMLRoleServiceConfig xmlConfig =
-                (XMLRoleServiceConfig)
-                        createRoleConfig(
-                                "test1",
-                                XMLRoleService.class,
-                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                "test1.xml");
+        XMLRoleServiceConfig xmlConfig = (XMLRoleServiceConfig)
+                createRoleConfig("test1", XMLRoleService.class, XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE, "test1.xml");
 
         try {
             validator.validateAddRoleService(xmlConfig);
@@ -126,13 +120,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         // run only if a temp dir is availbale
         if (new XMLSecurityConfigValidator(getSecurityManager()).getTempDir() != null) {
             String invalidPath = "abc" + File.separator + "def.xml";
-            XMLRoleServiceConfig xmlConfig4 =
-                    (XMLRoleServiceConfig)
-                            createRoleConfig(
-                                    "test4",
-                                    XMLRoleService.class,
-                                    XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                    invalidPath);
+            XMLRoleServiceConfig xmlConfig4 = (XMLRoleServiceConfig) createRoleConfig(
+                    "test4", XMLRoleService.class, XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE, invalidPath);
 
             try {
                 validator.validateAddRoleService(xmlConfig4);
@@ -182,13 +171,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
             fail("Should work but got: " + ex.getMessage());
         }
 
-        xmlConfig =
-                (XMLRoleServiceConfig)
-                        createRoleConfig(
-                                "test2",
-                                XMLRoleService.class,
-                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                "test2.xml");
+        xmlConfig = (XMLRoleServiceConfig)
+                createRoleConfig("test2", XMLRoleService.class, XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE, "test2.xml");
 
         try {
             validator.validateRemoveRoleService(xmlConfig);
@@ -204,14 +188,11 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
             assertEquals("test2", ex.getArgs()[0]);
         }
 
-        xmlConfig =
-                (XMLRoleServiceConfig)
-                        createRoleConfig(
-                                "test3",
-                                XMLRoleService.class,
-                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                new File(getSecurityManager().role().dir(), "test3.xml")
-                                        .getAbsolutePath());
+        xmlConfig = (XMLRoleServiceConfig) createRoleConfig(
+                "test3",
+                XMLRoleService.class,
+                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
+                new File(getSecurityManager().role().dir(), "test3.xml").getAbsolutePath());
         try {
             validator.validateRemoveRoleService(xmlConfig);
 
@@ -226,13 +207,8 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
 
         /////////////// test modify
-        xmlConfig =
-                (XMLRoleServiceConfig)
-                        createRoleConfig(
-                                "test4",
-                                XMLRoleService.class,
-                                XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE,
-                                "testModify.xml");
+        xmlConfig = (XMLRoleServiceConfig) createRoleConfig(
+                "test4", XMLRoleService.class, XMLRoleService.DEFAULT_LOCAL_ADMIN_ROLE, "testModify.xml");
 
         XMLRoleServiceConfig oldXmlConfig = new XMLRoleServiceConfig(xmlConfig);
         try {
@@ -262,14 +238,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
     @Test
     public void testUserGroupConfig() throws IOException {
         super.testUserGroupConfig();
-        XMLUserGroupServiceConfig config =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                XMLUserGroupService.DEFAULT_NAME,
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                XMLConstants.FILE_UR);
+        XMLUserGroupServiceConfig config = (XMLUserGroupServiceConfig) createUGConfig(
+                XMLUserGroupService.DEFAULT_NAME,
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                XMLConstants.FILE_UR);
 
         XMLSecurityConfigValidator validator = new XMLSecurityConfigValidator(getSecurityManager());
 
@@ -296,14 +270,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
 
         config.setCheckInterval(0);
 
-        XMLUserGroupServiceConfig xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                "test1",
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                "test1.xml");
+        XMLUserGroupServiceConfig xmlConfig = (XMLUserGroupServiceConfig) createUGConfig(
+                "test1",
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                "test1.xml");
 
         try {
             validator.validateAddUserGroupService(xmlConfig);
@@ -313,14 +285,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
             Assert.fail("Should work but got: " + ex.getMessage());
         }
 
-        XMLUserGroupServiceConfig xmlConfig5 =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                "test5",
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                "abc.xml");
+        XMLUserGroupServiceConfig xmlConfig5 = (XMLUserGroupServiceConfig) createUGConfig(
+                "test5",
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                "abc.xml");
         try {
             // getSecurityManager().saveUserGroupService(xmlConfig);
             validator.validateAddUserGroupService(xmlConfig5);
@@ -341,14 +311,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         // run only if a temp dir is availbale
         if (new XMLSecurityConfigValidator(getSecurityManager()).getTempDir() != null) {
             String invalidPath = "abc" + File.separator + "def.xml";
-            XMLUserGroupServiceConfig xmlConfig4 =
-                    (XMLUserGroupServiceConfig)
-                            createUGConfig(
-                                    "test4",
-                                    XMLUserGroupService.class,
-                                    getPlainTextPasswordEncoder().getName(),
-                                    PasswordValidator.DEFAULT_NAME,
-                                    invalidPath);
+            XMLUserGroupServiceConfig xmlConfig4 = (XMLUserGroupServiceConfig) createUGConfig(
+                    "test4",
+                    XMLUserGroupService.class,
+                    getPlainTextPasswordEncoder().getName(),
+                    PasswordValidator.DEFAULT_NAME,
+                    invalidPath);
 
             try {
                 validator.validateAddUserGroupService(xmlConfig4);
@@ -380,7 +348,9 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
                 .andReturn(new TreeSet<>(Arrays.asList("test1", "test2", "testModify")))
                 .anyTimes();
 
-        expect(secMgr.userGroup()).andReturn(Files.asResource(tempFolder.getRoot())).anyTimes();
+        expect(secMgr.userGroup())
+                .andReturn(Files.asResource(tempFolder.getRoot()))
+                .anyTimes();
 
         expect(secMgr.loadPasswordEncoder(getPlainTextPasswordEncoder().getName()))
                 .andReturn(getPlainTextPasswordEncoder())
@@ -399,14 +369,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
             fail("Should work but got: " + ex.getMessage());
         }
 
-        xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                "test2",
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                "test2.xml");
+        xmlConfig = (XMLUserGroupServiceConfig) createUGConfig(
+                "test2",
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                "test2.xml");
         try {
             validator.validateRemoveUserGroupService(xmlConfig);
             fail("non empty ug service should fail");
@@ -421,15 +389,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
             assertEquals("test2", ex.getArgs()[0]);
         }
 
-        xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                "test3",
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                new File(getSecurityManager().userGroup().dir(), "test3.xml")
-                                        .getAbsolutePath());
+        xmlConfig = (XMLUserGroupServiceConfig) createUGConfig(
+                "test3",
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                new File(getSecurityManager().userGroup().dir(), "test3.xml").getAbsolutePath());
 
         try {
             validator.validateRemoveUserGroupService(xmlConfig);
@@ -444,14 +409,12 @@ public class XMLSecurityConfigValidatorTest extends SecurityConfigValidatorTest 
         }
 
         /////////////// test modify
-        xmlConfig =
-                (XMLUserGroupServiceConfig)
-                        createUGConfig(
-                                "testModify",
-                                XMLUserGroupService.class,
-                                getPlainTextPasswordEncoder().getName(),
-                                PasswordValidator.DEFAULT_NAME,
-                                "testModify.xml");
+        xmlConfig = (XMLUserGroupServiceConfig) createUGConfig(
+                "testModify",
+                XMLUserGroupService.class,
+                getPlainTextPasswordEncoder().getName(),
+                PasswordValidator.DEFAULT_NAME,
+                "testModify.xml");
 
         XMLUserGroupServiceConfig oldXmlConfig = new XMLUserGroupServiceConfig(xmlConfig);
         try {

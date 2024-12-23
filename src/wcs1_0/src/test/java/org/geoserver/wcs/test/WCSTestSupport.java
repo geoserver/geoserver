@@ -53,26 +53,20 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
 
     static {
         try {
-            final SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WCS10_GETCAPABILITIES_SCHEMA =
-                    factory.newSchema(new File("./schemas/wcs/1.0.0/wcsCapabilities.xsd"));
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            WCS10_GETCAPABILITIES_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/wcsCapabilities.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WCS10_GETCOVERAGE_SCHEMA =
-                    factory.newSchema(new File("./schemas/wcs/1.0.0/getCoverage.xsd"));
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            WCS10_GETCOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/getCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
         try {
-            final SchemaFactory factory =
-                    SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-            WCS10_DESCRIBECOVERAGE_SCHEMA =
-                    factory.newSchema(new File("./schemas/wcs/1.0.0/describeCoverage.xsd"));
+            final SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+            WCS10_DESCRIBECOVERAGE_SCHEMA = factory.newSchema(new File("./schemas/wcs/1.0.0/describeCoverage.xsd"));
         } catch (Exception e) {
             throw new RuntimeException("Could not parse the WCS 1.0.0 schemas", e);
         }
@@ -154,15 +148,13 @@ public abstract class WCSTestSupport extends CoverageTestSupport {
     }
 
     /**
-     * Utility method that reads a GeoTIFF from a HTTP servlet response, and passes the resulting
-     * coverage to the provided consumer for testing
+     * Utility method that reads a GeoTIFF from a HTTP servlet response, and passes the resulting coverage to the
+     * provided consumer for testing
      */
-    protected void checkGeotiffResponse(
-            MockHttpServletResponse response, ThrowingConsumer<GridCoverage2D> consumer)
+    protected void checkGeotiffResponse(MockHttpServletResponse response, ThrowingConsumer<GridCoverage2D> consumer)
             throws Exception {
         try (MemoryCacheImageInputStream stream =
-                new MemoryCacheImageInputStream(
-                        new ByteArrayInputStream(response.getContentAsByteArray()))) {
+                new MemoryCacheImageInputStream(new ByteArrayInputStream(response.getContentAsByteArray()))) {
             GridCoverage2D coverage = new GeoTiffReader(stream).read(null);
             consumer.accept(coverage);
         }

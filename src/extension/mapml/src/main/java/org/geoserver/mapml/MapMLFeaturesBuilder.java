@@ -45,9 +45,7 @@ public class MapMLFeaturesBuilder {
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
         featureSources =
-                mapContent.layers().stream()
-                        .map(Layer::getFeatureSource)
-                        .collect(Collectors.toList());
+                mapContent.layers().stream().map(Layer::getFeatureSource).collect(Collectors.toList());
     }
 
     /**
@@ -64,43 +62,36 @@ public class MapMLFeaturesBuilder {
 
         if (!getMapRequest.getLayers().isEmpty()
                 && MapLayerInfo.TYPE_VECTOR != getMapRequest.getLayers().get(0).getType()) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support non-vector layers.");
+            throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
         }
         FeatureCollection featureCollection = featureSources.get(0).getFeatures();
         if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Complex Features.");
+            throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
         }
         SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
 
         GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
         if (sourceGeometryDescriptor == null) {
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support non-geometry features.");
+            throw new ServiceException("MapML WMS Feature format does not currently support non-geometry features.");
         }
         SimpleFeatureCollection reprojectedFeatureCollection = null;
-        if (!sourceGeometryDescriptor
-                .getCoordinateReferenceSystem()
-                .equals(getMapRequest.getCrs())) {
+        if (!sourceGeometryDescriptor.getCoordinateReferenceSystem().equals(getMapRequest.getCrs())) {
             try {
-                reprojectedFeatureCollection =
-                        new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
+                reprojectedFeatureCollection = new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
                 ((ReprojectingFeatureCollection) reprojectedFeatureCollection)
                         .setDefaultSource(sourceGeometryDescriptor.getCoordinateReferenceSystem());
             } catch (SchemaException | FactoryException e) {
-                throw new ServiceException(
-                        "Unable to reproject to the requested coordinate references system", e);
+                throw new ServiceException("Unable to reproject to the requested coordinate references system", e);
             }
         } else {
             reprojectedFeatureCollection = fc;
         }
 
-        LayerInfo layerInfo = geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
+        LayerInfo layerInfo =
+                geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
         FeatureType featureType = fc.getSchema();
-        ResourceInfo meta =
-                geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
+        ResourceInfo meta = geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
         return MapMLFeatureUtil.featureCollectionToMapML(
                 reprojectedFeatureCollection,
                 layerInfo,

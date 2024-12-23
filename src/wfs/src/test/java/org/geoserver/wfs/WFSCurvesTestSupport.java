@@ -22,11 +22,9 @@ public class WFSCurvesTestSupport extends WFSTestSupport {
 
     protected QName CURVELINES = new QName(MockData.CITE_URI, "curvelines", MockData.CITE_PREFIX);
 
-    protected QName CURVEMULTILINES =
-            new QName(MockData.CITE_URI, "curvemultilines", MockData.CITE_PREFIX);
+    protected QName CURVEMULTILINES = new QName(MockData.CITE_URI, "curvemultilines", MockData.CITE_PREFIX);
 
-    protected QName CURVEPOLYGONS =
-            new QName(MockData.CITE_URI, "curvepolygons", MockData.CITE_PREFIX);
+    protected QName CURVEPOLYGONS = new QName(MockData.CITE_URI, "curvepolygons", MockData.CITE_PREFIX);
 
     protected XpathEngine xpath;
 
@@ -37,31 +35,18 @@ public class WFSCurvesTestSupport extends WFSTestSupport {
 
         testData.addWorkspace(MockData.CITE_PREFIX, MockData.CITE_URI, getCatalog());
         testData.addVectorLayer(
-                CURVELINES,
-                Collections.emptyMap(),
-                "curvelines.properties",
-                MockData.class,
-                getCatalog());
+                CURVELINES, Collections.emptyMap(), "curvelines.properties", MockData.class, getCatalog());
         testData.addVectorLayer(
-                CURVEMULTILINES,
-                Collections.emptyMap(),
-                "curvemultilines.properties",
-                MockData.class,
-                getCatalog());
+                CURVEMULTILINES, Collections.emptyMap(), "curvemultilines.properties", MockData.class, getCatalog());
         testData.addVectorLayer(
-                CURVEPOLYGONS,
-                Collections.emptyMap(),
-                "curvepolygons.properties",
-                MockData.class,
-                getCatalog());
+                CURVEPOLYGONS, Collections.emptyMap(), "curvepolygons.properties", MockData.class, getCatalog());
 
         FeatureTypeInfo curveLines = getCatalog().getFeatureTypeByName(getLayerId(CURVELINES));
         curveLines.setCircularArcPresent(true);
         curveLines.setLinearizationTolerance(null);
         getCatalog().save(curveLines);
 
-        FeatureTypeInfo curveMultiLines =
-                getCatalog().getFeatureTypeByName(getLayerId(CURVEMULTILINES));
+        FeatureTypeInfo curveMultiLines = getCatalog().getFeatureTypeByName(getLayerId(CURVEMULTILINES));
         curveMultiLines.setCircularArcPresent(true);
         curveMultiLines.setLinearizationTolerance(null);
         getCatalog().save(curveMultiLines);

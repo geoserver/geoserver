@@ -41,9 +41,8 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
     }
 
     /**
-     * According to the spec, the token can be verified issuing a GET request, and putting the token
-     * in the Authorization header. See
-     * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+     * According to the spec, the token can be verified issuing a GET request, and putting the token in the
+     * Authorization header. See https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -59,21 +58,15 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
     }
 
     /**
-     * According to the spec, the token can be verified issuing a GET request, and putting the token
-     * in the Authorization header. See
-     * https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
+     * According to the spec, the token can be verified issuing a GET request, and putting the token in the
+     * Authorization header. See https://openid.net/specs/openid-connect-core-1_0.html#UserInfo
      */
-    protected Map<String, Object> checkTokenEndpoint(
-            String checkTokenEndpoint, String accessToken) {
+    protected Map<String, Object> checkTokenEndpoint(String checkTokenEndpoint, String accessToken) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", getAuthorizationHeader(accessToken));
         return restTemplate
-                .exchange(
-                        checkTokenEndpoint,
-                        HttpMethod.GET,
-                        new HttpEntity<>(formData, headers),
-                        Map.class)
+                .exchange(checkTokenEndpoint, HttpMethod.GET, new HttpEntity<>(formData, headers), Map.class)
                 .getBody();
     }
 
@@ -83,30 +76,20 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
      */
     public Map<String, Object> introspectToken(String accessToken) {
         if (introspectionEndpointUrl == null)
-            throw new RuntimeException(
-                    "Cannot introspect JWE token, the introspection endpoint URL is not set");
+            throw new RuntimeException("Cannot introspect JWE token, the introspection endpoint URL is not set");
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("token", accessToken);
         formData.add("token_type_hint", "access_token");
         HttpHeaders headers = new HttpHeaders();
         // set client id and secret, url encoded, as the Authorization header
-        headers.set(
-                "Authorization",
-                "Basic " + Base64.encodeBytes((clientId + ":" + clientSecret).getBytes()));
+        headers.set("Authorization", "Basic " + Base64.encodeBytes((clientId + ":" + clientSecret).getBytes()));
         return restTemplate
-                .exchange(
-                        introspectionEndpointUrl,
-                        HttpMethod.POST,
-                        new HttpEntity<>(formData, headers),
-                        Map.class)
+                .exchange(introspectionEndpointUrl, HttpMethod.POST, new HttpEntity<>(formData, headers), Map.class)
                 .getBody();
     }
 
-    /**
-     * According to the spec, the token signature can be checked using public JSON Web Key set
-     * document.
-     */
+    /** According to the spec, the token signature can be checked using public JSON Web Key set document. */
     protected Map<String, Object> checkTokenJWKS(String rawAccessToken) {
         // use
         try {
@@ -118,8 +101,7 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
             tokenValidator.validateSignature(rsaKey, jwsToken);
         } catch (ParseException parseException) {
             throw (InvalidSignatureException)
-                    new InvalidSignatureException(
-                                    "Could not verify signature of the JWT with the given RSA Public Key")
+                    new InvalidSignatureException("Could not verify signature of the JWT with the given RSA Public Key")
                             .initCause(parseException);
         }
         // verify access token - this did not validate signature as initially assumed
@@ -177,8 +159,7 @@ public class OpenIdConnectTokenServices extends GeoServerOAuthRemoteTokenService
         }
 
         setAccessTokenConverter(
-                new GeoServerAccessTokenConverter(
-                        new GeoServerUserAuthenticationConverter(config.getPrincipalKey())));
+                new GeoServerAccessTokenConverter(new GeoServerUserAuthenticationConverter(config.getPrincipalKey())));
     }
 
     @Override

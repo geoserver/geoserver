@@ -41,24 +41,23 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
     private static final double DELTA = 1E-4;
 
     /**
-     * Test that the null values and range of a wrapped sampleDimension are the same configured on
-     * the {@link CoverageDimensionInfo} object used to customize them
+     * Test that the null values and range of a wrapped sampleDimension are the same configured on the
+     * {@link CoverageDimensionInfo} object used to customize them
      */
     @Test
     public void testDimensionsWrapping() throws IOException {
-        final GridSampleDimension sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        SampleDimensionType.REAL_64BITS,
-                        ColorInterpretation.GRAY_INDEX,
-                        null,
-                        null,
-                        new double[] {-9999.0},
-                        -1000d,
-                        1000d,
-                        1d,
-                        0d,
-                        null);
+        final GridSampleDimension sampleDim = new GridSampleDimension(
+                "original",
+                SampleDimensionType.REAL_64BITS,
+                ColorInterpretation.GRAY_INDEX,
+                null,
+                null,
+                new double[] {-9999.0},
+                -1000d,
+                1000d,
+                1d,
+                0d,
+                null);
 
         // Setting coverage dimension
         final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
@@ -94,19 +93,18 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
 
     @Test
     public void testWrapCustomizationSurviveCopyConstructor() throws Exception {
-        final GridSampleDimension sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        SampleDimensionType.REAL_64BITS,
-                        ColorInterpretation.GRAY_INDEX,
-                        null,
-                        null,
-                        new double[] {-9999.0},
-                        -1000d,
-                        1000d,
-                        1d,
-                        0d,
-                        null);
+        final GridSampleDimension sampleDim = new GridSampleDimension(
+                "original",
+                SampleDimensionType.REAL_64BITS,
+                ColorInterpretation.GRAY_INDEX,
+                null,
+                null,
+                new double[] {-9999.0},
+                -1000d,
+                1000d,
+                1d,
+                0d,
+                null);
 
         // Setting coverage dimension
         final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
@@ -156,16 +154,15 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setNullValues(nullValues);
 
         // Quantitative nodata category
-        GridSampleDimension sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        new Category[] {
-                            new Category(
-                                    Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                                    new Color[] {new Color(0, 0, 0, 0)},
-                                    NumberRange.create(-9999, -9999))
-                        },
-                        null);
+        GridSampleDimension sampleDim = new GridSampleDimension(
+                "original",
+                new Category[] {
+                    new Category(
+                            Vocabulary.formatInternational(VocabularyKeys.NODATA),
+                            new Color[] {new Color(0, 0, 0, 0)},
+                            NumberRange.create(-9999, -9999))
+                },
+                null);
 
         // Wrap the dimension
         GridSampleDimension copy = WrappedSampleDimension.build(sampleDim, coverageDim);
@@ -201,16 +198,13 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         coverageDim.setNullValues(nullValues);
 
         // Qualitative nodata category
-        GridSampleDimension sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        new Category[] {
-                            new Category(
-                                    Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                                    new Color(0, 0, 0, 0),
-                                    Double.NaN)
-                        },
-                        null);
+        GridSampleDimension sampleDim = new GridSampleDimension(
+                "original",
+                new Category[] {
+                    new Category(
+                            Vocabulary.formatInternational(VocabularyKeys.NODATA), new Color(0, 0, 0, 0), Double.NaN)
+                },
+                null);
 
         // Wrap the dimension
         GridSampleDimension wrappedDim = WrappedSampleDimension.build(sampleDim, coverageDim);
@@ -232,16 +226,15 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         assertEquals(category.getRange().getMaximum(), Double.NaN, DELTA);
 
         // Quantitative nodata category
-        sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        new Category[] {
-                            new Category(
-                                    Vocabulary.formatInternational(VocabularyKeys.NODATA),
-                                    new Color[] {new Color(0, 0, 0, 0)},
-                                    NumberRange.create(-9999, -9999))
-                        },
-                        null);
+        sampleDim = new GridSampleDimension(
+                "original",
+                new Category[] {
+                    new Category(
+                            Vocabulary.formatInternational(VocabularyKeys.NODATA),
+                            new Color[] {new Color(0, 0, 0, 0)},
+                            NumberRange.create(-9999, -9999))
+                },
+                null);
 
         // Wrap the dimension
         copy = WrappedSampleDimension.build(sampleDim, coverageDim);
@@ -261,19 +254,18 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
     /** Test that if no range is defined, Category values or Default values are used */
     @Test
     public void testNoRange() throws IOException {
-        GridSampleDimension sampleDim =
-                new GridSampleDimension(
-                        "original",
-                        SampleDimensionType.REAL_64BITS,
-                        ColorInterpretation.GRAY_INDEX,
-                        null,
-                        null,
-                        new double[] {-9999.0},
-                        -1000d,
-                        1000d,
-                        1d,
-                        0d,
-                        null);
+        GridSampleDimension sampleDim = new GridSampleDimension(
+                "original",
+                SampleDimensionType.REAL_64BITS,
+                ColorInterpretation.GRAY_INDEX,
+                null,
+                null,
+                new double[] {-9999.0},
+                -1000d,
+                1000d,
+                1d,
+                0d,
+                null);
 
         // Setting coverage dimension
         final CoverageDimensionImpl coverageDim = new CoverageDimensionImpl();
@@ -283,8 +275,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         // Creation of the WrappedSampleDimension
         SampleDimension wrappedDim = WrappedSampleDimension.build(sampleDim, coverageDim);
         // Get the range
-        NumberRange<? extends Number> wrappedRange =
-                ((WrappedSampleDimension) wrappedDim).getRange();
+        NumberRange<? extends Number> wrappedRange = ((WrappedSampleDimension) wrappedDim).getRange();
         // Ensure the range is not present
         assertNull(wrappedRange);
         // Check if min and max are taken from the categories
@@ -314,8 +305,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         RenderedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_BYTE_GRAY);
 
         GridCoverage2D original =
-                gcFactory.create(
-                        "original", image, new GeneralBounds(new Rectangle2D.Double(0, 0, 64, 64)));
+                gcFactory.create("original", image, new GeneralBounds(new Rectangle2D.Double(0, 0, 64, 64)));
         GridSampleDimension[] gsd = {new GridSampleDimension("wrappedSampleDimension")};
         GridCoverageWrapper wrapper = new GridCoverageWrapper("wrapped", original, gsd, null);
         assertNotSame(original.getSampleDimensions(), wrapper.getSampleDimensions());

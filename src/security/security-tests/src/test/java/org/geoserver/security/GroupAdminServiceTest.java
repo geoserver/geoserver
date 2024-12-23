@@ -137,11 +137,8 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     }
 
     void setAuth() {
-        Authentication auth =
-                new UsernamePasswordAuthenticationToken(
-                        bob,
-                        bob.getPassword(),
-                        Collections.singletonList(GeoServerRole.GROUP_ADMIN_ROLE));
+        Authentication auth = new UsernamePasswordAuthenticationToken(
+                bob, bob.getPassword(), Collections.singletonList(GeoServerRole.GROUP_ADMIN_ROLE));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
@@ -157,8 +154,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
 
     @Test
     public void testWrapUserGroupService() throws Exception {
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         assertFalse(ugService instanceof GroupAdminUserGroupService);
 
         setAuth();
@@ -184,8 +180,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     @Test
     public void testHideGroups() throws Exception {
         Assume.assumeFalse(System.getProperty("macos-github-build") != null);
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         assertTrue(ugService.getUserGroups().contains(users));
         assertNotNull(ugService.getGroupByGroupname("users"));
         assertTrue(ugService.getUserGroups().contains(admins));
@@ -211,8 +206,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     public void testCreateNewUser() throws Exception {
         setAuth();
 
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         GeoServerUserGroupStore ugStore = ugService.createStore();
 
         GeoServerUser bill = ugStore.createUserObject("bill", "foobar", true);
@@ -226,8 +220,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     public void testAssignUserToGroup() throws Exception {
         testCreateNewUser();
 
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         GeoServerUserGroupStore ugStore = ugService.createStore();
 
         GeoServerUser bill = ugStore.getUserByUsername("bill");
@@ -248,8 +241,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     public void testRemoveUserInGroup() throws Exception {
         testAssignUserToGroup();
 
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         GeoServerUserGroupStore ugStore = ugService.createStore();
         GeoServerUser bill = ugStore.getUserByUsername("bill");
 
@@ -262,8 +254,7 @@ public class GroupAdminServiceTest extends AbstractSecurityServiceTest {
     @Test
     public void testRemoveUserNotInGroup() throws Exception {
         Assume.assumeFalse(System.getProperty("macos-github-build") != null);
-        GeoServerUserGroupService ugService =
-                getSecurityManager().loadUserGroupService(ugStore.getName());
+        GeoServerUserGroupService ugService = getSecurityManager().loadUserGroupService(ugStore.getName());
         GeoServerUserGroupStore ugStore = ugService.createStore();
 
         GeoServerUser sally = ugStore.createUserObject("sally", "foobar", true);

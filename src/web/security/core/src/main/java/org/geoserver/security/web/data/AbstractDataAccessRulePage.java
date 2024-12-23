@@ -49,11 +49,9 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
         @Override
         protected String load() {
             if (globalGroupRule.getModelObject()) {
-                return new ParamResourceModel("globalGroup", AbstractDataAccessRulePage.this)
-                        .getString();
+                return new ParamResourceModel("globalGroup", AbstractDataAccessRulePage.this).getString();
             } else {
-                return new ParamResourceModel("workspace", AbstractDataAccessRulePage.this)
-                        .getString();
+                return new ParamResourceModel("workspace", AbstractDataAccessRulePage.this).getString();
             }
         }
     }
@@ -71,23 +69,22 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
         /** Returns a sorted list of global layer group names */
         List<String> getGlobalLayerGroupNames() {
-            Stream<String> names =
-                    getCatalog().getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
-                            .map(lg -> lg.getName())
-                            .sorted();
+            Stream<String> names = getCatalog().getLayerGroupsByWorkspace(CatalogFacade.NO_WORKSPACE).stream()
+                    .map(lg -> lg.getName())
+                    .sorted();
             return Stream.concat(Stream.of("*"), names).collect(Collectors.toList());
         }
 
         /** Returns a sorted list of workspace names */
         List<String> getWorkspaceNames() {
-            Stream<String> names =
-                    getCatalog().getWorkspaces().stream().map(ws -> ws.getName()).sorted();
+            Stream<String> names = getCatalog().getWorkspaces().stream()
+                    .map(ws -> ws.getName())
+                    .sorted();
             return Stream.concat(Stream.of("*"), names).collect(Collectors.toList());
         }
     }
 
-    static List<AccessMode> MODES =
-            Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
+    static List<AccessMode> MODES = Arrays.asList(AccessMode.READ, AccessMode.WRITE, AccessMode.ADMIN);
 
     DropDownChoice<String> rootChoice, layerChoice;
     DropDownChoice<AccessMode> accessModeChoice;
@@ -108,88 +105,75 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
         form.add(globalGroupRule = new CheckBox("globalGroupRule"));
         globalGroupRule.setOutputMarkupId(true);
-        globalGroupRule.add(
-                new OnChangeAjaxBehavior() {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        rootChoice.getModel().detach();
-                        target.add(rootChoice);
-                        layerAndLabel.setVisible(!globalGroupRule.getModelObject());
-                        target.add(layerContainer);
-                        rootLabel.getDefaultModel().detach();
-                        target.add(rootLabel);
-                    }
-                });
+        globalGroupRule.add(new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                rootChoice.getModel().detach();
+                target.add(rootChoice);
+                layerAndLabel.setVisible(!globalGroupRule.getModelObject());
+                target.add(layerContainer);
+                rootLabel.getDefaultModel().detach();
+                target.add(rootLabel);
+            }
+        });
 
         form.add(rootLabel = new Label("rootLabel", new RootLabelModel()));
         rootLabel.setOutputMarkupId(true);
         form.add(rootChoice = new DropDownChoice<>("root", new RootsModel()));
         rootChoice.setRequired(true);
         rootChoice.setOutputMarkupId(true);
-        rootChoice.add(
-                new AjaxFormComponentUpdatingBehavior("change") {
-                    @Override
-                    protected void onUpdate(AjaxRequestTarget target) {
-                        layerChoice.setChoices(
-                                new Model<>(getLayerNames(rootChoice.getConvertedInput())));
-                        layerChoice.modelChanged();
-                        target.add(layerChoice);
-                    }
-                });
+        rootChoice.add(new AjaxFormComponentUpdatingBehavior("change") {
+            @Override
+            protected void onUpdate(AjaxRequestTarget target) {
+                layerChoice.setChoices(new Model<>(getLayerNames(rootChoice.getConvertedInput())));
+                layerChoice.modelChanged();
+                target.add(layerChoice);
+            }
+        });
 
         form.add(layerContainer = new WebMarkupContainer("layerContainer"));
         layerContainer.setOutputMarkupId(true);
         layerContainer.add(layerAndLabel = new WebMarkupContainer("layerAndLabel"));
-        layerAndLabel.add(
-                layerChoice = new DropDownChoice<>("layer", getLayerNames(rule.getRoot())));
+        layerAndLabel.add(layerChoice = new DropDownChoice<>("layer", getLayerNames(rule.getRoot())));
         layerAndLabel.setVisible(!rule.isGlobalGroupRule());
         layerChoice.setRequired(true);
         layerChoice.setOutputMarkupId(true);
 
-        form.add(
-                accessModeChoice =
-                        new DropDownChoice<>("accessMode", MODES, new AccessModeRenderer()));
+        form.add(accessModeChoice = new DropDownChoice<>("accessMode", MODES, new AccessModeRenderer()));
         accessModeChoice.setRequired(true);
 
         form.add(
-                rolesFormComponent =
-                        new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles"))
-                                .setHasAnyRole(
-                                        rule.getRoles()
-                                                .contains(GeoServerRole.ANY_ROLE.getAuthority())));
+                rolesFormComponent = new RuleRolesFormComponent("roles", new PropertyModel<>(rule, "roles"))
+                        .setHasAnyRole(rule.getRoles().contains(GeoServerRole.ANY_ROLE.getAuthority())));
 
         // build the submit/cancel
-        form.add(
-                new SubmitLink("save") {
-                    @Override
-                    public void onSubmit() {
-                        DataAccessRule rule = (DataAccessRule) getForm().getModelObject();
-                        if (rolesFormComponent.isHasAnyRole()) {
-                            rule.getRoles().clear();
-                            rule.getRoles().add(GeoServerRole.ANY_ROLE.getAuthority());
-                        }
-                        if (globalGroupRule.getModelObject()) {
-                            // just to be on the safe side
-                            rule.setLayer(null);
-                        }
-                        onFormSubmit(rule);
-                    }
-                });
+        form.add(new SubmitLink("save") {
+            @Override
+            public void onSubmit() {
+                DataAccessRule rule = (DataAccessRule) getForm().getModelObject();
+                if (rolesFormComponent.isHasAnyRole()) {
+                    rule.getRoles().clear();
+                    rule.getRoles().add(GeoServerRole.ANY_ROLE.getAuthority());
+                }
+                if (globalGroupRule.getModelObject()) {
+                    // just to be on the safe side
+                    rule.setLayer(null);
+                }
+                onFormSubmit(rule);
+            }
+        });
         form.add(new BookmarkablePageLink<DataAccessRule>("cancel", DataSecurityPage.class));
     }
 
     /** Implements the actual save action */
     protected abstract void onFormSubmit(DataAccessRule rule);
 
-    /**
-     * Returns a sorted list of layer names in the specified workspace (or * if the workspace is *)
-     */
+    /** Returns a sorted list of layer names in the specified workspace (or * if the workspace is *) */
     ArrayList<String> getLayerNames(String rootName) {
         ArrayList<String> result = new ArrayList<>();
         if (!rootName.equals("*")) {
             Filter wsResources = Predicates.equal("store.workspace.name", rootName);
-            try (CloseableIterator<ResourceInfo> it =
-                    getCatalog().list(ResourceInfo.class, wsResources)) {
+            try (CloseableIterator<ResourceInfo> it = getCatalog().list(ResourceInfo.class, wsResources)) {
                 while (it.hasNext()) {
                     result.add(it.next().getName());
                 }
@@ -197,12 +181,11 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
             // collect also layer groups
             getCatalog().getLayerGroupsByWorkspace(rootName).stream()
                     .map(lg -> lg.getName())
-                    .forEach(
-                            name -> {
-                                if (!result.contains(name)) {
-                                    result.add(name);
-                                }
-                            });
+                    .forEach(name -> {
+                        if (!result.contains(name)) {
+                            result.add(name);
+                        }
+                    });
             Collections.sort(result);
         }
         result.add(0, "*");
@@ -227,9 +210,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
 
         @Override
         public FormComponent<?>[] getDependentFormComponents() {
-            return new FormComponent[] {
-                rootChoice, layerChoice, accessModeChoice, rolesFormComponent
-            };
+            return new FormComponent[] {rootChoice, layerChoice, accessModeChoice, rolesFormComponent};
         }
 
         @Override
@@ -242,8 +223,7 @@ public abstract class AbstractDataAccessRulePage extends AbstractSecurityPage {
             updateModels();
             String roleInputString =
                     rolesFormComponent.getPalette().getRecorderComponent().getInput();
-            if ((roleInputString == null || roleInputString.trim().isEmpty())
-                    && !rolesFormComponent.isHasAnyRole()) {
+            if ((roleInputString == null || roleInputString.trim().isEmpty()) && !rolesFormComponent.isHasAnyRole()) {
                 form.error(new ParamResourceModel("emptyRoles", getPage()).getString());
             }
         }

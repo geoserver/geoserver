@@ -47,7 +47,9 @@ public interface Batch extends SoftRemove, Serializable, Identifiable {
     default String getFullName() {
         return getConfiguration() == null
                 ? getName()
-                : ((getConfiguration().getName() == null ? "" : getConfiguration().getName())
+                : ((getConfiguration().getName() == null
+                                ? ""
+                                : getConfiguration().getName())
                         + FULL_NAME_DIVISOR
                         + getName());
     }

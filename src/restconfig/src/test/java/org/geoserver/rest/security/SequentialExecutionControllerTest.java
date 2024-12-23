@@ -64,19 +64,16 @@ public class SequentialExecutionControllerTest extends GeoServerTestSupport {
         List<String> requestUrls = new ArrayList<>();
         roles.forEach(role -> requestUrls.add("rest/security/roles/role/" + role + "/user/popo"));
 
-        requestUrls
-                .parallelStream()
-                .forEach(
-                        requestUrl -> {
-                            MockHttpServletRequest request = createRequest(requestUrl);
-                            request.setMethod("POST");
+        requestUrls.parallelStream().forEach(requestUrl -> {
+            MockHttpServletRequest request = createRequest(requestUrl);
+            request.setMethod("POST");
 
-                            try {
-                                dispatch(request, "UTF-8");
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
-                        });
+            try {
+                dispatch(request, "UTF-8");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         JaxbRoleList jaxbRoleList = rolesController.getUser("popo");
         assertEquals(4, jaxbRoleList.getRoles().size());
@@ -93,8 +90,7 @@ public class SequentialExecutionControllerTest extends GeoServerTestSupport {
         IntStream.range(0, USERS_COUNT).parallel().forEach(i -> createUser(i));
 
         // grab the users, check
-        GeoServerSecurityManager manager =
-                applicationContext.getBean(GeoServerSecurityManager.class);
+        GeoServerSecurityManager manager = applicationContext.getBean(GeoServerSecurityManager.class);
         GeoServerUserGroupService userService = manager.loadUserGroupService("default");
         for (int i = 0; i < USERS_COUNT; i++) {
             assertNotNull(userService.getUserByUsername("user" + i));
@@ -102,11 +98,9 @@ public class SequentialExecutionControllerTest extends GeoServerTestSupport {
     }
 
     private void createUser(int i) {
-        String userBody =
-                String.format(
-                        "<user><userName>%s</userName><password>%s</password>"
-                                + "<enabled>true</enabled></user>",
-                        "user" + i, "password" + i);
+        String userBody = String.format(
+                "<user><userName>%s</userName><password>%s</password>" + "<enabled>true</enabled></user>",
+                "user" + i, "password" + i);
 
         try {
             postAsServletResponse("rest/security/usergroup/users", userBody, "text/xml");

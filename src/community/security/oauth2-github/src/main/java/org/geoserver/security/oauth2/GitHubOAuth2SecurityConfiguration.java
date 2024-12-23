@@ -18,8 +18,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 /**
  * GitHub specific REST remplates for OAuth2 protocol.
  *
- * <p>GitHub Authorization APIs available at
- * <strong>https://developer.github.com/v3/#authentication</strong> and
+ * <p>GitHub Authorization APIs available at <strong>https://developer.github.com/v3/#authentication</strong> and
  * <strong>https://developer.github.com/v3/oauth/</strong>
  *
  * <p>First of all the user must create an API key through the GitHub API Credentials <br>
@@ -27,16 +26,15 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
  *
  * <p>The procedure will provide a new <b>Client ID</b> and <b>Client Secret</b>
  *
- * <p>Also the user must specify the <b>Authorization callback URL</b> pointing to the GeoServer
- * instances <br>
+ * <p>Also the user must specify the <b>Authorization callback URL</b> pointing to the GeoServer instances <br>
  * Example:
  *
  * <ul>
  *   <li>http://localhost:8080/geoserver
  * </ul>
  *
- * <p>The GitHub OAuth2 Filter Endpoint will automatically redirect the users to an URL like the
- * following one at first login <br>
+ * <p>The GitHub OAuth2 Filter Endpoint will automatically redirect the users to an URL like the following one at first
+ * login <br>
  * <br>
  * <code>
  * https://github.com/login/oauth/authorize?response_type=code&client_id=my_client_id&redirect_uri=http://localhost:8080/geoserver&scope=user

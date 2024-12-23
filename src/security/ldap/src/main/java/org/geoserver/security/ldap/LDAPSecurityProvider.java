@@ -57,14 +57,12 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerAuthenticationProvider createAuthenticationProvider(
-            SecurityNamedServiceConfig config) {
+    public GeoServerAuthenticationProvider createAuthenticationProvider(SecurityNamedServiceConfig config) {
         LDAPSecurityServiceConfig ldapConfig = (LDAPSecurityServiceConfig) config;
 
         LdapContextSource ldapContext = LDAPUtils.createLdapContext(ldapConfig);
 
-        GeoserverLdapBindAuthenticator authenticator =
-                new GeoserverLdapBindAuthenticator(ldapContext);
+        GeoserverLdapBindAuthenticator authenticator = new GeoserverLdapBindAuthenticator(ldapContext);
 
         // authenticate and extract user using a filter and an optional username
         // format
@@ -101,12 +99,9 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
             // fall back to looking up roles via LDAP server, choosing
             // between default and binding populator
             if (ldapConfig.isBindBeforeGroupSearch()) {
-                authPopulator =
-                        new BindingLdapAuthoritiesPopulator(
-                                ldapContext, ldapConfig.getGroupSearchBase());
+                authPopulator = new BindingLdapAuthoritiesPopulator(ldapContext, ldapConfig.getGroupSearchBase());
                 // set hierarchical configurations
-                BindingLdapAuthoritiesPopulator bindPopulator =
-                        (BindingLdapAuthoritiesPopulator) authPopulator;
+                BindingLdapAuthoritiesPopulator bindPopulator = (BindingLdapAuthoritiesPopulator) authPopulator;
                 bindPopulator.setUseNestedParentGroups(ldapConfig.isUseNestedParentGroups());
                 bindPopulator.setMaxGroupSearchLevel(ldapConfig.getMaxGroupSearchLevel());
                 bindPopulator.setNestedGroupSearchFilter(ldapConfig.getNestedGroupSearchFilter());
@@ -115,36 +110,29 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
                     ((BindingLdapAuthoritiesPopulator) authPopulator)
                             .setGroupSearchFilter(ldapConfig.getGroupSearchFilter());
                 }
-                provider =
-                        new LdapAuthenticationProvider(authenticator, authPopulator) {
-                            /**
-                             * We need to give authoritiesPopulator both username and password, so
-                             * it can bind to the LDAP server.
-                             */
-                            @Override
-                            protected Collection<? extends GrantedAuthority> loadUserAuthorities(
-                                    DirContextOperations userData,
-                                    String username,
-                                    String password) {
-                                return ((BindingLdapAuthoritiesPopulator) getAuthoritiesPopulator())
-                                        .getGrantedAuthorities(userData, username, password);
-                            }
-                        };
+                provider = new LdapAuthenticationProvider(authenticator, authPopulator) {
+                    /**
+                     * We need to give authoritiesPopulator both username and password, so it can bind to the LDAP
+                     * server.
+                     */
+                    @Override
+                    protected Collection<? extends GrantedAuthority> loadUserAuthorities(
+                            DirContextOperations userData, String username, String password) {
+                        return ((BindingLdapAuthoritiesPopulator) getAuthoritiesPopulator())
+                                .getGrantedAuthorities(userData, username, password);
+                    }
+                };
             } else {
                 ldapContext.setAnonymousReadOnly(true);
                 // is hierarchical nested groups implementation required?
                 if (ldapConfig.isUseNestedParentGroups()) {
                     // use nested implementation for nested groups support
-                    authPopulator =
-                            new NestedLdapAuthoritiesPopulator(
-                                    ldapContext, ldapConfig.getGroupSearchBase());
+                    authPopulator = new NestedLdapAuthoritiesPopulator(ldapContext, ldapConfig.getGroupSearchBase());
                     ((NestedLdapAuthoritiesPopulator) authPopulator)
                             .setMaxSearchDepth(ldapConfig.getMaxGroupSearchLevel());
                 } else {
                     // no hierarchical groups required, use default implementation
-                    authPopulator =
-                            new DefaultLdapAuthoritiesPopulator(
-                                    ldapContext, ldapConfig.getGroupSearchBase());
+                    authPopulator = new DefaultLdapAuthoritiesPopulator(ldapContext, ldapConfig.getGroupSearchBase());
                 }
 
                 if (ldapConfig.getGroupSearchFilter() != null) {
@@ -155,8 +143,7 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
             }
         }
 
-        return new LDAPAuthenticationProvider(
-                provider, ldapConfig.getAdminGroup(), ldapConfig.getGroupAdminGroup());
+        return new LDAPAuthenticationProvider(provider, ldapConfig.getAdminGroup(), ldapConfig.getGroupAdminGroup());
     }
 
     @Override
@@ -165,14 +152,12 @@ public class LDAPSecurityProvider extends GeoServerSecurityProvider {
     }
 
     @Override
-    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerRoleService createRoleService(SecurityNamedServiceConfig config) throws IOException {
         return new LDAPRoleService();
     }
 
     @Override
-    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config)
-            throws IOException {
+    public GeoServerUserGroupService createUserGroupService(SecurityNamedServiceConfig config) throws IOException {
         return new LDAPUserGroupService(config);
     }
 }

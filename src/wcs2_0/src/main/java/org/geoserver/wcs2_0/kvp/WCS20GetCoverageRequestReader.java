@@ -44,8 +44,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         GetCoverageType gc = (GetCoverageType) super.read(request, kvp, rawKvp);
 
         // handle dimension subsets
@@ -75,15 +74,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
 
     private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
         // the early spec draft had un-qualified params, keeping it for backwards compatibility
-        List<String> geoTiffParams =
-                Arrays.asList(
-                        "compression",
-                        "jpeg_quality",
-                        "predictor",
-                        "interleave",
-                        "tiling",
-                        "tileheight",
-                        "tilewidth");
+        List<String> geoTiffParams = Arrays.asList(
+                "compression", "jpeg_quality", "predictor", "interleave", "tiling", "tileheight", "tilewidth");
         parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS, null);
         // the current has the qualified as "geotiff:xyz"
         parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS, "geotiff");
@@ -95,11 +87,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     }
 
     private void parseSimpleContentList(
-            GetCoverageType gc,
-            Map kvp,
-            List<String> geoTiffParams,
-            String namespace,
-            String kvpPrefix) {
+            GetCoverageType gc, Map kvp, List<String> geoTiffParams, String namespace, String kvpPrefix) {
         for (String param : geoTiffParams) {
             String key = param;
             if (kvpPrefix != null) {

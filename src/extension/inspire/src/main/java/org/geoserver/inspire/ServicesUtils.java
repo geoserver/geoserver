@@ -76,8 +76,7 @@ public final class ServicesUtils {
         String otherLanguages = null;
         if (metadataMap.get(OTHER_LANGUAGES.key) != null)
             otherLanguages = metadataMap.get(OTHER_LANGUAGES.key).toString();
-        List<String> langList =
-                otherLanguages == null ? null : Arrays.asList(otherLanguages.split(","));
+        List<String> langList = otherLanguages == null ? null : Arrays.asList(otherLanguages.split(","));
         // encode the default language
         translator.start("inspire_common:SupportedLanguages");
         translator.start("inspire_common:DefaultLanguage");
@@ -106,8 +105,7 @@ public final class ServicesUtils {
         translator.end("inspire_common:ResponseLanguage");
     }
 
-    private static String retrieveLanguageParameter(
-            String defaultLanguage, List<String> languages) {
+    private static String retrieveLanguageParameter(String defaultLanguage, List<String> languages) {
         Map<String, Object> kvpDispatcher = Dispatcher.REQUEST.get().getRawKvp();
         String value = null;
         if (kvpDispatcher != null) {

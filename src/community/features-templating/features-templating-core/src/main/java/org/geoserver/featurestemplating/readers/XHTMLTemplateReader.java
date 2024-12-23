@@ -27,14 +27,12 @@ public class XHTMLTemplateReader extends XMLRecursiveTemplateReader {
 
     protected Stack<String> optionsNamesStack;
 
-    public XHTMLTemplateReader(Resource resource, NamespaceSupport namespaceSupport)
-            throws IOException {
+    public XHTMLTemplateReader(Resource resource, NamespaceSupport namespaceSupport) throws IOException {
         super(resource, namespaceSupport);
         optionsNamesStack = new Stack<>();
     }
 
-    public XHTMLTemplateReader(
-            Resource resource, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
+    public XHTMLTemplateReader(Resource resource, XMLRecursiveTemplateReader parent, NamespaceSupport namespaceSupport)
             throws IOException {
         super(resource, parent, namespaceSupport);
         optionsNamesStack = new Stack<>();

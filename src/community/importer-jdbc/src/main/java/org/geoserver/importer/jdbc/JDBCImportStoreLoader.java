@@ -40,17 +40,10 @@ public class JDBCImportStoreLoader implements DisposableBean {
         try {
             Properties params = getParameters();
 
-            store =
-                    (JDBCDataStore)
-                            DataStoreFinder.getDataStore(
-                                    DataUtilities.toConnectionParameters(params));
-            if (store == null)
-                throw new RuntimeException(
-                        "Failed to create a JDBC store with parameters: " + params);
+            store = (JDBCDataStore) DataStoreFinder.getDataStore(DataUtilities.toConnectionParameters(params));
+            if (store == null) throw new RuntimeException("Failed to create a JDBC store with parameters: " + params);
         } catch (IOException e) {
-            LOGGER.info(
-                    "can't find or create JDBC import store configuration file: "
-                            + JDBCSTATUS_NAME);
+            LOGGER.info("can't find or create JDBC import store configuration file: " + JDBCSTATUS_NAME);
             LOGGER.log(Level.FINE, "no config file?", e);
         }
     }
@@ -62,8 +55,7 @@ public class JDBCImportStoreLoader implements DisposableBean {
             Properties fixture = new Properties();
             fixture.put("user", "geotools");
             fixture.put("password", "geotools");
-            fixture.put(
-                    "database", dataDir.getRoot().dir().getAbsolutePath() + "/importer/h2-store");
+            fixture.put("database", dataDir.getRoot().dir().getAbsolutePath() + "/importer/h2-store");
             fixture.put("dbtype", "h2");
             try (OutputStream os = resource.out()) {
                 fixture.store(os, "Defaulting to local H2 database");

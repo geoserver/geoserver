@@ -24,15 +24,14 @@ public abstract class AbstractGeoServicesConverter extends BaseMessageConverter<
         super(supportedMediaTypes);
     }
 
-    protected AbstractGeoServicesConverter(
-            Charset defaultCharset, MediaType... supportedMediaTypes) {
+    protected AbstractGeoServicesConverter(Charset defaultCharset, MediaType... supportedMediaTypes) {
         super(defaultCharset, supportedMediaTypes);
     }
 
     /**
-     * Serializes an object in a context-insensitive way, so that it can be called outside of the
-     * regular request handling hierarchy. Mainly used for exception handling; see {@link
-     * FormatParameterInterceptor} and {@link GeoServicesExceptionResolver}.
+     * Serializes an object in a context-insensitive way, so that it can be called outside of the regular request
+     * handling hierarchy. Mainly used for exception handling; see {@link FormatParameterInterceptor} and
+     * {@link GeoServicesExceptionResolver}.
      *
      * @param os {@link OutputStream} to write to
      * @param o Object to write

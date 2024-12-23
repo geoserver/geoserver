@@ -24,8 +24,7 @@ import org.junit.Test;
 
 public class GribRasterEditPanelTest extends GeoServerWicketTestSupport {
 
-    protected static QName SAMPLE_GRIB =
-            new QName(MockData.SF_URI, "sampleGrib", MockData.SF_PREFIX);
+    protected static QName SAMPLE_GRIB = new QName(MockData.SF_URI, "sampleGrib", MockData.SF_PREFIX);
 
     @Before
     public void loginBefore() {
@@ -35,8 +34,7 @@ public class GribRasterEditPanelTest extends GeoServerWicketTestSupport {
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
         super.setUpTestData(testData);
-        testData.setUpRasterLayer(
-                SAMPLE_GRIB, "test-data/sampleGrib.grb2", null, null, GribDataTest.class);
+        testData.setUpRasterLayer(SAMPLE_GRIB, "test-data/sampleGrib.grb2", null, null, GribDataTest.class);
     }
 
     @Test
@@ -44,23 +42,19 @@ public class GribRasterEditPanelTest extends GeoServerWicketTestSupport {
         Page page = tester.startPage(new CoverageStoreNewPage(new GRIBFormat().getName()));
         tester.assertNoErrorMessage();
         print(page, true, true);
-        Component editor =
-                tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
+        Component editor = tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
         assertThat(editor, instanceOf(GribRasterEditPanel.class));
     }
 
     @Test
     public void testGribEdit() throws Exception {
         CoverageStoreInfo store =
-                getCatalog()
-                        .getCoverageStoreByName(
-                                SAMPLE_GRIB.getPrefix(), SAMPLE_GRIB.getLocalPart());
+                getCatalog().getCoverageStoreByName(SAMPLE_GRIB.getPrefix(), SAMPLE_GRIB.getLocalPart());
         assertNotNull(store);
         Page page = tester.startPage(new CoverageStoreEditPage(store));
         tester.assertNoErrorMessage();
         print(page, true, true);
-        Component editor =
-                tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
+        Component editor = tester.getComponentFromLastRenderedPage("rasterStoreForm:parametersPanel");
         assertThat(editor, instanceOf(GribRasterEditPanel.class));
     }
 }

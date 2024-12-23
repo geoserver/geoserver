@@ -12,8 +12,7 @@ import org.geotools.referencing.CRS;
 /**
  * Model wrapper for {@link CoordinateReferenceSystem} instances.
  *
- * <p>This model operates by persisting the wkt ({@link CoordinateReferenceSystem#toWKT()}) for a
- * crs.
+ * <p>This model operates by persisting the wkt ({@link CoordinateReferenceSystem#toWKT()}) for a crs.
  *
  * @author Justin Deoliveira, OpenGeo
  */

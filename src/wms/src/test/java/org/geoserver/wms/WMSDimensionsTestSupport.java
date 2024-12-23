@@ -38,19 +38,14 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     protected static final long MILLIS_IN_DAY = 24 * 60 * 60 * 1000;
     protected static final long MILLIS_IN_MINUTE = 60000;
 
-    protected QName V_TIME_ELEVATION =
-            new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
-    protected QName V_TIME_ELEVATION_EMPTY =
-            new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
-    protected QName V_TIME_ELEVATION_STACKED =
-            new QName(MockData.SF_URI, "TimeElevationStacked", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_EMPTY = new QName(MockData.SF_URI, "TimeElevationEmpty", MockData.SF_PREFIX);
+    protected QName V_TIME_ELEVATION_STACKED = new QName(MockData.SF_URI, "TimeElevationStacked", MockData.SF_PREFIX);
     protected QName V_TIME_ELEVATION_WITH_START_END =
             new QName(MockData.SF_URI, "TimeElevationWithStartEnd", MockData.SF_PREFIX);
     protected static QName WATTEMP = new QName(MockData.SF_URI, "watertemp", MockData.SF_PREFIX);
-    protected static QName TIMERANGES =
-            new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
-    protected static QName TIMESERIES =
-            new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
+    protected static QName TIMERANGES = new QName(MockData.SF_URI, "timeranges", MockData.SF_PREFIX);
+    protected static QName TIMESERIES = new QName(MockData.SF_URI, "timeseries", MockData.SF_PREFIX);
 
     protected static final String UNITS = "foot";
     protected static final String UNIT_SYMBOL = "ft";
@@ -124,30 +119,17 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
         Map<LayerProperty, Object> map = new HashMap<>();
         map.put(LayerProperty.STYLE, "TimeElevation");
         Catalog catalog = getCatalog();
-        testData.addStyle(
-                "TimeElevation", "TimeElevation.sld", WMSDimensionsTestSupport.class, catalog);
+        testData.addStyle("TimeElevation", "TimeElevation.sld", WMSDimensionsTestSupport.class, catalog);
         testData.addVectorLayer(
-                V_TIME_ELEVATION,
-                map,
-                "TimeElevation.properties",
-                WMSDimensionsTestSupport.class,
-                catalog);
+                V_TIME_ELEVATION, map, "TimeElevation.properties", WMSDimensionsTestSupport.class, catalog);
 
         // vector time-elevation, emtpy
         testData.addVectorLayer(
-                V_TIME_ELEVATION_EMPTY,
-                map,
-                "TimeElevationEmpty.properties",
-                WMSDimensionsTestSupport.class,
-                catalog);
+                V_TIME_ELEVATION_EMPTY, map, "TimeElevationEmpty.properties", WMSDimensionsTestSupport.class, catalog);
 
         // vector time-elevation, stacked (all polys covering the whole planet)
         map.put(LayerProperty.STYLE, "TimeElevationStacked");
-        testData.addStyle(
-                "TimeElevationStacked",
-                "TimeElevationStacked.sld",
-                WMSDimensionsTestSupport.class,
-                catalog);
+        testData.addStyle("TimeElevationStacked", "TimeElevationStacked.sld", WMSDimensionsTestSupport.class, catalog);
         testData.addVectorLayer(
                 V_TIME_ELEVATION_STACKED,
                 map,
@@ -155,19 +137,15 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 WMSDimensionsTestSupport.class,
                 catalog);
 
-        testData.addStyle(
-                "temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);
+        testData.addStyle("temperature", "temperature.sld", WMSDimensionsTestSupport.class, catalog);
         Map<LayerProperty, Object> propertyMap = new HashMap<>();
         propertyMap.put(LayerProperty.STYLE, "temperature");
         // a raster layer with times
-        testData.addRasterLayer(
-                TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, catalog);
+        testData.addRasterLayer(TIMESERIES, "timeseries.zip", null, null, SystemTestData.class, catalog);
         // a raster layer with time and elevation
-        testData.addRasterLayer(
-                WATTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);
+        testData.addRasterLayer(WATTEMP, "watertemp.zip", null, propertyMap, SystemTestData.class, catalog);
         // a raster layer with time, elevation and custom dimensions as ranges
-        testData.addRasterLayer(
-                TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
+        testData.addRasterLayer(TIMERANGES, "timeranges.zip", null, null, SystemTestData.class, catalog);
     }
 
     /** Checks two dates are the same, within a given tolerance. */
@@ -183,8 +161,7 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
             Double resolution,
             String units,
             String unitSymbol) {
-        setupVectorDimension(
-                "TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
+        setupVectorDimension("TimeElevation", metadata, attribute, presentation, resolution, units, unitSymbol);
     }
 
     protected void setupVectorDimensionWithEnd(
@@ -196,23 +173,14 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
             String units,
             String unitSymbol) {
         setupVectorDimension(
-                "TimeElevationWithStartEnd",
-                metadata,
-                attribute,
-                presentation,
-                resolution,
-                units,
-                unitSymbol);
+                "TimeElevationWithStartEnd", metadata, attribute, presentation, resolution, units, unitSymbol);
         FeatureTypeInfo info = getCatalog().getFeatureTypeByName("TimeElevationWithStartEnd");
         info.getMetadata().get(metadata, DimensionInfo.class).setEndAttribute(endAttribute);
         getCatalog().save(info);
     }
 
     protected void setupResourceDimensionDefaultValue(
-            QName name,
-            String dimensionName,
-            DimensionDefaultValueSetting defaultValue,
-            String... startEndAttribute) {
+            QName name, String dimensionName, DimensionDefaultValueSetting defaultValue, String... startEndAttribute) {
         ResourceInfo info = getCatalog().getResourceByName(name.getLocalPart(), ResourceInfo.class);
         if (info == null) {
             throw new RuntimeException("Unable to get resource by name " + name.getLocalPart());
@@ -242,47 +210,24 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
                 values.size());
     }
 
-    /**
-     * Asserts that the specified nearest value has been used and check the corresponding HTTP
-     * warning
-     */
+    /** Asserts that the specified nearest value has been used and check the corresponding HTTP warning */
     protected void assertDefaultDimensionWarning(
             String layerId, String dimensionName, String unit, String expectedValue) {
         String expected =
-                "99 Default value used: "
-                        + dimensionName
-                        + "="
-                        + expectedValue
-                        + " "
-                        + unit
-                        + " ("
-                        + layerId
-                        + ")";
+                "99 Default value used: " + dimensionName + "=" + expectedValue + " " + unit + " (" + layerId + ")";
 
         assertWarningExists(expected);
     }
 
-    /**
-     * Asserts that the specified nearest value has been used and check the corresponding HTTP
-     * warning
-     */
+    /** Asserts that the specified nearest value has been used and check the corresponding HTTP warning */
     protected void assertNearestTimeWarning(String layerId, String expectedValue) {
         String expected =
-                "99 Nearest value used: time="
-                        + expectedValue
-                        + " "
-                        + ResourceInfo.TIME_UNIT
-                        + " ("
-                        + layerId
-                        + ")";
+                "99 Nearest value used: time=" + expectedValue + " " + ResourceInfo.TIME_UNIT + " (" + layerId + ")";
 
         assertWarningExists(expected);
     }
 
-    /**
-     * Asserts that the specified nearest value has been used and check the corresponding HTTP
-     * warning
-     */
+    /** Asserts that the specified nearest value has been used and check the corresponding HTTP warning */
     protected void assertNoNearestWarning(String layerId, String dimension) {
         String expected = "99 No nearest value found on " + layerId + ": " + dimension;
 
@@ -292,10 +237,9 @@ public abstract class WMSDimensionsTestSupport extends WMSTestSupport {
     private void assertWarningExists(String expected) {
         MockHttpServletResponse response = getLastResponse();
         List<Object> values = response.getHeaderValues(HttpHeaders.WARNING);
-        Object found = values.stream().filter(v -> expected.equals(v)).findFirst().orElse(null);
+        Object found =
+                values.stream().filter(v -> expected.equals(v)).findFirst().orElse(null);
 
-        assertNotNull(
-                "Could not find\n" + expected + "\n among the following warnings:\n" + values,
-                found);
+        assertNotNull("Could not find\n" + expected + "\n among the following warnings:\n" + values, found);
     }
 }

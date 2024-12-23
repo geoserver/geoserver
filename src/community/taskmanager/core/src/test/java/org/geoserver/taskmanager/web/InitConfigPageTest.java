@@ -91,23 +91,18 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
         tester.assertRenderedPage(ConfigurationPage.class);
 
         // attributes table
-        GeoServerTablePanel<Attribute> attributesPanel =
-                (GeoServerTablePanel<Attribute>)
-                        tester.getComponentFromLastRenderedPage(
-                                "configurationForm:attributesPanel");
+        GeoServerTablePanel<Attribute> attributesPanel = (GeoServerTablePanel<Attribute>)
+                tester.getComponentFromLastRenderedPage("configurationForm:attributesPanel");
         assertEquals(3, attributesPanel.getDataProvider().size());
 
         // tasks table
         GeoServerTablePanel<Task> tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(1, tasksPanel.getDataProvider().size());
 
         // batches panel
-        GeoServerTablePanel<Batch> batchesPanel =
-                (GeoServerTablePanel<Batch>)
-                        tester.getComponentFromLastRenderedPage(
-                                "configurationForm:batchesPanel:form:batchesPanel");
+        GeoServerTablePanel<Batch> batchesPanel = (GeoServerTablePanel<Batch>)
+                tester.getComponentFromLastRenderedPage("configurationForm:batchesPanel:form:batchesPanel");
         assertEquals(1, batchesPanel.getDataProvider().size());
 
         tester.assertInvisible("configurationForm:save");
@@ -117,29 +112,25 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
 
         Thread.sleep(1000);
 
-        tester.executeBehavior(
-                tester.getLastRenderedPage().getBehaviors(AbstractAjaxTimerBehavior.class).get(0));
+        tester.executeBehavior(tester.getLastRenderedPage()
+                .getBehaviors(AbstractAjaxTimerBehavior.class)
+                .get(0));
 
         tester.assertRenderedPage(ConfigurationPage.class);
 
         // attributes table
-        attributesPanel =
-                (GeoServerTablePanel<Attribute>)
-                        tester.getComponentFromLastRenderedPage(
-                                "configurationForm:attributesPanel");
+        attributesPanel = (GeoServerTablePanel<Attribute>)
+                tester.getComponentFromLastRenderedPage("configurationForm:attributesPanel");
         assertEquals(5, attributesPanel.getDataProvider().size());
 
         // tasks table
         tasksPanel =
-                (GeoServerTablePanel<Task>)
-                        tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
+                (GeoServerTablePanel<Task>) tester.getComponentFromLastRenderedPage("configurationForm:tasksPanel");
         assertEquals(2, tasksPanel.getDataProvider().size());
 
         // batches panel
-        batchesPanel =
-                (GeoServerTablePanel<Batch>)
-                        tester.getComponentFromLastRenderedPage(
-                                "configurationForm:batchesPanel:form:batchesPanel");
+        batchesPanel = (GeoServerTablePanel<Batch>)
+                tester.getComponentFromLastRenderedPage("configurationForm:batchesPanel:form:batchesPanel");
         assertEquals(2, batchesPanel.getDataProvider().size());
 
         tester.assertModelValue(
@@ -149,13 +140,11 @@ public class InitConfigPageTest extends AbstractWicketTaskManagerTest {
         tester.assertVisible("configurationForm:save");
 
         FormTester formTester = tester.newFormTester("configurationForm");
-        formTester.select(
-                "attributesPanel:listContainer:items:4:itemProperties:1:component:dropdown", 0);
+        formTester.select("attributesPanel:listContainer:items:4:itemProperties:1:component:dropdown", 0);
         tester.executeAjaxEvent(
                 "configurationForm:attributesPanel:listContainer:items:4:itemProperties:1:component:dropdown",
                 "change");
-        formTester.select(
-                "attributesPanel:listContainer:items:5:itemProperties:1:component:dropdown", 0);
+        formTester.select("attributesPanel:listContainer:items:5:itemProperties:1:component:dropdown", 0);
 
         tester.clickLink("configurationForm:apply");
         tester.assertRenderedPage(ConfigurationPage.class);

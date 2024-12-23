@@ -32,16 +32,13 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
 
     public static Property<StyleInfo> WORKSPACE = new BeanProperty<>("workspace", "workspace.name");
 
-    static final Property<StyleInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    static final Property<StyleInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    static final Property<StyleInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    static final Property<StyleInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
     static final Property<StyleInfo> FORMAT = new BeanProperty<>("format", "format");
 
-    static final Property<StyleInfo> FORMAT_VERSION =
-            new BeanProperty<>("formatversion", "formatVersion");
+    static final Property<StyleInfo> FORMAT_VERSION = new BeanProperty<>("formatversion", "formatVersion");
 
     static List<Property<StyleInfo>> PROPERTIES = Arrays.asList(NAME, FORMAT, WORKSPACE);
 
@@ -60,15 +57,9 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         List<Property<StyleInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowCreatedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowModifiedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
         return modifiedPropertiesList;
     }
@@ -101,10 +92,7 @@ public class StyleProvider extends GeoServerDataProvider<StyleInfo> {
         }
     }
 
-    /**
-     * Returns the requested page of layer objects after applying any keyword filtering set on the
-     * page
-     */
+    /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
     private CloseableIterator<StyleInfo> filteredItems(Integer first, Integer count) {
         final Catalog catalog = getCatalog();
 

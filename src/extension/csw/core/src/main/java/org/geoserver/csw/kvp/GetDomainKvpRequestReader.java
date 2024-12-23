@@ -24,8 +24,7 @@ public class GetDomainKvpRequestReader extends CSWKvpRequestReader {
     }
 
     @Override
-    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp)
-            throws Exception {
+    public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         // fix propertyName before we get into EMF reflection mode
         Object propertyName = kvp.remove(PROPERTYNAME);
 

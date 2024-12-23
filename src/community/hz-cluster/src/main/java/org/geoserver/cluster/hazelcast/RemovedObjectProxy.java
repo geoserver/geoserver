@@ -36,14 +36,14 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geotools.api.data.DataStore;
 
 /**
- * Proxy for {@link CatalogInfo} concrete interfaces used to notify the local cluster member of
- * objects removed on another member.
+ * Proxy for {@link CatalogInfo} concrete interfaces used to notify the local cluster member of objects removed on
+ * another member.
  *
- * <p>The only methods proxied are {@link CatalogInfo#getId() getId()}, {@code getName()} for the
- * ones that have such a method, and {@link CatalogInfo#accept(CatalogVisitor)}.
+ * <p>The only methods proxied are {@link CatalogInfo#getId() getId()}, {@code getName()} for the ones that have such a
+ * method, and {@link CatalogInfo#accept(CatalogVisitor)}.
  *
- * <p>{@code accept(CatalogVisitor)} is crucial for the {@link ResourcePool} catalog listener to be
- * able of disposing locally cached resources such as {@link DataStore} instances.
+ * <p>{@code accept(CatalogVisitor)} is crucial for the {@link ResourcePool} catalog listener to be able of disposing
+ * locally cached resources such as {@link DataStore} instances.
  */
 class RemovedObjectProxy implements InvocationHandler {
 
@@ -62,10 +62,7 @@ class RemovedObjectProxy implements InvocationHandler {
     }
 
     public RemovedObjectProxy(
-            String id,
-            String name,
-            Class<? extends Info> infoInterface,
-            @Nullable String nativeName) {
+            String id, String name, Class<? extends Info> infoInterface, @Nullable String nativeName) {
         checkNotNull(id, "id");
         checkNotNull(name, "name");
         checkNotNull(infoInterface, "infoInterface");
@@ -144,13 +141,7 @@ class RemovedObjectProxy implements InvocationHandler {
 
     @Override
     public String toString() {
-        return "RemovedObjectProxy[("
-                + infoInterface.getSimpleName()
-                + "[id="
-                + id
-                + ", name="
-                + name
-                + "]]";
+        return "RemovedObjectProxy[(" + infoInterface.getSimpleName() + "[id=" + id + ", name=" + name + "]]";
     }
 
     @Override

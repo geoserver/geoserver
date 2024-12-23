@@ -89,7 +89,9 @@ public class KMLPlacemarkTransformTest {
                 feature.getDefaultGeometry().getClass());
         SimpleFeature result = kmlPlacemarkTransform.convertFeature(feature, transformedType);
         Assert.assertEquals(
-                "Invalid Geometry class", Point.class, result.getAttribute("Geometry").getClass());
+                "Invalid Geometry class",
+                Point.class,
+                result.getAttribute("Geometry").getClass());
         Assert.assertEquals(
                 "Unexpected default geometry",
                 Point.class,

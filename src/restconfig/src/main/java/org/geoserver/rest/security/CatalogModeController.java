@@ -77,8 +77,7 @@ public class CatalogModeController {
 
         String mode = (String) map.get(MODE_ELEMENT);
 
-        if (mode == null)
-            throw new ResourceNotFoundException("Element " + MODE_ELEMENT + " is missing");
+        if (mode == null) throw new ResourceNotFoundException("Element " + MODE_ELEMENT + " is missing");
 
         CatalogMode modeValue = null;
         for (CatalogMode m : CatalogMode.values()) {
@@ -88,8 +87,7 @@ public class CatalogModeController {
             }
         }
 
-        if (modeValue == null)
-            throw new RestException("Not a valid mode: " + mode, HttpStatus.UNPROCESSABLE_ENTITY);
+        if (modeValue == null) throw new RestException("Not a valid mode: " + mode, HttpStatus.UNPROCESSABLE_ENTITY);
 
         ruleDAO.setCatalogMode(modeValue);
         ruleDAO.storeRules();

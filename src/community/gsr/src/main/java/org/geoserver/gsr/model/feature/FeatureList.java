@@ -67,16 +67,12 @@ public class FeatureList implements GSRModel {
     }
 
     public <T extends FeatureType, F extends org.geotools.api.feature.Feature> FeatureList(
-            FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR)
-            throws IOException {
+            FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR) throws IOException {
         this(collection, returnGeometry, outputSR, null);
     }
 
     public <T extends FeatureType, F extends org.geotools.api.feature.Feature> FeatureList(
-            FeatureCollection<T, F> collection,
-            boolean returnGeometry,
-            String outputSR,
-            String quantizationParameters)
+            FeatureCollection<T, F> collection, boolean returnGeometry, String outputSR, String quantizationParameters)
             throws IOException {
 
         T schema = collection.getSchema();
@@ -86,10 +82,7 @@ public class FeatureList implements GSRModel {
             GeometryDescriptor geometryDescriptor = schema.getGeometryDescriptor();
             if (geometryDescriptor == null) {
                 throw new RuntimeException(
-                        "No geometry descriptor for type "
-                                + schema
-                                + "; "
-                                + schema.getDescriptors());
+                        "No geometry descriptor for type " + schema + "; " + schema.getDescriptors());
             }
             GeometryType geometryType = geometryDescriptor.getType();
             if (geometryType == null) {
@@ -130,47 +123,38 @@ public class FeatureList implements GSRModel {
         } else {
             JSONObject json = (JSONObject) JSONSerializer.toJSON(quantizationParameters);
 
-            QuantizedGeometryEncoder.Mode mode =
-                    QuantizedGeometryEncoder.Mode.valueOf(json.getString("mode"));
+            QuantizedGeometryEncoder.Mode mode = QuantizedGeometryEncoder.Mode.valueOf(json.getString("mode"));
             QuantizedGeometryEncoder.OriginPosition originPosition =
-                    QuantizedGeometryEncoder.OriginPosition.valueOf(
-                            json.getString("originPosition"));
+                    QuantizedGeometryEncoder.OriginPosition.valueOf(json.getString("originPosition"));
             Double tolerance = json.getDouble("tolerance");
             Envelope extent = GeometryEncoder.jsonToEnvelope(json.getJSONObject("extent"));
-            CoordinateReferenceSystem envelopeCrs =
-                    SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(
-                            json.getJSONObject("extent").getJSONObject("spatialReference"));
+            CoordinateReferenceSystem envelopeCrs = SpatialReferenceEncoder.coordinateReferenceSystemFromJSON(
+                    json.getJSONObject("extent").getJSONObject("spatialReference"));
 
             MathTransform mathTx;
             try {
                 mathTx = CRS.findMathTransform(envelopeCrs, outCrs, true);
             } catch (FactoryException e) {
                 throw new IllegalArgumentException(
-                        "Unable to translate between input and native coordinate reference systems",
-                        e);
+                        "Unable to translate between input and native coordinate reference systems", e);
             }
             Envelope transformedExtent;
             try {
                 transformedExtent = JTS.transform(extent, mathTx);
             } catch (TransformException e) {
                 throw new IllegalArgumentException(
-                        "Error while converting envelope from input to native coordinate system",
-                        e);
+                        "Error while converting envelope from input to native coordinate system", e);
             }
 
             // TODO: Transform extent to outSR before determining translate
             // default to upperLeft
-            double[] translate =
-                    new double[] {transformedExtent.getMinX(), transformedExtent.getMaxY()};
+            double[] translate = new double[] {transformedExtent.getMinX(), transformedExtent.getMaxY()};
             if (originPosition == QuantizedGeometryEncoder.OriginPosition.bottomRight) {
                 translate = new double[] {transformedExtent.getMaxX(), transformedExtent.getMinY()};
             }
-            transform =
-                    new Transform(originPosition, new double[] {tolerance, tolerance}, translate);
+            transform = new Transform(originPosition, new double[] {tolerance, tolerance}, translate);
 
-            geometryEncoder =
-                    new QuantizedGeometryEncoder(
-                            mode, originPosition, tolerance, transformedExtent);
+            geometryEncoder = new QuantizedGeometryEncoder(mode, originPosition, tolerance, transformedExtent);
         }
 
         for (PropertyDescriptor desc : schema.getDescriptors()) {
@@ -185,13 +169,8 @@ public class FeatureList implements GSRModel {
         try (FeatureIterator<F> iterator = collection.features()) {
             while (iterator.hasNext()) {
                 org.geotools.api.feature.Feature feature = iterator.next();
-                features.add(
-                        FeatureEncoder.feature(
-                                feature,
-                                returnGeometry,
-                                spatialReference,
-                                objectIdFieldName,
-                                geometryEncoder));
+                features.add(FeatureEncoder.feature(
+                        feature, returnGeometry, spatialReference, objectIdFieldName, geometryEncoder));
             }
         }
     }

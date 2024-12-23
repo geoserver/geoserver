@@ -18,8 +18,7 @@ public class GdalBinaryPPIO extends BinaryPPIO {
     private String outputFormat;
     private String fileExtension;
 
-    protected GdalBinaryPPIO(
-            String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
+    protected GdalBinaryPPIO(String outputFormat, GdalCoverageResponseDelegate delegate, String mimeType) {
         super(GridCoverage2D.class, GridCoverage2D.class, mimeType);
         this.delegate = delegate;
         this.outputFormat = outputFormat;

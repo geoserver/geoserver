@@ -34,30 +34,25 @@ public class ImporterExpiryTest extends ImporterTestSupport {
         File archsitesDir = unpack("shape/archsites_epsg_prj.zip");
 
         // A pending context. Just create it
-        ImportContext pending =
-                importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
+        ImportContext pending = importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
 
         // A fake initializing context
-        ImportContext init =
-                importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
+        ImportContext init = importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
         init.setState(ImportContext.State.INIT);
         importer.getStore().save(init);
 
         // A fake failed initialization context
-        ImportContext initError =
-                importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
+        ImportContext initError = importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
         initError.setState(ImportContext.State.INIT);
         importer.getStore().save(initError);
 
         // A running context... actually running would be unreliable, just mark it as such
-        ImportContext running =
-                importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
+        ImportContext running = importer.createContext(new SpatialFile(new File(archsitesDir, "archsites.shp")));
         running.setState(ImportContext.State.RUNNING);
         importer.getStore().save(running);
 
         // run a full import, a completed context
-        ImportContext completed =
-                importArchSites(new SpatialFile(new File(archsitesDir, "archsites.shp")));
+        ImportContext completed = importArchSites(new SpatialFile(new File(archsitesDir, "archsites.shp")));
 
         // sleep a bit longer than the expiry time
         Thread.sleep(3000);
@@ -67,20 +62,18 @@ public class ImporterExpiryTest extends ImporterTestSupport {
         cleaner.run();
 
         AtomicInteger counter = new AtomicInteger(0);
-        importer.getStore()
-                .query(
-                        ic -> {
-                            // these should all be cleaned
-                            assertNotEquals(ic, init);
-                            assertNotEquals(ic, initError);
-                            assertNotEquals(ic, pending);
-                            assertNotEquals(ic, completed);
+        importer.getStore().query(ic -> {
+            // these should all be cleaned
+            assertNotEquals(ic, init);
+            assertNotEquals(ic, initError);
+            assertNotEquals(ic, pending);
+            assertNotEquals(ic, completed);
 
-                            // however this should have been spared
-                            assertEquals(ic, running);
+            // however this should have been spared
+            assertEquals(ic, running);
 
-                            counter.incrementAndGet();
-                        });
+            counter.incrementAndGet();
+        });
         assertEquals(1, counter.get());
     }
 

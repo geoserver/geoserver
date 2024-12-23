@@ -16,9 +16,8 @@ public class SystemPropertyStatus implements ModuleStatus {
     private static final Logger LOGGER = Logging.getLogger(SystemPropertyStatus.class);
 
     /**
-     * Name of the environment variable that turns on the details (listing of all property
-     * variables) for this module. "false" = don't show, "true" = show all the environment variables
-     * on the web interface.
+     * Name of the environment variable that turns on the details (listing of all property variables) for this module.
+     * "false" = don't show, "true" = show all the environment variables on the web interface.
      */
     public static final String SystemPropertyStatusEnabledEnvironmentVar =
             "GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED";
@@ -62,8 +61,7 @@ public class SystemPropertyStatus implements ModuleStatus {
      * returns true if the message (list of variables) should be shown
      *
      * <p>Uses environment variable SystemPropertyStatusEnabledEnvironmentVar
-     * ("GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED") not defined -> false (default) bad value
-     * -> false (default)
+     * ("GEOSERVER_MODULE_SYSTEM_PROPERTY_STATUS_ENABLED") not defined -> false (default) bad value -> false (default)
      */
     public boolean isShow() {
         String val = getEnvironmentVariable(SystemPropertyStatusEnabledEnvironmentVar);
@@ -84,10 +82,9 @@ public class SystemPropertyStatus implements ModuleStatus {
     @Override
     public Optional<String> getMessage() {
         if (!isShow()) {
-            var message =
-                    String.format(
-                            "Java system properties hidden for security reasons.  Set the environment variable '%s' to 'true' to see them.",
-                            SystemPropertyStatusEnabledEnvironmentVar);
+            var message = String.format(
+                    "Java system properties hidden for security reasons.  Set the environment variable '%s' to 'true' to see them.",
+                    SystemPropertyStatusEnabledEnvironmentVar);
             return Optional.of(message);
         }
         StringBuffer result = new StringBuffer();

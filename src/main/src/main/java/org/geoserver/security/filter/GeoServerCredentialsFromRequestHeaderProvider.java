@@ -12,8 +12,7 @@ import org.geoserver.security.validation.CredentialsFromRequestHeaderFilterConfi
 import org.geoserver.security.validation.SecurityConfigValidator;
 
 /**
- * Security provider to extract user credentials (username and password) from Request Headers in a
- * configurable way.
+ * Security provider to extract user credentials (username and password) from Request Headers in a configurable way.
  *
  * @author Lorenzo Natali, GeoSolutions
  * @author Mauro Bartolomeoli, GeoSolutions
@@ -23,9 +22,7 @@ public class GeoServerCredentialsFromRequestHeaderProvider extends AbstractFilte
     public void configure(XStreamPersister xp) {
         super.configure(xp);
         xp.getXStream()
-                .alias(
-                        "credentialsFromRequestHeaderAuthentication",
-                        CredentialsFromRequestHeaderFilterConfig.class);
+                .alias("credentialsFromRequestHeaderAuthentication", CredentialsFromRequestHeaderFilterConfig.class);
     }
 
     @Override
@@ -39,8 +36,7 @@ public class GeoServerCredentialsFromRequestHeaderProvider extends AbstractFilte
     }
 
     @Override
-    public SecurityConfigValidator createConfigurationValidator(
-            GeoServerSecurityManager securityManager) {
+    public SecurityConfigValidator createConfigurationValidator(GeoServerSecurityManager securityManager) {
         return new CredentialsFromRequestHeaderFilterConfigValidator(securityManager);
     }
 }

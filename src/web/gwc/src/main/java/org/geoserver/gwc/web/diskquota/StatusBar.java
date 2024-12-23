@@ -28,18 +28,15 @@ public class StatusBar extends Panel {
             final IModel<String> progressMessageModel) {
         super(id);
         setOutputMarkupId(true);
-        add(
-                new Behavior() {
-                    private static final long serialVersionUID = -8058471260136015254L;
+        add(new Behavior() {
+            private static final long serialVersionUID = -8058471260136015254L;
 
-                    @Override
-                    public void renderHead(Component component, IHeaderResponse response) {
-                        response.render(
-                                CssHeaderItem.forReference(
-                                        new PackageResourceReference(
-                                                StatusBar.class, "statusbar.css")));
-                    }
-                });
+            @Override
+            public void renderHead(Component component, IHeaderResponse response) {
+                response.render(
+                        CssHeaderItem.forReference(new PackageResourceReference(StatusBar.class, "statusbar.css")));
+            }
+        });
 
         WebMarkupContainer usageBar = new WebMarkupContainer("statusBarProgress");
         WebMarkupContainer excessBar = new WebMarkupContainer("statusBarExcess");
@@ -61,16 +58,10 @@ public class StatusBar extends Panel {
             excessPercentage = 0;
         }
 
-        usageBar.add(
-                new AttributeModifier(
-                        "style",
-                        new Model<>(
-                                "width: "
-                                        + usedPercentage
-                                        + "px; left: 5px; border-left: inherit;")));
+        usageBar.add(new AttributeModifier(
+                "style", new Model<>("width: " + usedPercentage + "px; left: 5px; border-left: inherit;")));
 
-        String redStyle =
-                "width: " + excessPercentage + "px; left: " + (5 + usedPercentage) + "px;";
+        String redStyle = "width: " + excessPercentage + "px; left: " + (5 + usedPercentage) + "px;";
         excessBar.add(new AttributeModifier("style", new Model<>(redStyle)));
 
         add(usageBar);

@@ -26,8 +26,7 @@ import org.junit.Test;
 /** UI test for Custom dimension editor for vector. */
 public class VectorCustomDimensionEditorTest extends GeoServerWicketTestSupport {
 
-    private static final String markup =
-            "<form wicket:id=\"form\"><div wicket:id=\"dimEditor\" /></form>";
+    private static final String markup = "<form wicket:id=\"form\"><div wicket:id=\"dimEditor\" /></form>";
 
     @Test
     public void testEditor() {
@@ -45,8 +44,7 @@ public class VectorCustomDimensionEditorTest extends GeoServerWicketTestSupport 
         Pair<String, DimensionInfo> entry = Pair.of("dim_name", dimension);
         VectorCustomDimensionEntry dimEntry = new VectorCustomDimensionEntry(entry);
         VectorCustomDimensionEditor editor =
-                new VectorCustomDimensionEditor(
-                        "dimEditor", Model.of(dimEntry), featureTypeInfo, Serializable.class);
+                new VectorCustomDimensionEditor("dimEditor", Model.of(dimEntry), featureTypeInfo, Serializable.class);
         Form form = new Form("form");
         form.add(editor);
         form = tester.startComponentInPage(form, Markup.of(markup));

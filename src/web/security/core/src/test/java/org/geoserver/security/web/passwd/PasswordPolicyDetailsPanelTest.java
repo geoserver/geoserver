@@ -62,10 +62,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
 
     protected boolean getUpperCaseRequired(boolean value) {
         return (Boolean)
-                formTester
-                        .getForm()
-                        .get("details:config.uppercaseRequired")
-                        .getDefaultModelObject();
+                formTester.getForm().get("details:config.uppercaseRequired").getDefaultModelObject();
     }
 
     protected void setLowerCaseRequired(boolean value) {
@@ -74,10 +71,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
 
     protected boolean getLowerCaseRequired(boolean value) {
         return (Boolean)
-                formTester
-                        .getForm()
-                        .get("details:config.lowercaseRequired")
-                        .getDefaultModelObject();
+                formTester.getForm().get("details:config.lowercaseRequired").getDefaultModelObject();
     }
 
     protected void setUnlimted(boolean value) {
@@ -94,8 +88,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
     }
 
     protected int getMinLength(int value) {
-        return (Integer)
-                formTester.getForm().get("details:config.minLength").getDefaultModelObject();
+        return (Integer) formTester.getForm().get("details:config.minLength").getDefaultModelObject();
     }
 
     protected void setMaxLength(int value) {
@@ -103,8 +96,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
     }
 
     protected int getMaxLength(int value) {
-        return (Integer)
-                formTester.getForm().get("details:config.maxLength").getDefaultModelObject();
+        return (Integer) formTester.getForm().get("details:config.maxLength").getDefaultModelObject();
     }
 
     @Test
@@ -156,8 +148,7 @@ public class PasswordPolicyDetailsPanelTest extends AbstractSecurityNamedService
         assertEquals(3, countItems());
         assertNotNull(getSecurityNamedServiceConfig("default"));
         assertNotNull(getSecurityNamedServiceConfig("master"));
-        PasswordPolicyConfig pwConfig =
-                (PasswordPolicyConfig) getSecurityNamedServiceConfig("default2");
+        PasswordPolicyConfig pwConfig = (PasswordPolicyConfig) getSecurityNamedServiceConfig("default2");
         assertNotNull(pwConfig);
         assertEquals("default2", pwConfig.getName());
         assertEquals(PasswordValidatorImpl.class.getName(), pwConfig.getClassName());

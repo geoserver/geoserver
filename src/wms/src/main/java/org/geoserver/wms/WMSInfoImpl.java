@@ -44,16 +44,16 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     private boolean featuresReprojectionDisabled = false;
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map with key
-     * "authorityURLs", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key "authorityURLs", and a not
+     * transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
     protected List<AuthorityURLInfo> authorityURLs = new ArrayList<>(2);
 
     /**
-     * This property is transient in 2.1.x series and stored under the metadata map with key
-     * "identifiers", and a not transient in the 2.2.x series.
+     * This property is transient in 2.1.x series and stored under the metadata map with key "identifiers", and a not
+     * transient in the 2.2.x series.
      *
      * @since 2.1.3
      */
@@ -227,8 +227,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
     }
 
     @Override
-    public void setGetFeatureInfoMimeTypeCheckingEnabled(
-            boolean getFeatureInfoMimeTypeCheckingEnabled) {
+    public void setGetFeatureInfoMimeTypeCheckingEnabled(boolean getFeatureInfoMimeTypeCheckingEnabled) {
         this.getFeatureInfoMimeTypeCheckingEnabled = getFeatureInfoMimeTypeCheckingEnabled;
     }
 
@@ -254,8 +253,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public String getRootLayerAbstract() {
-        return InternationalStringUtils.getOrDefault(
-                rootLayerAbstract, internationalRootLayerAbstract);
+        return InternationalStringUtils.getOrDefault(rootLayerAbstract, internationalRootLayerAbstract);
     }
 
     @Override
@@ -312,9 +310,7 @@ public class WMSInfoImpl extends ServiceInfoImpl implements WMSInfo {
 
     @Override
     public int getRemoteStyleMaxRequestTime() {
-        return remoteStyleMaxRequestTime != null
-                ? remoteStyleMaxRequestTime
-                : DEFAULT_REMOTE_STYLE_MAX_REQUEST_TIME;
+        return remoteStyleMaxRequestTime != null ? remoteStyleMaxRequestTime : DEFAULT_REMOTE_STYLE_MAX_REQUEST_TIME;
     }
 
     @Override

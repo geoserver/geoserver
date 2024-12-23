@@ -47,9 +47,7 @@ public class SourceCoverageKvpParser extends KvpParser {
             LayerInfo layer = catalog.getLayerByName(value);
             if (layer == null || layer.getType() != PublishedType.RASTER)
                 throw new WcsException(
-                        "Could not find sourcecoverage '" + coverage + "'",
-                        InvalidParameterValue,
-                        "sourcecoverage");
+                        "Could not find sourcecoverage '" + coverage + "'", InvalidParameterValue, "sourcecoverage");
             coverages.add(coverage);
         }
 

@@ -36,8 +36,7 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
     public static final GeoServerRole ANONYMOUS_ROLE = new GeoServerRole("ROLE_ANONYMOUS");
 
     /** Geoserver system roles */
-    public static final GeoServerRole[] SystemRoles = {
-        ADMIN_ROLE, GROUP_ADMIN_ROLE, AUTHENTICATED_ROLE, ANONYMOUS_ROLE
+    public static final GeoServerRole[] SystemRoles = {ADMIN_ROLE, GROUP_ADMIN_ROLE, AUTHENTICATED_ROLE, ANONYMOUS_ROLE
     };
 
     /** Mappable system roles */
@@ -71,8 +70,8 @@ public class GeoServerRole implements GrantedAuthority, Comparable<GeoServerRole
     /**
      * Generic mechanism to store additional information (role paramaters)
      *
-     * <p>examples: a user with the role ROLE_EMPLOYEE could have a role parameter EMPLOYEE_NUMBER
-     * To be filled by the backend store
+     * <p>examples: a user with the role ROLE_EMPLOYEE could have a role parameter EMPLOYEE_NUMBER To be filled by the
+     * backend store
      */
     public Properties getProperties() {
         if (properties == null) properties = new Properties();

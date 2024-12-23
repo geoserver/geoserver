@@ -35,13 +35,11 @@ public class GitHubTokenServices extends GeoServerOAuthRemoteTokenServices {
     }
 
     @Override
-    protected Map<String, Object> postForMap(
-            String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
+    protected Map<String, Object> postForMap(String path, MultiValueMap<String, String> formData, HttpHeaders headers) {
         if (headers.getContentType() == null) {
             headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         }
-        ParameterizedTypeReference<Map<String, Object>> map =
-                new ParameterizedTypeReference<Map<String, Object>>() {};
+        ParameterizedTypeReference<Map<String, Object>> map = new ParameterizedTypeReference<Map<String, Object>>() {};
         return restTemplate
                 .exchange(path, HttpMethod.GET, new HttpEntity<>(formData, headers), map)
                 .getBody();

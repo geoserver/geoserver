@@ -20,15 +20,14 @@ public class MeasureTypeBindingTest extends AbstractAppSchemaTestSupport {
     }
 
     /**
-     * This is to test MeasureTypeBinding without 'uom' in app-schema. GeoServer should encode
-     * output without error (https://osgeo-org.atlassian.net/browse/GEOT-1272)
+     * This is to test MeasureTypeBinding without 'uom' in app-schema. GeoServer should encode output without error
+     * (https://osgeo-org.atlassian.net/browse/GEOT-1272)
      */
     @Test
     public void testMeasureTypeBindingWithoutUOM() {
         String path = "wfs?request=GetFeature&version=1.1.0&typename=ex:PolymorphicFeature";
         Document doc = getAsDOM(path);
-        LOGGER.info(
-                "WFS GetFeature&typename=ex:PolymorphicFeature response:\n" + prettyString(doc));
+        LOGGER.info("WFS GetFeature&typename=ex:PolymorphicFeature response:\n" + prettyString(doc));
         assertXpathCount(1, "//ex:PolymorphicFeature", doc);
 
         Node feature = doc.getElementsByTagName("ex:PolymorphicFeature").item(0);

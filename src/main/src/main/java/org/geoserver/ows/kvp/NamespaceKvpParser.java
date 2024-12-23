@@ -16,11 +16,10 @@ import org.geoserver.platform.ServiceException;
 import org.xml.sax.helpers.NamespaceSupport;
 
 /**
- * Parses a list of namespace declarations of the form {@code
- * <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a {@link
- * NamespaceSupport}. Using the {@link PrefixNamespaceSeparator#COMMA} it's also possible to handle
- * the WFS 2.0 suggested syntax, {@code
- * <xmlns(foo,http://name.space1)[,xmlns(bar,http://name.space2)]+> }
+ * Parses a list of namespace declarations of the form
+ * {@code <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> } into a {@link NamespaceSupport}. Using the
+ * {@link PrefixNamespaceSeparator#COMMA} it's also possible to handle the WFS 2.0 suggested syntax,
+ * {@code <xmlns(foo,http://name.space1)[,xmlns(bar,http://name.space2)]+> }
  *
  * @author groldan
  */
@@ -38,8 +37,8 @@ public class NamespaceKvpParser extends KvpParser {
     }
 
     /**
-     * @param value a list of namespace declarations of the form {@code
-     *     <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
+     * @param value a list of namespace declarations of the form
+     *     {@code <xmlns(foo=http://name.space1)[,xmlns(bar=http://name.space2)]+> }
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -60,9 +59,7 @@ public class NamespaceKvpParser extends KvpParser {
             decl = decl.trim();
             if (!decl.startsWith("xmlns(") || !decl.endsWith(")")) {
                 throw new ServiceException(
-                        "Illegal namespace declaration, "
-                                + "should be of the form xmlns(<prefix>=<ns uri>): "
-                                + decl,
+                        "Illegal namespace declaration, " + "should be of the form xmlns(<prefix>=<ns uri>): " + decl,
                         ServiceException.INVALID_PARAMETER_VALUE,
                         getKey());
             }
@@ -91,9 +88,7 @@ public class NamespaceKvpParser extends KvpParser {
                 new URI(uri);
             } catch (URISyntaxException e) {
                 throw new ServiceException(
-                        "Illegal namespace declaration: " + decl,
-                        ServiceException.INVALID_PARAMETER_VALUE,
-                        getKey());
+                        "Illegal namespace declaration: " + decl, ServiceException.INVALID_PARAMETER_VALUE, getKey());
             }
             ctx.declarePrefix(prefix, uri);
         }

@@ -61,8 +61,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
                     // check if the service is enabled
                     if (!info.isEnabled()) {
                         throw new ServiceException(
-                                "Service " + info.getName() + " is disabled",
-                                ServiceException.SERVICE_UNAVAILABLE);
+                                "Service " + info.getName() + " is disabled", ServiceException.SERVICE_UNAVAILABLE);
                     }
                 }
             } catch (Exception e) {
@@ -74,10 +73,9 @@ public class DisabledServiceCheck implements DispatcherCallback {
             }
         } else {
             // log a warning, we could not perform an important check
-            LOGGER.warning(
-                    "Could not get a ServiceInfo for service "
-                            + service.getId()
-                            + " thus could not check if the service is enabled");
+            LOGGER.warning("Could not get a ServiceInfo for service "
+                    + service.getId()
+                    + " thus could not check if the service is enabled");
         }
 
         return service;
@@ -94,8 +92,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
     }
 
     @Override
-    public Response responseDispatched(
-            Request request, Operation operation, Object result, Response response) {
+    public Response responseDispatched(Request request, Operation operation, Object result, Response response) {
         return response;
     }
 

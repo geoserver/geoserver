@@ -49,8 +49,7 @@ public class StyleTest extends StylesTestSupport {
 
     @Test
     public void testGetStyleNative() throws Exception {
-        MockHttpServletResponse response =
-                getAsServletResponse("ogc/styles/v1/styles/" + POLYGON_COMMENT);
+        MockHttpServletResponse response = getAsServletResponse("ogc/styles/v1/styles/" + POLYGON_COMMENT);
         assertEquals(200, response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         // the native comment got preserved, this is not a re-encoding
@@ -60,10 +59,7 @@ public class StyleTest extends StylesTestSupport {
     @Test
     public void testGetStyleNativeExplicitFormat() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/styles/v1/styles/"
-                                + POLYGON_COMMENT
-                                + "?f=application%2Fvnd.ogc.sld%2Bxml");
+                getAsServletResponse("ogc/styles/v1/styles/" + POLYGON_COMMENT + "?f=application%2Fvnd.ogc.sld%2Bxml");
         assertEquals(200, response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_10, response.getContentType());
         // the native comment got preserved, this is not a re-encoding
@@ -73,15 +69,11 @@ public class StyleTest extends StylesTestSupport {
     @Test
     public void testGetStyleConverted() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "ogc/styles/v1/styles/"
-                                + POLYGON_COMMENT
-                                + "?f=application%2Fvnd.ogc.se%2Bxml");
+                getAsServletResponse("ogc/styles/v1/styles/" + POLYGON_COMMENT + "?f=application%2Fvnd.ogc.se%2Bxml");
         assertEquals(200, response.getStatus());
         assertEquals(SLDHandler.MIMETYPE_11, response.getContentType());
         // the native comment did not get preserved, this is a re-encoding
-        assertThat(
-                response.getContentAsString(), not(containsString("This is a testable comment")));
+        assertThat(response.getContentAsString(), not(containsString("This is a testable comment")));
         // cannot test further because the SLD 1.1 encoding of styles is not actually available....
     }
 
@@ -105,14 +97,14 @@ public class StyleTest extends StylesTestSupport {
     public void testPutOnNewStyle() throws Exception {
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        "ogc/styles/v1/styles/myNewStyle", sld, SLDHandler.MIMETYPE_10);
+                putAsServletResponse("ogc/styles/v1/styles/myNewStyle", sld, SLDHandler.MIMETYPE_10);
         assertEquals(204, response.getStatus());
 
         // check the style got created
         StyleInfo myNewStyle = getCatalog().getStyleByName("myNewStyle");
         assertNotNull(myNewStyle);
-        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+        assertEquals(
+                "CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
     }
 
     @Test
@@ -131,7 +123,8 @@ public class StyleTest extends StylesTestSupport {
         // check the style got created
         StyleInfo myNewStyle = getCatalog().getStyleByName("myNewStyle");
         assertNotNull(myNewStyle);
-        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+        assertEquals(
+                "CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
     }
 
     @Test
@@ -142,8 +135,7 @@ public class StyleTest extends StylesTestSupport {
 
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        "ogc/styles/v1/styles/Ponds?validate=only", sld, SLDHandler.MIMETYPE_10);
+                putAsServletResponse("ogc/styles/v1/styles/Ponds?validate=only", sld, SLDHandler.MIMETYPE_10);
         assertEquals(204, response.getStatus());
 
         // check the style did not get modified
@@ -153,11 +145,9 @@ public class StyleTest extends StylesTestSupport {
 
     @Test
     public void testPutValidateInvalid() throws Exception {
-        String sld =
-                IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointInvalid.sld"));
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointInvalid.sld"));
         MockHttpServletResponse response =
-                putAsServletResponse(
-                        "ogc/styles/v1/styles/Ponds?validate=only", sld, SLDHandler.MIMETYPE_10);
+                putAsServletResponse("ogc/styles/v1/styles/Ponds?validate=only", sld, SLDHandler.MIMETYPE_10);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), CoreMatchers.containsString("Mark"));
     }
@@ -165,8 +155,7 @@ public class StyleTest extends StylesTestSupport {
     @Test
     public void testPostNewStyle() throws Exception {
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
-        MockHttpServletResponse response =
-                postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
+        MockHttpServletResponse response = postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
         assertEquals(
                 "http://localhost:8080/geoserver/ogc/styles/v1/styles/SimplePoint",
@@ -175,7 +164,8 @@ public class StyleTest extends StylesTestSupport {
         // check the style got created
         StyleInfo myNewStyle = getCatalog().getStyleByName(SIMPLE_POINT);
         assertNotNull(myNewStyle);
-        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+        assertEquals(
+                "CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
     }
 
     @Test
@@ -195,7 +185,8 @@ public class StyleTest extends StylesTestSupport {
         // check the style got created
         StyleInfo myNewStyle = getCatalog().getStyleByName(SIMPLE_POINT);
         assertNotNull(myNewStyle);
-        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+        assertEquals(
+                "CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
     }
 
     @Test
@@ -205,36 +196,32 @@ public class StyleTest extends StylesTestSupport {
 
         // try again, should fail with conflict
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePoint.sld"));
-        MockHttpServletResponse response =
-                postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
+        MockHttpServletResponse response = postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
         assertEquals(409, response.getStatus());
     }
 
     @Test
     public void testPostAutoGenerateName() throws Exception {
         String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointNoName.sld"));
-        MockHttpServletResponse response =
-                postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
+        MockHttpServletResponse response = postAsServletResponse("ogc/styles/v1/styles", sld, SLDHandler.MIMETYPE_10);
         assertEquals(201, response.getStatus());
         String location = response.getHeader(HttpHeaders.LOCATION);
         String urlBase = "http://localhost:8080/geoserver/ogc/styles/v1/styles/";
-        assertThat(
-                location, allOf(startsWith(urlBase + "style-"), not(equalTo(urlBase + "style-"))));
+        assertThat(location, allOf(startsWith(urlBase + "style-"), not(equalTo(urlBase + "style-"))));
 
         // check the style got created with the indicated name
         String styleName = location.substring(urlBase.length());
         StyleInfo myNewStyle = getCatalog().getStyleByName(styleName);
         assertNotNull(myNewStyle);
-        assertEquals("CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
+        assertEquals(
+                "CookbookSimplePoint", myNewStyle.getSLD().getStyledLayers()[0].getName());
     }
 
     @Test
     public void testPostValidateInvalid() throws Exception {
-        String sld =
-                IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointInvalid.sld"));
+        String sld = IOUtils.toString(StyleTest.class.getResourceAsStream("simplePointInvalid.sld"));
         MockHttpServletResponse response =
-                postAsServletResponse(
-                        "ogc/styles/v1/styles?validate=only", sld, SLDHandler.MIMETYPE_10);
+                postAsServletResponse("ogc/styles/v1/styles?validate=only", sld, SLDHandler.MIMETYPE_10);
         assertEquals(400, response.getStatus());
         assertThat(response.getContentAsString(), CoreMatchers.containsString("Mark"));
     }
@@ -245,8 +232,7 @@ public class StyleTest extends StylesTestSupport {
         testPostNewStyle();
 
         // now delete
-        MockHttpServletResponse response =
-                deleteAsServletResponse("ogc/styles/v1/styles/" + SIMPLE_POINT);
+        MockHttpServletResponse response = deleteAsServletResponse("ogc/styles/v1/styles/" + SIMPLE_POINT);
         assertEquals(204, response.getStatus());
 
         // try again, this time it should be a 404

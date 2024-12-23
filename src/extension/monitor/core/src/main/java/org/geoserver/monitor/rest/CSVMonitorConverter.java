@@ -49,9 +49,7 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
                         String string = val.toString();
                         Matcher match = ESCAPE_REQUIRED.matcher(string);
                         if (match.find()) { // may need escaping, so escape
-                            string =
-                                    string.replaceAll(
-                                            "\"", "\"\""); // Double all double quotes to escape
+                            string = string.replaceAll("\"", "\"\""); // Double all double quotes to escape
                             sb.append("\"");
                             sb.append(string);
                             sb.append("\"");
@@ -93,8 +91,7 @@ public class CSVMonitorConverter extends BaseMonitorConverter {
      * @param monitor used to cancel output process
      * @param os Output stream (not closed by this method allowing use of zipfile)
      */
-    void writeCSVfile(Object result, String[] fields, Monitor monitor, OutputStream os)
-            throws IOException {
+    void writeCSVfile(Object result, String[] fields, Monitor monitor, OutputStream os) throws IOException {
         final BufferedWriter w = new BufferedWriter(new OutputStreamWriter(os));
 
         // write out the header

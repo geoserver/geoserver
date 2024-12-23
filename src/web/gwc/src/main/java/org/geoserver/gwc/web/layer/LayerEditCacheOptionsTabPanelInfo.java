@@ -42,8 +42,7 @@ public class LayerEditCacheOptionsTabPanelInfo extends CommonPublishedEditTabPan
             tileLayerInfo = info.clone();
         }
         if (isNew) tileLayerInfo.setEnabled(true);
-        final boolean initWithTileLayer =
-                (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
+        final boolean initWithTileLayer = (isNew && defaultSettings.isCacheLayersByDefault()) || tileLayer != null;
 
         if (!initWithTileLayer) {
             tileLayerInfo.setId(null); // indicate not to create the tile layer

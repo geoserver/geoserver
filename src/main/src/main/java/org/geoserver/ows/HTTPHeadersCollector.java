@@ -18,17 +18,17 @@ import org.geoserver.filters.GeoServerFilter;
 import org.geoserver.ows.util.CaseInsensitiveMap;
 
 /**
- * Collects headers on behalf of {@link ProxifyingURLMangler}, so that they can be used also for
- * asynchronoous executions happening outside of request threads. Given the specific usage, only the
- * first value of headers is collected.
+ * Collects headers on behalf of {@link ProxifyingURLMangler}, so that they can be used also for asynchronoous
+ * executions happening outside of request threads. Given the specific usage, only the first value of headers is
+ * collected.
  */
 public class HTTPHeadersCollector implements GeoServerFilter {
 
     public static final ThreadLocal<Map<String, String>> HEADERS = new ThreadLocal<>();
 
     /**
-     * Returns the value for the specified header, if the {@link #HEADERS} thread local is loaded,
-     * and contains one, null otherwise.
+     * Returns the value for the specified header, if the {@link #HEADERS} thread local is loaded, and contains one,
+     * null otherwise.
      */
     public static String getHeader(String header) {
         Map<String, String> headers = HEADERS.get();

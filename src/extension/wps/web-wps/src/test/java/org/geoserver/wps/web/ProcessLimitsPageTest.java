@@ -39,10 +39,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
         contour.setEnabled(true);
         contour.setName(new NameImpl("ras", "Contour"));
         contour.getValidators().put("data", new MaxSizeValidator(1));
-        contour.getValidators()
-                .put(
-                        "levels",
-                        new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
+        contour.getValidators().put("levels", new NumberRangeValidator(new NumberRange<>(Double.class, -8000d, 8000d)));
         contour.getValidators().put("levels", new MultiplicityValidator(3));
         rasterGroup.getFilteredProcesses().add(contour);
 
@@ -59,8 +56,7 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
 
         // start the pages
         WPSAccessRulePage accessRulePage = tester.startPage(new WPSAccessRulePage());
-        ProcessSelectionPage selectionPage =
-                tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
+        ProcessSelectionPage selectionPage = tester.startPage(new ProcessSelectionPage(accessRulePage, rasterGroup));
         FilteredProcess filteredProcess = new FilteredProcess(pi.getName(), "");
         filteredProcess.setValidators(pi.getValidators());
         tester.startPage(new ProcessLimitsPage(selectionPage, filteredProcess));
@@ -69,33 +65,25 @@ public class ProcessLimitsPageTest extends WPSPagesTestSupport {
 
         // grab the table and check its contents (the order should be stable, we are iterating over
         // the process inputs)
-        OddEvenItem item =
-                (OddEvenItem)
-                        tester.getComponentFromLastRenderedPage("form:table:listContainer:items:1");
+        OddEvenItem item = (OddEvenItem) tester.getComponentFromLastRenderedPage("form:table:listContainer:items:1");
         // max input size
         InputLimit il = (InputLimit) item.getDefaultModelObject();
         assertEquals("data", il.getName());
         assertEquals(
-                Integer.valueOf(1),
-                item.get("itemProperties:2:component:text").getDefaultModelObject());
+                Integer.valueOf(1), item.get("itemProperties:2:component:text").getDefaultModelObject());
         // levels range validator
-        item =
-                (OddEvenItem)
-                        tester.getComponentFromLastRenderedPage("form:table:listContainer:items:3");
+        item = (OddEvenItem) tester.getComponentFromLastRenderedPage("form:table:listContainer:items:3");
         il = (InputLimit) item.getDefaultModelObject();
         assertEquals("levels", il.getName());
         assertEquals(
                 new NumberRange<>(Double.class, -8000d, 8000d),
                 item.get("itemProperties:2:component:range").getDefaultModelObject());
         // multiplicity validator
-        item =
-                (OddEvenItem)
-                        tester.getComponentFromLastRenderedPage("form:table:listContainer:items:4");
+        item = (OddEvenItem) tester.getComponentFromLastRenderedPage("form:table:listContainer:items:4");
         il = (InputLimit) item.getDefaultModelObject();
         assertEquals("levels", il.getName());
         assertEquals(
-                Integer.valueOf(3),
-                item.get("itemProperties:2:component:text").getDefaultModelObject());
+                Integer.valueOf(3), item.get("itemProperties:2:component:text").getDefaultModelObject());
     }
 
     private ProcessInfo getProcess(List<ProcessInfo> filteredProcesses, String name) {

@@ -17,8 +17,7 @@ import org.geotools.api.data.Transaction;
 import org.geotools.jdbc.JDBCDataStore;
 
 /** @author Ian Schneider <ischneider@opengeo.org> */
-public class CreateIndexTransform extends AbstractTransform
-        implements PostTransform, VectorTransform {
+public class CreateIndexTransform extends AbstractTransform implements PostTransform, VectorTransform {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,8 +42,7 @@ public class CreateIndexTransform extends AbstractTransform
         if (store instanceof JDBCDataStore) {
             createIndex(task, (JDBCDataStore) store);
         } else {
-            task.addMessage(
-                    Level.WARNING, "Cannot create index on non database target. Not a big deal.");
+            task.addMessage(Level.WARNING, "Cannot create index on non database target. Not a big deal.");
         }
     }
 

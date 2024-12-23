@@ -23,15 +23,12 @@ public class MongoComplexReader extends ComplexFeatureReader {
     private SchemalessFeatureMapper<DBObject> mapper;
     private final Query query;
 
-    public MongoComplexReader(
-            MongoCursor<DBObject> cursor, ComplexFeatureSource featureSource, Query query) {
+    public MongoComplexReader(MongoCursor<DBObject> cursor, ComplexFeatureSource featureSource, Query query) {
         super(featureSource);
         this.cursor = cursor;
         this.query = query;
-        this.mapper =
-                new SchemalessMongoToComplexMapper(
-                        (DynamicFeatureType) featureSource.getSchema(),
-                        query.getCoordinateSystemReproject());
+        this.mapper = new SchemalessMongoToComplexMapper(
+                (DynamicFeatureType) featureSource.getSchema(), query.getCoordinateSystemReproject());
     }
 
     @Override

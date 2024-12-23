@@ -15,8 +15,7 @@ import org.springframework.web.multipart.support.MultipartFilter;
 public class SqliteMultipartFilter extends MultipartFilter implements GeoServerFilter {
 
     @Override
-    protected void doFilterInternal(
-            HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String path = request.getRequestURI();
         if (path.contains("gwc/rest/sqlite/")) {

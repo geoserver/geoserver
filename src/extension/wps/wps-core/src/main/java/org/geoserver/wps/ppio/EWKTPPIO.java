@@ -19,8 +19,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
 
 /**
- * Used to represent geometries in EWKT format Reads geometry and crs from string and sets this crs
- * to created geometry
+ * Used to represent geometries in EWKT format Reads geometry and crs from string and sets this crs to created geometry
  */
 public class EWKTPPIO extends CDataPPIO {
 
@@ -47,7 +46,8 @@ public class EWKTPPIO extends CDataPPIO {
             throw new IllegalArgumentException("Input should contain geometry");
         }
         CoordinateReferenceSystem geomCRS = null;
-        if (wktContents.length == 2 && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
+        if (wktContents.length == 2
+                && SRID_REGEX.matcher(wktContents[0].toUpperCase()).matches()) {
             String sridString = wktContents[0].split("=")[1];
             geomCRS = CRS.decode("EPSG:" + sridString, true);
         }

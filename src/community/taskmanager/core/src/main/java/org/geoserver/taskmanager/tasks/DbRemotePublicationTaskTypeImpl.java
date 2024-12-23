@@ -39,8 +39,7 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
         ParameterInfo dbInfo = new ParameterInfo(PARAM_DB_NAME, extTypes.dbName, true);
         paramInfo.put(PARAM_DB_NAME, dbInfo);
         paramInfo.put(
-                PARAM_TABLE_NAME,
-                new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, false).dependsOn(dbInfo));
+                PARAM_TABLE_NAME, new ParameterInfo(PARAM_TABLE_NAME, extTypes.tableName, false).dependsOn(dbInfo));
     }
 
     @Override
@@ -50,11 +49,7 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
 
     @Override
     protected boolean createStore(
-            ExternalGS extGS,
-            GeoServerRESTManager restManager,
-            StoreInfo store,
-            TaskContext ctx,
-            String name)
+            ExternalGS extGS, GeoServerRESTManager restManager, StoreInfo store, TaskContext ctx, String name)
             throws IOException, TaskException {
         try {
             final DbSource db = (DbSource) ctx.getParameterValues().get(PARAM_DB_NAME);
@@ -62,16 +57,10 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
             final ExternalGS gs = (ExternalGS) ctx.getParameterValues().get(PARAM_EXT_GS);
             return restManager
                     .getStoreManager()
-                    .create(
-                            store.getWorkspace().getName(),
-                            db.postProcess(db.getStoreEncoder(name, gs), table));
+                    .create(store.getWorkspace().getName(), db.postProcess(db.getStoreEncoder(name, gs), table));
         } catch (UnsupportedOperationException e) {
             throw new TaskException(
-                    "Failed to create store "
-                            + store.getWorkspace().getName()
-                            + ":"
-                            + store.getName(),
-                    e);
+                    "Failed to create store " + store.getWorkspace().getName() + ":" + store.getName(), e);
         }
     }
 
@@ -90,52 +79,27 @@ public class DbRemotePublicationTaskTypeImpl extends AbstractRemotePublicationTa
 
     @Override
     protected void postProcess(
-            StoreType storeType,
-            ResourceInfo resource,
-            GSResourceEncoder re,
-            TaskContext ctx,
-            Finalizer finalizer)
+            StoreType storeType, ResourceInfo resource, GSResourceEncoder re, TaskContext ctx, Finalizer finalizer)
             throws TaskException {
         final DbTable originalTable = (DbTable) ctx.getParameterValues().get(PARAM_TABLE_NAME);
         if (originalTable != null) {
-            final DbTable table =
-                    (DbTable)
-                            ctx.getBatchContext()
-                                    .get(
-                                            originalTable,
-                                            new BatchContext.Dependency() {
-                                                @Override
-                                                public void revert() throws TaskException {
-                                                    if (resource.getMetadata()
-                                                            .containsKey(
-                                                                    FeatureTypeInfo
-                                                                            .JDBC_VIRTUAL_TABLE)) {
-                                                        // virtual table, resource must be attached
-                                                        // to
-                                                        // SQL query
-                                                        // in metadata, rather than just table name
-                                                        finalizer
-                                                                .getEncoder()
-                                                                .setNativeName(
-                                                                        resource.getNativeName());
-                                                    } else {
-                                                        DbTable table =
-                                                                (DbTable)
-                                                                        ctx.getBatchContext()
-                                                                                .get(
-                                                                                        ctx.getParameterValues()
-                                                                                                .get(
-                                                                                                        PARAM_TABLE_NAME));
-                                                        finalizer
-                                                                .getEncoder()
-                                                                .setNativeName(
-                                                                        SqlUtil.notQualified(
-                                                                                table
-                                                                                        .getTableName()));
-                                                    }
-                                                    finalizer.run();
-                                                }
-                                            });
+            final DbTable table = (DbTable) ctx.getBatchContext().get(originalTable, new BatchContext.Dependency() {
+                @Override
+                public void revert() throws TaskException {
+                    if (resource.getMetadata().containsKey(FeatureTypeInfo.JDBC_VIRTUAL_TABLE)) {
+                        // virtual table, resource must be attached
+                        // to
+                        // SQL query
+                        // in metadata, rather than just table name
+                        finalizer.getEncoder().setNativeName(resource.getNativeName());
+                    } else {
+                        DbTable table = (DbTable) ctx.getBatchContext()
+                                .get(ctx.getParameterValues().get(PARAM_TABLE_NAME));
+                        finalizer.getEncoder().setNativeName(SqlUtil.notQualified(table.getTableName()));
+                    }
+                    finalizer.run();
+                }
+            });
             finalizer.setFinalizeAtCommit(table != null && table.equals(originalTable));
 
             ((GSFeatureTypeEncoder) re).setNativeName(SqlUtil.notQualified(table.getTableName()));

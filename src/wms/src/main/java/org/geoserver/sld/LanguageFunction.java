@@ -23,8 +23,7 @@ public class LanguageFunction extends FunctionExpressionImpl {
 
     private static final String LANGUAGE = "LANGUAGE";
 
-    public static FunctionName NAME =
-            new FunctionNameImpl("language", parameter("result", String.class));
+    public static FunctionName NAME = new FunctionNameImpl("language", parameter("result", String.class));
 
     public LanguageFunction() {
         super(NAME);

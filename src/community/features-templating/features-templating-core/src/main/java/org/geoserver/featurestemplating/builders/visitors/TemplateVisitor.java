@@ -9,8 +9,8 @@ import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
 
 /**
- * Visitor with {@code visit} methods to be called by {@link
- * org.geoserver.featurestemplating.builders.TemplateBuilder#accept}
+ * Visitor with {@code visit} methods to be called by
+ * {@link org.geoserver.featurestemplating.builders.TemplateBuilder#accept}
  */
 public interface TemplateVisitor {
 

@@ -56,10 +56,7 @@ public class CatalogItemReader<T> extends CatalogReader<T> {
             }
 
             if (this.counter != 0) {
-                throw new Exception(
-                        "Not all the Catalog Resources of class ["
-                                + this.clazz
-                                + "] have been dumped!");
+                throw new Exception("Not all the Catalog Resources of class [" + this.clazz + "] have been dumped!");
             }
         } catch (Exception e) {
             logValidationExceptions((T) null, e);

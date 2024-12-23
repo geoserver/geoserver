@@ -22,10 +22,9 @@ public class ModuleStatusTest {
                 new ClassPathXmlApplicationContext("testApplicationContext.xml")) {
             assertNotNull(context);
 
-            Optional<ModuleStatus> status =
-                    GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
-                            .filter(s -> s.getModule().equalsIgnoreCase("gs-params-extractor"))
-                            .findFirst();
+            Optional<ModuleStatus> status = GeoServerExtensions.extensions(ModuleStatus.class, context).stream()
+                    .filter(s -> s.getModule().equalsIgnoreCase("gs-params-extractor"))
+                    .findFirst();
             assertTrue(status.isPresent());
         }
     }

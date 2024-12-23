@@ -47,22 +47,25 @@ import org.junit.Test;
 @TestSetup(run = TestSetupFrequency.REPEAT)
 public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport {
 
-    static interface TestService1 extends ServiceInfo {};
+    static interface TestService1 extends ServiceInfo {}
+    ;
 
-    static interface TestService2 extends ServiceInfo {};
+    static interface TestService2 extends ServiceInfo {}
+    ;
 
     @SuppressWarnings("serial")
-    static class TestService1Impl extends ServiceInfoImpl implements TestService1 {};
+    static class TestService1Impl extends ServiceInfoImpl implements TestService1 {}
+    ;
 
     @SuppressWarnings("serial")
-    static class TestService2Impl extends ServiceInfoImpl implements TestService2 {};
+    static class TestService2Impl extends ServiceInfoImpl implements TestService2 {}
+    ;
 
     private WorkspaceInfo testWs1, testWs2;
 
     /**
-     * Disables using this plugin before setting up the test application context, to check the
-     * values of the manually run {@link DataDirectoryGeoServerLoader} against the objects loaded by
-     * {@link DefaultGeoServerLoader}
+     * Disables using this plugin before setting up the test application context, to check the values of the manually
+     * run {@link DataDirectoryGeoServerLoader} against the objects loaded by {@link DefaultGeoServerLoader}
      */
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
@@ -82,19 +85,15 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
         TestServiceLoader1 serviceLoader1 = new TestServiceLoader1(getResourceLoader());
         TestServiceLoader2 serviceLoader2 = new TestServiceLoader2(getResourceLoader());
-        GeoServerExtensionsHelper.singleton(
-                "testServiceLoader1", serviceLoader1, XStreamServiceLoader.class);
-        GeoServerExtensionsHelper.singleton(
-                "testServiceLoader2", serviceLoader2, XStreamServiceLoader.class);
+        GeoServerExtensionsHelper.singleton("testServiceLoader1", serviceLoader1, XStreamServiceLoader.class);
+        GeoServerExtensionsHelper.singleton("testServiceLoader2", serviceLoader2, XStreamServiceLoader.class);
 
-        geoServer.removeListener(
-                geoServer.getListeners().stream()
-                        .filter(ServicePersister.class::isInstance)
-                        .findFirst()
-                        .orElse(null));
+        geoServer.removeListener(geoServer.getListeners().stream()
+                .filter(ServicePersister.class::isInstance)
+                .findFirst()
+                .orElse(null));
 
-        final List<XStreamServiceLoader<ServiceInfo>> loaders =
-                DataDirectoryGeoServerLoader.findServiceLoaders();
+        final List<XStreamServiceLoader<ServiceInfo>> loaders = DataDirectoryGeoServerLoader.findServiceLoaders();
 
         geoServer.addListener(new ServicePersister(loaders, geoServer));
 
@@ -111,23 +110,18 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         geoServer.add(faker.settingsInfo(testWs1));
         geoServer.add(faker.settingsInfo(testWs2));
 
-        geoServer.add(
-                faker.serviceInfo(testWs1, "service1", () -> serviceLoader1.create(geoServer)));
-        geoServer.add(
-                faker.serviceInfo(testWs1, "service2", () -> serviceLoader2.create(geoServer)));
+        geoServer.add(faker.serviceInfo(testWs1, "service1", () -> serviceLoader1.create(geoServer)));
+        geoServer.add(faker.serviceInfo(testWs1, "service2", () -> serviceLoader2.create(geoServer)));
 
-        geoServer.add(
-                faker.serviceInfo(testWs2, "service1", () -> serviceLoader1.create(geoServer)));
-        geoServer.add(
-                faker.serviceInfo(testWs2, "service2", () -> serviceLoader2.create(geoServer)));
+        geoServer.add(faker.serviceInfo(testWs2, "service1", () -> serviceLoader1.create(geoServer)));
+        geoServer.add(faker.serviceInfo(testWs2, "service2", () -> serviceLoader2.create(geoServer)));
     }
 
     @Test
     public void loadCatalog() {
         GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        DataDirectoryGeoServerLoader loader =
-                new DataDirectoryGeoServerLoader(resourceLoader, secManager);
+        DataDirectoryGeoServerLoader loader = new DataDirectoryGeoServerLoader(resourceLoader, secManager);
 
         final Catalog catalog = super.getCatalog();
         CatalogImpl newCatalog = new CatalogImpl();
@@ -138,9 +132,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertSameSize(catalog.getNamespaces(), newCatalog.getNamespaces());
         assertSameSize(catalog.getStyles(), newCatalog.getStyles());
         assertSameSize(catalog.getStores(StoreInfo.class), newCatalog.getStores(StoreInfo.class));
-        assertSameSize(
-                catalog.getResources(ResourceInfo.class),
-                newCatalog.getResources(ResourceInfo.class));
+        assertSameSize(catalog.getResources(ResourceInfo.class), newCatalog.getResources(ResourceInfo.class));
         assertSameSize(catalog.getLayers(), newCatalog.getLayers());
         assertSameSize(catalog.getLayerGroups(), newCatalog.getLayerGroups());
     }
@@ -151,7 +143,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         DataStoreInfo infoWithPassword = createPostgisStore();
         infoWithPassword.setEnabled(false);
         final String pwdParam = PostgisNGDataStoreFactory.PASSWD.key;
-        final String plainPwd = (String) infoWithPassword.getConnectionParameters().get(pwdParam);
+        final String plainPwd =
+                (String) infoWithPassword.getConnectionParameters().get(pwdParam);
 
         catalog.add(infoWithPassword);
         infoWithPassword = catalog.getDataStore(infoWithPassword.getId());
@@ -167,15 +160,13 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         }
         GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        DataDirectoryGeoServerLoader loader =
-                new DataDirectoryGeoServerLoader(resourceLoader, secManager);
+        DataDirectoryGeoServerLoader loader = new DataDirectoryGeoServerLoader(resourceLoader, secManager);
 
         CatalogImpl newCatalog = new CatalogImpl();
 
         loader.postProcessBeforeInitialization(newCatalog, "catalog");
 
-        DataStoreInfo depersistedWithDataDirLoader =
-                newCatalog.getDataStore(infoWithPassword.getId());
+        DataStoreInfo depersistedWithDataDirLoader = newCatalog.getDataStore(infoWithPassword.getId());
         assertNotNull(depersistedWithDataDirLoader);
         assertEquals(
                 plainPwd, depersistedWithDataDirLoader.getConnectionParameters().get(pwdParam));
@@ -208,15 +199,13 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         }
         GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        DataDirectoryGeoServerLoader loader =
-                new DataDirectoryGeoServerLoader(resourceLoader, secManager);
+        DataDirectoryGeoServerLoader loader = new DataDirectoryGeoServerLoader(resourceLoader, secManager);
 
         CatalogImpl newCatalog = new CatalogImpl();
 
         loader.postProcessBeforeInitialization(newCatalog, "catalog");
 
-        WMSStoreInfo depersistedWithDataDirLoader =
-                newCatalog.getStore(store.getId(), WMSStoreInfo.class);
+        WMSStoreInfo depersistedWithDataDirLoader = newCatalog.getStore(store.getId(), WMSStoreInfo.class);
         assertNotNull(depersistedWithDataDirLoader);
         assertEquals(plainPassword, depersistedWithDataDirLoader.getPassword());
     }
@@ -228,9 +217,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         ds.setName("postgis");
         ds.setType(new PostgisNGDataStoreFactory().getDisplayName());
         Map<String, Serializable> params = ds.getConnectionParameters();
-        params.put(
-                PostgisNGDataStoreFactory.DBTYPE.key,
-                (String) PostgisNGDataStoreFactory.DBTYPE.getDefaultValue());
+        params.put(PostgisNGDataStoreFactory.DBTYPE.key, (String) PostgisNGDataStoreFactory.DBTYPE.getDefaultValue());
         params.put(PostgisNGDataStoreFactory.HOST.key, "localhost");
         params.put(PostgisNGDataStoreFactory.DATABASE.key, "test");
         params.put(PostgisNGDataStoreFactory.USER.key, "test");
@@ -242,8 +229,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     public void loadConfig() {
         GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        DataDirectoryGeoServerLoader loader =
-                new DataDirectoryGeoServerLoader(resourceLoader, secManager);
+        DataDirectoryGeoServerLoader loader = new DataDirectoryGeoServerLoader(resourceLoader, secManager);
 
         final GeoServer gs = getGeoServer();
         GeoServer newGs = new GeoServerImpl();
@@ -258,10 +244,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertNotNull(newGs.getService(TestService1.class));
         assertNotNull(newGs.getService(TestService2.class));
 
-        WorkspaceInfo ws1 =
-                requireNonNull(newGs.getCatalog().getWorkspaceByName(testWs1.getName()));
-        WorkspaceInfo ws2 =
-                requireNonNull(newGs.getCatalog().getWorkspaceByName(testWs2.getName()));
+        WorkspaceInfo ws1 = requireNonNull(newGs.getCatalog().getWorkspaceByName(testWs1.getName()));
+        WorkspaceInfo ws2 = requireNonNull(newGs.getCatalog().getWorkspaceByName(testWs2.getName()));
 
         assertNotNull(newGs.getSettings(ws1));
         assertNotNull(newGs.getSettings(ws2));
@@ -295,7 +279,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         protected TestService1 createServiceFromScratch(GeoServer gs) {
             return new TestService1Impl();
         }
-    };
+    }
+    ;
 
     static final class TestServiceLoader2 extends XStreamServiceLoader<TestService2> {
 
@@ -312,5 +297,6 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         protected TestService2 createServiceFromScratch(GeoServer gs) {
             return new TestService2Impl();
         }
-    };
+    }
+    ;
 }

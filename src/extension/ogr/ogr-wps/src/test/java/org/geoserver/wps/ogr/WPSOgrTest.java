@@ -72,8 +72,7 @@ public class WPSOgrTest extends WPSTestSupport {
         File configuration = null;
         try {
             configuration = loadConfiguration();
-            Ogr2OgrConfigurator configurator =
-                    applicationContext.getBean(Ogr2OgrConfigurator.class);
+            Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
             List<String> formatNames = new ArrayList<>();
             for (Format f : configurator.of.getFormats()) {
@@ -96,10 +95,7 @@ public class WPSOgrTest extends WPSTestSupport {
         OgrConfiguration.DEFAULT.gdalData = Ogr2OgrTestUtil.getGdalData();
         Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
         configurator.loadConfiguration();
-        Document d =
-                getAsDOM(
-                        root()
-                                + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
+        Document d = getAsDOM(root() + "service=wps&request=describeprocess&identifier=gs:BufferFeatureCollection");
         String base = "/wps:ProcessDescriptions/ProcessDescription/ProcessOutputs";
         for (Format f : OgrConfiguration.DEFAULT.getFormats()) {
             if (f.getMimeType() != null) {
@@ -120,13 +116,10 @@ public class WPSOgrTest extends WPSTestSupport {
         File configuration = null;
         try {
             configuration = loadConfiguration();
-            Ogr2OgrConfigurator configurator =
-                    applicationContext.getBean(Ogr2OgrConfigurator.class);
+            Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
             MockHttpServletResponse r =
-                    postAsServletResponse(
-                            "wps",
-                            getWpsRawXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
+                    postAsServletResponse("wps", getWpsRawXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
             assertEquals("application/vnd.google-earth.kml; subtype=OGR-KML", r.getContentType());
             assertTrue(r.getContentAsString().length() > 0);
         } finally {
@@ -141,17 +134,12 @@ public class WPSOgrTest extends WPSTestSupport {
         File configuration = null;
         try {
             configuration = loadConfiguration();
-            Ogr2OgrConfigurator configurator =
-                    applicationContext.getBean(Ogr2OgrConfigurator.class);
+            Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
-            Document d =
-                    postAsDOM(
-                            "wps",
-                            getWpsDocumentXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
+            Document d = postAsDOM("wps", getWpsDocumentXML("application/vnd.google-earth.kml; subtype=OGR-KML"));
             assertThat(
                     d,
-                    xml.hasOneNode(
-                            "//kml:kml/kml:Document/kml:Schema | //kml:kml/kml:Document/kml:Folder/kml:Schema"));
+                    xml.hasOneNode("//kml:kml/kml:Document/kml:Schema | //kml:kml/kml:Document/kml:Folder/kml:Schema"));
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -164,16 +152,13 @@ public class WPSOgrTest extends WPSTestSupport {
         File configuration = null;
         try {
             configuration = loadConfiguration();
-            Ogr2OgrConfigurator configurator =
-                    applicationContext.getBean(Ogr2OgrConfigurator.class);
+            Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
-            MockHttpServletResponse r =
-                    postAsServletResponse("wps", getWpsRawXML("text/csv; subtype=OGR-CSV"));
+            MockHttpServletResponse r = postAsServletResponse("wps", getWpsRawXML("text/csv; subtype=OGR-CSV"));
             assertEquals("text/csv; subtype=OGR-CSV", r.getContentType());
             assertTrue(r.getContentAsString().length() > 0);
-            assertTrue(
-                    r.getContentAsString().contains("WKT,gml_id,STATE_NAME")
-                            || r.getContentAsString().contains("geometry,gml_id,STATE_NAME"));
+            assertTrue(r.getContentAsString().contains("WKT,gml_id,STATE_NAME")
+                    || r.getContentAsString().contains("geometry,gml_id,STATE_NAME"));
         } finally {
             if (configuration != null) {
                 configuration.delete();
@@ -186,11 +171,9 @@ public class WPSOgrTest extends WPSTestSupport {
         File configuration = null;
         try {
             configuration = loadConfiguration();
-            Ogr2OgrConfigurator configurator =
-                    applicationContext.getBean(Ogr2OgrConfigurator.class);
+            Ogr2OgrConfigurator configurator = applicationContext.getBean(Ogr2OgrConfigurator.class);
             configurator.loadConfiguration();
-            MockHttpServletResponse r =
-                    postAsServletResponse("wps", getWpsRawXML("application/zip; subtype=OGR-TAB"));
+            MockHttpServletResponse r = postAsServletResponse("wps", getWpsRawXML("application/zip; subtype=OGR-TAB"));
             assertEquals("application/zip; subtype=OGR-TAB", r.getContentType());
             ByteArrayInputStream bis = getBinaryInputStream(r);
             ZipInputStream zis = new ZipInputStream(bis);
@@ -214,68 +197,66 @@ public class WPSOgrTest extends WPSTestSupport {
     }
 
     private String getWpsRawXML(String ouputMime) throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>features</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA["
-                        + readFileIntoString("states-FeatureCollection.json")
-                        + "]]></wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>distance</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:LiteralData>10</wps:LiteralData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:RawDataOutput mimeType=\""
-                        + ouputMime
-                        + "\">"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:RawDataOutput>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>features</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA["
+                + readFileIntoString("states-FeatureCollection.json")
+                + "]]></wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>distance</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>10</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:RawDataOutput mimeType=\""
+                + ouputMime
+                + "\">"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:RawDataOutput>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         return xml;
     }
 
     private String getWpsDocumentXML(String ouputMime) throws Exception {
-        String xml =
-                "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
-                        + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
-                        + "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>"
-                        + "<wps:DataInputs>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>features</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:ComplexData mimeType=\"application/json\"><![CDATA["
-                        + readFileIntoString("states-FeatureCollection.json")
-                        + "]]></wps:ComplexData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "<wps:Input>"
-                        + "<ows:Identifier>distance</ows:Identifier>"
-                        + "<wps:Data>"
-                        + "<wps:LiteralData>10</wps:LiteralData>"
-                        + "</wps:Data>"
-                        + "</wps:Input>"
-                        + "</wps:DataInputs>"
-                        + "<wps:ResponseForm>"
-                        + "<wps:ResponseDocument>"
-                        + "<wps:Output mimeType=\""
-                        + ouputMime
-                        + "\">"
-                        + "<ows:Identifier>result</ows:Identifier>"
-                        + "</wps:Output>"
-                        + "</wps:ResponseDocument>"
-                        + "</wps:ResponseForm>"
-                        + "</wps:Execute>";
+        String xml = "<wps:Execute service='WPS' version='1.0.0' xmlns:wps='http://www.opengis.net/wps/1.0.0' "
+                + "xmlns:ows='http://www.opengis.net/ows/1.1'>"
+                + "<ows:Identifier>gs:BufferFeatureCollection</ows:Identifier>"
+                + "<wps:DataInputs>"
+                + "<wps:Input>"
+                + "<ows:Identifier>features</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:ComplexData mimeType=\"application/json\"><![CDATA["
+                + readFileIntoString("states-FeatureCollection.json")
+                + "]]></wps:ComplexData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "<wps:Input>"
+                + "<ows:Identifier>distance</ows:Identifier>"
+                + "<wps:Data>"
+                + "<wps:LiteralData>10</wps:LiteralData>"
+                + "</wps:Data>"
+                + "</wps:Input>"
+                + "</wps:DataInputs>"
+                + "<wps:ResponseForm>"
+                + "<wps:ResponseDocument>"
+                + "<wps:Output mimeType=\""
+                + ouputMime
+                + "\">"
+                + "<ows:Identifier>result</ows:Identifier>"
+                + "</wps:Output>"
+                + "</wps:ResponseDocument>"
+                + "</wps:ResponseForm>"
+                + "</wps:Execute>";
         return xml;
     }
 

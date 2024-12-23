@@ -40,19 +40,17 @@ public class ElevationParser {
     /**
      * Parses elevations throwing an exception if the final list exceeds maxElevations
      *
-     * @param maxElevations Maximum number of elevations to parse, or a non positive number to have
-     *     no limit
+     * @param maxElevations Maximum number of elevations to parse, or a non positive number to have no limit
      */
     public ElevationParser(int maxElevations) {
         this.maxElevations = maxElevations;
     }
 
     /**
-     * Parses the elevation given in parameter. The string may contains either a single double, or a
-     * start value, end value and a period. In the first case, this method returns a singleton
-     * containing only the parsed value. In the second case, this method returns a list including
-     * all elevations from start value up to the end value with the interval specified in the {@code
-     * value} string.
+     * Parses the elevation given in parameter. The string may contains either a single double, or a start value, end
+     * value and a period. In the first case, this method returns a singleton containing only the parsed value. In the
+     * second case, this method returns a list including all elevations from start value up to the end value with the
+     * interval specified in the {@code value} string.
      *
      * @param value The elevation item or items to parse.
      * @return A list of doubles, or an empty list of the {@code value} string is null or empty.
@@ -67,32 +65,30 @@ public class ElevationParser {
         if (value.length() == 0) {
             return Collections.emptyList();
         }
-        final Set values =
-                new TreeSet(
-                        (o1, o2) -> {
-                            final boolean o1Double = o1 instanceof Double;
-                            final boolean o2Double = o2 instanceof Double;
+        final Set values = new TreeSet((o1, o2) -> {
+            final boolean o1Double = o1 instanceof Double;
+            final boolean o2Double = o2 instanceof Double;
 
-                            // o1 date
-                            if (o1Double) {
-                                final Double left = (Double) o1;
-                                if (o2Double) {
-                                    // o2 date
-                                    return left.compareTo((Double) o2);
-                                }
-                                // o2 number range
-                                return left.compareTo(((NumberRange<Double>) o2).getMinValue());
-                            }
+            // o1 date
+            if (o1Double) {
+                final Double left = (Double) o1;
+                if (o2Double) {
+                    // o2 date
+                    return left.compareTo((Double) o2);
+                }
+                // o2 number range
+                return left.compareTo(((NumberRange<Double>) o2).getMinValue());
+            }
 
-                            // o1 number range
-                            final NumberRange left = (NumberRange) o1;
-                            if (o2Double) {
-                                // o2 date
-                                return left.getMinValue().compareTo(o2);
-                            }
-                            // o2 daterange
-                            return left.getMinValue().compareTo(((NumberRange) o2).getMinValue());
-                        });
+            // o1 number range
+            final NumberRange left = (NumberRange) o1;
+            if (o2Double) {
+                // o2 date
+                return left.getMinValue().compareTo(o2);
+            }
+            // o2 daterange
+            return left.getMinValue().compareTo(((NumberRange) o2).getMinValue());
+        });
         final String[] listValues = value.split(",");
         int maxValues = getMaxElevations();
         for (String d : listValues) {
@@ -120,9 +116,7 @@ public class ElevationParser {
                         if (!addValue(values, step) && j >= maxValues) {
                             // prevent infinite loops
                             throw new ServiceException(
-                                    "Exceeded "
-                                            + maxValues
-                                            + " iterations parsing elevations, bailing out.",
+                                    "Exceeded " + maxValues + " iterations parsing elevations, bailing out.",
                                     ServiceException.INVALID_PARAMETER_VALUE,
                                     "elevation");
                         }
@@ -131,8 +125,7 @@ public class ElevationParser {
                         checkMaxElevations(values, maxValues);
                     }
                 } else {
-                    throw new ParseException(
-                            "Invalid elevation parameter: " + Arrays.toString(period), 0);
+                    throw new ParseException("Invalid elevation parameter: " + Arrays.toString(period), 0);
                 }
             }
             checkMaxElevations(values, maxValues);

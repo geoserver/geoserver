@@ -12,8 +12,8 @@ import org.geotools.dggs.gstore.DGGSStore;
 import org.springframework.stereotype.Component;
 
 /**
- * Custom security wrapper, for the moment used mostly to make the DGGS specific methods visible to
- * the API, otherwise the core secure wrappers would hide them.
+ * Custom security wrapper, for the moment used mostly to make the DGGS specific methods visible to the API, otherwise
+ * the core secure wrappers would hide them.
  */
 @Component
 public class DGGSSecuredObjectFactory implements SecuredObjectFactory {

@@ -82,8 +82,7 @@ public class JSONIncludesTest {
 
     @Test
     public void checkObjectInclusionSubdirDownwards() throws Exception {
-        RecursiveJSONParser parser =
-                new RecursiveJSONParser(store.get("includeInObjectSubdir.json"));
+        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("includeInObjectSubdir.json"));
         JsonNode parsed = parser.parse();
 
         checkObjectInclusion(parsed);
@@ -97,8 +96,7 @@ public class JSONIncludesTest {
 
     @Test
     public void checkObjectInclusionSubdirAbsoluteUp() throws IOException {
-        RecursiveJSONParser parser =
-                new RecursiveJSONParser(store.get("subdir/includeInObjectAbsoluteUp.json"));
+        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("subdir/includeInObjectAbsoluteUp.json"));
         JsonNode parsed = parser.parse();
 
         checkObjectInclusion(parsed);
@@ -106,8 +104,7 @@ public class JSONIncludesTest {
 
     @Test
     public void checkObjectInclusionRelativeDot() throws IOException {
-        RecursiveJSONParser parser =
-                new RecursiveJSONParser(store.get("includeInObjectRelativeDot.json"));
+        RecursiveJSONParser parser = new RecursiveJSONParser(store.get("includeInObjectRelativeDot.json"));
         JsonNode parsed = parser.parse();
 
         checkObjectInclusion(parsed);
@@ -164,9 +161,7 @@ public class JSONIncludesTest {
     public void testRecursionLimited() {
         RuntimeException ex = checkThrowingTemplate("recurse.json");
         assertThat(
-                ex.getMessage(),
-                containsString(
-                        "Went beyond maximum expansion depth (51), chain is: [recurse.json"));
+                ex.getMessage(), containsString("Went beyond maximum expansion depth (51), chain is: [recurse.json"));
     }
 
     @Test
@@ -179,9 +174,7 @@ public class JSONIncludesTest {
     public void testRecursionPingPong() {
         // ping and pong import each other in an infinite recursion
         RuntimeException ex = checkThrowingTemplate("ping.json");
-        assertThat(
-                ex.getMessage(),
-                containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
+        assertThat(ex.getMessage(), containsString("Went beyond maximum expansion depth (51), chain is: [ping.json"));
         assertThat(ex.getMessage(), containsString("pong.json"));
     }
 
@@ -189,10 +182,8 @@ public class JSONIncludesTest {
     public void testIncludedModificationAreDetected() throws IOException, InterruptedException {
         Resource resource = store.get("includeInObject.json");
         RecursiveJSONParser parser = new RecursiveJSONParser(resource);
-        TemplateReaderConfiguration configuration =
-                new TemplateReaderConfiguration(new NamespaceSupport());
-        JSONTemplateReader reader =
-                new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
+        TemplateReaderConfiguration configuration = new TemplateReaderConfiguration(new NamespaceSupport());
+        JSONTemplateReader reader = new JSONTemplateReader(parser.parse(), configuration, parser.getWatchers());
         RootBuilder rootBuilder = reader.getRootBuilder();
         assertFalse(rootBuilder.needsReload());
         Resource included = store.get("object.json");
@@ -214,7 +205,6 @@ public class JSONIncludesTest {
     }
 
     private RuntimeException checkThrowingTemplate(String s) {
-        return assertThrows(
-                RuntimeException.class, () -> new RecursiveJSONParser(store.get(s)).parse());
+        return assertThrows(RuntimeException.class, () -> new RecursiveJSONParser(store.get(s)).parse());
     }
 }

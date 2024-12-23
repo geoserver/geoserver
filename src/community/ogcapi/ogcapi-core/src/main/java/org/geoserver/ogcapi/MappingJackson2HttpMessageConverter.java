@@ -12,8 +12,7 @@ import org.geoserver.rest.wrapper.RestWrapper;
 import org.springframework.http.MediaType;
 
 /**
- * GeoServer extension of MappingJackson2HttpMessageConverter allowing to mark a bean so that it
- * won't get serialized
+ * GeoServer extension of MappingJackson2HttpMessageConverter allowing to mark a bean so that it won't get serialized
  */
 public class MappingJackson2HttpMessageConverter
         extends org.springframework.http.converter.json.MappingJackson2HttpMessageConverter {
@@ -34,8 +33,7 @@ public class MappingJackson2HttpMessageConverter
         // reading wise, the converters are called with simple types (not wrappers),
         // limit this to the OGC API controllers, while the REST ones handle all the
         // other classes, for backwards compatibility
-        if (contextClass != null
-                && !contextClass.getPackage().getName().startsWith("org.geoserver.ogcapi"))
+        if (contextClass != null && !contextClass.getPackage().getName().startsWith("org.geoserver.ogcapi"))
             return false;
 
         return super.canRead(type, contextClass, mediaType);

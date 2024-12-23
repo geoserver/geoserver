@@ -47,31 +47,27 @@ public class StyleEditPageNoLayersTest extends GeoServerWicketTestSupport {
 
         tester.debugComponentTrees();
         tester.assertComponent("styleForm:context:panel:name", TextField.class);
-        tester.assertComponent(
-                "styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
+        tester.assertComponent("styleForm:styleEditor:editorContainer:editorParent:editor", TextArea.class);
     }
 
     @Test
     public void testPublishingTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:1:link", "click");
-        tester.assertErrorMessages(
-                new String[] {"Cannot show Publishing options: No Layers available."});
+        tester.assertErrorMessages(new String[] {"Cannot show Publishing options: No Layers available."});
     }
 
     @Test
     public void testLayerPreviewTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:2:link", "click");
-        tester.assertErrorMessages(
-                new String[] {"Cannot show Layer Preview: No Layers available."});
+        tester.assertErrorMessages(new String[] {"Cannot show Layer Preview: No Layers available."});
     }
 
     @Test
     public void testLayerAttributesTab() {
 
         tester.executeAjaxEvent("styleForm:context:tabs-container:tabs:3:link", "click");
-        tester.assertErrorMessages(
-                new String[] {"Cannot show Attribute Preview: No Layers available."});
+        tester.assertErrorMessages(new String[] {"Cannot show Attribute Preview: No Layers available."});
     }
 }

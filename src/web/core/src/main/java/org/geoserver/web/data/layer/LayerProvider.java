@@ -56,60 +56,51 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
 
     static final Property<LayerInfo> TITLE = new BeanProperty<>("title", "title");
 
-    static final Property<LayerInfo> MODIFIED_TIMESTAMP =
-            new BeanProperty<>("datemodfied", "dateModified");
+    static final Property<LayerInfo> MODIFIED_TIMESTAMP = new BeanProperty<>("datemodfied", "dateModified");
 
-    static final Property<LayerInfo> CREATED_TIMESTAMP =
-            new BeanProperty<>("datecreated", "dateCreated");
+    static final Property<LayerInfo> CREATED_TIMESTAMP = new BeanProperty<>("datecreated", "dateCreated");
 
     /**
-     * A custom property that uses the derived enabled() property instead of isEnabled() to account
-     * for disabled resource/store
+     * A custom property that uses the derived enabled() property instead of isEnabled() to account for disabled
+     * resource/store
      */
-    static final Property<LayerInfo> ENABLED =
-            new AbstractProperty<LayerInfo>("enabled") {
+    static final Property<LayerInfo> ENABLED = new AbstractProperty<LayerInfo>("enabled") {
 
-                @Override
-                public Boolean getPropertyValue(LayerInfo item) {
-                    return Boolean.valueOf(item.enabled());
+        @Override
+        public Boolean getPropertyValue(LayerInfo item) {
+            return Boolean.valueOf(item.enabled());
+        }
+    };
+
+    static final Property<LayerInfo> SRS = new BeanProperty<LayerInfo>("SRS", "resource.SRS") {
+
+        /** We roll a custom comparator that treats the numeric part of the code as a number */
+        @Override
+        public java.util.Comparator<LayerInfo> getComparator() {
+            return (o1, o2) -> {
+                // split out authority and code
+                String[] srs1 = o1.getResource().getSRS().split(":");
+                String[] srs2 = o2.getResource().getSRS().split(":");
+
+                // use sign to control sort order
+                if (srs1[0].equalsIgnoreCase(srs2[0]) && srs1.length > 1 && srs2.length > 1) {
+                    try {
+                        // in case of same authority, compare numbers
+                        return Integer.valueOf(srs1[1]).compareTo(Integer.valueOf(srs2[1]));
+                    } catch (NumberFormatException e) {
+                        // a handful of codes are not numeric,
+                        // handle the general case as well
+                        return srs1[1].compareTo(srs2[1]);
+                    }
+                } else {
+                    // compare authorities
+                    return srs1[0].compareToIgnoreCase(srs2[0]);
                 }
             };
+        }
+    };
 
-    static final Property<LayerInfo> SRS =
-            new BeanProperty<LayerInfo>("SRS", "resource.SRS") {
-
-                /**
-                 * We roll a custom comparator that treats the numeric part of the code as a number
-                 */
-                @Override
-                public java.util.Comparator<LayerInfo> getComparator() {
-                    return (o1, o2) -> {
-                        // split out authority and code
-                        String[] srs1 = o1.getResource().getSRS().split(":");
-                        String[] srs2 = o2.getResource().getSRS().split(":");
-
-                        // use sign to control sort order
-                        if (srs1[0].equalsIgnoreCase(srs2[0])
-                                && srs1.length > 1
-                                && srs2.length > 1) {
-                            try {
-                                // in case of same authority, compare numbers
-                                return Integer.valueOf(srs1[1]).compareTo(Integer.valueOf(srs2[1]));
-                            } catch (NumberFormatException e) {
-                                // a handful of codes are not numeric,
-                                // handle the general case as well
-                                return srs1[1].compareTo(srs2[1]);
-                            }
-                        } else {
-                            // compare authorities
-                            return srs1[0].compareToIgnoreCase(srs2[0]);
-                        }
-                    };
-                }
-            };
-
-    static final List<Property<LayerInfo>> PROPERTIES =
-            Arrays.asList(TYPE, TITLE, NAME, STORE, ENABLED, SRS); //
+    static final List<Property<LayerInfo>> PROPERTIES = Arrays.asList(TYPE, TITLE, NAME, STORE, ENABLED, SRS); //
 
     @Override
     protected List<LayerInfo> getItems() {
@@ -123,15 +114,9 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         List<Property<LayerInfo>> modifiedPropertiesList =
                 PROPERTIES.stream().map(c -> c).collect(Collectors.toList());
         // check geoserver properties
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowCreatedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowCreatedTimeColumnsInAdminList())
             modifiedPropertiesList.add(CREATED_TIMESTAMP);
-        if (GeoServerApplication.get()
-                .getGeoServer()
-                .getSettings()
-                .isShowModifiedTimeColumnsInAdminList())
+        if (GeoServerApplication.get().getGeoServer().getSettings().isShowModifiedTimeColumnsInAdminList())
             modifiedPropertiesList.add(MODIFIED_TIMESTAMP);
         return modifiedPropertiesList;
     }
@@ -177,10 +162,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         }
     }
 
-    /**
-     * Returns the requested page of layer objects after applying any keyword filtering set on the
-     * page
-     */
+    /** Returns the requested page of layer objects after applying any keyword filtering set on the page */
     private Iterator<LayerInfo> filteredItems(Long first, Long count) {
         final Catalog catalog = getCatalog();
 
@@ -207,8 +189,7 @@ public class LayerProvider extends GeoServerDataProvider<LayerInfo> {
         final Filter filter = getFilter();
         // our already filtered and closeable iterator
         Iterator<LayerInfo> items =
-                catalog.list(
-                        LayerInfo.class, filter, first.intValue(), count.intValue(), sortOrder);
+                catalog.list(LayerInfo.class, filter, first.intValue(), count.intValue(), sortOrder);
 
         return items;
     }

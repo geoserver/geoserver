@@ -34,8 +34,7 @@ public abstract class StringCQLFunction extends FunctionExpressionImpl {
     }
 
     /**
-     * Convert the cql to a Filter taking care of injecting the Namespaces to every PropertyName in
-     * it.
+     * Convert the cql to a Filter taking care of injecting the Namespaces to every PropertyName in it.
      *
      * @param cql the cql string.
      * @return the Filter.

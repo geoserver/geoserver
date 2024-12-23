@@ -32,22 +32,19 @@ public interface RecordDescriptor extends QueryablesMapping {
     String getOutputSchema();
 
     /**
-     * The set of feature properties to be returned for the specified elementSetName (only needs to
-     * answer for the ElementSetType#BRIEF and ElementSetType#SUMMARY). The chosen Set
-     * implementation must respect the order in which the attributes are supposed to be encoded
-     * ({@link LinkedHashSet} will do)
+     * The set of feature properties to be returned for the specified elementSetName (only needs to answer for the
+     * ElementSetType#BRIEF and ElementSetType#SUMMARY). The chosen Set implementation must respect the order in which
+     * the attributes are supposed to be encoded ({@link LinkedHashSet} will do)
      */
     List<Name> getPropertiesForElementSet(ElementSetType elementSet);
 
-    /**
-     * Provides the namespace support needed to handle all schemas used/referenced by this record
-     */
+    /** Provides the namespace support needed to handle all schemas used/referenced by this record */
     NamespaceSupport getNamespaceSupport();
 
     /**
-     * Checks that the spatial filters are actually referring to a spatial property. The {@link
-     * SpatialFilterChecker} utility class can be used against simple records (like CSW), but more
-     * complex record types will need a more sophisticated approach
+     * Checks that the spatial filters are actually referring to a spatial property. The {@link SpatialFilterChecker}
+     * utility class can be used against simple records (like CSW), but more complex record types will need a more
+     * sophisticated approach
      */
     void verifySpatialFilters(Filter filter);
 

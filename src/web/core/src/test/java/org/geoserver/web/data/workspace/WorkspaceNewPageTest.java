@@ -102,8 +102,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(
-                new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
+        tester.assertErrorMessages(new String[] {"Invalid workspace name: \"default\" is a reserved keyword"});
     }
 
     @Test
@@ -114,10 +113,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(
-                new String[] {
-                    "Namespace with URI '" + MockTestData.CITE_URI + "' already exists."
-                });
+        tester.assertErrorMessages(new String[] {"Namespace with URI '" + MockTestData.CITE_URI + "' already exists."});
 
         // Make sure the workspace doesn't get added if the namespace fails
         assertNull(getCatalog().getWorkspaceByName("def"));
@@ -132,10 +128,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         form.submit("submit");
 
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(
-                new String[] {
-                    "Workspace named '" + MockTestData.CITE_PREFIX + "' already exists."
-                });
+        tester.assertErrorMessages(new String[] {"Workspace named '" + MockTestData.CITE_PREFIX + "' already exists."});
     }
 
     @Test
@@ -154,8 +147,7 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
         // try to create non isolated workspace with the same namespace
         createWorkspace("test_b", "http://www.test.org", false);
         tester.assertRenderedPage(WorkspaceNewPage.class);
-        tester.assertErrorMessages(
-                new String[] {"Namespace with URI 'http://www.test.org' already exists."});
+        tester.assertErrorMessages(new String[] {"Namespace with URI 'http://www.test.org' already exists."});
         // check that no objects were created in the catalog
         assertThat(catalog.getWorkspaceByName("test_b"), nullValue());
         assertThat(catalog.getNamespaceByPrefix("test_b"), nullValue());
@@ -227,14 +219,13 @@ public class WorkspaceNewPageTest extends GeoServerWicketTestSupport {
     public void testSecurityTabInactiveWithNoDeafaultAccessManager() {
         TestResourceAccessManager manager = new TestResourceAccessManager();
         SecureCatalogImpl oldSc = (SecureCatalogImpl) GeoServerExtensions.bean("secureCatalog");
-        SecureCatalogImpl sc =
-                new SecureCatalogImpl(getCatalog(), manager) {
+        SecureCatalogImpl sc = new SecureCatalogImpl(getCatalog(), manager) {
 
-                    @Override
-                    protected boolean isAdmin(Authentication authentication) {
-                        return false;
-                    }
-                };
+            @Override
+            protected boolean isAdmin(Authentication authentication) {
+                return false;
+            }
+        };
         applicationContext.getBeanFactory().destroyBean("secureCatalog");
         GeoServerExtensionsHelper.clear();
         GeoServerExtensionsHelper.singleton("secureCatalog", sc, SecureCatalogImpl.class);

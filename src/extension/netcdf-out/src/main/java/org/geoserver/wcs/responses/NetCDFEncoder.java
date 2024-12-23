@@ -18,10 +18,7 @@ import org.geoserver.web.netcdf.NetCDFSettingsContainer;
 import org.geoserver.web.netcdf.layer.NetCDFLayerSettingsContainer;
 import ucar.ma2.InvalidRangeException;
 
-/**
- * Writes out a NetCDF file (the write parameters are provided during construction, see {@link
- * NetCDFEncoderFactory}
- */
+/** Writes out a NetCDF file (the write parameters are provided during construction, see {@link NetCDFEncoderFactory} */
 public interface NetCDFEncoder {
 
     /** Writes out the NetCDF file */
@@ -33,9 +30,7 @@ public interface NetCDFEncoder {
     /** Extracts the NetCDF encoding settings out of the encoding parameters */
     static NetCDFLayerSettingsContainer getSettings(Map<String, String> encodingParameters) {
         Set<String> keys = encodingParameters.keySet();
-        if (keys != null
-                && !keys.isEmpty()
-                && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
+        if (keys != null && !keys.isEmpty() && keys.contains(WCS20GetCoverageResponse.COVERAGE_ID_PARAM)) {
             String coverageId = encodingParameters.get(WCS20GetCoverageResponse.COVERAGE_ID_PARAM);
             if (coverageId != null) {
                 return getSettings(coverageId);
@@ -56,13 +51,9 @@ public interface NetCDFEncoder {
                 map = info.getResource().getMetadata();
             }
         }
-        if (map != null
-                && !map.isEmpty()
-                && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
+        if (map != null && !map.isEmpty() && map.containsKey(NetCDFSettingsContainer.NETCDFOUT_KEY)) {
             NetCDFLayerSettingsContainer settings =
-                    map.get(
-                            NetCDFSettingsContainer.NETCDFOUT_KEY,
-                            NetCDFLayerSettingsContainer.class);
+                    map.get(NetCDFSettingsContainer.NETCDFOUT_KEY, NetCDFLayerSettingsContainer.class);
             return settings;
         }
 

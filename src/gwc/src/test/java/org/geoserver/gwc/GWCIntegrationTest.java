@@ -139,16 +139,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     static final String WORKSPACED_LAYER_GROUP = "workspacedLayerGroup";
 
     static final String TEST_WORKSPACE_NAME = "testWorkspace";
-    static final String TEST_WORKSPACE_URI =
-            "http://geoserver.org/GWCIntegerationTest/" + TEST_WORKSPACE_NAME;
+    static final String TEST_WORKSPACE_URI = "http://geoserver.org/GWCIntegerationTest/" + TEST_WORKSPACE_NAME;
     static final String WORKSPACED_STYLE_NAME = "workspacedStyle";
     static final String WORKSPACED_STYLE_FILE = "workspacedStyle.sld";
     static final String WORKSPACED_LAYER = "workspacedLayer";
-    static final QName WORKSPACED_LAYER_QNAME =
-            new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
+    static final QName WORKSPACED_LAYER_QNAME = new QName(TEST_WORKSPACE_URI, WORKSPACED_LAYER, TEST_WORKSPACE_NAME);
 
-    static QName BASIC_POLYGONS_NO_CRS =
-            new QName(MockData.CITE_URI, "BasicPolygonsNoCrs", MockData.CITE_PREFIX);
+    static QName BASIC_POLYGONS_NO_CRS = new QName(MockData.CITE_URI, "BasicPolygonsNoCrs", MockData.CITE_PREFIX);
 
     static QName V_TIME_ELEVATION = new QName(MockData.SF_URI, "TimeElevation", MockData.SF_PREFIX);
 
@@ -168,8 +165,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         Catalog catalog = getCatalog();
         testData.addWorkspace(TEST_WORKSPACE_NAME, TEST_WORKSPACE_URI, catalog);
         WorkspaceInfo wi = catalog.getWorkspaceByName(TEST_WORKSPACE_NAME);
-        testData.addStyle(
-                wi, WORKSPACED_STYLE_NAME, WORKSPACED_STYLE_FILE, this.getClass(), catalog);
+        testData.addStyle(wi, WORKSPACED_STYLE_NAME, WORKSPACED_STYLE_FILE, this.getClass(), catalog);
 
         assertThat(
                 catalog.getStyleByName(wi, WORKSPACED_STYLE_NAME),
@@ -193,12 +189,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         props = new HashMap<>();
         props.put(LayerProperty.SRS, "4326");
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.FORCE_DECLARED);
-        testData.addVectorLayer(
-                BASIC_POLYGONS_NO_CRS,
-                null,
-                "BasicPolygonsNoCrs.properties",
-                this.getClass(),
-                catalog);
+        testData.addVectorLayer(BASIC_POLYGONS_NO_CRS, null, "BasicPolygonsNoCrs.properties", this.getClass(), catalog);
 
         // add a style group (any caps request would fail without the fix in GEOS-9111)
         testData.addStyle("stylegroup", "stylegroup.sld", GWCIntegrationTest.class, catalog);
@@ -210,11 +201,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         catalog.add(group);
 
         testData.addVectorLayer(
-                V_TIME_ELEVATION,
-                null,
-                "TimeElevation.properties",
-                WMSDimensionsTestSupport.class,
-                catalog);
+                V_TIME_ELEVATION, null, "TimeElevation.properties", WMSDimensionsTestSupport.class, catalog);
 
         // clean up the recorded http requests
         HttpRequestRecorderCallback.reset();
@@ -247,11 +234,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testPngIntegration() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
@@ -259,11 +244,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testRequestReplacement() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=1");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=1");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
@@ -271,11 +254,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testWorkspacedStyle() throws Exception {
         String layerId = getLayerId(WORKSPACED_LAYER_QNAME);
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
@@ -284,10 +265,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     public void testGetLegendGraphics() throws Exception {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wms?service=wms&version=1.1.1&request=GetLegendGraphic&layer="
-                                + layerId
-                                + "&style=&format=image/png");
+                getAsServletResponse("gwc/service/wms?service=wms&version=1.1.1&request=GetLegendGraphic&layer="
+                        + layerId
+                        + "&style=&format=image/png");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
     }
@@ -297,11 +277,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         String layerId = getLayerId(MockData.BASIC_POLYGONS);
         setCachingMetadata(layerId, true, 7200);
 
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=7200, must-revalidate", sr.getHeader("Cache-Control"));
@@ -313,11 +291,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // setup no caching
         setCachingMetadata(layerId, false, -1);
 
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("no-cache, no-store, must-revalidate", sr.getHeader("Cache-Control"));
@@ -341,11 +317,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
         getCatalog().add(lg);
 
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + FLAT_LAYER_GROUP
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + FLAT_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=1000, must-revalidate", sr.getHeader("Cache-Control"));
@@ -380,21 +354,17 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         getCatalog().add(container);
 
         // check the caching headers on the nested group
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + NESTED_LAYER_GROUP
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + NESTED_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=7200, must-revalidate", sr.getHeader("Cache-Control"));
 
         // check the caching headers on the container layer group
-        sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + CONTAINER_LAYER_GROUP
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + CONTAINER_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("max-age=1000, must-revalidate", sr.getHeader("Cache-Control"));
@@ -408,8 +378,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches
-     * a gwc tile should return with the proper {@code geowebcache-tile-index} HTTP response header.
+     * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches a gwc tile should
+     * return with the proper {@code geowebcache-tile-index} HTTP response header.
      */
     @Test
     public void testDirectWMSIntegration() throws Exception {
@@ -434,10 +404,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches
-     * a gwc tile should return with the proper {@code geowebcache-tile-index} HTTP response header.
-     * If requireTileParameter is set to false - direct integration should work even if tiled=true
-     * is not set.
+     * If direct WMS integration is enabled, a GetMap requests that hits the regular WMS but matches a gwc tile should
+     * return with the proper {@code geowebcache-tile-index} HTTP response header. If requireTileParameter is set to
+     * false - direct integration should work even if tiled=true is not set.
      */
     @Test
     public void testDirectWMSIntegrationWithRequireTileParameter() throws Exception {
@@ -490,10 +459,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
 
-        String request =
-                "wms?service=wms&version=1.3.0&request=GetMap&styles=&layers="
-                        + layerName
-                        + "&srs=EPSG:4326&bbox=-90,-180,90,0&format=image/png&width=256&height=256&tiled=true";
+        String request = "wms?service=wms&version=1.3.0&request=GetMap&styles=&layers="
+                + layerName
+                + "&srs=EPSG:4326&bbox=-90,-180,90,0&format=image/png&width=256&height=256&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         assertEquals(200, response.getStatus());
@@ -561,16 +529,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final String layerName = BASIC_POLYGONS.getPrefix() + ":" + BASIC_POLYGONS.getLocalPart();
         final String path = buildGetMap(true, layerName, "EPSG:4326", null) + "&tiled=true";
         final String qualifiedName = super.getLayerId(BASIC_POLYGONS);
-        final GeoServerTileLayer tileLayer =
-                (GeoServerTileLayer) gwc.getTileLayerByName(qualifiedName);
+        final GeoServerTileLayer tileLayer = (GeoServerTileLayer) gwc.getTileLayerByName(qualifiedName);
         ((LayerInfo) tileLayer.getPublishedInfo())
                 .getResource()
                 .getMetadata()
                 .put(ResourceInfo.CACHING_ENABLED, "true");
-        ((LayerInfo) tileLayer.getPublishedInfo())
-                .getResource()
-                .getMetadata()
-                .put(ResourceInfo.CACHE_AGE_MAX, 3456);
+        ((LayerInfo) tileLayer.getPublishedInfo()).getResource().getMetadata().put(ResourceInfo.CACHE_AGE_MAX, 3456);
 
         MockHttpServletResponse response = getAsServletResponse(path);
         String cacheControl = response.getHeader("Cache-Control");
@@ -604,16 +568,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
         assertNotNull(tileLayer);
         boolean directWMSIntegrationEndpoint = true;
-        String request =
-                MockData.CITE_PREFIX
-                        + "/"
-                        + buildGetMap(
-                                directWMSIntegrationEndpoint,
-                                localName,
-                                "EPSG:4326",
-                                null,
-                                tileLayer)
-                        + "&tiled=true";
+        String request = MockData.CITE_PREFIX
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -633,16 +591,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
         assertNotNull(tileLayer);
         boolean directWMSIntegrationEndpoint = true;
-        String request =
-                TEST_WORKSPACE_NAME
-                        + "/"
-                        + buildGetMap(
-                                directWMSIntegrationEndpoint,
-                                localName,
-                                "EPSG:4326",
-                                null,
-                                tileLayer)
-                        + "&tiled=true";
+        String request = TEST_WORKSPACE_NAME
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -658,16 +610,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(response2.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
         // now try with the style name too, should be another hit
-        request =
-                TEST_WORKSPACE_NAME
-                        + "/"
-                        + buildGetMap(
-                                directWMSIntegrationEndpoint,
-                                localName,
-                                "EPSG:4326",
-                                WORKSPACED_STYLE_NAME,
-                                tileLayer)
-                        + "&tiled=true";
+        request = TEST_WORKSPACE_NAME
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", WORKSPACED_STYLE_NAME, tileLayer)
+                + "&tiled=true";
 
         MockHttpServletResponse response3 = getAsServletResponse(request);
         assertEquals(200, response3.getStatus());
@@ -683,22 +629,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         getCatalog().save(ws);
 
         // rename the bits in the request, it should be another hit
-        request =
-                newWorkspaceName
-                        + "/"
-                        + buildGetMap(
-                                directWMSIntegrationEndpoint,
-                                localName,
-                                "EPSG:4326",
-                                WORKSPACED_STYLE_NAME,
-                                tileLayer)
-                        + "&tiled=true";
+        request = newWorkspaceName
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", WORKSPACED_STYLE_NAME, tileLayer)
+                + "&tiled=true";
         MockHttpServletResponse response4 = getAsServletResponse(request);
         assertEquals(200, response4.getStatus());
         assertEquals("image/png", response4.getContentType());
-        assertEquals(
-                newWorkspaceName + ":" + WORKSPACED_LAYER,
-                response4.getHeader("geowebcache-layer"));
+        assertEquals(newWorkspaceName + ":" + WORKSPACED_LAYER, response4.getHeader("geowebcache-layer"));
         assertThat(response4.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
     }
 
@@ -718,10 +656,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         assertNotNull(layer);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -775,10 +712,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         assertNotNull(layer);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -825,11 +761,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         catalog.save(layer);
         layer = catalog.getLayerByName(qualifiedName);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&style=generic"
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&style=generic"
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -877,11 +812,10 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         layer.getStyles().add(catalog.getStyleByName("generic"));
         catalog.save(layer);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&style=generic"
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&style=generic"
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -927,10 +861,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         assertNotNull(layer);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
@@ -968,8 +901,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         + "    </wfs:Insert>\n"
                         + "</wfs:Transaction>";
 
-        String wfsRequest =
-                TEST_WORKSPACE_NAME + "/wfs?service=WFS&version=1.0.0&request=Transaction";
+        String wfsRequest = TEST_WORKSPACE_NAME + "/wfs?service=WFS&version=1.0.0&request=Transaction";
         MockHttpServletResponse wfsResponse = postAsServletResponse(wfsRequest, wfsInsert);
         assertEquals(200, wfsResponse.getStatus());
 
@@ -1008,12 +940,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // wmts request, use the qualified name, first request, works, but it's a cache miss of
         // course
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + workspaceName
-                        + ":"
-                        + WORKSPACED_LAYER_GROUP
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + workspaceName
+                + ":"
+                + WORKSPACED_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
         MockHttpServletResponse sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
@@ -1029,8 +960,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final GWC gwc = GWC.get();
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
         final TileLayer tileLayer = gwc.getTileLayerByName(lg.prefixedName());
-        request =
-                buildGetMap(true, lg.prefixedName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
+        request = buildGetMap(true, lg.prefixedName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
@@ -1038,11 +968,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(sr.getHeader("geowebcache-cache-result"), equalToIgnoringCase("HIT"));
 
         // and direct integration against the workspace local name
-        request =
-                workspaceName
-                        + "/"
-                        + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer)
-                        + "&tiled=true";
+        request = workspaceName + "/" + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals(lg.prefixedName(), sr.getHeader("geowebcache-layer"));
@@ -1055,12 +981,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         getCatalog().save(ws);
 
         // prepare the wmts request anew, it should be a hit, the cache should be preserved
-        request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + newWorkspaceName
-                        + ":"
-                        + WORKSPACED_LAYER_GROUP
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        request = "gwc/service/wmts?request=GetTile&layer="
+                + newWorkspaceName
+                + ":"
+                + WORKSPACED_LAYER_GROUP
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
         sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
@@ -1077,10 +1002,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // and direct integration against the workspace local name
         request =
-                newWorkspaceName
-                        + "/"
-                        + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer)
-                        + "&tiled=true";
+                newWorkspaceName + "/" + buildGetMap(true, lg.getName(), "EPSG:4326", null, tileLayer) + "&tiled=true";
         sr = getAsServletResponse(request);
         assertEquals(200, sr.getStatus());
         assertEquals(newQualifiedName, sr.getHeader("geowebcache-layer"));
@@ -1103,24 +1025,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         final TileLayer tileLayer = gwc.getTileLayerByName(qualifiedName);
         assertNotNull(tileLayer);
         boolean directWMSIntegrationEndpoint = true;
-        String request =
-                MockData.CDF_PREFIX // asking /geoserver/cdf/wms? for cite:BasicPolygons
-                        + "/"
-                        + buildGetMap(
-                                directWMSIntegrationEndpoint,
-                                localName,
-                                "EPSG:4326",
-                                null,
-                                tileLayer)
-                        + "&tiled=true";
+        String request = MockData.CDF_PREFIX // asking /geoserver/cdf/wms? for cite:BasicPolygons
+                + "/"
+                + buildGetMap(directWMSIntegrationEndpoint, localName, "EPSG:4326", null, tileLayer)
+                + "&tiled=true";
 
         MockHttpServletResponse response = getAsServletResponse(request);
 
         assertEquals(200, response.getStatus());
 
-        assertTrue(
-                response.getContentType(),
-                response.getContentType().startsWith("application/vnd.ogc.se_xml"));
+        assertTrue(response.getContentType(), response.getContentType().startsWith("application/vnd.ogc.se_xml"));
 
         assertTrue(
                 response.getContentAsString(),
@@ -1190,13 +1104,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             if (tl.getName().equals("sf:AggregateGeoFeature")) {
                 // tl.isInitialized();
                 foudAGF = true;
-                GridSubset epsg4326 = tl.getGridSubset(gridSetBroker.getWorldEpsg4326().getName());
-                assertEquals(
-                        epsg4326.getGridSetBounds(), new BoundingBox(-180.0, -90.0, 180.0, 90.0));
+                GridSubset epsg4326 =
+                        tl.getGridSubset(gridSetBroker.getWorldEpsg4326().getName());
+                assertEquals(epsg4326.getGridSetBounds(), new BoundingBox(-180.0, -90.0, 180.0, 90.0));
                 String mime = tl.getMimeTypes().get(1).getMimeType();
-                assertTrue(
-                        mime.startsWith("image/")
-                                || mime.startsWith("application/vnd.google-earth.kml+xml"));
+                assertTrue(mime.startsWith("image/") || mime.startsWith("application/vnd.google-earth.kml+xml"));
             }
         }
         assertTrue(foudAGF);
@@ -1223,10 +1135,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     private String buildGetMap(
-            final boolean directWMSIntegrationEndpoint,
-            final String layerName,
-            final String gridsetId,
-            String styles) {
+            final boolean directWMSIntegrationEndpoint, final String layerName, final String gridsetId, String styles) {
 
         final GWC gwc = GWC.get();
         final TileLayer tileLayer = gwc.getTileLayerByName(layerName);
@@ -1263,8 +1172,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * See GEOS-5092, check server startup is not hurt by a tile layer out of sync (say someone
-     * manually removed the GeoServer layer)
+     * See GEOS-5092, check server startup is not hurt by a tile layer out of sync (say someone manually removed the
+     * GeoServer layer)
      */
     @Test
     public void testMissingGeoServerLayerAtStartUp() throws Exception {
@@ -1325,8 +1234,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         JDBCQuotaStoreFactory.ENABLE_HSQL_AUTO_SHUTDOWN = true;
         // normal state, quota is not enabled by default
         GWC gwc = GWC.get();
-        ConfigurableQuotaStoreProvider provider =
-                GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
         DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
         JDBCConfiguration jdbc = gwc.getJDBCDiskQuotaConfig();
         assertFalse("Disk quota is enabled??", quota.isEnabled());
@@ -1339,12 +1247,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         gwc.saveDiskQuotaConfig(quota, null);
         GeoServerDataDirectory dd = GeoServerExtensions.bean(GeoServerDataDirectory.class);
         String jdbcConfigPath = "gwc/geowebcache-diskquota-jdbc.xml";
-        assertNull(
-                "jdbc config (" + jdbcConfigPath + ") should not be there",
-                dd.findFile(jdbcConfigPath));
+        assertNull("jdbc config (" + jdbcConfigPath + ") should not be there", dd.findFile(jdbcConfigPath));
         String hsqlStorePath = "gwc/diskquota_page_store_hsql";
-        assertNotNull(
-                "jdbc store (" + hsqlStorePath + ") should be there", dd.findFile(hsqlStorePath));
+        assertNotNull("jdbc store (" + hsqlStorePath + ") should be there", dd.findFile(hsqlStorePath));
         assertTrue(getActualStore(provider) instanceof JDBCQuotaStore);
 
         // disable again and clean up
@@ -1367,12 +1272,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         pool.setMaxOpenPreparedStatements(50);
         jdbc.setConnectionPool(pool);
         gwc.saveDiskQuotaConfig(quota, jdbc);
-        assertNotNull(
-                "jdbc config (" + jdbcConfigPath + ") should be there",
-                dd.findFile(jdbcConfigPath));
-        assertNull(
-                "jdbc store (" + hsqlStorePath + ") should be there",
-                dd.findDataFile(hsqlStorePath));
+        assertNotNull("jdbc config (" + jdbcConfigPath + ") should be there", dd.findFile(jdbcConfigPath));
+        assertNull("jdbc store (" + hsqlStorePath + ") should be there", dd.findDataFile(hsqlStorePath));
         File newQuotaStore = new File("./target/quota-hsql.script");
         assertTrue(newQuotaStore.exists());
 
@@ -1381,8 +1282,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             Document dom = dom(fis);
             // print(dom);
             String storedPassword =
-                    XMLUnit.newXpathEngine()
-                            .evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
+                    XMLUnit.newXpathEngine().evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
         }
@@ -1393,8 +1293,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     public void testDiskQuotaH2Storage() throws Exception {
         // normal state, quota is not enabled by default
         GWC gwc = GWC.get();
-        ConfigurableQuotaStoreProvider provider =
-                GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
+        ConfigurableQuotaStoreProvider provider = GeoServerExtensions.bean(ConfigurableQuotaStoreProvider.class);
         DiskQuotaConfig quota = gwc.getDiskQuotaConfig();
         JDBCConfiguration jdbc = gwc.getJDBCDiskQuotaConfig();
         assertFalse("Disk quota is enabled??", quota.isEnabled());
@@ -1422,11 +1321,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         pool.setValidationQuery("SELECT 1");
         gwc.saveDiskQuotaConfig(quota, jdbc);
-        assertNotNull(
-                "jdbc config (" + jdbcConfigPath + ") should be there",
-                dd.findFile(jdbcConfigPath));
-        assertNull(
-                "jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
+        assertNotNull("jdbc config (" + jdbcConfigPath + ") should be there", dd.findFile(jdbcConfigPath));
+        assertNull("jdbc store (" + h2StorePath + ") should be there", dd.findDataFile(h2StorePath));
 
         File newQuotaStore = new File("./target/quota-h2.data.db");
         assertTrue(newQuotaStore.exists());
@@ -1442,8 +1338,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             Document dom = dom(fis);
             // print(dom);
             String storedPassword =
-                    XMLUnit.newXpathEngine()
-                            .evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
+                    XMLUnit.newXpathEngine().evaluate("/gwcJdbcConfiguration/connectionPool/password", dom);
             // check the password has been encoded properly
             assertTrue(storedPassword.startsWith("crypt1:"));
         }
@@ -1457,19 +1352,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testPreserveHeaders() throws Exception {
         MockHttpServletResponse response =
-                getAsServletResponse(
-                        "gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
+                getAsServletResponse("gwc/service/wms?service=wms&version=1.1.0&request=GetCapabilities");
         // System.out.println(response.getContentAsString());
         assertEquals("application/vnd.ogc.wms_xml", getBaseMimeType(response.getContentType()));
-        assertEquals(
-                "inline;filename=wms-getcapabilities.xml",
-                response.getHeader("content-disposition"));
+        assertEquals("inline;filename=wms-getcapabilities.xml", response.getHeader("content-disposition"));
     }
 
     @Test
     public void testGutter() throws Exception {
-        GeoServerTileLayer tileLayer =
-                (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS));
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS));
         GeoServerTileLayerInfo info = tileLayer.getInfo();
         info.setGutter(100);
         GWC.get().save(tileLayer);
@@ -1551,17 +1442,16 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertNull("Unexpected cache directory " + cacheDirectory, loader.find(cacheDirectory));
         assertNull("Unexpected cached tile " + cachedTile, loader.find(cachedTile));
         // trigger tile caching with a WMTS request
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "gwc/service/wmts" //
-                                + "?request=GetTile" //
-                                + "&layer="
-                                + layerName //
-                                + "&format=image/png" //
-                                + "&tilematrixset=EPSG:4326" //
-                                + "&tilematrix=EPSG:4326:0" //
-                                + "&tilerow=0" //
-                                + "&tilecol=0");
+        MockHttpServletResponse response = getAsServletResponse(
+                "gwc/service/wmts" //
+                        + "?request=GetTile" //
+                        + "&layer="
+                        + layerName //
+                        + "&format=image/png" //
+                        + "&tilematrixset=EPSG:4326" //
+                        + "&tilematrix=EPSG:4326:0" //
+                        + "&tilerow=0" //
+                        + "&tilecol=0");
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         // cache directory and cached tile should now be present
@@ -1581,29 +1471,23 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // print(doc);
         assertThat(
                 WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
-                equalTo(
-                        "http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+                equalTo("http://localhost:8080/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
     }
 
     public Document assertGetCapabilitiesWithLocalWorkspace() throws Exception {
         // getting capabilities document for CITE workspace
-        Document document =
-                getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
+        Document document = getAsDOM(MockData.CITE_PREFIX + "/gwc/service/wmts?request=GetCapabilities");
         // checking get capabilities result for CITE workspace
         List<LayerInfo> citeLayers = getWorkspaceLayers(MockData.CITE_PREFIX);
         assertThat(
-                Integer.parseInt(
-                        WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
+                Integer.parseInt(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
                 greaterThan(0));
         assertThat(
-                Integer.parseInt(
-                        WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
+                Integer.parseInt(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
                 lessThanOrEqualTo(citeLayers.size()));
         assertThat(
                 WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='"
-                                + MockData.BUILDINGS.getLocalPart()
-                                + "'])",
+                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='" + MockData.BUILDINGS.getLocalPart() + "'])",
                         document),
                 is("1"));
         return document;
@@ -1619,8 +1503,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             // print(doc);
             assertThat(
                     WMTS_XPATH_10.evaluate("//wmts:ServiceMetadataURL[2]/@xlink:href", doc),
-                    equalTo(
-                            "http://fooBar/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
+                    equalTo("http://fooBar/geoserver/cite/gwc/service/wmts/rest/WMTSCapabilities.xml"));
 
         } finally {
             setProxyBase(gs, null);
@@ -1646,32 +1529,25 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         // force recomputing the grid subsets by adding one (at runtime this happens while editing a
         // layer)
         GridSetBroker gridSetBroker = GWC.get().getGridSetBroker();
-        GridSet testGridSet = namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
+        GridSet testGridSet =
+                namedGridsetCopy("TEST", gridSetBroker.getDefaults().worldEpsg4326());
         // gridset bounds are computed only for gridsets known to the broker
         gridSetBroker.addGridSet(testGridSet);
-        GridSubset testGridSubset =
-                GridSubsetFactory.createGridSubSet(
-                        testGridSet,
-                        new BoundingBox(-180, 0, 0, 90),
-                        0,
-                        testGridSet.getNumLevels() - 1);
+        GridSubset testGridSubset = GridSubsetFactory.createGridSubSet(
+                testGridSet, new BoundingBox(-180, 0, 0, 90), 0, testGridSet.getNumLevels() - 1);
         GeoServerTileLayer tileLayer =
-                (GeoServerTileLayer)
-                        GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS_NO_CRS));
+                (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(BASIC_POLYGONS_NO_CRS));
         tileLayer.addGridSubset(testGridSubset);
 
         // get the capabilities and check the gridset bounds (not the whole world)
-        Document document =
-                getAsDOM(
-                        MockData.CITE_PREFIX
-                                + "/"
-                                + BASIC_POLYGONS_NO_CRS.getLocalPart()
-                                + "/gwc/service/wmts?request=GetCapabilities");
+        Document document = getAsDOM(MockData.CITE_PREFIX
+                + "/"
+                + BASIC_POLYGONS_NO_CRS.getLocalPart()
+                + "/gwc/service/wmts?request=GetCapabilities");
         // print(document);
-        String basePath =
-                "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygonsNoCrs']"
-                        + "/wmts:TileMatrixSetLink[wmts:TileMatrixSet='EPSG:4326']/wmts:TileMatrixSetLimits"
-                        + "/wmts:TileMatrixLimits[wmts:TileMatrix='EPSG:4326:1']";
+        String basePath = "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygonsNoCrs']"
+                + "/wmts:TileMatrixSetLink[wmts:TileMatrixSet='EPSG:4326']/wmts:TileMatrixSetLimits"
+                + "/wmts:TileMatrixLimits[wmts:TileMatrix='EPSG:4326:1']";
         assertEquals("0", WMTS_XPATH_10.evaluate(basePath + "/wmts:MinTileRow", document));
         assertEquals("1", WMTS_XPATH_10.evaluate(basePath + "/wmts:MaxTileRow", document));
         assertEquals("1", WMTS_XPATH_10.evaluate(basePath + "/wmts:MinTileCol", document));
@@ -1681,22 +1557,15 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesWithLocalLayer() throws Exception {
         // getting capabilities document for CITE workspace
-        Document document =
-                getAsDOM(
-                        MockData.CITE_PREFIX
-                                + "/"
-                                + MockData.BUILDINGS.getLocalPart()
-                                + "/gwc/service/wmts?request=GetCapabilities");
+        Document document = getAsDOM(MockData.CITE_PREFIX
+                + "/"
+                + MockData.BUILDINGS.getLocalPart()
+                + "/gwc/service/wmts?request=GetCapabilities");
         // checking get capabilities result for CITE workspace
-        assertThat(
-                Integer.parseInt(
-                        WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
-                equalTo(1));
+        assertThat(Integer.parseInt(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
         assertThat(
                 WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='"
-                                + MockData.BUILDINGS.getLocalPart()
-                                + "'])",
+                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='" + MockData.BUILDINGS.getLocalPart() + "'])",
                         document),
                 is("1"));
     }
@@ -1704,40 +1573,29 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesWithLocalGroup() throws Exception {
         // getting capabilities document for CITE workspace
-        Document document =
-                getAsDOM(SIMPLE_LAYER_GROUP + "/gwc/service/wmts?request=GetCapabilities");
+        Document document = getAsDOM(SIMPLE_LAYER_GROUP + "/gwc/service/wmts?request=GetCapabilities");
         // checking get capabilities result for CITE workspace
-        assertThat(
-                Integer.parseInt(
-                        WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)),
-                equalTo(1));
+        assertThat(Integer.parseInt(WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer)", document)), equalTo(1));
         assertThat(
                 WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='"
-                                + SIMPLE_LAYER_GROUP
-                                + "'])",
-                        document),
+                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='" + SIMPLE_LAYER_GROUP + "'])", document),
                 is("1"));
     }
 
     @Test
     public void testGetTileWithLocalWorkspace() throws Exception {
         // perform a get tile request using a virtual service
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        MockData.CITE_PREFIX
-                                + "/gwc/service/wmts?request=GetTile&layer="
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse response = getAsServletResponse(MockData.CITE_PREFIX
+                + "/gwc/service/wmts?request=GetTile&layer="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         // redo the same request
-        response =
-                getAsServletResponse(
-                        MockData.CITE_PREFIX
-                                + "/gwc/service/wmts?request=GetTile&layer="
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        response = getAsServletResponse(MockData.CITE_PREFIX
+                + "/gwc/service/wmts?request=GetTile&layer="
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, response.getStatus());
         assertEquals("image/png", response.getContentType());
         // check that we got an hit
@@ -1768,14 +1626,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
             wmtsInfo.setEnabled(false);
             getGeoServer().save(wmtsInfo);
             MockHttpServletResponse response =
-                    getAsServletResponse(
-                            "gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
+                    getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
             assertEquals(400, response.getStatus());
             wmtsInfo.setEnabled(true);
             getGeoServer().save(wmtsInfo);
-            response =
-                    getAsServletResponse(
-                            "gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
+            response = getAsServletResponse("gwc/service/wmts?service=wmts&version=1.0.0&request=GetCapabilities");
             assertEquals(200, response.getStatus());
         } finally {
             // restoring initial configuration value
@@ -1787,50 +1642,37 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testWmtsGetCapabilitiesRequest() throws Exception {
         // getting the capabilities document
-        MockHttpServletResponse response =
-                getAsServletResponse("/gwc/service/wmts?request=GetCapabilities");
+        MockHttpServletResponse response = getAsServletResponse("/gwc/service/wmts?request=GetCapabilities");
         // check that the request was successful
         assertThat(response.getStatus(), is(200));
         // parse XML response content
         Document document = dom(response, false);
         print(document);
         // check that default styles are advertised
-        String result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer/wmts:Style[@isDefault='true']"
-                                + "/ows:Identifier[text()='Default'])",
-                        document);
+        String result = WMTS_XPATH_10.evaluate(
+                "count(//wmts:Contents/wmts:Layer/wmts:Style[@isDefault='true']" + "/ows:Identifier[text()='Default'])",
+                document);
         assertThat(Integer.parseInt(result), greaterThan(0));
         // check that GeoServer service metadata is available
-        result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//ows:ServiceProvider/ows:ProviderName[text()='GeoServer'])",
-                        document);
+        result = WMTS_XPATH_10.evaluate("count(//ows:ServiceProvider/ows:ProviderName[text()='GeoServer'])", document);
         assertThat(Integer.parseInt(result), is(1));
         // check that 0.0 and positive infinite scales are not advertised
-        result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer/wmts:Style/"
-                                + "wmts:LegendURL[@minScaleDenominator='0.0'])",
-                        document);
+        result = WMTS_XPATH_10.evaluate(
+                "count(//wmts:Contents/wmts:Layer/wmts:Style/" + "wmts:LegendURL[@minScaleDenominator='0.0'])",
+                document);
         assertThat(Integer.parseInt(result), is(0));
-        result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer/wmts:Style/"
-                                + "wmts:LegendURL[@maxScaleDenominator='NaN'])",
-                        document);
+        result = WMTS_XPATH_10.evaluate(
+                "count(//wmts:Contents/wmts:Layer/wmts:Style/" + "wmts:LegendURL[@maxScaleDenominator='NaN'])",
+                document);
         assertThat(Integer.parseInt(result), is(0));
         // check that min and max scales are advertised
-        result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer/wmts:Style/"
-                                + "wmts:LegendURL[@minScaleDenominator='100000.0'][@maxScaleDenominator='300000.0'])",
-                        document);
+        result = WMTS_XPATH_10.evaluate(
+                "count(//wmts:Contents/wmts:Layer/wmts:Style/"
+                        + "wmts:LegendURL[@minScaleDenominator='100000.0'][@maxScaleDenominator='300000.0'])",
+                document);
         assertThat(Integer.parseInt(result), greaterThan(0));
         // check the style group is reported
-        result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//wmts:Contents/wmts:Layer[ows:Identifier='stylegroup'])", document);
+        result = WMTS_XPATH_10.evaluate("count(//wmts:Contents/wmts:Layer[ows:Identifier='stylegroup'])", document);
         assertThat(Integer.parseInt(result), equalTo(1));
 
         // check that legend URI are correctly encoded in the context of a local workspace
@@ -1838,17 +1680,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(workspace, notNullValue());
         LocalWorkspace.set(workspace);
         try {
-            response =
-                    getAsServletResponse(
-                            TEST_WORKSPACE_NAME + "/gwc/service/wmts?request=GetCapabilities");
+            response = getAsServletResponse(TEST_WORKSPACE_NAME + "/gwc/service/wmts?request=GetCapabilities");
             document = dom(response, false);
-            result =
-                    WMTS_XPATH_10.evaluate(
-                            "count(//wmts:Contents/wmts:Layer/wmts:Style/"
-                                    + "wmts:LegendURL[contains(@xlink:href,'geoserver/"
-                                    + TEST_WORKSPACE_NAME
-                                    + "/ows')])",
-                            document);
+            result = WMTS_XPATH_10.evaluate(
+                    "count(//wmts:Contents/wmts:Layer/wmts:Style/"
+                            + "wmts:LegendURL[contains(@xlink:href,'geoserver/"
+                            + TEST_WORKSPACE_NAME
+                            + "/ows')])",
+                    document);
             assertThat(Integer.parseInt(result), greaterThan(0));
         } finally {
             // make sure we remove the local workspace
@@ -1906,8 +1745,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesWithRestEndpoints() throws Exception {
 
-        MockHttpServletRequest request =
-                createRequest("/gwc" + WMTSService.REST_PATH + "/WMTSCapabilities.xml");
+        MockHttpServletRequest request = createRequest("/gwc" + WMTSService.REST_PATH + "/WMTSCapabilities.xml");
         request.setMethod("GET");
         request.setContent(new byte[] {});
 
@@ -1924,11 +1762,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesWithRestEndpointsWorkspaceService() throws Exception {
         MockHttpServletRequest request =
-                createRequest(
-                        MockData.CITE_PREFIX
-                                + "/gwc"
-                                + WMTSService.REST_PATH
-                                + "/WMTSCapabilities.xml");
+                createRequest(MockData.CITE_PREFIX + "/gwc" + WMTSService.REST_PATH + "/WMTSCapabilities.xml");
         request.setMethod("GET");
 
         Request mockRequest = mock(Request.class);
@@ -1969,15 +1803,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetTileWithRestEndpoints() throws Exception {
 
-        MockHttpServletRequest request =
-                createRequest(
-                        "/gwc"
-                                + WMTSService.REST_PATH
-                                + "/"
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
+        MockHttpServletRequest request = createRequest("/gwc"
+                + WMTSService.REST_PATH
+                + "/"
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
         request.setMethod("GET");
         request.setContent(new byte[] {});
 
@@ -1994,14 +1826,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetTileWithRestEndpointsInVirtualService() throws Exception {
         // get tile
-        MockHttpServletRequest request =
-                createRequest(
-                        MockData.BASIC_POLYGONS.getPrefix()
-                                + "/gwc"
-                                + WMTSService.REST_PATH
-                                + "/"
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
+        MockHttpServletRequest request = createRequest(MockData.BASIC_POLYGONS.getPrefix()
+                + "/gwc"
+                + WMTSService.REST_PATH
+                + "/"
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0?format=image/png");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         // mock the request
@@ -2017,15 +1847,13 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testFeatureInfoWithRestEndpoints() throws Exception {
         // get feature info
-        MockHttpServletRequest request =
-                createRequest(
-                        "/gwc"
-                                + WMTSService.REST_PATH
-                                + "/"
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
+        MockHttpServletRequest request = createRequest("/gwc"
+                + WMTSService.REST_PATH
+                + "/"
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         // mock the request
@@ -2041,16 +1869,14 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testFeatureInfoWithRestEndpointsInVirtualService() throws Exception {
         // getting feature info
-        MockHttpServletRequest request =
-                createRequest(
-                        MockData.BASIC_POLYGONS.getPrefix()
-                                + "/gwc"
-                                + WMTSService.REST_PATH
-                                + "/"
-                                + MockData.BASIC_POLYGONS.getPrefix()
-                                + ":"
-                                + MockData.BASIC_POLYGONS.getLocalPart()
-                                + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
+        MockHttpServletRequest request = createRequest(MockData.BASIC_POLYGONS.getPrefix()
+                + "/gwc"
+                + WMTSService.REST_PATH
+                + "/"
+                + MockData.BASIC_POLYGONS.getPrefix()
+                + ":"
+                + MockData.BASIC_POLYGONS.getLocalPart()
+                + "/EPSG:4326/EPSG:4326:0/0/0/0/0?format=text/plain");
         request.setMethod("GET");
         request.setContent(new byte[] {});
         // mock the request
@@ -2066,8 +1892,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     @Test
     public void testGetCapabilitiesWithRestEndpointsAndDimensions() throws Exception {
         GeoServerTileLayer tileLayer =
-                (GeoServerTileLayer)
-                        GWC.get().getTileLayerByName(getLayerId(MockData.BASIC_POLYGONS));
+                (GeoServerTileLayer) GWC.get().getTileLayerByName(getLayerId(MockData.BASIC_POLYGONS));
         GeoServerTileLayerInfo info = tileLayer.getInfo();
 
         // Add dimensions to layer
@@ -2083,8 +1908,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         GWC.get().save(tileLayer);
 
-        MockHttpServletRequest request =
-                createRequest("/gwc" + WMTSService.REST_PATH + "/WMTSCapabilities.xml");
+        MockHttpServletRequest request = createRequest("/gwc" + WMTSService.REST_PATH + "/WMTSCapabilities.xml");
         request.setMethod("GET");
         request.setContent(new byte[] {});
 
@@ -2113,32 +1937,26 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         doc));
     }
 
-    /**
-     * Test that using an invalid \ non-existing style in a GetTile request will throw the correct
-     * OWS exception.
-     */
+    /** Test that using an invalid \ non-existing style in a GetTile request will throw the correct OWS exception. */
     @Test
     public void testCetTileWithInvalidStyle() throws Exception {
         // using cite:BasicPolygons layer for testing
         String layerName = getLayerId(MockData.BASIC_POLYGONS);
         // get tile request with an invalid style, this should return an exception report
-        MockHttpServletResponse response =
-                getAsServletResponse(
-                        "gwc/service/wmts"
-                                + "?request=GetTile&layer="
-                                + layerName
-                                + "&style=invalid&format=image/png"
-                                + "&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse response = getAsServletResponse("gwc/service/wmts"
+                + "?request=GetTile&layer="
+                + layerName
+                + "&style=invalid&format=image/png"
+                + "&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(400, response.getStatus());
         assertEquals("text/xml", response.getContentType());
         // parse XML response content
         Document document = dom(response, false);
         // let's check the content of the exception report
-        String result =
-                WMTS_XPATH_10.evaluate(
-                        "count(//ows:ExceptionReport/ows:Exception"
-                                + "[@exceptionCode='InvalidParameterValue'][@locator='Style'])",
-                        document);
+        String result = WMTS_XPATH_10.evaluate(
+                "count(//ows:ExceptionReport/ows:Exception"
+                        + "[@exceptionCode='InvalidParameterValue'][@locator='Style'])",
+                document);
         assertThat(Integer.parseInt(result), is(1));
     }
 
@@ -2158,10 +1976,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         assertNotNull(layer);
 
-        String request =
-                "gwc/service/wmts?request=GetTile&layer="
-                        + qualifiedName
-                        + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
+        String request = "gwc/service/wmts?request=GetTile&layer="
+                + qualifiedName
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0";
 
         // first request
         MockHttpServletResponse response = getAsServletResponse(request);
@@ -2188,10 +2005,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     /** Helper method that creates a layer group using the provided name and layers names. */
     private void createLayerGroup(String layerGroupName, QName... layersNames) throws Exception {
         // get layers that match the layers names
-        List<LayerInfo> layers =
-                Arrays.stream(layersNames)
-                        .map(layerName -> getCatalog().getLayerByName(new NameImpl(layerName)))
-                        .collect(Collectors.toList());
+        List<LayerInfo> layers = Arrays.stream(layersNames)
+                .map(layerName -> getCatalog().getLayerByName(new NameImpl(layerName)))
+                .collect(Collectors.toList());
         // create a new layer group using the provided name
         LayerGroupInfo layerGroup = getCatalog().getFactory().createLayerGroup();
         layerGroup.setName(layerGroupName);
@@ -2207,8 +2023,8 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     /**
-     * Test verifying that GWC integration will work when layer belongs to default workspace and
-     * layer name is passed without workspace being part of layer name or OWS request itself.
+     * Test verifying that GWC integration will work when layer belongs to default workspace and layer name is passed
+     * without workspace being part of layer name or OWS request itself.
      */
     @Test
     public void testDirectDefaultWorkspaceWMSIntegration() throws Exception {
@@ -2216,12 +2032,11 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         gwc.getConfig().setDirectWMSIntegrationEnabled(true);
         final String layerName = BASIC_POLYGONS.getLocalPart();
 
-        String request =
-                "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
-                        + "&layers="
-                        + layerName
-                        + "&srs=EPSG:4326&width=256&height=256&styles="
-                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        String request = "wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                + "&layers="
+                + layerName
+                + "&srs=EPSG:4326&width=256&height=256&styles="
+                + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         response = getAsServletResponse(request);
@@ -2232,13 +2047,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         assertTrue(response.getHeader("geowebcache-cache-result").equalsIgnoreCase("HIT"));
 
         // with virtual services
-        request =
-                MockData.CITE_PREFIX
-                        + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
-                        + "&layers="
-                        + layerName
-                        + "&srs=EPSG:4326&width=256&height=256&styles="
-                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        request = MockData.CITE_PREFIX
+                + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                + "&layers="
+                + layerName
+                + "&srs=EPSG:4326&width=256&height=256&styles="
+                + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
         response = getAsServletResponse(request);
 
         response = getAsServletResponse(request);
@@ -2267,13 +2081,12 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         new CatalogBuilder(getCatalog()).calculateLayerGroupBounds(lg);
         getCatalog().add(lg);
 
-        String request =
-                MockData.BASIC_POLYGONS.getPrefix()
-                        + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
-                        + "&layers="
-                        + WORKSPACED_LAYER_GROUP
-                        + "&srs=EPSG:4326&width=256&height=256&styles="
-                        + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
+        String request = MockData.BASIC_POLYGONS.getPrefix()
+                + "/wms?service=WMS&request=GetMap&version=1.1.1&format=image/png"
+                + "&layers="
+                + WORKSPACED_LAYER_GROUP
+                + "&srs=EPSG:4326&width=256&height=256&styles="
+                + "&bbox=-180.0,-90.0,0.0,90.0&tiled=true";
         MockHttpServletResponse response = getAsServletResponse(request);
 
         response = getAsServletResponse(request);
@@ -2304,21 +2117,17 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
         elevation.setKey("elevation");
         elevation.setValues(Arrays.asList("500"));
         info.addParameterFilter(elevation);
-        info.setCacheWarningSkips(
-                new HashSet<>(
-                        Arrays.asList(
-                                DimensionWarning.WarningType.Default,
-                                DimensionWarning.WarningType.Nearest,
-                                DimensionWarning.WarningType.FailedNearest)));
+        info.setCacheWarningSkips(new HashSet<>(Arrays.asList(
+                DimensionWarning.WarningType.Default,
+                DimensionWarning.WarningType.Nearest,
+                DimensionWarning.WarningType.FailedNearest)));
         GWC.get().save(tileLayer);
 
         // go for a request that has no time and no elevation, the defaults should kick in and
         // cause warnings to be added
-        MockHttpServletResponse sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        MockHttpServletResponse sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));
@@ -2331,11 +2140,9 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // given the settings, it should not have been cached, so a second request should cause
         // another miss
-        sr =
-                getAsServletResponse(
-                        "gwc/service/wmts?request=GetTile&layer="
-                                + layerId
-                                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
+        sr = getAsServletResponse("gwc/service/wmts?request=GetTile&layer="
+                + layerId
+                + "&format=image/png&tilematrixset=EPSG:4326&tilematrix=EPSG:4326:0&tilerow=0&tilecol=0");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
         assertEquals("MISS", sr.getHeader("geowebcache-cache-result"));

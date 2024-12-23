@@ -48,18 +48,17 @@ public class GeofencePersisterSerializationTest {
 
     @Test
     public void testDeserialization() throws Exception {
-        String xml =
-                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-                        + "<Rule>"
-                        + "<access>LIMIT</access>"
-                        + "<layer>DE_USNG_UTM18</layer>"
-                        + "<limits>"
-                        + "     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>"
-                        + "     <catalogMode>HIDDEN</catalogMode>"
-                        + "</limits>"
-                        + "<priority>1</priority>"
-                        + "<workspace>geonode</workspace>"
-                        + "</Rule>";
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                + "<Rule>"
+                + "<access>LIMIT</access>"
+                + "<layer>DE_USNG_UTM18</layer>"
+                + "<limits>"
+                + "     <allowedArea>SRID=4326;MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))</allowedArea>"
+                + "     <catalogMode>HIDDEN</catalogMode>"
+                + "</limits>"
+                + "<priority>1</priority>"
+                + "<workspace>geonode</workspace>"
+                + "</Rule>";
 
         ByteArrayInputStream bais = new ByteArrayInputStream(xml.getBytes(UTF_8));
 
@@ -96,9 +95,7 @@ public class GeofencePersisterSerializationTest {
         Limits limits = new Limits();
         limits.setCatalogMode("HIDDEN");
         WKTReader reader = new WKTReader();
-        limits.setAllowedArea(
-                (MultiPolygon)
-                        reader.read("MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))"));
+        limits.setAllowedArea((MultiPolygon) reader.read("MULTIPOLYGON (((-75 -90, -75 90, 75 90, 75 -90, -75 -90)))"));
         rule.setLimits(limits);
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();

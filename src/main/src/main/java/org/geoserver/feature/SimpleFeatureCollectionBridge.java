@@ -20,16 +20,15 @@ import org.geotools.feature.FeatureIterator;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
 /**
- * Bridges between FeatureCollection and SimpleFeatureCollection. Ported over from GeoTools to
- * handle CompositeFeatureCollection, which might not have a uniform feature type due to composition
- * TODO: WFS should really handle another way mixed feature type results...
+ * Bridges between FeatureCollection and SimpleFeatureCollection. Ported over from GeoTools to handle
+ * CompositeFeatureCollection, which might not have a uniform feature type due to composition TODO: WFS should really
+ * handle another way mixed feature type results...
  */
 class SimpleFeatureCollectionBridge implements SimpleFeatureCollection {
 
     private FeatureCollection<SimpleFeatureType, SimpleFeature> collection;
 
-    public SimpleFeatureCollectionBridge(
-            FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection) {
+    public SimpleFeatureCollectionBridge(FeatureCollection<SimpleFeatureType, SimpleFeature> featureCollection) {
         if (featureCollection == null) {
             throw new NullPointerException("FeatureCollection required");
         }

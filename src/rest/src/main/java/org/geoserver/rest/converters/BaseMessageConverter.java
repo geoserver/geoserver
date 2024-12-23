@@ -114,7 +114,6 @@ public abstract class BaseMessageConverter<T> extends AbstractHttpMessageConvert
     @Override
     protected void writeInternal(T t, HttpOutputMessage outputMessage)
             throws IOException, HttpMessageNotWritableException {
-        throw new HttpMessageNotWritableException(
-                getClass().getName() + " does not support serialization");
+        throw new HttpMessageNotWritableException(getClass().getName() + " does not support serialization");
     }
 }

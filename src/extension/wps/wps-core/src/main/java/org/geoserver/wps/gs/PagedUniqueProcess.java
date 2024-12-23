@@ -22,9 +22,8 @@ import org.geotools.process.factory.DescribeResult;
 import org.geotools.util.logging.Logging;
 
 /**
- * A WPS process to retrieve unique field values from a layer on Geoserver catalog. Requires a valid
- * layer name and a field name to extract the unique values. It accepts sorting and paging
- * parameters.
+ * A WPS process to retrieve unique field values from a layer on Geoserver catalog. Requires a valid layer name and a
+ * field name to extract the unique values. It accepts sorting and paging parameters.
  *
  * @author Cesar Martinez Izquierdo
  * @author Sandro Salari
@@ -109,20 +108,15 @@ public class PagedUniqueProcess implements GeoServerProcess {
         }
         SimpleFeatureType featureType = features.getSchema();
         String featureTypeName = featureType.getTypeName();
-        LOGGER.fine(
-                "PagedUnique process called on resource: "
-                        + featureTypeName
-                        + " - field: "
-                        + fieldName);
+        LOGGER.fine("PagedUnique process called on resource: " + featureTypeName + " - field: " + fieldName);
 
-        UniqueVisitor visitor =
-                new UniqueVisitor(FF.property(fieldName)) {
-                    @Override
-                    public boolean hasLimits() {
-                        // force usage of visitor limits, also for size extraction "query"
-                        return true;
-                    }
-                };
+        UniqueVisitor visitor = new UniqueVisitor(FF.property(fieldName)) {
+            @Override
+            public boolean hasLimits() {
+                // force usage of visitor limits, also for size extraction "query"
+                return true;
+            }
+        };
 
         Integer listSize = 0;
         List<String> list = new ArrayList<>();

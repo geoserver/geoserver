@@ -26,8 +26,7 @@ class XStreamLoader {
 
     private static final XStreamPersisterFactory xpf = new XStreamPersisterFactory();
 
-    private static final ThreadLocal<XStreamPersister> XP =
-            ThreadLocal.withInitial(xpf::createXMLPersister);
+    private static final ThreadLocal<XStreamPersister> XP = ThreadLocal.withInitial(xpf::createXMLPersister);
 
     private final AtomicLong readFileCount = new AtomicLong();
 

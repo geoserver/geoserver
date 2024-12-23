@@ -26,9 +26,8 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     /** Tests that a count for All the features works * */
     @Test
     public void testGetMappedFeatureHitsCount() {
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits");
         LOGGER.info("WFS GetFeature, typename=gsml:MappedFeature response:\n" + prettyString(doc));
 
         assertNumberMathcedAndNumberReturned(doc, 5, 0);
@@ -38,10 +37,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureHitsCountWithFilterOnRootAttribute() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
-                                + "&cql_filter=gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                        + "&cql_filter=gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
         LOGGER.info(prettyString(doc));
         assertNumberMathcedAndNumberReturned(doc, 1, 0);
     }
@@ -50,10 +48,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureHitsCountWithFilterOnNestedAttribute() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
-                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                        + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'");
         LOGGER.info(prettyString(doc));
         assertNumberMathcedAndNumberReturned(doc, 1, 0);
     }
@@ -62,10 +59,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureHitsCountWithFilterOnNestedAttribute2() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
-                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                        + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
         LOGGER.info(prettyString(doc));
 
         assertNumberMathcedAndNumberReturned(doc, 3, 0);
@@ -74,10 +70,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureHitsCountWithFilterOnNestedAttributeWithMaxNumber() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
-                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&count=1");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits"
+                        + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&count=1");
         LOGGER.info(prettyString(doc));
         assertNumberMathcedAndNumberReturned(doc, 3, 0);
     }
@@ -86,10 +81,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithFilterOnNestedAttribute() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'");
         LOGGER.info(prettyString(doc));
 
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
@@ -98,10 +92,9 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithFilterOnNestedAttribute2() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
         LOGGER.info(prettyString(doc));
 
         assertNumberMathcedAndNumberReturned(doc, 3, 3);
@@ -110,22 +103,20 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithAndNestedFilterOnSameTypes() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'"
-                                + "AND gsml:specification.gsml:GeologicUnit.gml:name = 'New Group'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'"
+                        + "AND gsml:specification.gsml:GeologicUnit.gml:name = 'New Group'");
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
     }
 
     @Test
     public void testGetFeatureNumberMatchedWithComplexPropertyORSimpleProperty() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27"
-                                + " OR gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27"
+                        + " OR gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
 
         assertNumberMathcedAndNumberReturned(doc, 4, 4);
     }
@@ -133,35 +124,31 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithSimplePropertyANDComplexProperty() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'"
-                                + " AND gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description = 'Olivine basalt'"
+                        + " AND gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
 
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
     }
 
     @Test
-    public void testGetFeatureNumberMatchedWithComplexPropertyORSimplePropertyWithPagination()
-            throws Exception {
+    public void testGetFeatureNumberMatchedWithComplexPropertyORSimplePropertyWithPagination() throws Exception {
 
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27"
-                                + " OR gsml:MappedFeature.gml:name = 'MURRADUC BASALT'&startIndex=3&count=2");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27"
+                        + " OR gsml:MappedFeature.gml:name = 'MURRADUC BASALT'&startIndex=3&count=2");
 
         assertNumberMathcedAndNumberReturned(doc, 4, 1);
     }
 
     @Test
     public void testGetFeatureNumberMatchedWithMultipleAND() throws Exception {
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:name = 'New Group'"
-                                + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%25%27 AND gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter=gsml:specification.gsml:GeologicUnit.gml:name = 'New Group'"
+                        + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%25%27 AND gsml:MappedFeature.gml:name = 'MURRADUC BASALT'");
 
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
     }
@@ -169,11 +156,10 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilter() throws Exception {
         if (isGeopkgTest()) return;
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
-                                + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                        + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27");
 
         assertNumberMathcedAndNumberReturned(doc, 3, 3);
     }
@@ -181,11 +167,10 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterWithPagination() throws Exception {
         if (isGeopkgTest()) return;
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
-                                + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&startIndex=1");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                        + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27&startIndex=1");
 
         assertNumberMathcedAndNumberReturned(doc, 3, 2);
     }
@@ -193,30 +178,25 @@ public class GetFeatureNumberMatchedGMLTest extends AbstractAppSchemaTestSupport
     @Test
     public void testGetFeatureNumberMatchedWithGeomComplexFilterManyAND() throws Exception {
         if (isGeopkgTest()) return;
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
-                                + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
-                                + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27 AND gsml:MappedFeature.gml:name = 'GUNTHORPE FORMATION'");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml32&request=GetFeature&typeNames=gsml:MappedFeature"
+                        + "&cql_filter= intersects(gsml:shape, buffer(POLYGON((-1.3 52.5,-1.3 52.6,-1.2 52.6,-1.2 52.5,-1.3 52.5)),100))"
+                        + " AND gsml:MappedFeature.gsml:specification.gsml:GeologicUnit.gml:description LIKE %27%25Olivine%20basalt%2C%20tuff%25%27 AND gsml:MappedFeature.gml:name = 'GUNTHORPE FORMATION'");
 
         assertNumberMathcedAndNumberReturned(doc, 1, 1);
     }
 
     @Test
     public void testGetMappedNumberMatchedWithIdFilter() {
-        Document doc =
-                getAsDOM(
-                        "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits&&cql_filter=IN('mf1')");
+        Document doc = getAsDOM(
+                "ows?service=WFS&version=2.0.0&outputFormat=gml3&request=GetFeature&typeNames=gsml:MappedFeature&resulttype=hits&&cql_filter=IN('mf1')");
         LOGGER.info("WFS GetFeature, typename=gsml:MappedFeature response:\n" + prettyString(doc));
 
         assertNumberMathcedAndNumberReturned(doc, 1, 0);
     }
 
-    private void assertNumberMathcedAndNumberReturned(
-            Document doc, int numberMatched, int numberReturned) {
-        assertXpathEvaluatesTo(
-                String.valueOf(numberMatched), "/wfs:FeatureCollection/@numberMatched", doc);
-        assertXpathEvaluatesTo(
-                String.valueOf(numberReturned), "/wfs:FeatureCollection/@numberReturned", doc);
+    private void assertNumberMathcedAndNumberReturned(Document doc, int numberMatched, int numberReturned) {
+        assertXpathEvaluatesTo(String.valueOf(numberMatched), "/wfs:FeatureCollection/@numberMatched", doc);
+        assertXpathEvaluatesTo(String.valueOf(numberReturned), "/wfs:FeatureCollection/@numberReturned", doc);
     }
 }

@@ -21,8 +21,8 @@ import org.geotools.xml.transform.TransformerBase;
 /**
  * Web Feature Service implementation, versions 1.0, and 1.1.
  *
- * <p>Each of the methods on this class corresponds to an operation as defined by the Web Feature
- * Specification. See {@link "http://www.opengeospatial.org/standards/wfs"} for more details.
+ * <p>Each of the methods on this class corresponds to an operation as defined by the Web Feature Specification. See
+ * {@link "http://www.opengeospatial.org/standards/wfs"} for more details.
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
@@ -64,8 +64,7 @@ public interface WebFeatureService {
      * @return A feature collection type instance.
      * @throws WFSException Any service exceptions.
      */
-    FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request)
-            throws WFSException;
+    FeatureCollectionResponse getFeatureWithLock(GetFeatureWithLockType request) throws WFSException;
 
     /**
      * WFS LockFeatureType operation.

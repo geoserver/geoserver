@@ -13,6 +13,5 @@ import org.geoserver.security.web.SecurityNamedServicePanelInfo;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class UserGroupServicePanelInfo<
-                C extends SecurityUserGroupServiceConfig, T extends UserGroupServicePanel<C>>
+public class UserGroupServicePanelInfo<C extends SecurityUserGroupServiceConfig, T extends UserGroupServicePanel<C>>
         extends SecurityNamedServicePanelInfo<C, T> {}

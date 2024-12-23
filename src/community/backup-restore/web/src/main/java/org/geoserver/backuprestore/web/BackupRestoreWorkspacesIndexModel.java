@@ -14,8 +14,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.web.GeoServerApplication;
 
 /** @author aless */
-public class BackupRestoreWorkspacesIndexModel
-        extends LoadableDetachableModel<List<WorkspaceInfo>> {
+public class BackupRestoreWorkspacesIndexModel extends LoadableDetachableModel<List<WorkspaceInfo>> {
 
     private static final long serialVersionUID = 4052600127151308001L;
     private ResourceFilePanel resourceFilePanel;

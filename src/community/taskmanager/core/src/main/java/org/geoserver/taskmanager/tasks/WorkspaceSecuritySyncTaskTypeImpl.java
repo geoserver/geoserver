@@ -35,18 +35,18 @@ public class WorkspaceSecuritySyncTaskTypeImpl implements TaskType {
 
     public static final String PARAM_WORKSPACE = "workspace";
 
-    @Autowired protected ExtTypes extTypes;
+    @Autowired
+    protected ExtTypes extTypes;
 
-    @Autowired protected DataAccessRuleDAO dao;
+    @Autowired
+    protected DataAccessRuleDAO dao;
 
-    protected final Map<String, ParameterInfo> paramInfo =
-            new LinkedHashMap<String, ParameterInfo>();
+    protected final Map<String, ParameterInfo> paramInfo = new LinkedHashMap<String, ParameterInfo>();
 
     @PostConstruct
     public void initParamInfo() {
         paramInfo.put(PARAM_EXT_GS, new ParameterInfo(PARAM_EXT_GS, extTypes.extGeoserver, true));
-        paramInfo.put(
-                PARAM_WORKSPACE, new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, true));
+        paramInfo.put(PARAM_WORKSPACE, new ParameterInfo(PARAM_WORKSPACE, extTypes.workspace, true));
     }
 
     @Override
@@ -57,9 +57,8 @@ public class WorkspaceSecuritySyncTaskTypeImpl implements TaskType {
     @Override
     public TaskResult run(TaskContext ctx) throws TaskException {
         final ExternalGS extGS = (ExternalGS) ctx.getParameterValues().get(PARAM_EXT_GS);
-        final WorkspaceInfo workspace =
-                (WorkspaceInfo)
-                        ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_WORKSPACE));
+        final WorkspaceInfo workspace = (WorkspaceInfo)
+                ctx.getBatchContext().get(ctx.getParameterValues().get(PARAM_WORKSPACE));
 
         final GeoServerRESTManager restManager;
         try {
@@ -75,8 +74,7 @@ public class WorkspaceSecuritySyncTaskTypeImpl implements TaskType {
         Set<String> rolesAdmin = null, rolesRead = null, rolesWrite = null;
 
         for (DataAccessRule rule : dao.getRules()) {
-            if (rule.getRoot().equals(workspace.getName())
-                    && rule.getLayer().equals(DataAccessRule.ANY)) {
+            if (rule.getRoot().equals(workspace.getName()) && rule.getLayer().equals(DataAccessRule.ANY)) {
                 switch (rule.getAccessMode()) {
                     case ADMIN:
                         rolesAdmin = rule.getRoles();
@@ -94,58 +92,43 @@ public class WorkspaceSecuritySyncTaskTypeImpl implements TaskType {
         }
 
         RESTDataRules dataRules = restManager.getSecurityManager().getDataRules();
-        final boolean createR =
-                dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.R) == null;
-        final boolean createW =
-                dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.W) == null;
-        final boolean createA =
-                dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.A) == null;
+        final boolean createR = dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.R) == null;
+        final boolean createW = dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.W) == null;
+        final boolean createA = dataRules.getRule(workspace.getName(), DataAccessRule.ANY, RuleType.A) == null;
 
         GSDataRulesEncoder encoderCreate = new GSDataRulesEncoder();
         GSDataRulesEncoder encoderUpdate = new GSDataRulesEncoder();
 
         if (rolesRead != null) {
             if (createR) {
-                encoderCreate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.R, rolesRead);
+                encoderCreate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.R, rolesRead);
             } else {
-                encoderUpdate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.R, rolesRead);
+                encoderUpdate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.R, rolesRead);
             }
         }
         if (rolesWrite != null) {
             if (createW) {
-                encoderCreate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.W, rolesWrite);
+                encoderCreate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.W, rolesWrite);
             } else {
-                encoderUpdate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.W, rolesWrite);
+                encoderUpdate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.W, rolesWrite);
             }
         }
         if (rolesAdmin != null) {
             if (createA) {
-                encoderCreate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.A, rolesAdmin);
+                encoderCreate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.A, rolesAdmin);
             } else {
-                encoderUpdate.addRule(
-                        workspace.getName(), DataAccessRule.ANY, RuleType.A, rolesAdmin);
+                encoderUpdate.addRule(workspace.getName(), DataAccessRule.ANY, RuleType.A, rolesAdmin);
             }
         }
 
         if (!createR && rolesRead == null) {
-            restManager
-                    .getSecurityManager()
-                    .deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.R);
+            restManager.getSecurityManager().deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.R);
         }
         if (!createW && rolesWrite == null) {
-            restManager
-                    .getSecurityManager()
-                    .deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.W);
+            restManager.getSecurityManager().deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.W);
         }
         if (!createA && rolesAdmin == null) {
-            restManager
-                    .getSecurityManager()
-                    .deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.A);
+            restManager.getSecurityManager().deleteDataRule(workspace.getName(), DataAccessRule.ANY, RuleType.A);
         }
 
         if (!encoderUpdate.isEmpty()) {

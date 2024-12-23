@@ -30,17 +30,14 @@ public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     private List<DimensionDescriptor> dimensionDescriptors;
 
     public GranuleCoverageInfo(
-            CoverageInfo delegate,
-            SimpleFeature feature,
-            List<DimensionDescriptor> dimensionDescriptors) {
+            CoverageInfo delegate, SimpleFeature feature, List<DimensionDescriptor> dimensionDescriptors) {
         super(delegate);
         this.feature = feature;
         this.dimensionDescriptors = dimensionDescriptors;
     }
 
     @Override
-    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints)
-            throws IOException {
+    public GridCoverageReader getGridCoverageReader(ProgressListener listener, Hints hints) throws IOException {
         StructuredGridCoverage2DReader reader =
                 (StructuredGridCoverage2DReader) super.getGridCoverageReader(listener, hints);
         return new SingleGranuleGridCoverageReader(reader, feature, dimensionDescriptors);
@@ -49,8 +46,7 @@ public class GranuleCoverageInfo extends DecoratingCoverageInfo {
     @Override
     public CoordinateReferenceSystem getCRS() {
         try {
-            return ((GridCoverage2DReader) getGridCoverageReader(null, null))
-                    .getCoordinateReferenceSystem();
+            return ((GridCoverage2DReader) getGridCoverageReader(null, null)).getCoordinateReferenceSystem();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

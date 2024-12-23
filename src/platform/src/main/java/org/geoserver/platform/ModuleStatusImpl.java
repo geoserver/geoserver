@@ -31,9 +31,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
     /** serialVersionUID */
     private static final long serialVersionUID = -5759469520194940051L;
 
-    /**
-     * The internal machine-readable module name, often a maven module or jar name (example gs-main)
-     */
+    /** The internal machine-readable module name, often a maven module or jar name (example gs-main) */
     private String module;
 
     /** Module human-readable name, should agree with user manual (example GeoServer Main) */
@@ -181,20 +179,14 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
 
     @Override
     public String toString() {
-        return "ModuleStatusImpl [module="
-                + module
-                + ", component="
-                + component
-                + ", version="
-                + version
-                + "]";
+        return "ModuleStatusImpl [module=" + module + ", component=" + component + ", version=" + version + "]";
     }
 
     /**
      * Obtain the version for the module from the pom.properties.
      *
-     * <p>WARNING: This method reads every pom.properties on the classpath. It should only be used
-     * if absolutely necessary
+     * <p>WARNING: This method reads every pom.properties on the classpath. It should only be used if absolutely
+     * necessary
      */
     protected String getVersionInternal() {
         return listVersionsInternal().get(module);
@@ -206,9 +198,8 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
         synchronized (MAVEN_VERSIONS) {
             if (MAVEN_VERSIONS.isEmpty()) {
                 try {
-                    Resource[] resources =
-                            new PathMatchingResourcePatternResolver()
-                                    .getResources("classpath*:META-INF/maven/*/*/pom.properties");
+                    Resource[] resources = new PathMatchingResourcePatternResolver()
+                            .getResources("classpath*:META-INF/maven/*/*/pom.properties");
                     for (Resource resource : resources) {
                         try (InputStream in = resource.getInputStream()) {
                             Properties properties = new Properties();
@@ -218,10 +209,7 @@ public class ModuleStatusImpl implements ModuleStatus, Serializable {
                             String version = properties.getProperty("version");
                             MAVEN_VERSIONS.put(artifactId, version);
                         } catch (IOException e) {
-                            LOGGER.log(
-                                    Level.FINE,
-                                    "Error reading pom.properties: " + resource.getFilename(),
-                                    e);
+                            LOGGER.log(Level.FINE, "Error reading pom.properties: " + resource.getFilename(), e);
                         }
                     }
                 } catch (IOException e) {

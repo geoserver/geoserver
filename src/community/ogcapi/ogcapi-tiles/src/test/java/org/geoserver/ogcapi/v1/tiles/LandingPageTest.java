@@ -88,9 +88,7 @@ public class LandingPageTest extends TilesTestSupport {
         // System.out.println(yaml);
         DocumentContext json = convertYamlToJsonPath(yaml);
         assertJSONList(
-                json,
-                "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel",
-                "self");
+                json, "links[?(@.type == 'application/x-yaml' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel", "self");
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/x-yaml' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel",
@@ -133,9 +131,7 @@ public class LandingPageTest extends TilesTestSupport {
         assertEquals(15, (int) json.read("links.length()", Integer.class));
         // check landing page links
         assertJSONList(
-                json,
-                "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel",
-                "self");
+                json, "links[?(@.type == 'application/json' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel", "self");
         assertJSONList(
                 json,
                 "links[?(@.type != 'application/json' && @.href =~ /.*ogc\\/tiles\\/v1\\/\\?.*/)].rel",

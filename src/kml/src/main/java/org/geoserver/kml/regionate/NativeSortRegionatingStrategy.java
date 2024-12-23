@@ -26,8 +26,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.Layer;
 
 /**
- * An attribute based regionating strategy assuming it's possible (and fast) to sort on the user
- * specified attribute. Features with higher values of the attribute will be found in higher tiles.
+ * An attribute based regionating strategy assuming it's possible (and fast) to sort on the user specified attribute.
+ * Features with higher values of the attribute will be found in higher tiles.
  *
  * @author Andrea Aime
  */
@@ -52,26 +52,19 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
         Map options = con.getRequest().getFormatOptions();
         attribute = (String) options.get("regionateAttr");
         if (attribute == null) attribute = MapLayerInfo.getRegionateAttribute(featureType);
-        if (attribute == null)
-            throw new ServiceException("Regionating attribute has not been specified");
+        if (attribute == null) throw new ServiceException("Regionating attribute has not been specified");
 
         // Make sure the attribute is actually there
         AttributeType attributeType = type.getType(attribute);
         if (attributeType == null) {
             throw new ServiceException(
-                    "Could not find regionating attribute "
-                            + attribute
-                            + " in layer "
-                            + featureType.getName());
+                    "Could not find regionating attribute " + attribute + " in layer " + featureType.getName());
         }
 
         // check we can actually sort on that attribute
         if (!fs.getQueryCapabilities().supportsSorting(ff.sort(attribute, SortOrder.DESCENDING)))
             throw new ServiceException(
-                    "Native sorting on the "
-                            + attribute
-                            + " is not possible for layer "
-                            + featureType.getName());
+                    "Native sorting on the " + attribute + " is not possible for layer " + featureType.getName());
 
         // make sure a special db for this layer and attribute will be created
         return super.getDatabaseName(con, layer) + "_" + attribute;
@@ -84,21 +77,17 @@ public class NativeSortRegionatingStrategy extends CachedHierarchyRegionatingStr
 
     @Override
     public FeatureIterator getSortedFeatures(
-            GeometryDescriptor geom,
-            ReferencedEnvelope latLongEnv,
-            ReferencedEnvelope nativeEnv,
-            Connection cacheConn)
+            GeometryDescriptor geom, ReferencedEnvelope latLongEnv, ReferencedEnvelope nativeEnv, Connection cacheConn)
             throws Exception {
         // build the bbox filter
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
-        BBOX filter =
-                ff.bbox(
-                        geom.getLocalName(),
-                        nativeEnv.getMinX(),
-                        nativeEnv.getMinY(),
-                        nativeEnv.getMaxX(),
-                        nativeEnv.getMaxY(),
-                        null);
+        BBOX filter = ff.bbox(
+                geom.getLocalName(),
+                nativeEnv.getMinX(),
+                nativeEnv.getMinY(),
+                nativeEnv.getMaxX(),
+                nativeEnv.getMaxY(),
+                null);
 
         // build an optimized query (only the necessary attributes
         Query q = new Query();

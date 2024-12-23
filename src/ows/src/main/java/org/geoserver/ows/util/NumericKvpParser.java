@@ -11,8 +11,7 @@ import org.geotools.util.Converters;
 /**
  * A kvp parser which parses a value into a numeric value.
  *
- * <p>The type of the number is determined by {@link #getBinding()}. It must be assignable from
- * {@link Number}.
+ * <p>The type of the number is determined by {@link #getBinding()}. It must be assignable from {@link Number}.
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */

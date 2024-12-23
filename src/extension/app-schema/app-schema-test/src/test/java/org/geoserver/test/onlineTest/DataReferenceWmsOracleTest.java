@@ -17,8 +17,7 @@ public class DataReferenceWmsOracleTest extends DataReferenceWmsOracleWithJoinin
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
-        AppSchemaDataAccessRegistry.getAppSchemaProperties()
-                .setProperty("app-schema.joining", "false");
+        AppSchemaDataAccessRegistry.getAppSchemaProperties().setProperty("app-schema.joining", "false");
         super.setUpTestData(testData);
     }
 }

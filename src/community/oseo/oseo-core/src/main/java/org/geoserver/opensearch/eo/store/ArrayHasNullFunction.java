@@ -15,11 +15,8 @@ import org.geotools.filter.capability.FunctionNameImpl;
 public class ArrayHasNullFunction extends FunctionExpressionImpl {
 
     /** Get function name */
-    public static FunctionName NAME =
-            new FunctionNameImpl(
-                    "arrayhasnull",
-                    parameter("result", Boolean.class),
-                    parameter("arraytocheck", String[].class));
+    public static FunctionName NAME = new FunctionNameImpl(
+            "arrayhasnull", parameter("result", Boolean.class), parameter("arraytocheck", String[].class));
 
     /** Constructor */
     public ArrayHasNullFunction() {

@@ -45,8 +45,7 @@ public class HzSessionShareFilter implements Filter {
 
     protected HzCluster getCluster() {
         if (cluster == null) {
-            ApplicationContext ac =
-                    WebApplicationContextUtils.getRequiredWebApplicationContext(srvCtx);
+            ApplicationContext ac = WebApplicationContextUtils.getRequiredWebApplicationContext(srvCtx);
             cluster = ac.getBean("hzCluster", HzCluster.class);
         }
         return cluster;
@@ -75,29 +74,28 @@ public class HzSessionShareFilter implements Filter {
         params.put("sticky-session", Boolean.toString(getCluster().isStickySession()));
         params.put("instance-name", getCluster().getHz().getConfig().getInstanceName());
 
-        FilterConfig config =
-                new FilterConfig() {
+        FilterConfig config = new FilterConfig() {
 
-                    @Override
-                    public String getFilterName() {
-                        return "hazelcast";
-                    }
+            @Override
+            public String getFilterName() {
+                return "hazelcast";
+            }
 
-                    @Override
-                    public ServletContext getServletContext() {
-                        return srvCtx;
-                    }
+            @Override
+            public ServletContext getServletContext() {
+                return srvCtx;
+            }
 
-                    @Override
-                    public String getInitParameter(String name) {
-                        return params.get(name);
-                    }
+            @Override
+            public String getInitParameter(String name) {
+                return params.get(name);
+            }
 
-                    @Override
-                    public Enumeration<String> getInitParameterNames() {
-                        return Iterators.asEnumeration(params.keySet().iterator());
-                    }
-                };
+            @Override
+            public Enumeration<String> getInitParameterNames() {
+                return Iterators.asEnumeration(params.keySet().iterator());
+            }
+        };
 
         delegate.init(config);
     }

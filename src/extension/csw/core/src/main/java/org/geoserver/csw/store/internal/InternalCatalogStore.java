@@ -39,6 +39,7 @@ import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.filter.expression.PropertyName;
 import org.geotools.api.filter.sort.SortBy;
+import org.geotools.data.store.FilteringFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.filter.SortByImpl;
 import org.geotools.util.logging.Logging;
@@ -162,11 +163,12 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
 
         for (CatalogStoreMapping mapping : mappings) {
 
+            CSWUnmappingFilterVisitor unmapper = new CSWUnmappingFilterVisitor(mapping, rd);
             Query unmapped =
                     unmap(
                             prepareQuery(
                                     query, rd, rd.getQueryablesMapping(mapping.getMappingName())),
-                            new CSWUnmappingFilterVisitor(mapping, rd));
+                            unmapper);
 
             for (CatalogStoreMapping outputMapping : outputMappings) {
                 // we only output mappings with the same name, to avoid duplication of the results
@@ -179,7 +181,7 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                                 outputMapping.subMapping(unmapped.getProperties(), rdOutput);
                     }
 
-                    results.add(
+                    FeatureCollection<FeatureType, Feature> collection =
                             new CatalogStoreFeatureCollection(
                                     startIndex,
                                     unmapped.getMaxFeatures(),
@@ -188,16 +190,17 @@ public class InternalCatalogStore extends AbstractCatalogStore implements Applic
                                     geoServer.getCatalog(),
                                     outputMapping,
                                     rdOutput,
-                                    interpolationProperties));
+                                    interpolationProperties);
+
+                    if (unmapper.needsPostFilter()) {
+                        collection =
+                                new FilteringFeatureCollection<>(collection, query.getFilter());
+                    }
+                    results.add(collection);
                 }
             }
         }
-
-        if (results.size() == 1) {
-            return results.get(0);
-        } else {
-            return new CompositeFeatureCollection<>(results);
-        }
+        return new CompositeFeatureCollection<>(results);
     }
 
     @Override

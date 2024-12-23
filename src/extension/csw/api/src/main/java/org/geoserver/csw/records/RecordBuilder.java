@@ -5,6 +5,7 @@
  */
 package org.geoserver.csw.records;
 
+import org.geoserver.csw.util.PropertyPath;
 import org.geotools.api.feature.Feature;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 
@@ -21,16 +22,32 @@ public interface RecordBuilder {
      * @param name name of property
      * @param values value(s) to be attached to property
      */
-    public void addElement(String name, Object... values);
+    void addElement(PropertyPath name, Object... values);
 
-    public void addElement(String name, int[] splitIndex, Object... values);
+    void addElement(PropertyPath name, int[] splitIndex, Object... values);
+
+    /**
+     * Adds an element to the current record
+     *
+     * @param name name of property
+     * @param values value(s) to be attached to property
+     */
+    @Deprecated
+    default void addElement(String name, Object... values) {
+        addElement(PropertyPath.fromDotPath(name), values);
+    }
+
+    @Deprecated
+    default void addElement(String name, int[] splitIndex, Object... values) {
+        addElement(PropertyPath.fromDotPath(name), splitIndex, values);
+    }
 
     /**
      * Adds a bounding box to the record. The envelope must be in WGS84
      *
      * @param env the bounding box
      */
-    public void addBoundingBox(ReferencedEnvelope env);
+    void addBoundingBox(ReferencedEnvelope env);
 
     /**
      * Builds a record and sets up to work on the next one
@@ -38,5 +55,5 @@ public interface RecordBuilder {
      * @param id the feature identifier
      * @return the feature
      */
-    public Feature build(String id);
+    Feature build(String id);
 }

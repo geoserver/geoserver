@@ -189,6 +189,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
             if (iterator != null) {
                 // close the last iterator
                 iterator.close();
+                iterator = null;
             }
 
             return false;

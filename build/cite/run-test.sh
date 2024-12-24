@@ -65,7 +65,7 @@ fi;
 wms11() {
     echo $0
 
-    run_rest_test_suite "wms11" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WMS%26request%3DGetCapabilities%26version%3D1.1.0" "updatesequence=auto" "low-updatesequence=0" "high-updatesequence=100" "profile=queryable" "recommended=true" "getfeatureinfo=true" "feesconstraints=true" "bboxconstraints=EITHER"
+    run_rest_test_suite "wms11" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WMS%26request%3DGetCapabilities%26version%3D1.1.0" "updatesequence=auto" "low-updatesequence=0" "high-updatesequence=100" "profile=queryable" "recommended=true" "getfeatureinfo=true" "feesconstraints=true" "bboxconstraints=EITHER"
 }
 
 wms13 () {
@@ -103,63 +103,14 @@ wcs11 () {
   _run
 }
 
-# Usage:
-# ogcapi-features10([iut])
-# - iut: optional. URL of landing page. Defaults to 'default_iut="http://geoserver:8080/geoserver/ogc/features/v1'
 ogcapi-features10() {
-    # Define the default Instance Under Test
-    default_iut="http://geoserver:8080/geoserver/ogc/features/v1"
-
-    # Use provided argument if given, otherwise use the default value
-    iut="${1:-$default_iut}"
-
-    # Call the generic function with iut as the first argument and default values for the others
-    run_rest_test 'ogcapi-features-1.0' "$iut"
-}
-
-# Usage:
-# run_rest_test(suitename iut)
-# - suitename: name of the test suite to run (e.g. 'ogcapi-features-1.0')
-# - iut: URL of the Instance Under Test's landing page or GetCapabilities document
-run_rest_test() {
-
-    local suitename="${1}"
-    local iut="${2}"    
-
-    local teamenginehost=$(hostname)
-
-    # Check if required arguments are provided
-    if [ -z "$suitename" ] || [ -z "$iut" ]; then
-        echo "run-rest-test()> Invalid arguments. Expected run-rest-test(suitename, iut)"
-        echo "suitename: name of the test suite to run (e.g., 'ogcapi-features-1.0')"
-        echo "iut: URL of the Instance Under Test's landing page or GetCapabilities document"
-        exit 1
-    fi
-    
-    apiurl="http://$teamenginehost:8080/teamengine/rest/suites/$suitename/run"
-    testurl="$apiurl?noofcollections=-1&iut=$iut"
-    credentials="ogctest:ogctest"
-    targetfile="/logs/testng-results.xml"
-
-    echo
-    echo Running tests
-    echo api URL: $apiurl
-    echo iut: $iut
-    echo Will save the XML report to $targetfile
-    echo This may take a while...
-
-    # Requesting application/xml as it's the one we can parse to fail the build if there are test failures
-    curl -v -s -u "$credentials" "$testurl" -H "Accept: application/xml" > $targetfile
-    # Check if the curl command failed
-    if [ $? -ne 0 ]; then
-        echo "Error: Failed to run tests"
-        exit 1
-    fi
+    run_rest_test_suite "ogcapi-features-1.0" "testng" "iut=http://geoserver:8080/geoserver/ogc/features/v1" "noofcollections=-1"
 }
 
 run_rest_test_suite() {
     local suite_name=$1
-    shift
+    local targetfile="/logs/$2-results.xml"
+    shift 2
     local params=("$@")
 
     echo $0
@@ -177,7 +128,6 @@ run_rest_test_suite() {
     testurl="$apiurl?$url_params"
     echo $testurl
     credentials="ogctest:ogctest"
-    targetfile="/logs/xml-results.xml"
 
     set +x
 

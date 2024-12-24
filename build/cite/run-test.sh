@@ -70,9 +70,8 @@ wms11() {
 
 wms13 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wms13/1.3.0/ctl/main.xml"
-  form="$TE_FORMS_DIR/wms-1.3.0.xml"
-  _run
+  
+  run_rest_test_suite "wms13" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WMS%26request%3DGetCapabilities%26version%3D1.3.0" "updatesequence=auto" "low-updatesequence=0" "high-updatesequence=100" "queryable=true" "recommended=true"
 }
 
 wfs10 () {

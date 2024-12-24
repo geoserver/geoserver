@@ -6,6 +6,10 @@ services:
         GEOSERVER_DATA_DIR_SRC: "./wms11/citewms-1.1"
 
   teamengine:
-    volumes:
-      - ./wms11/wms-1.1.1.xml:/home/teamengine/te_base/forms/wms-1.1.1.xml
-    command: /run-test.sh wms11
+    image: ogccite/teamengine-production
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

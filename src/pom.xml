@@ -2027,6 +2027,7 @@
           <encoding>UTF-8</encoding>
           <fork>${fork.javac}</fork>
           <maxmem>${javac.maxHeapSize}</maxmem>
+          <parameters>true</parameters>
         </configuration>
       </plugin>
 

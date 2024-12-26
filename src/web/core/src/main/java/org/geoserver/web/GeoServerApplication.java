@@ -102,7 +102,7 @@ public class GeoServerApplication extends WebApplication
      *
      * <p>Sample use: {@code org.geoserver.web.csp.strict=true}
      */
-    public static boolean CSP_STRICT = Boolean.valueOf(System.getProperty("org.geoserver.web.csp.strict", "false"));
+    public static boolean CSP_STRICT = Boolean.valueOf(System.getProperty("org.geoserver.web.csp.strict", "true"));
 
     public static final String GEOSERVER_CSRF_DISABLED = "GEOSERVER_CSRF_DISABLED";
     public static final String GEOSERVER_CSRF_WHITELIST = "GEOSERVER_CSRF_WHITELIST";

@@ -20,8 +20,7 @@ public class CSPConfiguration implements Serializable {
 
     // default values
     private static final Boolean DEFAULT_ENABLED = true;
-    // TODO: can switch to false after all Wicket CSP issues are fixed
-    private static final Boolean DEFAULT_REPORT_ONLY = true;
+    private static final Boolean DEFAULT_REPORT_ONLY = false;
     private static final Boolean DEFAULT_ALLOW_OVERRIDE = false;
     private static final Boolean DEFAULT_INJECT_PROXY_BASE = false;
     private static final String DEFAULT_REMOTE_RESOURCES = "";

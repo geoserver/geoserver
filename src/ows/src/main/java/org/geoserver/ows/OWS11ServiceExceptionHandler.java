@@ -33,7 +33,8 @@ import org.geotools.xsd.Encoder;
  */
 public class OWS11ServiceExceptionHandler extends ServiceExceptionHandler {
 
-    private static String CONTENT_TYPE = System.getProperty("ows11.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+    static String CONTENT_TYPE = System.getProperty("ows11.exception.xml.responsetype", DEFAULT_XML_MIME_TYPE);
+
     /**
      * verbose exception flag controlling whether the exception stack trace will be included in the encoded ows
      * exception report

@@ -149,6 +149,7 @@ public abstract class GetCapabilitiesLegendURLTest extends WMSTestSupport {
 
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
+        req.setVersion("1.1.1");
 
         getTestData()
                 .copyTo(

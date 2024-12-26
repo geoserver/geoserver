@@ -33,9 +33,20 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
     }
 
     @Test
+    public void testAcceptVersions() throws Exception {
+        Document dom = getAsDOM(BASEPATH + "?service=csw&version=1.0.0,2.0.2&request=GetCapabilities");
+        // print(dom);
+        checkValidationErrors(dom);
+    }
+
+    @Test
     public void testGetBasic() throws Exception {
         Document dom = getAsDOM(BASEPATH + "?service=csw&version=2.0.2&request=GetCapabilities");
         // print(dom);
+        checkCapabilitiesDocument(dom);
+    }
+
+    private void checkCapabilitiesDocument(Document dom) throws Exception {
         checkValidationErrors(dom);
 
         // basic check on local name
@@ -68,6 +79,13 @@ public class GetCapabilitiesTest extends CSWInternalTestSupport {
                 "1",
                 "count(//ows:Operation[@name='GetDomain']/ows:Parameter[@name='PropertyName' and ows:Value = 'dc:title'])",
                 dom);
+    }
+
+    @Test
+    public void testAcceptVersionsInvalid() throws Exception {
+        // two versions that are not supported, should result in an exception
+        Document dom = getAsDOM(BASEPATH + "?service=csw&acceptVersions=1.0.0,10.0.0&request=GetCapabilities");
+        checkOws11Exception(dom, "VersionNegotiationFailed", "acceptVersions");
     }
 
     @Test

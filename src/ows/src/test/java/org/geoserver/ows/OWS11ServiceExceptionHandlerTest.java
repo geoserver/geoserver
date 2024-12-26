@@ -28,12 +28,12 @@ public class OWS11ServiceExceptionHandlerTest {
 
     @BeforeClass
     public static void setupClass() {
-        System.setProperty("ows11.exception.xml.responsetype", XML_TYPE_TEXT);
+        OWS11ServiceExceptionHandler.CONTENT_TYPE = XML_TYPE_TEXT;
     }
 
     @AfterClass
     public static void teardownClass() {
-        System.clearProperty("ows11.exception.xml.responsetype");
+        OWS11ServiceExceptionHandler.CONTENT_TYPE = OWS11ServiceExceptionHandler.DEFAULT_XML_MIME_TYPE;
     }
 
     @Before

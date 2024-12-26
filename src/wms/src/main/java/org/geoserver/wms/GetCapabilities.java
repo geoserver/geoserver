@@ -34,7 +34,7 @@ public class GetCapabilities {
      */
     public TransformerBase run(final GetCapabilitiesRequest request) throws ServiceException {
 
-        final Version version = WMS.version(request.getVersion());
+        final Version version = WMS.version(request.getVersion(), WMS.VERSION_1_3_0);
         if (version == null) {
             throw new IllegalArgumentException("version not supplied.");
         }
@@ -65,7 +65,7 @@ public class GetCapabilities {
 
         TransformerBase transformer;
         String baseUrl = request.getBaseUrl();
-        if (WMS.VERSION_1_1_1.equals(version)) {
+        if (WMS.VERSION_1_1_1.equals(version) || WMS.VERSION_1_0_0.equals(version)) {
             Set<String> mapFormats = wms.getAllowedMapFormatNames();
             List<ExtendedCapabilitiesProvider> extCapsProviders = wms.getAvailableExtendedCapabilitiesProviders();
             transformer = new GetCapabilitiesTransformer(wms, baseUrl, mapFormats, legendFormats, extCapsProviders);

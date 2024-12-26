@@ -437,4 +437,11 @@ public class GetCapabilitiesReponseTest extends WMSTestSupport {
         assertXpathExists("//Layer[Name='MarsPoi']/SRS[text()='IAU:49900']", dom);
         assertXpathExists("//Layer[Name='MarsPoi']/BoundingBox[@SRS='IAU:49900']", dom);
     }
+
+    @Test
+    public void testWmtVer() throws Exception {
+        // legacy wmtver support (WMS 1.0), 1.0.0 should be found in the generated document (CITE tests check it)
+        Document dom = getAsDOM("wms?request=GetCapabilities&wmtver=1.0.0&service=WMS");
+        assertXpathEvaluatesTo("1.0.0", "/WMT_MS_Capabilities/@version", dom);
+    }
 }

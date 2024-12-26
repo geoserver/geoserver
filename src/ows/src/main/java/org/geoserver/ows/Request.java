@@ -7,6 +7,7 @@ package org.geoserver.ows;
 
 import java.io.BufferedReader;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
@@ -50,8 +51,11 @@ public class Request {
     /** XML root element name as parsed from a POST request with an xml request body */
     protected String postRequestElementName;
 
-    /** OWS protocol version (combined with service and request) */
+    /** OWS protocol version (combined with service and request). Can be the result of negotiation */
     protected String version;
+
+    /** OWS acceptVersions parameter, if present */
+    protected List<String> acceptVersions;
 
     /**
      * xml namespace used in request body, only relevant for post requests and when request body content is namespace
@@ -172,6 +176,11 @@ public class Request {
     /** The service version */
     public String getVersion() {
         return version;
+    }
+
+    /** The OWS acceptVersions parameter, if present */
+    public List<String> getAcceptVersions() {
+        return acceptVersions;
     }
 
     /** The request namespace */
@@ -328,6 +337,15 @@ public class Request {
      */
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    /**
+     * Sets the accepts version list (used by the Dispatcher when acceptVersions is present in the request)
+     *
+     * @param acceptVersions OWS acceptVersions
+     */
+    public void setAcceptVersions(List<String> acceptVersions) {
+        this.acceptVersions = acceptVersions;
     }
 
     /** Sets the request namespace */

@@ -42,7 +42,6 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.csw.records.RecordDescriptor;
 import org.geoserver.csw.store.CatalogStore;
 import org.geoserver.ows.URLMangler.URLType;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.feature.type.Name;
@@ -98,18 +97,7 @@ public class GetCapabilities {
     }
 
     public CapabilitiesType run(GetCapabilitiesType request) throws CSWException {
-        // do the version negotiation dance
         SectionsType sections = null;
-        List<String> provided = Collections.singletonList(CSW_VERSION);
-        List<String> accepted = null;
-        if (request.getAcceptVersions() != null)
-            accepted = request.getAcceptVersions().getVersion();
-        String version = RequestUtils.getVersionOws11(provided, accepted);
-
-        if (!CSW_VERSION.equals(version)) {
-            throw new CSWException("Could not understand version:" + version);
-        }
-
         if (request.getSections() != null) {
             sections = request.getSections();
         }

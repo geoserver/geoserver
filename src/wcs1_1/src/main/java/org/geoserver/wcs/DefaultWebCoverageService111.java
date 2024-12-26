@@ -11,7 +11,6 @@ import static org.vfny.geoserver.wcs.WcsException.WcsExceptionCode.InvalidParame
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -41,7 +40,6 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.data.util.CoverageUtils;
-import org.geoserver.ows.util.RequestUtils;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wcs.kvp.GridCS;
 import org.geoserver.wcs.kvp.GridType;
@@ -106,26 +104,10 @@ public class DefaultWebCoverageService111 implements WebCoverageService111 {
     @Override
     @SuppressWarnings("unchecked") // EMF objects without generics
     public WCSCapsTransformer getCapabilities(GetCapabilitiesType request) {
-        // do the version negotiation dance
-        List<String> provided = new ArrayList<>();
-        // provided.add("1.0.0");
-        provided.add("1.1.0");
-        provided.add("1.1.1");
-        List<String> accepted = null;
-        if (request.getAcceptVersions() != null)
-            accepted = request.getAcceptVersions().getVersion();
-        String version = RequestUtils.getVersionOws11(provided, accepted);
-
-        // TODO: add support for 1.0.0 in here
-
-        if ("1.1.0".equals(version) || "1.1.1".equals(version)) {
-            WCSCapsTransformer capsTransformer = new WCSCapsTransformer(geoServer);
-            capsTransformer.setEncoding(Charset.forName(
-                    (getServiceInfo().getGeoServer().getSettings().getCharset())));
-            return capsTransformer;
-        }
-
-        throw new WcsException("Could not understand version:" + version);
+        WCSCapsTransformer capsTransformer = new WCSCapsTransformer(geoServer);
+        capsTransformer.setEncoding(
+                Charset.forName((getServiceInfo().getGeoServer().getSettings().getCharset())));
+        return capsTransformer;
     }
 
     @Override

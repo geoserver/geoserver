@@ -129,7 +129,7 @@ public class DispatcherTest {
             Request req = new Request();
             req.setInput(buffered);
 
-            Request res = Dispatcher.readOpPost(req);
+            Request res = Dispatcher.readOpPost(req, false);
             assertSame(req, res);
             assertEquals("Hello", res.getRequest());
             assertEquals("hello", res.getService());

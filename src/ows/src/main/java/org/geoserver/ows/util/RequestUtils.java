@@ -10,12 +10,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.platform.Service;
 import org.geoserver.platform.ServiceException;
 import org.geotools.util.Version;
 
@@ -44,15 +49,39 @@ public class RequestUtils {
     }
 
     /**
+     * Version negotiation in OWS, using the AcceptVersions parameter (list of acceptedVersions supported by client, in
+     * order of preference).
+     *
+     * @param acceptedVersions The list of acceptedVersions supported by the client, in order of preference.
+     * @param supportedVersions
+     * @return The version to use, or null if negotiation failed.
+     */
+    public String negotiateAcceptsVersion(List<String> acceptedVersions, List<String> supportedVersions) {
+        // the clients sends the acceptedVersions in preference order, so we just need to find the first one that is
+        // available
+        for (String version : acceptedVersions) {
+            if (supportedVersions.contains(version)) {
+                return version;
+            }
+        }
+
+        // negotiation failed, return the latest version
+        return null;
+    }
+
+    /**
      * Given a list of provided versions, and a list of accepted versions, this method will return the negotiated
      * version to be used for response according to the pre OWS 1.1 specifications, that is, WMS 1.1, WMS 1.3, WFS 1.0,
      * WFS 1.1 and WCS 1.0
      *
-     * @param providedList a non null, non empty list of provided versions (in "x.y.z" format)
+     * @param providedList a list of provided versions (in "x.y.z" format) (method will return null if list is empty or
+     *     null)
      * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" format)
      * @return the negotiated version to be used for response
      */
     public static String getVersionPreOws(List<String> providedList, List<String> acceptedList) {
+        if (providedList == null || providedList.isEmpty()) return null;
+
         // first figure out which versions are provided
         TreeSet<Version> provided = new TreeSet<>();
         for (String v : providedList) {
@@ -128,14 +157,16 @@ public class RequestUtils {
      * version to be used for response according to the OWS 1.1 specification (at the time of writing, only WCS 1.1.1 is
      * using it)
      *
-     * @param providedList a non null, non empty list of provided versions (in "x.y.z" format)
+     * @param supportedList a list of provided versions (in "x.y.z" format)
      * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" format)
      * @return the negotiated version to be used for response
      */
-    public static String getVersionOws11(List<String> providedList, List<String> acceptedList) {
+    public static String getVersionOWS(List<String> supportedList, List<String> acceptedList, boolean citeCompliant) {
+        if (supportedList == null) return null;
+
         // first figure out which versions are provided
         TreeSet<Version> provided = new TreeSet<>();
-        for (String v : providedList) {
+        for (String v : supportedList) {
             provided.add(new Version(v));
         }
 
@@ -146,7 +177,7 @@ public class RequestUtils {
         // next figure out what the client accepts (and check they are good version numbers)
         List<Version> accepted = new ArrayList<>();
         for (String v : acceptedList) {
-            checkVersionNumber(v, "AcceptVersions");
+            if (citeCompliant) checkVersionNumber(v, "AcceptVersions");
 
             accepted.add(new Version(v));
         }
@@ -161,15 +192,8 @@ public class RequestUtils {
             }
         }
 
-        // from the spec: "If the list does not contain any version numbers that the server
-        // supports, the server shall return an Exception with
-        // exceptionCode="VersionNegotiationFailed"
-        if (negotiated == null)
-            throw new ServiceException(
-                    "Could not find any matching version " + acceptedList + " in supported list: " + acceptedList,
-                    "VersionNegotiationFailed");
-
-        return negotiated.toString();
+        if (negotiated != null) return negotiated.toString();
+        return null;
     }
 
     /**
@@ -260,5 +284,33 @@ public class RequestUtils {
             }
         }
         return result;
+    }
+
+    /**
+     * Loads and return all implementations of the {@link Service} interface. Checks for duplicates in the process,
+     * would return an exception in such a case.
+     */
+    public static Collection<Service> loadServices() {
+        Collection<Service> services = GeoServerExtensions.extensions(Service.class);
+
+        if (!(new HashSet<>(services).size() == services.size())) {
+            String msg = "Two identical service descriptors found";
+            throw new IllegalStateException(msg);
+        }
+
+        return services;
+    }
+
+    /**
+     * Returns the supported versions for a given service (useful for version negotiation).
+     *
+     * @param service The service id.
+     * @return The list of supported versions.
+     */
+    public static List<String> getSupportedVersions(String service) {
+        return loadServices().stream()
+                .filter(s -> s.getId().equalsIgnoreCase(service))
+                .map(s -> s.getVersion().toString())
+                .collect(Collectors.toList());
     }
 }

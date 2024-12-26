@@ -18,15 +18,16 @@
     <constructor-arg ref="envelopeDimensionsMapper" />
     <constructor-arg ref="MIMETYPEMapper" />
   </bean>
-  <!-- <bean id="wcsLogger" class="org.geoserver.ows.util.EMFLogger"> <constructor-arg 
-    type="java.lang.String" value="org.geoserver.wcs" /> </bean> -->
+  <bean id="wcs20Logger" class="org.geoserver.ows.util.EMFLogger">
+    <constructor-arg type="java.lang.String" value="org.geoserver.wcs" />
+  </bean>
   <bean id="wcs20Service" class="org.springframework.aop.framework.ProxyFactoryBean">
     <property name="proxyInterfaces">
       <value>org.geoserver.wcs2_0.WebCoverageService20</value>
     </property>
     <property name="interceptorNames">
       <list>
-        <value>wcsLogger</value>
+        <value>wcs20Logger</value>
         <value>wcs20ServiceInterceptor*</value>
         <value>wcs20ServiceTarget</value>
       </list>

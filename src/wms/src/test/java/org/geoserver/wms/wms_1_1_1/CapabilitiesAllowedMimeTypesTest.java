@@ -61,7 +61,7 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
         // add mime type restrictions
         addMimeTypes();
 
-        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version==1.1.1", true);
+        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         formatNodes = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Request/GetMap/Format", doc);
         Assert.assertEquals(1, formatNodes.getLength());
         Assert.assertEquals(getMapFormat.getMimeType(), formatNodes.item(0).getTextContent());
@@ -73,7 +73,7 @@ public class CapabilitiesAllowedMimeTypesTest extends WMSTestSupport {
         // remove restrictions
         removeMimeTypes();
 
-        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version==1.1.1", true);
+        doc = getAsDOM("sf/PrimitiveGeoFeature/wms?service=WMS&request=getCapabilities&version=1.1.1", true);
         formatNodes = xpath.getMatchingNodes("/WMT_MS_Capabilities/Capability/Request/GetMap/Format", doc);
         Assert.assertTrue(formatNodes.getLength() > 1);
 

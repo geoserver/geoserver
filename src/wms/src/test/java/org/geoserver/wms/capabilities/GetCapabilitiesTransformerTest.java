@@ -221,6 +221,7 @@ public class GetCapabilitiesTransformerTest extends WMSTestSupport {
 
         req = new GetCapabilitiesRequest();
         req.setBaseUrl(baseUrl);
+        req.setVersion("1.1.1");
 
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");

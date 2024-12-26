@@ -207,12 +207,9 @@ public class GetFeatureInfoKvpReader extends KvpRequestReader {
             // do nothing, FEATURE_COUNT is optional
         }
 
-        Version version = wms.negotiateVersion(request.getVersion());
-        request.setVersion(version.toString());
-
         // JD: most wms 1.3 client implementations still use x/y rather than i/j, so we support
-        // those
-        // too when i/j not specified when not running in strict cite compliance mode
+        // those too when i/j not specified when not running in strict cite compliance mode
+        Version version = WMS.version(request.getVersion(), WMS.VERSION_1_3_0);
         String colPixel, rowPixel;
         if (version.compareTo(WMS.VERSION_1_3_0) >= 0) {
             colPixel = "I";

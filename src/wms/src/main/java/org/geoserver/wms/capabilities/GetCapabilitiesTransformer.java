@@ -230,17 +230,11 @@ public class GetCapabilitiesTransformer extends TransformerBase {
 
         private static final String EPSG = "EPSG:";
 
-        private static AttributesImpl wmsVersion = new AttributesImpl();
-
         private static final String XLINK_NS = "http://www.w3.org/1999/xlink";
 
         DimensionHelper dimensionHelper;
 
         private LegendSample legendSample;
-
-        static {
-            wmsVersion.addAttribute("", "version", "version", "", "1.1.1");
-        }
 
         /** The request from wich all the information needed to produce the capabilities document can be obtained */
         private GetCapabilitiesRequest request;
@@ -321,6 +315,8 @@ public class GetCapabilitiesTransformer extends TransformerBase {
                         .toString());
             }
 
+            AttributesImpl wmsVersion = new AttributesImpl();
+            wmsVersion.addAttribute("", "version", "version", "", getDocumentVersion());
             AttributesImpl rootAtts = new AttributesImpl(wmsVersion);
             rootAtts.addAttribute("", "updateSequence", "updateSequence", "", wmsConfig.getUpdateSequence() + "");
 
@@ -334,6 +330,19 @@ public class GetCapabilitiesTransformer extends TransformerBase {
             handleService();
             handleCapability(orderedLayers, orderedGroups);
             end("WMT_MS_Capabilities");
+        }
+
+        private String getDocumentVersion() {
+            // CITE compliant: if WMTVER is present and VERSION is not, use WMTVER in the response document version
+            Map<String, String> rawKvp = request.getRawKvp();
+            if (rawKvp != null) {
+                String wmtver = rawKvp.get("WMTVER");
+                String version = rawKvp.get("VERSION");
+                if (wmtver != null && version == null) {
+                    return wmtver;
+                }
+            }
+            return request.getVersion();
         }
 
         /** Encodes the service metadata section of a WMS capabilities document. */

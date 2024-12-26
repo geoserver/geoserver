@@ -29,6 +29,7 @@ application directory.
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wcs1_1</artifactId>
@@ -60,6 +61,12 @@ application directory.
     <dependency>
       <groupId>org.geotools</groupId>
       <artifactId>gt-iau-wkt</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.geoserver</groupId>
+      <artifactId>gs-wcs1_0</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

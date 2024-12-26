@@ -122,6 +122,8 @@ import org.springframework.context.ApplicationContextAware;
  */
 public class WMS implements ApplicationContextAware {
 
+    public static final Version VERSION_1_0_0 = new Version("1.0.0");
+
     public static final Version VERSION_1_1_1 = new Version("1.1.1");
 
     public static final Version VERSION_1_3_0 = new Version("1.3.0");
@@ -921,6 +923,21 @@ public class WMS implements ApplicationContextAware {
     public GetLegendGraphicOutputFormat getLegendGraphicOutputFormat(final String outputFormat) {
         GetLegendGraphicOutputFormat format = WMSExtensions.findLegendGraphicFormat(outputFormat, applicationContext);
         return format;
+    }
+
+    /**
+     * Returns a version object for the specified version string.
+     * <p>
+     * Calls through to {@link #version(String, boolean)} with exact set to <code>false</false>.
+     * </p>
+     * @param version The version string.
+     * @param defaultVersion The default version to return if the version string is null or empty.
+     * @return The version object or null if the version string is null or empty.
+     */
+    public static Version version(String version, Version defaultVersion) {
+        Version result = version(version, false);
+        if (result == null) result = defaultVersion;
+        return result;
     }
 
     /**

@@ -36,6 +36,7 @@ public class CapabilitiesKvpReader extends KvpRequestReader {
         GetCapabilitiesRequest request = (GetCapabilitiesRequest) super.read(req, kvp, rawKvp);
         request.setRawKvp(rawKvp);
 
+        // WMS 1.1 spec: in the case that VERSION and WMTVER are both given, VERSION takes precedence
         String version = request.getVersion();
         if (null == version || version.isEmpty()) {
             version = (String) rawKvp.get("WMTVER");

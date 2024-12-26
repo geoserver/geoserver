@@ -36,7 +36,7 @@ public class WCSExtendedCapabilitiesTest extends GeoServerSystemTestSupport {
 
     private static final String WCS_1_1_1_GETCAPREQUEST = "wcs?request=GetCapabilities&service=WCS&version=1.1.1";
     private static final String WCS_2_0_0_GETCAPREQUEST =
-            "wcs?request=GetCapabilities&service=WCS&acceptVersions=2.0.0";
+            "wcs?request=GetCapabilities&service=WCS&acceptVersions=2.0.1";
 
     @Test
     public void testNoInspireSettings() throws Exception {

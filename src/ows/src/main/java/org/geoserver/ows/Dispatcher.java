@@ -5,6 +5,7 @@
  */
 package org.geoserver.ows;
 
+import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
 import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 import java.io.BufferedInputStream;
@@ -30,6 +31,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -118,6 +120,13 @@ import org.xml.sax.SAXException;
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
 public class Dispatcher extends AbstractController {
+
+    /**
+     * The KVP parameter used for version negotiation in OWS requests, enumerating the versions supported by the client,
+     * in order of preference.
+     */
+    public static final String ACCEPT_VERSIONS = "AcceptVersions";
+
     /** Logging instance */
     static Logger logger = Logging.getLogger("org.geoserver.ows");
 
@@ -380,6 +389,68 @@ public class Dispatcher extends AbstractController {
     }
 
     /**
+     * Figures out the service from the kvp (or the context path if kvp is missing, and not cite compliant) and then
+     * performs version negotiation based on "version" or "acceptVersions"
+     */
+    private void negotiateServiceAndVersionKvp(Request req) {
+        Map<String, Object> kvp = req.getKvp();
+
+        // if the service is not explicitly set, some parsers will not be found
+        String service = KvpUtils.getSingleValue(kvp, "service");
+        if (service == null && !citeCompliant) {
+            try {
+                service = getServiceFromRequest(req);
+                if (!"OWS".equalsIgnoreCase(service)) { // OWS is too generic for the parser lookup
+                    kvp.put("service", service);
+                }
+                logger.log(Level.FINER, "service kvp parameter not found, setting to " + service);
+            } catch (Exception e) {
+                logger.log(Level.WARNING, "Unable to determine service from kvp or context");
+            }
+        }
+
+        // figure out the target version before we parse the kvp
+        // as some kvp parsers are version specific (e.g. AcceptVersions has 3 different implementations in EMF)
+        String request = KvpUtils.getSingleValue(kvp, "request");
+        String version = KvpUtils.getSingleValue(kvp, "version");
+        String wmtver = KvpUtils.getSingleValue(kvp, "wmtver");
+        if (service != null && "GetCapabilities".equalsIgnoreCase(request)) {
+            List<String> supportedVersions = RequestUtils.getSupportedVersions(service);
+
+            if (version != null) {
+                // pre-OWS negotiation if version if available
+                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(version));
+            } else if (wmtver != null && "WMS".equalsIgnoreCase(service)) {
+                // this case is specific to WMS for backwards compatibility
+                version = RequestUtils.getVersionPreOws(supportedVersions, List.of(wmtver));
+            } else {
+                // OWS negotiation, using acceptVersions
+                String acceptVersionsList = Optional.ofNullable(kvp)
+                        .map(map -> map.get(ACCEPT_VERSIONS))
+                        .filter(v -> v instanceof String)
+                        .map(v -> (String) v)
+                        .orElse(null);
+                if (acceptVersionsList != null) {
+                    List<String> acceptVersions = KvpUtils.readFlat(acceptVersionsList, KvpUtils.INNER_DELIMETER);
+                    req.setAcceptVersions(acceptVersions);
+                    version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
+                    if (version == null) versionNegotiationFailed();
+                }
+            }
+
+            // set in negotiated version to control the parsing
+            if (version != null) {
+                kvp.put("version", version);
+            }
+        }
+    }
+
+    private static void versionNegotiationFailed() {
+        throw new ServiceException(
+                "Could not determine version", ServiceException.VERSION_NEGOTIATION_FAILED, "acceptVersions");
+    }
+
+    /**
      * Initializes the request context by parsing the request path into two components: the 'context' and the 'path'.
      * The 'context' is the part of the URI before the last '/' and the 'path' is the part after the last '/'.
      *
@@ -510,14 +581,15 @@ public class Dispatcher extends AbstractController {
 
     Service service(Request req) throws Exception {
         String service = getServiceFromRequest(req);
+        String version = req.getVersion();
 
         // load from teh context
-        Service serviceDescriptor = findService(service, req.getVersion(), req.getNamespace());
+        Service serviceDescriptor = findService(service, version, req.getNamespace());
         if (serviceDescriptor == null) {
             // hack for backwards compatability, try finding the service with the context instead
             // of the service
             if (req.getContext() != null) {
-                serviceDescriptor = findService(req.getContext(), req.getVersion(), req.getNamespace());
+                serviceDescriptor = findService(req.getContext(), version, req.getNamespace());
                 if (serviceDescriptor != null) {
                     // found, assume that the client is using <service>/<request>
                     if (req.getRequest() == null) {
@@ -558,7 +630,7 @@ public class Dispatcher extends AbstractController {
         // check the body
         if (req.getInput() != null
                 && "POST".equalsIgnoreCase(req.getHttpRequest().getMethod())) {
-            readOpPost(req);
+            readOpPost(req, citeCompliant);
         }
 
         // try to infer from context
@@ -782,7 +854,7 @@ public class Dispatcher extends AbstractController {
                     boolean found = false;
                     Version version = new Version(req.getVersion());
 
-                    for (Service service : loadServices()) {
+                    for (Service service : RequestUtils.loadServices()) {
                         if (version.equals(service.getVersion())) {
                             found = true;
 
@@ -1115,20 +1187,9 @@ public class Dispatcher extends AbstractController {
         return response;
     }
 
-    Collection<Service> loadServices() {
-        Collection<Service> services = GeoServerExtensions.extensions(Service.class);
-
-        if (!(new HashSet<>(services).size() == services.size())) {
-            String msg = "Two identical service descriptors found";
-            throw new IllegalStateException(msg);
-        }
-
-        return services;
-    }
-
     Service findService(String id, String ver, String namespace) throws ServiceException {
         Version version = (ver != null) ? new Version(ver) : null;
-        Collection<Service> services = loadServices();
+        Collection<Service> services = RequestUtils.loadServices();
 
         // the id is actually the pathinfo, in case workspace specific services
         // are active we want to skip the workspace part in the path and go directly to the
@@ -1473,23 +1534,11 @@ public class Dispatcher extends AbstractController {
 
     void parseKVP(Request req) throws ServiceException {
         preParseKVP(req);
+        negotiateServiceAndVersionKvp(req);
         parseKVP(req, req.getKvp());
     }
 
     Map<String, Object> parseKVP(Request req, Map<String, Object> kvp) {
-        // if the service is not explicitly set, some parsers will not be found
-        if (!kvp.containsKey("service") && !kvp.containsKey("SERVICE") && !citeCompliant) {
-            String service = null;
-            try {
-                service = getServiceFromRequest(req);
-                if (!"OWS".equalsIgnoreCase(service)) { // OWS is too generic for the parser lookup
-                    kvp.put("service", service);
-                }
-                logger.log(Level.FINER, "service kvp parameter not found, setting to " + service);
-            } catch (Exception e) {
-                logger.log(Level.WARNING, "Unable to determine service from kvp or context");
-            }
-        }
         List<Throwable> errors = KvpUtils.parse(kvp);
         if (!errors.isEmpty()) {
             req.setError(errors.get(0));
@@ -1610,16 +1659,18 @@ public class Dispatcher extends AbstractController {
      *
      * @param req The request to set properties to based on the xml request body's
      *            root element
+     * @param citeCompliant Whether to perform version negotiation for OWS requests
      * @return a {@link Map} containing the parsed parameters.
      * @throws Exception if there was an error reading the input.
      */
-    public static Request readOpPost(Request req) throws Exception {
+    public static Request readOpPost(Request req, boolean citeCompliant) throws Exception {
         String namespace;
         String elementName;
         String request;
         String service;
         String version;
         String outputFormat;
+        List<String> acceptVersions = new ArrayList<>();
 
         XMLStreamReader parser = createParserForRootElement(req);
         try {
@@ -1635,6 +1686,34 @@ public class Dispatcher extends AbstractController {
             service = parser.getAttributeValue(null, "service");
             version = parser.getAttributeValue(null, "version");
             outputFormat = parser.getAttributeValue(null, "outputFormat");
+
+            // GetCapabilities request may have AcceptVersions, needed for version negotiation in OWS
+            boolean done = false;
+            int lastEvent = -1;
+            if ("GetCapabilities".equals(request)) {
+                acceptVersions = new ArrayList<>();
+                while (parser.hasNext()) {
+                    lastEvent = parser.next();
+                    if (START_ELEMENT == lastEvent
+                            && parser.getName().getLocalPart().equals("AcceptVersions")) break;
+                    else if (END_ELEMENT == lastEvent
+                            && parser.getName().getLocalPart().equals("GetCapabilities")) {
+                        done = true;
+                        break;
+                    }
+                }
+
+                while (!done && parser.hasNext()) {
+                    int next = parser.next();
+                    if (START_ELEMENT == next && parser.getName().getLocalPart().equals("Version")) {
+                        String v = parser.getElementText();
+                        acceptVersions.add(v);
+                    } else if (END_ELEMENT == next) {
+                        String localPart = parser.getName().getLocalPart();
+                        if (localPart.equals("AcceptVersions") || localPart.equals("GetCapabilities")) break;
+                    }
+                }
+            }
         } finally {
             parser.close();
         }
@@ -1642,15 +1721,35 @@ public class Dispatcher extends AbstractController {
         req.setNamespace(normalize(namespace));
         req.setPostRequestElementName(normalize(elementName));
         // These may already be given by the request query string KVP's, override only if non-null
+        boolean isCapabilitiesRequest = "GetCapabilities".equals(request);
         if (request != null) {
             req.setRequest(normalize(request));
         }
+
         if (service != null) {
             req.setService(normalize(service));
         }
+
+        if (acceptVersions != null) req.setAcceptVersions(acceptVersions);
+
+        // normally the service is implied by the namespace of the request, but we might have negotiation (odd case)
         if (version != null) {
-            req.setVersion(normalizeVersion(normalize(version)));
+            req.setVersion(normalizeVersion(version));
+        } else if (isCapabilitiesRequest && acceptVersions != null && !acceptVersions.isEmpty()) {
+            // negotiation with accept version
+            List<String> supportedVersions = null;
+            if (service != null) {
+                req.setService(normalize(service));
+                supportedVersions = RequestUtils.getSupportedVersions(service);
+            }
+            version = RequestUtils.getVersionOWS(supportedVersions, acceptVersions, citeCompliant);
+            if (version == null) versionNegotiationFailed();
         }
+        // set the final version after negotiation
+        if (version != null) {
+            req.setVersion(version);
+        }
+
         if (outputFormat != null) {
             req.setOutputFormat(normalize(outputFormat));
         }
@@ -1686,8 +1785,11 @@ public class Dispatcher extends AbstractController {
                 && !(current instanceof ClientStreamAbortedException)
                 && !isSecurityException(current)
                 && !(current instanceof HttpErrorCodeException)) {
-            if (current instanceof SAXException) current = ((SAXException) current).getException();
-            else current = current.getCause();
+            if (current instanceof SAXException) {
+                current = ((SAXException) current).getException();
+            } else {
+                current = current.getCause();
+            }
         }
         if (current instanceof ClientStreamAbortedException) {
             logger.log(Level.FINER, "Client has closed stream", t);
@@ -1802,8 +1904,13 @@ public class Dispatcher extends AbstractController {
         }
 
         if (handler == null) {
-            // none found, fall back on default
-            handler = new OWS10ServiceExceptionHandler();
+            // none found, make a guess... if there is an "acceptVersions" it cannot be 1.0, default to 1.1 althought it
+            // could also be 2.0 (hey... that's why it's a guess)
+            if (request.getAcceptVersions() != null) {
+                handler = new OWS11ServiceExceptionHandler();
+            } else {
+                handler = new OWS10ServiceExceptionHandler();
+            }
         }
 
         // if SOAP request use special SOAP exception handler, but only for OWS requests because

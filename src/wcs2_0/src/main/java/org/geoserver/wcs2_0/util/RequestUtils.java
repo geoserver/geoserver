@@ -68,7 +68,7 @@ public class RequestUtils {
      * @param providedList a non null, non empty list of provided versions (in "x.y.z" or "x.y" format)
      * @param acceptedList a list of accepted versions, eventually null or empty (in "x.y.z" or "x.y" format)
      * @return the negotiated version to be used for response
-     * @see org.geoserver.ows.util.RequestUtils#getVersionOws11(java.util.List, java.util.List)
+     * @see org.geoserver.ows.util.RequestUtils#getVersionOWS(List, List, boolean)
      */
     public static String getVersionOws20(List<String> providedList, List<String> acceptedList) {
 

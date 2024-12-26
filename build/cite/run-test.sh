@@ -76,12 +76,12 @@ wms13 () {
 
 wfs10 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wfs/1.0.0/ctl/main.xml"
-  form="$TE_FORMS_DIR/wfs-1.0.0.xml"
-  _run
+
+  run_rest_test_suite "wfs10" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwms%3Fservice=WFS%26request%3DGetCapabilities%26version%3D1.0.0" "multiplenamenspaces=true"
 }
 
 wfs11 () {
+  # Cannot run via REST API, see https://github.com/opengeospatial/ets-wfs11/issues/109
   echo $0
   source="$TE_SCRIPTS_DIR/wfs/1.1.0/ctl/main.ctl"
   form="$TE_FORMS_DIR/wfs-1.1.0.xml"

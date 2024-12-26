@@ -75,7 +75,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13))
+ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs11))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)

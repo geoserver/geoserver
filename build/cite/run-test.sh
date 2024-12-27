@@ -89,6 +89,7 @@ wfs11 () {
 }
 
 wcs10 () {
+  # WCS 1.0.0 is not supported by the REST API,s see https://github.com/opengeospatial/ets-wcs10/issues/43
   echo $0
   source="$TE_SCRIPTS_DIR/wcs/1.0.0/ctl/wcs.xml"
   form="$TE_FORMS_DIR/wcs-1.0.0.xml"
@@ -97,9 +98,8 @@ wcs10 () {
 
 wcs11 () {
   echo $0
-  source="$TE_SCRIPTS_DIR/wcs/1.1.1/ctl/wcs.xml"
-  form="$TE_FORMS_DIR/wcs-1.1.1.xml"
-  _run
+
+  run_rest_test_suite "wcs11" "xml" "url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fows%3Fservice=WCS%26request%3DGetCapabilities%26version%3D1.1.0"
 }
 
 ogcapi-features10() {

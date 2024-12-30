@@ -340,7 +340,8 @@ public class RequestUtils {
     /** Makes sure the version is present and supported */
     public static void checkVersion(String version) {
         if (version == null) {
-            throw new WCS20Exception("Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, version);
+            throw new WCS20Exception(
+                    "Missing version", OWS20Exception.OWSExceptionCode.MissingParameterValue, "version");
         }
 
         if (!WCS20Const.V201.equals(version) && !WCS20Const.V20.equals(version)) {

@@ -1,0 +1,153 @@
+<coverage>
+  <id>CoverageInfoImpl--14e58cab:19359ba45ca:-7ff3</id>
+  <name>rotated</name>
+  <nativeName>rotated</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--14e58cab:19359ba45ca:-7ffe</id>
+  </namespace>
+  <title>An artificial rotated coverage</title>
+  <description>Just a fictuous rotated coverage used to show offset parameters in the rotated case</description>
+  <keywords>
+    <string>WCS</string>
+    <string>rotated</string>
+    <string>rotated</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;Monte Mario / Italy zone 1&quot;, 
+  GEOGCS[&quot;Monte Mario&quot;, 
+    DATUM[&quot;Monte Mario&quot;, 
+      SPHEROID[&quot;International 1924&quot;, 6378388.0, 297.0, AUTHORITY[&quot;EPSG&quot;,&quot;7022&quot;]], 
+      TOWGS84[-104.1, -49.1, -9.9, 0.971, -2.917, 0.714, -11.68], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6265&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4265&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;, AUTHORITY[&quot;EPSG&quot;,&quot;9807&quot;]], 
+  PARAMETER[&quot;central_meridian&quot;, 9.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 1500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;3003&quot;]]</nativeCRS>
+  <srs>EPSG:3003</srs>
+  <nativeBoundingBox>
+    <minx>1402796.735086838</minx>
+    <maxx>1402868.2853603114</maxx>
+    <miny>5000064.822668008</miny>
+    <maxy>5000119.220342959</maxy>
+    <crs class="projected">EPSG:3003</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>7.763187423015292</minx>
+    <maxx>7.764107940146299</maxx>
+    <miny>45.14718491498969</miny>
+    <maxy>45.14768431716957</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="dirName">rotated_rotated</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--14e58cab:19359ba45ca:-7ff6</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <nativeFormat>GeoTIFF</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>482 634</high>
+    </range>
+    <transform>
+      <scaleX>-5.270943E-6</scaleX>
+      <scaleY>5.2709729999999995E-6</scaleY>
+      <shearX>0.112851313689</shearX>
+      <shearY>0.112851313599</shearY>
+      <translateX>1402796.794050454</translateX>
+      <translateY>5000064.879096299</translateY>
+    </transform>
+    <crs>EPSG:3003</crs>
+  </grid>
+  <supportedFormats>
+    <string>GEOTIFF</string>
+    <string>TIFF</string>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>DEBUG</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+    <string>bilinear</string>
+    <string>bicubic</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>RED_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>GREEN_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>BLUE_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>ALPHA_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:3003</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:3003</string>
+  </responseSRS>
+  <parameters>
+    <entry>
+      <string>RescalePixels</string>
+      <boolean>false</boolean>
+    </entry>
+  </parameters>
+</coverage>

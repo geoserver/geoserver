@@ -108,6 +108,15 @@ wcs11 () {
   run_rest_test_suite "wcs11" "xml" "url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fows%3Fservice=WCS%26request%3DGetCapabilities%26version%3D1.1.0"
 }
 
+wcs20 () {
+  echo $0
+
+  # suite name is really just "wcs" without the version
+  run_rest_test_suite "wcs" "xml" "url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fows%3Fservice=WCS%26request%3DGetCapabilities" "core=core" "ext_crs=crs" "ext_rsub=range%20subsetting" "ext_scal=scaling" "ext_int=interpolation"
+  # Leaving post out to https://github.com/opengeospatial/ets-wcs20/issues/143
+  # "ext_post=post" 
+}
+
 ogcapi-features10() {
     run_rest_test_suite "ogcapi-features-1.0" "testng" "iut=http://geoserver:8080/geoserver/ogc/features/v1" "noofcollections=-1"
 }

@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
       matrix:
-        suite: [ogcapi-features10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
+        suite: [ogcapi-features10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, wcs20, geotiff11, gpkg12]
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4

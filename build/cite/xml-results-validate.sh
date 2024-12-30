@@ -41,7 +41,7 @@ echo -e "Passed: ${GREEN}${passed}${NC}"
 echo -e "Failed: ${RED}${failed}${NC}"
 echo -e "Skipped: ${skipped}"
 
-# Exit with status 1 if there are any failed tests
-if [ "$failed" -gt 0 ]; then
+# Exit with status 1 if there are any failed tests, or not passed tests
+if [ "$failed" -gt 0 ] || [ "$passed" -eq 0 ]; then
     exit 1
 fi

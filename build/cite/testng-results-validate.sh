@@ -10,7 +10,7 @@
 # when using the teamengine REST API to produce the xml report, it will always return a 200 HTTP status code.
 #
 # Contrary to testng-results-report.sh, this script does not require xmlstarlet to be installed,
-# and can be used to fail the build if there are test failures rergardless of whether a detailed
+# and can be used to fail the build if there are test failures regardless of whether a detailed
 # report can be printed out.
 
 

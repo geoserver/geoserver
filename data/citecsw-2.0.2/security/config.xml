@@ -22,14 +22,14 @@
       <filter>contextAsc</filter>
       <filter>formLogout</filter>
     </filters>
-    <filters name="rest" path="/rest/**">
+    <filters name="rest" path="/rest.*,/rest/**">
       <filter>contextNoAsc</filter>
       <filter>basic</filter>
       <filter>anonymous</filter>
       <filter>exception</filter>
       <filter>restInterceptor</filter>
     </filters>
-    <filters name="gwc" path="/gwc/rest/**">
+    <filters name="gwc" path="/gwc/rest.*,/gwc/rest/**">
       <filter>contextNoAsc</filter>
       <filter>basic</filter>
       <filter>exception</filter>

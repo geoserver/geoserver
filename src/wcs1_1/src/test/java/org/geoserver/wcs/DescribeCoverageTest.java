@@ -22,6 +22,7 @@ import org.geoserver.catalog.CoverageDimensionInfo;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ProjectionPolicy;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
@@ -121,13 +122,24 @@ public class DescribeCoverageTest extends WCSTestSupport {
 
     @Test
     public void testDescribeMissingVersion() throws Exception {
-        Document dom =
-                getAsDOM(BASEPATH + "?request=DescribeCoverage&service=WCS&identifiers=" + getLayerId(TASMANIA_DEM));
-        // print(dom);
-        checkOws11Exception(dom);
-        Element element = (Element) dom.getElementsByTagName("ows:Exception").item(0);
-        assertEquals("MissingParameterValue", element.getAttribute("exceptionCode"));
-        assertEquals("version", element.getAttribute("locator"));
+        GeoServer gs = getGeoServer();
+        WCSInfo info = gs.getService(WCSInfo.class);
+        info.setCiteCompliant(true);
+        gs.save(info);
+
+        try {
+            Document dom = getAsDOM(
+                    BASEPATH + "?request=DescribeCoverage&service=WCS&identifiers=" + getLayerId(TASMANIA_DEM));
+            // print(dom);
+            checkOws11Exception(dom);
+            Element element =
+                    (Element) dom.getElementsByTagName("ows:Exception").item(0);
+            assertEquals("MissingParameterValue", element.getAttribute("exceptionCode"));
+            assertEquals("version", element.getAttribute("locator"));
+        } finally {
+            info.setCiteCompliant(false);
+            gs.save(info);
+        }
     }
 
     @Test

@@ -19,9 +19,11 @@ import org.geoserver.catalog.Keyword;
 import org.geoserver.catalog.MetadataLinkInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.impl.CoverageDimensionImpl;
+import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.wcs.WCSInfo;
 import org.geoserver.wcs2_0.WCSTestSupport;
 import org.junit.Before;
 import org.junit.Test;
@@ -863,5 +865,23 @@ public class DescribeCoverageTest extends WCSTestSupport {
                 "2008-10-31T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:beginPosition", dom);
         assertXpathEvaluatesTo(
                 "2008-11-07T00:00:00.000Z", "//gml:boundedBy/gml:EnvelopeWithTimePeriod/gml:endPosition", dom);
+    }
+
+    @Test
+    public void testDescribeMissingVersion() throws Exception {
+        GeoServer gs = getGeoServer();
+        WCSInfo info = gs.getService(WCSInfo.class);
+        info.setCiteCompliant(true);
+        gs.save(info);
+
+        try {
+            MockHttpServletResponse response =
+                    getAsServletResponse("wcs?request=DescribeCoverage&service=WCS&coverageId=wcs__BlueMarble");
+            // print(dom);
+            checkOws20Exception(response, 400, "MissingParameterValue", "version");
+        } finally {
+            info.setCiteCompliant(false);
+            gs.save(info);
+        }
     }
 }

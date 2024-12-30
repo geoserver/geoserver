@@ -215,4 +215,8 @@
   <bean id="wcs11WorkspaceQualifier" class="org.geoserver.wcs.WCS11WorkspaceQualifier">
     <constructor-arg ref="catalog"/>
   </bean>
+
+  <bean id="wcs11ExceptionHandler" class="org.geoserver.wcs.WCS11ServiceExceptionHandler">
+    <constructor-arg ref="wcsService-1.1.1"/>
+  </bean>
 </beans>

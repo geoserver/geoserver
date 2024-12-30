@@ -17,11 +17,11 @@
     <filters name="webLogout" class="org.geoserver.security.LogoutFilterChain" path="/j_spring_security_logout,/j_spring_security_logout/,/logout" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
       <filter>formLogout</filter>
     </filters>
-    <filters name="rest" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+    <filters name="rest" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/rest.*,/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
       <filter>basic</filter>
       <filter>anonymous</filter>
     </filters>
-    <filters name="gwc" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/gwc/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
+    <filters name="gwc" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="restInterceptor" exceptionTranslationName="exception" path="/gwc/rest.*,/gwc/rest/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">
       <filter>basic</filter>
     </filters>
     <filters name="default" class="org.geoserver.security.ServiceLoginFilterChain" interceptorName="interceptor" exceptionTranslationName="exception" path="/**" disabled="false" allowSessionCreation="false" ssl="false" matchHTTPMethod="false">

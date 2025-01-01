@@ -1,0 +1,32 @@
+services:
+  geoserver:
+    image: ogccite/geoserver:wfs20
+    depends_on:
+      - postgres
+    build:
+      args:
+        GEOSERVER_DATA_DIR_SRC: "./wfs20/citewfs-2.0"
+
+  teamengine:
+    image: ogccite/teamengine-production
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s
+
+  postgres:
+    image: postgis/postgis:15-3.5-alpine
+    ports:
+      - 15432:5432
+    environment:
+      POSTGRES_DB: geoserver
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+    - ./wfs20/01-init-user.sh:/docker-entrypoint-initdb.d/01-init-user.sh
+    - ./wfs20/citewfs-2.0/dataset-sf0-postgis2.sql:/docker-entrypoint-initdb.d/02-init-db.sql
+
+volumes:
+  pg_data:

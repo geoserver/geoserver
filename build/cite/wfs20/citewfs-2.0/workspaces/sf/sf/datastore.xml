@@ -11,7 +11,7 @@
     <entry key="user">cite</entry>
     <entry key="passwd">cite</entry>
     <entry key="wkb enabled">true</entry>
-    <entry key="host">localhost</entry>
+    <entry key="host">postgres</entry>
     <entry key="port">5432</entry>
     <entry key="database">cite</entry>
     <entry key="dbtype">postgisng</entry>

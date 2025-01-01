@@ -88,6 +88,12 @@ wfs11 () {
   _run
 }
 
+wfs20 () {
+  echo $0
+
+  run_rest_test_suite "wfs20" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fwfs%3Fservice=WFS%26request%3DGetCapabilities%26version%3D2.0.0"
+}
+
 wcs10 () {
   # WCS 1.0.0 is not supported by the REST API,s see https://github.com/opengeospatial/ets-wcs10/issues/43
   echo $0

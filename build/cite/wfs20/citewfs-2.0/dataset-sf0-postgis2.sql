@@ -3,13 +3,16 @@
 --     psql -U <database owner> <database> < dataset-sf0.sql
 SET client_encoding = 'UTF8';
 
-drop table "PrimitiveGeoFeature";
+\c cite
+SET ROLE cite;
+
+drop table if exists "PrimitiveGeoFeature";
 CREATE TABLE "PrimitiveGeoFeature" (
     description character varying,
     name character varying,
-    "surfaceProperty" public.geometry(Polygon,4326),
-    "pointProperty" public.geometry(Point,4326),
-    "curveProperty" public.geometry(LineString,4326),
+    "surfaceProperty" geometry(Polygon,4326),
+    "pointProperty" geometry(Point,4326),
+    "curveProperty" geometry(LineString,4326),
     "intProperty" integer NOT NULL,
     "uriProperty" character varying,
     measurand double precision NOT NULL,
@@ -26,13 +29,13 @@ INSERT INTO public."PrimitiveGeoFeature" VALUES ('description-f003', 'name-f003'
 INSERT INTO public."PrimitiveGeoFeature" VALUES ('description-f008', 'name-f008', '0103000020E61000000100000004000000A01A2FDD24E63E4083C0CAA1459646409EEFA7C64B773E40FA7E6ABC74D346409EEFA7C64B773E40355EBA490CF24640A01A2FDD24E63E4083C0CAA145964640', NULL, NULL, 300, NULL, 783.5, '2006-06-28 07:08:00+02', '2006-12-12 01:00:00+01', 18.9200000000000017, 'f008', 'PrimitiveGeoFeature.f008');
 INSERT INTO public."PrimitiveGeoFeature" VALUES (NULL, 'name-f015', NULL, '0101000020E61000000AD7A3703D0A25C0B81E85EB51784140', NULL, -900, NULL, 2.39999999999999991, NULL, NULL, 7.90000000000000036, 'f015', 'PrimitiveGeoFeature.f015');
 
-drop table "AggregateGeoFeature";
+drop table if exists "AggregateGeoFeature";
 CREATE TABLE "AggregateGeoFeature" (
     description character varying,
     name character varying,
-    "multiPointProperty" public.geometry(MultiPoint,4326),
-    "multiCurveProperty" public.geometry(MultiLineString,4326),
-    "multiSurfaceProperty" public.geometry(MultiPolygon,4326),
+    "multiPointProperty" geometry(MultiPoint,4326),
+    "multiCurveProperty" geometry(MultiLineString,4326),
+    "multiSurfaceProperty" geometry(MultiPolygon,4326),
     "doubleProperty" double precision NOT NULL,
     "intRangeProperty" character varying,
     "strProperty" character varying NOT NULL,
@@ -48,11 +51,11 @@ INSERT INTO public."AggregateGeoFeature" VALUES ('description-f010', 'name-f010'
 INSERT INTO public."AggregateGeoFeature" VALUES (NULL, 'name-f016', NULL, NULL, '0106000020E6100000010000000103000000020000000700000000000000000018400000000000C04C4000000000000020400000000000C04C4000000000000020400000000000004E4000000000000022400000000000404F4000000000000014400000000000404F4000000000000018400000000000004E4000000000000018400000000000C04C40040000000000000000001A400000000000004D400000000000001A400000000000804D400000000000001C400000000000804D400000000000001A400000000000004D40', -182.900000000000006, NULL, 'In rhoncus nisl sit amet sem.', 'EE010', 'f016', 'AggregateGeoFeature.f016');
 
 
-drop table "EntitéGénérique";
+drop table if exists "EntitéGénérique";
 CREATE TABLE "EntitéGénérique" (
     description character varying,
     name character varying,
-    "attribut.Géométrie" public.geometry(Geometry,4326),
+    "attribut.Géométrie" geometry(Geometry,4326),
     "boolProperty" boolean NOT NULL,
     "str4Property" character varying NOT NULL,
     "featureRef" character varying,

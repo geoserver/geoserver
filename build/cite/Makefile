@@ -75,7 +75,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs10 wfs20 wcs11 geotiff11 gpkg12))
+ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -265,7 +265,7 @@ print-full-failures:
     elif [ -f "logs/xml-results.xml" ]; then \
 		./xml-results-full-error-report.sh logs/xml-results.xml; \
 	else \
-		echo "The files logs/testng-results.xml and logs/xml-results.xml  do not exist. Skipping the report generation."; \
+		echo "The files logs/testng-results.xml and logs/xml-results.xml do not exist. Skipping the report generation."; \
 	fi
 
 .PHONY: pull

@@ -96,7 +96,7 @@ public abstract class ServiceDescriptionProvider {
             List<String> disabledServices = DisabledServiceResourceFilter.disabledServices(resourceInfo);
             layerServices.removeAll(disabledServices);
 
-            return layerServices.contains(serviceType);
+            return layerServices.contains(serviceType) && info.isEnabled();
         }
         return info.isEnabled();
     }

@@ -6,7 +6,10 @@
   <h3><wicket:message key="defaultTitle">Services Settings</wicket:message></h3>
 
   <fieldset>
-    <legend><span><wicket:message key="layerSettings">Layer Settings</wicket:message></span></legend>
+    <legend>
+      <span><wicket:message key="layerSettings">Layer Settings</wicket:message></span>
+      <a href="#" wicket:id="layerSettingsHelp" class="help-link"></a>
+    </legend>
     <ul class="choiceList">
       <li>
         <input id="configEnabled" type="checkbox" wicket:id="configEnabled"></input>
@@ -22,7 +25,15 @@
         </div>
       </li>
     </ul>
+    <ul>
+      <li>
+        <label id="defaultDisabledServicesLabel" wicket:id="defaultDisabledServicesLabel" for="defaultDisabledServices"/>
+        <input id="defaultDisabledServices" class="text" type="text" wicket:id="defaultDisabledServices" title="List of services disabled by default. This setting is defined by 'org.geoserver.service.disabled' application property."/>
+      </li>
+    </ul>
   </fieldset>
+
+  <div wicket:id="serviceDialog"></div>
 
   </wicket:panel>
 </form>

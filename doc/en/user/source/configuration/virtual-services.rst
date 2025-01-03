@@ -15,60 +15,64 @@ A *virtual service* is a view of the global service that consists only of a subs
 
 When a client accesses a virtual service that client only has access to those layers published by that virtual service. Access to layers in the global service via the virtual service will result in an exception. This makes virtual services ideal for compartmentalizing access to layers. A service provider may wish to create multiple services for different clients handing one service url to one client, and a different service url to another client. Virtual services allow the service provider to achieve this with a single GeoServer instance.
 
-Filtering by workspace
-----------------------
+.. _virtual_workspace_services:
+
+Workspace services
+------------------
 
 Consider the following snippets of the WFS capabilities document from the GeoServer release configuration that list all the feature types::
 
    http://localhost:8080/geoserver/wfs?request=GetCapabilities
-   
+
+The above url results in the following feature types in the capabilities document::
+
    <wfs:WFS_Capabilities>
    
      <FeatureType xmlns:tiger="http://www.census.gov">
       <Name>tiger:poly_landmarks</Name>
-   --
+      ...
      <FeatureType xmlns:tiger="http://www.census.gov">
       <Name>tiger:poi</Name>
-   --
+      ...
      <FeatureType xmlns:tiger="http://www.census.gov">
       <Name>tiger:tiger_roads</Name>
-   --
+      ...
      <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
       <Name>sf:archsites</Name>
-   --
+      ...
      <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
       <Name>sf:bugsites</Name>
-   --
+      ...
      <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
       <Name>sf:restricted</Name>
-   --
+      ...
      <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
       <Name>sf:roads</Name>
-   --
+      ...
      <FeatureType xmlns:sf="http://www.openplans.org/spearfish">
       <Name>sf:streams</Name>
-   --
+      ...
      <FeatureType xmlns:topp="http://www.openplans.org/topp">
       <Name>topp:tasmania_cities</Name>
-   --
+      ...
      <FeatureType xmlns:topp="http://www.openplans.org/topp">
       <Name>topp:tasmania_roads</Name>
-   --
+      ...
      <FeatureType xmlns:topp="http://www.openplans.org/topp">
       <Name>topp:tasmania_state_boundaries</Name>
-   --
+      ...
      <FeatureType xmlns:topp="http://www.openplans.org/topp">
       <Name>topp:tasmania_water_bodies</Name>
-   --
+      ...
      <FeatureType xmlns:topp="http://www.openplans.org/topp">
       <Name>topp:states</Name>
-   --
+      ...
      <FeatureType xmlns:tiger="http://www.census.gov">
       <Name>tiger:giant_polygon</Name>
-      
+      ...
    </wfs:WFS_Capabilities>
    
-The above document lists every feature type configured on the server. Now consider the following capabilities request:: 
+The above document lists every feature type configured on the server. Now consider the following workspace service capabilities request:: 
 
    http://localhost:8080/geoserver/topp/wfs?request=GetCapabilities
 
@@ -78,51 +82,86 @@ The part of interest in the above request is the "topp" prefix to the wfs servic
    
       <FeatureType xmlns:topp="http://www.openplans.org/topp">
        <Name>topp:tasmania_cities</Name>
-    --
+       ...
       <FeatureType xmlns:topp="http://www.openplans.org/topp">
        <Name>topp:tasmania_roads</Name>
-    --
+       ...
       <FeatureType xmlns:topp="http://www.openplans.org/topp">
        <Name>topp:tasmania_state_boundaries</Name>
-    --
+       ...
       <FeatureType xmlns:topp="http://www.openplans.org/topp">
        <Name>topp:tasmania_water_bodies</Name>
-    --
+       ...
       <FeatureType xmlns:topp="http://www.openplans.org/topp">
        <Name>topp:states</Name>
-       
+       ...
     </wfs:WFS_Capabilities>
 
-The above feature types correspond to those configured on the server as part of the "topp" workspace. 
+The above feature types correspond to those configured on the server as part of the ``topp`` workspace.
 
 The consequence of a virtual service is not only limited to the capabilities document of the service. When a client accesses a virtual service it is restricted to only those layers for all operations. For instance, consider the following WFS feature request::
 
   http://localhost:8080/geoserver/topp/wfs?request=GetFeature&typename=tiger:roads
 
-The above request results in an exception. Since the request feature type "tiger:roads" is not in the "topp" workspace the client will receive an error stating that the requested feature type does not exist. 
+The above request results in an exception. Since the request feature type ``tiger:roads`` is not in the ``topp`` workspace the client will receive an error stating that the requested feature type does not exist.
 
-Filtering by layer
-------------------
+Configuring workspace services
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Workspace services can be configured to override service configuration for an individual workspace.
+
+.. figure:: /data/webadmin/img/workspace_services.png
+   
+   Workspace services
+
+Each workspace service can be configureed with their own title, abstract and service settings. This can also be used to enable/disable specific services on a workspace by workspace basis to control what virtual services are available.
+
+.. figure:: /data/webadmin/img/workspace_wms_settings.png
+   
+   Workspace Service Settings
+   
+For more information see :ref:`workspace_services`.
+
+.. _virtual_layer_services:
+
+Layer services
+--------------
 
 It is possible to further filter a global service by specifying the name of layer as part of the virtual service. For instance consider the following capabilities document:: 
 
    http://localhost:8080/geoserver/topp/states/wfs?request=GetCapabilities
 
-The part of interest is the "states" prefix to the wfs service. The above url results in the following capabilities document that contains a single feature type::
+The part of interest is the ``states`` prefix to the wfs service. The above url results in the following capabilities document that contains a single feature type::
 
   <wfs:WFS_Capabilities>
   
     <FeatureType xmlns:topp="http://www.openplans.org/topp">
      <Name>topp:states</Name>
-     
+     ...
   <wfs:WFS_Capabilities>
+  
+Configuring layer services
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Layer services use the configuration provided by :ref:`workspace services <workspace_services>`, or default :ref:`global services <services>`.
+
+Additionally you may choose to :ref:`disable specific layer services <data_webadmin_layers_services>` to control which virtual services are available.
+
+  .. figure:: /data/webadmin/img/service_layer.png
+
+     Disabled Services Settings
+
+WMS Configuration offers configuration of :ref:`data_webadmin_layers_root` when only a single layer is to be listed for a layer service. 
+
+Global services
+---------------
 
 .. _global_services_off:
 
 Turning off global services
----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-It is possible to completely restrict access to the global OWS services by setting a configuration flag. When global access is disabled OWS services may only occur through a virtual service. Any client that tries to access a service globally will receive an exception.
+It is possible to completely restrict access to the global OWS services by adjusing :ref:`config_globalsettings_global`. When global access is disabled OWS services may only occur through a virtual workspace or layer service. Any client that tries to access a service globally will receive an exception.
 
 To disable global services, log into the GeoServer web administration interface and navigate to "Global Settings". Uncheck the "Enable Global Services" check box.
 
@@ -133,6 +172,8 @@ To disable global services, log into the GeoServer web administration interface 
 Isolated Workspaces
 ^^^^^^^^^^^^^^^^^^^
 
+When publishing XML content each FeatureType is expected to be published into a unique XML Namespace. Isolated workspaces allow GeoServer to configure two workspaces with the same XML Namespace with some restrictions outlined below to ensure there is no opportunity for namespace conflict.
+
 Isolated workspaces content is only visible and queryable in the context of a virtual service bound to the isolated workspace. This means that isolated workspaces content will not show up in global capabilities documents and global services cannot query isolated workspaces contents. Note that these restrictions do not apply to the REST API.
 
 A workspace can be made isolated by checking the :guilabel:`Isolated Workspace` checkbox when creating or editing a workspace.
@@ -141,9 +182,9 @@ A workspace can be made isolated by checking the :guilabel:`Isolated Workspace` 
 
    Making a workspace isolated
 
-An isolated workspace will be able to reuse a namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
+An isolated workspace will be able to reuse an XML namespace already used by another workspace, but its resources (layers, styles, etc ...) can only be retrieved when using that workspace virtual services and will only show up in those virtual services capabilities documents.
 
-It is only possible to create two or more workspaces with the same namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
+It is only possible to create two or more workspaces with the same XML namespace in GeoServer if only one of them is non isolated, i.e. isolated workspaces have no restrictions in namespaces usage but two non isolated workspaces can't use the same namespace.
 
 The following situation will be valid:
 
@@ -161,7 +202,7 @@ But not the following one:
 
   - Prefix: st3 Namespace: http://www.stations.org/1.0 Isolated: true
 
-At most only one non isolated workspace can use a certain namespace.
+At most only one non isolated workspace can use a certain XML namespace.
 
 Consider the following image which shows to workspaces (st1 and st2) that use the same namespace (http://www.stations.org/1.0) and several layers contained by them:
 

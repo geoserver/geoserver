@@ -248,12 +248,13 @@ Cache parameters that apply to the HTTP response from client requests.
 
 .. figure:: img/data_http_response_caching_settings.png
 
+.. _data_webadmin_layers_root:
+
 Root Layer in Capabilities
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
-Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups.
+WMS Capabilities documents in GeoServer always have a top level (root) Layer element that works as a container of all the available layers and groups. This allows spatial reference systems to be listed once and inherited by child layers rather than be repeated.
 
-When a layer is the only top level element in the Capabilities document, it is possible to remove this root Layer and return
-a hierarchy where the layer is the root instead.
+When accessed as a :ref:`virtual_layer_services` only a single layer is to be listed, it is possible to remove this root Layer and return a hierarchy where the layer is the root instead.
 
 To enable this functionality, choose the **No** option from the Root Layer in Capabilities section.
 
@@ -264,22 +265,32 @@ Finally, it is possible to override the service settings and force a **Yes** to 
   
    Layer root layer in capabilities options
 
+.. _data_webadmin_layers_services:
+
 Services Settings
 ^^^^^^^^^^^^^^^^^
 
-Sets services configuration on layer level.
+GeoServer publishes :ref:`virtual_layer_services` associated with each layer using the configuration provided by :ref:`workspace services <workspace_services>`, or default :ref:`global services <services>`. This configuration includes enable/disabled setting that determines if a service is available.
 
-  .. figure:: img/service_enable_layer.png
+For greater control the :guilabel:`Service Settings` allows specific services to be disabled.
 
-     Services Settings
+  .. figure:: img/service_layer.png
 
-* **Selectively enable services for layer**—Activate/deactivate service enable/disable configuration for the layer.
-* **Enabled Services**—Selects enabled services list for this layer.
+     Disabled Services Settings
+
+* **Selectively disable services for layer**—Activate/deactivate service disable configuration for the layer.
+* **Services**—Available services for this layer.
 * **Disabled Services**—Selects disabled services list for this layer.
 
   .. note::
 
-     It is also possible to set by-default disabled services to all layers using the ``org.geoserver.service.disabled`` system/env/servlet context variable.  This variable accepts a comma separated list of services that should be disabled by default, in case the resource in question has no explicit configuration.
+     It is also possible to define by-default disabled services to all layers using the ``org.geoserver.service.disabled`` :ref:`application property <application_properties>`. 
+     
+     .. figure:: img/server_layer_defaults.png
+        
+        Application property org.geoserver.service.disabled
+        
+     This property accepts a comma separated list of services that should be disabled by default, in case the resource in question has no explicit configuration.
 
 
 WMS Settings

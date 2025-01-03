@@ -217,7 +217,7 @@ GeoServer Property Reference
      - x
    * - org.geoserver.service.disabled
        
-       Default comma separated list of disabled services.
+       :ref:`Layer service <data_webadmin_layers_services>` default comma separated list of disabled services.
      - x
      - x
      - x

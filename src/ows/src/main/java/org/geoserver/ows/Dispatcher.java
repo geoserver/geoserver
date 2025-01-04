@@ -409,6 +409,12 @@ public class Dispatcher extends AbstractController {
             }
         }
 
+        // do not bother with version negotiation if the request is just a GWC proxy (see GwcServiceDispatcherCallback)
+        // GWC has the actual tile service implementation and will handle version negotiation itself
+        if ("/gwc".equals(req.getHttpRequest().getServletPath())) {
+            return;
+        }
+
         // figure out the target version before we parse the kvp
         // as some kvp parsers are version specific (e.g. AcceptVersions has 3 different implementations in EMF)
         String request = KvpUtils.getSingleValue(kvp, "request");

@@ -75,7 +75,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs10 wfs20 wcs11))
+ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs10 wfs20 wcs11 geotiff11))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -239,6 +239,23 @@ validate-rest-results: $(suite)
     elif [ -f "logs/xml-results.xml" ]; then \
 		./xml-results-report.sh logs/xml-results.xml; \
 		./xml-results-validate.sh logs/xml-results.xml; \
+    else \
+        @result=0; \
+        for file in logs/*-results.xml; do \
+        if [ -f "$$file" ]; then \
+            case "$$file" in \
+            *testng-results.xml) \
+                ./testng-results-report.sh "$$file"; \
+                ./testng-results-validate.sh "$$file" || result=1; \
+                ;; \
+            *xml-results.xml) \
+                ./xml-results-report.sh "$$file"; \
+                ./xml-results-validate.sh "$$file" || result=1; \
+                ;; \
+            esac; \
+        fi; \
+        done; \
+        exit $$result; \
     fi
 
 .PHONY: print-full-failures

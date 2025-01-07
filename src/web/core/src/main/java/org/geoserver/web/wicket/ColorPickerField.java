@@ -5,14 +5,11 @@
  */
 package org.geoserver.web.wicket;
 
-import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AttributeAppender;
-import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 
 /**
@@ -27,25 +24,17 @@ public class ColorPickerField extends TextField<String> {
             new PackageResourceReference(ColorPickerField.class, "js/jscolor/jscolor.js");
 
     public ColorPickerField(String id) {
-        super(id, String.class);
-        initComponents();
+        this(id, null);
     }
 
     public ColorPickerField(String id, IModel<String> model) {
         super(id, model, String.class);
-        initComponents();
+        add(AttributeModifier.replace("class", "color {\"required\":false}"));
     }
 
-    void initComponents() {
-        add(new Behavior() {
-            private static final long serialVersionUID = 4269437302317170665L;
-
-            @Override
-            public void renderHead(Component component, IHeaderResponse response) {
-                super.renderHead(component, response);
-                response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
-            }
-        });
-        add(new AttributeAppender("class", new Model<>("color {required:false}"), ","));
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(JSCOLOR_JS));
     }
 }

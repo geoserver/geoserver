@@ -108,7 +108,6 @@ public class TransactionListenerTest extends WFSTestSupport {
         assertEquals(TransactionEventType.PRE_INSERT, thirdEvent.getType());
         assertEquals(CiteTestData.POINTS, thirdEvent.getLayerName());
 
-
         // one feature from the pre-insert hook, one from the post-insert hook
         assertEquals(4, listener.features.size());
 

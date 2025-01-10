@@ -86,18 +86,31 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "</cgf:lineStringProperty>"
                 + "<cgf:id>t0002</cgf:id>"
                 + "</cgf:Lines>"
+                + "<cgf:Points>"
+                + "<cgf:pointProperty>"
+                + "<gml:Point><gml:coordinates>15,15</gml:coordinates></gml:Point>"
+                + "</cgf:pointProperty>"
+                + "<cgf:id>t0005</cgf:id>"
+                + "</cgf:Points>"
                 + "</wfs:Insert>"
                 + "</wfs:Transaction>";
 
         postAsDOM("wfs", insert);
-        assertEquals(2, listener.events.size());
+        assertEquals(4, listener.events.size());
 
         TransactionEvent firstEvent = listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof InsertElementType);
         assertEquals(TransactionEventType.PRE_INSERT, firstEvent.getType());
         assertEquals(CiteTestData.LINES, firstEvent.getLayerName());
+
+        TransactionEvent thirdEvent = listener.events.get(2);
+        assertTrue(thirdEvent.getSource() instanceof InsertElementType);
+        assertEquals(TransactionEventType.PRE_INSERT, thirdEvent.getType());
+        assertEquals(CiteTestData.POINTS, thirdEvent.getLayerName());
+
+
         // one feature from the pre-insert hook, one from the post-insert hook
-        assertEquals(2, listener.features.size());
+        assertEquals(4, listener.features.size());
 
         // what was the fid of the inserted feature?
         String getFeature = "<wfs:GetFeature "

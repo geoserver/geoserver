@@ -9,6 +9,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class InsertElementHandler extends AbstractTransactionElementHandler {
 
         try {
             // group features by their schema
-            HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new HashMap<>();
+            HashMap /* <SimpleFeatureType,FeatureCollection> */ schema2features = new LinkedHashMap();
 
             List featureList = insert.getFeatures();
             for (Object item : featureList) {

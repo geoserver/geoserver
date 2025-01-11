@@ -25,7 +25,12 @@ public class ClickHouseFilterToSQL extends FilterToSQL {
 
     @Override
     protected void writeLiteral(Object literal) throws IOException {
-        if (literal instanceof Date) {
+        if (literal instanceof java.sql.Date) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String isoDate = sdf.format(((Date) literal));
+
+            out.write("toDate('" + isoDate + "')");
+        } else if (literal instanceof Date) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
             String isoDate = sdf.format(((Date) literal));
 

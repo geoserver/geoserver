@@ -20,6 +20,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Calendar;
+import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.jdbc.BasicSQLDialect;
@@ -87,5 +92,21 @@ class ClickHouseDialect extends BasicSQLDialect {
         } else if (offset > 0) {
             sql.append(" OFFSET " + offset);
         }
+    }
+
+    @Override
+    public Object convertValue(Object value, AttributeDescriptor ad) {
+        Class<?> binding = ad.getType().getBinding();
+        if (value instanceof LocalDate && binding.equals(java.sql.Date.class)) {
+            LocalDate d = (LocalDate) value;
+            Calendar c = Calendar.getInstance();
+            c.clear();
+            c.set(d.getYear(), d.getMonthValue() - 1, d.getDayOfMonth(), 0, 0, 0);
+            return new java.sql.Date(c.getTimeInMillis());
+        } else if (value instanceof LocalDateTime && binding.equals(java.sql.Timestamp.class)) {
+            return java.sql.Timestamp.from(
+                    ((LocalDateTime) value).atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return super.convertValue(value, ad);
     }
 }

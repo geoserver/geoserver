@@ -12,7 +12,7 @@
         <include>annotations-2.*.jar</include>
         <include>auth-2.*.jar</include>
         <include>aws-*-2.*.jar</include>
-        <include>azure-storage*.jar</include>
+        <include>azure-*.jar</include>
         <include>client-runtime*.jar</include>
         <include>gs-cog*.jar</include>
         <include>http-client-spi-2*.jar</include>
@@ -26,6 +26,7 @@
         <include>okio*.jar</include>
         <include>profiles-2.*.jar</include>
         <include>protocol-core-2.*.jar</include>
+        <include>reactor-core-*.jar</include>
         <include>reactive-streams*.jar</include>
         <include>regions-2.*.jar</include>
         <include>rxjava*.jar</include>

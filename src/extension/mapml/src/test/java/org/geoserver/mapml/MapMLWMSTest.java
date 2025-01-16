@@ -1237,19 +1237,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 .toString()
                 .equalsIgnoreCase(featureCaptionTemplate));
         String forests = getLayerId(MockData.FORESTS);
-        HashMap<String, String> vars = new HashMap<>();
-        vars.put("version", "1.1.1");
-        vars.put("bbox", "-0.002,-0.002,0.002,0.002");
-        vars.put("styles", "");
-        vars.put("format", "jpeg");
-        vars.put("info_format", "text/mapml");
-        vars.put("request", "GetFeatureInfo");
-        vars.put("layers", forests);
-        vars.put("query_layers", forests);
-        vars.put("width", "20");
-        vars.put("height", "20");
-        vars.put("x", "10");
-        vars.put("y", "10");
+        HashMap<String, String> vars = getRequestVars(forests);
         MockRequestResponse requestResponse = getMockRequestResponse(forests, vars, null, null, null);
         org.w3c.dom.Document doc = dom(
                 new ByteArrayInputStream(
@@ -1259,6 +1247,38 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertXpathEvaluatesTo("1", "count(//html:map-featurecaption)", doc);
         assertXpathEvaluatesTo("1", "count(//html:map-geometry)", doc);
         assertXpathEvaluatesTo("1", "count(//html:map-properties)", doc);
+    }
+
+    @Test
+    public void testRasterGetFeatureInfoMapML() throws Exception {
+        String world = getLayerId(MockData.WORLD);
+        HashMap<String, String> vars = getRequestVars(world);
+        MockRequestResponse requestResponse = getMockRequestResponse(world, vars, null, null, null);
+        org.w3c.dom.Document doc = dom(
+                new ByteArrayInputStream(
+                        requestResponse.response.getContentAsString().getBytes()),
+                true);
+
+        assertXpathEvaluatesTo("1", "count(//html:map-feature)", doc);
+        assertXpathEvaluatesTo("0", "count(//html:map-geometry)", doc);
+        assertXpathEvaluatesTo("1", "count(//html:map-properties)", doc);
+    }
+
+    private static HashMap<String, String> getRequestVars(String world) {
+        HashMap<String, String> vars = new HashMap<>();
+        vars.put("version", "1.1.1");
+        vars.put("bbox", "-0.002,-0.002,0.002,0.002");
+        vars.put("styles", "");
+        vars.put("format", "jpeg");
+        vars.put("info_format", "text/mapml");
+        vars.put("request", "GetFeatureInfo");
+        vars.put("layers", world);
+        vars.put("query_layers", world);
+        vars.put("width", "20");
+        vars.put("height", "20");
+        vars.put("x", "10");
+        vars.put("y", "10");
+        return vars;
     }
 
     @Test

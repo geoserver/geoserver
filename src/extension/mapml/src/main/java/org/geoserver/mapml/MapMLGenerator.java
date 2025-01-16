@@ -71,16 +71,23 @@ public class MapMLGenerator {
     private MapMLSimplifier simplifier;
 
     /**
+     * Builds a MapML feature from a SimpleFeature
+     *
      * @param sf a feature
      * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
-     * @return the feature (eventually null if the feature is outside the clip bounds or has no matching style
+     * @param mapMLStyles - list of applicable MapMLStyles
+     * @param templateOptional - optional template to use for geometry
+     * @param applyGeomTransform - whether to apply geometry transformation
+     * @return the feature (eventually null if the feature is outside the clip bounds or has no matching style when
+     *     applyGeomTransform is true)
      * @throws IOException - IOException
      */
     public Optional<Feature> buildFeature(
             SimpleFeature sf,
             String featureCaptionTemplate,
             List<MapMLStyle> mapMLStyles,
-            Optional<Mapml> templateOptional)
+            Optional<Mapml> templateOptional,
+            boolean applyGeomTransform)
             throws IOException {
         if (mapMLStyles != null && mapMLStyles.isEmpty()) {
             // no applicable styles, probably because of scale
@@ -103,63 +110,85 @@ public class MapMLGenerator {
             f.setProperties(pc);
             pc.setAnyElement(collectAttributes(sf, replacmentAttsOptional));
         }
+        if (applyGeomTransform) {
+            // if clipping is enabled, clip the geometry and return null if the clip removed it
+            // entirely
+            Geometry g = (Geometry) sf.getDefaultGeometry();
+            if (g == null) return Optional.empty();
 
-        // if clipping is enabled, clip the geometry and return null if the clip removed it entirely
-        Geometry g = (Geometry) sf.getDefaultGeometry();
-        if (g == null) return Optional.empty();
-
-        // intersection check
-        if (clipBounds != null && !clipBounds.intersects(g.getEnvelopeInternal())) return Optional.empty();
-        // eventual simplification (for WMS usage)
-        if (simplifier != null) {
-            try {
-                g = simplifier.simplify(g);
-            } catch (Exception e) {
-                LOGGER.log(Level.FINE, "Failed to simplify geometry, using it as is.", e);
-            }
-        }
-
-        // eventual geometry conversion due to style type
-        if (mapMLStyles != null) {
-            // convert geometry to type expected by the first symbolizer
-            g = convertGeometryToSymbolizerType(g, mapMLStyles.get(0));
-            // can't convert geometry to type expected by symbolizer?
-            if (g == null) {
-                if (LOGGER.isLoggable(Level.FINER)) {
-                    LOGGER.finer("Could not convert geometry of type"
-                            + (g != null ? g.getGeometryType() : "null")
-                            + " to symbolizer type: "
-                            + mapMLStyles.get(0).getSymbolizerType());
+            // intersection check
+            if (clipBounds != null && !clipBounds.intersects(g.getEnvelopeInternal())) return Optional.empty();
+            // eventual simplification (for WMS usage)
+            if (simplifier != null) {
+                try {
+                    g = simplifier.simplify(g);
+                } catch (Exception e) {
+                    LOGGER.log(Level.FINE, "Failed to simplify geometry, using it as is.", e);
                 }
-                return Optional.empty();
             }
-            String spaceDelimitedCSSClasses =
-                    mapMLStyles.stream().map(MapMLStyle::getCSSClassName).collect(Collectors.joining(SPACE));
-            f.setStyle(spaceDelimitedCSSClasses);
-        }
 
-        // and clipping (again for WMS usage)
-        if (g != null && !g.isEmpty() && clipBounds != null) {
-            MapMLGeometryClipper clipper = new MapMLGeometryClipper(g, clipBounds);
-            g = clipper.clipAndTag();
-        }
-        if (g == null || g.isEmpty()) return Optional.empty();
+            // eventual geometry conversion due to style type
+            if (mapMLStyles != null) {
+                // convert geometry to type expected by the first symbolizer
+                g = convertGeometryToSymbolizerType(g, mapMLStyles.get(0));
+                // can't convert geometry to type expected by symbolizer?
+                if (g == null) {
+                    if (LOGGER.isLoggable(Level.FINER)) {
+                        LOGGER.finer("Could not convert geometry of type"
+                                + (g != null ? g.getGeometryType() : "null")
+                                + " to symbolizer type: "
+                                + mapMLStyles.get(0).getSymbolizerType());
+                    }
+                    return Optional.empty();
+                }
+                String spaceDelimitedCSSClasses =
+                        mapMLStyles.stream().map(MapMLStyle::getCSSClassName).collect(Collectors.joining(SPACE));
+                f.setStyle(spaceDelimitedCSSClasses);
+            }
 
-        // if there is an template geometry and the original geometry is not tagged, use it instead
-        // of the original geometry
-        GeometryContent geometryContent = null;
-        if (templateOptional.isPresent() && g.getUserData() == null) {
-            geometryContent =
-                    templateOptional.get().getBody().getFeatures().get(0).getGeometry();
-            // format the geometry coming from the template using the formatter
-            Object geometry = geometryContent.getGeometryContent().getValue();
-            formatGeometry(geometry);
-        } else {
-            geometryContent = buildGeometry(g);
-        }
+            // and clipping (again for WMS usage)
+            if (g != null && !g.isEmpty() && clipBounds != null) {
+                MapMLGeometryClipper clipper = new MapMLGeometryClipper(g, clipBounds);
+                g = clipper.clipAndTag();
+            }
+            if (g == null || g.isEmpty()) return Optional.empty();
 
-        f.setGeometry(geometryContent);
+            // if there is an template geometry and the original geometry is not tagged, use it
+            // instead
+            // of the original geometry
+            GeometryContent geometryContent = null;
+            if (templateOptional.isPresent() && g.getUserData() == null) {
+                geometryContent =
+                        templateOptional.get().getBody().getFeatures().get(0).getGeometry();
+                // format the geometry coming from the template using the formatter
+                Object geometry = geometryContent.getGeometryContent().getValue();
+                formatGeometry(geometry);
+            } else {
+                geometryContent = buildGeometry(g);
+            }
+
+            f.setGeometry(geometryContent);
+        }
         return Optional.of(f);
+    }
+
+    /**
+     * Builds a MapML feature from a simple feature, by default applying geometry transformations as needed
+     *
+     * @param sf a feature
+     * @param featureCaptionTemplate - template optionally containing ${placeholders}. Can be null.
+     * @param mapMLStyles - list of applicable MapMLStyles
+     * @param templateOptional - optional template to use for geometry
+     * @return the feature (eventually null if the feature is outside the clip bounds or has no matching style
+     * @throws IOException - IOException
+     */
+    public Optional<Feature> buildFeature(
+            SimpleFeature sf,
+            String featureCaptionTemplate,
+            List<MapMLStyle> mapMLStyles,
+            Optional<Mapml> templateOptional)
+            throws IOException {
+        return buildFeature(sf, featureCaptionTemplate, mapMLStyles, templateOptional, true);
     }
 
     /**

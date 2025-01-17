@@ -22,9 +22,12 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.security.auth.x500.X500Principal;
+import org.apache.commons.dbcp.BasicDataSource;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.plus.jndi.Resource;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
@@ -66,6 +69,9 @@ public class Start {
             // conn.setThreadPool(tp);
 
             jettyServer.setConnectors(https != null ? new Connector[] {http, https} : new Connector[] {http});
+
+            // uncomment call and customize method to create a JNDI data source
+            // addJNDIDataSource();
 
             /*Constraint constraint = new Constraint();
             constraint.setName(Constraint.__BASIC_AUTH);;
@@ -140,6 +146,28 @@ public class Start {
                 }
             }
         }
+    }
+
+    /**
+     * Adds a JNDI data source to the Jetty server. Uncomment call in the main method, and customize the pool parameters
+     * and name as needed.
+     */
+    @SuppressWarnings("PMD.UnusedPrivateMethod")
+    private static void addJNDIDataSource() throws NamingException {
+        // Create the JNDI data source
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setDriverClassName("org.postgresql.Driver");
+        dataSource.setUrl("jdbc:postgresql://localhost:5432/mydb");
+        dataSource.setUsername("user");
+        dataSource.setPassword("pwd");
+        dataSource.setMaxActive(20);
+        dataSource.setMaxIdle(5);
+        dataSource.setMinIdle(2);
+        dataSource.setInitialSize(5);
+        dataSource.setAccessToUnderlyingConnectionAllowed(true);
+
+        // Bind the data source to JNDI
+        new Resource("java:comp/env/jdbc/myds", dataSource);
     }
 
     private static ServerConnector getHTTPSConnector(Server jettyServer, HttpConfiguration httpConfig) {

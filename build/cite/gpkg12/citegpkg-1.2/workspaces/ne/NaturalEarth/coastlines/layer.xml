@@ -1,0 +1,22 @@
+<layer>
+  <name>coastlines</name>
+  <id>LayerInfoImpl-1c443fee:182c0f3f209:-7fef</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-1c443fee:182c0f3f209:-7fee</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-1c443fee:182c0f3f209:-7ff0</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-08-21 15:41:25.144 UTC</dateCreated>
+  <dateModified>2022-08-21 16:14:14.428 UTC</dateModified>
+</layer>

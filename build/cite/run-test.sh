@@ -129,6 +129,19 @@ geotiff11() {
   run_rest_test_suite_prefix "geotiff11" "05-wcs-dem-jpeg-tinytiles-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__tazbm%26compression%3DJPEG%26compression%3DJPEG%26jpeg_quality%3D75%26tiling%3Dtrue%26tileheight%3D32%26tilewidth%3D32"
 }
 
+gpkg12() {
+  run_rest_test_suite_prefix "gpkg12" "01-wfs-single-table" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dtopp%253Astates%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "02-wfs-multi-table" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fne%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dne%3Acountries%2Cne%3Adisputed_areas%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "03-wfs-projected" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fsf%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dsf%3Aarchsites%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  run_rest_test_suite_prefix "gpkg12" "04-wms-wgs84" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fne%2Fwms%3Fservice%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dne%253Acountries%26bbox%3D-124.73142200000001%252C24.955967%252C-66.969849%252C49.371735%26width%3D768%26height%3D330%26srs%3DEPSG%253A4326%26styles%3D%26format%3Dapplication%2Fgeopackage%252Bsqlite3"
+
+  # This one is failing, needs a gridset for EPSG:26713 but once provided the output is still empty....
+  # run_rest_test_suite_prefix "gpkg12" "05-wms-projected" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fsf%2Fwms%3Fservice%3DWMS%26version%3D1.1.0%26request%3DGetMap%26layers%3Dsf%253Aarchsites%26bbox%3D589851.4376666048%252C4914490.882968263%252C608346.4603107043%252C4926501.8980334345%26width%3D768%26height%3D498%26srs%3DEPSG%253A26713%26styles%3D%26format%3Dapplication%2Fgeopackage%252Bsqlite3"
+}
+
 run_rest_test_suite() {
   local suite_name=$1
   local format=$2

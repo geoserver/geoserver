@@ -1,0 +1,78 @@
+<wms>
+  <id>WMSInfoImpl-1c443fee:182c0f3f209:-7f99</id>
+  <workspace>
+    <id>WorkspaceInfoImpl-1c443fee:182c0f3f209:-7ffe</id>
+  </workspace>
+  <enabled>true</enabled>
+  <name>WMS</name>
+  <title>GeoServer Natural Earth Maps</title>
+  <internationalTitle/>
+  <maintainer>http://geoserver.org/comm</maintainer>
+  <abstrct>Map images generated from Natural Earth vector data, raster data and imagery.</abstrct>
+  <internationalAbstract/>
+  <accessConstraints>NONE</accessConstraints>
+  <fees>NONE</fees>
+  <versions>
+    <org.geotools.util.Version>
+      <version>1.1.1</version>
+    </org.geotools.util.Version>
+    <org.geotools.util.Version>
+      <version>1.3.0</version>
+    </org.geotools.util.Version>
+  </versions>
+  <keywords>
+    <string>WMS</string>
+    <string>GEOSERVER</string>
+  </keywords>
+  <metadataLink/>
+  <citeCompliant>false</citeCompliant>
+  <onlineResource>http://geoserver.org</onlineResource>
+  <schemaBaseURL>http://schemas.opengis.net</schemaBaseURL>
+  <verbose>false</verbose>
+  <metadata>
+    <entry key="disableDatelineWrappingHeuristic">false</entry>
+    <entry key="kmlSuperoverlayMode">auto</entry>
+    <entry key="kmlReflectorMode">refresh</entry>
+    <entry key="svgAntiAlias">true</entry>
+    <entry key="rootLayerInCapabilities">false</entry>
+    <entry key="kmlPlacemark">false</entry>
+    <entry key="kmlKmscore">40</entry>
+    <entry key="mapWrapping">true</entry>
+    <entry key="pngCompression">25</entry>
+    <entry key="jpegCompression">25</entry>
+    <entry key="advancedProjectionDensification">false</entry>
+    <entry key="advancedProjectionHandling">true</entry>
+    <entry key="kmlAttr">true</entry>
+    <entry key="svgRenderer">Batik</entry>
+    <entry key="MarkFactoryList"></entry>
+    <entry key="scalehintMapunitsPixel">false</entry>
+  </metadata>
+  <bboxForEachCRS>false</bboxForEachCRS>
+  <watermark>
+    <enabled>false</enabled>
+    <position>BOT_RIGHT</position>
+    <transparency>0</transparency>
+  </watermark>
+  <interpolation>Nearest</interpolation>
+  <getFeatureInfoMimeTypeCheckingEnabled>false</getFeatureInfoMimeTypeCheckingEnabled>
+  <getMapMimeTypeCheckingEnabled>false</getMapMimeTypeCheckingEnabled>
+  <dynamicStylingDisabled>false</dynamicStylingDisabled>
+  <featuresReprojectionDisabled>false</featuresReprojectionDisabled>
+  <maxBuffer>25</maxBuffer>
+  <maxRequestMemory>65536</maxRequestMemory>
+  <maxRenderingTime>60</maxRenderingTime>
+  <maxRenderingErrors>1000</maxRenderingErrors>
+  <rootLayerTitle>Natural Earth</rootLayerTitle>
+  <rootLayerAbstract>Natural Earth is a public domain map dataset available featuring tightly integrated vector and raster data.</rootLayerAbstract>
+  <internationalRootLayerTitle/>
+  <internationalRootLayerAbstract/>
+  <maxRequestedDimensionValues>100</maxRequestedDimensionValues>
+  <cacheConfiguration>
+    <enabled>false</enabled>
+    <maxEntries>1000</maxEntries>
+    <maxEntrySize>51200</maxEntrySize>
+  </cacheConfiguration>
+  <remoteStyleMaxRequestTime>60000</remoteStyleMaxRequestTime>
+  <remoteStyleTimeout>30000</remoteStyleTimeout>
+  <defaultGroupStyleEnabled>true</defaultGroupStyleEnabled>
+</wms>

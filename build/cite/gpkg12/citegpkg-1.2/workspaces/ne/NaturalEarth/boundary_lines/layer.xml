@@ -1,0 +1,22 @@
+<layer>
+  <name>boundary_lines</name>
+  <id>LayerInfoImpl-1c443fee:182c0f3f209:-7ff7</id>
+  <type>VECTOR</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-1c443fee:182c0f3f209:-7fe4</id>
+  </defaultStyle>
+  <styles class="linked-hash-set">
+    <style>
+      <id>StyleInfoImpl--570ae188:124761b8d78:-7fe3</id>
+    </style>
+  </styles>
+  <resource class="featureType">
+    <id>FeatureTypeInfoImpl-1c443fee:182c0f3f209:-7ff8</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateCreated>2022-08-21 15:25:56.948 UTC</dateCreated>
+  <dateModified>2022-08-21 16:15:02.807 UTC</dateModified>
+</layer>

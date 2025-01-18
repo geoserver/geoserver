@@ -1,0 +1,16 @@
+<layer>
+  <name>Pk50095</name>
+  <id>LayerInfoImpl--570ae188:124761b8d78:-7fb4</id>
+  <path>/</path>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--570ae188:124761b8d78:-7fe2</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--570ae188:124761b8d78:-7fb5</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

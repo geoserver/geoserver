@@ -75,7 +75,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs10 wfs20 wcs11 geotiff11))
+ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wfs10 wfs20 wcs11 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)
@@ -276,7 +276,7 @@ pull: $(suite)
 
 .PHONY: build-war
 build-war:
-	@mvn -Pogcapi-features \
+	@mvn -Pogcapi-features,geopkg-output \
 	clean package -f ../../src/pom.xml \
 	-DskipTests  -B -ntp -U -T1C -fae -pl :gs-web-app -am
 

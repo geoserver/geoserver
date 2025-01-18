@@ -1,0 +1,90 @@
+<coverage>
+  <id>CoverageInfoImpl--570ae188:124761b8d78:-7fb7</id>
+  <name>Arc_Sample</name>
+  <nativeName>Arc_Sample</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-7ff8</id>
+  </namespace>
+  <title>A sample ArcGrid file</title>
+  <description>Generated from arcGridSample</description>
+  <keywords>
+    <string>WCS</string>
+    <string>arcGridSample</string>
+    <string>arcGridSample_Coverage</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-180.0</minx>
+    <maxx>180.0</maxx>
+    <miny>-90.0</miny>
+    <maxy>90.0</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="dirName">arc_sample</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--570ae188:124761b8d78:-7fd5</id>
+  </store>
+  <nativeFormat>ArcGrid</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>720 360</high>
+    </range>
+    <transform>
+      <scaleX>0.5</scaleX>
+      <scaleY>-0.5</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>-179.75</translateX>
+      <translateY>89.75</translateY>
+    </transform>
+    <crs>EPSG:4326</crs>
+  </grid>
+  <supportedFormats>
+    <string>ARCGRID</string>
+    <string>ARCGRID-GZIP</string>
+    <string>GEOTIFF</string>
+    <string>PNG</string>
+    <string>GIF</string>
+    <string>TIFF</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>precip30min</name>
+      <description>GridSampleDimension[-9999.0,8849.000000000002]</description>
+      <range>
+        <min>-9999.0</min>
+        <max>8849.0</max>
+      </range>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:4326</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:4326</string>
+  </responseSRS>
+</coverage>

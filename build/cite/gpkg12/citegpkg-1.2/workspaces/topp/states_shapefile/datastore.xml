@@ -1,0 +1,12 @@
+<dataStore>
+  <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fd9</id>
+  <name>states_shapefile</name>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl--570ae188:124761b8d78:-7ffd</id>
+  </workspace>
+  <connectionParameters>
+    <entry key="namespace">http://www.openplans.org/topp</entry>
+    <entry key="url">file:data/shapefiles/states.shp</entry>
+  </connectionParameters>
+</dataStore>

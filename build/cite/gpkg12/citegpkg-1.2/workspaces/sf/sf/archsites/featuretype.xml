@@ -1,0 +1,89 @@
+<featureType>
+  <id>FeatureTypeInfoImpl--570ae188:124761b8d78:-7fcb</id>
+  <name>archsites</name>
+  <nativeName>archsites</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--570ae188:124761b8d78:-8000</id>
+  </namespace>
+  <title>Spearfish archeological sites</title>
+  <abstract>Sample data from GRASS, archeological sites location, Spearfish, South Dakota, USA</abstract>
+  <keywords>
+    <string>archsites</string>
+    <string>spearfish</string>
+    <string>sfArchsites</string>
+    <string>archeology</string>
+  </keywords>
+  <nativeCRS class="projected">PROJCS[&quot;NAD27 / UTM zone 13N&quot;, 
+  GEOGCS[&quot;NAD27&quot;, 
+    DATUM[&quot;North American Datum 1927&quot;, 
+      SPHEROID[&quot;Clarke 1866&quot;, 6378206.4, 294.9786982138982, AUTHORITY[&quot;EPSG&quot;,&quot;7008&quot;]], 
+      TOWGS84[-4.2, 135.4, 181.9, 0.0, 0.0, 0.0, 0.0], 
+      AUTHORITY[&quot;EPSG&quot;,&quot;6267&quot;]], 
+    PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+    UNIT[&quot;degree&quot;, 0.017453292519943295], 
+    AXIS[&quot;Geodetic longitude&quot;, EAST], 
+    AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;4267&quot;]], 
+  PROJECTION[&quot;Transverse_Mercator&quot;], 
+  PARAMETER[&quot;central_meridian&quot;, -105.0], 
+  PARAMETER[&quot;latitude_of_origin&quot;, 0.0], 
+  PARAMETER[&quot;scale_factor&quot;, 0.9996], 
+  PARAMETER[&quot;false_easting&quot;, 500000.0], 
+  PARAMETER[&quot;false_northing&quot;, 0.0], 
+  UNIT[&quot;m&quot;, 1.0], 
+  AXIS[&quot;Easting&quot;, EAST], 
+  AXIS[&quot;Northing&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;26713&quot;]]</nativeCRS>
+  <srs>EPSG:26713</srs>
+  <nativeBoundingBox>
+    <minx>589851.4376666048</minx>
+    <maxx>608346.4603107043</maxx>
+    <miny>4914490.882968263</miny>
+    <maxy>4926501.8980334345</maxy>
+    <crs class="projected">EPSG:26713</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>-103.8725637911543</minx>
+    <maxx>-103.63794182141925</maxx>
+    <miny>44.37740330855979</miny>
+    <maxy>44.48804280772808</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <projectionPolicy>FORCE_DECLARED</projectionPolicy>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="kml.regionateFeatureLimit">10</entry>
+    <entry key="cacheAgeMax">3600</entry>
+    <entry key="cachingEnabled">true</entry>
+    <entry key="indexingEnabled">false</entry>
+    <entry key="dirName">sfArchsites_archsites</entry>
+  </metadata>
+  <store class="dataStore">
+    <id>DataStoreInfoImpl--570ae188:124761b8d78:-7fdb</id>
+  </store>
+  <maxFeatures>0</maxFeatures>
+  <numDecimals>0</numDecimals>
+  <attributes>
+    <attribute>
+      <name>the_geom</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>cat</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+    <attribute>
+      <name>str1</name>
+      <minOccurs>0</minOccurs>
+      <maxOccurs>1</maxOccurs>
+      <nillable>false</nillable>
+    </attribute>
+  </attributes>
+  <overridingServiceSRS>false</overridingServiceSRS>
+  <skipNumberMatched>false</skipNumberMatched>
+  <circularArcPresent>false</circularArcPresent>
+</featureType>

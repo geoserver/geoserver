@@ -1,0 +1,16 @@
+services:
+  geoserver:
+    image: ogccite/geoserver:gpkg12
+    build:
+      args:
+        # A git copy of the release data directory (mix of raster and vector data)
+        GEOSERVER_DATA_DIR_SRC: "./gpkg12/citegpkg-1.2"
+
+  teamengine:
+    image: ogccite/ets-gpkg12:1.2-teamengine-5.7-gs
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

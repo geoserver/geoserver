@@ -15,6 +15,7 @@ import static org.junit.Assert.assertTrue;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -253,6 +254,62 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 for (Coordinates je : mls.getTwoOrMoreCoordinatePairs()) {
                     String mlscoords = je.getCoordinates().get(0).toString();
                     assertEquals(2, mlscoords.split(" ").length);
+                }
+            }
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void testCoordinatePrecision() throws Exception {
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart());
+        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
+        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
+        cat.save(li);
+
+        // test with a big bbox, we will only need minimal precision
+        Mapml mapml = new MapMLWMSRequest()
+                .name(MockData.ROAD_SEGMENTS.getLocalPart())
+                .bbox("-180,-90,180,90")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
+        List<Feature> features = mapml.getBody().getFeatures();
+        //     assertEquals(5, features.size());
+        testScale(features, 0);
+
+        // test with smaller bbox, we will need more precision
+        mapml = new MapMLWMSRequest()
+                .name(MockData.ROAD_SEGMENTS.getLocalPart())
+                .bbox("-0.1,-0.1,0.1,0.1")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
+        features = mapml.getBody().getFeatures();
+        testScale(features, 4);
+    }
+
+    private static void testScale(List<Feature> features, int expectedScale) {
+        for (Feature feature : features) {
+            Object geometry = feature.getGeometry().getGeometryContent().getValue();
+            // all lines are small enough that they are simplified to start/end
+            if (geometry instanceof LineString) {
+                LineString ls = (LineString) geometry;
+                String lscoords =
+                        ls.getCoordinates().get(0).getCoordinates().get(0).toString();
+                String[] coords = lscoords.split(" ");
+                BigDecimal bd = new BigDecimal(coords[0]).stripTrailingZeros();
+                int scale = bd.scale();
+                assertEquals(expectedScale, scale);
+            } else if (geometry instanceof MultiLineString) {
+                MultiLineString mls = (MultiLineString) geometry;
+                for (Coordinates je : mls.getTwoOrMoreCoordinatePairs()) {
+                    String mlscoords = je.getCoordinates().get(0).toString();
+                    String[] coords = mlscoords.split(" ");
+                    BigDecimal bd = new BigDecimal(coords[0]);
+                    int scale = bd.scale();
+                    assertEquals(expectedScale, scale);
                 }
             }
         }

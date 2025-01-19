@@ -36,7 +36,7 @@ class MapMLSimplifier {
 
     private final double querySimplificationDistance;
     private final double simplificationDistance;
-    private final ScreenMap screenMap;
+    private ScreenMap screenMap;
     private final ReferencedEnvelope renderingArea;
 
     public MapMLSimplifier(WMSMapContent mapContent, CoordinateReferenceSystem sourceCrs) throws FactoryException {
@@ -77,7 +77,7 @@ class MapMLSimplifier {
         return querySimplificationDistance;
     }
 
-    public Geometry simplify(Geometry geom) throws FactoryException, TransformException {
+    public Geometry simplify(Geometry geom) throws TransformException {
         if (geom == null) return null;
         Geometry result = geom;
 
@@ -91,7 +91,8 @@ class MapMLSimplifier {
         int dimension = result.getDimension();
         if (dimension > 0) {
             Envelope env = result.getEnvelopeInternal();
-            if (screenMap.canSimplify(env)) {
+            // null screenMap means that it was successfully passed to the datasource
+            if (screenMap != null && screenMap.canSimplify(env)) {
                 if (screenMap.checkAndSet(env)) {
                     return null;
                 } else {
@@ -103,13 +104,34 @@ class MapMLSimplifier {
                             result.getFactory(),
                             result.getClass());
                 }
-            } else if (dimension == 2) {
+            }
+            if (dimension == 2) {
                 result = TopologyPreservingSimplifier.simplify(geom, this.simplificationDistance);
             } else if (dimension == 1) {
                 result = DouglasPeuckerSimplifier.simplify(geom, this.simplificationDistance);
             }
         }
+        return simplifyPrecision(result);
+    }
 
-        return result;
+    /**
+     * Simplify the geometry to the precision of the rendering area using the simplificationDistance
+     *
+     * @param result
+     * @return
+     */
+    private Geometry simplifyPrecision(Geometry result) {
+        if (result == null) return null;
+        int scale = (int) Math.ceil(-Math.log10(simplificationDistance));
+        RoundingPrecisionTransformer transformer = new RoundingPrecisionTransformer(scale);
+        return transformer.transform(result);
+    }
+
+    public ScreenMap getScreenMap() {
+        return screenMap;
+    }
+
+    public void setScreenMap(ScreenMap screenMap) {
+        this.screenMap = screenMap;
     }
 }

@@ -33,6 +33,8 @@ import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.SchemaException;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.MultiLineString;
 
 public class MapMLFeaturesBuilder {
 
@@ -106,7 +108,21 @@ public class MapMLFeaturesBuilder {
             throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
         }
         SimpleFeatureCollection fc = null;
+
         if (query != null) {
+            if (featureSource.getSupportedHints().contains(Hints.SCREENMAP)) {
+                query.getHints().put(Hints.SCREENMAP, simplifier.getScreenMap());
+                // we don't want to run the screenmap simplification twice
+                simplifier.setScreenMap(null);
+            }
+            // LineString and MultiLineString geometries can be simplified without worrying about topology
+            Class<?> binding =
+                    featureSource.getSchema().getGeometryDescriptor().getType().getBinding();
+            if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
+                if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_SIMPLIFICATION)) {
+                    query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplifier);
+                }
+            }
             fc = featureSource.getFeatures(query);
         } else {
             fc = featureSource.getFeatures();

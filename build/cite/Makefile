@@ -68,6 +68,12 @@ endif
 		echo "$(suite) has no special script to build the ETS docker image."; \
 	fi
 
+.PHONY: geoserver-version
+geoserver-version: ##	Print the version of the GeoServer on the current docker.
+	@echo Getting the full GeoServer/GeoWebCache/Geotools version.
+	@curl -u admin:geoserver "http://localhost:18090/geoserver/rest/about/version.xml"
+	@echo "" ## newline
+
 .PHONY: test
 test: ##	suite=<suite>				Run the Test Suite with teamengine and GeoServer on docker compose.
 ifndef suite
@@ -143,21 +149,6 @@ else
 	@echo "Running CLI-based tests for suite: $(suite)"
 	@$(MAKE) test-cli suite=$(suite)
 endif
-
-
-.PHONY: version
-version: ### suite=<suite>				Print the version of the GeoServer on the current docker.
-ifndef suite
-	@echo "Error: suite is not specified. Please specify the suite print the version for."
-	@$(MAKE) help
-	@exit 1
-endif
-	@echo Getting the GeoServer version.
-	@docker run -i --rm ogccite/geoserver:$(suite) bash -c \
-	  'cd /usr/local/tomcat/webapps/ && \
-	  if [ -d geoserver ]; then cat geoserver/META-INF/MANIFEST.MF; \
-	  elif [ -f geoserver.war ]; then jar -xf geoserver.war; cat META-INF/MANIFEST.MF; \
-	  fi'
 
 
 .PHONY: ogcapi-features10-localhost

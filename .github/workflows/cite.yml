@@ -113,6 +113,12 @@ jobs:
         working-directory: build/cite
         run: make print-full-failures
 
+      - name: Print GeoServer full version
+        if: always()
+        working-directory: build/cite
+        run: make geoserver-version
+
+
       - name: Print GeoServer logs
         if: always()
         working-directory: build/cite

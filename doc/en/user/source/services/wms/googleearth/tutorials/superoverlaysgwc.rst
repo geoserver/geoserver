@@ -6,9 +6,9 @@ Super-Overlays and GeoWebCache
 Overview
 --------
 
-This tutorial explains how to use `GeoWebCache <http://geowebcache.org>`_ (GWC) to enhance the performance of super-overlays in Google Earth. For more information please see the page on :ref:`ge_feature_kml_super_overlays`
+This tutorial explains how to use `GeoWebCache <https://geowebcache.osgeo.org>`_ (GWC) to enhance the performance of super-overlays in Google Earth. For more information please see the page on :ref:`ge_feature_kml_super_overlays`
 
-Conveniently GeoWebCache can generate super-overlays automatically. With the standalone GeoWebCache it takes minimal amount of configuration. Please see the  `GeoWebCache documentation <http://geowebcache.org/trac/wiki/configuration>`_ for more information on the standalone version of GeoWebCache.
+Conveniently GeoWebCache can generate super-overlays automatically. With the standalone GeoWebCache it takes minimal amount of configuration. Please see the  `GeoWebCache documentation <https://geowebcache.osgeo.org/docs/current/services/kml.html>`_ for more information on the standalone version of GeoWebCache.
 
 We are going to use the plug in version of GeoWebCache where there is no configuration need. For this tutorial we are also using the topp:states layer.
 Using the GeoWebCache plug in with super-overlays

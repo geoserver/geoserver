@@ -86,30 +86,18 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "</cgf:lineStringProperty>"
                 + "<cgf:id>t0002</cgf:id>"
                 + "</cgf:Lines>"
-                + "<cgf:Points>"
-                + "<cgf:pointProperty>"
-                + "<gml:Point><gml:coordinates>15,15</gml:coordinates></gml:Point>"
-                + "</cgf:pointProperty>"
-                + "<cgf:id>t0005</cgf:id>"
-                + "</cgf:Points>"
                 + "</wfs:Insert>"
                 + "</wfs:Transaction>";
 
         postAsDOM("wfs", insert);
-        assertEquals(4, listener.events.size());
+        assertEquals(2, listener.events.size());
 
         TransactionEvent firstEvent = listener.events.get(0);
         assertTrue(firstEvent.getSource() instanceof InsertElementType);
         assertEquals(TransactionEventType.PRE_INSERT, firstEvent.getType());
         assertEquals(CiteTestData.LINES, firstEvent.getLayerName());
-
-        TransactionEvent thirdEvent = listener.events.get(2);
-        assertTrue(thirdEvent.getSource() instanceof InsertElementType);
-        assertEquals(TransactionEventType.PRE_INSERT, thirdEvent.getType());
-        assertEquals(CiteTestData.POINTS, thirdEvent.getLayerName());
-
         // one feature from the pre-insert hook, one from the post-insert hook
-        assertEquals(4, listener.features.size());
+        assertEquals(2, listener.features.size());
 
         // what was the fid of the inserted feature?
         String getFeature = "<wfs:GetFeature "
@@ -141,6 +129,48 @@ public class TransactionListenerTest extends WFSTestSupport {
         assertEquals(TransactionEventType.POST_INSERT, secondEvent.getType());
         Feature inserted = listener.features.get(1);
         assertEquals(fid, inserted.getIdentifier().getID());
+    }
+
+    @Test
+    public void testOrderedInsert() throws Exception {
+        // perform an insert
+        String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert > "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>"
+                + "</gml:LineString>"
+                + "</cgf:lineStringProperty>"
+                + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>"
+                + "<cgf:Points>"
+                + "<cgf:pointProperty>"
+                + "<gml:Point><gml:coordinates>15,15</gml:coordinates></gml:Point>"
+                + "</cgf:pointProperty>"
+                + "<cgf:id>t0005</cgf:id>"
+                + "</cgf:Points>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+        postAsDOM("wfs", insert);
+        assertEquals(4, listener.features.size());
+
+        // get the feature before insert
+        Feature firstFeature = listener.features.get(0);
+        assertEquals("t0002", firstFeature.getProperty("id").getValue());
+        Feature secondFeature = listener.features.get(1);
+        assertEquals("t0002", secondFeature.getProperty("id").getValue());
+        Feature thirdFeature = listener.features.get(2);
+        assertEquals("t0005", thirdFeature.getProperty("id").getValue());
+        Feature fourthFeature = listener.features.get(3);
+        assertEquals("t0005", fourthFeature.getProperty("id").getValue());
     }
 
     @Test

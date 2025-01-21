@@ -12,12 +12,12 @@
   <parent>
     <groupId>org.geoserver.community.security</groupId>
     <artifactId>gs-sec-oidc</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <artifactId>gs-sec-oidc-assembly</artifactId>
   <packaging>jar</packaging>
-  <name>GeoServer OpenId Connect Security Module - Assembly</name>
+  <name>GeoServer OpenID Connect Security Module - Assembly</name>
 
   <dependencies>
 

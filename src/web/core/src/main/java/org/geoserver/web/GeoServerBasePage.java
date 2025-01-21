@@ -170,6 +170,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                     protected void onComponentTag(org.apache.wicket.markup.ComponentTag tag) {
                         String loginPath = getResourcePath(info.getLoginPath());
                         tag.put("action", loginPath);
+                        tag.put("method", info.getMethod());
                     }
                 };
 
@@ -209,7 +210,7 @@ public class GeoServerBasePage extends WebPage implements IAjaxIndicatorAware {
                         break;
                     }
                 }
-                loginForm.setVisible(anonymous && filterInChain);
+                loginForm.setVisible(anonymous && filterInChain && info.isEnabled());
             }
         });
 

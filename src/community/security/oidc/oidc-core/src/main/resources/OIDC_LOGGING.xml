@@ -16,48 +16,28 @@
     </Appenders>
     <Loggers>
 
-        <Logger name="org.geotools" level="warn" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-        <Logger name="org.geotools.factory" level="warn" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
+        <Logger name="org.springframework" level="info"/>
+        
+        <Logger name="org.geotools.factory" level="warn"/>
+        <Logger name="org.geotools" level="warn"/>
+        <Logger name="org.geowebcache" level="error"/>       
+        <Logger name="org.geoserver" level="warn"/>
+        <Logger name="org.vfny.geoserver" level="warn"/>
+        <Logger name="org.geoserver.catalog" level="warn"/>
 
-        <Logger name="org.geoserver" level="warn" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-        <Logger name="org.vfny.geoserver" level="warn" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-
-        <Logger name="org.springframework" level="warn" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-
-        <Logger name="org.geowebcache" level="error" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-
-        <Logger name="org.geoserver.catalog" level="config" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-
-        <Logger name="org.geoserver.security" level="config" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
-
-        <Logger name="org.geoserver.security.oauth2" level="trace" additivity="false">
-            <AppenderRef ref="stdout"/>
-            <AppenderRef ref="geoserverlogfile"/>
-        </Logger>
+        <Logger name="org.springframework.security" level="debug"/>
+        
+        <!-- too much noise: -->
+        <Logger name="org.springframework.security.web.FilterChainProxy" level="info"/>
+        <Logger name="org.springframework.security.web.FilterChainProxy" level="info"/>
+        <Logger name="org.springframework.security.web.authentication.rememberme.RememberMeAuthenticationFilter" level="warn"/>
+        <Logger name="org.springframework.security.web.context.HttpSessionSecurityContextRepository" level="info"/>
+        
+        <Logger name="org.springframework.security.oauth2" level="debug"/>
+        
+        <Logger name="org.geoserver.security" level="info"/>
+        <Logger name="org.geoserver.security.oauth2" level="trace"/>
+        <Logger name="org.geoserver.security.oauth2.common.ConfidentialLogger" level="trace"/>
 
         <Root level="warn">
             <AppenderRef ref="stdout"/>

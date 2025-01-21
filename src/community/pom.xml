@@ -382,6 +382,12 @@
       </modules>
     </profile>
     <profile>
+      <id>oidc</id>
+      <modules>
+        <module>security</module>
+      </modules>
+    </profile>    
+    <profile>
       <id>oseo</id>
       <modules>
         <module>oseo</module>

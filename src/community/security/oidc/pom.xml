@@ -12,13 +12,13 @@
   <parent>
     <groupId>org.geoserver.community</groupId>
     <artifactId>gs-security</artifactId>
-    <version>2.26-SNAPSHOT</version>
+    <version>2.27-SNAPSHOT</version>
   </parent>
 
   <groupId>org.geoserver.community.security</groupId>
   <artifactId>gs-sec-oidc</artifactId>
   <packaging>pom</packaging>
-  <name>GeoServer OpenId Connect Security Module</name>
+  <name>GeoServer OpenID Connect Security Module</name>
 
   <modules>
     <module>oidc-core</module>

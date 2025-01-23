@@ -9,10 +9,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import org.apache.wicket.Page;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.web.GeoServerHomePage;
@@ -85,6 +95,107 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
                 assertTrue("version", link.getLink().contains("&version="));
                 assertTrue("service", link.getLink().contains("&service=WMTS"));
             }
+        }
+    }
+
+    @Test
+    public void availableServiceCheck() {
+        GWCServiceDescriptionProvider provider = GeoServerExtensions.bean(GWCServiceDescriptionProvider.class);
+        Catalog catalog = getCatalog();
+        GeoServer geoServer = getGeoServer();
+        GeoServerInfo global = geoServer.getGlobal();
+        WMTSInfo wmts = geoServer.getService(WMTSInfo.class);
+        GWC gwc = GWC.get();
+
+        WorkspaceInfo cite = catalog.getWorkspaceByName("cite");
+        LayerInfo buildings = catalog.getLayerByName("Buildings");
+        String tileLayerName = buildings.getResource().prefixedName();
+        GeoServerTileLayer tileLayer = (GeoServerTileLayer) gwc.getTileLayerByName(tileLayerName);
+        try {
+            // check enable/disable global services
+            List<ServiceDescription> services;
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            global.setGlobalServices(false);
+            geoServer.save(global);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            // check enable/disable WFSInfo
+            global.setGlobalServices(true);
+            geoServer.save(global);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            wmts.setEnabled(false);
+            geoServer.save(wmts);
+            services = provider.getServices(null, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, null).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+            wmts.setEnabled(true);
+            geoServer.save(wmts);
+
+            // checks based on tile layer availability
+            assertTrue("has tilt layer", gwc.hasTileLayer(buildings));
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(1, services.size());
+
+            gwc.removeTileLayers(Arrays.asList("cite:Buildings"));
+            assertFalse("no tilelayer", gwc.hasTileLayer(buildings));
+            services = provider.getServices(cite, buildings).stream()
+                    .filter(s -> s.isAvailable())
+                    .collect(Collectors.toList());
+            assertEquals(0, services.size());
+
+        } finally {
+            global.setGlobalServices(true);
+            geoServer.save(global);
+            wmts.setEnabled(true);
+            geoServer.save(wmts);
+
+            if (!gwc.tileLayerExists(tileLayerName)) gwc.add(tileLayer);
         }
     }
 }

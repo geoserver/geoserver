@@ -7,12 +7,14 @@ package org.geoserver.gwc.web;
 import java.util.ArrayList;
 import java.util.List;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.wmts.GWCResourceServiceVoter;
 import org.geoserver.gwc.wmts.WMTSInfo;
 import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.ServiceDescription;
@@ -57,11 +59,17 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     /** GWC-bases services don't have layer-specific enabling... */
     @Override
-    protected boolean isAvailable(String serviceType, ServiceInfo info, PublishedInfo layerInfo) {
-        if (layerInfo != null && !layerInfo.isEnabled()) {
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+            GWCResourceServiceVoter voter = new GWCResourceServiceVoter();
+            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+                return false;
+            }
+        }
+        if (layerInfo != null && !gwc.hasTileLayer(layerInfo)) {
             return false;
         }
-        return info.isEnabled();
+        return super.isAvailable(serviceType, serviceInfo, layerInfo);
     }
 
     @Override

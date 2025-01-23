@@ -1,10 +1,13 @@
-/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/*
+ * (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+
 package org.geoserver.printing;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 import java.util.logging.Logger;
@@ -18,71 +21,128 @@ import org.geoserver.util.IOUtils;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 /**
- * Wrapper for Spring's ServletWrappingController to allow use of GeoServer's config dir.
+ * A wrapper for Spring's {@code ServletWrappingController} that configures MapFish printing with GeoServer's data
+ * directory.
  *
- * @author Alan Gerber, The Open Planning Project
+ * <p>This controller modifies the servlet init parameter "config" so that it points to
+ * {@code $GEOSERVER_DATA_DIR/printing/$CONFIG} or another directory, as configured by environment variables or system
+ * properties.
+ *
+ * <ul>
+ *   <li>If <b>GEOSERVER_PRINT_CONFIG_DIR</b> is set as an environment variable, that takes precedence.
+ *   <li>If <b>GEOSERVER_PRINT_CONFIG_DIR</b> is set as a system property, that is used next.
+ *   <li>Otherwise, {@code "printing"} (relative to the GeoServer data directory) is used.
+ * </ul>
+ *
+ * @author Originally by Alan Gerber, The Open Planning Project (2001) Updated & documented by ...
  */
 public class PrintingServletWrappingController extends ServletWrappingController {
 
-    private final Logger LOG = org.geotools.util.logging.Logging.getLogger("org.geoserver.printing");
+    private static final Logger LOGGER =
+            org.geotools.util.logging.Logging.getLogger(PrintingServletWrappingController.class);
 
+    /** Name of environment and system property for the custom config directory. */
+    private static final String PRINT_CONFIG_DIR_PROPERTY = "GEOSERVER_PRINT_CONFIG_DIR";
+
+    /** Fallback directory name under the GeoServer data directory if no custom config is set. */
+    private static final String DEFAULT_PRINT_DIR = "printing";
+
+    /**
+     * Overrides the init parameter "config" to point to the correct printing config path.
+     *
+     * @param initParameters the original servlet init parameters
+     */
     @Override
     public void setInitParameters(Properties initParameters) {
-        // find the config parameter and update it so it points to
-        // $GEOSERVER_DATA_DIR/printing/$CONFIG
         String configProp = initParameters.getProperty("config");
+        if (configProp == null) {
+            // If there's no "config" property at all, just pass it on
+            LOGGER.warning("No 'config' init parameter was found. MapFish printing servlet may fail.");
+            super.setInitParameters(initParameters);
+            return;
+        }
 
         try {
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
             String configPath = findPrintConfigDirectory(configProp);
-            Resource config = loader.get(configPath);
-
-            if (config.getType() == Type.UNDEFINED) {
-                try (InputStream conf = getClass().getResourceAsStream("default-config.yaml")) {
-                    IOUtils.copy(conf, config.out());
-                }
-            }
-            if (!Resources.canRead(config)) {
-                LOG.warning("Printing module missing its configuration.  Any actions it takes will fail.");
-                return;
-            }
-            initParameters.setProperty("config", config.file().getAbsolutePath());
-        } catch (java.io.IOException e) {
-            LOG.warning("Unable to calculate canonical path for MapFish printing servlet. "
-                    + "Module will fail when run.  IO Exception is: "
-                    + e);
+            initParameters.setProperty("config", configPath);
+        } catch (IOException e) {
+            LOGGER.warning("IO error while setting up MapFish printing servlet config: " + e.getMessage());
         } catch (Exception e) {
-            LOG.warning("Unable to access/create config directory for MapFish printing module."
-                    + "Module will fail when run. Config exception is: "
-                    + e);
+            // Catch other unexpected issues
+            LOGGER.warning("Error while setting up MapFish printing servlet config: " + e.getMessage());
         }
         super.setInitParameters(initParameters);
     }
 
-    private String findPrintConfigDirectory(String configProp) {
-        // 1. look for environment variable
-        String dd = lookupEnvironmentVariable();
+    /**
+     * Determines the final absolute path to the printing configuration.
+     *
+     * <p>The logic is:
+     *
+     * <ol>
+     *   <li>If environment variable {@link #PRINT_CONFIG_DIR_PROPERTY} is set, use that.
+     *   <li>Otherwise, if system property {@link #PRINT_CONFIG_DIR_PROPERTY} is set, use that.
+     *   <li>Otherwise, use {@link #DEFAULT_PRINT_DIR}.
+     * </ol>
+     *
+     * Then resolve {@code configProp} relative to that directory if necessary. If the resulting resource doesn't exist,
+     * copies the {@code default-config.yaml} from classpath.
+     *
+     * @param configProp the name of the printing config resource (e.g. "config.yaml")
+     * @return the absolute path to the printing configuration file
+     * @throws IOException if there is an error accessing or creating the file
+     */
+    private String findPrintConfigDirectory(String configProp) throws IOException {
+        // 1) Try environment variable
+        String dir = getPrintConfigEnvVariable();
 
-        // 2. look up java property
-        if (dd == null) {
-            dd = lookupSystemProperty();
+        // 2) Try system property
+        if (dir == null) {
+            dir = lookupPrintConfigSystemProperty();
         }
 
-        // 3. fall back to the default one
-        if (dd == null) {
-            dd = "printing";
+        // 3) Fallback
+        if (dir == null) {
+            dir = DEFAULT_PRINT_DIR;
         } else {
-            dd = Paths.convert(dd);
+            // Convert any OS-specific path separators
+            dir = Paths.convert(dir);
         }
 
-        return Paths.path(dd, Paths.convert(configProp));
+        // Combine directory + configProp
+        String combinedPath = Paths.path(dir, Paths.convert(configProp));
+
+        // If 'dir' is not absolute, interpret it as relative to the data directory
+        if (!java.nio.file.Paths.get(dir).isAbsolute()) {
+            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+            Resource configResource = loader.get(combinedPath);
+
+            // If the file doesn't exist (Type.UNDEFINED), copy default-config.yaml from resources
+            if (configResource.getType() == Type.UNDEFINED) {
+                try (InputStream defaultConfigStream = getClass().getResourceAsStream("default-config.yaml")) {
+
+                    if (defaultConfigStream == null) {
+                        LOGGER.warning("default-config.yaml not found in the classpath.");
+                    } else {
+                        IOUtils.copy(defaultConfigStream, configResource.out());
+                        LOGGER.info("default-config.yaml copied to " + combinedPath);
+                    }
+                }
+            } else if (!Resources.canRead(configResource)) {
+                LOGGER.warning("Printing configuration resource exists but is not readable: " + configResource.path());
+            }
+            // Return the absolute filesystem path
+            return configResource.file().getAbsolutePath();
+        }
+        // If it's already absolute, just return that path
+        return combinedPath;
     }
 
-    String lookupSystemProperty() {
-        return System.getProperty("GEOSERVER_PRINT_CONFIG_DIR");
+    protected String lookupPrintConfigSystemProperty() {
+        return System.getProperty(PRINT_CONFIG_DIR_PROPERTY);
     }
 
-    String lookupEnvironmentVariable() {
-        return System.getenv("GEOSERVER_PRINT_CONFIG_DIR");
+    protected String getPrintConfigEnvVariable() {
+        return System.getenv(PRINT_CONFIG_DIR_PROPERTY);
     }
 }

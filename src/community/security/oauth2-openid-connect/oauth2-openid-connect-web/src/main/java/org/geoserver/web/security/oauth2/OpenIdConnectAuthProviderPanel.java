@@ -152,6 +152,9 @@ public class OpenIdConnectAuthProviderPanel extends GeoServerOAuth2AuthProviderP
 
         add(new HelpLink("PKCEHelp", this).setDialog(dialog));
         add(new CheckBox("usePKCE"));
+
+        add(new HelpLink("cacheAuthenticationHelp", this).setDialog(dialog));
+        add(new CheckBox("cacheAuthentication"));
     }
 
     @Override

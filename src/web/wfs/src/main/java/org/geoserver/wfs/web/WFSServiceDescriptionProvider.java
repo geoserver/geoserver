@@ -8,15 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.web.ServiceDescription;
 import org.geoserver.web.ServiceDescriptionProvider;
 import org.geoserver.web.ServiceLinkDescription;
 import org.geoserver.wfs.WFSInfo;
+import org.geoserver.wfs.WFSResourceVoter;
 import org.geoserver.wfs.WebFeatureService;
 import org.geoserver.wfs.WebFeatureService20;
 import org.geotools.util.logging.Logging;
@@ -53,6 +56,17 @@ public class WFSServiceDescriptionProvider extends ServiceDescriptionProvider {
             info = geoserver.getService(WFSInfo.class);
         }
         return info;
+    }
+
+    @Override
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+            WFSResourceVoter voter = new WFSResourceVoter();
+            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+                return false;
+            }
+        }
+        return super.isAvailable(serviceType, serviceInfo, layerInfo);
     }
 
     @Override

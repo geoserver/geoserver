@@ -10,14 +10,16 @@ import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.ConsoleNotifier;
+import com.github.tomakehurst.wiremock.matching.RequestPattern;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,6 +122,8 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                         .withBodyFile("userinfo.json")));
 
+        long now = Instant.now().getEpochSecond();
+        long expiration = now + 3600;
         openIdService.stubFor(WireMock.post(urlPathEqualTo("/introspect"))
                 .withHeader(
                         "Authorization",
@@ -129,7 +133,18 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                        .withBody("{\"active\": true}")));
+                        .withBody("{\"active\": true, \"exp\": " + expiration + "}")));
+    }
+
+    @Before
+    public void cleanupCounters() throws Exception {
+        openIdService.resetRequests();
+    }
+
+    @After
+    public void clear() {
+        SecurityContextHolder.clearContext();
+        RequestContextHolder.resetRequestAttributes();
     }
 
     @AfterClass
@@ -308,9 +323,6 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
         MockHttpServletResponse response = executeOnSecurityFilters(request);
 
-        System.out.println(response.getStatus());
-        System.out.println(response.getContentAsString());
-
         SecurityContext context = new HttpSessionSecurityContextRepository()
                 .loadContext(new HttpRequestResponseHolder(request, response));
         Authentication auth = context.getAuthentication();
@@ -319,6 +331,59 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         assertThat(
                 auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
                 CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+    }
+
+    @Test
+    public void testCacheAuthentication() throws Exception {
+        // make it pull the roles from the userinfo and enable authentication cache
+        GeoServerSecurityManager manager = getSecurityManager();
+        OpenIdConnectFilterConfig filterConfig =
+                (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);
+        filterConfig.setRoleSource(OpenIdConnectFilterConfig.OpenIdRoleSource.UserInfo);
+        filterConfig.setCacheAuthentication(true);
+        manager.saveFilter(filterConfig);
+
+        // set up a GetFeature request with a bearer token in the headers
+        MockHttpServletRequest request = createRequest(
+                "wfs?service=WFS&version=2.0.0&request=GetFeature&typeName=" + getLayerId(MockData.BASIC_POLYGONS));
+        request.addHeader("Authorization", "Bearer " + TEST_OPAQUE_TOKEN);
+
+        // execute the request
+        MockHttpServletResponse response = executeOnSecurityFilters(request);
+        assertPtolemyUser(request, response);
+        clearAuthentication(request, response);
+
+        // as the first request with no cache around, it should have contacted the introspection and the user info
+        RequestPattern introspectPattern =
+                WireMock.postRequestedFor(urlPathEqualTo("/introspect")).build();
+        RequestPattern userInfoPattern =
+                WireMock.getRequestedFor(urlPathEqualTo("/userinfo")).build();
+        assertEquals(1, openIdService.countRequestsMatching(introspectPattern).getCount());
+        assertEquals(1, openIdService.countRequestsMatching(userInfoPattern).getCount());
+        openIdService.resetRequests();
+
+        // request again, it should be cached now, no new requests to the oidc server
+        response = executeOnSecurityFilters(request);
+        assertPtolemyUser(request, response);
+        assertEquals(0, openIdService.countRequestsMatching(introspectPattern).getCount());
+        assertEquals(0, openIdService.countRequestsMatching(userInfoPattern).getCount());
+    }
+
+    private static void assertPtolemyUser(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
+        Authentication auth = context.getAuthentication();
+        assertNotNull(auth);
+        assertEquals("claudius.ptolemy@gmail.com", auth.getPrincipal());
+        assertThat(
+                auth.getAuthorities().stream().map(a -> a.getAuthority()).collect(Collectors.toList()),
+                CoreMatchers.hasItems("geography", "astronomy", "ROLE_AUTHENTICATED"));
+    }
+
+    private static void clearAuthentication(MockHttpServletRequest request, MockHttpServletResponse response) {
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(request, response));
+        context.setAuthentication(null);
     }
 
     private MockHttpServletResponse executeOnSecurityFilters(MockHttpServletRequest request)
@@ -334,11 +399,5 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
         filterChainProxy.doFilter(request, response, chain);
 
         return response;
-    }
-
-    @After
-    public void clear() {
-        SecurityContextHolder.clearContext();
-        RequestContextHolder.resetRequestAttributes();
     }
 }

@@ -36,6 +36,7 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
     boolean allowBearerTokens = true;
     boolean usePKCE = false;
     boolean enforceTokenValidation = true;
+    private boolean cacheAuthentication;
 
     /** Supports extraction of roles among the token claims */
     public static enum OpenIdRoleSource implements RoleSource {
@@ -151,6 +152,16 @@ public class OpenIdConnectFilterConfig extends GeoServerOAuth2FilterConfig {
 
     public void setEnforceTokenValidation(boolean enforceTokenValidation) {
         this.enforceTokenValidation = enforceTokenValidation;
+    }
+
+    /** Whether or not the authentication should be cached based on the access token <code>exp</code> attribute. */
+    public boolean isCacheAuthentication() {
+        return cacheAuthentication;
+    }
+
+    /** Sets whether or not the authentication should be cached based on the access token <code>exp</code> attribute. */
+    public void setCacheAuthentication(boolean cacheAuthentication) {
+        this.cacheAuthentication = cacheAuthentication;
     }
 
     @Override

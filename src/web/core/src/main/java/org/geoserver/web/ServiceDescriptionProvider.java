@@ -75,12 +75,12 @@ public abstract class ServiceDescriptionProvider {
      * Is this service/layer available? This works for standard GS services like WMS/WFS - GWC-based ones will need to
      * re-implement.
      *
-     * @param serviceType Service type, example {@code WPS}, to cross reference with service links
-     * @param info - Info about the service (service can be on/off)
-     * @param layerInfo - Info about the layer (layer can not have this service enabled)
-     * @return true of service is available for this layer
+     * @param serviceType Service type, example {@code WPS}, to cross-reference with service links.
+     * @param serviceInfo - Service configuration (including service enabled/disabled)
+     * @param layerInfo - Layer configuration (including disabled service list)
+     * @return true if service is available for this layer
      */
-    protected boolean isAvailable(String serviceType, ServiceInfo info, PublishedInfo layerInfo) {
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
         if (layerInfo != null && !layerInfo.isEnabled()) {
             return false;
         }
@@ -96,9 +96,9 @@ public abstract class ServiceDescriptionProvider {
             List<String> disabledServices = DisabledServiceResourceFilter.disabledServices(resourceInfo);
             layerServices.removeAll(disabledServices);
 
-            return layerServices.contains(serviceType) && info.isEnabled();
+            return layerServices.contains(serviceType) && serviceInfo.isEnabled();
         }
-        return info.isEnabled();
+        return serviceInfo.isEnabled();
     }
 
     /**

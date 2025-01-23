@@ -6,13 +6,16 @@ package org.geoserver.gwc.wmts;
 
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ServiceResourceVoter;
+import org.geoserver.gwc.GWC;
 
+/** Hide GWC services if a tile layer is not defined. */
 public class GWCResourceServiceVoter implements ServiceResourceVoter {
 
     @Override
     public boolean hideService(String serviceType, ResourceInfo resource) {
-        // on WMTS service request hide service from list, because it isn't useful for Service
-        // disable GUI
-        return "WMTS".equalsIgnoreCase(serviceType);
+        // WMTS service request hide service from list if there is no tile layer
+        if (!"WMTS".equalsIgnoreCase(serviceType)) return false;
+
+        return !GWC.get().hasTileLayer(resource);
     }
 }

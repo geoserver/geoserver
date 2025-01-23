@@ -7,12 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.Service;
 import org.geoserver.wcs.WCSInfo;
+import org.geoserver.wcs.WCSResourceVoter;
 import org.geoserver.wcs.WebCoverageService100;
 import org.geoserver.wcs.WebCoverageService111;
 import org.geoserver.wcs2_0.WebCoverageService20;
@@ -53,6 +56,17 @@ public class WCSServiceDescriptionProvider extends ServiceDescriptionProvider {
             info = geoserver.getService(WCSInfo.class);
         }
         return info;
+    }
+
+    @Override
+    protected boolean isAvailable(String serviceType, ServiceInfo serviceInfo, PublishedInfo layerInfo) {
+        if (layerInfo != null && layerInfo instanceof LayerInfo) {
+            WCSResourceVoter voter = new WCSResourceVoter();
+            if (voter.hideService(serviceType, ((LayerInfo) layerInfo).getResource())) {
+                return false;
+            }
+        }
+        return super.isAvailable(serviceType, serviceInfo, layerInfo);
     }
 
     @Override

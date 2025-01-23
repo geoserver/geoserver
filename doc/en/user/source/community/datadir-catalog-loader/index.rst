@@ -82,9 +82,23 @@ to resolve a bean that has not yet been fully initialized, resulting in a smooth
 Installation
 ------------
 
-1. Download the `gs-datadir-catalog-loader` extension JAR file from the official GeoServer community module repository.
-2. Copy the JAR file to the `WEB-INF/lib` directory of your GeoServer installation.
-3. Restart GeoServer to activate the module.
+To download and install the required extensions by hand:
+
+#. Download the geoserver-|release|-datadir-catalog-loader.zip from:
+
+   * `Community Builds <https://build.geoserver.org/geoserver/main/community-latest/>`_ (GeoServer WebSite)
+   
+   It is important to download the version that matches the GeoServer you are running.
+
+#. Stop the GeoServer application.
+
+#. Navigate into the :file:`webapps/geoserver/WEB-INF/lib` folder.
+
+   These files make up the running GeoServer application.
+
+#. Unzip the contents of the zip file into the :file:`lib` folder.
+
+#. Restart the Application Server.
 
 Configuration
 -------------

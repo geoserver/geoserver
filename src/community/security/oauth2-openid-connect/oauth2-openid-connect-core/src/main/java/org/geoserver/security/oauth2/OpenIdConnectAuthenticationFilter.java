@@ -11,6 +11,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTParser;
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
@@ -26,6 +27,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.security.auth.AuthenticationCache;
 import org.geoserver.security.config.RoleSource;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
 import org.geoserver.security.filter.GeoServerLogoutFilter;
@@ -53,6 +55,15 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
     private static final Logger LOGGER = Logging.getLogger(OpenIdConnectAuthenticationFilter.class);
 
     static final String ID_TOKEN_VALUE = "OpenIdConnect-IdTokenValue";
+
+    /**
+     * Contains the value of the "exp" claim of the access token (for JWE tokens, the equivalent attribute obtained from
+     * the instrospection call). This is used to cache the access token. According to spec: "its value is a JSON
+     * [RFC8259] number representing the number of seconds from 1970-01-01T00:00:00Z as measured in UTC until the
+     * date/time."
+     */
+    static final String ACCESS_TOKEN_EXPIRATION = "OpenIdConnect-AccessTokenExpiration";
+
     TokenValidator bearerTokenValidator;
 
     /** Generator used for Public Key Code Exchange code_verifier */
@@ -86,6 +97,34 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
             sc.setConfiguration(idConfig);
         }
         this.bearerTokenValidator = bearerTokenValidator;
+    }
+
+    @Override
+    public void initializeFromConfig(SecurityNamedServiceConfig config) throws IOException {
+        super.initializeFromConfig(config);
+
+        if (config instanceof OpenIdConnectFilterConfig) {
+            // in case cache authentication got disabled, clear the cache
+            OpenIdConnectFilterConfig idConfig = (OpenIdConnectFilterConfig) config;
+            if (!idConfig.isCacheAuthentication()) {
+                AuthenticationCache cache = getSecurityManager().getAuthenticationCache();
+                if (cache != null) cache.removeAll(getName());
+            }
+        }
+    }
+
+    @Override
+    protected void tryCacheAuthentication(HttpServletRequest request, String cacheKey, Authentication auth) {
+        OpenIdConnectFilterConfig config = (OpenIdConnectFilterConfig) filterConfig;
+        if (auth != null
+                && request.getAttribute(ACCESS_TOKEN_EXPIRATION) instanceof Long
+                && config.isCacheAuthentication()) {
+            long exp = (Long) request.getAttribute(ACCESS_TOKEN_EXPIRATION);
+            long now = Instant.now().getEpochSecond(); // epoch is guaranteed to be in UTC like exp
+            int ttlSeconds = (int) (exp - now);
+            if (ttlSeconds > 0)
+                getSecurityManager().getAuthenticationCache().put(getName(), cacheKey, auth, ttlSeconds, ttlSeconds);
+        }
     }
 
     @Override
@@ -136,10 +175,11 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
         JWT jwt = JWTParser.parse(accessToken);
 
         if (jwt.getJWTClaimsSet() != null) {
-            Map accessTokenClaims = Optional.ofNullable(jwt.getJWTClaimsSet())
+            Map<String, Object> accessTokenClaims = Optional.ofNullable(jwt.getJWTClaimsSet())
                     .map(cs -> cs.getClaims())
                     .orElse(Collections.emptyMap());
             bearerTokenValidator.verifyToken((OpenIdConnectFilterConfig) filterConfig, accessTokenClaims, userinfoMap);
+            collectExpiration(req, accessTokenClaims);
         } else if (jwt instanceof JWEObject) {
             if (tokenServices instanceof OpenIdConnectTokenServices) {
                 OpenIdConnectTokenServices ots = (OpenIdConnectTokenServices) tokenServices;
@@ -147,11 +187,22 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
                 if (!Boolean.TRUE.equals(result.get("active"))) {
                     throw new Exception("Bearer token is not active");
                 }
+                collectExpiration(req, result);
             } else {
                 throw new Exception("Cannot verify bearer token, please setup an introspection endpoint");
             }
         } else {
             throw new Exception("Bearer token validation not supported for this configuration");
+        }
+    }
+
+    /** If an expiration attribute is set, we can use it to cache the access token */
+    private static void collectExpiration(HttpServletRequest req, Map<String, Object> properties) {
+        if (properties.get("exp") instanceof Number) {
+            long exp = ((Number) properties.get("exp")).longValue();
+            if (exp > Instant.now().getEpochSecond()) { // epoch is guaranteed to be in UTC like exp
+                req.setAttribute(ACCESS_TOKEN_EXPIRATION, exp);
+            }
         }
     }
 

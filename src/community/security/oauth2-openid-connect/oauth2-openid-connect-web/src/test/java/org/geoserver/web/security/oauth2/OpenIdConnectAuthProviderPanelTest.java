@@ -28,15 +28,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     public void testResponseModeParam() throws Exception {
         String baseUrl = "https://localhost:8080";
         navigateToOpenIdPanel("OpenIdFilter1");
-        formTester.setValue("panel:content:name", "OpenIdFilter1");
-        formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
-        formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
-        formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
-        formTester.setValue("panel:content:logoutUri", baseUrl + "/logout");
-        formTester.setValue("panel:content:scopes", "open_id");
-        formTester.setValue("panel:content:cliendId", "fnruurnu4unu4");
-        formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
-        formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
+        fillBasicForm("OpenIdFilter1", baseUrl);
 
         // set the response mode
         formTester.setValue("panel:content:responseMode", "query");
@@ -51,15 +43,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     public void testSendClientSecret() throws Exception {
         String baseUrl = "https://localhost:8080";
         navigateToOpenIdPanel("OpenIdFilter2");
-        formTester.setValue("panel:content:name", "OpenIdFilter2");
-        formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
-        formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
-        formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
-        formTester.setValue("panel:content:logoutUri", baseUrl + "/logout");
-        formTester.setValue("panel:content:scopes", "open_id");
-        formTester.setValue("panel:content:cliendId", "fnruurnu4unu4");
-        formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
-        formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
+        fillBasicForm("OpenIdFilter2", baseUrl);
 
         formTester.setValue("panel:content:sendClientSecret", true);
 
@@ -70,10 +54,21 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     }
 
     @Test
-    public void testPostRedirectUri() throws Exception {
+    public void testCacheAutentication() throws Exception {
         String baseUrl = "https://localhost:8080";
-        navigateToOpenIdPanel("OpenIdFilter3");
-        formTester.setValue("panel:content:name", "OpenIdFilter3");
+        navigateToOpenIdPanel("OpenIdFilterCA");
+        fillBasicForm("OpenIdFilterCA", baseUrl);
+
+        formTester.setValue("panel:content:cacheAuthentication", true);
+
+        clickSave();
+        tester.assertNoErrorMessage();
+        clickNamedServiceConfig("OpenIdFilterCA");
+        tester.assertModelValue("panel:panel:form:panel:cacheAuthentication", true);
+    }
+
+    private void fillBasicForm(String filterId, String baseUrl) {
+        formTester.setValue("panel:content:name", filterId);
         formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
         formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
         formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
@@ -82,6 +77,13 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
         formTester.setValue("panel:content:cliendId", "fnruurnu4unu4");
         formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
         formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
+    }
+
+    @Test
+    public void testPostRedirectUri() throws Exception {
+        String baseUrl = "https://localhost:8080";
+        navigateToOpenIdPanel("OpenIdFilter3");
+        fillBasicForm("OpenIdFilter3", baseUrl);
 
         formTester.setValue("panel:content:postLogoutRedirectUri", "http://localhost:8080/post/redirect");
 
@@ -95,15 +97,7 @@ public class OpenIdConnectAuthProviderPanelTest extends AbstractSecurityNamedSer
     public void testenforceTokenValidation() throws Exception {
         String baseUrl = "https://localhost:8080";
         navigateToOpenIdPanel("OpenIdFilter4");
-        formTester.setValue("panel:content:name", "OpenIdFilter4");
-        formTester.setValue("panel:content:userAuthorizationUri", baseUrl + "/authorize");
-        formTester.setValue("panel:content:accessTokenUri", baseUrl + "/token");
-        formTester.setValue("panel:content:checkTokenEndpointUrl", baseUrl + "/checkToken");
-        formTester.setValue("panel:content:logoutUri", baseUrl + "/logout");
-        formTester.setValue("panel:content:scopes", "open_id");
-        formTester.setValue("panel:content:cliendId", "fnruurnu4unu4");
-        formTester.setValue("panel:content:clientSecret", "fnruurnu4unu4");
-        formTester.setValue("panel:content:jwkURI", baseUrl + "/jwk");
+        fillBasicForm("OpenIdFilter4", baseUrl);
 
         formTester.setValue("panel:content:enforceTokenValidation", true);
 

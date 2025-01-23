@@ -110,11 +110,15 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
+        // try authenticating from cache (token caching mechanism). If the authentication is found in
+        // the cache, the cache key will be null and the authentication set in the security context,
+        // otherwise, the cache key will be returned and the authentication in the context will remain unset
+        String cacheKey = authenticateFromCache(this, (HttpServletRequest) request);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        // Search for an access_token on the request (simulating SSO)
-        String accessToken = getAccessTokenFromRequest(request);
-        if (authentication == null || authentication instanceof AnonymousAuthenticationToken || accessToken != null) {
 
+        // Search for an access_token on the request (simulating SSO)
+        if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            String accessToken = getAccessTokenFromRequest(request);
             OAuth2AccessToken token = restTemplate.getOAuth2ClientContext().getAccessToken();
 
             if (accessToken != null && token != null && !token.getValue().equals(accessToken)) {
@@ -145,20 +149,28 @@ public abstract class GeoServerOAuthAuthenticationFilter extends GeoServerPreAut
                     || authentication == null
                     || authentication instanceof AnonymousAuthenticationToken) {
 
+                // performs full authentication (token validation, roles calculation, etc.)
                 doAuthenticate((HttpServletRequest) request, (HttpServletResponse) response);
 
                 Authentication postAuthentication =
                         SecurityContextHolder.getContext().getAuthentication();
-                if (postAuthentication != null) {
-                    if (cacheAuthentication(postAuthentication, (HttpServletRequest) request)) {
-                        getSecurityManager()
-                                .getAuthenticationCache()
-                                .put(getName(), getCacheKey((HttpServletRequest) request), postAuthentication);
-                    }
+                if (postAuthentication != null && cacheKey != null) {
+                    tryCacheAuthentication((HttpServletRequest) request, cacheKey, postAuthentication);
                 }
             }
         }
         chain.doFilter(request, response);
+    }
+
+    /**
+     * Tries to cache the authentication if the cache key is not null and the authentication is not already in the
+     * cache.
+     */
+    protected void tryCacheAuthentication(
+            HttpServletRequest request, String cacheKey, Authentication postAuthentication) {
+        if (cacheAuthentication(postAuthentication, request)) {
+            getSecurityManager().getAuthenticationCache().put(getName(), cacheKey, postAuthentication);
+        }
     }
 
     /**

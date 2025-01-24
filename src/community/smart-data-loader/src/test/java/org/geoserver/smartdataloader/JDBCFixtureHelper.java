@@ -9,13 +9,13 @@ public interface JDBCFixtureHelper {
     default Properties createExampleFixture() {
         Properties fixture = new Properties();
 
-        fixture.put("url", "url=jdbc\\:postgresql\\://localhost/mock");
+        fixture.put("url", "jdbc\\:postgresql\\://localhost/mock");
         fixture.put("dbtype", "postgis");
         fixture.put("database", "mock");
         fixture.put("port", "5432");
         fixture.put("host", "localhost");
         fixture.put("user", "geoserver");
-        fixture.put("passwd", "geoserver");
+        fixture.put("password", "geoserver");
         fixture.put("driver", "org.postgresql.Driver");
 
         return fixture;

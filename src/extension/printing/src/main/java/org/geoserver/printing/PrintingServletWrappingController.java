@@ -1,10 +1,8 @@
-/*
- * (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
+/* (c) 2014 - 2016 Open Source Geospatial Foundation - all rights reserved
  * (c) 2001 - 2013 OpenPlans
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-
 package org.geoserver.printing;
 
 import java.io.IOException;
@@ -15,7 +13,6 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Paths;
 import org.geoserver.platform.resource.Resource;
-import org.geoserver.platform.resource.Resource.Type;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.util.IOUtils;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
@@ -93,49 +90,60 @@ public class PrintingServletWrappingController extends ServletWrappingController
      * @throws IOException if there is an error accessing or creating the file
      */
     private String findPrintConfigDirectory(String configProp) throws IOException {
-        // 1) Try environment variable
+        // 1) Check environment variable
         String dir = getPrintConfigEnvVariable();
 
-        // 2) Try system property
+        // 2) Check system property
         if (dir == null) {
             dir = lookupPrintConfigSystemProperty();
         }
 
-        // 3) Fallback
+        // 3) Use the default if still null
         if (dir == null) {
             dir = DEFAULT_PRINT_DIR;
         } else {
-            // Convert any OS-specific path separators
+            // Normalize path separators (e.g., backslash vs slash)
             dir = Paths.convert(dir);
         }
 
-        // Combine directory + configProp
+        // Combine base dir + the config filename
         String combinedPath = Paths.path(dir, Paths.convert(configProp));
 
-        // If 'dir' is not absolute, interpret it as relative to the data directory
-        if (!java.nio.file.Paths.get(dir).isAbsolute()) {
-            GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
-            Resource configResource = loader.get(combinedPath);
+        // Obtain the resource from the loader.
+        //   - If 'dir' is absolute, we still can create a Resource that points to an external location
+        //     using a small helper or 'Resources.fromPath(...)' if available in your codebase.
+        GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
+        Resource configResource;
+        java.nio.file.Path dirPath = java.nio.file.Paths.get(dir);
 
-            // If the file doesn't exist (Type.UNDEFINED), copy default-config.yaml from resources
-            if (configResource.getType() == Type.UNDEFINED) {
-                try (InputStream defaultConfigStream = getClass().getResourceAsStream("default-config.yaml")) {
-
-                    if (defaultConfigStream == null) {
-                        LOGGER.warning("default-config.yaml not found in the classpath.");
-                    } else {
-                        IOUtils.copy(defaultConfigStream, configResource.out());
-                        LOGGER.info("default-config.yaml copied to " + combinedPath);
-                    }
-                }
-            } else if (!Resources.canRead(configResource)) {
-                LOGGER.warning("Printing configuration resource exists but is not readable: " + configResource.path());
-            }
-            // Return the absolute filesystem path
-            return configResource.file().getAbsolutePath();
+        if (dirPath.isAbsolute()) {
+            String absoluteFile =
+                    dirPath.resolve(configProp).toAbsolutePath().normalize().toString();
+            configResource = Resources.fromPath(absoluteFile, null);
+        } else {
+            // For relative paths, interpret relative to the GeoServer data directory
+            configResource = loader.get(combinedPath);
         }
-        // If it's already absolute, just return that path
-        return combinedPath;
+
+        // 4) If resource does not exist or is not readable, copy default-config.yaml from classpath
+        if (configResource.getType() == Resource.Type.UNDEFINED || !Resources.canRead(configResource)) {
+            if (!Resources.canRead(configResource)) {
+                LOGGER.warning("Printing configuration resource is undefined or not readable: "
+                        + configResource.path()
+                        + " . Copying default-config.yaml from classpath.");
+            }
+            try (InputStream defaultConfigStream = getClass().getResourceAsStream("default-config.yaml")) {
+                if (defaultConfigStream == null) {
+                    LOGGER.warning("default-config.yaml not found in the classpath!");
+                } else {
+                    IOUtils.copy(defaultConfigStream, configResource.out());
+                    LOGGER.info("default-config.yaml copied to " + configResource.path());
+                }
+            }
+        }
+
+        // 5) Return the absolute path of the underlying file
+        return configResource.file().getAbsolutePath();
     }
 
     protected String lookupPrintConfigSystemProperty() {

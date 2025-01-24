@@ -8,8 +8,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -29,6 +27,7 @@ import org.mockito.Mockito;
  */
 public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSupport {
 
+    public static final String TMP_TEST_PRINT_CONFIG_CONFIG_YAML = "/tmp/test-print-config/config.yaml";
     private PrintingServletWrappingController controller;
     private GeoServerResourceLoader loader;
     private Resource resource;
@@ -37,7 +36,7 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
     private ByteArrayOutputStream resourceOutputStream;
 
     // A mock File that we pretend is the resource location for absolute paths
-    private final File mockFile = new File("/tmp/test-print-config/config.yaml");
+    private final File mockFile = new File(TMP_TEST_PRINT_CONFIG_CONFIG_YAML);
 
     @Before
     public void setUp() throws Exception {
@@ -102,9 +101,14 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         // 5) Because the path is absolute, the resulting config param
         // should be "/tmp/test-print-config/config.yaml"
         String updatedConfig = initParameters.getProperty("config");
-        Path actualPath = Paths.get(mockFile.getAbsolutePath()).toAbsolutePath().normalize();
-        Path expectedPath = Paths.get(updatedConfig).toAbsolutePath().normalize();
-        assertEquals("Expected the config path to match our mocked absolute file", expectedPath, actualPath);
+        // Convert backslashes to forward slashes just in case we're on Windows
+        String normalizedConfig = updatedConfig.replace('\\', '/');
+
+        // Check that the final part of the path is correct
+        org.junit.Assert.assertTrue(
+                "Expected the config path to end with: " + TMP_TEST_PRINT_CONFIG_CONFIG_YAML + ", but got: "
+                        + normalizedConfig,
+                normalizedConfig.endsWith(TMP_TEST_PRINT_CONFIG_CONFIG_YAML));
 
         // 6) Verify that no default YAML was copied
         // (In an absolute path scenario, the code doesn't do resource-based copying)
@@ -159,7 +163,7 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         //    so the code in findPrintConfigDirectory() used getClass().getResourceAsStream("default-config.yaml")
         //    to copy it. Let's verify what got copied matches that file.
 
-        String copiedYaml = new String(resourceOutputStream.toByteArray(), StandardCharsets.UTF_8);
+        String copiedYaml = resourceOutputStream.toString(StandardCharsets.UTF_8);
         // Load the expected YAML directly from test resources, or store it as a constant if you prefer
         String expectedYaml = readTestResource("default-config.yaml");
 
@@ -197,7 +201,7 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         when(mockResource.in()).thenReturn(resourceInputStream);
 
         // If the code calls mockResource.file().getAbsolutePath(), return a plausible path:
-        File mockFile = new File("/tmp/test-print-config/config.yaml");
+        File mockFile = new File(TMP_TEST_PRINT_CONFIG_CONFIG_YAML);
         when(mockResource.file()).thenReturn(mockFile);
 
         // 5) Register the mock loader with GeoServerExtensions
@@ -214,12 +218,14 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
 
         // 8) Confirm the resulting config path
         String updatedConfig = initParams.getProperty("config");
-        Path actualPath = Paths.get(mockFile.getAbsolutePath()).toAbsolutePath().normalize();
-        Path expectedPath = Paths.get(updatedConfig).toAbsolutePath().normalize();
-        assertEquals(
-                "Expected the config path to be the absolute path from the environment variable",
-                expectedPath,
-                actualPath);
+        // Convert backslashes to forward slashes just in case we're on Windows
+        String normalizedConfig = updatedConfig.replace('\\', '/');
+
+        // Check that the final part of the path is correct
+        org.junit.Assert.assertTrue(
+                "Expected the config path to end with: " + TMP_TEST_PRINT_CONFIG_CONFIG_YAML + ", but got: "
+                        + normalizedConfig,
+                normalizedConfig.endsWith(TMP_TEST_PRINT_CONFIG_CONFIG_YAML));
 
         // 9) Because the path is absolute, the code does not copy default-config.yaml.
         //    Instead, it references the existing resource. Let's confirm that

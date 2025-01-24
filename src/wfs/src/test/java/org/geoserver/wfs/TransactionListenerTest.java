@@ -14,6 +14,7 @@ import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.UpdateElementType;
 import org.geoserver.data.test.CiteTestData;
 import org.geotools.api.feature.Feature;
+import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -139,7 +140,7 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
                 + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
                 + "xmlns:gml=\"http://www.opengis.net/gml\"> "
-                + "<wfs:Insert > "
+                + "<wfs:Insert> "
                 + "<cgf:Lines>"
                 + "<cgf:lineStringProperty>"
                 + "<gml:LineString>"
@@ -159,18 +160,22 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "</wfs:Insert>"
                 + "</wfs:Transaction>";
 
-        postAsDOM("wfs", insert);
-        assertEquals(4, listener.features.size());
+        Document dom = postAsDOM("wfs", insert);
+        assertEquals(4, listener.events.size());
 
-        // get the feature before insert
-        Feature firstFeature = listener.features.get(0);
-        assertEquals("t0002", firstFeature.getProperty("id").getValue());
-        Feature secondFeature = listener.features.get(1);
-        assertEquals("t0002", secondFeature.getProperty("id").getValue());
-        Feature thirdFeature = listener.features.get(2);
-        assertEquals("t0005", thirdFeature.getProperty("id").getValue());
-        Feature fourthFeature = listener.features.get(3);
-        assertEquals("t0005", fourthFeature.getProperty("id").getValue());
+        // get the first event pre insert
+        TransactionEvent firstPreEvent = listener.events.get(0);
+        assertEquals(TransactionEventType.PRE_INSERT, firstPreEvent.getType());
+        assertEquals(
+                "t0002",
+                DataUtilities.list(firstPreEvent.getAffectedFeatures()).get(0).getAttribute("id"));
+
+        // get the sevond event pre insert
+        TransactionEvent secondPreEvent = listener.events.get(2);
+        assertEquals(TransactionEventType.PRE_INSERT, secondPreEvent.getType());
+        assertEquals(
+                "t0005",
+                DataUtilities.list(secondPreEvent.getAffectedFeatures()).get(0).getAttribute("id"));
     }
 
     @Test

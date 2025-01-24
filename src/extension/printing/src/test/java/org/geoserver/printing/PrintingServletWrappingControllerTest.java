@@ -27,7 +27,7 @@ import org.mockito.Mockito;
  */
 public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSupport {
 
-    public static final String TMP_TEST_PRINT_CONFIG_CONFIG_YAML = "/tmp/test-print-config/config.yaml";
+    public static final String TMP_TEST_PRINT_CONFIG_CONFIG_YAML = "tmp/test-print-config/config.yaml";
     private PrintingServletWrappingController controller;
     private GeoServerResourceLoader loader;
     private Resource resource;
@@ -36,7 +36,7 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
     private ByteArrayOutputStream resourceOutputStream;
 
     // A mock File that we pretend is the resource location for absolute paths
-    private final File mockFile = new File(TMP_TEST_PRINT_CONFIG_CONFIG_YAML);
+    private final File mockFile = new File("/" + TMP_TEST_PRINT_CONFIG_CONFIG_YAML);
 
     @Before
     public void setUp() throws Exception {
@@ -201,7 +201,6 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         when(mockResource.in()).thenReturn(resourceInputStream);
 
         // If the code calls mockResource.file().getAbsolutePath(), return a plausible path:
-        File mockFile = new File(TMP_TEST_PRINT_CONFIG_CONFIG_YAML);
         when(mockResource.file()).thenReturn(mockFile);
 
         // 5) Register the mock loader with GeoServerExtensions

@@ -160,7 +160,7 @@ public class TransactionListenerTest extends WFSTestSupport {
                 + "</wfs:Insert>"
                 + "</wfs:Transaction>";
 
-        Document dom = postAsDOM("wfs", insert);
+        postAsDOM("wfs", insert);
         assertEquals(4, listener.events.size());
 
         // get the first event pre insert

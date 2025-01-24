@@ -8,6 +8,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -100,10 +102,9 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         // 5) Because the path is absolute, the resulting config param
         // should be "/tmp/test-print-config/config.yaml"
         String updatedConfig = initParameters.getProperty("config");
-        assertEquals(
-                "Expected the config path to match our mocked absolute file",
-                mockFile.getAbsolutePath(),
-                updatedConfig);
+        Path actualPath = Paths.get(mockFile.getAbsolutePath()).toAbsolutePath().normalize();
+        Path expectedPath = Paths.get(updatedConfig).toAbsolutePath().normalize();
+        assertEquals("Expected the config path to match our mocked absolute file", expectedPath, actualPath);
 
         // 6) Verify that no default YAML was copied
         // (In an absolute path scenario, the code doesn't do resource-based copying)
@@ -213,10 +214,12 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
 
         // 8) Confirm the resulting config path
         String updatedConfig = initParams.getProperty("config");
+        Path actualPath = Paths.get(mockFile.getAbsolutePath()).toAbsolutePath().normalize();
+        Path expectedPath = Paths.get(updatedConfig).toAbsolutePath().normalize();
         assertEquals(
                 "Expected the config path to be the absolute path from the environment variable",
-                mockFile.getAbsolutePath(),
-                updatedConfig);
+                expectedPath,
+                actualPath);
 
         // 9) Because the path is absolute, the code does not copy default-config.yaml.
         //    Instead, it references the existing resource. Let's confirm that

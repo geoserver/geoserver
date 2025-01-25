@@ -533,8 +533,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
                 GeoServerExtensions.extensions(GeoServerSecurityProvider.class)) {
             securityProvider.destroy(this);
         }
-        userGroupServices.clear();
-        roleServices.clear();
+        clearCaches();
 
         userGroupServiceHelper.destroy();
         roleServiceHelper.destroy();
@@ -566,9 +565,16 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
      * loads configuration and initializes the security subsystem.
      */
     void init() throws Exception {
+        clearCaches();
         init(loadMasterPasswordConfig());
         init(loadSecurityConfig());
         fireChanged();
+    }
+
+    private void clearCaches() {
+        userGroupServices.clear();
+        roleServices.clear();
+        passwordValidators.clear();
     }
 
     synchronized void init(SecurityManagerConfig config) throws Exception {

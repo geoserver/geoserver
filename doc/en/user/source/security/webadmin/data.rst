@@ -64,7 +64,8 @@ File sandbox
 
 The sandbox allows a GeoServer full administrator to limit file system access to workspace administrators.
 In particular, both GUI and REST API will sandbox workspace administrators to ``<sandbox>/<workspace>``,
-and prevent them from accessing files outside of it.
+and prevent them from accessing files outside of it. For more information about how workspace administrators
+can access the REST API, please see the section on :ref:`security_rest_workspace_admin`.
 
 .. figure:: images/fs_sandbox.png
    :align: center

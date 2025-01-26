@@ -19,6 +19,7 @@ The first page discusses configuration options in the web administration interfa
    layer
    sandbox
    rest
+   rest_workspace_admin
    urlchecks
    csp
    disable

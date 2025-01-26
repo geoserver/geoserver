@@ -80,7 +80,7 @@ public class AdminRequestTest extends CatalogRESTTestSupport {
     }
 
     @Override
-    public void login() throws Exception {
+    public void login() {
         // skip the login by default
     }
 

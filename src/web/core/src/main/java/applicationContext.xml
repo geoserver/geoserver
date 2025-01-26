@@ -449,7 +449,7 @@
   
   <bean id="wicketEnvVariableInjector" class="org.geoserver.web.WicketEnvironmentVariableCallback"/>
   
-  <bean id="adminRequestCallback" class="org.geoserver.web.AdminRequestWicketCallback"/>
+  <bean id="wicketAdminRequestCallback" class="org.geoserver.web.AdminRequestWicketCallback"/>
 
 	<!-- login button -->
 	<bean id="geoserverFormLoginButton" class="org.geoserver.web.LoginFormInfo">

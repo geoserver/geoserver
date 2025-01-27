@@ -5,14 +5,14 @@
  */
 package org.geoserver.wfs;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import org.geotools.api.feature.Feature;
 import org.geotools.data.DataUtilities;
 
 public class TransactionListenerTester implements TransactionListener {
-    List<TransactionEvent> events = new LinkedList<>();
-    List<Feature> features = new LinkedList<>();
+    List<TransactionEvent> events = new ArrayList<>();
+    List<Feature> features = new ArrayList<>();
 
     public void clear() {
         events.clear();

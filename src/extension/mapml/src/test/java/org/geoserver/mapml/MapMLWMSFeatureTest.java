@@ -38,6 +38,7 @@ import org.geoserver.mapml.xml.MultiPolygon;
 import org.geoserver.mapml.xml.Point;
 import org.geoserver.mapml.xml.Polygon;
 import org.geoserver.mapml.xml.Span;
+import org.geoserver.mapml.xml.Tile;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
@@ -61,6 +62,7 @@ import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.After;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
+import org.springframework.mock.web.MockHttpServletRequest;
 
 public class MapMLWMSFeatureTest extends MapMLTestSupport {
     @Override
@@ -72,6 +74,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
         String polygons = MockData.POLYGONS.getLocalPart();
+        String world = MockData.WORLD.getLocalPart();
+        String basicPolygons = MockData.BASIC_POLYGONS.getLocalPart();
         LayerGroupInfo lg = catalog.getFactory().createLayerGroup();
         lg.setName("layerGroup");
         lg.getLayers().add(catalog.getLayerByName(points));
@@ -80,6 +84,13 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         CatalogBuilder builder = new CatalogBuilder(catalog);
         builder.calculateLayerGroupBounds(lg, DefaultGeographicCRS.WGS84);
         catalog.add(lg);
+
+        LayerGroupInfo lgWithRaster = catalog.getFactory().createLayerGroup();
+        lgWithRaster.setName("layerGroupWithRaster");
+        lgWithRaster.getLayers().add(catalog.getLayerByName(basicPolygons));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(world));
+        builder.calculateLayerGroupBounds(lgWithRaster, DefaultGeographicCRS.WGS84);
+        catalog.add(lgWithRaster);
     }
 
     @After
@@ -129,6 +140,40 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 "Polygons layer coordinates should match original feature's coordinates",
                 "0 -1 1 0 0 1 -1 0 0 -1",
                 polygon.getThreeOrMoreCoordinatePairs().get(0).getCoordinates().get(0));
+    }
+
+    @Test
+    public void testMapMLUseFeaturesLayerGroupRaster() throws Exception {
+
+        Mapml mapmlFeatures = new MapMLWMSRequest()
+                .name("layerGroupWithRaster")
+                .bbox("-180,-90,180,90")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
+        List<Tile> tiles = mapmlFeatures.getBody().getTiles();
+        assertEquals("Raster layer world should return tiles", 2, tiles.size());
+        MockHttpServletRequest request = createRequest(tiles.get(0).getSrc());
+        assertEquals("-180.0,-90.0,0.0,90.0", request.getParameter("BBOX"));
+        MockHttpServletRequest request2 = createRequest(tiles.get(1).getSrc());
+        assertEquals("0.0,-90.0,180.0,90.0", request2.getParameter("BBOX"));
+
+        Mapml mapmlFeatures2 = new MapMLWMSRequest()
+                .name("layerGroupWithRaster")
+                .bbox("-90,-45,90,45")
+                .srs("EPSG:4326")
+                .feature(true)
+                .getAsMapML();
+        List<Tile> tiles2 = mapmlFeatures2.getBody().getTiles();
+        assertEquals("Raster layer world should return tiles", 4, tiles2.size());
+        MockHttpServletRequest request3 = createRequest(tiles2.get(0).getSrc());
+        assertEquals("-180.0,-90.0,0.0,90.0", request3.getParameter("BBOX"));
+        MockHttpServletRequest request4 = createRequest(tiles2.get(1).getSrc());
+        assertEquals("0.0,-90.0,180.0,90.0", request4.getParameter("BBOX"));
+        MockHttpServletRequest request5 = createRequest(tiles2.get(0).getSrc());
+        assertEquals("-180.0,-90.0,0.0,90.0", request5.getParameter("BBOX"));
+        MockHttpServletRequest request6 = createRequest(tiles2.get(1).getSrc());
+        assertEquals("0.0,-90.0,180.0,90.0", request6.getParameter("BBOX"));
     }
 
     @Test
@@ -633,28 +678,6 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
                 template.delete();
             }
         }
-    }
-
-    @Test
-    public void testExceptionBecauseMoreThanOneFeatureType() throws Exception {
-        Catalog cat = getCatalog();
-        LayerInfo li = cat.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(li);
-        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
-        lgi.getMetadata().put(MAPML_USE_FEATURES, true);
-        lgi.getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(lgi);
-        String response = new MapMLWMSRequest()
-                .name("layerGroup" + "," + MockData.BASIC_POLYGONS.getLocalPart())
-                .srs("EPSG:4326")
-                .feature(true)
-                .getAsString();
-
-        assertTrue(
-                "MapML response contains an exception due to multiple feature types",
-                response.contains("MapML WMS Feature format does not currently support Multiple Feature Type output."));
     }
 
     @Test

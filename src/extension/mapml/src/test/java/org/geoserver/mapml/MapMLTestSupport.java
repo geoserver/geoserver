@@ -212,6 +212,7 @@ public class MapMLTestSupport extends WMSTestSupport {
             String formatOptions = isFeature()
                     ? MapMLConstants.MAPML_FEATURE_FO + ":true;"
                     : getFormat() != null ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png;" : "";
+
             if (isCreateFeatureLinks()) {
                 formatOptions += MapMLConstants.MAPML_CREATE_FEATURE_LINKS + ":true;";
             }

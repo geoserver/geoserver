@@ -6,12 +6,12 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
-import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS;
-import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS_DEFAULT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS;
+import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS_DEFAULT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_REMOTE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP_DEFAULT;
@@ -112,7 +112,10 @@ import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.SRS;
 import org.locationtech.jts.geom.Envelope;
 
 /** Builds a MapML document from a WMSMapContent object */
@@ -193,6 +196,8 @@ public class MapMLDocumentBuilder {
         this.request = request;
         this.mapContent = mapContent;
         GetMapRequest getMapRequest = mapContent.getRequest();
+        this.useFeatures = useFeatures(getMapRequest);
+        this.useTiles = useTiles(getMapRequest);
         String rawLayersCommaDL = getMapRequest.getRawKvp().get("layers");
         this.layers = toRawLayers(rawLayersCommaDL);
         this.stylesCommaDelimited = getMapRequest.getRawKvp().get("styles") != null
@@ -219,7 +224,7 @@ public class MapMLDocumentBuilder {
         this.layerTitlesCommaDelimited = layers.stream().map(RawLayer::getTitle).collect(Collectors.joining(","));
     }
 
-    private String extractCRS(Map<String, String> rawKvp) {
+    public static String extractCRS(Map<String, String> rawKvp) {
         String srs = null;
         String version = rawKvp.get("VERSION");
         if ("1.3.0".equalsIgnoreCase(version)) {
@@ -238,7 +243,7 @@ public class MapMLDocumentBuilder {
      * @param bbox Envelope object
      * @return comma delimited string
      */
-    private String toCommaDelimitedBbox(Envelope bbox) {
+    public static String toCommaDelimitedBbox(Envelope bbox) {
         return bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
     }
 
@@ -256,22 +261,35 @@ public class MapMLDocumentBuilder {
         String[] rawLayersArray = rawLayersCommaDL.split(",");
         for (String rawLayerTitle : rawLayersArray) {
             LayerInfo layerInfo = wms.getLayerByName(rawLayerTitle);
-            RawLayer rawLayer = new RawLayer();
+
             if (layerInfo == null) {
                 LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(rawLayerTitle);
-                rawLayer.setTitle(getTitle(layerGroupInfo, rawLayerTitle));
-                rawLayer.setName(layerGroupInfo.getName());
-                rawLayer.setLayerGroup(true);
-                rawLayer.setPublishedInfo(layerGroupInfo);
+                if (!useFeatures) {
+                    RawLayer rawLayer = new RawLayer();
+                    rawLayer.setTitle(getTitle(layerGroupInfo, rawLayerTitle));
+                    rawLayer.setName(layerGroupInfo.getName());
+                    rawLayer.setLayerGroup(true);
+                    rawLayer.setPublishedInfo(layerGroupInfo);
+                    rawLayers.add(rawLayer);
+                } else {
+                    for (PublishedInfo publishedInfo : layerGroupInfo.getLayers()) {
+                        addToRawLayers(rawLayers, publishedInfo.getTitle(), (LayerInfo) publishedInfo);
+                    }
+                }
             } else {
-                rawLayer.setTitle(getTitle(layerInfo, rawLayerTitle));
-                rawLayer.setLayerGroup(false);
-                rawLayer.setName(layerInfo.getName());
-                rawLayer.setPublishedInfo(layerInfo);
+                addToRawLayers(rawLayers, rawLayerTitle, layerInfo);
             }
-            rawLayers.add(rawLayer);
         }
         return rawLayers;
+    }
+
+    private void addToRawLayers(List<RawLayer> rawLayers, String rawLayerTitle, LayerInfo layerInfo) {
+        RawLayer rawLayer = new RawLayer();
+        rawLayer.setTitle(getTitle(layerInfo, rawLayerTitle));
+        rawLayer.setLayerGroup(false);
+        rawLayer.setName(layerInfo.getName());
+        rawLayer.setPublishedInfo(layerInfo);
+        rawLayers.add(rawLayer);
     }
 
     /**
@@ -407,9 +425,6 @@ public class MapMLDocumentBuilder {
         MapMLLayerMetadata mapMLLayerMetadata = new MapMLLayerMetadata();
         mapMLLayerMetadata.setLayerMeta(new MetadataMap());
         mapMLLayerMetadata.setUseTiles(false);
-        if (layers.size() == 1) {
-            useFeatures = useFeatures(layers.get(0), mapContent.getRequest());
-        }
         mapMLLayerMetadata.setUseFeatures(useFeatures);
         mapMLLayerMetadata.setLayerName(layersCommaDelimited);
         mapMLLayerMetadata.setStyleName(stylesCommaDelimited);
@@ -590,9 +605,7 @@ public class MapMLDocumentBuilder {
         cqlFilter = cql != null ? cql : "";
         tileLayerExists = gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
                 && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo).getGridSubset(projType.value()) != null;
-        useTiles = useTiles(layer, mapContent.getRequest());
         boolean useRemote = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_REMOTE, Boolean.class));
-        useFeatures = useFeatures(layer, mapContent.getRequest());
 
         return new MapMLLayerMetadata(
                 layerInfo,
@@ -618,31 +631,28 @@ public class MapMLDocumentBuilder {
     /**
      * Check if layer should be represented as a feature
      *
-     * @param layer RawLayer
      * @param getMapRequest GetMapRequest
      * @return boolean true if layer should be represented as a feature
      */
     @SuppressWarnings("unchecked")
-    private static boolean useFeatures(RawLayer layer, GetMapRequest getMapRequest) {
+    private static boolean useFeatures(GetMapRequest getMapRequest) {
         Optional useFeaturesOptional = Optional.ofNullable(getMapRequest
                 .getFormatOptions()
                 .getOrDefault(
                         MAPML_CREATE_FEATURE_LINKS.toUpperCase(),
                         getMapRequest.getFormatOptions().get(MAPML_CREATE_FEATURE_LINKS.toLowerCase())));
         return (Boolean.parseBoolean(
-                        (String) useFeaturesOptional.orElse(MAPML_CREATE_FEATURE_LINKS_DEFAULT.toString())))
-                && (PublishedType.VECTOR == layer.getPublishedInfo().getType());
+                (String) useFeaturesOptional.orElse(MAPML_CREATE_FEATURE_LINKS_DEFAULT.toString())));
     }
 
     /**
      * Check if layer should be represented with tiles
      *
-     * @param layer RawLayer
      * @param getMapRequest GetMapRequest
      * @return boolean useTiles
      */
     @SuppressWarnings("unchecked")
-    private static boolean useTiles(RawLayer layer, GetMapRequest getMapRequest) {
+    private static boolean useTiles(GetMapRequest getMapRequest) {
         Optional useTilesOptional = Optional.ofNullable(getMapRequest
                 .getFormatOptions()
                 .getOrDefault(
@@ -733,7 +743,10 @@ public class MapMLDocumentBuilder {
         Base base = new Base();
         Map<String, String> wmsParams = new HashMap<>();
         wmsParams.put("format", MapMLConstants.MAPML_MIME_TYPE);
-        String formatOptions = getFormatOptions(format, useTiles, useFeatures);
+        String formatOptions =
+                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + escapeHtml4((String) format.orElse(imageFormat)) + ";"
+                        + MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":" + isMultiExtent + ";"
+                        + MAPML_USE_TILES_REP + ":" + useTiles + ";" + MAPML_CREATE_FEATURE_LINKS + ":" + useFeatures;
         wmsParams.put("format_options", formatOptions);
         wmsParams.put("layers", layersCommaDelimited);
         wmsParams.put("crs", projType.getCRSCode());
@@ -879,14 +892,6 @@ public class MapMLDocumentBuilder {
         if (styles != null) head.setStyle(styles);
         links.addAll(getLinksFromHeadTemplate(stylesAndLinks));
         return head;
-    }
-
-    private String getFormatOptions(Optional<Object> format, Boolean useTiles, Boolean useFeatures) {
-        String formatOptions =
-                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + escapeHtml4((String) format.orElse(imageFormat)) + ";"
-                        + MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":" + isMultiExtent + ";"
-                        + MAPML_USE_TILES_REP + ":" + useTiles + ";" + MAPML_CREATE_FEATURE_LINKS + ":" + useFeatures;
-        return formatOptions;
     }
 
     /**
@@ -1950,7 +1955,10 @@ public class MapMLDocumentBuilder {
             kvp.put("CQL_FILTER", cqlFilter);
         }
         kvp.put("FORMAT", MAPML_MIME_TYPE);
-        String formatOptions = getFormatOptions(format, useTiles, useFeatures);
+        String formatOptions =
+                MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":" + escapeHtml4((String) format.orElse(imageFormat)) + ";"
+                        + MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":" + isMultiExtent + ";"
+                        + MAPML_USE_TILES_REP + ":" + useTiles + ";" + MAPML_CREATE_FEATURE_LINKS + ":" + useFeatures;
         kvp.put("format_options", formatOptions);
         kvp.put("SERVICE", "WMS");
         kvp.put("REQUEST", "GetMap");

@@ -168,6 +168,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
         String polygons = MockData.POLYGONS.getLocalPart();
+        String world = MockData.WORLD.getLocalPart();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         ResourceInfo ri =
                 catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
@@ -205,6 +206,15 @@ public class MapMLWMSTest extends MapMLTestSupport {
         ReferencedEnvelope webMercEnv = new ReferencedEnvelope(x1, x2, y1, y2, webMerc);
         lgi.setBounds(webMercEnv);
         catalog.save(lgi);
+
+        LayerGroupInfo lgWithRaster = catalog.getFactory().createLayerGroup();
+        lgWithRaster.setName("layerGroupWithRaster");
+        lgWithRaster.getLayers().add(catalog.getLayerByName(points));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(lines));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(polygons));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(world));
+        builder.calculateLayerGroupBounds(lgWithRaster, DefaultGeographicCRS.WGS84);
+        catalog.add(lgWithRaster);
     }
 
     @Before
@@ -283,6 +293,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
         expectedInternationalTitle = lgi.getInternationalTitle().toString(Locale.CANADA_FRENCH);
         assertTrue("Le titre français".equalsIgnoreCase(expectedInternationalTitle));
         assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
+    }
+
+    @Test
+    public void testMapMLLayerGroupWithRaster() throws Exception {
+        Catalog cat = getCatalog();
+
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroupWithRaster");
+
+        MockRequestResponse requestResponse =
+                getMockRequestResponse(((PublishedInfo) lgi).getName(), null, null, "EPSG:3857", null, true, false);
+
+        Mapml mapml = mapml(requestResponse.response);
+        String title = mapml.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase("Points,Lines,Polygons,World"));
     }
 
     @Test
@@ -439,13 +463,13 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 mapmlOneRaster.getBody().getExtents().get(0).getInputOrDatalistOrLink(), Link.class);
         List<Link> featureLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.FEATURES);
         assertEquals(
-                "Features link should not be present when useFeatures on even one layer is raster",
-                0,
+                "Features link can be present when useFeatures even if one layer is raster",
+                1,
                 featureLinksForRaster.size());
         List<Link> imageLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.IMAGE);
         assertEquals(
-                "Image link should be present when useFeatures on even one layer is raster",
-                1,
+                "Image link should not be present when useFeatures on even one layer is raster",
+                0,
                 imageLinksForRaster.size());
     }
 

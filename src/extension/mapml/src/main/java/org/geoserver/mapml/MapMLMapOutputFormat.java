@@ -86,7 +86,7 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
             mapMLDocument = builder.getMapMLDocument();
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =
-                    new MapMLDocumentBuilder(mapContent, wms, geoServer, request.getHttpRequest());
+                    new MapMLDocumentBuilder(mapContent, wms, request.getHttpRequest());
             mapMLDocument = mapMLDocumentBuilder.getMapMLDocument();
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

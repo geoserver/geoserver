@@ -30,6 +30,14 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.28 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.28, the configuration option for MapML Multi-Layer as Multi-Extent has been moved from 
+the WMS Administration page to the Publishing tab of the Layer Group configuration. Backwards compatibility 
+with previously configured MapML implementations is maintained through the population of Layer Group metadata 
+if the option was previously enabled in the WMS Administration page. For more information, see :ref:`mapml_installation`.
+
 FreeMarker Template Method Access (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -27,12 +27,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 /**
- * Tests {@link PrintingServletWrappingController} to ensure: 1) Absolute and relative paths are handled correctly. 2)
- * The final config YAML matches the default-config.yaml when created.
+ * Tests {@link PrintingServletWrappingController} to ensure: 1) Absolute and relative paths are
+ * handled correctly. 2) The final config YAML matches the default-config.yaml when created.
  */
 public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSupport {
 
-    public static final String TMP_TEST_PRINT_CONFIG_CONFIG_YAML = "tmp/test-print-config/config.yaml";
+    public static final String TMP_TEST_PRINT_CONFIG_CONFIG_YAML =
+            "tmp/test-print-config/config.yaml";
     private PrintingServletWrappingController controller;
     private GeoServerResourceLoader loader;
     private Resource resource;
@@ -57,7 +58,8 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         // Initialize GeoServerExtensionsHelper so that
         // GeoServerExtensions finds our mock loader
         GeoServerExtensionsHelper.init(null);
-        GeoServerExtensionsHelper.singleton("geoserverResourceLoader", loader, GeoServerResourceLoader.class);
+        GeoServerExtensionsHelper.singleton(
+                "geoserverResourceLoader", loader, GeoServerResourceLoader.class);
 
         // place the configuration file in the data dir (which is also used as the servlet context
         // lookup)
@@ -78,8 +80,8 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
     }
 
     /**
-     * Tests that when the system property GEOSERVER_PRINT_CONFIG_DIR is an absolute path, the controller simply returns
-     * that path + "config.yaml" with no resource copying.
+     * Tests that when the system property GEOSERVER_PRINT_CONFIG_DIR is an absolute path, the
+     * controller simply returns that path + "config.yaml" with no resource copying.
      */
     @Test
     public void testSetInitParametersWithAbsolutePath() throws Exception {
@@ -111,7 +113,9 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
 
         // Check that the final part of the path is correct
         org.junit.Assert.assertTrue(
-                "Expected the config path to end with: " + TMP_TEST_PRINT_CONFIG_CONFIG_YAML + ", but got: "
+                "Expected the config path to end with: "
+                        + TMP_TEST_PRINT_CONFIG_CONFIG_YAML
+                        + ", but got: "
                         + normalizedConfig,
                 normalizedConfig.endsWith(TMP_TEST_PRINT_CONFIG_CONFIG_YAML));
 
@@ -124,9 +128,10 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
     }
 
     /**
-     * Tests that when the system property GEOSERVER_PRINT_CONFIG_DIR is a relative path, the controller treats it as
-     * relative to the GeoServer data directory. If the resource is UNDEFINED, it should copy default-config.yaml from
-     * the classpath. We then compare the written content with the expected YAML.
+     * Tests that when the system property GEOSERVER_PRINT_CONFIG_DIR is a relative path, the
+     * controller treats it as relative to the GeoServer data directory. If the resource is
+     * UNDEFINED, it should copy default-config.yaml from the classpath. We then compare the written
+     * content with the expected YAML.
      */
     @Test
     public void testSetInitParametersWithRelativePathAndCompareYaml() throws Exception {
@@ -164,26 +169,35 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
                 updatedConfig);
 
         // 6) Compare the contents that were copied into resource.out()
-        //    We placed the actual YAML in src/test/resources/org/geoserver/printing/default-config.yaml
-        //    so the code in findPrintConfigDirectory() used getClass().getResourceAsStream("default-config.yaml")
+        //    We placed the actual YAML in
+        // src/test/resources/org/geoserver/printing/default-config.yaml
+        //    so the code in findPrintConfigDirectory() used
+        // getClass().getResourceAsStream("default-config.yaml")
         //    to copy it. Let's verify what got copied matches that file.
 
         String copiedYaml = resourceOutputStream.toString(StandardCharsets.UTF_8);
-        // Load the expected YAML directly from test resources, or store it as a constant if you prefer
+        // Load the expected YAML directly from test resources, or store it as a constant if you
+        // prefer
         String expectedYaml = readTestResource("default-config.yaml");
 
         // Assert that they match. Using trim() to avoid any trailing newlines or carriage returns
-        assertEquals("The copied YAML should match default-config.yaml.", expectedYaml.trim(), copiedYaml.trim());
+        assertEquals(
+                "The copied YAML should match default-config.yaml.",
+                expectedYaml.trim(),
+                copiedYaml.trim());
     }
 
     @Test
     public void testSetInitParametersFromEnvironmentVariableAndCompareYaml() throws Exception {
         // 1) Create a spy so we can override getPrintConfigEnvVariable()
-        PrintingServletWrappingController spiedController = Mockito.spy(new PrintingServletWrappingController());
+        PrintingServletWrappingController spiedController =
+                Mockito.spy(new PrintingServletWrappingController());
 
         // 2) Suppose the environment variable says: "/tmp/test-print-config"
         //    We'll treat this as absolute, so that the code does not copy default-config.yaml.
-        Mockito.doReturn("/tmp/test-print-config").when(spiedController).lookupPrintConfigSystemProperty();
+        Mockito.doReturn("/tmp/test-print-config")
+                .when(spiedController)
+                .lookupPrintConfigSystemProperty();
 
         // 3) Prepare mocks for resource loader, just like the other tests
         GeoServerResourceLoader mockLoader = Mockito.mock(GeoServerResourceLoader.class);
@@ -211,7 +225,8 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
         // 5) Register the mock loader with GeoServerExtensions
         GeoServerExtensionsHelper.clear();
         GeoServerExtensionsHelper.init(null);
-        GeoServerExtensionsHelper.singleton("geoserverResourceLoader", mockLoader, GeoServerResourceLoader.class);
+        GeoServerExtensionsHelper.singleton(
+                "geoserverResourceLoader", mockLoader, GeoServerResourceLoader.class);
 
         // 6) Build the init parameters
         Properties initParams = new Properties();
@@ -227,7 +242,9 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
 
         // Check that the final part of the path is correct
         org.junit.Assert.assertTrue(
-                "Expected the config path to end with: " + TMP_TEST_PRINT_CONFIG_CONFIG_YAML + ", but got: "
+                "Expected the config path to end with: "
+                        + TMP_TEST_PRINT_CONFIG_CONFIG_YAML
+                        + ", but got: "
                         + normalizedConfig,
                 normalizedConfig.endsWith(TMP_TEST_PRINT_CONFIG_CONFIG_YAML));
 
@@ -252,7 +269,8 @@ public class PrintingServletWrappingControllerTest extends GeoServerSystemTestSu
     private String readTestResource(String resourceName) throws Exception {
         try (InputStream is = getClass().getResourceAsStream(resourceName)) {
             if (is == null) {
-                throw new IllegalStateException("Could not find test resource '" + resourceName + "' on classpath.");
+                throw new IllegalStateException(
+                        "Could not find test resource '" + resourceName + "' on classpath.");
             }
             byte[] bytes = is.readAllBytes();
             return new String(bytes, StandardCharsets.UTF_8);

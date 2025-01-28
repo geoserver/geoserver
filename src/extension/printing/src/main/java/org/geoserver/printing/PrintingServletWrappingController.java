@@ -18,15 +18,16 @@ import org.geoserver.util.IOUtils;
 import org.springframework.web.servlet.mvc.ServletWrappingController;
 
 /**
- * A wrapper for Spring's {@code ServletWrappingController} that configures MapFish printing with GeoServer's data
- * directory.
+ * A wrapper for Spring's {@code ServletWrappingController} that configures MapFish printing with
+ * GeoServer's data directory.
  *
- * <p>This controller modifies the servlet init parameter "config" so that it points to
- * {@code $GEOSERVER_DATA_DIR/printing/$CONFIG} or another directory, as configured by environment variables or system
- * properties.
+ * <p>This controller modifies the servlet init parameter "config" so that it points to {@code
+ * $GEOSERVER_DATA_DIR/printing/$CONFIG} or another directory, as configured by environment
+ * variables or system properties.
  *
  * <ul>
- *   <li>If <b>GEOSERVER_PRINT_CONFIG_DIR</b> is set as an environment variable, that takes precedence.
+ *   <li>If <b>GEOSERVER_PRINT_CONFIG_DIR</b> is set as an environment variable, that takes
+ *       precedence.
  *   <li>If <b>GEOSERVER_PRINT_CONFIG_DIR</b> is set as a system property, that is used next.
  *   <li>Otherwise, {@code "printing"} (relative to the GeoServer data directory) is used.
  * </ul>
@@ -54,7 +55,8 @@ public class PrintingServletWrappingController extends ServletWrappingController
         String configProp = initParameters.getProperty("config");
         if (configProp == null) {
             // If there's no "config" property at all, just pass it on
-            LOGGER.warning("No 'config' init parameter was found. MapFish printing servlet may fail.");
+            LOGGER.warning(
+                    "No 'config' init parameter was found. MapFish printing servlet may fail.");
             super.setInitParameters(initParameters);
             return;
         }
@@ -63,10 +65,12 @@ public class PrintingServletWrappingController extends ServletWrappingController
             String configPath = findPrintConfigDirectory(configProp);
             initParameters.setProperty("config", configPath);
         } catch (IOException e) {
-            LOGGER.warning("IO error while setting up MapFish printing servlet config: " + e.getMessage());
+            LOGGER.warning(
+                    "IO error while setting up MapFish printing servlet config: " + e.getMessage());
         } catch (Exception e) {
             // Catch other unexpected issues
-            LOGGER.warning("Error while setting up MapFish printing servlet config: " + e.getMessage());
+            LOGGER.warning(
+                    "Error while setting up MapFish printing servlet config: " + e.getMessage());
         }
         super.setInitParameters(initParameters);
     }
@@ -82,8 +86,8 @@ public class PrintingServletWrappingController extends ServletWrappingController
      *   <li>Otherwise, use {@link #DEFAULT_PRINT_DIR}.
      * </ol>
      *
-     * Then resolve {@code configProp} relative to that directory if necessary. If the resulting resource doesn't exist,
-     * copies the {@code default-config.yaml} from classpath.
+     * Then resolve {@code configProp} relative to that directory if necessary. If the resulting
+     * resource doesn't exist, copies the {@code default-config.yaml} from classpath.
      *
      * @param configProp the name of the printing config resource (e.g. "config.yaml")
      * @return the absolute path to the printing configuration file
@@ -110,7 +114,8 @@ public class PrintingServletWrappingController extends ServletWrappingController
         String combinedPath = Paths.path(dir, Paths.convert(configProp));
 
         // Obtain the resource from the loader.
-        //   - If 'dir' is absolute, we still can create a Resource that points to an external location
+        //   - If 'dir' is absolute, we still can create a Resource that points to an external
+        // location
         //     using a small helper or 'Resources.fromPath(...)' if available in your codebase.
         GeoServerResourceLoader loader = GeoServerExtensions.bean(GeoServerResourceLoader.class);
         Resource configResource;
@@ -126,13 +131,16 @@ public class PrintingServletWrappingController extends ServletWrappingController
         }
 
         // 4) If resource does not exist or is not readable, copy default-config.yaml from classpath
-        if (configResource.getType() == Resource.Type.UNDEFINED || !Resources.canRead(configResource)) {
+        if (configResource.getType() == Resource.Type.UNDEFINED
+                || !Resources.canRead(configResource)) {
             if (!Resources.canRead(configResource)) {
-                LOGGER.warning("Printing configuration resource is undefined or not readable: "
-                        + configResource.path()
-                        + " . Copying default-config.yaml from classpath.");
+                LOGGER.warning(
+                        "Printing configuration resource is undefined or not readable: "
+                                + configResource.path()
+                                + " . Copying default-config.yaml from classpath.");
             }
-            try (InputStream defaultConfigStream = getClass().getResourceAsStream("default-config.yaml")) {
+            try (InputStream defaultConfigStream =
+                    getClass().getResourceAsStream("default-config.yaml")) {
                 if (defaultConfigStream == null) {
                     LOGGER.warning("default-config.yaml not found in the classpath!");
                 } else {

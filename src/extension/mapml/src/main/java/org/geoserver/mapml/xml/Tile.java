@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -36,13 +37,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "")
 @XmlRootElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml")
-public class Tile {
+public class Tile implements Comparable<Tile> {
 
     @XmlAttribute(name = "col", required = true)
     protected BigInteger col;
 
     @XmlAttribute(name = "row", required = true)
     protected BigInteger row;
+
+    @XmlAttribute(name = "zoom")
+    protected BigInteger zoom;
 
     @XmlAttribute(name = "src", required = true)
     @XmlSchemaType(name = "anySimpleType")
@@ -66,6 +70,9 @@ public class Tile {
     @XmlAttribute(name = "type")
     @XmlSchemaType(name = "anySimpleType")
     protected String type;
+
+    @XmlTransient
+    protected Double distance;
 
     /**
      * Gets the value of the col property.
@@ -227,5 +234,47 @@ public class Tile {
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the zoom property.
+     *
+     * @return possible object is {@link BigInteger }
+     */
+    public BigInteger getZoom() {
+        return zoom;
+    }
+
+    /**
+     * Sets the value of the zoom property.
+     *
+     * @param value allowed object is {@link BigInteger }
+     */
+    public void setZoom(BigInteger value) {
+        this.zoom = value;
+    }
+
+    /**
+     * Gets the value of the distance property.
+     *
+     * @return value allowed object is {@link Double}
+     */
+    @XmlTransient
+    public Double getDistance() {
+        return distance;
+    }
+
+    /**
+     * Sets the value of the distance property.
+     *
+     * @param value
+     */
+    public void setDistance(Double value) {
+        this.distance = value;
+    }
+
+    @Override
+    public int compareTo(Tile o) {
+        return this.distance.compareTo(o.getDistance());
     }
 }

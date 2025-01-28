@@ -4,6 +4,7 @@
  */
 package org.geoserver.mapml;
 
+import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.fail;
 
 import java.io.StringReader;
@@ -12,8 +13,17 @@ import java.util.Locale;
 import java.util.Map;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.wms.WMSTestSupport;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.mime.TextMime;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -50,6 +60,36 @@ public class MapMLTestSupport extends WMSTestSupport {
             fail("MapML response is not valid XML");
         }
         return mapml;
+    }
+
+    protected void enableTileCaching(QName layerName, Catalog catalog) {
+        enableTileCaching(layerName, getCatalog(), GWC.get());
+    }
+
+    protected void enableTileCaching(QName layerName, Catalog catalog, GWC gwc) {
+        GWCConfig defaults = GWCConfig.getOldDefaults();
+        // it seems just the fact of retrieving the bean causes the
+        // GridSets to be added to the gwc GridSetBroker, but if you don't do
+        // this, they are not added automatically
+        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
+        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
+        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
+        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
+        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        layerInfoTileLayer.addGridSubset(wgs84gridset);
+        layerInfoTileLayer.addGridSubset(osmtilegridset);
+        layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
+        gwc.save(layerInfoTileLayer);
+    }
+
+    protected void disableTileCaching(QName layerName, Catalog catalog) {
+        GWC gwc = applicationContext.getBean(GWC.class);
+        GWCConfig defaults = GWCConfig.getOldDefaults();
+        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
+        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        layerInfoTileLayer.removeGridSubset("OSMTILE");
+        layerInfoTileLayer.removeGridSubset("WGS84");
+        gwc.save(layerInfoTileLayer);
     }
 
     @Override
@@ -212,6 +252,7 @@ public class MapMLTestSupport extends WMSTestSupport {
             String formatOptions = isFeature()
                     ? MapMLConstants.MAPML_FEATURE_FO + ":true;"
                     : getFormat() != null ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png;" : "";
+
             if (isCreateFeatureLinks()) {
                 formatOptions += MapMLConstants.MAPML_CREATE_FEATURE_LINKS + ":true;";
             }

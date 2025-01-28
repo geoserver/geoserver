@@ -10,9 +10,11 @@ package org.geoserver.mapml.xml;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import javax.xml.bind.annotation.XmlType;
 
 /**
@@ -48,11 +50,16 @@ public class BodyContent {
     @XmlElement(name = "map-link", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Link> links;
 
-    @XmlElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml")
-    protected List<Feature> features;
+    // @XmlElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml")
+    // protected List<Feature> features;
 
-    @XmlElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml")
-    protected List<Tile> tiles;
+    // @XmlElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml")
+    // protected List<Tile> tiles;
+    @XmlElements({
+        @XmlElement(name = "map-tile", namespace = "http://www.w3.org/1999/xhtml", type = Tile.class),
+        @XmlElement(name = "map-feature", namespace = "http://www.w3.org/1999/xhtml", type = Feature.class)
+    })
+    protected List<Object> tilesOrFeatures;
 
     @XmlElement(name = "map-image", namespace = "http://www.w3.org/1999/xhtml")
     protected List<Image> images;
@@ -86,17 +93,30 @@ public class BodyContent {
     }
 
     public List<Feature> getFeatures() {
-        if (features == null) {
-            features = new ArrayList<>();
+        if (tilesOrFeatures == null) {
+            tilesOrFeatures = new ArrayList<>();
         }
-        return this.features;
+        return this.tilesOrFeatures.stream()
+                .filter(Feature.class::isInstance)
+                .map(Feature.class::cast)
+                .collect(Collectors.toList());
     }
 
     public List<Tile> getTiles() {
-        if (tiles == null) {
-            tiles = new ArrayList<>();
+        if (tilesOrFeatures == null) {
+            tilesOrFeatures = new ArrayList<>();
         }
-        return this.tiles;
+        return this.tilesOrFeatures.stream()
+                .filter(Tile.class::isInstance)
+                .map(Tile.class::cast)
+                .collect(Collectors.toList());
+    }
+
+    public List<Object> getTilesOrFeatures() {
+        if (tilesOrFeatures == null) {
+            tilesOrFeatures = new ArrayList<>();
+        }
+        return this.tilesOrFeatures;
     }
 
     public List<Image> getImages() {

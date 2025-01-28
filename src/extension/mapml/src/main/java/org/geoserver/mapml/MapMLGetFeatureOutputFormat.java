@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -80,18 +81,19 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         int numDecimals = this.getNumDecimals(featureCollections, gs, gs.getCatalog());
         boolean forcedDecimal = this.getForcedDecimal(featureCollections, gs, gs.getCatalog());
         boolean padWithZeros = this.getPadWithZeros(featureCollections, gs, gs.getCatalog());
+        List<MapMLFeatureUtil.FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers = new ArrayList<>();
+        MapMLFeatureUtil.FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier =
+                new MapMLFeatureUtil.FeatureCollectionInfoSimplifier(
+                        featureCollection, layerInfo, null, null, numDecimals, forcedDecimal, padWithZeros, null);
+        featureCollectionInfoSimplifiers.add(featureCollectionInfoSimplifier);
         Mapml mapml = MapMLFeatureUtil.featureCollectionToMapML(
-                featureCollection,
-                layerInfo,
+                featureCollectionInfoSimplifiers,
                 null,
                 requestCRS,
                 MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
-                numDecimals,
-                forcedDecimal,
-                padWithZeros,
+                false,
+                false,
                 null,
-                false,
-                false,
                 null);
 
         // write to output

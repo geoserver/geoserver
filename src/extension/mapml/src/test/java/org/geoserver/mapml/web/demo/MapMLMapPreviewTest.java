@@ -19,10 +19,12 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.repeater.data.DataView;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.config.ServiceInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.web.demo.MapPreviewPage;
+import org.geoserver.wms.WMSInfo;
 import org.junit.After;
 import org.junit.Test;
 
@@ -40,6 +42,10 @@ public class MapMLMapPreviewTest extends GeoServerWicketTestSupport {
         li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
         li.getResource().getMetadata().put(MAPML_MULTIEXTENT, false);
         cat.save(li);
+
+        ServiceInfo serviceInfo = getGeoServer().getService(WMSInfo.class);
+        serviceInfo.getMetadata().put(MAPML_MULTILAYER_AS_MULTIEXTENT, false);
+        getGeoServer().save(serviceInfo);
     }
 
     @Test

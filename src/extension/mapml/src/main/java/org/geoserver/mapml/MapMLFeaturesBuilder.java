@@ -5,9 +5,13 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -18,7 +22,6 @@ import org.geoserver.feature.ReprojectingFeatureCollection;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
-import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
@@ -30,7 +33,9 @@ import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.SchemaException;
+import org.geotools.map.Layer;
 import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
@@ -39,16 +44,16 @@ import org.locationtech.jts.geom.MultiLineString;
 public class MapMLFeaturesBuilder {
 
     static final Logger LOGGER = Logging.getLogger(MapMLFeaturesBuilder.class);
-    private MapMLSimplifier simplifier;
-    private final SimpleFeatureSource featureSource;
+    private List<FeatureSourceSimplifier> featureSourceSimplifiers = new ArrayList<>();
     private final GeoServer geoServer;
     private final WMSMapContent mapContent;
     private final GetMapRequest getMapRequest;
-    private final Query query;
 
     private boolean skipAttributes = false;
 
     private boolean skipHeadStyles = false;
+
+    private final HttpServletRequest request;
 
     /**
      * Constructor
@@ -56,23 +61,56 @@ public class MapMLFeaturesBuilder {
      * @param mapContent the WMS map content
      * @param geoServer the GeoServer
      */
-    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, Query query) {
-        if (mapContent.layers().size() != 1)
-            throw new ServiceException(
-                    "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-        FeatureSource fs = mapContent.layers().get(0).getFeatureSource();
-        if (!(fs instanceof SimpleFeatureSource))
-            throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
-        this.featureSource = (SimpleFeatureSource) fs;
-
+    public MapMLFeaturesBuilder(
+            WMSMapContent mapContent, GeoServer geoServer, List<Query> queries, HttpServletRequest request)
+            throws IOException {
+        int i = 0;
+        for (Layer layer : mapContent.layers()) {
+            FeatureSource fs = layer.getFeatureSource();
+            if (!(fs instanceof SimpleFeatureSource))
+                throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
+            Query query = queries.get(i);
+            MapMLSimplifier simplifier = getSimplifier(fs, mapContent, query);
+            FeatureSourceSimplifier fss = new FeatureSourceSimplifier(
+                    (SimpleFeatureSource) fs,
+                    simplifier,
+                    (SimpleFeatureCollection) getFeatureCollection(fs, query, simplifier),
+                    query);
+            featureSourceSimplifiers.add(fss);
+            i++;
+        }
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
-        this.query = new Query(query);
-        this.simplifier = getSimplifier(mapContent, query);
+        this.request = request;
     }
 
-    private MapMLSimplifier getSimplifier(WMSMapContent mapContent, Query query) {
+    private FeatureCollection getFeatureCollection(FeatureSource featureSource, Query query, MapMLSimplifier simplifier)
+            throws IOException {
+        FeatureCollection fc = null;
+
+        if (query != null) {
+            if (featureSource.getSupportedHints().contains(Hints.SCREENMAP)) {
+                query.getHints().put(Hints.SCREENMAP, simplifier.getScreenMap());
+                // we don't want to run the screenmap simplification twice
+                simplifier.setScreenMap(null);
+            }
+            // LineString and MultiLineString geometries can be simplified without worrying about topology
+            Class<?> binding =
+                    featureSource.getSchema().getGeometryDescriptor().getType().getBinding();
+            if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
+                if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_SIMPLIFICATION)) {
+                    query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplifier);
+                }
+            }
+            fc = featureSource.getFeatures(query);
+        } else {
+            fc = featureSource.getFeatures();
+        }
+        return fc;
+    }
+
+    private MapMLSimplifier getSimplifier(FeatureSource featureSource, WMSMapContent mapContent, Query query) {
         try {
             CoordinateReferenceSystem layerCRS = featureSource.getSchema().getCoordinateReferenceSystem();
             MapMLSimplifier simplifier = new MapMLSimplifier(mapContent, layerCRS);
@@ -103,80 +141,99 @@ public class MapMLFeaturesBuilder {
      * @throws IOException If an error occurs while producing the map
      */
     public Mapml getMapMLDocument() throws IOException {
-        if (!getMapRequest.getLayers().isEmpty()
-                && MapLayerInfo.TYPE_VECTOR != getMapRequest.getLayers().get(0).getType()) {
-            throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
-        }
-        SimpleFeatureCollection fc = null;
+        List<MapMLFeatureUtil.FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers = new ArrayList<>();
+        int i = 0;
+        for (Layer layer : mapContent.layers()) {
+            SimpleFeatureCollection fc = null;
+            FeatureSource fs = layer.getFeatureSource();
+            if (!(fs instanceof SimpleFeatureSource))
+                throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
+            SimpleFeatureSource featureSource = (SimpleFeatureSource) fs;
+            Query query = featureSourceSimplifiers.get(i).getQuery();
+            MapMLSimplifier simplifier = getSimplifier(featureSource, mapContent, query);
 
-        if (query != null) {
-            if (featureSource.getSupportedHints().contains(Hints.SCREENMAP)) {
-                query.getHints().put(Hints.SCREENMAP, simplifier.getScreenMap());
-                // we don't want to run the screenmap simplification twice
-                simplifier.setScreenMap(null);
-            }
-            // LineString and MultiLineString geometries can be simplified without worrying about topology
-            Class<?> binding =
-                    featureSource.getSchema().getGeometryDescriptor().getType().getBinding();
-            if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
-                if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_SIMPLIFICATION)) {
-                    query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplifier);
+            if (query != null) {
+                if (featureSource.getSupportedHints().contains(Hints.SCREENMAP)) {
+                    query.getHints().put(Hints.SCREENMAP, simplifier.getScreenMap());
+                    // we don't want to run the screenmap simplification twice
+                    simplifier.setScreenMap(null);
                 }
+                // LineString and MultiLineString geometries can be simplified without worrying about topology
+                Class<?> binding = featureSource
+                        .getSchema()
+                        .getGeometryDescriptor()
+                        .getType()
+                        .getBinding();
+                if (LineString.class.isAssignableFrom(binding) || MultiLineString.class.isAssignableFrom(binding)) {
+                    if (featureSource.getSupportedHints().contains(Hints.GEOMETRY_SIMPLIFICATION)) {
+                        query.getHints().put(Hints.GEOMETRY_SIMPLIFICATION, simplifier);
+                    }
+                }
+                fc = featureSource.getFeatures(query);
+            } else {
+                fc = featureSource.getFeatures();
             }
-            fc = featureSource.getFeatures(query);
-        } else {
-            fc = featureSource.getFeatures();
-        }
-
-        GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
-        if (sourceGeometryDescriptor == null) {
-            throw new ServiceException("MapML WMS Feature format does not currently support non-geometry features.");
-        }
-        SimpleFeatureCollection reprojectedFeatureCollection = null;
-        if (!sourceGeometryDescriptor.getCoordinateReferenceSystem().equals(getMapRequest.getCrs())) {
-            try {
-                reprojectedFeatureCollection = new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
-                ((ReprojectingFeatureCollection) reprojectedFeatureCollection)
-                        .setDefaultSource(sourceGeometryDescriptor.getCoordinateReferenceSystem());
-            } catch (SchemaException | FactoryException e) {
-                throw new ServiceException("Unable to reproject to the requested coordinate references system", e);
+            GeometryDescriptor sourceGeometryDescriptor = fc.getSchema().getGeometryDescriptor();
+            if (sourceGeometryDescriptor == null) {
+                throw new ServiceException(
+                        "MapML WMS Feature format does not currently support non-geometry features.");
             }
-        } else {
-            reprojectedFeatureCollection = fc;
+            SimpleFeatureCollection reprojectedFeatureCollection = null;
+            if (!sourceGeometryDescriptor.getCoordinateReferenceSystem().equals(getMapRequest.getCrs())) {
+                try {
+                    reprojectedFeatureCollection = new ReprojectingFeatureCollection(fc, getMapRequest.getCrs());
+                    ((ReprojectingFeatureCollection) reprojectedFeatureCollection)
+                            .setDefaultSource(sourceGeometryDescriptor.getCoordinateReferenceSystem());
+                } catch (SchemaException | FactoryException e) {
+                    throw new ServiceException("Unable to reproject to the requested coordinate references system", e);
+                }
+            } else {
+                reprojectedFeatureCollection = fc;
+            }
+
+            LayerInfo layerInfo =
+                    geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
+            CoverageInfo coverageInfo = null;
+            if (layerInfo == null) {
+                coverageInfo = geoServer.getCatalog().getCoverageByName(layer.getTitle());
+            }
+            CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
+            FeatureType featureType = fc.getSchema();
+            ResourceInfo meta = geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
+            if (query != null && query.getFilter() != null && query.getFilter().equals(Filter.EXCLUDE)) {
+                // if the filter is exclude, return an empty MapML that has header metadata
+                return MapMLFeatureUtil.getEmptyMapML(layerInfo, crs);
+            }
+            Map<String, MapMLStyle> styles =
+                    getMapMLStyleMap(getMapRequest.getStyles().get(i), layerInfo);
+            MapMLFeatureUtil.FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier =
+                    new MapMLFeatureUtil.FeatureCollectionInfoSimplifier(
+                            reprojectedFeatureCollection,
+                            layerInfo,
+                            coverageInfo,
+                            simplifier,
+                            getNumberOfDecimals(meta),
+                            getForcedDecimal(meta),
+                            getPadWithZeros(meta),
+                            styles);
+            featureCollectionInfoSimplifiers.add(featureCollectionInfoSimplifier);
+            i++;
         }
-
-        Map<String, MapMLStyle> styles = getMapMLStyleMap();
-
-        LayerInfo layerInfo =
-                geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
-        FeatureType featureType = fc.getSchema();
-        ResourceInfo meta = geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
-        if (query != null && query.getFilter() != null && query.getFilter().equals(Filter.EXCLUDE)) {
-            // if the filter is exclude, return an empty MapML that has header metadata
-            return MapMLFeatureUtil.getEmptyMapML(layerInfo, crs);
-        }
-
         return MapMLFeatureUtil.featureCollectionToMapML(
-                reprojectedFeatureCollection,
-                layerInfo,
+                featureCollectionInfoSimplifiers,
                 getMapRequest.getBbox(), // clip on bound
                 crs,
                 null, // for WMS GetMap we don't include alternate projections
-                getNumberOfDecimals(meta),
-                getForcedDecimal(meta),
-                getPadWithZeros(meta),
-                styles,
                 skipHeadStyles,
                 skipAttributes,
-                simplifier);
+                request,
+                getMapRequest);
     }
 
-    private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {
-        Style style = getMapRequest.getStyles().get(0);
+    private Map<String, MapMLStyle> getMapMLStyleMap(Style style, LayerInfo layerInfo) throws IOException {
         if (style == null) {
-            StyleInfo styleInfo =
-                    getMapRequest.getLayers().get(0).getLayerInfo().getDefaultStyle();
+            StyleInfo styleInfo = layerInfo.getDefaultStyle();
             if (styleInfo != null && styleInfo.getStyle() != null) {
                 style = styleInfo.getStyle();
             } else {
@@ -229,5 +286,39 @@ public class MapMLFeaturesBuilder {
             return ((FeatureTypeInfo) meta).getForcedDecimal();
         }
         return false;
+    }
+
+    private class FeatureSourceSimplifier {
+        private final SimpleFeatureSource featureSource;
+        private final MapMLSimplifier simplifier;
+        private final SimpleFeatureCollection fc;
+        private final Query query;
+
+        private FeatureSourceSimplifier(
+                SimpleFeatureSource featureSource,
+                MapMLSimplifier simplifier,
+                SimpleFeatureCollection fc,
+                Query query) {
+            this.featureSource = featureSource;
+            this.simplifier = simplifier;
+            this.fc = fc;
+            this.query = new Query(query);
+        }
+
+        SimpleFeatureSource getFeatureSource() {
+            return featureSource;
+        }
+
+        MapMLSimplifier getSimplifier() {
+            return simplifier;
+        }
+
+        SimpleFeatureCollection getFeatureCollection() {
+            return fc;
+        }
+
+        Query getQuery() {
+            return query;
+        }
     }
 }

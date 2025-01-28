@@ -42,7 +42,7 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
             + "&HEIGHT=414"
             + "&format_options="
             + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-            + ":image/png";
+            + ":image/png;" + MapMLConstants.MAPML_USE_TILES_REP + ":true";
 
     @BeforeClass
     public static void beforeClass() {
@@ -106,7 +106,6 @@ public class MapMLWMTSProxyTest extends MapMLBaseProxyTest {
 
         ResourceInfo layerMeta = li.getResource();
         layerMeta.getMetadata().put(MapMLConstants.MAPML_USE_REMOTE, false);
-        layerMeta.getMetadata().put(MapMLConstants.MAPML_USE_TILES, true);
         cat.save(layerMeta);
 
         // get the mapml doc for the layer

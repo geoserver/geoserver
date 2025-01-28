@@ -138,8 +138,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         WMSInfo wms = geoServer.getService(WMSInfo.class);
         wms.getMetadata()
                 .put(
-                        MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT,
-                        MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT);
+                        MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT,
+                        MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT);
         // restore default max request memory
         wms.setMaxRequestMemory(0);
         geoServer.save(wms);
@@ -343,22 +343,15 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testMapMLDefaultMimeType() throws Exception {
-        GeoServer geoServer = getGeoServer();
-        WMSInfo wms = geoServer.getService(WMSInfo.class);
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
-        geoServer.save(wms);
         Catalog cat = getCatalog();
         LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
-        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
         li.getResource().getMetadata().put(MapMLConstants.MAPML_MIME, "img/jpeg");
-        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
-        li2.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
-        li2.getResource().getMetadata().put(MAPML_USE_TILES, false);
         cat.save(li);
-        cat.save(li2);
         Mapml mapmlExtent = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart())
+                .tile(false)
+                .createFeatureLinks(false)
+                .multiExtent(true)
                 .srs("EPSG:3857")
                 .getAsMapML();
 
@@ -370,6 +363,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 imageLinksForSingle.get(0).getTref().contains("format=img/jpeg"));
         Mapml mapmlExtentWithTwo = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + MockData.LINES.getLocalPart())
+                .tile(false)
+                .createFeatureLinks(false)
+                .multiExtent(true)
                 .srs("EPSG:3857")
                 .getAsMapML();
         List<Link> extentLinksOne = getTypeFromInputOrDataListOrLink(
@@ -389,31 +385,13 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testMapMLUseFeaturesLinks() throws Exception {
-        GeoServer geoServer = getGeoServer();
-        WMSInfo wms = geoServer.getService(WMSInfo.class);
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
-        geoServer.save(wms);
-
-        Catalog cat = getCatalog();
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li.getResource().getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(li);
-
-        LayerInfo li2 = cat.getLayerByName(MockData.LINES.getLocalPart());
-        li2.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li2.getResource().getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(li2);
-
-        LayerInfo li3 = cat.getLayerByName(MockData.WORLD.getLocalPart());
-        li3.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li3.getResource().getMetadata().put(MAPML_USE_TILES, false);
-        cat.save(li3);
-
         Mapml mapmlExtent = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + MockData.LINES.getLocalPart())
                 .srs("EPSG:3857")
                 .cql("id%3D%27t0002%27;INCLUDE")
+                .createFeatureLinks(true)
+                .tile(false)
+                .multiExtent(true)
                 .getAsMapML();
 
         List<Link> extentLinks = getTypeFromInputOrDataListOrLink(
@@ -429,11 +407,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 "Features link tref should contain CQL_FILTER=id%3D%27t0002%27",
                 imageLinksForSingle.get(0).getTref().contains("cql_filter=id='t0002'"));
 
-        // now we change one of the layers to not return features
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
-        cat.save(li);
+        // now we change to not return features
         Mapml mapmlOneNotFeatures = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + MockData.LINES.getLocalPart())
+                .createFeatureLinks(false)
+                .multiExtent(true)
                 .srs("EPSG:3857")
                 .getAsMapML();
 
@@ -450,23 +428,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 1,
                 imageLinksForSingleOneNotFeatures.size());
 
-        List<Link> extentLinksOneHasFeatures = getTypeFromInputOrDataListOrLink(
-                mapmlOneNotFeatures.getBody().getExtents().get(1).getInputOrDatalistOrLink(), Link.class);
-        List<Link> featureLinksForSingleOneHasFeatures = getLinkByRelType(extentLinksOneHasFeatures, RelType.FEATURES);
-        assertEquals(
-                "Features link should be present in the second extent", 1, featureLinksForSingleOneHasFeatures.size());
-        List<Link> imageLinksForSingleOneHasFeatures = getLinkByRelType(extentLinksOneHasFeatures, RelType.IMAGE);
-        assertEquals(
-                "Image link should not be present when in second extent, which does not have useFeatures",
-                0,
-                imageLinksForSingleOneHasFeatures.size());
-
         // now we add a raster layer
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        cat.save(li);
         Mapml mapmlOneRaster = new MapMLWMSRequest()
                 .name("layerGroup" + "," + MockData.POLYGONS.getLocalPart() + "," + MockData.WORLD.getLocalPart())
                 .srs("EPSG:3857")
+                .createFeatureLinks(true)
                 .getAsMapML();
 
         List<Link> extentLinksOneRaster = getTypeFromInputOrDataListOrLink(
@@ -485,16 +451,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testCQLTiledLinks() throws Exception {
-        Catalog cat = getCatalog();
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li.getResource().getMetadata().put(MAPML_USE_TILES, true);
-        cat.save(li);
-
         Mapml mapmlExtent = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:3857")
                 .cql("id%3D%27t0002%27;INCLUDE")
+                .createFeatureLinks(true)
+                .tile(true)
                 .getAsMapML();
 
         List<Link> extentLinks = getTypeFromInputOrDataListOrLink(
@@ -511,16 +473,13 @@ public class MapMLWMSTest extends MapMLTestSupport {
     public void testCQLTiledCachedLinks() throws Exception {
         // set up tile caching so that we can check WMTS links
         Catalog cat = getCatalog();
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        li.getResource().getMetadata().put(MAPML_USE_FEATURES, true);
-        li.getResource().getMetadata().put(MAPML_USE_TILES, true);
-        cat.save(li);
-
         enableTileCaching(MockData.POLYGONS, cat);
 
         Mapml mapmlExtent = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:3857")
+                .createFeatureLinks(true)
+                .tile(true)
                 .cql("id%3D%27t0002%27;INCLUDE")
                 .getAsMapML();
 
@@ -536,25 +495,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     @Test
     public void testMapMLMultiLayer() throws Exception {
-        Catalog cat = getCatalog();
-        GeoServer geoServer = getGeoServer();
-        WMSInfo wms = geoServer.getService(WMSInfo.class);
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.FALSE);
-        geoServer.save(wms);
-
-        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
-        ResourceInfo layerMeta = li.getResource();
-        li.getResource().getMetadata().put("mapml.useTiles", true);
-        cat.save(layerMeta);
-
-        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroup");
-        lgi.getMetadata().put("mapml.useTiles", true);
-        cat.save(lgi);
-
         Mapml mapmlSingleExtent = new MapMLWMSRequest()
                 .name("layerGroup" + "," + MockData.POLYGONS.getLocalPart())
                 .bbox("-20000000,-20000000,20000000,20000000")
                 .srs("EPSG:3857")
+                .multiExtent(false)
+                .tile(true)
                 .getAsMapML();
 
         List<Link> selfStyleLinksForSingle =
@@ -617,12 +563,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 reader.toString().contains("hidden"));
 
         // Change To Return Multiple Extents for Multiple Layers
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
-        geoServer.save(wms);
-
         Mapml mapmlMultiExtent = new MapMLWMSRequest()
                 .name("layerGroup" + "," + MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:3857")
+                .tile(true)
+                .multiExtent(true)
                 .getAsMapML();
 
         List<Link> selfStyleLinksForMulti =
@@ -663,14 +608,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String mapmlString = new MapMLWMSRequest()
                 .name("layerGroup" + "," + MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:3857")
+                .multiExtent(true)
+                .tile(true)
                 .getAsString();
         assertFalse("For multi-extent, the extent hidden attribute should be excluded", mapmlString.contains("hidden"));
         StyleInfo styleInfo = getCatalog().getStyleByName("BasicPolygons");
+        Catalog cat = getCatalog();
+        LayerInfo li = cat.getLayerByName(MockData.POLYGONS.getLocalPart());
         li.getStyles().add(styleInfo);
         cat.save(li);
         Mapml mapmlMultiExtentWithMultiStyles = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + "layerGroup")
                 .srs("EPSG:3857")
+                .multiExtent(true)
+                .tile(true)
                 .styles("BasicPolygons,")
                 .getAsMapML();
 
@@ -691,14 +642,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
         li.getStyles().add(cat.getStyleByName("scaleRange"));
         li.setDefaultStyle(cat.getStyleByName("scaleRange"));
         cat.save(li);
-        ResourceInfo layerMeta = li.getResource();
-        layerMeta.getMetadata().put("mapml.useTiles", true);
-        cat.save(layerMeta);
 
         Mapml mapmlSingleLayer = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:4326")
                 .styles("scaleRange")
+                .tile(true)
                 .getAsMapML();
 
         List<Input> inputs = getTypeFromInputOrDataListOrLink(
@@ -721,6 +670,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 .name(MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:4326")
                 .styles("scaleRangeNoMax")
+                .tile(true)
                 .getAsMapML();
 
         List<Input> inputsNoMax = getTypeFromInputOrDataListOrLink(
@@ -742,6 +692,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 .name(MockData.POLYGONS.getLocalPart())
                 .srs("EPSG:4326")
                 .styles("scaleRangeExtremes")
+                .tile(true)
                 .getAsMapML();
 
         List<Input> inputsExtremes = getTypeFromInputOrDataListOrLink(
@@ -761,14 +712,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
         li.setDefaultStyle(cat.getStyleByName("scaleRange"));
         cat.save(li);
 
-        GeoServer geoServer = getGeoServer();
-        WMSInfo wms = geoServer.getService(WMSInfo.class);
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.TRUE);
-        geoServer.save(wms);
         Mapml mapmlMultiExtentWithMultiStyles = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + "layerGroup")
                 .srs("EPSG:4326")
                 .styles("scaleRange,")
+                .multiExtent(true)
+                .tile(true)
                 .getAsMapML();
 
         List<Input> inputsMultiExtent = getTypeFromInputOrDataListOrLink(
@@ -785,12 +734,12 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 "10",
                 zoomInputsMultiExtent.get(0).getMax());
 
-        wms.getMetadata().put(MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT, Boolean.FALSE);
-        geoServer.save(wms);
         Mapml mapmlSingleExtentWithMultiStyles = new MapMLWMSRequest()
                 .name(MockData.POLYGONS.getLocalPart() + "," + "layerGroup")
                 .srs("EPSG:4326")
                 .styles("scaleRange,")
+                .tile(true)
+                .multiExtent(false)
                 .getAsMapML();
 
         List<Input> inputsSingleExtent = getTypeFromInputOrDataListOrLink(
@@ -985,15 +934,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         // set up mapml layer to useTiles
         Catalog catalog = getCatalog();
-        ResourceInfo layerMeta =
-                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
-        layerMeta.getMetadata().put(MAPML_USE_TILES, true);
-        catalog.save(layerMeta);
         enableTileCaching(MockData.ROAD_SEGMENTS, catalog);
 
         // request again
         MockRequestResponse requestResponseJapanese =
-                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null);
+                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null, false, true);
         doc = dom(new ByteArrayInputStream(requestResponseJapanese.response.getContentAsByteArray()), true);
 
         String wmtsLayerName = layerId;
@@ -1049,7 +994,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 null,
                 Locale.JAPANESE,
                 "EPSG:3857",
-                null);
+                null,
+                false,
+                true);
 
         org.w3c.dom.Document docOsmTile = dom(
                 new ByteArrayInputStream(
@@ -1072,7 +1019,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Test
     public void testGWCTiledFeatureLinks() throws Exception {
         String layerId = getLayerId(MockData.ROAD_SEGMENTS);
-        MockRequestResponse requestResponse = getMockRequestResponse(layerId, null, null, "EPSG:4326", null);
+        MockRequestResponse requestResponse =
+                getMockRequestResponse(layerId, null, null, "EPSG:4326", null, false, false);
 
         org.w3c.dom.Document doc =
                 dom(new ByteArrayInputStream(requestResponse.response.getContentAsByteArray()), true);
@@ -1081,16 +1029,11 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
         // set up mapml layer to useTiles and useFeatures as well
         Catalog catalog = getCatalog();
-        ResourceInfo layerMeta =
-                catalog.getLayerByName(MockData.ROAD_SEGMENTS.getLocalPart()).getResource();
-        layerMeta.getMetadata().put(MAPML_USE_TILES, true);
-        layerMeta.getMetadata().put(MAPML_USE_FEATURES, true);
-        catalog.save(layerMeta);
         enableTileCaching(MockData.ROAD_SEGMENTS, catalog);
 
         // request again
         MockRequestResponse requestResponseJapanese =
-                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null);
+                getMockRequestResponse(layerId, null, Locale.JAPANESE, "EPSG:4326", null, true, true);
         doc = dom(new ByteArrayInputStream(requestResponseJapanese.response.getContentAsByteArray()), true);
 
         String wmtsLayerName = layerId;
@@ -1524,7 +1467,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 null,
                 "MapML:WGS84",
                 null,
-                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84));
+                new ReferencedEnvelope(-180, 180, -90, 90, DefaultGeographicCRS.WGS84),
+                false,
+                false);
 
         Mapml mapml = parseMapML(requestResponse);
 
@@ -1740,12 +1685,32 @@ public class MapMLWMSTest extends MapMLTestSupport {
 
     private MockRequestResponse getMockRequestResponse(String name, Map kvp, Locale locale, String srs, String styles)
             throws Exception {
-        return getMockRequestResponse(
-                name, kvp, locale, srs, styles, new ReferencedEnvelope(0, 1, 0, 1, DefaultGeographicCRS.WGS84));
+        return getMockRequestResponse(name, kvp, locale, srs, styles, false, false);
     }
 
     private MockRequestResponse getMockRequestResponse(
-            String name, Map kvp, Locale locale, String srs, String styles, ReferencedEnvelope bounds)
+            String name, Map kvp, Locale locale, String srs, String styles, Boolean useFeatures, Boolean useTiles)
+            throws Exception {
+        return getMockRequestResponse(
+                name,
+                kvp,
+                locale,
+                srs,
+                styles,
+                new ReferencedEnvelope(0, 1, 0, 1, DefaultGeographicCRS.WGS84),
+                useFeatures,
+                useTiles);
+    }
+
+    private MockRequestResponse getMockRequestResponse(
+            String name,
+            Map kvp,
+            Locale locale,
+            String srs,
+            String styles,
+            ReferencedEnvelope bounds,
+            Boolean useFeatures,
+            Boolean useTiles)
             throws Exception {
         String path = null;
         MockHttpServletRequest request = null;
@@ -1769,7 +1734,9 @@ public class MapMLWMSTest extends MapMLTestSupport {
                     + "&HEIGHT=150"
                     + "&format_options="
                     + MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION
-                    + ":image/png";
+                    + ":image/png;"
+                    + (useTiles ? (MapMLConstants.MAPML_USE_TILES_REP + ":true;") : "")
+                    + (useFeatures ? MapMLConstants.MAPML_CREATE_FEATURE_LINKS + ":true" : "");
             request = createRequest(path);
         }
 

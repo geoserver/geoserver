@@ -5,8 +5,10 @@
 
 package org.geoserver.mapml;
 
+import static org.geoserver.mapml.MapMLConstants.MAPML_MULTIEXTENT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.MapMLLayerConfigurationPanel.getAvailableMimeTypes;
+import static org.geoserver.web.demo.MapMLFormatLink.FORMAT_OPTION_DEFAULT;
 
 import java.util.logging.Logger;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -17,8 +19,10 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
 import org.geoserver.catalog.LayerGroupInfo;
+import org.geoserver.web.GeoServerApplication;
 import org.geoserver.web.publish.PublishedConfigurationPanel;
 import org.geoserver.web.util.MapModel;
+import org.geoserver.wms.WMSInfo;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -54,7 +58,7 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
         add(licenseLink);
 
         // add the checkbox to select tiled or not
-        MapModel<Boolean> useTilesModel = new MapModel<>(new PropertyModel<>(model, METADATA), "mapml.useTiles");
+        MapModel<Boolean> useTilesModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_USE_TILES);
         CheckBox useTiles = new CheckBox("useTiles", useTilesModel);
         useTiles.add(new OnChangeAjaxBehavior() {
             @Override
@@ -65,6 +69,25 @@ public class MapMLLayerGroupConfigurationPanel extends PublishedConfigurationPan
             }
         });
         add(useTiles);
+
+        // add the checkbox to select multiextent or not
+        MapModel<Boolean> multiextentModel = new MapModel<>(new PropertyModel<>(model, METADATA), MAPML_MULTIEXTENT);
+        // in previous versions, the multiextent option was stored in the WMSInfo
+        if (multiextentModel.getObject() == null) {
+            WMSInfo wmsInfo = GeoServerApplication.get().getGeoServer().getService(WMSInfo.class);
+            boolean multiExtent = Boolean.parseBoolean(
+                    wmsInfo.getMetadata().get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT) != null
+                            ? wmsInfo.getMetadata()
+                                    .get(MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT)
+                                    .toString()
+                            : FORMAT_OPTION_DEFAULT);
+            LayerGroupInfo layerGroupInfo = model.getObject();
+            layerGroupInfo.getMetadata().put(MAPML_MULTIEXTENT, multiExtent);
+            GeoServerApplication.get().getGeoServer().getCatalog().save(layerGroupInfo);
+            multiextentModel.setObject(multiExtent);
+        }
+        CheckBox multiextent = new CheckBox("multiextent", multiextentModel);
+        add(multiextent);
 
         MapModel<String> mimeModel = new MapModel<>(new PropertyModel<>(model, METADATA), MapMLConstants.MAPML_MIME);
         boolean useTilesFromModel =

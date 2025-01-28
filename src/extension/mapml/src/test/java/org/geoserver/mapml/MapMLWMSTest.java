@@ -168,6 +168,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         String points = MockData.POINTS.getLocalPart();
         String lines = MockData.LINES.getLocalPart();
         String polygons = MockData.POLYGONS.getLocalPart();
+        String world = MockData.WORLD.getLocalPart();
         CatalogBuilder cb = new CatalogBuilder(catalog);
         ResourceInfo ri =
                 catalog.getLayerByName(MockData.BASIC_POLYGONS.getLocalPart()).getResource();
@@ -205,6 +206,15 @@ public class MapMLWMSTest extends MapMLTestSupport {
         ReferencedEnvelope webMercEnv = new ReferencedEnvelope(x1, x2, y1, y2, webMerc);
         lgi.setBounds(webMercEnv);
         catalog.save(lgi);
+
+        LayerGroupInfo lgWithRaster = catalog.getFactory().createLayerGroup();
+        lgWithRaster.setName("layerGroupWithRaster");
+        lgWithRaster.getLayers().add(catalog.getLayerByName(points));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(lines));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(polygons));
+        lgWithRaster.getLayers().add(catalog.getLayerByName(world));
+        builder.calculateLayerGroupBounds(lgWithRaster, DefaultGeographicCRS.WGS84);
+        catalog.add(lgWithRaster);
     }
 
     @Before
@@ -283,6 +293,20 @@ public class MapMLWMSTest extends MapMLTestSupport {
         expectedInternationalTitle = lgi.getInternationalTitle().toString(Locale.CANADA_FRENCH);
         assertTrue("Le titre français".equalsIgnoreCase(expectedInternationalTitle));
         assertTrue(title.equalsIgnoreCase(expectedInternationalTitle));
+    }
+
+    @Test
+    public void testMapMLLayerGroupWithRaster() throws Exception {
+        Catalog cat = getCatalog();
+
+        LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroupWithRaster");
+
+        MockRequestResponse requestResponse =
+                getMockRequestResponse((lgi).getName(), null, null, "EPSG:3857", null, true, false);
+
+        Mapml mapml = mapml(requestResponse.response);
+        String title = mapml.getHead().getTitle();
+        assertTrue(title.equalsIgnoreCase("Points,Lines,Polygons,World"));
     }
 
     @Test
@@ -439,13 +463,13 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 mapmlOneRaster.getBody().getExtents().get(0).getInputOrDatalistOrLink(), Link.class);
         List<Link> featureLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.FEATURES);
         assertEquals(
-                "Features link should not be present when useFeatures on even one layer is raster",
-                0,
+                "Features link can be present when useFeatures even if one layer is raster",
+                1,
                 featureLinksForRaster.size());
         List<Link> imageLinksForRaster = getLinkByRelType(extentLinksOneRaster, RelType.IMAGE);
         assertEquals(
-                "Image link should be present when useFeatures on even one layer is raster",
-                1,
+                "Image link should not be present when useFeatures on even one layer is raster",
+                0,
                 imageLinksForRaster.size());
     }
 
@@ -1146,23 +1170,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("RoadSegments-r2-s1", f2.getStyle());
     }
 
-    private void enableTileCaching(QName layerName, Catalog catalog) {
-        GWC gwc = applicationContext.getBean(GWC.class);
-        GWCConfig defaults = GWCConfig.getOldDefaults();
-        // it seems just the fact of retrieving the bean causes the
-        // GridSets to be added to the gwc GridSetBroker, but if you don't do
-        // this, they are not added automatically
-        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
-        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
-        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
-        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
-        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
-        layerInfoTileLayer.addGridSubset(wgs84gridset);
-        layerInfoTileLayer.addGridSubset(osmtilegridset);
-        layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
-        gwc.save(layerInfoTileLayer);
-    }
-
     @Test
     public void testGetFeatureInfoMapML() throws Exception {
 
@@ -1181,7 +1188,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
                 .toString()
                 .equalsIgnoreCase(featureCaptionTemplate));
         String forests = getLayerId(MockData.FORESTS);
-        HashMap<String, String> vars = getRequestVars(forests);
+        HashMap<String, String> vars = getRequestVars(forests, "-0.002,-0.002,0.002,0.002", null);
         MockRequestResponse requestResponse = getMockRequestResponse(forests, vars, null, null, null);
         org.w3c.dom.Document doc = dom(
                 new ByteArrayInputStream(
@@ -1196,7 +1203,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
     @Test
     public void testRasterGetFeatureInfoMapML() throws Exception {
         String world = getLayerId(MockData.WORLD);
-        HashMap<String, String> vars = getRequestVars(world);
+        HashMap<String, String> vars = getRequestVars(world, "-0.002,-0.002,0.002,0.002", null);
         MockRequestResponse requestResponse = getMockRequestResponse(world, vars, null, null, null);
         org.w3c.dom.Document doc = dom(
                 new ByteArrayInputStream(
@@ -1208,10 +1215,22 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertXpathEvaluatesTo("1", "count(//html:map-properties)", doc);
     }
 
-    private static HashMap<String, String> getRequestVars(String world) {
+    @Test
+    public void testLayerGroupGetFeatureInfoMapML() throws Exception {
+        HashMap<String, String> vars = getRequestVars("layerGroup", "400000,400000,599999,599999", "epsg:32615");
+        MockRequestResponse requestResponse = getMockRequestResponse("layerGroup", vars, null, null, null);
+        org.w3c.dom.Document doc = dom(
+                new ByteArrayInputStream(
+                        requestResponse.response.getContentAsString().getBytes()),
+                true);
+        // check that each of the layers in the group is represented as a feature
+        assertXpathEvaluatesTo("3", "count(//html:map-feature)", doc);
+    }
+
+    private static HashMap<String, String> getRequestVars(String world, String bbox, String srs) {
         HashMap<String, String> vars = new HashMap<>();
         vars.put("version", "1.1.1");
-        vars.put("bbox", "-0.002,-0.002,0.002,0.002");
+        vars.put("bbox", bbox);
         vars.put("styles", "");
         vars.put("format", "jpeg");
         vars.put("info_format", "text/mapml");
@@ -1222,6 +1241,8 @@ public class MapMLWMSTest extends MapMLTestSupport {
         vars.put("height", "20");
         vars.put("x", "10");
         vars.put("y", "10");
+        vars.put("feature_count", "50");
+        vars.put("srs", srs != null ? srs : "EPSG:4326");
         return vars;
     }
 

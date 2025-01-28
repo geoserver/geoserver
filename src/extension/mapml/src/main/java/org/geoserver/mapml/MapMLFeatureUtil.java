@@ -4,18 +4,25 @@
  */
 package org.geoserver.mapml;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
+import static org.geoserver.mapml.MapMLDocumentBuilder.extractCRS;
+import static org.geoserver.mapml.MapMLDocumentBuilder.toCommaDelimitedBbox;
+import static org.geoserver.mapml.MapMLDocumentBuilder.useTiles;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 
 import freemarker.template.TemplateNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,11 +30,17 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
+import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.template.MapMLMapTemplate;
@@ -38,31 +51,47 @@ import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.mapml.xml.Tile;
+import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeodeticCRS;
+import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.api.style.Style;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.feature.FeatureCollection;
+import org.geotools.geometry.jts.JTS;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheException;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.Grid;
+import org.geowebcache.grid.GridSet;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.GridSubsetFactory;
+import org.geowebcache.grid.SRS;
 import org.locationtech.jts.geom.Envelope;
 
 public class MapMLFeatureUtil {
     private static final Logger LOGGER = Logging.getLogger(MapMLFeatureUtil.class);
+    private static final double IS_TILE_TOL = 0.002D;
     public static final String STYLE_CLASS_PREFIX = ".";
     public static final String STYLE_CLASS_DELIMITER = " ";
     public static final String BBOX_DISPLAY_NONE = ".bbox {display:none}";
     private static final MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
     private static final MapMLEncoder encoder;
+    protected static GWC gwc = GWC.get();
 
     static {
         try {
@@ -73,58 +102,31 @@ public class MapMLFeatureUtil {
     }
 
     /**
-     * Convert a feature collection to a MapML document
+     * Convert a list of layers to a MapML document
      *
-     * @param featureCollection the feature collection to be converted to MapML
-     * @param layerInfo metadata for the feature class
+     * @param layerSimplfierContexts the layers to convert
      * @param clipBounds the bounds to clip the features to (or null if not clipping is desired)
      * @param requestCRS the CRS requested by the client
      * @param alternateProjections alternate projections for the feature collection
-     * @param numDecimals number of decimal places to use for coordinates
-     * @param forcedDecimal whether to force decimal notation
-     * @param padWithZeros whether to pad with zeros
      * @param skipAttributes whether to skip attributes HTML representation in the output
-     * @param simplifier the optional geometry simplifier to target vector screen usage
      * @return a MapML document
      * @throws IOException if an error occurs while producing the MapML document
      */
-    public static Mapml featureCollectionToMapML(
-            FeatureCollection featureCollection,
-            LayerInfo layerInfo,
+    public static Mapml layerContextsToMapMLDocument(
+            List<LayerSimplfierContext> layerSimplfierContexts,
             Envelope clipBounds,
             CoordinateReferenceSystem requestCRS,
             List<Link> alternateProjections,
-            int numDecimals,
-            boolean forcedDecimal,
-            boolean padWithZeros,
-            Map<String, MapMLStyle> styles,
             boolean skipHeadStyles,
             boolean skipAttributes,
-            MapMLSimplifier simplifier)
+            HttpServletRequest request,
+            GetMapRequest getMapRequest)
             throws IOException {
-        if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException("MapML OutputFormat does not support Complex Features.");
-        }
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
-        boolean hasTemplate = false;
-        boolean hasHeadTemplate = false;
-        try {
-            if (!mapMLMapTemplate.isTemplateEmpty(
-                    fc.getSchema(), MAPML_FEATURE_HEAD_FTL, FeatureTemplate.class, "0\n")) {
-                hasHeadTemplate = true;
-            }
-        } catch (TemplateNotFoundException e) {
-            LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
-        }
-        try {
-            if (!mapMLMapTemplate.isTemplateEmpty(fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
-                hasTemplate = true;
-            }
-        } catch (TemplateNotFoundException e) {
-            LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
-        }
 
-        ResourceInfo resourceInfo = layerInfo.getResource();
+        // Check if tiles were requested
+
+        // Some stuff we are getting from the first layer
+        ResourceInfo resourceInfo = layerSimplfierContexts.get(0).getResourceInfo();
         MetadataMap layerMeta = resourceInfo.getMetadata();
 
         // build the mapML doc
@@ -132,7 +134,7 @@ public class MapMLFeatureUtil {
 
         // build the head
         HeadContent head = new HeadContent();
-        head.setTitle(layerInfo.getName());
+        head.setTitle(getTitle(layerSimplfierContexts));
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
         meta.setCharset("UTF-8");
@@ -141,7 +143,7 @@ public class MapMLFeatureUtil {
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
-        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, layerInfo);
+        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, resourceInfo);
         metas.addAll(projectionAndExtent);
         List<Link> links = head.getLinks();
         if (alternateProjections != null) {
@@ -161,12 +163,31 @@ public class MapMLFeatureUtil {
             }
             links.add(link);
         }
-        if (!skipHeadStyles) {
-            String style = getCSSStylesFull(styles);
-            head.setStyle(style);
-            if (hasHeadTemplate) {
-                getInterpolatedStylesFromTemplate(fc)
-                        .ifPresent(interpolated -> appendTemplateCSSStyle(head, interpolated));
+
+        // loop through the layers for head elements
+        for (LayerSimplfierContext layerSimplfierContext : layerSimplfierContexts) {
+            FeatureCollection featureCollection = layerSimplfierContext.getFeatureCollection();
+            if (!(featureCollection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
+            boolean hasHeadTemplate = false;
+            try {
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        fc.getSchema(), MAPML_FEATURE_HEAD_FTL, FeatureTemplate.class, "0\n")) {
+                    hasHeadTemplate = true;
+                }
+            } catch (TemplateNotFoundException e) {
+                LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
+            }
+            Map<String, MapMLStyle> styles = layerSimplfierContext.getStyles();
+            if (!skipHeadStyles) {
+                String style = getCSSStylesFull(styles);
+                head.setStyle(style);
+                if (hasHeadTemplate) {
+                    getInterpolatedStylesFromTemplate(fc)
+                            .ifPresent(interpolated -> appendTemplateCSSStyle(head, interpolated));
+                }
             }
         }
 
@@ -176,38 +197,272 @@ public class MapMLFeatureUtil {
         // build the body
         BodyContent body = new BodyContent();
         mapml.setBody(body);
+        List<Object> featuresOrTiles = body.getTilesOrFeatures();
 
-        List<Feature> features = body.getFeatures();
-        MapMLGenerator featureBuilder = new MapMLGenerator();
-        featureBuilder.setNumDecimals(numDecimals);
-        featureBuilder.setForcedDecimal(forcedDecimal);
-        featureBuilder.setPadWithZeros(padWithZeros);
-        featureBuilder.setClipBounds(clipBounds);
-        featureBuilder.setSkipAttributes(skipAttributes);
-        featureBuilder.setSimplifier(simplifier);
-        try (SimpleFeatureIterator iterator = fc.features()) {
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                Optional<Mapml> interpolatedOptional = Optional.empty();
-                if (hasTemplate) {
-                    interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+        for (LayerSimplfierContext layerSimplfierContext : layerSimplfierContexts) {
+            Map<String, MapMLStyle> styles = layerSimplfierContext.getStyles();
+            FeatureCollection featureCollection = layerSimplfierContext.getFeatureCollection();
+            if (!(featureCollection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
+            boolean hasTemplate = false;
+
+            try {
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
+                    hasTemplate = true;
                 }
-                // convert feature to xml
-                if (styles != null) {
-                    List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
-                    Optional<Feature> f = featureBuilder.buildFeature(
-                            feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
-                    // feature will be skipped if geometry incompatible with style symbolizer
-                    f.ifPresent(features::add);
-                } else {
-                    // WFS GETFEATURE request with no styles
-                    Optional<Feature> f =
-                            featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
-                    f.ifPresent(features::add);
+            } catch (TemplateNotFoundException e) {
+                LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
+            }
+            boolean useTileLinks = false;
+            if (layerSimplfierContext.getResourceInfo() != null
+                    && layerSimplfierContext.getResourceInfo() instanceof FeatureTypeInfo) {
+                MapMLGenerator featureBuilder = new MapMLGenerator();
+                featureBuilder.setNumDecimals(layerSimplfierContext.getNumDecimals());
+                featureBuilder.setForcedDecimal(layerSimplfierContext.isForcedDecimal());
+                featureBuilder.setPadWithZeros(layerSimplfierContext.isPadWithZeros());
+                featureBuilder.setClipBounds(clipBounds);
+                featureBuilder.setSkipAttributes(skipAttributes);
+                featureBuilder.setSimplifier(layerSimplfierContext.getSimplifier());
+                try (SimpleFeatureIterator iterator = fc.features()) {
+                    while (iterator.hasNext()) {
+                        SimpleFeature feature = iterator.next();
+                        Optional<Mapml> interpolatedOptional = Optional.empty();
+                        if (hasTemplate) {
+                            interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+                        }
+                        // convert feature to xml
+                        if (styles != null) {
+                            List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
+                            Optional<Feature> f = featureBuilder.buildFeature(
+                                    feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
+                            // feature will be skipped if geometry incompatible with style symbolizer
+                            f.ifPresent(featuresOrTiles::add);
+                        } else {
+                            // WFS GETFEATURE request with no styles
+                            Optional<Feature> f =
+                                    featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
+                            f.ifPresent(featuresOrTiles::add);
+                        }
+                    }
+                }
+            } else if (layerSimplfierContext.getResourceInfo() != null
+                    && layerSimplfierContext.getResourceInfo() instanceof CoverageInfo
+                    && request != null) {
+                if (getMapRequest != null && useTiles(getMapRequest)) {
+                    String crs = extractCRS(getMapRequest.getRawKvp());
+                    useTileLinks = gwc.hasTileLayer(layerSimplfierContext.getResourceInfo())
+                            && gwc.getTileLayer(layerSimplfierContext.getResourceInfo())
+                                            .getGridSubset(crs)
+                                    != null;
+                }
+                try {
+                    if (getMapRequest != null) {
+                        GridSet chosen = getGridSet(requestCRS);
+                        if (chosen == null) {
+                            throw new ServiceException("No MapML gridset found for CRS: " + requestCRS);
+                        }
+                        BoundingBox bbox = new BoundingBox(
+                                clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
+                        MapMLProjection projType = parseProjType(getMapRequest);
+                        int zoomLevel = MapMLHTMLOutput.computeZoom(
+                                projType,
+                                (ReferencedEnvelope) clipBounds,
+                                getMapRequest.getWidth(),
+                                getMapRequest.getHeight());
+                        GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
+                        long[][] tileRangeLevels = gridSubset.getWMTSCoverages();
+                        long[] tileRange = tileRangeLevels[0];
+                        long minTileX = tileRange[0];
+                        long minTileY = tileRange[1];
+                        long maxTileX = tileRange[2];
+                        long maxTileY = tileRange[3];
+                        List<Tile> tiles = new ArrayList<>();
+                        for (long tileX = minTileX; tileX <= maxTileX; tileX++) {
+                            for (long tileY = minTileY; tileY <= maxTileY; tileY++) {
+                                long[] tile1 = {tileX, tileY, zoomLevel};
+                                BoundingBox tileBbox = boundsFromIndex(tile1, gridSubset);
+                                Envelope tileEnvelope = new Envelope(
+                                        tileBbox.getMinX(), tileBbox.getMaxX(), tileBbox.getMinY(), tileBbox.getMaxY());
+                                String link = null;
+                                if (useTileLinks) {
+                                    Map<String, Object> formatOptions = getMapRequest.getFormatOptions();
+                                    String format = null;
+                                    if (formatOptions != null) {
+                                        format = formatOptions
+                                                .get(MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION)
+                                                .toString();
+                                    } else {
+                                        format = "image/png";
+                                    }
+                                    link = getWMTSLink(
+                                            layerSimplfierContext,
+                                            chosen.getSrs().toString(),
+                                            request,
+                                            String.valueOf(zoomLevel),
+                                            String.valueOf(tileX),
+                                            String.valueOf(tileY),
+                                            format);
+                                } else {
+                                    link = getWMSLink(
+                                            tileEnvelope,
+                                            request,
+                                            getMapRequest,
+                                            layerSimplfierContext,
+                                            chosen.getTileWidth(),
+                                            chosen.getTileHeight());
+                                }
+                                Tile tile = new Tile();
+                                tile.setRow(BigInteger.valueOf(tileY));
+                                tile.setCol(BigInteger.valueOf(tileX));
+                                tile.setZoom(BigInteger.valueOf(zoomLevel));
+                                tile.setSrc(link);
+                                tile.setDistance(JTS.orthodromicDistance(
+                                        clipBounds.centre(), tileEnvelope.centre(), requestCRS));
+                                tiles.add(tile);
+                            }
+                        }
+                        Collections.sort(tiles);
+                        boolean isTile = (getMapRequest.getWidth() == getMapRequest.getHeight()
+                                && tiles.get(0).getDistance() < IS_TILE_TOL);
+                        if (isTile) {
+                            featuresOrTiles.add(tiles.get(0));
+                        } else {
+                            featuresOrTiles.addAll(tiles);
+                        }
+                    }
+                } catch (FactoryException | GeoWebCacheException | TransformException e) {
+                    throw new ServiceException("Error while looking up MapML gridset", e);
                 }
             }
         }
         return mapml;
+    }
+
+    private static BoundingBox boundsFromIndex(long[] tileIndex, GridSubset gridSubset) {
+        final int tileZ = (int) tileIndex[2];
+        Grid grid = gridSubset.getGridSet().getGrid(tileZ);
+        boolean yBaseToggle = gridSubset.getGridSet().isTopLeftAligned();
+
+        final long tileX = tileIndex[0];
+        final long tileY = tileIndex[1];
+
+        double width = grid.getResolution() * gridSubset.getGridSet().getTileWidth();
+        double height = grid.getResolution() * gridSubset.getGridSet().getTileHeight();
+
+        final double[] tileOrigin = gridSubset.getGridSet().tileOrigin();
+        BoundingBox tileBounds = new BoundingBox(
+                tileOrigin[0] + width * tileX,
+                yBaseToggle ? tileOrigin[1] - (height * tileY) : tileOrigin[1] + (height * tileY),
+                tileOrigin[0] + width * (tileX + 1),
+                yBaseToggle ? tileOrigin[1] - ((height * tileY) + height) : tileOrigin[1] + height * (tileY + 1));
+        return tileBounds;
+    }
+
+    /** Parses the projection into a ProjType, or throws a proper service exception indicating the unsupported CRS */
+    private static MapMLProjection parseProjType(GetMapRequest getMapRequest) {
+        try {
+            return new MapMLProjection(getMapRequest.getSRS().toUpperCase());
+        } catch (IllegalArgumentException | FactoryException iae) {
+            // figure out the parameter name (version dependent) and the actual original
+            // string value for the srs/crs parameter
+            String parameterName = Optional.ofNullable(getMapRequest.getVersion())
+                    .filter(v -> v.equals("1.3.0"))
+                    .map(v -> "crs")
+                    .orElse("srs");
+            Map<String, Object> rawKvp = Dispatcher.REQUEST.get().getRawKvp();
+            String value = (String) rawKvp.get("srs");
+            if (value == null) value = (String) rawKvp.get("crs");
+            throw new ServiceException(
+                    "This projection is not supported by MapML: " + value,
+                    ServiceException.INVALID_PARAMETER_VALUE,
+                    parameterName);
+        }
+    }
+
+    private static String getWMTSLink(
+            LayerSimplfierContext layerSimplfierContext,
+            String tilematrixset,
+            HttpServletRequest request,
+            String zoomLevel,
+            String column,
+            String row,
+            String format) {
+        String path = "gwc/service/wmts";
+        HashMap<String, String> params = new HashMap<>();
+        String layerName = null;
+        if (layerSimplfierContext.getResourceInfo().getNamespace().getPrefix() != null) {
+            layerName = layerSimplfierContext.getResourceInfo().getNamespace().getPrefix() + ":"
+                    + layerSimplfierContext.getResourceInfo().getName();
+        } else {
+            layerName = layerSimplfierContext.getResourceInfo().getName();
+        }
+        params.put("layer", layerName);
+        params.put("tilematrixset", tilematrixset);
+        params.put("service", "WMTS");
+        params.put("request", "GetTile");
+        params.put("version", "1.0.0");
+        params.put("tilematrix", layerName + ":" + zoomLevel);
+        params.put("TileCol", column);
+        params.put("TileRow", row);
+        params.put("format", format);
+        String baseUrl = ResponseUtils.baseURL(request);
+        return ResponseUtils.buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
+    }
+
+    private static String getWMSLink(
+            Envelope clipBounds,
+            HttpServletRequest request,
+            GetMapRequest getMapRequest,
+            LayerSimplfierContext layerSimplfierContext,
+            int tileWidth,
+            int tileHeight) {
+        String baseUrl = ResponseUtils.baseURL(request);
+        Map<String, String> kvp = new LinkedHashMap<>();
+        kvp.put(
+                "LAYERS",
+                layerSimplfierContext.getResourceInfo().getNamespace().getPrefix() != null
+                        ? layerSimplfierContext.getResourceInfo().getNamespace().getPrefix() + ":"
+                                + layerSimplfierContext.getResourceInfo().getName()
+                        : layerSimplfierContext.getResourceInfo().getName());
+        kvp.put("BBOX", toCommaDelimitedBbox(clipBounds));
+        kvp.put("HEIGHT", String.valueOf(tileHeight));
+        kvp.put("WIDTH", String.valueOf(tileWidth));
+        kvp.put("CRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
+        kvp.put("FORMAT", "image/png");
+        kvp.put("TRANSPARENT", String.valueOf(getMapRequest.isTransparent()));
+        kvp.put("SERVICE", "WMS");
+        kvp.put("REQUEST", "GetMap");
+        kvp.put("VERSION", "1.3.0");
+        return ResponseUtils.buildURL(baseUrl, "wms", kvp, URLMangler.URLType.SERVICE);
+    }
+
+    private static GridSet getGridSet(CoordinateReferenceSystem requestCRS)
+            throws FactoryException, GeoWebCacheException {
+        String epsg = CRS.lookupIdentifier(requestCRS, true);
+        MapMLGridsets mapMlGridsets = (MapMLGridsets) GeoServerExtensions.bean("mapMLGridsets");
+        GridSet chosen = null;
+        for (String candidate : mapMlGridsets.getGridSetNames()) {
+            Optional<GridSet> optionalGridSet = mapMlGridsets.getGridSet(candidate);
+            if (optionalGridSet.isPresent()) {
+                GridSet testGridset = optionalGridSet.get();
+                if (testGridset.getSrs().equals(SRS.getSRS(epsg))) {
+                    chosen = optionalGridSet.get();
+                    break;
+                }
+            }
+        }
+        return chosen;
+    }
+
+    private static String getTitle(List<LayerSimplfierContext> layerSimplfierContexts) {
+        StringJoiner title = new StringJoiner(", ");
+        for (LayerSimplfierContext layerSimplfierContext : layerSimplfierContexts) {
+            title.add(layerSimplfierContext.getResourceInfo().getName());
+        }
+        return title.toString();
     }
 
     private static Optional<Mapml> getInterpolatedFromTemplate(SimpleFeatureCollection fc, SimpleFeature feature) {
@@ -283,7 +538,7 @@ public class MapMLFeatureUtil {
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
-        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, layerInfo);
+        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, resourceInfo);
         metas.addAll(projectionAndExtent);
         List<Link> links = head.getLinks();
 
@@ -372,13 +627,14 @@ public class MapMLFeatureUtil {
 
     /**
      * @param requestCRS the CRS requested by the client
-     * @param layerInfo metadata for the feature class
+     * @param resourceInfo metadata for the feature class
      * @return
      */
-    private static Set<Meta> deduceProjectionAndExtent(CoordinateReferenceSystem requestCRS, LayerInfo layerInfo) {
+    private static Set<Meta> deduceProjectionAndExtent(
+            CoordinateReferenceSystem requestCRS, ResourceInfo resourceInfo) {
         Set<Meta> metas = new HashSet<>();
         TiledCRSParams tcrs = null;
-        CoordinateReferenceSystem sourceCRS = layerInfo.getResource().getCRS();
+        CoordinateReferenceSystem sourceCRS = resourceInfo.getCRS();
         CoordinateReferenceSystem responseCRS = sourceCRS;
         String sourceCRSCode = CRS.toSRS(sourceCRS);
         String responseCRSCode = sourceCRSCode;
@@ -414,7 +670,7 @@ public class MapMLFeatureUtil {
             projection.setContent(crs.equalsIgnoreCase("gcrs") ? cite + ":" + responseCRSCode : responseCRSCode);
             coordinateSystem.setContent(crs);
         }
-        extent.setContent(getExtent(layerInfo, responseCRSCode, responseCRS));
+        extent.setContent(getExtent(resourceInfo, responseCRSCode, responseCRS));
         metas.add(projection);
         metas.add(coordinateSystem);
         metas.add(extent);
@@ -422,15 +678,19 @@ public class MapMLFeatureUtil {
     }
 
     /**
-     * @param layerInfo source of bbox info
+     * @param resourceInfo source of bbox info
      * @param responseCRSCode output CRS code
      * @param responseCRS used to transform source bbox to, if necessary
      * @return
      */
     private static String getExtent(
-            LayerInfo layerInfo, String responseCRSCode, CoordinateReferenceSystem responseCRS) {
+            ResourceInfo resourceInfo, String responseCRSCode, CoordinateReferenceSystem responseCRS) {
         String extent = "";
-        ResourceInfo r = layerInfo.getResource();
+        ReferencedEnvelope latLonBbox = null;
+        String name = "";
+        latLonBbox = resourceInfo.getLatLonBoundingBox();
+        name = resourceInfo.getName();
+
         ReferencedEnvelope re;
         String gcrsFormat =
                 "top-left-longitude=%1$.6f,top-left-latitude=%2$.6f,bottom-right-longitude=%3$.6f,bottom-right-latitude=%4$.6f";
@@ -440,15 +700,15 @@ public class MapMLFeatureUtil {
         double minEasting, minNorthing, maxEasting, maxNorthing;
         TiledCRSParams tcrs = TiledCRSConstants.lookupTCRSParams(responseCRSCode);
         try {
+            assert latLonBbox != null : "latLonBbox null for MapML layer " + name;
             if (responseCRS instanceof GeodeticCRS) {
-                re = r.getLatLonBoundingBox();
-                minLong = re.getMinX();
-                minLat = re.getMinY();
-                maxLong = re.getMaxX();
-                maxLat = re.getMaxY();
+                minLong = latLonBbox.getMinX();
+                minLat = latLonBbox.getMinY();
+                maxLong = latLonBbox.getMaxX();
+                maxLat = latLonBbox.getMaxY();
                 extent = String.format(gcrsFormat, minLong, maxLat, maxLong, minLat);
             } else {
-                re = r.boundingBox().transform(responseCRS, true);
+                re = latLonBbox.transform(responseCRS, true);
                 minEasting = re.getMinX();
                 minNorthing = re.getMinY();
                 maxEasting = re.getMaxX();
@@ -554,5 +814,75 @@ public class MapMLFeatureUtil {
         Map formatOptions = (Map) request.getKvp().get("format_options");
         if (formatOptions != null && Boolean.valueOf((String) formatOptions.get(key))) return true;
         return false;
+    }
+
+    /** Convenience class to hold the information needed to simplify a feature collection */
+    public static class LayerSimplfierContext {
+        private final FeatureCollection featureCollection;
+        private final ResourceInfo resourceInfo;
+        private final MapMLSimplifier simplifier;
+        private final int numDecimals;
+        private final boolean forcedDecimal;
+        private final boolean padWithZeros;
+        private final Map<String, MapMLStyle> styles;
+
+        /**
+         * Constructor
+         *
+         * @param featureCollection
+         * @param resourceInfo
+         * @param simplifier
+         * @param numDecimals
+         * @param forcedDecimal
+         * @param padWithZeros
+         */
+        public LayerSimplfierContext(
+                FeatureCollection featureCollection,
+                ResourceInfo resourceInfo,
+                MapMLSimplifier simplifier,
+                int numDecimals,
+                boolean forcedDecimal,
+                boolean padWithZeros,
+                Map<String, MapMLStyle> styles) {
+            this.featureCollection = featureCollection;
+            this.resourceInfo = resourceInfo;
+            this.simplifier = simplifier;
+            this.numDecimals = numDecimals;
+            this.forcedDecimal = forcedDecimal;
+            this.padWithZeros = padWithZeros;
+            this.styles = styles;
+        }
+
+        public FeatureCollection getFeatureCollection() {
+            return featureCollection;
+        }
+
+        public ResourceInfo getResourceInfo() {
+            return resourceInfo;
+        }
+
+        public MapMLSimplifier getSimplifier() {
+            return simplifier;
+        }
+
+        public int getNumDecimals() {
+            return numDecimals;
+        }
+
+        public boolean isForcedDecimal() {
+            return forcedDecimal;
+        }
+
+        public boolean isPadWithZeros() {
+            return padWithZeros;
+        }
+
+        public Map<String, MapMLStyle> getStyles() {
+            return styles;
+        }
+    }
+
+    protected static void setGWC(GWC gwc) {
+        MapMLFeatureUtil.gwc = gwc;
     }
 }

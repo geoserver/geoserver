@@ -4,6 +4,7 @@
  */
 package org.geoserver.mapml;
 
+import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.fail;
 
 import java.io.StringReader;
@@ -12,8 +13,17 @@ import java.util.Locale;
 import java.util.Map;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXBException;
+import javax.xml.namespace.QName;
+import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.LayerInfo;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.wms.WMSTestSupport;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.mime.TextMime;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -50,6 +60,64 @@ public class MapMLTestSupport extends WMSTestSupport {
             fail("MapML response is not valid XML");
         }
         return mapml;
+    }
+
+    protected void enableTileCaching(QName layerName, Catalog catalog) {
+        enableTileCaching(layerName, getCatalog(), GWC.get());
+    }
+
+    protected void enableTileCaching(QName layerName, Catalog catalog, GWC gwc) {
+        GWCConfig defaults = GWCConfig.getOldDefaults();
+        // This is needed because Spring tests lazy load beans
+        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
+        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
+        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
+
+        // Check if it's a LayerGroup first, then fallback to Layer
+        GeoServerTileLayer tileLayer = null;
+        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
+        if (layerInfo != null) {
+            tileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        } else {
+            // Try LayerGroup
+            org.geoserver.catalog.LayerGroupInfo layerGroupInfo = catalog.getLayerGroupByName(layerName.getLocalPart());
+            if (layerGroupInfo != null) {
+                tileLayer = new GeoServerTileLayer(layerGroupInfo, defaults, gwc.getGridSetBroker());
+            } else {
+                throw new IllegalArgumentException(
+                        "No layer or layer group found with name: " + layerName.getLocalPart());
+            }
+        }
+
+        tileLayer.addGridSubset(wgs84gridset);
+        tileLayer.addGridSubset(osmtilegridset);
+        tileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
+        gwc.save(tileLayer);
+    }
+
+    protected void disableTileCaching(QName layerName, Catalog catalog) {
+        GWC gwc = applicationContext.getBean(GWC.class);
+        GWCConfig defaults = GWCConfig.getOldDefaults();
+
+        // Check if it's a LayerGroup first, then fallback to Layer
+        GeoServerTileLayer tileLayer = null;
+        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
+        if (layerInfo != null) {
+            tileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
+        } else {
+            // Try LayerGroup
+            org.geoserver.catalog.LayerGroupInfo layerGroupInfo = catalog.getLayerGroupByName(layerName.getLocalPart());
+            if (layerGroupInfo != null) {
+                tileLayer = new GeoServerTileLayer(layerGroupInfo, defaults, gwc.getGridSetBroker());
+            } else {
+                throw new IllegalArgumentException(
+                        "No layer or layer group found with name: " + layerName.getLocalPart());
+            }
+        }
+
+        tileLayer.removeGridSubset("OSMTILE");
+        tileLayer.removeGridSubset("WGS84");
+        gwc.save(tileLayer);
     }
 
     @Override

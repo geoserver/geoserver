@@ -101,6 +101,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - org.geoserver.web.csp.strict
+       
+       :ref:`csp_strict`, default true.
+     - x
+     -
+     - 
    * - org.geoserver.catalog.loadingThreads
        
        Number of threads used to load catalogue (Default 4).

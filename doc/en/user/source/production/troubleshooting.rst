@@ -3,8 +3,67 @@
 Troubleshooting
 ===============
 
+User Interface
+--------------
+
+The :ref:`web_admin` is used to configure the GeoServer application, and is often where an issue is first observed.
+
+.. _wicket_error:
+
+Oops, something went wrong
+``````````````````````````
+
+An unexpected problem that is encountered when using the web administration console is reported as a ``org.apache.wicket.WicketRuntimeException``, with additional information shown in the form of a Java Stack Trace.
+
+Failures in GeoSever often show up as Java stack traces. It is important to read the entire stack trace all the way through to the end to determine the initial cause.
+
+**Example: File System Permission**
+
+Here is an example where GeoServer application did not have write permission in the GEOSERVER_DATA_DIR location::
+
+    org.apache.wicket.WicketRuntimeException: Error attaching this container for rendering
+        ...
+    Caused by: java.lang.IllegalStateException: Cannot create security/masterpw.digest
+        ...
+    Caused by: java.io.IOException: Access is denied
+        at java.io.WinNTFileSystem.createFileExclusively(Native Method)
+        at java.io.File.createNewFile(Unknown Source)
+
+Reading the entire stack trace from the bottom to the top:
+
+1. It was unable to access a directory due to file permission.
+2. This occured when attempting to create ``security/masterpw.digest``
+3. WicketRuntimeException indicates this failure was observed in the user interface.
+   
+   This was so unexpected or unusual the user interface displays an "Oops something went wrong" page and was unable to continue.
+
+Assessment: For this specific example the error occured when setting up the ``security`` folder. This is something GeoServer does when starting the first time. Without a default security configuration user interface was unable to function.
+
+.. _csp_strict:
+
+User interface non-responsive
+`````````````````````````````
+
+Check the browser "Developer Tools" console for Content Security Policy errors::
+
+    Refused to send form data to 'https://gs-main.geosolutionsgroup.com/geoserver/j_spring_security_check' because it violates the following Content Security Policy directive: "form-action 'self'".
+    Content-Security-Policy: The page’s settings blocked a style (style-src-elem) at http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/css/blueprint/screen-ver-5E7BA86A4C3BEA6B457AC3C7F9ADF9B4.css from being applied because it violates the following directive: “style-src 'nonce-_BrhuCNPcn8dWJbyQ1IqkS3R'” 3 NetUtil.sys.mjs:144:15
+
+It is expected that the administration console functions correctly, and problems with any community module or extension can be managed, see GeoServer Security section on :ref:`security_csp` for very detailed information.
+
+
+However CSP problems can also be introduced in your environment when working behind a proxy. To restore access to the user interface when troubleshooting you may choose to disable CSP failures with the environmental variable ``org.geoserver.web.csp.strict``.
+
+* `true`: Content Security Policy violations will be blocked by the browser use use of header ``Content-Security-Policy``.
+* `false`: Content Security Policy violations will be reported in the developer tools console only with header ``Content-Security-Policy-Report-Only``.
+
+This setting is intended to report CSP violations to the browser javascript console, so you can review and troubleshoot.
+
+Web Services
+------------
+
 Checking WFS requests
-----------------------------
+`````````````````````
 
 It often happens that users report issues with hand-crafted WFS requests not working as expected. In the majority of the cases the request is malformed, but GeoServer does not complain and just ignores the malformed part (this behaviour is the default to make older WFS clients work fine with GeoServer). 
 
@@ -19,12 +78,14 @@ Leveraging GeoServer own log
 
 GeoServer can generate a quite extensive log of its operations in the ``$GEOSERVER_DATA_DIR/logs/geoserver.log`` file. 
 Looking into such file is one of the first things to do when troubleshooting a problem, in particular it's interesting to see the log contents in correspondence of a misbehaving request.
-The amount of information logged can vary based on the logging profile chosen in the *Server Settings* configuration page.
+
+The amount of information logged can vary based on the :ref:`logging profile chosen <config_globalsettings_log_profile>` in the *Server Settings* configuration page. Review :ref:`logging` for additional guidance on creating your own :ref:`logging_custom` to troubleshoot a specific problem.
+
 
 .. _troubleshooting_requests:
 
 Logging service requests
-------------------------
+````````````````````````
 
 GeoServer provides a request logging capability that is inactive by default. When enabled in the :ref:`global settings <config_globalsettings_log_request>` GeoServer can log both the requested URL and POST requests contents.
 
@@ -268,22 +329,24 @@ To see **how the memory is actually being used in a succinct way** the following
      20:         23122         554928  java.util.HashMap$Entry
      21:         16910         541120  org.apache.xerces.dom.TextImpl
      22:          9898         395920  org.apache.xerces.dom.AttrNSImpl
-	 
-	 
+
 By the dump we can see most of the memory is used by the GeoServer code itself (first 5 items) followed by the HSQL cache holding a few rows of the EPSG database. In case of a memory leak a few object types will hold the vast majority of the live heap.
 Mind, to look for a leak the dump should be gathered with the server almost idle. If, for example, the server is under a load of GetMap requests the main memory usage will be the byte[] holding the images while they are rendered, but that is not a leak, it's legitimate and temporary usage.
 
 In case of memory leaks a developer will probably ask for a **full heap dump** to analyze with a high end profiling tool. Such dump can be generated with the following command::
 
-	> jmap -dump:live,file=/tmp/dump.hprof 17251
-	Dumping heap to /tmp/dump.hprof ...
-	Heap dump file created
+    > jmap -dump:live,file=/tmp/dump.hprof 17251
+    Dumping heap to /tmp/dump.hprof ...
+    Heap dump file created
 
 The dump files are generally as big as the memory used so it's advisable to compress the resulting file before sending it to a developer.
   
 
+Configuration
+-------------
+
 XStream
--------
+```````
 
 GeoServer and GeoWebCache use XStream to read and write XML for configuration and for their REST APIs.  In order to do this securely, it needs a list of Java classes that are safe to convert between objects and XML.  If a class not on that list is given to XStream, it will generate the error ``com.thoughtworks.xstream.security.ForbiddenClassException``.  The specific class that was a problem should also be included.  This may be a result of the lists of allowed classes missing a class, which should be reported as a bug, or it may be caused by an extension/plugin not adding its classes to the list (finally, it could be someone trying to perform a "Remote Execution" attack, which is what the allow-list is designed to prevent).
 

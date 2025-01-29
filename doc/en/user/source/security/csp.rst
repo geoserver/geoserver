@@ -6,6 +6,7 @@ Content Security Policy
 The :guilabel:`Content Security Policy` page controls how GeoServer prepares the Content-Security-Policy
 (CSP) HTTP response headers, used to mitigate cross-site scripting and clickjacking attacks.
 
+
 Default Configuration
 ---------------------
 
@@ -38,6 +39,11 @@ configuration, GeoServer will check the current default configuration against th
 * :file:`csp.xml` will be updated with the policies from the new default configuration if they
   have not been changed from the old default configuration. Other settings will not be changed.
 * :file:`csp_default.xml` will be updated with the new default configuration.
+
+CSP Strict
+``````````
+
+Even with the default configuration it is possible to introduced when configuring GeoServer behind a proxy. The  environmental variable `org.geoserver.web.csp.strict` can be used to allow access to GeoServer User interface during :ref:`troubleshooting <csp_strict>`.
 
 Configuring CSP
 ---------------
@@ -95,7 +101,7 @@ change the header value at the top of this page to::
     base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self' https://geoserver.org;
 
 Configuring Policies
---------------------
+````````````````````
 
 Each policy contains the rules and directives to set a single CSP header value. When there are CSP
 directives from multiple policies, the directives will be concatenated into a single line using
@@ -121,7 +127,7 @@ up/down arrows or by dragging and dropping the rule's row in the table.
     After saving a policy, make sure to save/apply the configuration.
 
 Configuring Rules
------------------
+`````````````````
 
 Each rule contains a filter to match against user requests and the CSP directives to add to the
 header value for matching requests. Rules will be checked in order against incoming requests and
@@ -156,7 +162,7 @@ or by dragging and dropping the rule's row in the table.
 .. _security_csp_filters:
 
 Request Filters
----------------
+```````````````
 
 The filter contains a string of predicates concatenated with the string ``AND`` and the rule's
 directives will be applied to a request only if all of the predicates match the request. There
@@ -189,7 +195,7 @@ last rule in a policy since any additional rules would never be checked.
 .. _security_csp_directives:
 
 Header Directives
------------------
+`````````````````
 
 .. warning::
     GeoServer gives administrators complete control over the CSP header directives and sources and
@@ -228,7 +234,7 @@ directives. The keyword ``NONE`` can be used to specify that no header value wil
 requests that match this rule.
 
 Fallback Directives
--------------------
+````````````````````
 
 When an administrator is directly editing the CSP configuration file or uploading it through the
 REST Resources API, it is possible to create a file that GeoServer cannot parse. In these cases,
@@ -243,7 +249,7 @@ The keyword ``NONE`` can be used to specify that no header value will be assigne
 there are CSP configuration errors.
 
 Testing
--------
+```````
 
 The :guilabel:`Test Content Security Policy` form allows a URL to be checked, reporting the CSP
 header value that would be set for a GET request to that URL. This form will test the current CSP

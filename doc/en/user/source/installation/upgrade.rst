@@ -39,7 +39,7 @@ intended to **block** the use of inline JavaScript in all HTML output except in 
 required (e.g., OpenLayers maps). It is possible that future work may further restrict the default
 policy.
 
-Most uers without any customized HTML output should not experience any issues. Users who need
+Most users without any customized HTML output should not experience any issues. Users who need
 inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output should see
 :ref:`tutorials_getfeatureinfo_html_csp`. Users experiencing issues with static web files or custom
 classes/plugins generating HTML output may need to update their settings. For more information, see
@@ -48,6 +48,9 @@ classes/plugins generating HTML output may need to update their settings. For mo
 .. note::
     It is recommended that static web files be disabled if they are not necessary in order to
     mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
+However CSP problems can also be introduced in your environment when running GeoServer behind a proxy server.
+If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -111,9 +111,9 @@ GeoServer does not have much in the way of strict commit policies. Our current c
 
 3. **Do not commit jars or libs, use Maven instead:** In general never commit a depending library directly into the repository, this is what we use Maven for. If you have a jar that is not present in any maven repositories, ask on the developer list to get it uploaded to one of the project maven repositories.
 
-4. **Ensure code is properly formatted:** We follow the [Google formatting conventions](https://google.github.io/styleguide/javaguide.html) with the AOSP variant (4 spaces indent instead of 2).
-   
-   The [google-java-format project](https://github.com/google/google-java-format) offers plugins for various IDEs. If your IDE is not supported, please just build once on the command line before committing.
+4. **Ensure code is properly formatted:** GeoServer uses the [palantir-java-format](https://github.com/palantir/palantir-java-format?tab=readme-ov-file#palantir-java-format) which is a fork of the `google-java-format` ASOP style updated Lamda expressions and 120 columns.
+
+   The [Palantir Java Format project](https://github.com/palantir/palantir-java-format) offers plugins for various IDEs. If your IDE is not supported, please just build once on the command line before committing.
 
 ## Community commit access
 

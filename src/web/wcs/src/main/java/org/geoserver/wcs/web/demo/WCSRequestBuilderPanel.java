@@ -168,6 +168,8 @@ public class WCSRequestBuilderPanel extends Panel {
                 gc.targetCRS = ri.getCoordinateReferenceSystem();
                 gc.sourceGridRange = null;
                 describeLink.setEnabled(true);
+                WCSRequestBuilderPanel.this.targetCRS.modelChanged();
+                WCSRequestBuilderPanel.this.envelope.modelChanged();
                 target.add(WCSRequestBuilderPanel.this);
             }
         });

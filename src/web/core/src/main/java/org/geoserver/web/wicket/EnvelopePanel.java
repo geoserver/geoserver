@@ -233,6 +233,8 @@ public class EnvelopePanel extends FormComponentPanel<ReferencedEnvelope> {
         visitChildren(TextField.class, (component, visit) -> {
             ((TextField<String>) component).clearInput();
         });
+
+        crsPanel.modelChanged();
     }
 
     /** Returns the coordinate reference system added by the user in the GUI, if any and valid */

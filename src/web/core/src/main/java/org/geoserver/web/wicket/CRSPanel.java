@@ -143,6 +143,11 @@ public class CRSPanel extends FormComponentPanel<CoordinateReferenceSystem> {
         initComponents();
     }
 
+    @Override
+    protected void onModelChanged() {
+        wktLink.setEnabled(getModelObject() != null);
+    }
+
     /*
      * helper for internally creating the panel.
      */

@@ -24,7 +24,7 @@ Proxy Base URL
 
 GeoServer can have the capabilities documents report a proxy properly. "The Proxy Base URL" field is the base URL seen beyond a reverse proxy.
 
-This setting is available in the Administration Console and REST API by GeoServer Administrator. This setting may also be managed using the ``PROXY_BASE_URL`` :ref`application property <application_properties>` defined by a System Administrator.
+This setting is available in the Administration Console and REST API by GeoServer Administrator. This setting may also be managed using the ``PROXY_BASE_URL`` :ref:`application property <application_properties>` defined by a System Administrator.
 
 .. code-block::bash
 

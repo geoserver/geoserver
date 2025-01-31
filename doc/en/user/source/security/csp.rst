@@ -14,36 +14,42 @@ The default CSP configuration is intended to support many GeoServer use cases an
 securely run GeoServer without having to modify the configuration. It may be updated in future
 releases to fix bugs, support new features or enhance security.
 
-The default header value for most GeoServer requests will be::
+  The default header value for most GeoServer requests will be::
+  
+     base-uri 'self';
+     form-action 'self';
+     default-src 'none';
+     child-src 'self';
+     connect-src 'self';
+     font-src 'self';
+     img-src 'self' data:;
+     style-src 'self' 'unsafe-inline';
+     script-src 'self';
+     frame-ancestors 'self';
 
-    base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self';
-
-and the ``'unsafe-inline'`` and ``'unsafe-eval'`` sources will be added to the ``script-src``
-directive only for specific requests that may require unsafe JavaScript. The default configuration
-may be updated as necessary by the GeoServer developers.
+The ``'unsafe-inline'`` and ``'unsafe-eval'`` sources will be added to the ``script-src``
+directive only for specific requests that may require unsafe JavaScript.
 
 .. note::
     While the ``'self'`` script source should be sufficient to prevent most reflected cross-site
     scripting, it does leave the possibility of stored cross-site scripting by administrators
-    with permissions to upload static web files. It is possible that future work will further
+    with permissions to upload static web files. It is anticipated that future work will further
     restrict the default policy to completely disable JavaScript for most requests. See the
     :ref:`tutorials_staticfiles` page for instructions to disable that feature if it is not needed.
 
-The current CSP configuration is stored in the file :file:`csp.xml`, located in the ``security``
-directory in the GeoServer data directory. The default CSP configuration will be stored in the
-file :file:`csp_default.xml` in the same directory. It is important that administrators do **NOT**
-modify :file:`csp_default.xml`. In order to detect when new GeoServer releases update the default
-configuration, GeoServer will check the current default configuration against the configuration in
-:file:`csp_default.xml`. If they are found to be different:
+The default configuration may be updated as necessary by the GeoServer developers.
+
+The current CSP configuration is stored in the GeoServer data directory file :file:`security/csp.xml`.
+The default CSP configuration will be stored in the file :file:`security/csp_default.xml`.
+
+It is important that administrators do **NOT** modify :file:`csp_default.xml`. In order to detect when new GeoServer releases update the default configuration, GeoServer will check the current default configuration against the configuration in :file:`csp_default.xml`. If they are found to be different:
 
 * :file:`csp.xml` will be updated with the policies from the new default configuration if they
   have not been changed from the old default configuration. Other settings will not be changed.
 * :file:`csp_default.xml` will be updated with the new default configuration.
 
-CSP Strict
-``````````
+.. _security_csp_strict:
 
-Even with the default configuration it is possible to introduced when configuring GeoServer behind a proxy. The  environmental variable `org.geoserver.web.csp.strict` can be used to allow access to GeoServer User interface during :ref:`troubleshooting <csp_strict>`.
 
 Configuring CSP
 ---------------
@@ -75,30 +81,63 @@ the ``form-action`` directive and all fetch directives that normally allow ``'se
 necessary for certain use cases where web browsers are able to access a GeoServer host directly
 rather than through the proxy and the HTML response contains absolute URLs to the proxy base URL.
 This does not guarantee that other browser restrictions will not prevent the page from functioning.
-Enabling this with a proxy base URL set to ``https://geoserver.org`` would change the header value
-at the top of this page to::
 
-    base-uri 'self'; form-action 'self' https://geoserver.org; default-src 'none'; child-src 'self' https://geoserver.org; connect-src 'self' https://geoserver.org; font-src 'self https://geoserver.org'; img-src 'self' https://geoserver.org data:; style-src 'self' https://geoserver.org 'unsafe-inline'; script-src 'self' https://geoserver.org;, frame-ancestors 'self';
+  Enabling this with a proxy base URL set to ``https://geoserver.org`` would change the header value
+  at the top of this page to::
+  
+      base-uri 'self';
+      form-action 'self' https://geoserver.org;
+      default-src 'none';
+      child-src 'self' https://geoserver.org;
+      connect-src 'self' https://geoserver.org;
+      font-src 'self https://geoserver.org';
+      img-src 'self' https://geoserver.org data:;
+      style-src 'self' https://geoserver.org 'unsafe-inline';
+      script-src 'self' https://geoserver.org;
+      frame-ancestors 'self';
 
 Use the :guilabel:`Allowed sources for remote web resources` text field to add sources to the
 ``font-src``, ``img-src``, ``style-src``, and ``script-src`` directives for static web files (if
 not disabled by system property) and for WMS GetFeatureInfo HTML output (if enabled by system
 property). This is intended to make it easier to allow loading these resources from a CDN or any
 other remote host. Only trusted hosts should be added here to prevent cross-site scripting
-attacks. The ``geoserver.csp.remoteResources`` system property will override this field if it has
-been set. Setting this to ``'self' https://geoserver.org`` would set the following header value for
-an HTML file in the static files directory::
+attacks.
 
-    base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self' https://geoserver.org; img-src 'self' https://geoserver.org data:; style-src 'self' https://geoserver.org 'unsafe-inline'; script-src 'self' https://geoserver.org;, frame-ancestors 'self';
+  Setting this to ``'self' https://geoserver.org`` would set the following header value for
+  an HTML file in the static files directory::
+  
+     base-uri 'self';
+     form-action 'self';
+     default-src 'none';
+     child-src 'self'; connect-src 'self';
+     font-src 'self' https://geoserver.org;
+     img-src 'self' https://geoserver.org data:;
+     style-src 'self' https://geoserver.org 'unsafe-inline';
+     script-src 'self' https://geoserver.org;
+     frame-ancestors 'self';
+
+.. note:: The ``geoserver.csp.remoteResources`` system property will override this field if it has been set.
 
 Use the :guilabel:`Allowed frame-ancestors directive sources` text field to control the sources of
 the ``frame-ancestors`` directive. This is intended to make it easier for administrators to allow
 specific remote hosts to load GeoServer content in frames. Only trusted hosts should be added
-here to prevent clickjacking attacks. The ``geoserver.csp.frameAncestors`` system property will
-override this field if it has been set. Setting this to ``'self' https://geoserver.org`` would
-change the header value at the top of this page to::
+here to prevent clickjacking attacks.
 
-    base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self';, frame-ancestors 'self' https://geoserver.org;
+  Setting this to ``'self' https://geoserver.org`` would change the header value at the top of this page to::
+  
+     base-uri 'self';
+     form-action 'self';
+     default-src 'none';
+     child-src 'self';
+     connect-src 'self';
+     font-src 'self';
+     img-src 'self' data:;
+     style-src 'self' 'unsafe-inline';
+     script-src 'self';
+     frame-ancestors 'self' https://geoserver.org;
+
+.. note:: The ``geoserver.csp.frameAncestors`` system property will override this field if it has been set.
+
 
 Configuring Policies
 ````````````````````
@@ -168,26 +207,37 @@ The filter contains a string of predicates concatenated with the string ``AND`` 
 directives will be applied to a request only if all of the predicates match the request. There
 are three types of predicates that can be used:
 
-* PATH(regex): Returns true if the URL-decoded request path matches the regular expression. The
+* **PATH(regex)**: Returns true if the URL-decoded request path matches the regular expression. The
   regex will be tested against the path that is relative to GeoServer's context root and starting
   with a forward slash.
-  Example: ``PATH(^/([^/]+/){0,2}wms/?$)``
-* PARAM(key_regex,value_regex): Returns true if all query parameters with a URL-decoded key that
+  
+  Example::
+  
+      PATH(^/([^/]+/){0,2}wms/?$)
+  
+* **PARAM(key_regex,value_regex)**: Returns true if all query parameters with a URL-decoded key that
   match the key_regex have a URL-decoded value that match the value_regex. The value regex will be
   tested against an empty string if no query parameters matched the key regex.
-  Example: ``PARAM((?i)^service$,(?i)^wms$)``
-* PROP(key,value_regex): Returns true if the value for the property key matches the regex. The key
+  
+  Example::
+  
+      PARAM((?i)^service$,(?i)^wms$)
+  
+* **PROP(key,value_regex)**: Returns true if the value for the property key matches the regex. The key
   is case-sensitive and must contain must contain the string ``GeoServer``, ``GeoTools``, or
   ``GeoWebCache`` anywhere in the key (case-insensitive). The regex will be tested against an empty
   string if the property is not set. This is primarily intended for the default configuration and
   may not be useful to administrators.
-  Example: ``PROP(GEOSERVER_CONSOLE_DISABLED,(?i)^(?!true$).*$)``
+  
+  Example::
+  
+      PROP(GEOSERVER_CONSOLE_DISABLED,(?i)^(?!true$).*$)
 
-.. note::
-    The ``(?i)`` at the beginning of the regular expression will use case-insensitive matching and
-    enclosing the pattern inside of the ``^$`` characters will match the entire string. See the
-    `Regular Expressions Tutorial <https://docs.oracle.com/javase/tutorial/essential/regex/>`_ for
-    more information about how to use Java regular expressions.
+  .. note::
+      The ``(?i)`` at the beginning of the regular expression will use case-insensitive matching and
+      enclosing the pattern inside of the ``^$`` characters will match the entire string. See the
+      `Regular Expressions Tutorial <https://docs.oracle.com/javase/tutorial/essential/regex/>`_ for
+      more information about how to use Java regular expressions.
 
 Leaving the filter blank will cause this rule to match all requests and should only be used on the
 last rule in a policy since any additional rules would never be checked.
@@ -233,21 +283,6 @@ It does not matter whether a rule is enabled or disabled when searching precedin
 directives. The keyword ``NONE`` can be used to specify that no header value will be assigned to
 requests that match this rule.
 
-Fallback Directives
-````````````````````
-
-When an administrator is directly editing the CSP configuration file or uploading it through the
-REST Resources API, it is possible to create a file that GeoServer cannot parse. In these cases,
-GeoServer will fall back to using very strict header directives until the configuration file is
-fixed. The ``geoserver.csp.fallbackDirectives`` property can be set either via Java system
-property, command line argument (-D), environment variable or web.xml init parameter to change the
-fallback directives from the default value::
-
-    base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
-
-The keyword ``NONE`` can be used to specify that no header value will be assigned to rquests when
-there are CSP configuration errors.
-
 Testing
 ```````
 
@@ -265,6 +300,72 @@ the CSP for the test URL with the string `NONE` being shown if no header would b
    Test CSP with URL
 
 .. _security_csp_references:
+
+System Administrator CSP Settings
+---------------------------------
+
+CSP Configuration Overrides
+```````````````````````````
+
+The following settings override the :ref:`security_csp_strict` described above:
+
+* The ``geoserver.csp.remoteResources`` system property will override :guilabel:`Allowed sources for remote web resources` field if it has been set.
+
+* The ``geoserver.csp.frameAncestors`` system property will override :guilabel:`Allowed frame-ancestors directive sources` field if it has been set.
+
+Fallback Directives
+```````````````````
+
+When an administrator is directly editing the CSP configuration file or uploading it through the
+REST Resources API, it is possible to create a file that GeoServer cannot parse. In these cases,
+GeoServer will fall back to using very strict header directives until the configuration file is
+fixed. The ``geoserver.csp.fallbackDirectives`` property can be set either via Java system
+property, command line argument (-D), environment variable or web.xml init parameter to change the
+fallback directives from the default value::
+
+    base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
+
+The keyword ``NONE`` can be used to specify that no header value will be assigned to rquests when
+there are CSP configuration errors.
+
+
+CSP Strict
+``````````
+
+The  environmental variable ``org.geoserver.web.csp.strict`` intended to allow access to Web Administration Console use during :ref:`CSP Troubleshooting <csp_strict>`:
+
+* ``true``: Content Security Policy violations will be blocked by the browser, with use of header ``Content-Security-Policy``.
+* ``false``: Content Security Policy violations will be reported in the developer tools console, with use header ``Content-Security-Policy-Report-Only``.
+
+  This setting is intended to report CSP violations to the browser javascript console, so you can review and troubleshoot.
+
+.. _security_csp_featureinfo_html_script:
+
+WFS GetFeatureInfo CSP Policy
+`````````````````````````````
+
+The :ref:`application property <application_properties>` ``GEOSERVER_FEATUREINFO_HTML_SCRIPT`` controls the ``Content-Security-Policy`` for WFS GetFeatureInfo response limiting the use of fonts, images, style or script resources.
+
+* ``SELF``: The default value, restricts template authors to content provided by GeoServer.
+
+* ``UNSAFE``: No restriction
+  
+  .. warning:: Warning Allowing unsafe scripts could allow cross-site scripting attacks and should only be done if you can fully trust your template authors.
+
+For more information see :ref:`GetFeatureInfo Templates <tutorials_getfeatureinfo_html_csp>` tutorial.
+
+Serving Static Files
+````````````````````
+
+GeoServer allows serving static files from the `GEOSERVER_DATA_DIR/www` folder as an easy way to provide html, images or scripts alongside geospatial content.
+
+The :ref:`application property <application_properties>` ``GEOSERVER_STATIC_WEB_FILES_SCRIPT`` controls the ``Content-Security-Policy`` for the static files location.
+
+* ``SELF``: Restricts static file authors to content provided by GeoServer.
+
+* ``UNSAFE``:  The default value, no restriction.
+
+For more information see :ref:`tutorials_staticfiles`.
 
 References
 ----------

@@ -33,24 +33,31 @@ Notes on upgrading specific versions
 Content Security Policy (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of GeoServer 2.27, the Content-Security-Policy HTTP response header will be enabled by default
-in order to mitigate cross-site scripting and clickjacking attacks. The default header value is
-intended to **block** the use of inline JavaScript in all HTML output except in cases where it is
-required (e.g., OpenLayers maps). It is possible that future work may further restrict the default
-policy.
+The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site
+scripting and clickjacking attacks. The default header value asks the browser **block** the use of inline
+JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).
+It is anticipated that future work may further restrict the default policy in the interests of safety.
 
-Most users without any customized HTML output should not experience any issues. Users who need
-inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output should see
-:ref:`tutorials_getfeatureinfo_html_csp`. Users experiencing issues with static web files or custom
-classes/plugins generating HTML output may need to update their settings. For more information, see
-:ref:`production_config_csp`.
+* It is expected that the web administration console functions correctly, along with extensions and community modules.
 
-.. note::
-    It is recommended that static web files be disabled if they are not necessary in order to
-    mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+* If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
+  
+  * If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.
+  
+  * With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
 
-However CSP problems can also be introduced in your environment when running GeoServer behind a proxy server.
-If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
+* Users who need inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of  :ref:`GEOSERVER_FEATUREINFO_HTML_SCRIPT <security_csp_featureinfo_html_script>` application property.
+
+* Users experiencing issues with static web files or custom classes/plugins generating HTML output may need to update their settings.
+
+  For more information, see :ref:`production_config_csp`.
+
+  .. note::
+     It is recommended that static web files be disabled if they are not necessary in order to
+     mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
+* GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
+
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

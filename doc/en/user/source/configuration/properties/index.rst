@@ -193,7 +193,7 @@ GeoServer Property Reference
      - x
    * - GEOSERVER_DISABLE_STATIC_WEB_FILES
        
-       :doc:`/tutorials/staticfiles`, default false
+       :ref:`production_config_static_files`, default false
      - x
      - x
      - x
@@ -205,7 +205,7 @@ GeoServer Property Reference
      - x
    * - GEOSERVER_FEATUREINFO_HTML_SCRIPT
        
-       :doc:`/tutorials/GetFeatureInfo/html`, default SELF
+       :ref:`security_csp_featureinfo_html_script`, default SELF
      - x
      - x
      - x

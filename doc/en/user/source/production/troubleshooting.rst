@@ -47,15 +47,32 @@ User interface non-responsive
 Check the browser "Developer Tools" console for Content Security Policy errors::
 
     Refused to send form data to 'https://gs-main.geosolutionsgroup.com/geoserver/j_spring_security_check' because it violates the following Content Security Policy directive: "form-action 'self'".
+    
+::
+
     Content-Security-Policy: The page’s settings blocked a style (style-src-elem) at http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/css/blueprint/screen-ver-5E7BA86A4C3BEA6B457AC3C7F9ADF9B4.css from being applied because it violates the following directive: “style-src 'nonce-_BrhuCNPcn8dWJbyQ1IqkS3R'” 3 NetUtil.sys.mjs:144:15
 
-It is expected that the administration console functions correctly, and problems with any community module or extension can be managed, see GeoServer Security section on :ref:`security_csp` for very detailed information.
+The use of Content Security Policy headers is an additional safety precaution introduced by your browser to mitigate cross-site scripting and clickjacking attacks:
 
+* It is expected that the :ref:`web administration console <web_admin>` functions correctly, along with extensions and community modules.
+  
+  If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report these issues.
+  
+  If you have recently upgraded GeoServer you may also try refreshing the page :kbd:`Control-R`, or reloading the page ignoring the cache content :kbd:`Control-Shift-R`.
 
-However CSP problems can also be introduced in your environment when working behind a proxy. To restore access to the user interface when troubleshooting you may choose to disable CSP failures with the environmental variable ``org.geoserver.web.csp.strict``.
+* With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
+  
+  The ``form-action 'self'`` error above is an example, caused by a proxy forwarding a request to GeoServer
+  using `http:` which did not match the `https:` defined by the GeoServer :ref:`Proxy Base URL <proxy_base>` setting.
 
-* `true`: Content Security Policy violations will be blocked by the browser use use of header ``Content-Security-Policy``.
-* `false`: Content Security Policy violations will be reported in the developer tools console only with header ``Content-Security-Policy-Report-Only``.
+* GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`security_csp` for very detailed information.
+  
+  These facilities can be used mitigate CSP problems that have been reported with administration console, extensions or a community modules.
+
+To restore access to the user interface when troubleshooting you may choose to disable CSP enforcement with the environmental variable ``org.geoserver.web.csp.strict``:
+
+* ``true``: Content Security Policy violations will be blocked by the browser use use of header ``Content-Security-Policy``.
+* ``false``: Content Security Policy violations will be reported in the developer tools console only with header ``Content-Security-Policy-Report-Only``.
 
 This setting is intended to report CSP violations to the browser javascript console, so you can review and troubleshoot.
 

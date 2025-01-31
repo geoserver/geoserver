@@ -20,38 +20,20 @@ import org.geotools.api.style.RasterSymbolizer;
 import org.geotools.api.style.Rule;
 import org.geotools.api.style.Style;
 import org.junit.Test;
-import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.w3c.dom.Document;
 
 public class RasterizerTest extends SLDServiceBaseTest {
 
-    ClassPathXmlApplicationContext appContext;
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         super.onSetUp(testData);
-        appContext = new ClassPathXmlApplicationContext("classpath:**/sldservice-applicationContext.xml");
-        appContext.refresh();
-        for (BeanFactoryPostProcessor postProcessor : appContext.getBeanFactoryPostProcessors()) {
-            applicationContext.addBeanFactoryPostProcessor(postProcessor);
-        }
-        applicationContext.refresh();
 
         getTestData().addWorkspace(getTestData().WCS_PREFIX, getTestData().WCS_URI, getCatalog());
         getTestData().addDefaultRasterLayer(getTestData().WORLD, getCatalog());
-    }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see org.geoserver.test.GeoServerSystemTestSupport#onTearDown(org.geoserver.data.test.SystemTestData)
-     */
-    @Override
-    protected void onTearDown(SystemTestData testData) throws Exception {
-        super.onTearDown(testData);
-        appContext.close();
+        assertNotNull(super.applicationContext.getBean(org.geoserver.catalog.SLDHandler.class));
+        assertNotNull(super.applicationContext.getBean(org.geoserver.config.util.XStreamPersisterFactory.class));
     }
 
     @Test
@@ -68,7 +50,6 @@ public class RasterizerTest extends SLDServiceBaseTest {
         final String restPath = RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         assertEquals(200, response.getStatus());
-        login(); // re-login, AdminRequest's gone
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -83,7 +64,6 @@ public class RasterizerTest extends SLDServiceBaseTest {
         final String restPath = RestBaseController.ROOT_PATH + "/sldservice/wcs:World/" + getServiceUrl() + ".xml";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         assertEquals(200, response.getStatus());
-        login(); // re-login, AdminRequest's gone
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -101,9 +81,9 @@ public class RasterizerTest extends SLDServiceBaseTest {
                 + getServiceUrl()
                 + ".xml?"
                 + "classes=5&min=10.0&max=50.0&digits=1&ramp=custom&startColor=0xFF0000&endColor=0x0000FF";
+
         MockHttpServletResponse response = getAsServletResponse(restPath);
         assertEquals(200, response.getStatus());
-        login(); // re-login, AdminRequest's gone
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);
@@ -127,7 +107,6 @@ public class RasterizerTest extends SLDServiceBaseTest {
                 + "classes=5&min=10.0&max=50.0&digits=2&ramp=custom&startColor=0xFF0000&endColor=0x0000FF";
         MockHttpServletResponse response = getAsServletResponse(restPath);
         assertEquals(200, response.getStatus());
-        login(); // re-login, AdminRequest's gone
         Document dom = getAsDOM(restPath, 200);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         print(dom, baos);

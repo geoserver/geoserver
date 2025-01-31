@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
@@ -219,6 +221,50 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         return auth.getAdminRights();
     }
 
+    /**
+     * Parse a String holding an IP address and optionally a port.
+     *
+     * <p>Address may be either in IPv4 or IPv6 form. Recognized formats are:
+     *
+     * <ul>
+     *   <li>ipv4
+     *   <li>ipv4:port
+     *   <li>ipv6
+     *   <li>[ipv6]
+     *   <li>[ipv6]:port
+     *   <li>hostname
+     *   <li>hostname:port
+     * </ul>
+     *
+     * This method does not perform any validation check on the format; it only tries and parse any of the above
+     * formats.
+     *
+     * @param a String representing the address
+     * @return String, where [0] holds the ip or hostname and [1] the port or null
+     */
+    static String[] parseAddress(String a) {
+        // patterns are very lenient, but they help us to discriminate the kind of the provided address
+        final Pattern ipv4pattern = Pattern.compile("^(?<ADDR>\\d{1,3}(\\.\\d{1,3}){3})(:(?<PORT>\\d+))?$");
+        final Pattern ipv6pattern = Pattern.compile("^\\[?(?<ADDR>[0-9a-fA-F\\:]+)\\]?(\\]\\:(?<PORT>\\d+))?$");
+
+        Matcher m = ipv4pattern.matcher(a);
+        if (m.matches()) {
+            return new String[] {m.group("ADDR"), m.group("PORT")};
+        } else {
+            m = ipv6pattern.matcher(a);
+            if (m.matches()) {
+                return new String[] {m.group("ADDR"), m.group("PORT")};
+            } else {
+                if (a.contains(":")) {
+                    int i = a.lastIndexOf(":");
+                    return new String[] {a.substring(0, i), a.substring(i + 1)};
+                } else {
+                    return new String[] {a, null};
+                }
+            }
+        }
+    }
+
     String getSourceAddress(HttpServletRequest http) {
         try {
             if (http == null) {
@@ -229,12 +275,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             String forwardedFor = http.getHeader("X-Forwarded-For");
             if (forwardedFor != null) {
                 String[] ips = forwardedFor.split(", ");
-
-                return InetAddress.getByName(ips[0]).getHostAddress();
+                String[] parsed = parseAddress(ips[0]); // returns 0:address 1:port
+                return InetAddress.getByName(parsed[0]).getHostAddress();
             } else {
-                // Returns an IP address, removes surrounding brackets present in case of IPV6
-                // addresses
-                return http.getRemoteAddr().replaceAll("[\\[\\]]", "");
+                return parseAddress(http.getRemoteAddr())[0];
             }
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Failed to get remote address", e);
@@ -249,10 +293,11 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         if (owsRequest != null) {
             HttpServletRequest httpReq = owsRequest.getHttpRequest();
             String sourceAddress = getSourceAddress(httpReq);
-            if (sourceAddress == null) {
-                LOGGER.log(Level.WARNING, "Could not retrieve source address from OWSRequest");
+            if (sourceAddress != null) {
+                LOGGER.log(Level.FINE, "IP source address found in OWSRequest");
+                return sourceAddress;
             }
-            return sourceAddress;
+            LOGGER.log(Level.WARNING, "Could not retrieve source address from OWSRequest");
         }
 
         // try Spring
@@ -260,14 +305,16 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             HttpServletRequest request =
                     ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
             String sourceAddress = getSourceAddress(request);
-            if (sourceAddress == null) {
-                LOGGER.log(Level.WARNING, "Could not retrieve source address with Spring Request");
+            if (sourceAddress != null) {
+                LOGGER.log(Level.FINE, "IP source address found in Spring Request");
+                return sourceAddress;
             }
-            return sourceAddress;
+            LOGGER.log(Level.WARNING, "Could not retrieve source address with Spring Request");
         } catch (IllegalStateException ex) {
             LOGGER.log(Level.WARNING, "Error retrieving source address with Spring Request: " + ex.getMessage());
-            return null;
         }
+
+        return null;
     }
 
     @Override

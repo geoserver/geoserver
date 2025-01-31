@@ -311,13 +311,39 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
     }
 
+    public void assertAddress(String input, String expectedAddress, String expectedPort) {
+        String[] addrport = GeofenceAccessManager.parseAddress(input);
+        assertEquals("Parsed address does not match", expectedAddress, addrport[0]);
+        assertEquals("Parsed port does not match", expectedPort, addrport[1]);
+    }
+
     @Test
-    public void testIPv6Address() {
+    public void testAddressAndPort() {
+        assertAddress("127.0.0.1", "127.0.0.1", null); // NOPMD
+        assertAddress("127.0.0.1:8000", "127.0.0.1", "8000"); // NOPMD
+        assertAddress("999.999.999.999:8000", "999.999.999.999", "8000"); // yes, it's parsable
+        assertAddress("0:0:0:0:0:0:0:42", "0:0:0:0:0:0:0:42", null); // NOPMD
+        assertAddress(":::::::42", ":::::::42", null);
+        assertAddress("[:1::2::4a4a:F1F0:42]", ":1::2::4a4a:F1F0:42", null);
+        assertAddress("[::::::F1F0:42]:1234", "::::::F1F0:42", "1234");
+        assertAddress("whatever", "whatever", null);
+        assertAddress("whatever:1000", "whatever", "1000");
+    }
+
+    @Test
+    public void testIPv6AddressXFF() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("[0:0:0:0:0:0:0:1]");
+        request.addHeader("x-forwarded-for", "[0:0:0:0:0:0:0:1]:1234");
         String sourceAddress = accessManager.getSourceAddress(request);
-        // assert that address does not contain any brackets
-        assertFalse(sourceAddress.matches("\\[(.*)\\]"));
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
+    }
+
+    @Test
+    public void testIPv6AddressRemoteAddr() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("[0:0:0:0:0:0:0:1]:1234");
+        String sourceAddress = accessManager.getSourceAddress(request);
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
     }
 
     static class IntersectExtractor extends DefaultFilterVisitor {

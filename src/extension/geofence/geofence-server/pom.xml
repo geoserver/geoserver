@@ -17,21 +17,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.googlecode.genericdao</groupId>
-      <artifactId>dao</artifactId>
-      <version>1.1.0</version>
-      <exclusions>
-        <exclusion>
-          <artifactId>persistence-api</artifactId>
-          <groupId>javax.persistence</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>com.googlecode.genericdao</groupId>
-      <artifactId>search-jpa-hibernate</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
       <exclusions>
@@ -45,19 +30,30 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.hibernatespatial</groupId>
-      <artifactId>hibernate-spatial</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.hibernatespatial</groupId>
-      <artifactId>hibernate-spatial-h2-geodb</artifactId>
-    </dependency>
 
     <dependency>
       <groupId>org.opengeo</groupId>
       <artifactId>geodb</artifactId>
       <version>${opengeo-geodb.version}</version>
+    </dependency>
+
+    <!-- Older versions of h2 fails in drop/create tables   -->
+    <!-- This version may break netcdf/grib modules         -->
+    <!-- Please do consider using a postgis backend instead -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.3.232</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.postgis</groupId>
+      <artifactId>postgis-jdbc</artifactId>
+      <version>${postgis.jdbc.version}</version>
     </dependency>
 
     <dependency>
@@ -134,11 +130,6 @@
     </dependency>
 
     <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-    </dependency>
-
-    <dependency>
       <groupId>com.github.svenmeier.wicket-dnd</groupId>
       <artifactId>wicket-dnd</artifactId>
     </dependency>
@@ -194,7 +185,6 @@
     <dependency>
       <groupId>org.geoserver</groupId>
       <artifactId>gs-wms</artifactId>
-      <version>${project.version}</version>
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
@@ -229,24 +219,28 @@
 
   <profiles>
     <profile>
-      <id>geofence-postgis</id>
-      <activation>
-        <property>
-          <name>geofence-postgis</name>
-        </property>
-      </activation>
-      <dependencies>
-        <dependency>
-          <groupId>org.hibernatespatial</groupId>
-          <artifactId>hibernate-spatial-postgis</artifactId>
-          <version>${hibernate-spatial-version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.postgis</groupId>
-          <artifactId>postgis-jdbc</artifactId>
-          <version>${postgis.jdbc.version}</version>
-        </dependency>
-      </dependencies>
+      <id>release</id>
+      <build>
+        <!-- needed to pack h2 in geofence needed version -->
+        <plugins>
+          <plugin>
+            <artifactId>maven-dependency-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>copy-dependencies</id>
+                <phase>install</phase>
+                <goals>
+                  <goal>copy-dependencies</goal>
+                </goals>
+                <configuration>
+                  <includeGroupIds>com.h2database,org.postgresql,org.postgis</includeGroupIds>
+                  <includeArtifactIds>h2,postgresql,postgis-jdbc</includeArtifactIds>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
   </profiles>
 

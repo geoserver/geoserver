@@ -1073,6 +1073,14 @@
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
         </dependency>
+        <!-- Older versions of h2 fail in drop/create tables   -->
+        <!-- This version may break netcdf/grib modules         -->
+        <!-- Please do consider using a postgis backend instead -->
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <version>2.3.232</version>
+        </dependency>
       </dependencies>
     </profile>
     <profile>

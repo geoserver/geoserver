@@ -29,7 +29,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
 
     private static Logger log = Logging.getLogger(RESTfulDefinitionSource.class);
 
-    private static final String[] validMethodNames = {"GET", "PUT", "DELETE", "POST", "HEAD"};
+    private static final String[] validMethodNames = {"GET", "PUT", "DELETE", "POST", "HEAD", "OPTIONS"};
 
     /** Underlying SecurityMetedataSource object */
     private RESTfulDefinitionSourceDelegateMap delegate = null;
@@ -180,7 +180,7 @@ public class RESTfulDefinitionSource implements FilterInvocationSecurityMetadata
                         if (!matched) {
                             throw new IllegalArgumentException("The HTTP Method Name ("
                                     + s
-                                    + " does NOT equal a valid name (GET,PUT,POST,DELETE,HEAD)");
+                                    + " does NOT equal a valid name (GET,PUT,POST,DELETE,HEAD,OPTIONS)");
                         }
                     }
                 }

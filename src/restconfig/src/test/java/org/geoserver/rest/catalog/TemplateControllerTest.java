@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import org.geoserver.data.test.SystemTestData;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
 
@@ -25,12 +24,6 @@ public class TemplateControllerTest extends CatalogRESTTestSupport {
         super.setUpTestData(testData);
 
         testData.setUpDefaultRasterLayers();
-    }
-
-    @Override
-    @Before
-    public void login() throws Exception {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
     }
 
     private String getIndexAsString(String childPath, String format) throws Exception {

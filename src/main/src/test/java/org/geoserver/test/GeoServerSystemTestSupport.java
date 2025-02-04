@@ -115,6 +115,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.auth.TestingAuthenticationCache;
+import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
@@ -801,6 +802,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
     protected void setRequestAuth(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    /** Login as the {@literal admin} user with roles {@literal ADMIN, ROLE_ADMINISTRATOR} */
+    protected Authentication loginAsAdmin() {
+        return login(
+                "admin",
+                "geoserver",
+                AbstractGeoServerSecurityService.DEFAULT_LOCAL_ADMIN_ROLE,
+                GeoServerRole.ADMIN_ROLE.getAuthority());
     }
 
     /**

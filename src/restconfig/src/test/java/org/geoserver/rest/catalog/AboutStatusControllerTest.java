@@ -9,12 +9,18 @@ import static org.junit.Assert.assertTrue;
 
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.test.GeoServerSystemTestSupport;
+import org.junit.Before;
 import org.junit.Test;
 
 /** @author Carlo Cancellieri - GeoSolutions SAS */
 public class AboutStatusControllerTest extends GeoServerSystemTestSupport {
 
     private static String BASEPATH = RestBaseController.ROOT_PATH;
+
+    @Before
+    public void login() {
+        login("admin", "geoserver");
+    }
 
     @Test
     public void testGetStatusHTML() throws Exception {

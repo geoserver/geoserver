@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class RestAccessController extends AbstractAclController<String, RESTAccessRuleDAO> {
 
     /** rule pattern */
-    static final Pattern KEYPATTERN = Pattern.compile("\\S+:(GET|POST|PUT|DELETE|HEAD)(,(GET|POST|PUT|DELETE|HEAD))*");
+    static final Pattern KEYPATTERN =
+            Pattern.compile("\\S+:(GET|POST|PUT|DELETE|HEAD|OPTIONS)(,(GET|POST|PUT|DELETE|HEAD|OPTIONS))*");
 
     public RestAccessController() {
         super(RESTAccessRuleDAO.get());

@@ -24,6 +24,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import org.geotools.api.feature.FeatureVisitor;
+import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.feature.type.AttributeDescriptor;
 import org.geotools.api.feature.type.GeometryDescriptor;
 import org.geotools.data.jdbc.FilterToSQL;
@@ -97,6 +103,12 @@ class ClickHouseDialect extends BasicSQLDialect {
     @Override
     public Object convertValue(Object value, AttributeDescriptor ad) {
         Class<?> binding = ad.getType().getBinding();
+        Date c = convertValue(value, binding);
+        if (c != null) return c;
+        return super.convertValue(value, ad);
+    }
+
+    private static Date convertValue(Object value, Class<?> binding) {
         if (value instanceof LocalDate && binding.equals(java.sql.Date.class)) {
             LocalDate d = (LocalDate) value;
             Calendar c = Calendar.getInstance();
@@ -107,6 +119,25 @@ class ClickHouseDialect extends BasicSQLDialect {
             return java.sql.Timestamp.from(
                     ((LocalDateTime) value).atZone(ZoneId.systemDefault()).toInstant());
         }
-        return super.convertValue(value, ad);
+        return null;
+    }
+
+    /** SQLite dates are just strings, they don't get converted to Date in case of aggregation, do it here instead */
+    @Override
+    public Function<Object, Object> getAggregateConverter(FeatureVisitor visitor, SimpleFeatureType featureType) {
+        Optional<List<Class>> maybeResultTypes = getResultTypes(visitor, featureType);
+        if (maybeResultTypes.isPresent()) {
+            List<Class> resultTypes = maybeResultTypes.get();
+            if (resultTypes.size() == 1) {
+                Class<?> targetType = resultTypes.get(0);
+                if (java.util.Date.class.isAssignableFrom(targetType)) {
+                    return v -> {
+                        return convertValue(v, targetType);
+                    };
+                }
+            }
+        }
+        // otherwise no conversion needed
+        return Function.identity();
     }
 }

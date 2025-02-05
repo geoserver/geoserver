@@ -160,8 +160,7 @@ public class MapMLHTMLOutput {
 
     private String buildViewerPath(HttpServletRequest request) {
         String base = ResponseUtils.baseURL(request);
-        return ResponseUtils.buildURL(
-                base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
+        return ResponseUtils.buildURL(base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
     }
 
     private int computeZoom(ProjType projType, ReferencedEnvelope projectedBbox) {

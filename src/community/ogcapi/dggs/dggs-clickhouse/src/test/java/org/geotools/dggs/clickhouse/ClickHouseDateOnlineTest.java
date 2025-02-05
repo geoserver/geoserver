@@ -9,6 +9,7 @@
  */
 package org.geotools.dggs.clickhouse;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -17,6 +18,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
@@ -26,10 +28,15 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.data.DataUtilities;
+import org.geotools.feature.visitor.MaxVisitor;
+import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.feature.visitor.NearestVisitor;
+import org.geotools.feature.visitor.UniqueVisitor;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCDateOnlineTest;
 import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.jdbc.JDBCTestSupport;
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 /**
@@ -114,5 +121,84 @@ public class ClickHouseDateOnlineTest extends JDBCTestSupport {
             // regenerate the database table using the new JVM Timezone
             ((ClickHouseDateTestSetup) setup).setUpData();
         }
+    }
+
+    @Test
+    public void testMinDate() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        MinVisitor visitor = new MinVisitor(aname("d"));
+        fs.getFeatures().accepts(visitor, null);
+        Date date = (Date) visitor.getMin();
+        assertNotNull(date);
+    }
+
+    @Test
+    public void testMaxDate() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        MaxVisitor visitor = new MaxVisitor(aname("d"));
+        fs.getFeatures().accepts(visitor, null);
+        Date date = (Date) visitor.getMax();
+        assertNotNull(date);
+    }
+
+    @Test
+    public void testDistinctDate() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        UniqueVisitor visitor = new UniqueVisitor(aname("d"));
+        fs.getFeatures().accepts(visitor, null);
+        Set results = visitor.getUnique();
+        for (Object result : results) {
+            assertThat(result, CoreMatchers.instanceOf(Date.class));
+        }
+    }
+
+    @Test
+    public void testNearestDate() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        FilterFactory ff = dataStore.getFilterFactory();
+        NearestVisitor visitor = new NearestVisitor(ff.property(aname("d")), new Date());
+        fs.getFeatures().accepts(visitor, null);
+        Date date = (Date) visitor.getNearestMatch();
+        assertNotNull(date);
+    }
+
+    @Test
+    public void testMinTimeStamp() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        MinVisitor visitor = new MinVisitor(aname("dt"));
+        fs.getFeatures().accepts(visitor, null);
+        Timestamp ts = (Timestamp) visitor.getMin();
+        assertNotNull(ts);
+    }
+
+    @Test
+    public void testMaxTimeStamp() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        MaxVisitor visitor = new MaxVisitor(aname("dt"));
+        fs.getFeatures().accepts(visitor, null);
+        Timestamp ts = (Timestamp) visitor.getMax();
+        assertNotNull(ts);
+    }
+
+    @Test
+    public void testDistinctTimeStamp() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        UniqueVisitor visitor = new UniqueVisitor(aname("dt"));
+        fs.getFeatures().accepts(visitor, null);
+        Set results = visitor.getUnique();
+        for (Object result : results) {
+            assertThat(result, CoreMatchers.instanceOf(Timestamp.class));
+        }
+    }
+
+    @Test
+    public void testNearestTimeStamp() throws Exception {
+        SimpleFeatureSource fs = dataStore.getFeatureSource(tname("dates"));
+        FilterFactory ff = dataStore.getFilterFactory();
+        NearestVisitor visitor =
+                new NearestVisitor(ff.property(aname("dt")), new Timestamp(System.currentTimeMillis()));
+        fs.getFeatures().accepts(visitor, null);
+        Timestamp ts = (Timestamp) visitor.getNearestMatch();
+        assertNotNull(ts);
     }
 }

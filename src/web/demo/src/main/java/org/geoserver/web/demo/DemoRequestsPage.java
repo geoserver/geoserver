@@ -5,7 +5,8 @@
  */
 package org.geoserver.web.demo;
 
-import com.google.common.base.Charsets;
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 import com.google.common.io.CharStreams;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -75,17 +76,14 @@ public class DemoRequestsPage extends GeoServerBasePage {
     static {
         try {
             var demo_request_js = CharStreams.toString(new InputStreamReader(
-                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.js"),
-                    Charsets.UTF_8));
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.js"), UTF_8));
             var xml_pretty_print_js = CharStreams.toString(new InputStreamReader(
-                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/xml-pretty-print.js"),
-                    Charsets.UTF_8));
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/xml-pretty-print.js"), UTF_8));
             var js = demo_request_js + "\n" + xml_pretty_print_js;
             demoRequestsJavascript = js;
 
             demoRequestsCSS = CharStreams.toString(new InputStreamReader(
-                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.css"),
-                    Charsets.UTF_8));
+                    DemoRequestsPage.class.getResourceAsStream("/org/geoserver/web/demo/demo-requests.css"), UTF_8));
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "error occurred reading demoRequestsJavascript", e);

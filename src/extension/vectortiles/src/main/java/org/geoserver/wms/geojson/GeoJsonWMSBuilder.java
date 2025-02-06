@@ -4,9 +4,9 @@
  */
 package org.geoserver.wms.geojson;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.wms.geojson.GeoJsonBuilderFactory.MIME_TYPE;
 
-import com.google.common.base.Charsets;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
@@ -45,7 +45,7 @@ public class GeoJsonWMSBuilder implements VectorTileBuilder {
                 .setPrefix("geojson")
                 .setSuffix(".geojson")
                 .get();
-        writer = new OutputStreamWriter(out, Charsets.UTF_8);
+        writer = new OutputStreamWriter(out, UTF_8);
         jsonWriter = new org.geoserver.wfs.json.GeoJSONBuilder(writer);
         jsonWriter.object(); // start root object
         jsonWriter.key("type").value("FeatureCollection");

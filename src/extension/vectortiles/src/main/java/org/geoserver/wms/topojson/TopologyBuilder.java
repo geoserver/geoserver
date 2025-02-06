@@ -4,9 +4,9 @@
  */
 package org.geoserver.wms.topojson;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.geoserver.wms.topojson.TopoJSONBuilderFactory.MIME_TYPE;
 
-import com.google.common.base.Charsets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -110,7 +110,7 @@ public class TopologyBuilder implements VectorTileBuilder {
                         .setPrefix("topology")
                         .setSuffix(".topojson")
                         .get();
-                Writer writer = new OutputStreamWriter(out, Charsets.UTF_8)) {
+                Writer writer = new OutputStreamWriter(out, UTF_8)) {
             TopoJSONEncoder encoder = new TopoJSONEncoder();
 
             encoder.encode(topology, writer);

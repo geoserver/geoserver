@@ -38,7 +38,7 @@ certain sensitive classes to mitigate the impact of malicious templates. Most te
 be modified by administrators will also be limited to only accessing getter methods. For more
 information about this, see :ref:`tutorials_getfeatureinfo_html_access`.
 
-The following is an example of the exception message that will probably be seen when processing a
+The following is an example of the exception message seen when processing a
 template that previously worked but is blocked by the new restrictions:
 
   ::

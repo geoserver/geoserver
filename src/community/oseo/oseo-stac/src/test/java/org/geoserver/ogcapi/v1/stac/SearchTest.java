@@ -146,7 +146,7 @@ public class SearchTest extends STACTestSupport {
     }
 
     @Test
-    public void testCollectionsCqlPostSort() throws Exception {
+    public void testCollectionsPostSort() throws Exception {
         // two SAS1, two Landsat, sorted in descending order
         String request = "{\n"
                 + "  \"collections\": [\n"
@@ -164,6 +164,30 @@ public class SearchTest extends STACTestSupport {
                 + "    \"LANDSAT8\"\n"
                 + "  ],\n"
                 + "  \"sortby\": [{\"field\":\"constellation\",\"direction\":\"asc\"}]\n"
+                + "}";
+        DocumentContext doc2 = postAsJSONPath("ogc/stac/v1/search", request2, 200);
+        checkCollectionsSinglePage(doc2, 4, contains("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"));
+    }
+
+    @Test
+    public void testCollectionsPostSortPrefixed() throws Exception {
+        // two SAS1, two Landsat, sorted in descending order
+        String request = "{\n"
+                + "  \"collections\": [\n"
+                + "    \"SAS1\",\n"
+                + "    \"LANDSAT8\"\n"
+                + "  ],\n"
+                + "  \"sortby\": [{\"field\":\"properties.constellation\",\"direction\":\"desc\"}]\n"
+                + "}";
+        DocumentContext doc = postAsJSONPath("ogc/stac/v1/search", request, 200);
+        checkCollectionsSinglePage(doc, 4, contains("SAS1", "SAS1", "LANDSAT8", "LANDSAT8"));
+        // the two landsat8 should be first
+        String request2 = "{\n"
+                + "  \"collections\": [\n"
+                + "    \"SAS1\",\n"
+                + "    \"LANDSAT8\"\n"
+                + "  ],\n"
+                + "  \"sortby\": [{\"field\":\"properties.constellation\",\"direction\":\"asc\"}]\n"
                 + "}";
         DocumentContext doc2 = postAsJSONPath("ogc/stac/v1/search", request2, 200);
         checkCollectionsSinglePage(doc2, 4, contains("LANDSAT8", "LANDSAT8", "SAS1", "SAS1"));
@@ -541,9 +565,8 @@ public class SearchTest extends STACTestSupport {
 
     @Test
     public void testGeometryQueryable() throws Exception {
-        // two sentinel, one landsat, one sas
-        DocumentContext doc =
-                getAsJSONPath("ogc/stac/v1/search?filter=S_INTERSECTS(geometry, ENVELOPE(16,42,17,43))", 200);
+        // two sentinel, one landsat, one sas (used to be ENVELOPE(...) but CQL2 changed to BBOX
+        DocumentContext doc = getAsJSONPath("ogc/stac/v1/search?filter=S_INTERSECTS(geometry, BBOX(16,42,17,43))", 200);
 
         checkCollectionsItemsSinglePage(
                 doc,

@@ -4,8 +4,11 @@
  */
 package org.geoserver.rest;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
+
 import freemarker.core.HTMLOutputFormat;
 import freemarker.core.ParseException;
+import freemarker.ext.beans.BeansWrapper;
 import freemarker.template.Configuration;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.Template;
@@ -76,14 +79,14 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      * @param clazz Class of the object being wrapped
      */
     protected <T> Configuration createConfiguration(Class<T> clazz) {
-        Configuration cfg = TemplateUtils.getSafeConfiguration();
-        cfg.setObjectWrapper(createObjectWrapper(clazz));
-        cfg.setClassForTemplateLoading(getClass(), pathPrefix);
+        BeansWrapper wrapper = (BeansWrapper) createObjectWrapper(clazz);
+        Configuration templateConfig = TemplateUtils.getSafeConfiguration(wrapper, FULL_ACCESS, null);
+        templateConfig.setClassForTemplateLoading(getClass(), pathPrefix);
         if (encoding != null) {
-            cfg.setDefaultEncoding(encoding);
+            templateConfig.setDefaultEncoding(encoding);
         }
-        cfg.setOutputFormat(HTMLOutputFormat.INSTANCE);
-        return cfg;
+        templateConfig.setOutputFormat(HTMLOutputFormat.INSTANCE);
+        return templateConfig;
     }
 
     /**

@@ -137,6 +137,30 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - GEOSERVER_FORCE_FREEMARKER_ESCAPING
+
+       :doc:`/production/config`, default true
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_ALLOW_LIST
+
+       :doc:`/tutorials/GetFeatureInfo/html`
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_BLOCK_LIST
+
+       :doc:`/tutorials/GetFeatureInfo/html`
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_API_EXPOSED
+
+       :doc:`/tutorials/GetFeatureInfo/html`, default false
+     - x
+     - x
+     - x
    * - ows10.exception.xml.responsetype
        
        :doc:`/production/config`

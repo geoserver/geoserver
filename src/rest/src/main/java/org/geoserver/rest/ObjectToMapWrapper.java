@@ -9,7 +9,7 @@ import static org.geoserver.template.TemplateUtils.FM_VERSION;
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
 import freemarker.ext.beans.MapModel;
-import freemarker.template.DefaultObjectWrapper;
+import freemarker.ext.beans.MemberAccessPolicy;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
@@ -23,6 +23,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.ows.util.ClassProperties;
 import org.geoserver.ows.util.OwsUtils;
+import org.geoserver.template.TemplateUtils;
 import org.geotools.util.logging.Logging;
 
 /**
@@ -32,6 +33,8 @@ import org.geotools.util.logging.Logging;
  */
 public class ObjectToMapWrapper<T> extends BeansWrapper {
     private static final Logger LOGGER = Logging.getLogger("org.geoserver.rest");
+
+    private BeansWrapper wrapper = null;
 
     /** The class of object being serialized. */
     Class<T> clazz;
@@ -51,6 +54,12 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         super(FM_VERSION);
         this.clazz = clazz;
         this.classesToExpand = classesToExpand;
+    }
+
+    @Override
+    public void setMemberAccessPolicy(MemberAccessPolicy memberAccessPolicy) {
+        super.setMemberAccessPolicy(memberAccessPolicy);
+        this.wrapper = TemplateUtils.getSafeWrapper(null, memberAccessPolicy, null);
     }
 
     /**
@@ -82,7 +91,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object instanceof Collection) {
             Collection c = (Collection) object;
             if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
-                SimpleHash hash = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+                SimpleHash hash = new SimpleHash(this.wrapper);
                 hash.put("values", new CollectionModel(c, this));
                 setRequestInfo(hash);
                 wrapInternal(hash, (Collection<T>) object);
@@ -92,7 +101,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
         if (object != null && clazz.isAssignableFrom(object.getClass())) {
             Map<String, Object> map = objectToMap(object, clazz);
 
-            SimpleHash model = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+            SimpleHash model = new SimpleHash(this.wrapper);
             model.put("properties", new MapModel(map, this));
             model.put("className", clazz.getSimpleName());
             setRequestInfo(model);

@@ -4,6 +4,8 @@
  */
 package org.geoserver.ogcapi;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
+
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.core.Environment;
 import freemarker.template.Configuration;
@@ -13,7 +15,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -21,6 +22,7 @@ import org.geoserver.ows.LocalWorkspace;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.template.DirectTemplateFeatureCollectionFactory;
 import org.geoserver.template.FeatureWrapper;
+import org.geoserver.template.GeoServerMemberAccessPolicy;
 import org.geoserver.template.GeoServerTemplateLoader;
 import org.geoserver.template.TemplateUtils;
 import org.geotools.util.SoftValueHashMap;
@@ -102,10 +104,10 @@ public class FreemarkerTemplateSupport {
 
     Configuration getTemplateConfiguration(Class<?> clazz) {
         return configurationCache.computeIfAbsent(clazz, k -> {
-            Configuration cfg = TemplateUtils.getSafeConfiguration();
-            cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
-            cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
-            return cfg;
+            GeoServerMemberAccessPolicy policy = FULL_ACCESS.withAllowList("io.swagger.v3.oas.models.");
+            Configuration templateConfig =
+                    TemplateUtils.getSafeConfiguration(new FeatureWrapper(FC_FACTORY), policy, null);
+            return templateConfig;
         });
     }
 

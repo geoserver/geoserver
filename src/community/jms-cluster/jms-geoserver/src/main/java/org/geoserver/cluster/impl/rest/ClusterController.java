@@ -4,6 +4,8 @@
  */
 package org.geoserver.cluster.impl.rest;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
+
 import com.thoughtworks.xstream.converters.collections.PropertiesConverter;
 import freemarker.template.SimpleHash;
 import freemarker.template.Template;
@@ -26,6 +28,7 @@ import org.geoserver.rest.converters.FreemarkerHTMLMessageConverter;
 import org.geoserver.rest.converters.XStreamMessageConverter;
 import org.geoserver.rest.util.MediaTypeExtensions;
 import org.geoserver.rest.wrapper.RestWrapper;
+import org.geoserver.template.TemplateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
@@ -120,12 +123,15 @@ public class ClusterController extends AbstractCatalogController {
 
     @Override
     public void configureFreemarker(FreemarkerHTMLMessageConverter converter, Template template) {
-        template.setObjectWrapper(new ObjectToMapWrapper<Properties>(Properties.class) {
-            @Override
-            protected void wrapInternal(Map properties, SimpleHash model, Properties props) {
-                properties.putAll(props);
-            }
-        });
+        template.setObjectWrapper(TemplateUtils.getSafeWrapper(
+                new ObjectToMapWrapper<Properties>(Properties.class) {
+                    @Override
+                    protected void wrapInternal(Map properties, SimpleHash model, Properties props) {
+                        properties.putAll(props);
+                    }
+                },
+                FULL_ACCESS,
+                null));
     }
 
     @Override

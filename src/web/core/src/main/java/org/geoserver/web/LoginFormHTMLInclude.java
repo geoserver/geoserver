@@ -4,6 +4,8 @@
  */
 package org.geoserver.web;
 
+import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.StringWriter;
@@ -31,12 +33,8 @@ public class LoginFormHTMLInclude extends Include {
 
     public static final String GEOSERVER_LOGIN_AUTOCOMPLETE = "geoserver.login.autocomplete";
 
-    private static Configuration templateConfig;
-
-    static {
-        // initialize the template engine, this is static to maintain a cache
-        templateConfig = TemplateUtils.getSafeConfiguration();
-    }
+    // initialize the template engine, this is static to maintain a cache
+    private static final Configuration templateConfig = TemplateUtils.getSafeConfiguration(null, null, EXPOSE_NOTHING);
 
     private PackageResourceReference resourceReference;
 

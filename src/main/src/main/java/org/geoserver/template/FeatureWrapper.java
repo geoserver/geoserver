@@ -9,8 +9,8 @@ import static org.geoserver.template.TemplateUtils.FM_VERSION;
 
 import freemarker.ext.beans.BeansWrapper;
 import freemarker.ext.beans.CollectionModel;
+import freemarker.ext.beans.MemberAccessPolicy;
 import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.SimpleHash;
 import freemarker.template.TemplateCollectionModel;
 import freemarker.template.TemplateDateModel;
@@ -101,21 +101,35 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
  * @author Gabriel Roldan, TOPP
  */
 public class FeatureWrapper extends BeansWrapper {
+
     static Catalog gsCatalog;
+
+    private BeansWrapper wrapper = null;
 
     /** factory to create CollectionTemplateModel from FeatureCollection */
     protected TemplateFeatureCollectionFactory templateFeatureCollectionFactory;
 
     public FeatureWrapper() {
-        super(FM_VERSION);
-        setSimpleMapWrapper(true);
-        this.templateFeatureCollectionFactory = copyTemplateFeatureCollectionFactory;
+        this(copyTemplateFeatureCollectionFactory);
     }
 
     public FeatureWrapper(TemplateFeatureCollectionFactory templateFeatureCollectionFactory) {
         super(FM_VERSION);
         setSimpleMapWrapper(true);
         this.templateFeatureCollectionFactory = templateFeatureCollectionFactory;
+    }
+
+    @Override
+    public void clearClassIntrospectionCache() {
+        super.clearClassIntrospectionCache();
+        this.wrapper.clearClassIntrospectionCache();
+        ((GeoServerMemberAccessPolicy) getMemberAccessPolicy()).reset();
+    }
+
+    @Override
+    public void setMemberAccessPolicy(MemberAccessPolicy memberAccessPolicy) {
+        super.setMemberAccessPolicy(memberAccessPolicy);
+        this.wrapper = TemplateUtils.getSafeWrapper(null, memberAccessPolicy, null);
     }
 
     private Catalog getCatalog() {
@@ -204,7 +218,7 @@ public class FeatureWrapper extends BeansWrapper {
         // check for feature collection
         if (object instanceof FeatureCollection) {
             // create a model with just one variable called 'features'
-            SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+            SimpleHash map = new SimpleHash(this.wrapper);
             map.put(
                     "features",
                     templateFeatureCollectionFactory.createTemplateFeatureCollection((FeatureCollection) object, this));
@@ -250,7 +264,7 @@ public class FeatureWrapper extends BeansWrapper {
 
         // build up the result, feature type is represented by its name an
         // attributes
-        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash map = new SimpleHash(this.wrapper);
         map.put("attributes", new SequenceMapModel(attributeMap, this));
         map.put("name", ft.getName().getLocalPart());
         map.put("namespace", getNamespace(ft.getName()));
@@ -261,7 +275,7 @@ public class FeatureWrapper extends BeansWrapper {
 
     private SimpleHash buildComplex(ComplexAttribute att) {
         // create the model
-        SimpleHash map = new SimpleHash(new DefaultObjectWrapper(FM_VERSION));
+        SimpleHash map = new SimpleHash(this.wrapper);
 
         // next create the Map representing the per attribute useful
         // properties for a template

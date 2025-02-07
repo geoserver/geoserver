@@ -4,6 +4,8 @@
  */
 package org.geoserver.mapml.template;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
+
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -29,21 +31,17 @@ import org.geotools.api.feature.simple.SimpleFeatureType;
 
 /** A template engine for generating MapML content. */
 public class MapMLMapTemplate {
-    /** The template configuration */
-    static Configuration templateConfig;
 
     static DirectTemplateFeatureCollectionFactory FC_FACTORY = new DirectTemplateFeatureCollectionFactory();
 
+    /** The template configuration */
+    static final Configuration templateConfig =
+            TemplateUtils.getSafeConfiguration(new FeatureWrapper(FC_FACTORY), FULL_ACCESS, null);
+
     static {
         // initialize the template engine, this is static to maintain a cache
-        templateConfig = TemplateUtils.getSafeConfiguration();
-
         templateConfig.setLocale(Locale.US);
         templateConfig.setNumberFormat("0.###########");
-        templateConfig.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
-
-        // encoding
-        templateConfig.setDefaultEncoding("UTF-8");
     }
 
     /** The template used to add to the head of the preview viewer. */

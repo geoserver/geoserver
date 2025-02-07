@@ -52,18 +52,18 @@ public class MapMLHTMLGetFeatureTest extends WFSTestSupport {
         Document doc = Jsoup.parse(htmlResponse);
         Element webmapimport = doc.head().select("script").first();
         assertTrue(
-                "HTML document script must use mapml-viewer.js module",
-                webmapimport.attr("src").matches(".*mapml-viewer\\.js"));
+                "HTML document script must use mapml.js module",
+                webmapimport.attr("src").matches(".*mapml\\.js"));
         Element map = doc.body().select("mapml-viewer").first();
         assertTrue(
                 "viewer must have projection set to \"OSMTILE\"",
                 map.attr("projection").equalsIgnoreCase("OSMTILE"));
-        Element layer = map.getElementsByTag("layer-").first();
+        Element layer = map.getElementsByTag("map-layer").first();
         assertTrue(
                 "Layer must have label equal to title or layer name if no title",
                 layer.attr("label").equalsIgnoreCase(li.getTitle()));
         assertTrue(
-                "HTML title and layer- label attribute should be equal",
+                "HTML title and map-layer label attribute should be equal",
                 layer.attr("label").equalsIgnoreCase(doc.title()));
         String zoom = doc.select("mapml-viewer").attr("zoom");
         // zoom is calculated based on a display size and the extent of the
@@ -89,7 +89,7 @@ public class MapMLHTMLGetFeatureTest extends WFSTestSupport {
                 + "&BBOX=80,-50,100,0";
 
         Document doc = getAsJSoup(path);
-        Element layer = doc.select("mapml-viewer > layer-").first();
+        Element layer = doc.select("mapml-viewer > map-layer").first();
         String layerSrc = layer.attr("src");
         assertThat(layerSrc, startsWith("http://localhost:8080/geoserver/cite/wfs?"));
         assertThat(layerSrc, containsString("TYPENAME=cite%3ALakes"));

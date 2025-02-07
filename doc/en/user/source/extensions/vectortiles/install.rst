@@ -7,7 +7,11 @@ Installing the Vector Tiles Extension
 
    .. warning:: Make sure to match the version of the extension to the version of GeoServer.
 
-#. Extract the archive and copy the contents into the GeoServer :file:`WEB-INF/lib` directory.
+#. Extract the archive and copy the contents into the GeoServer library :file:`WEB-INF/lib` directory located in:
+   
+  * GeoServer binary Jetty: :file:`<GEOSERVER_ROOT>/webapps/geoserver/WEB-INF/lib`
+  * Default Tomcat deployment: :file:`<CATALINA_BASE>/webapps/geoserver/WEB-INF/lib`
+
 
 #. Restart GeoServer.
 

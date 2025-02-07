@@ -259,6 +259,11 @@ public class STACSortablesMapper {
     private Object mapSortable(SortBy sb, Map<String, String> sortables) {
         String sortable = sb.getPropertyName().getPropertyName();
         String sourceName = sortables.get(sortable);
+        // STAC refers to properties as properties.<name>, for properties that are not top level (top level properties
+        // seem to be a STAC invention), so we need to map them back to the source property name, the GeoTools feature
+        // model has no such concept, all properties are at the same level
+        if (sourceName == null && sortable.startsWith("properties."))
+            sourceName = sortables.get(sortable.substring(11));
         if (sourceName == null)
             throw new APIException(
                     APIException.INVALID_PARAMETER_VALUE, "Unknown sortable: " + sortable, HttpStatus.NOT_FOUND);

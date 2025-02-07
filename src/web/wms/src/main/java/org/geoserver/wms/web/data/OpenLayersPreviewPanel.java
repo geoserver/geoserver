@@ -5,10 +5,9 @@
  */
 package org.geoserver.wms.web.data;
 
-import static org.geoserver.template.TemplateUtils.FM_VERSION;
+import static freemarker.ext.beans.BeansWrapper.EXPOSE_NOTHING;
 
 import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import java.io.IOException;
@@ -66,12 +65,10 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     private static final long serialVersionUID = -8742721113748106000L;
 
     static final Logger LOGGER = Logging.getLogger(OpenLayersPreviewPanel.class);
-    static final Configuration templates;
+    private static final Configuration templateConfig = TemplateUtils.getSafeConfiguration(null, null, EXPOSE_NOTHING);
 
     static {
-        templates = TemplateUtils.getSafeConfiguration();
-        templates.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
-        templates.setObjectWrapper(new DefaultObjectWrapper(FM_VERSION));
+        templateConfig.setClassForTemplateLoading(OpenLayersPreviewPanel.class, "");
     }
 
     final Random rand = new Random();
@@ -158,7 +155,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
     private void renderHeaderCss(IHeaderResponse header) throws IOException, TemplateException {
         Map<String, Object> context = new HashMap<>();
         context.put("id", olPreview.getMarkupId());
-        Template template = templates.getTemplate("ol-style.ftl");
+        Template template = templateConfig.getTemplate("ol-style.ftl");
         StringWriter css = new java.io.StringWriter();
         template.process(context, css);
         header.render(CssHeaderItem.forCSS(css.toString(), null));
@@ -214,7 +211,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         String base = ResponseUtils.baseURL(req);
         String baseUrl = ResponseUtils.buildURL(base, "/", null, URLType.RESOURCE);
         context.put("baseUrl", canonicUrl(baseUrl));
-        Template template = templates.getTemplate("ol-load.ftl");
+        Template template = templateConfig.getTemplate("ol-load.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
         header.render(new CssUrlReferenceHeaderItem(
@@ -241,7 +238,7 @@ public class OpenLayersPreviewPanel extends StyleEditTabPanel implements IHeader
         context.put("id", olPreview.getMarkupId());
         context.put("cachebuster", rand.nextInt());
 
-        Template template = templates.getTemplate("ol-update.ftl");
+        Template template = templateConfig.getTemplate("ol-update.ftl");
         StringWriter script = new java.io.StringWriter();
         template.process(context, script);
         return script.toString();

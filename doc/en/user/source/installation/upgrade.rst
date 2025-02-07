@@ -30,6 +30,22 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+FreeMarker Template Method Access (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.27, FreeMarker templates are now restricted from accessing methods related to
+certain sensitive classes to mitigate the impact of malicious templates. Most templates that can
+be modified by administrators will also be limited to only accessing getter methods. For more
+information about this, see :ref:`tutorials_getfeatureinfo_html_access`.
+
+The following is an example of the exception message seen when processing a
+template that previously worked but is blocked by the new restrictions:
+
+  ::
+
+    Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
+    ==> features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]
+
 Content Security Policy (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

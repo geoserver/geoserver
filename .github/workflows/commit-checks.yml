@@ -17,7 +17,7 @@ jobs:
 
       - name: Validate Commit Messages
         run: |
-          regex="^\[GEOS-[0-9]{4,}\] .+"  # Enforce the required format
+          regex="^\[GEOS-[0-9]{4,}\] .+"  # Enforce format
           issues=()
           error_found=false
 
@@ -28,8 +28,17 @@ jobs:
             fi
 
             issue=$(echo "$line" | grep -o "\[GEOS-[0-9]\{4,\}\]")  # Extract issue reference
+            issue_number=$(echo "$issue" | grep -o "[0-9]\{4,\}")
+
             if [[ " ${issues[@]} " =~ " $issue " ]]; then
               echo "❌ Duplicate issue reference detected: $issue"
+              error_found=true
+            fi
+
+            # Check if the issue exists on JIRA
+            response=$(curl -s -o /dev/null -w "%{http_code}" "https://osgeo-org.atlassian.net/browse/GEOS-$issue_number")
+            if [[ "$response" -ne 200 ]]; then
+              echo "❌ Issue $issue does not exist in OSGeo JIRA"
               error_found=true
             fi
 

@@ -2024,6 +2024,16 @@
           <artifactId>markdown-page-generator-plugin</artifactId>
           <version>2.4.0</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-enforcer-plugin</artifactId>
+          <version>3.5.0</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>versions-maven-plugin</artifactId>
+          <version>2.18.0</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -2375,7 +2385,40 @@
           </execution>
         </executions>
       </plugin>
-
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>enforce-maven-version</id>
+            <!-- Enforcing a minimum Maven version is crucial to ensure that:
+                 - Plugin version resolution works as expected: Different Maven versions
+                   may resolve plugin versions differently due to changes in the default
+                   lifecycle mappings, dependency resolution behavior, and plugin inheritance.
+                 - Features and bug fixes required by newer plugins are available: For example,
+                   some plugins (e.g., surefire-plugin 3.x) require Maven 3.6+ or 3.8+.
+                 - Consistent builds across environments: Without enforcing a Maven version,
+                   developers or CI/CD pipelines using different Maven versions may face
+                   unexpected build failures or inconsistencies.
+            -->
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>[3.8,4.0)</version>
+                  <message>You must use Maven 3.8 or higher to build this project.</message>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+      </plugin>
     </plugins>
 
   </build>

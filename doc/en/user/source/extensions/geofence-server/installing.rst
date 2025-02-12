@@ -16,10 +16,13 @@ Install the plugin
  #. Extract the files in this archive to the :file:`WEB-INF/lib` directory of your GeoServer installation.
  
     .. warning:: this plugin will install a version of the `H2 <http://www.h2database.com>`__  library that **is not compatible** 
-                 with other plugins using H2 (e.g. grib/netcdf). 
+                 with other plugins using H2 (e.g. grib/netcdf).   
 
-                 This initial setup is purely for demo purposes, so you should configure GeoFence to work 
-                 on a different backend (e.g. PostgreSQL/PostGIS).
+                 This H2 library is purely for demo purposes, allowing you to run the GeoFence plugin without the need to configure an external DB backend.  
+
+                 You should **remove the h2 library** file (see section :ref:`Clean up H2 dependency<Clean up H2 dependency>`) 
+                 and follow the steps in :ref:`Configure GeoFence to use PostgreSQL <Configure GeoFence to use PostgreSQL>`
+                 in order to be able to use the grib/netcdf extensions.
  
  #. Add the following system variable among the JVM startup options (location varies depending on installation type): ``-Dgwc.context.suffix=gwc`` to avoid conflicts with GWC pages.
 
@@ -31,8 +34,10 @@ Configure the plugin
 
 By default, GeoFence is configured to use H2 as a backend database and will work out of the box with the provided configuration.
 
-As reported above, you are encouraged to move to PostgreSQL/PostGIS.
+As reported above, you are strongly encouraged to move to PostgreSQL/PostGIS.
 
+
+.. _Configure GeoFence to use PostgreSQL:
 
 Configure GeoFence to use PostgreSQL
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -72,6 +77,7 @@ file :file:`<DATADIR>/geofence/geofence-datasource-ovr.properties` with a conten
 Note that the jar files needed to use PostgreSQL and PostGIS are already in the zip file of the plugin.
 
 
+.. _Clean up H2 dependency:
 
 Clean up H2 dependency
 ^^^^^^^^^^^^^^^^^^^^^^

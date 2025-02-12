@@ -239,27 +239,27 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
      * This method does not perform any validation check on the format; it only tries and parse any of the above
      * formats.
      *
-     * @param a String representing the address
-     * @return String, where [0] holds the ip or hostname and [1] the port or null
+     * @param a String representing the address, with an optional port
+     * @return a String with the only ip address stripped of the port
      */
-    static String[] parseAddress(String a) {
+    static String parseAddress(String a) {
         // patterns are very lenient, but they help us to discriminate the kind of the provided address
         final Pattern ipv4pattern = Pattern.compile("^(?<ADDR>\\d{1,3}(\\.\\d{1,3}){3})(:(?<PORT>\\d+))?$");
         final Pattern ipv6pattern = Pattern.compile("^\\[?(?<ADDR>[0-9a-fA-F\\:]+)\\]?(\\]\\:(?<PORT>\\d+))?$");
 
         Matcher m = ipv4pattern.matcher(a);
         if (m.matches()) {
-            return new String[] {m.group("ADDR"), m.group("PORT")};
+            return m.group("ADDR");
         } else {
             m = ipv6pattern.matcher(a);
             if (m.matches()) {
-                return new String[] {m.group("ADDR"), m.group("PORT")};
+                return m.group("ADDR");
             } else {
                 if (a.contains(":")) {
                     int i = a.lastIndexOf(":");
-                    return new String[] {a.substring(0, i), a.substring(i + 1)};
+                    return a.substring(0, i);
                 } else {
-                    return new String[] {a, null};
+                    return a;
                 }
             }
         }
@@ -275,10 +275,10 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
             String forwardedFor = http.getHeader("X-Forwarded-For");
             if (forwardedFor != null) {
                 String[] ips = forwardedFor.split(", ");
-                String[] parsed = parseAddress(ips[0]); // returns 0:address 1:port
-                return InetAddress.getByName(parsed[0]).getHostAddress();
+                String parsed = parseAddress(ips[0]);
+                return InetAddress.getByName(parsed).getHostAddress();
             } else {
-                return parseAddress(http.getRemoteAddr())[0];
+                return parseAddress(http.getRemoteAddr());
             }
         } catch (Exception e) {
             LOGGER.log(Level.INFO, "Failed to get remote address", e);

@@ -311,23 +311,22 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
     }
 
-    public void assertAddress(String input, String expectedAddress, String expectedPort) {
-        String[] addrport = GeofenceAccessManager.parseAddress(input);
-        assertEquals("Parsed address does not match", expectedAddress, addrport[0]);
-        assertEquals("Parsed port does not match", expectedPort, addrport[1]);
+    public void assertAddress(String input, String expectedAddress) {
+        String addr = GeofenceAccessManager.parseAddress(input);
+        assertEquals("Parsed address does not match", expectedAddress, addr);
     }
 
     @Test
-    public void testAddressAndPort() {
-        assertAddress("127.0.0.1", "127.0.0.1", null); // NOPMD
-        assertAddress("127.0.0.1:8000", "127.0.0.1", "8000"); // NOPMD
-        assertAddress("999.999.999.999:8000", "999.999.999.999", "8000"); // yes, it's parsable
-        assertAddress("0:0:0:0:0:0:0:42", "0:0:0:0:0:0:0:42", null); // NOPMD
-        assertAddress(":::::::42", ":::::::42", null);
-        assertAddress("[:1::2::4a4a:F1F0:42]", ":1::2::4a4a:F1F0:42", null);
-        assertAddress("[::::::F1F0:42]:1234", "::::::F1F0:42", "1234");
-        assertAddress("whatever", "whatever", null);
-        assertAddress("whatever:1000", "whatever", "1000");
+    public void testParseAddress() {
+        assertAddress("127.0.0.1", "127.0.0.1"); // NOPMD
+        assertAddress("127.0.0.1:8000", "127.0.0.1"); // NOPMD
+        assertAddress("999.999.999.999:8000", "999.999.999.999"); // yes, it's parsable
+        assertAddress("0:0:0:0:0:0:0:42", "0:0:0:0:0:0:0:42"); // NOPMD
+        assertAddress(":::::::42", ":::::::42");
+        assertAddress("[:1::2::4a4a:F1F0:42]", ":1::2::4a4a:F1F0:42");
+        assertAddress("[::::::F1F0:42]:1234", "::::::F1F0:42");
+        assertAddress("whatever", "whatever");
+        assertAddress("whatever:1000", "whatever");
     }
 
     @Test

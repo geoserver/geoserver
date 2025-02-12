@@ -311,13 +311,38 @@ public class GeofenceAccessManagerTest extends GeofenceBaseTest {
         assertTrue(expectedLimit.equalsExact(accessLimits.getRasterFilter(), .000000001));
     }
 
+    public void assertAddress(String input, String expectedAddress) {
+        String addr = GeofenceAccessManager.parseAddress(input);
+        assertEquals("Parsed address does not match", expectedAddress, addr);
+    }
+
     @Test
-    public void testIPv6Address() {
+    public void testParseAddress() {
+        assertAddress("127.0.0.1", "127.0.0.1"); // NOPMD
+        assertAddress("127.0.0.1:8000", "127.0.0.1"); // NOPMD
+        assertAddress("999.999.999.999:8000", "999.999.999.999"); // yes, it's parsable
+        assertAddress("0:0:0:0:0:0:0:42", "0:0:0:0:0:0:0:42"); // NOPMD
+        assertAddress(":::::::42", ":::::::42");
+        assertAddress("[:1::2::4a4a:F1F0:42]", ":1::2::4a4a:F1F0:42");
+        assertAddress("[::::::F1F0:42]:1234", "::::::F1F0:42");
+        assertAddress("whatever", "whatever");
+        assertAddress("whatever:1000", "whatever");
+    }
+
+    @Test
+    public void testIPv6AddressXFF() {
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRemoteAddr("[0:0:0:0:0:0:0:1]");
+        request.addHeader("x-forwarded-for", "[0:0:0:0:0:0:0:1]:1234");
         String sourceAddress = accessManager.getSourceAddress(request);
-        // assert that address does not contain any brackets
-        assertFalse(sourceAddress.matches("\\[(.*)\\]"));
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
+    }
+
+    @Test
+    public void testIPv6AddressRemoteAddr() {
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setRemoteAddr("[0:0:0:0:0:0:0:1]:1234");
+        String sourceAddress = accessManager.getSourceAddress(request);
+        assertEquals("0:0:0:0:0:0:0:1", sourceAddress); // NOPMD
     }
 
     static class IntersectExtractor extends DefaultFilterVisitor {

@@ -112,7 +112,10 @@ import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.SRS;
 import org.locationtech.jts.geom.Envelope;
 
 /** Builds a MapML document from a WMSMapContent object */
@@ -2763,12 +2766,12 @@ public class MapMLDocumentBuilder {
         return false;
     }
 
-    public static double calculateBestScaleDenominator(
+    public static int calculateBestScaleDenominator(
             double minx,
             double miny,
             double maxx,
             double maxy,
-            List<Double> scaleDenominators,
+            double[] scaleDenominators,
             double imageWidth,
             double metersPerUnit,
             double pixelSize) {
@@ -2783,17 +2786,50 @@ public class MapMLDocumentBuilder {
         double scaleDenominator = resolution / pixelSize;
 
         // Find the closest matching scale denominator
-        double bestMatch = scaleDenominators.get(0);
+        int bestMatch = 0;
         double minDifference = Math.abs(scaleDenominator - bestMatch);
 
-        for (double sd : scaleDenominators) {
-            double difference = Math.abs(scaleDenominator - sd);
+        for (int i = 0; i < scaleDenominators.length; i++) {
+            double difference = Math.abs(scaleDenominator - scaleDenominators[i]);
             if (difference < minDifference) {
                 minDifference = difference;
-                bestMatch = sd;
+                bestMatch = i;
             }
         }
 
         return bestMatch;
+    }
+
+    public static double[] getTileBounds(GridSet gridSet, int tileX, int tileY, double scaleDenominator) {
+
+        double[] origin = gridSet.tileOrigin();
+        int tileWidth = gridSet.getTileWidth();
+        // Calculate the bounds
+        double minX = origin[0] + tileX * tileWidth * gridSet.getPixelSize();
+        double maxX = origin[0] + (tileX + 1) * tileWidth * gridSet.getPixelSize();
+        double minY = origin[1] - (tileY + 1) * tileWidth * gridSet.getPixelSize();
+        double maxY = origin[1] - tileY * tileWidth * gridSet.getPixelSize();
+
+        return new double[] {minX, minY, maxX, maxY};
+    }
+
+    public BoundingBox getBboxForGridLoc(GridSet gridSet, int gridx, int gridy, double scaleDenominator) {
+        // Earth's circumference in meters
+        double earthCircumference = 40075016.686;
+
+        // Calculate meters per pixel
+        double metersPerPixel = earthCircumference / (gridSet.getTileWidth() * scaleDenominator);
+        double[] origin = gridSet.tileOrigin();
+        double tileWidthMeters = gridSet.getTileWidth() * metersPerPixel;
+
+        double tileWidthUnits = metersPerPixel / (gridSet.getMetersPerUnit() != 0 ? gridSet.getMetersPerUnit() : 1.0);
+
+        BoundingBox bbox = new BoundingBox(
+                origin[0] + tileWidthUnits * gridx,
+                origin[0] + tileWidthUnits * gridy,
+                origin[1] + tileWidthUnits * (gridx + 1),
+                origin[1] + tileWidthUnits * (gridy + 1));
+
+        return bbox;
     }
 }

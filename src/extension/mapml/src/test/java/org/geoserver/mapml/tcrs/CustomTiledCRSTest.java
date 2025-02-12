@@ -362,11 +362,11 @@ public class CustomTiledCRSTest extends MapMLTestSupport {
 
         Element nextScript = webmapimport.nextElementSibling().nextElementSibling();
         assertNotNull(nextScript);
-        String scriptContent = nextScript.html();
+        assertTrue(
+                "HTML document script must use custom-projection.js module",
+                nextScript.attr("src").matches(".*custom-projection\\.js"));
 
-        assertTrue(scriptContent.contains("customProjectionDefinition"));
-        assertTrue(scriptContent.contains("let map = document.querySelector(\"mapml-viewer\");"));
-        assertTrue(scriptContent.contains("map.defineCustomProjection(customProjectionDefinition"));
+        String scriptContent = doc.getElementById("customProjection").val();
         // Check the customProjectionDefinition exist
         String projectionPattern = "\"projection\":\\s*\"([^\"]+)\"";
         String resolutionsPattern = "\"resolutions\":\\s*\\[[^]]+\\]";

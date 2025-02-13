@@ -1185,9 +1185,11 @@
         <version>${httpclient.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter</artifactId>
-        <version>5.10.1</version>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.11.4</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
 
       <!-- logging dependencies -->

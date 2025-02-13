@@ -1160,7 +1160,7 @@
         which provides runtime scope; however gs-auth has a compile time dependency-->
         <groupId>net.minidev</groupId>
         <artifactId>json-smart</artifactId>
-        <version>2.5.0</version>
+        <version>2.5.2</version>
         <scope>compile</scope>
       </dependency>
       <dependency>

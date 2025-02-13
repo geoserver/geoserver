@@ -2099,7 +2099,8 @@
             <descriptor>release/ext-excel.xml</descriptor>
             <descriptor>release/ext-feature-pregeneralized.xml</descriptor>
             <descriptor>release/ext-gdal.xml</descriptor>
-            <descriptor>release/ext-geofence-server.xml</descriptor>
+            <descriptor>release/ext-geofence-server-h2.xml</descriptor>
+            <descriptor>release/ext-geofence-server-postgres.xml</descriptor>
             <descriptor>release/ext-geofence-wps.xml</descriptor>
             <descriptor>release/ext-geofence.xml</descriptor>
             <descriptor>release/ext-geopkg-output.xml</descriptor>

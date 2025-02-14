@@ -99,40 +99,46 @@ All filter parameters are optional.
      - Used for paging a list of rules. Specifies the number of entries per page. Leave out for no paging. If specified, ``page`` should also be specified.
    * - userName
      - string
-     - Filter rules on username (excludes all other specified usernames).
+     - Filter rules on username (excludes all other specific usernames).
    * - userAny
      - 0 or 1. 
-     - Specify whether rules for 'any' username are included or not.
+     - Specify whether rules matching any username are included or not.
    * - roleName
      - string
-     - Filter rules on rolename (excludes all other specified rolenames).
+     - Filter rules on rolename (excludes all other specific rolenames).
    * - roleAny
      - 0 or 1. 
-     - Specify whether rules for 'any' rolename are included or not.
+     - Specify whether rules matching any rolename are included or not.
+   * - ipaddress
+     - string
+     - Filter rules on IP address range (only select rules with an address range that includes the passed IP address).
+   * - ipaddressAny
+     - 0 or 1. 
+     - Specify whether rules matching any IP address are included or not.
    * - service
      - string
-     - Filter rules on service (excludes all other specified services).
+     - Filter rules on service (excludes all other specific services).
    * - serviceAny
      - 0 or 1. 
-     - Specify whether rules for 'any' service are included or not.
+     - Specify whether rules matching any service are included or not.
    * - request
      - string
-     - Filter rules on request (excludes all other specified requests).
+     - Filter rules on request (excludes all other specific requests).
    * - requestAny
      - 0 or 1. 
-     - Specify whether rules for 'any' request are included or not.
+     - Specify whether rules matching any request are included or not.
    * - workspace
      - string
-     - Filter rules on workspace (excludes all other specified workspaces).
+     - Filter rules on workspace (excludes all other specific workspaces).
    * - workspaceAny
      - 0 or 1. 
-     - Specify whether rules for 'any' workspace are included or not.
+     - Specify whether rules matching any workspace are included or not.
    * - layer
      - string
-     - Filter rules on layer (excludes all other specified layers).
+     - Filter rules on layer (excludes all other specific layers).
    * - layerAny
      - 0 or 1. 
-     - Specify whether rules for 'any' layer are included or not.
+     - Specify whether rules matching any layer are included or not.
 
 
 

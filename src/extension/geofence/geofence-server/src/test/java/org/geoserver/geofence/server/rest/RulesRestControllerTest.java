@@ -327,7 +327,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         // get the rules so we can access their id
         JaxbRuleList originalRules = controller.get(
                 0, 6, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null);
+                null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -586,7 +586,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getRuleLimits().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
         assertEquals(limits.getSpatialFilterType(), "INTERSECT");
@@ -626,7 +626,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getLayerDetails().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
         assertEquals(details.getSpatialFilterType(), "CLIP");
@@ -648,7 +648,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(r.getLayerDetails().getLayerType());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         r = list.getRules().get(0);
         assertNotNull(r);
         assertNotNull(r.getLayerDetails());
@@ -760,7 +760,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, String prefix, String... expectedUsers) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -778,7 +778,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, long... expectedPriorities) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

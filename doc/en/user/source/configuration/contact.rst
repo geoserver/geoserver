@@ -3,7 +3,7 @@
 Contact Information
 ===================
 
-The Contact Information is used in the ``Capabilities``` document of the WMS and other web services, and is publicly accessible.
+The Contact Information is used in the ``Capabilities`` document of the WMS and other web services, and is publicly accessible.
 
 Contact information supports :ref:`internationalization` allowing services to be described in the requested locale.
 

@@ -1,7 +1,7 @@
 .. _ogcapi_links:
 
-Configuring the GeoServer OGC API module
-========================================
+OGC API Service Configuration
+=============================
 
 The OGC API modules provide additional services along side the existing Open Web Services (OWS).
 

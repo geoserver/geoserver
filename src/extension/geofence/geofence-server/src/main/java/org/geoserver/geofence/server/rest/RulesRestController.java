@@ -115,6 +115,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipAddress", required = false) String ipAddress,
+            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -133,6 +135,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 instanceId,
                 instanceName,
                 instanceDefault,
+                ipAddress,
+                ipAddressDefault,
                 serviceName,
                 serviceDefault,
                 requestName,
@@ -167,6 +171,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipAddress", required = false) String ipAddress,
+            @RequestParam(value = "ipAddressAny", required = false) Boolean ipAddressDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -185,6 +191,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 instanceId,
                 instanceName,
                 instanceDefault,
+                ipAddress,
+                ipAddressDefault,
                 serviceName,
                 serviceDefault,
                 requestName,
@@ -284,6 +292,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
             Long instanceId,
             String instanceName,
             Boolean instanceDefault,
+            String ipAddress,
+            Boolean ipAddressDefault,
             String serviceName,
             Boolean serviceDefault,
             String requestName,
@@ -300,6 +310,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
         setFilter(filter.getUser(), userName, userDefault);
         setFilter(filter.getRole(), roleName, groupDefault);
         setFilter(filter.getInstance(), instanceId, instanceName, instanceDefault);
+        setFilter(filter.getSourceAddress(), ipAddress, ipAddressDefault);
         setFilter(filter.getService(), serviceName, serviceDefault);
         setFilter(filter.getRequest(), requestName, requestDefault);
         setFilter(filter.getSubfield(), subfield, subfieldDefault);

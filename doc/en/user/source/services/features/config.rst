@@ -12,7 +12,7 @@ The service is configured using:
   
   This is why the service page is titled ``GeoServer Web Feature Service`` by default.
 
-* Contact information defined by defined in by :ref:`config_contact`.
+* Contact information defined in :ref:`config_contact`.
 
 * Extra links can be added on a per-service or per-collection basis as indicated in :ref:`ogcapi_links`.
 
@@ -23,7 +23,7 @@ The OGC API Feature Service is modular, allowing you to enable/disable the funct
   
 * By default stable Standards and Community Standards are enabled. If WFS is strict, only official Standards are enabled and community standards are disabled
   
-* The OpenAPI service description is manditory and may not be disabled.
+* The OpenAPI service description is mandatory and may not be disabled.
   
 * The HTML and GeoJSON output formats are built-in and may not be disabled.
   
@@ -33,9 +33,9 @@ The OGC API Feature Service is modular, allowing you to enable/disable the funct
   
 * CQL2 Filter conformances.
   
-  Both the Text and JSON formats for CQL2 are available.
+  Both the Text and JSON formats for CQL2 are available and may be enabled or disabled.
   
-  The built-in CQL2 functionality may not be disabled, and functionality that is not implemented yet may not be enabled.
+  The remaining conformances reflect the built-in CQL2 implementation and may not be edited. The conformances marked enabled have been implemented, and the disabled conformances have not yet been implemented.
 
   .. figure:: img/cql2-configuration.png
      

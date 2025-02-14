@@ -23,8 +23,8 @@ The service is self described using:
   .. code-block:: json
   
      {
-       "title": "GeoServer Features services",
-       "description": "This services delivers vector data in raw form, including both geometries and attributes.",
+       "title": "GeoServer Features service",
+       "description": "This service delivers vector data in raw form, including both geometries and attributes.",
        "links": [
          {
            "href": "https://gs-main.geosolutionsgroup.com/geoserver/ogc/features/v1/?f=application%2Fjson",

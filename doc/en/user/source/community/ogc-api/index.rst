@@ -3,7 +3,7 @@
 OGC API modules
 ===============
 
-The `OGC API Standards <https://www.ogc.org/publications/>`__ are defined by the `Open Geospatial Consortium <http://www.opengeospatial.org>`__ as a familly of resource-centric REST services, each documented as by an OpenAPI documenting outlining the capabilities and datasets published.
+The `OGC API Standards <https://www.ogc.org/publications/>`__ are defined by the `Open Geospatial Consortium <http://www.opengeospatial.org>`__ as a family of resource-centric REST services, each documented as by an OpenAPI documenting outlining the capabilities and datasets published.
 
 Each standard is defined by a core, which is require to be implemented, and optional extensions, documented as the a set of conformances indicating which features are implemented and available.
 

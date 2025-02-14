@@ -75,56 +75,27 @@ public class MapMLFeatureUtil {
     /**
      * Convert a feature collection to a MapML document
      *
-     * @param featureCollection the feature collection to be converted to MapML
-     * @param layerInfo metadata for the feature class
+     * @param featureCollectionInfoSimplifiers the feature collections to convert
      * @param clipBounds the bounds to clip the features to (or null if not clipping is desired)
      * @param requestCRS the CRS requested by the client
      * @param alternateProjections alternate projections for the feature collection
-     * @param numDecimals number of decimal places to use for coordinates
-     * @param forcedDecimal whether to force decimal notation
-     * @param padWithZeros whether to pad with zeros
      * @param skipAttributes whether to skip attributes HTML representation in the output
-     * @param simplifier the optional geometry simplifier to target vector screen usage
      * @return a MapML document
      * @throws IOException if an error occurs while producing the MapML document
      */
     public static Mapml featureCollectionToMapML(
-            FeatureCollection featureCollection,
-            LayerInfo layerInfo,
+            List<FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers,
             Envelope clipBounds,
             CoordinateReferenceSystem requestCRS,
             List<Link> alternateProjections,
-            int numDecimals,
-            boolean forcedDecimal,
-            boolean padWithZeros,
             Map<String, MapMLStyle> styles,
             boolean skipHeadStyles,
-            boolean skipAttributes,
-            MapMLSimplifier simplifier)
+            boolean skipAttributes)
             throws IOException {
-        if (!(featureCollection instanceof SimpleFeatureCollection)) {
-            throw new ServiceException("MapML OutputFormat does not support Complex Features.");
-        }
-        SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
-        boolean hasTemplate = false;
-        boolean hasHeadTemplate = false;
-        try {
-            if (!mapMLMapTemplate.isTemplateEmpty(
-                    fc.getSchema(), MAPML_FEATURE_HEAD_FTL, FeatureTemplate.class, "0\n")) {
-                hasHeadTemplate = true;
-            }
-        } catch (TemplateNotFoundException e) {
-            LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
-        }
-        try {
-            if (!mapMLMapTemplate.isTemplateEmpty(fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
-                hasTemplate = true;
-            }
-        } catch (TemplateNotFoundException e) {
-            LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
-        }
 
-        ResourceInfo resourceInfo = layerInfo.getResource();
+        // Some stuff we are getting from the first layer
+        LayerInfo firstLayerInfo = featureCollectionInfoSimplifiers.get(0).getLayerInfo();
+        ResourceInfo resourceInfo = firstLayerInfo.getResource();
         MetadataMap layerMeta = resourceInfo.getMetadata();
 
         // build the mapML doc
@@ -132,7 +103,7 @@ public class MapMLFeatureUtil {
 
         // build the head
         HeadContent head = new HeadContent();
-        head.setTitle(layerInfo.getName());
+        head.setTitle(getTitle(featureCollectionInfoSimplifiers));
         List<Meta> metas = head.getMetas();
         Meta meta = new Meta();
         meta.setCharset("UTF-8");
@@ -141,7 +112,7 @@ public class MapMLFeatureUtil {
         meta.setHttpEquiv("Content-Type");
         meta.setContent(MapMLConstants.MAPML_MIME_TYPE);
         metas.add(meta);
-        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, layerInfo);
+        Set<Meta> projectionAndExtent = deduceProjectionAndExtent(requestCRS, firstLayerInfo);
         metas.addAll(projectionAndExtent);
         List<Link> links = head.getLinks();
         if (alternateProjections != null) {
@@ -161,12 +132,30 @@ public class MapMLFeatureUtil {
             }
             links.add(link);
         }
-        if (!skipHeadStyles) {
-            String style = getCSSStylesFull(styles);
-            head.setStyle(style);
-            if (hasHeadTemplate) {
-                getInterpolatedStylesFromTemplate(fc)
-                        .ifPresent(interpolated -> appendTemplateCSSStyle(head, interpolated));
+
+        // loop through the feature collections for head elements
+        for (FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier : featureCollectionInfoSimplifiers) {
+            FeatureCollection featureCollection = featureCollectionInfoSimplifier.getFeatureCollection();
+            if (!(featureCollection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
+            boolean hasHeadTemplate = false;
+            try {
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        fc.getSchema(), MAPML_FEATURE_HEAD_FTL, FeatureTemplate.class, "0\n")) {
+                    hasHeadTemplate = true;
+                }
+            } catch (TemplateNotFoundException e) {
+                LOGGER.log(Level.FINEST, MAPML_FEATURE_HEAD_FTL + " Template not found", e);
+            }
+            if (!skipHeadStyles) {
+                String style = getCSSStylesFull(styles);
+                head.setStyle(style);
+                if (hasHeadTemplate) {
+                    getInterpolatedStylesFromTemplate(fc)
+                            .ifPresent(interpolated -> appendTemplateCSSStyle(head, interpolated));
+                }
             }
         }
 
@@ -176,38 +165,64 @@ public class MapMLFeatureUtil {
         // build the body
         BodyContent body = new BodyContent();
         mapml.setBody(body);
-
         List<Feature> features = body.getFeatures();
-        MapMLGenerator featureBuilder = new MapMLGenerator();
-        featureBuilder.setNumDecimals(numDecimals);
-        featureBuilder.setForcedDecimal(forcedDecimal);
-        featureBuilder.setPadWithZeros(padWithZeros);
-        featureBuilder.setClipBounds(clipBounds);
-        featureBuilder.setSkipAttributes(skipAttributes);
-        featureBuilder.setSimplifier(simplifier);
-        try (SimpleFeatureIterator iterator = fc.features()) {
-            while (iterator.hasNext()) {
-                SimpleFeature feature = iterator.next();
-                Optional<Mapml> interpolatedOptional = Optional.empty();
-                if (hasTemplate) {
-                    interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+
+        for (FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier : featureCollectionInfoSimplifiers) {
+            FeatureCollection featureCollection = featureCollectionInfoSimplifier.getFeatureCollection();
+            if (!(featureCollection instanceof SimpleFeatureCollection)) {
+                throw new ServiceException("MapML OutputFormat does not support Complex Features.");
+            }
+            SimpleFeatureCollection fc = (SimpleFeatureCollection) featureCollection;
+            boolean hasTemplate = false;
+
+            try {
+                if (!mapMLMapTemplate.isTemplateEmpty(
+                        fc.getSchema(), MAPML_FEATURE_FTL, FeatureTemplate.class, "0\n")) {
+                    hasTemplate = true;
                 }
-                // convert feature to xml
-                if (styles != null) {
-                    List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
-                    Optional<Feature> f = featureBuilder.buildFeature(
-                            feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
-                    // feature will be skipped if geometry incompatible with style symbolizer
-                    f.ifPresent(features::add);
-                } else {
-                    // WFS GETFEATURE request with no styles
-                    Optional<Feature> f =
-                            featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
-                    f.ifPresent(features::add);
+            } catch (TemplateNotFoundException e) {
+                LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
+            }
+
+            MapMLGenerator featureBuilder = new MapMLGenerator();
+            featureBuilder.setNumDecimals(featureCollectionInfoSimplifier.getNumDecimals());
+            featureBuilder.setForcedDecimal(featureCollectionInfoSimplifier.isForcedDecimal());
+            featureBuilder.setPadWithZeros(featureCollectionInfoSimplifier.isPadWithZeros());
+            featureBuilder.setClipBounds(clipBounds);
+            featureBuilder.setSkipAttributes(skipAttributes);
+            featureBuilder.setSimplifier(featureCollectionInfoSimplifier.getSimplifier());
+            try (SimpleFeatureIterator iterator = fc.features()) {
+                while (iterator.hasNext()) {
+                    SimpleFeature feature = iterator.next();
+                    Optional<Mapml> interpolatedOptional = Optional.empty();
+                    if (hasTemplate) {
+                        interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+                    }
+                    // convert feature to xml
+                    if (styles != null) {
+                        List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
+                        Optional<Feature> f = featureBuilder.buildFeature(
+                                feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
+                        // feature will be skipped if geometry incompatible with style symbolizer
+                        f.ifPresent(features::add);
+                    } else {
+                        // WFS GETFEATURE request with no styles
+                        Optional<Feature> f =
+                                featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
+                        f.ifPresent(features::add);
+                    }
                 }
             }
         }
         return mapml;
+    }
+
+    private static String getTitle(List<FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers) {
+        StringJoiner title = new StringJoiner(", ");
+        for (FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier : featureCollectionInfoSimplifiers) {
+            title.add(featureCollectionInfoSimplifier.getLayerInfo().getName());
+        }
+        return title.toString();
     }
 
     private static Optional<Mapml> getInterpolatedFromTemplate(SimpleFeatureCollection fc, SimpleFeature feature) {
@@ -554,5 +569,53 @@ public class MapMLFeatureUtil {
         Map formatOptions = (Map) request.getKvp().get("format_options");
         if (formatOptions != null && Boolean.valueOf((String) formatOptions.get(key))) return true;
         return false;
+    }
+
+    public static class FeatureCollectionInfoSimplifier {
+        private final FeatureCollection featureCollection;
+        private final LayerInfo layerInfo;
+        private final MapMLSimplifier simplifier;
+        private final int numDecimals;
+        private final boolean forcedDecimal;
+        private final boolean padWithZeros;
+
+        public FeatureCollectionInfoSimplifier(
+                FeatureCollection featureCollection,
+                LayerInfo layerInfo,
+                MapMLSimplifier simplifier,
+                int numDecimals,
+                boolean forcedDecimal,
+                boolean padWithZeros) {
+            this.featureCollection = featureCollection;
+            this.layerInfo = layerInfo;
+            this.simplifier = simplifier;
+            this.numDecimals = numDecimals;
+            this.forcedDecimal = forcedDecimal;
+            this.padWithZeros = padWithZeros;
+        }
+
+        public FeatureCollection getFeatureCollection() {
+            return featureCollection;
+        }
+
+        public LayerInfo getLayerInfo() {
+            return layerInfo;
+        }
+
+        public MapMLSimplifier getSimplifier() {
+            return simplifier;
+        }
+
+        public int getNumDecimals() {
+            return numDecimals;
+        }
+
+        public boolean isForcedDecimal() {
+            return forcedDecimal;
+        }
+
+        public boolean isPadWithZeros() {
+            return padWithZeros;
+        }
     }
 }

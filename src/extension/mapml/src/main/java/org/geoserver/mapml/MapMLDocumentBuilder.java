@@ -270,6 +270,7 @@ public class MapMLDocumentBuilder {
                     rawLayer.setName(layerGroupInfo.getName());
                     rawLayer.setLayerGroup(true);
                     rawLayer.setPublishedInfo(layerGroupInfo);
+                    rawLayers.add(rawLayer);
                 } else {
                     for (PublishedInfo publishedInfo : layerGroupInfo.getLayers()) {
                         addToRawLayers(rawLayers, publishedInfo.getTitle(), (LayerInfo) publishedInfo);

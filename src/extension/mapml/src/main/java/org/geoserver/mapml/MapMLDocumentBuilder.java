@@ -196,6 +196,8 @@ public class MapMLDocumentBuilder {
         this.request = request;
         this.mapContent = mapContent;
         GetMapRequest getMapRequest = mapContent.getRequest();
+        this.useFeatures = useFeatures(getMapRequest);
+        this.useTiles = useTiles(getMapRequest);
         String rawLayersCommaDL = getMapRequest.getRawKvp().get("layers");
         this.layers = toRawLayers(rawLayersCommaDL);
         this.stylesCommaDelimited = getMapRequest.getRawKvp().get("styles") != null
@@ -259,22 +261,34 @@ public class MapMLDocumentBuilder {
         String[] rawLayersArray = rawLayersCommaDL.split(",");
         for (String rawLayerTitle : rawLayersArray) {
             LayerInfo layerInfo = wms.getLayerByName(rawLayerTitle);
-            RawLayer rawLayer = new RawLayer();
+
             if (layerInfo == null) {
                 LayerGroupInfo layerGroupInfo = wms.getLayerGroupByName(rawLayerTitle);
-                rawLayer.setTitle(getTitle(layerGroupInfo, rawLayerTitle));
-                rawLayer.setName(layerGroupInfo.getName());
-                rawLayer.setLayerGroup(true);
-                rawLayer.setPublishedInfo(layerGroupInfo);
+                if (!useFeatures) {
+                    RawLayer rawLayer = new RawLayer();
+                    rawLayer.setTitle(getTitle(layerGroupInfo, rawLayerTitle));
+                    rawLayer.setName(layerGroupInfo.getName());
+                    rawLayer.setLayerGroup(true);
+                    rawLayer.setPublishedInfo(layerGroupInfo);
+                } else {
+                    for (PublishedInfo publishedInfo : layerGroupInfo.getLayers()) {
+                        addToRawLayers(rawLayers, publishedInfo.getTitle(), (LayerInfo) publishedInfo);
+                    }
+                }
             } else {
-                rawLayer.setTitle(getTitle(layerInfo, rawLayerTitle));
-                rawLayer.setLayerGroup(false);
-                rawLayer.setName(layerInfo.getName());
-                rawLayer.setPublishedInfo(layerInfo);
+                addToRawLayers(rawLayers, rawLayerTitle, layerInfo);
             }
-            rawLayers.add(rawLayer);
         }
         return rawLayers;
+    }
+
+    private void addToRawLayers(List<RawLayer> rawLayers, String rawLayerTitle, LayerInfo layerInfo) {
+        RawLayer rawLayer = new RawLayer();
+        rawLayer.setTitle(getTitle(layerInfo, rawLayerTitle));
+        rawLayer.setLayerGroup(false);
+        rawLayer.setName(layerInfo.getName());
+        rawLayer.setPublishedInfo(layerInfo);
+        rawLayers.add(rawLayer);
     }
 
     /**
@@ -410,9 +424,6 @@ public class MapMLDocumentBuilder {
         MapMLLayerMetadata mapMLLayerMetadata = new MapMLLayerMetadata();
         mapMLLayerMetadata.setLayerMeta(new MetadataMap());
         mapMLLayerMetadata.setUseTiles(false);
-        if (layers.size() == 1) {
-            useFeatures = useFeatures(layers.get(0), mapContent.getRequest());
-        }
         mapMLLayerMetadata.setUseFeatures(useFeatures);
         mapMLLayerMetadata.setLayerName(layersCommaDelimited);
         mapMLLayerMetadata.setStyleName(stylesCommaDelimited);
@@ -593,9 +604,7 @@ public class MapMLDocumentBuilder {
         cqlFilter = cql != null ? cql : "";
         tileLayerExists = gwc.hasTileLayer(isLayerGroup ? layerGroupInfo : layerInfo)
                 && gwc.getTileLayer(isLayerGroup ? layerGroupInfo : layerInfo).getGridSubset(projType.value()) != null;
-        useTiles = useTiles(layer, mapContent.getRequest());
         boolean useRemote = Boolean.TRUE.equals(layerMeta.get(MAPML_USE_REMOTE, Boolean.class));
-        useFeatures = useFeatures(layer, mapContent.getRequest());
 
         return new MapMLLayerMetadata(
                 layerInfo,
@@ -621,30 +630,27 @@ public class MapMLDocumentBuilder {
     /**
      * Check if layer should be represented as a feature
      *
-     * @param layer RawLayer
      * @param getMapRequest GetMapRequest
      * @return boolean true if layer should be represented as a feature
      */
     @SuppressWarnings("unchecked")
-    private static boolean useFeatures(RawLayer layer, GetMapRequest getMapRequest) {
+    private static boolean useFeatures(GetMapRequest getMapRequest) {
         Optional useFeaturesOptional = Optional.ofNullable(getMapRequest
                 .getFormatOptions()
                 .getOrDefault(
                         MAPML_USE_FEATURES_REP.toUpperCase(),
                         getMapRequest.getFormatOptions().get(MAPML_USE_FEATURES_REP.toLowerCase())));
-        return (Boolean.parseBoolean((String) useFeaturesOptional.orElse(MAPML_USE_FEATURES_REP_DEFAULT.toString())))
-                && (PublishedType.VECTOR == layer.getPublishedInfo().getType());
+        return (Boolean.parseBoolean((String) useFeaturesOptional.orElse(MAPML_USE_FEATURES_REP_DEFAULT.toString())));
     }
 
     /**
      * Check if layer should be represented with tiles
      *
-     * @param layer RawLayer
      * @param getMapRequest GetMapRequest
      * @return boolean useTiles
      */
     @SuppressWarnings("unchecked")
-    private static boolean useTiles(RawLayer layer, GetMapRequest getMapRequest) {
+    private static boolean useTiles(GetMapRequest getMapRequest) {
         Optional useTilesOptional = Optional.ofNullable(getMapRequest
                 .getFormatOptions()
                 .getOrDefault(

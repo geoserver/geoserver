@@ -1,0 +1,16 @@
+<layer>
+  <name>usa</name>
+  <id>LayerInfoImpl-4cb3db9b:19509125c8a:-7feb</id>
+  <path>/</path>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl-4cb3db9b:19509125c8a:-7fef</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl-4cb3db9b:19509125c8a:-7fec</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+</layer>

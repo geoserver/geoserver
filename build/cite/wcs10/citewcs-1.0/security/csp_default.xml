@@ -1,0 +1,95 @@
+<config>
+  <enabled>true</enabled>
+  <reportOnly>false</reportOnly>
+  <allowOverride>false</allowOverride>
+  <injectProxyBase>false</injectProxyBase>
+  <remoteResources></remoteResources>
+  <frameAncestors></frameAncestors>
+  <policy>
+    <name>other-directives</name>
+    <description>Rules to set the base-uri, form-action and fetch directives</description>
+    <enabled>true</enabled>
+    <rule>
+      <name>static-html-files</name>
+      <description>Allow unsafe scripts and remote resources on static HTML pages unless disabled by a property.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/www/.*\.html?$) AND PROP(GEOSERVER_DISABLE_STATIC_WEB_FILES,(?i)^(?!true$).*$) AND PROP(GEOSERVER_STATIC_WEB_FILES_SCRIPT,(?i)^(UNSAFE)?$)</filter>
+      <directives>base-uri &apos;self&apos;; form-action &apos;self&apos;; default-src &apos;none&apos;; child-src &apos;self&apos;; connect-src &apos;self&apos;; font-src &apos;self&apos; ${geoserver.csp.remoteResources}; img-src &apos;self&apos; ${geoserver.csp.remoteResources} data:; style-src &apos;self&apos; ${geoserver.csp.remoteResources} &apos;unsafe-inline&apos;; script-src &apos;self&apos; ${geoserver.csp.remoteResources} &apos;unsafe-inline&apos; &apos;unsafe-eval&apos;;</directives>
+    </rule>
+    <rule>
+      <name>ows-wms-featureinfo-html</name>
+      <description>Allow unsafe scripts and remote resources on WMS GetFeatureInfo HTML output if enabled by a property.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/([^/]+/){0,2}ows/?$) AND PARAM((?i)^service$,(?i)^wms$) AND PARAM((?i)^request$,(?i)^getfeatureinfo$) AND PARAM((?i)^info_format$,(?i)^text/html$) AND PROP(GEOSERVER_FEATUREINFO_HTML_SCRIPT,(?i)^UNSAFE$)</filter>
+      <directives></directives>
+    </rule>
+    <rule>
+      <name>wms-featureinfo-html</name>
+      <description>Allow unsafe scripts and remote resources on WMS GetFeatureInfo HTML output if enabled by a property.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/([^/]+/){0,2}wms/?$) AND PARAM((?i)^service$,(?i)^(wms)?$) AND PARAM((?i)^request$,(?i)^getfeatureinfo$) AND PARAM((?i)^info_format$,(?i)^text/html$) AND PROP(GEOSERVER_FEATUREINFO_HTML_SCRIPT,(?i)^UNSAFE$)</filter>
+      <directives></directives>
+    </rule>
+    <rule>
+      <name>wtms-kvp-featureinfo-html</name>
+      <description>Allow unsafe scripts and remote resources on WMTS GetFeatureInfo HTML output if enabled by a property.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/([^/]+/){0,2}gwc/service/wmts/?$) AND PARAM((?i)^service$,(?i)^(wmts)?$) AND PARAM((?i)^request$,(?i)^getfeatureinfo$) AND PARAM((?i)^infoformat$,^text/html$) AND PROP(GEOSERVER_FEATUREINFO_HTML_SCRIPT,(?i)^UNSAFE$)</filter>
+      <directives></directives>
+    </rule>
+    <rule>
+      <name>wtms-rest-featureinfo-html</name>
+      <description>Allow unsafe scripts and remote resources on WMTS GetFeatureInfo HTML output if enabled by a property.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/([^/]+/){0,2}gwc/service/wmts/rest(/[^/]*){7,8}$) AND PARAM(^format$,^text/html$) AND PROP(GEOSERVER_FEATUREINFO_HTML_SCRIPT,(?i)^UNSAFE$)</filter>
+      <directives></directives>
+    </rule>
+    <rule>
+      <name>index-page</name>
+      <description>Allow unsafe scripts on the index.html page.</description>
+      <enabled>true</enabled>
+      <filter>PATH(^/index\.html$)</filter>
+      <directives>base-uri &apos;self&apos;; form-action &apos;self&apos;; default-src &apos;none&apos;; child-src &apos;self&apos;; connect-src &apos;self&apos;; font-src &apos;self&apos;; img-src &apos;self&apos; data:; style-src &apos;self&apos; &apos;unsafe-inline&apos;; script-src &apos;self&apos; &apos;unsafe-inline&apos;;</directives>
+    </rule>
+    <rule>
+      <name>other-requests</name>
+      <description>Block unsafe scripts on all other requests.</description>
+      <enabled>true</enabled>
+      <filter></filter>
+      <directives>base-uri &apos;self&apos;; form-action &apos;self&apos;; default-src &apos;none&apos;; child-src &apos;self&apos;; connect-src &apos;self&apos;; font-src &apos;self&apos;; img-src &apos;self&apos; data:; style-src &apos;self&apos; &apos;unsafe-inline&apos;; script-src &apos;self&apos;;</directives>
+    </rule>
+  </policy>
+  <policy>
+    <name>frame-ancestors</name>
+    <description>Rules to set the frame-ancestors directive</description>
+    <enabled>true</enabled>
+    <rule>
+      <name>frame-ancestors-property</name>
+      <description>Set frame-ancestors based on the CSP frame ancestors property or setting when it is configured.</description>
+      <enabled>true</enabled>
+      <filter>PROP(geoserver.csp.frameAncestors,(?i)^[a-z0-9&apos;\*][a-z0-9_\-&apos;:/\.\* ]{4,}$)</filter>
+      <directives>frame-ancestors ${geoserver.csp.frameAncestors};</directives>
+    </rule>
+    <rule>
+      <name>frame-ancestors-self</name>
+      <description>Pages can be displayed in frames with the same origin. This rule depends on the properties for the X-Frame-Options header.</description>
+      <enabled>true</enabled>
+      <filter>PROP(geoserver.xframe.shouldSetPolicy,(?i)^(true)?$) AND PROP(geoserver.xframe.policy,^(SAMEORIGIN)?$)</filter>
+      <directives>frame-ancestors &apos;self&apos;;</directives>
+    </rule>
+    <rule>
+      <name>frame-ancestors-none</name>
+      <description>Pages can not be displayed in any frames. This rule depends on the properties for the X-Frame-Options header.</description>
+      <enabled>true</enabled>
+      <filter>PROP(geoserver.xframe.shouldSetPolicy,(?i)^(true)?$) AND PROP(geoserver.xframe.policy,^DENY$)</filter>
+      <directives>frame-ancestors &apos;none&apos;;</directives>
+    </rule>
+    <rule>
+      <name>frame-ancestors-not-set</name>
+      <description>Pages can be displayed in frames with any origin. This rule depends on the properties for the X-Frame-Options header.</description>
+      <enabled>true</enabled>
+      <filter></filter>
+      <directives>NONE</directives>
+    </rule>
+  </policy>
+</config>

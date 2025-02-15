@@ -1,0 +1,12 @@
+<coverageStore>
+  <id>CoverageStoreInfoImpl-4cb3db9b:19509125c8a:-7fed</id>
+  <name>usa</name>
+  <type>WorldImage</type>
+  <enabled>true</enabled>
+  <workspace>
+    <id>WorkspaceInfoImpl-4cb3db9b:19509125c8a:-7ffd</id>
+  </workspace>
+  <__default>false</__default>
+  <disableOnConnFailure>false</disableOnConnFailure>
+  <url>file:coverages/img_sample/usa.png</url>
+</coverageStore>

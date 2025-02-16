@@ -1360,7 +1360,7 @@ public class GeoServerTileLayerTest {
                 legendsInfo.get("default_style").getLegendUrl(),
                 is(
                         "http://localhost:8080/geoserver/ows?service="
-                                + "WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
+                                + "WMS&request=GetLegendGraphic&version=1.1.0&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName"));
         // alternateStyle-1
         assertThat(legendsInfo.get("alternateStyle-1"), notNullValue());
         assertThat(legendsInfo.get("alternateStyle-1").getWidth(), is(120));
@@ -1370,7 +1370,7 @@ public class GeoServerTileLayerTest {
                 legendsInfo.get("alternateStyle-1").getLegendUrl(),
                 is(
                         "http://localhost:8080/geoserver/ows?service"
-                                + "=WMS&request=GetLegendGraphic&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
+                                + "=WMS&request=GetLegendGraphic&version=1.1.0&format=image%2Fpng&width=120&height=150&layer=workspace%3AMockLayerInfoName&style=alternateStyle-1"));
         // alternateStyle-2
         assertThat(legendsInfo.get("alternateStyle-2"), notNullValue());
         assertThat(legendsInfo.get("alternateStyle-2").getWidth(), is(150));

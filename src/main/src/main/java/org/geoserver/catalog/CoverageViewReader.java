@@ -105,10 +105,11 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
     /**
      * Executor for parallel loading of coverages that do support multithreaded loading to start with (e.g., image
-     * msoaic). It's not limiting the number of threads, because when MT loading is one, that's already limited in the
+     * mosaic). It's not limiting the number of threads, because when MT loading is one, that's already limited in the
      * readers. It cannot be the same executor used by the image mosaic (ResourcePool#getCoverageExecutor) because that
      * would cause deadlock (each read would use at least 2 threads, one inside the image mosaic and one inside the
-     * coverage view). Should we switch to allow parlale
+     * coverage view). Should we switch to allow parellel loading of coverages that do not support MT natively, a
+     * separate executor should be used.
      */
     private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 

@@ -47,7 +47,6 @@ public class MapMLFeaturesBuilder {
     private final GeoServer geoServer;
     private final WMSMapContent mapContent;
     private final GetMapRequest getMapRequest;
-    private final Query query;
 
     private boolean skipAttributes = false;
 
@@ -59,21 +58,25 @@ public class MapMLFeaturesBuilder {
      * @param mapContent the WMS map content
      * @param geoServer the GeoServer
      */
-    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, Query query) throws IOException {
+    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, List<Query> queries) throws IOException {
+        int i = 0;
         for (Layer layer : mapContent.layers()) {
             FeatureSource fs = layer.getFeatureSource();
             if (!(fs instanceof SimpleFeatureSource))
                 throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
+            Query query = queries.get(i);
             MapMLSimplifier simplifier = getSimplifier(fs, mapContent, query);
-            FeatureSourceSimplifier fss =
-                    new FeatureSourceSimplifier((SimpleFeatureSource) fs, simplifier, (SimpleFeatureCollection)
-                            getFeatureCollection(fs, query, simplifier));
+            FeatureSourceSimplifier fss = new FeatureSourceSimplifier(
+                    (SimpleFeatureSource) fs,
+                    simplifier,
+                    (SimpleFeatureCollection) getFeatureCollection(fs, query, simplifier),
+                    query);
             featureSourceSimplifiers.add(fss);
+            i++;
         }
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
-        this.query = new Query(query);
     }
 
     private FeatureCollection getFeatureCollection(FeatureSource featureSource, Query query, MapMLSimplifier simplifier)
@@ -137,12 +140,14 @@ public class MapMLFeaturesBuilder {
             throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
         }
         List<MapMLFeatureUtil.FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers = new ArrayList<>();
+        int i = 0;
         for (Layer layer : mapContent.layers()) {
             SimpleFeatureCollection fc = null;
             FeatureSource fs = layer.getFeatureSource();
             if (!(fs instanceof SimpleFeatureSource))
                 throw new ServiceException("MapML WMS Feature format does not currently support Complex Features.");
             SimpleFeatureSource featureSource = (SimpleFeatureSource) fs;
+            Query query = featureSourceSimplifiers.get(i).getQuery();
             MapMLSimplifier simplifier = getSimplifier(featureSource, mapContent, query);
 
             if (query != null) {
@@ -202,6 +207,7 @@ public class MapMLFeaturesBuilder {
                             getForcedDecimal(meta),
                             getPadWithZeros(meta));
             featureCollectionInfoSimplifiers.add(featureCollectionInfoSimplifier);
+            i++;
         }
         CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
         Map<String, MapMLStyle> styles = getMapMLStyleMap();
@@ -278,12 +284,17 @@ public class MapMLFeaturesBuilder {
         private final SimpleFeatureSource featureSource;
         private final MapMLSimplifier simplifier;
         private final SimpleFeatureCollection fc;
+        private final Query query;
 
         private FeatureSourceSimplifier(
-                SimpleFeatureSource featureSource, MapMLSimplifier simplifier, SimpleFeatureCollection fc) {
+                SimpleFeatureSource featureSource,
+                MapMLSimplifier simplifier,
+                SimpleFeatureCollection fc,
+                Query query) {
             this.featureSource = featureSource;
             this.simplifier = simplifier;
             this.fc = fc;
+            this.query = new Query(query);
         }
 
         SimpleFeatureSource getFeatureSource() {
@@ -296,6 +307,10 @@ public class MapMLFeaturesBuilder {
 
         SimpleFeatureCollection getFeatureCollection() {
             return fc;
+        }
+
+        Query getQuery() {
+            return query;
         }
     }
 }

@@ -437,9 +437,10 @@ public class TilesService {
         tmpHeaders.forEach((k, v) -> headers.add(k, v));
         // content type and disposition
         headers.add(HttpHeaders.CONTENT_TYPE, tile.getMimeType().getMimeType());
+        String disposition = requestedFormat.isInlinePreferred() ? "inline" : "attachment";
         headers.add(
-                HttpHeaders.CONTENT_DISPOSITION,
-                getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile));
+                HttpHeaders.CONTENT_DISPOSITION, disposition + "; filename=\"" +
+                getTileFileName(tileMatrixSetId, tileMatrix, tileRow, tileCol, tileLayer, tile) + "\"");
 
         return new ResponseEntity<>(tileBytes, headers, HttpStatus.OK);
     }
@@ -555,13 +556,15 @@ public class TilesService {
     }
 
     public String getTileFileName(
-            @PathVariable(name = "tileMatrixSetId") String tileMatrixSetId,
-            @PathVariable(name = "tileMatrix") String tileMatrix,
-            @PathVariable(name = "tileRow") long tileRow,
-            @PathVariable(name = "tileCol") long tileCol,
+            String tileMatrixSetId,
+            String tileMatrix,
+            long tileRow,
+            long tileCol,
             TileLayer tileLayer,
             ConveyorTile tile) {
-        String layerName = getTileLayerId(tileLayer);
+        String layerName = tileLayer instanceof GeoServerTileLayer
+                ? ((GeoServerTileLayer) tileLayer).getSimpleName()
+                : tileLayer.getName();
         return layerName
                 + "_"
                 + getExternalZIndex(tileMatrixSetId, tileMatrix, tileLayer)
@@ -569,6 +572,7 @@ public class TilesService {
                 + tileRow
                 + "_"
                 + tileCol
+                + "."
                 + tile.getMimeType().getFileExtension();
     }
 

@@ -5,11 +5,14 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
+import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -40,6 +43,8 @@ import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
 
+import javax.servlet.http.HttpServletRequest;
+
 public class MapMLFeaturesBuilder {
 
     static final Logger LOGGER = Logging.getLogger(MapMLFeaturesBuilder.class);
@@ -52,13 +57,17 @@ public class MapMLFeaturesBuilder {
 
     private boolean skipHeadStyles = false;
 
+    private final HttpServletRequest request;
+
     /**
      * Constructor
      *
      * @param mapContent the WMS map content
      * @param geoServer the GeoServer
      */
-    public MapMLFeaturesBuilder(WMSMapContent mapContent, GeoServer geoServer, List<Query> queries) throws IOException {
+    public MapMLFeaturesBuilder(
+            WMSMapContent mapContent, GeoServer geoServer, List<Query> queries, HttpServletRequest request)
+            throws IOException {
         int i = 0;
         for (Layer layer : mapContent.layers()) {
             FeatureSource fs = layer.getFeatureSource();
@@ -77,6 +86,7 @@ public class MapMLFeaturesBuilder {
         this.geoServer = geoServer;
         this.mapContent = mapContent;
         this.getMapRequest = mapContent.getRequest();
+        this.request = request;
     }
 
     private FeatureCollection getFeatureCollection(FeatureSource featureSource, Query query, MapMLSimplifier simplifier)
@@ -191,6 +201,10 @@ public class MapMLFeaturesBuilder {
 
             LayerInfo layerInfo =
                     geoServer.getCatalog().getLayerByName(fc.getSchema().getTypeName());
+            CoverageInfo coverageInfo = null;
+            if (layerInfo == null) {
+                coverageInfo = geoServer.getCatalog().getCoverageByName(layer.getTitle());
+            }
             CoordinateReferenceSystem crs = mapContent.getRequest().getCrs();
             FeatureType featureType = fc.getSchema();
             ResourceInfo meta = geoServer.getCatalog().getResourceByName(featureType.getName(), ResourceInfo.class);
@@ -202,6 +216,7 @@ public class MapMLFeaturesBuilder {
                     new MapMLFeatureUtil.FeatureCollectionInfoSimplifier(
                             reprojectedFeatureCollection,
                             layerInfo,
+                            coverageInfo,
                             simplifier,
                             getNumberOfDecimals(meta),
                             getForcedDecimal(meta),
@@ -218,7 +233,8 @@ public class MapMLFeaturesBuilder {
                 null, // for WMS GetMap we don't include alternate projections
                 styles,
                 skipHeadStyles,
-                skipAttributes);
+                skipAttributes,
+                request);
     }
 
     private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {

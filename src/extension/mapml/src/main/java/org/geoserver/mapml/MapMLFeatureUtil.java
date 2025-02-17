@@ -13,6 +13,8 @@ import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_F
 import freemarker.template.TemplateNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigInteger;
+import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,7 +25,10 @@ import java.util.Set;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
+
+import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
@@ -38,12 +43,15 @@ import org.geoserver.mapml.xml.Link;
 import org.geoserver.mapml.xml.Mapml;
 import org.geoserver.mapml.xml.Meta;
 import org.geoserver.mapml.xml.RelType;
+import org.geoserver.mapml.xml.Tile;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
 import org.geoserver.platform.ServiceException;
+import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
 import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeodeticCRS;
 import org.geotools.api.style.Style;
@@ -54,6 +62,8 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.GridSet;
 import org.locationtech.jts.geom.Envelope;
 
 public class MapMLFeatureUtil {
@@ -90,7 +100,8 @@ public class MapMLFeatureUtil {
             List<Link> alternateProjections,
             Map<String, MapMLStyle> styles,
             boolean skipHeadStyles,
-            boolean skipAttributes)
+            boolean skipAttributes,
+            HttpServletRequest request)
             throws IOException {
 
         // Some stuff we are getting from the first layer
@@ -166,6 +177,7 @@ public class MapMLFeatureUtil {
         BodyContent body = new BodyContent();
         mapml.setBody(body);
         List<Feature> features = body.getFeatures();
+        List<Tile> tiles = body.getTiles();
 
         for (FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier : featureCollectionInfoSimplifiers) {
             FeatureCollection featureCollection = featureCollectionInfoSimplifier.getFeatureCollection();
@@ -183,34 +195,48 @@ public class MapMLFeatureUtil {
             } catch (TemplateNotFoundException e) {
                 LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
             }
-
-            MapMLGenerator featureBuilder = new MapMLGenerator();
-            featureBuilder.setNumDecimals(featureCollectionInfoSimplifier.getNumDecimals());
-            featureBuilder.setForcedDecimal(featureCollectionInfoSimplifier.isForcedDecimal());
-            featureBuilder.setPadWithZeros(featureCollectionInfoSimplifier.isPadWithZeros());
-            featureBuilder.setClipBounds(clipBounds);
-            featureBuilder.setSkipAttributes(skipAttributes);
-            featureBuilder.setSimplifier(featureCollectionInfoSimplifier.getSimplifier());
-            try (SimpleFeatureIterator iterator = fc.features()) {
-                while (iterator.hasNext()) {
-                    SimpleFeature feature = iterator.next();
-                    Optional<Mapml> interpolatedOptional = Optional.empty();
-                    if (hasTemplate) {
-                        interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+            if (featureCollectionInfoSimplifier.getLayerInfo() != null) {
+                MapMLGenerator featureBuilder = new MapMLGenerator();
+                featureBuilder.setNumDecimals(featureCollectionInfoSimplifier.getNumDecimals());
+                featureBuilder.setForcedDecimal(featureCollectionInfoSimplifier.isForcedDecimal());
+                featureBuilder.setPadWithZeros(featureCollectionInfoSimplifier.isPadWithZeros());
+                featureBuilder.setClipBounds(clipBounds);
+                featureBuilder.setSkipAttributes(skipAttributes);
+                featureBuilder.setSimplifier(featureCollectionInfoSimplifier.getSimplifier());
+                try (SimpleFeatureIterator iterator = fc.features()) {
+                    while (iterator.hasNext()) {
+                        SimpleFeature feature = iterator.next();
+                        Optional<Mapml> interpolatedOptional = Optional.empty();
+                        if (hasTemplate) {
+                            interpolatedOptional = getInterpolatedFromTemplate(fc, feature);
+                        }
+                        // convert feature to xml
+                        if (styles != null) {
+                            List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
+                            Optional<Feature> f = featureBuilder.buildFeature(
+                                    feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
+                            // feature will be skipped if geometry incompatible with style symbolizer
+                            f.ifPresent(features::add);
+                        } else {
+                            // WFS GETFEATURE request with no styles
+                            Optional<Feature> f =
+                                    featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
+                            f.ifPresent(features::add);
+                        }
                     }
-                    // convert feature to xml
-                    if (styles != null) {
-                        List<MapMLStyle> applicableStyles = getApplicableStyles(feature, styles);
-                        Optional<Feature> f = featureBuilder.buildFeature(
-                                feature, fCaptionTemplate, applicableStyles, interpolatedOptional);
-                        // feature will be skipped if geometry incompatible with style symbolizer
-                        f.ifPresent(features::add);
-                    } else {
-                        // WFS GETFEATURE request with no styles
-                        Optional<Feature> f =
-                                featureBuilder.buildFeature(feature, fCaptionTemplate, null, interpolatedOptional);
-                        f.ifPresent(features::add);
-                    }
+                }
+            } else if (featureCollectionInfoSimplifier.getCoverageInfo() != null && request != null) {
+                String baseUrl = ResponseUtils.baseURL(request);
+                Tile tile = new Tile();
+                tile.setRow(BigInteger.valueOf(1));
+                tile.setCol(BigInteger.valueOf(1));
+                tile.setZoom(BigInteger.valueOf(1));
+                tile.setSrc(baseUrl);
+                tiles.add(tile);
+                try {
+                    String epsg = CRS.lookupIdentifier(requestCRS, true);
+                } catch (FactoryException e) {
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -220,7 +246,10 @@ public class MapMLFeatureUtil {
     private static String getTitle(List<FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers) {
         StringJoiner title = new StringJoiner(", ");
         for (FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier : featureCollectionInfoSimplifiers) {
-            title.add(featureCollectionInfoSimplifier.getLayerInfo().getName());
+            title.add(
+                    featureCollectionInfoSimplifier.getLayerInfo() != null
+                            ? featureCollectionInfoSimplifier.getLayerInfo().getName()
+                            : featureCollectionInfoSimplifier.getCoverageInfo().getName());
         }
         return title.toString();
     }
@@ -574,6 +603,7 @@ public class MapMLFeatureUtil {
     public static class FeatureCollectionInfoSimplifier {
         private final FeatureCollection featureCollection;
         private final LayerInfo layerInfo;
+        private final CoverageInfo coverageInfo;
         private final MapMLSimplifier simplifier;
         private final int numDecimals;
         private final boolean forcedDecimal;
@@ -582,6 +612,7 @@ public class MapMLFeatureUtil {
         public FeatureCollectionInfoSimplifier(
                 FeatureCollection featureCollection,
                 LayerInfo layerInfo,
+                CoverageInfo coverageInfo,
                 MapMLSimplifier simplifier,
                 int numDecimals,
                 boolean forcedDecimal,
@@ -592,6 +623,7 @@ public class MapMLFeatureUtil {
             this.numDecimals = numDecimals;
             this.forcedDecimal = forcedDecimal;
             this.padWithZeros = padWithZeros;
+            this.coverageInfo = coverageInfo;
         }
 
         public FeatureCollection getFeatureCollection() {
@@ -617,5 +649,68 @@ public class MapMLFeatureUtil {
         public boolean isPadWithZeros() {
             return padWithZeros;
         }
+
+        public CoverageInfo getCoverageInfo() {
+            return coverageInfo;
+        }
+    }
+
+    public static int calculateBestScaleDenominator(
+            double minx, double maxx, double[] scaleDenominators, double imageWidth, double pixelSize) {
+
+        // Calculate bounding box width
+        double boundingBoxWidth = maxx - minx;
+
+        // Calculate resolution
+        double resolution = boundingBoxWidth / imageWidth;
+
+        // Convert resolution to scale denominator
+        double scaleDenominator = resolution / pixelSize;
+
+        // Find the closest matching scale denominator
+        int bestMatch = 0;
+        double minDifference = Math.abs(scaleDenominator - bestMatch);
+
+        for (int i = 0; i < scaleDenominators.length; i++) {
+            double difference = Math.abs(scaleDenominator - scaleDenominators[i]);
+            if (difference < minDifference) {
+                minDifference = difference;
+                bestMatch = i;
+            }
+        }
+
+        return bestMatch;
+    }
+
+    public static double[] getTileBounds(GridSet gridSet, int tileX, int tileY, double scaleDenominator) {
+
+        double[] origin = gridSet.tileOrigin();
+        int tileWidth = gridSet.getTileWidth();
+        // Calculate the bounds
+        double minX = origin[0] + tileX * tileWidth * gridSet.getPixelSize();
+        double maxX = origin[0] + (tileX + 1) * tileWidth * gridSet.getPixelSize();
+        double minY = origin[1] - (tileY + 1) * tileWidth * gridSet.getPixelSize();
+        double maxY = origin[1] - tileY * tileWidth * gridSet.getPixelSize();
+
+        return new double[] {minX, minY, maxX, maxY};
+    }
+
+    public BoundingBox getBboxForGridLoc(GridSet gridSet, int gridx, int gridy, double scaleDenominator) {
+        // Earth's circumference in meters
+        double earthCircumference = 40075016.686;
+
+        // Calculate meters per pixel
+        double metersPerPixel = earthCircumference / (gridSet.getTileWidth() * scaleDenominator);
+        double[] origin = gridSet.tileOrigin();
+
+        double tileWidthUnits = metersPerPixel / (gridSet.getMetersPerUnit() != 0 ? gridSet.getMetersPerUnit() : 1.0);
+
+        BoundingBox bbox = new BoundingBox(
+                origin[0] + tileWidthUnits * gridx,
+                origin[0] + tileWidthUnits * gridy,
+                origin[1] + tileWidthUnits * (gridx + 1),
+                origin[1] + tileWidthUnits * (gridy + 1));
+
+        return bbox;
     }
 }

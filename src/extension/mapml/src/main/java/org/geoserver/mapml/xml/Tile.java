@@ -44,6 +44,9 @@ public class Tile {
     @XmlAttribute(name = "row", required = true)
     protected BigInteger row;
 
+    @XmlAttribute(name = "zoom")
+    protected BigInteger zoom;
+
     @XmlAttribute(name = "src", required = true)
     @XmlSchemaType(name = "anySimpleType")
     protected String src;
@@ -227,5 +230,22 @@ public class Tile {
      */
     public void setType(String value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the zoom property.
+     *
+     * @return possible object is {@link BigInteger }
+     */
+    public BigInteger getZoom() {
+        return zoom;
+    }
+
+    /**
+     * Sets the value of the zoom property.
+     * @param value allowed object is {@link BigInteger }
+     */
+    public void setZoom(BigInteger value) {
+        this.zoom = value;
     }
 }

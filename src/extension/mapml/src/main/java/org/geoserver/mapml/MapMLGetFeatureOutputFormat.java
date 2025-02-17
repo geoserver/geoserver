@@ -84,7 +84,7 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
         List<MapMLFeatureUtil.FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers = new ArrayList<>();
         MapMLFeatureUtil.FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier =
                 new MapMLFeatureUtil.FeatureCollectionInfoSimplifier(
-                        featureCollection, layerInfo, null, numDecimals, forcedDecimal, padWithZeros);
+                        featureCollection, layerInfo, null, null, numDecimals, forcedDecimal, padWithZeros);
         featureCollectionInfoSimplifiers.add(featureCollectionInfoSimplifier);
         Mapml mapml = MapMLFeatureUtil.featureCollectionToMapML(
                 featureCollectionInfoSimplifiers,
@@ -93,7 +93,8 @@ public class MapMLGetFeatureOutputFormat extends WFSGetFeatureOutputFormat {
                 MapMLFeatureUtil.alternateProjections(this.base, this.path, this.query),
                 null,
                 false,
-                false);
+                false,
+                null);
 
         // write to output
         OutputStreamWriter osw = new OutputStreamWriter(out, gs.getSettings().getCharset());

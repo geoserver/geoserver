@@ -68,7 +68,8 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
                 throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
             }
             List<Query> queries = StyleQueryUtil.getStyleQuery(mapContent.layers(), mapContent);
-            MapMLFeaturesBuilder builder = new MapMLFeaturesBuilder(mapContent, geoServer, queries);
+            MapMLFeaturesBuilder builder =
+                    new MapMLFeaturesBuilder(mapContent, geoServer, queries, request.getHttpRequest());
             builder.setSkipAttributes(isSkipAttributes(request));
             builder.setSkipHeadStyles(isSkipHeadStyles(request));
             mapMLDocument = builder.getMapMLDocument();

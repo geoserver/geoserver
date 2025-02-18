@@ -19,6 +19,7 @@ package org.geotools.dggs;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.commons.collections4.IteratorUtils;
 import org.geotools.api.filter.Filter;
 import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.Or;
@@ -35,6 +36,8 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.filter.visitor.DuplicatingFilterVisitor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 
 /**
@@ -82,12 +85,25 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
     public Object visit(Intersects filter, Object extraData) {
         // assuming a single geometry property in the DGGS output type
         if (filter.getExpression1() instanceof PropertyName && filter.getExpression2() instanceof Literal) {
-            Polygon polygon = (Polygon) filter.getExpression2().evaluate(Polygon.class);
-            Iterator<Zone> zones = dggs.polygon(polygon, resolution, true);
-            return getFilterFrom(dggs, zones, resolution);
-        } else {
-            return super.visit(filter, extraData);
+            Geometry geometry = (Geometry) filter.getExpression2().evaluate(Geometry.class);
+            if (geometry instanceof Polygon) {
+                Polygon polygon = (Polygon) geometry;
+                Iterator<Zone> zones = dggs.polygon(polygon, resolution, true);
+                return getFilterFrom(dggs, zones, resolution);
+            } else if (geometry instanceof MultiPolygon) {
+                MultiPolygon multiPolygon = (MultiPolygon) geometry;
+                List<Iterator<Zone>> iterators = new ArrayList<>();
+                for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+                    Polygon polygon = (Polygon) multiPolygon.getGeometryN(i);
+                    iterators.add(dggs.polygon(polygon, resolution, true));
+                }
+                @SuppressWarnings("unchecked")
+                Iterator<Zone> zones = IteratorUtils.chainedIterator(iterators.toArray(n -> new Iterator[n]));
+                return getFilterFrom(dggs, zones, resolution);
+            }
         }
+        // fallback for non supported cases
+        return super.visit(filter, extraData);
     }
 
     @Override

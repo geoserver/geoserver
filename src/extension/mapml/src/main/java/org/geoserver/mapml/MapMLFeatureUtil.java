@@ -4,9 +4,15 @@
  */
 package org.geoserver.mapml;
 
+import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES_REP;
+import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP;
+import static org.geoserver.mapml.MapMLDocumentBuilder.extractCRS;
+import static org.geoserver.mapml.MapMLDocumentBuilder.toCommaDelimitedBbox;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 
@@ -18,6 +24,7 @@ import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,6 +40,7 @@ import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.template.MapMLMapTemplate;
@@ -47,6 +55,7 @@ import org.geoserver.mapml.xml.Tile;
 import org.geoserver.ows.Request;
 import org.geoserver.ows.URLMangler;
 import org.geoserver.ows.util.ResponseUtils;
+import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.ServiceException;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.featureinfo.FeatureTemplate;
@@ -62,8 +71,13 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.metadata.iso.citation.Citations;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
+import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.grid.BoundingBox;
+import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.grid.GridSubsetFactory;
+import org.geowebcache.grid.SRS;
 import org.locationtech.jts.geom.Envelope;
 
 public class MapMLFeatureUtil {
@@ -101,7 +115,8 @@ public class MapMLFeatureUtil {
             Map<String, MapMLStyle> styles,
             boolean skipHeadStyles,
             boolean skipAttributes,
-            HttpServletRequest request)
+            HttpServletRequest request,
+            GetMapRequest getMapRequest)
             throws IOException {
 
         // Some stuff we are getting from the first layer
@@ -227,15 +242,77 @@ public class MapMLFeatureUtil {
                 }
             } else if (featureCollectionInfoSimplifier.getCoverageInfo() != null && request != null) {
                 String baseUrl = ResponseUtils.baseURL(request);
+                Map<String, String> kvp = new LinkedHashMap<>();
+                kvp.put(
+                        "LAYERS",
+                        featureCollectionInfoSimplifier
+                                                .getCoverageInfo()
+                                                .getNamespace()
+                                                .getPrefix()
+                                        != null
+                                ? featureCollectionInfoSimplifier
+                                                .getCoverageInfo()
+                                                .getNamespace()
+                                                .getPrefix() + ":"
+                                        + featureCollectionInfoSimplifier
+                                                .getCoverageInfo()
+                                                .getName()
+                                : featureCollectionInfoSimplifier
+                                        .getCoverageInfo()
+                                        .getName());
+                kvp.put("BBOX", toCommaDelimitedBbox(clipBounds));
+                kvp.put("HEIGHT", String.valueOf(1));
+                kvp.put("WIDTH", String.valueOf(1));
+                kvp.put("SRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
+                kvp.put("FORMAT", "image/png");
+                kvp.put("SERVICE", "WMS");
+                kvp.put("REQUEST", "GetMap");
+                kvp.put("VERSION", "1.3.0");
+                String wms = ResponseUtils.buildURL(baseUrl, "wms", kvp, URLMangler.URLType.SERVICE);
                 Tile tile = new Tile();
                 tile.setRow(BigInteger.valueOf(1));
                 tile.setCol(BigInteger.valueOf(1));
                 tile.setZoom(BigInteger.valueOf(1));
-                tile.setSrc(baseUrl);
+                tile.setSrc(wms);
                 tiles.add(tile);
                 try {
                     String epsg = CRS.lookupIdentifier(requestCRS, true);
+                    MapMLGridsets mapMlGridsets = (MapMLGridsets) GeoServerExtensions.bean("mapMLGridsets");
+                    GridSet chosen = null;
+                    for (String candidate : mapMlGridsets.getGridSetNames()) {
+                        Optional<GridSet> optionalGridSet = mapMlGridsets.getGridSet(candidate);
+                        if (optionalGridSet.isPresent()) {
+                            GridSet testGridset = optionalGridSet.get();
+                            if (testGridset.getSrs().equals(SRS.getSRS(epsg))) {
+                                chosen = optionalGridSet.get();
+                                break;
+                            }
+                        }
+                    }
+                    if (chosen != null) {
+                        int zoomLevel = calculateBestZoomLevel(
+                                clipBounds.getMinX(),
+                                clipBounds.getMaxX(),
+                                chosen,
+                                getMapRequest.getWidth(),
+                                chosen.getPixelSize());
+                        BoundingBox bbox = new BoundingBox(
+                                clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
+                        GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
+                        long[] tileRange = gridSubset.getCoverage(zoomLevel);
+                        long minx = tileRange[0];
+                        long miny = tileRange[1];
+                        long maxx = tileRange[2];
+                        long maxy = tileRange[3];
+                        long[] tile1 = {minx, miny, zoomLevel};
+                        long[] tile2 = {maxx, maxy, zoomLevel};
+                        BoundingBox boundingBoxTile1 = gridSubset.boundsFromIndex(tile1);
+                        BoundingBox boundingBoxTile2 = gridSubset.boundsFromIndex(tile2);
+                        System.out.println("Tile 1 bounds: " + boundingBoxTile1);
+                    }
                 } catch (FactoryException e) {
+                    throw new RuntimeException(e);
+                } catch (GeoWebCacheException e) {
                     throw new RuntimeException(e);
                 }
             }
@@ -655,8 +732,8 @@ public class MapMLFeatureUtil {
         }
     }
 
-    public static int calculateBestScaleDenominator(
-            double minx, double maxx, double[] scaleDenominators, double imageWidth, double pixelSize) {
+    public static int calculateBestZoomLevel(
+            double minx, double maxx, GridSet gridSet, double imageWidth, double pixelSize) {
 
         // Calculate bounding box width
         double boundingBoxWidth = maxx - minx;
@@ -664,15 +741,12 @@ public class MapMLFeatureUtil {
         // Calculate resolution
         double resolution = boundingBoxWidth / imageWidth;
 
-        // Convert resolution to scale denominator
-        double scaleDenominator = resolution / pixelSize;
-
         // Find the closest matching scale denominator
         int bestMatch = 0;
-        double minDifference = Math.abs(scaleDenominator - bestMatch);
+        double minDifference = Math.abs(resolution - bestMatch);
 
-        for (int i = 0; i < scaleDenominators.length; i++) {
-            double difference = Math.abs(scaleDenominator - scaleDenominators[i]);
+        for (int i = 0; i < gridSet.getNumLevels(); i++) {
+            double difference = Math.abs(resolution - gridSet.getGrid(i).getResolution());
             if (difference < minDifference) {
                 minDifference = difference;
                 bestMatch = i;
@@ -682,15 +756,15 @@ public class MapMLFeatureUtil {
         return bestMatch;
     }
 
-    public static double[] getTileBounds(GridSet gridSet, int tileX, int tileY, double scaleDenominator) {
+    public static double[] getTileBounds(GridSet gridSet, double resolution, int tileX, int tileY) {
 
         double[] origin = gridSet.tileOrigin();
         int tileWidth = gridSet.getTileWidth();
         // Calculate the bounds
-        double minX = origin[0] + tileX * tileWidth * gridSet.getPixelSize();
-        double maxX = origin[0] + (tileX + 1) * tileWidth * gridSet.getPixelSize();
-        double minY = origin[1] - (tileY + 1) * tileWidth * gridSet.getPixelSize();
-        double maxY = origin[1] - tileY * tileWidth * gridSet.getPixelSize();
+        double minX = origin[0] + tileX * tileWidth * resolution;
+        double maxX = origin[0] + (tileX + 1) * tileWidth * resolution;
+        double minY = origin[1] - (tileY + 1) * tileWidth * resolution;
+        double maxY = origin[1] - tileY * tileWidth * resolution;
 
         return new double[] {minX, minY, maxX, maxY};
     }

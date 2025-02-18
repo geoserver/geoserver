@@ -234,7 +234,8 @@ public class MapMLFeaturesBuilder {
                 styles,
                 skipHeadStyles,
                 skipAttributes,
-                request);
+                request,
+                getMapRequest);
     }
 
     private Map<String, MapMLStyle> getMapMLStyleMap() throws IOException {

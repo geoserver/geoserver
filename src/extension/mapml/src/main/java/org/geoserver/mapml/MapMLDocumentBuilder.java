@@ -224,7 +224,7 @@ public class MapMLDocumentBuilder {
         this.layerTitlesCommaDelimited = layers.stream().map(RawLayer::getTitle).collect(Collectors.joining(","));
     }
 
-    private String extractCRS(Map<String, String> rawKvp) {
+    public static String extractCRS(Map<String, String> rawKvp) {
         String srs = null;
         String version = rawKvp.get("VERSION");
         if ("1.3.0".equalsIgnoreCase(version)) {
@@ -243,7 +243,7 @@ public class MapMLDocumentBuilder {
      * @param bbox Envelope object
      * @return comma delimited string
      */
-    private String toCommaDelimitedBbox(Envelope bbox) {
+    public static String toCommaDelimitedBbox(Envelope bbox) {
         return bbox.getMinX() + "," + bbox.getMinY() + "," + bbox.getMaxX() + "," + bbox.getMaxY();
     }
 

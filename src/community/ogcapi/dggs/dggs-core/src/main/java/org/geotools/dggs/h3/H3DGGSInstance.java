@@ -51,7 +51,7 @@ public class H3DGGSInstance implements DGGSInstance {
     final Set<Long> northPoleZones;
     final Set<Long> southPoleZones;
 
-    H3DGGSInstance(H3Core h3) {
+    public H3DGGSInstance(H3Core h3) {
         this.h3 = h3;
 
         int[] resolutions = getResolutions();

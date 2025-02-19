@@ -46,6 +46,7 @@ import org.geotools.coverage.grid.io.footprint.FootprintBehavior;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.feature.visitor.MinVisitor;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.util.ImageUtilities;
@@ -410,6 +411,18 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
     /** Tests a heterogeneous view without setting any extra configuration (falling back on defaults) */
     @Test
     public void testHeterogeneousViewDefaults() throws Exception {
+        assertHeterogeneousViewDefaults(null);
+    }
+
+    /** Same as {@link #testHeterogeneousViewDefaults()} but with multithraeded reading */
+    @Test
+    public void testHeterogeneousViewDefaultsMT() throws Exception {
+        ParameterValue<Boolean> mtParameter = ImageMosaicFormat.ALLOW_MULTITHREADING.createValue();
+        mtParameter.setValue(true);
+        assertHeterogeneousViewDefaults(new GeneralParameterValue[] {mtParameter});
+    }
+
+    private void assertHeterogeneousViewDefaults(GeneralParameterValue[] readParams) throws Exception {
         CoverageInfo info = buildHeterogeneousResolutionView(
                 "s2AllBandsDefaults",
                 cv -> {},
@@ -440,7 +453,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
             assertEquals(5300040, envelope.getMaximum(1), 1);
 
             // read the full coverage to verify it's consistent
-            coverage = reader.read(null);
+            coverage = reader.read(readParams);
             assertCoverageResolution(coverage, 1007, 1007);
 
             assertEquals(coverage.getEnvelope(), envelope);

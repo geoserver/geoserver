@@ -84,7 +84,6 @@
     </bean>
     <bean id="mapMLHTMLProducer" class="org.geoserver.mapml.MapMLHTMLOutputFormat">
         <constructor-arg index="0" ref="wms"/>
-        <constructor-arg index="1" ref="geoServer"/>
     </bean>
     <bean id="mapMLAdminPanel" class="org.geoserver.web.services.AdminPagePanelInfo">
         <property name="id" value="mapMLAdminPanel"/>

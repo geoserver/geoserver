@@ -29,6 +29,23 @@ public final class MapMLConstants {
     /** format MediaType */
     public static final MediaType MAPML_MEDIA_TYPE = new MediaType("text", "mapml", StandardCharsets.UTF_8);
 
+    /** Multilayer represented as multi-extent */
+    public static final String MAPML_MULTILAYER_AS_MULTIEXTENT = "mapmlusemultiextents";
+
+    public static final String MAPML_USE_FEATURES_REP = "mapmlusefeatures";
+
+    public static final Boolean MAPML_USE_FEATURES_REP_DEFAULT = Boolean.FALSE;
+
+    public static final String MAPML_USE_TILES_REP = "mapmlusetiles";
+
+    public static final Boolean MAPML_USE_TILES_REP_DEFAULT = Boolean.FALSE;
+
+    /**
+     * The key for the metadata entry that controls whether a multi-layer request is rendered as a single extent or
+     * multiple extents.
+     */
+    public static final Boolean MAPML_MULTILAYER_AS_MULTIEXTENT_DEFAULT = Boolean.FALSE;
+
     /** format name */
     public static final String FORMAT_NAME = "MAPML";
 

@@ -62,31 +62,20 @@ public class MapMLMapOutputFormat implements GetMapOutputFormat {
         Request request = Dispatcher.REQUEST.get();
         Mapml mapMLDocument;
         if (isFeaturesRequest(request)) {
-            if (mapContent.layers() != null && mapContent.layers().size() > 1) {
-                throw new ServiceException(
-                        "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-            }
             if (!mapContent.getRequest().getLayers().isEmpty()
                     && MapLayerInfo.TYPE_VECTOR
                             != mapContent.getRequest().getLayers().get(0).getType()) {
                 throw new ServiceException("MapML WMS Feature format does not currently support non-vector layers.");
             }
             List<Query> queries = StyleQueryUtil.getStyleQuery(mapContent.layers(), mapContent);
-            Query query = null;
-            if (queries != null && !queries.isEmpty()) {
-                if (queries.size() > 1) {
-                    throw new ServiceException(
-                            "MapML WMS Feature format does not currently support Multiple Feature Type output.");
-                }
-                query = queries.get(0);
-            }
-            MapMLFeaturesBuilder builder = new MapMLFeaturesBuilder(mapContent, geoServer, query);
+            MapMLFeaturesBuilder builder =
+                    new MapMLFeaturesBuilder(mapContent, geoServer, queries, request.getHttpRequest());
             builder.setSkipAttributes(isSkipAttributes(request));
             builder.setSkipHeadStyles(isSkipHeadStyles(request));
             mapMLDocument = builder.getMapMLDocument();
         } else {
             MapMLDocumentBuilder mapMLDocumentBuilder =
-                    new MapMLDocumentBuilder(mapContent, wms, geoServer, request.getHttpRequest());
+                    new MapMLDocumentBuilder(mapContent, wms, request.getHttpRequest());
             mapMLDocument = mapMLDocumentBuilder.getMapMLDocument();
         }
         ByteArrayOutputStream bos = new ByteArrayOutputStream();

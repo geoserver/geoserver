@@ -7,7 +7,7 @@ package org.geoserver.mapml.web;
 import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
-import org.geoserver.mapml.MapMLDocumentBuilder;
+import org.geoserver.mapml.MapMLConstants;
 import org.geoserver.web.services.AdminPagePanel;
 import org.geoserver.web.util.MapModel;
 import org.geoserver.wms.WMSInfo;
@@ -27,8 +27,7 @@ public class MapMLAdminPanel extends AdminPagePanel {
         super(id, model);
         WMSInfo wmsInfo = (WMSInfo) model.getObject();
         CheckBox multiextent = new CheckBox(
-                "multiextent",
-                new MapModel<>(wmsInfo.getMetadata(), MapMLDocumentBuilder.MAPML_MULTILAYER_AS_MULTIEXTENT));
+                "multiextent", new MapModel<>(wmsInfo.getMetadata(), MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT));
         this.add(new Component[] {multiextent});
     }
 }

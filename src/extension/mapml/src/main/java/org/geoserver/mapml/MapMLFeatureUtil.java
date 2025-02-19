@@ -241,83 +241,97 @@ public class MapMLFeatureUtil {
                     }
                 }
             } else if (featureCollectionInfoSimplifier.getCoverageInfo() != null && request != null) {
-                String baseUrl = ResponseUtils.baseURL(request);
-                Map<String, String> kvp = new LinkedHashMap<>();
-                kvp.put(
-                        "LAYERS",
-                        featureCollectionInfoSimplifier
-                                                .getCoverageInfo()
-                                                .getNamespace()
-                                                .getPrefix()
-                                        != null
-                                ? featureCollectionInfoSimplifier
-                                                .getCoverageInfo()
-                                                .getNamespace()
-                                                .getPrefix() + ":"
-                                        + featureCollectionInfoSimplifier
-                                                .getCoverageInfo()
-                                                .getName()
-                                : featureCollectionInfoSimplifier
-                                        .getCoverageInfo()
-                                        .getName());
-                kvp.put("BBOX", toCommaDelimitedBbox(clipBounds));
-                kvp.put("HEIGHT", String.valueOf(1));
-                kvp.put("WIDTH", String.valueOf(1));
-                kvp.put("SRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
-                kvp.put("FORMAT", "image/png");
-                kvp.put("SERVICE", "WMS");
-                kvp.put("REQUEST", "GetMap");
-                kvp.put("VERSION", "1.3.0");
-                String wms = ResponseUtils.buildURL(baseUrl, "wms", kvp, URLMangler.URLType.SERVICE);
-                Tile tile = new Tile();
-                tile.setRow(BigInteger.valueOf(1));
-                tile.setCol(BigInteger.valueOf(1));
-                tile.setZoom(BigInteger.valueOf(1));
-                tile.setSrc(wms);
-                tiles.add(tile);
                 try {
-                    String epsg = CRS.lookupIdentifier(requestCRS, true);
-                    MapMLGridsets mapMlGridsets = (MapMLGridsets) GeoServerExtensions.bean("mapMLGridsets");
-                    GridSet chosen = null;
-                    for (String candidate : mapMlGridsets.getGridSetNames()) {
-                        Optional<GridSet> optionalGridSet = mapMlGridsets.getGridSet(candidate);
-                        if (optionalGridSet.isPresent()) {
-                            GridSet testGridset = optionalGridSet.get();
-                            if (testGridset.getSrs().equals(SRS.getSRS(epsg))) {
-                                chosen = optionalGridSet.get();
-                                break;
-                            }
+                    GridSet chosen = getGridSet(requestCRS);
+                    if (chosen == null) {
+                        throw new ServiceException("No MapML gridset found for CRS: " + requestCRS);
+                    }
+                    int zoomLevel = calculateBestZoomLevel(
+                            clipBounds.getMinX(), clipBounds.getMaxX(), chosen, getMapRequest.getWidth());
+                    BoundingBox bbox = new BoundingBox(
+                            clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
+                    GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
+                    long[] tileRange = gridSubset.getCoverage(zoomLevel);
+                    long minTileX = tileRange[0];
+                    long minTileY = tileRange[1];
+                    long maxTileX = tileRange[2];
+                    long maxTileY = tileRange[3];
+                    for (long tileX = minTileX; tileX <= maxTileX; tileX++) {
+                        for (long tileY = minTileY; tileY <= maxTileY; tileY++) {
+                            long[] tile1 = {tileX, tileY, zoomLevel};
+                            BoundingBox tileBbox = gridSubset.boundsFromIndex(tile1);
+                            Envelope tileEnvelope = new Envelope(
+                                    tileBbox.getMinX(), tileBbox.getMaxX(), tileBbox.getMinY(), tileBbox.getMaxY());
+                            String wms = getWMSLink(
+                                    tileEnvelope,
+                                    request,
+                                    getMapRequest,
+                                    featureCollectionInfoSimplifier,
+                                    chosen.getTileWidth(),
+                                    chosen.getTileHeight());
+                            Tile tile = new Tile();
+                            tile.setRow(BigInteger.valueOf(tileY));
+                            tile.setCol(BigInteger.valueOf(tileX));
+                            tile.setZoom(BigInteger.valueOf(zoomLevel));
+                            tile.setSrc(wms);
+                            tiles.add(tile);
                         }
                     }
-                    if (chosen != null) {
-                        int zoomLevel = calculateBestZoomLevel(
-                                clipBounds.getMinX(),
-                                clipBounds.getMaxX(),
-                                chosen,
-                                getMapRequest.getWidth(),
-                                chosen.getPixelSize());
-                        BoundingBox bbox = new BoundingBox(
-                                clipBounds.getMinX(), clipBounds.getMinY(), clipBounds.getMaxX(), clipBounds.getMaxY());
-                        GridSubset gridSubset = GridSubsetFactory.createGridSubSet(chosen, bbox, zoomLevel, zoomLevel);
-                        long[] tileRange = gridSubset.getCoverage(zoomLevel);
-                        long minx = tileRange[0];
-                        long miny = tileRange[1];
-                        long maxx = tileRange[2];
-                        long maxy = tileRange[3];
-                        long[] tile1 = {minx, miny, zoomLevel};
-                        long[] tile2 = {maxx, maxy, zoomLevel};
-                        BoundingBox boundingBoxTile1 = gridSubset.boundsFromIndex(tile1);
-                        BoundingBox boundingBoxTile2 = gridSubset.boundsFromIndex(tile2);
-                        System.out.println("Tile 1 bounds: " + boundingBoxTile1);
-                    }
-                } catch (FactoryException e) {
-                    throw new RuntimeException(e);
-                } catch (GeoWebCacheException e) {
-                    throw new RuntimeException(e);
+                } catch (FactoryException | GeoWebCacheException e) {
+                    throw new ServiceException("Error while looking up MapML gridset", e);
                 }
             }
         }
         return mapml;
+    }
+
+    private static String getWMSLink(
+            Envelope clipBounds,
+            HttpServletRequest request,
+            GetMapRequest getMapRequest,
+            FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier,
+            int tileWidth,
+            int tileHeight) {
+        String baseUrl = ResponseUtils.baseURL(request);
+        Map<String, String> kvp = new LinkedHashMap<>();
+        kvp.put(
+                "LAYERS",
+                featureCollectionInfoSimplifier.getCoverageInfo().getNamespace().getPrefix() != null
+                        ? featureCollectionInfoSimplifier
+                                        .getCoverageInfo()
+                                        .getNamespace()
+                                        .getPrefix() + ":"
+                                + featureCollectionInfoSimplifier
+                                        .getCoverageInfo()
+                                        .getName()
+                        : featureCollectionInfoSimplifier.getCoverageInfo().getName());
+        kvp.put("BBOX", toCommaDelimitedBbox(clipBounds));
+        kvp.put("HEIGHT", String.valueOf(tileHeight));
+        kvp.put("WIDTH", String.valueOf(tileWidth));
+        kvp.put("SRS", escapeHtml4(extractCRS(getMapRequest.getRawKvp())));
+        kvp.put("FORMAT", "image/png");
+        kvp.put("SERVICE", "WMS");
+        kvp.put("REQUEST", "GetMap");
+        kvp.put("VERSION", "1.3.0");
+        return ResponseUtils.buildURL(baseUrl, "wms", kvp, URLMangler.URLType.SERVICE);
+    }
+
+    private static GridSet getGridSet(CoordinateReferenceSystem requestCRS)
+            throws FactoryException, GeoWebCacheException {
+        String epsg = CRS.lookupIdentifier(requestCRS, true);
+        MapMLGridsets mapMlGridsets = (MapMLGridsets) GeoServerExtensions.bean("mapMLGridsets");
+        GridSet chosen = null;
+        for (String candidate : mapMlGridsets.getGridSetNames()) {
+            Optional<GridSet> optionalGridSet = mapMlGridsets.getGridSet(candidate);
+            if (optionalGridSet.isPresent()) {
+                GridSet testGridset = optionalGridSet.get();
+                if (testGridset.getSrs().equals(SRS.getSRS(epsg))) {
+                    chosen = optionalGridSet.get();
+                    break;
+                }
+            }
+        }
+        return chosen;
     }
 
     private static String getTitle(List<FeatureCollectionInfoSimplifier> featureCollectionInfoSimplifiers) {
@@ -677,6 +691,9 @@ public class MapMLFeatureUtil {
         return false;
     }
 
+    /**
+     * Convenience class to hold the information needed to simplify a feature collection
+     */
     public static class FeatureCollectionInfoSimplifier {
         private final FeatureCollection featureCollection;
         private final LayerInfo layerInfo;
@@ -686,6 +703,16 @@ public class MapMLFeatureUtil {
         private final boolean forcedDecimal;
         private final boolean padWithZeros;
 
+        /**
+         * Constructor
+         * @param featureCollection
+         * @param layerInfo
+         * @param coverageInfo
+         * @param simplifier
+         * @param numDecimals
+         * @param forcedDecimal
+         * @param padWithZeros
+         */
         public FeatureCollectionInfoSimplifier(
                 FeatureCollection featureCollection,
                 LayerInfo layerInfo,
@@ -732,8 +759,15 @@ public class MapMLFeatureUtil {
         }
     }
 
-    public static int calculateBestZoomLevel(
-            double minx, double maxx, GridSet gridSet, double imageWidth, double pixelSize) {
+    /**
+     * Calculate the best zoom level for a given bounding box
+     * @param minx bounding box min x
+     * @param maxx bounding box max x
+     * @param gridSet the grid set
+     * @param imageWidth the image width
+     * @return the best zoom level
+     */
+    private static int calculateBestZoomLevel(double minx, double maxx, GridSet gridSet, double imageWidth) {
 
         // Calculate bounding box width
         double boundingBoxWidth = maxx - minx;
@@ -741,7 +775,7 @@ public class MapMLFeatureUtil {
         // Calculate resolution
         double resolution = boundingBoxWidth / imageWidth;
 
-        // Find the closest matching scale denominator
+        // Find the closest matching resolution
         int bestMatch = 0;
         double minDifference = Math.abs(resolution - bestMatch);
 
@@ -754,37 +788,5 @@ public class MapMLFeatureUtil {
         }
 
         return bestMatch;
-    }
-
-    public static double[] getTileBounds(GridSet gridSet, double resolution, int tileX, int tileY) {
-
-        double[] origin = gridSet.tileOrigin();
-        int tileWidth = gridSet.getTileWidth();
-        // Calculate the bounds
-        double minX = origin[0] + tileX * tileWidth * resolution;
-        double maxX = origin[0] + (tileX + 1) * tileWidth * resolution;
-        double minY = origin[1] - (tileY + 1) * tileWidth * resolution;
-        double maxY = origin[1] - tileY * tileWidth * resolution;
-
-        return new double[] {minX, minY, maxX, maxY};
-    }
-
-    public BoundingBox getBboxForGridLoc(GridSet gridSet, int gridx, int gridy, double scaleDenominator) {
-        // Earth's circumference in meters
-        double earthCircumference = 40075016.686;
-
-        // Calculate meters per pixel
-        double metersPerPixel = earthCircumference / (gridSet.getTileWidth() * scaleDenominator);
-        double[] origin = gridSet.tileOrigin();
-
-        double tileWidthUnits = metersPerPixel / (gridSet.getMetersPerUnit() != 0 ? gridSet.getMetersPerUnit() : 1.0);
-
-        BoundingBox bbox = new BoundingBox(
-                origin[0] + tileWidthUnits * gridx,
-                origin[0] + tileWidthUnits * gridy,
-                origin[1] + tileWidthUnits * (gridx + 1),
-                origin[1] + tileWidthUnits * (gridy + 1));
-
-        return bbox;
     }
 }

@@ -10,6 +10,8 @@ import static org.junit.Assert.assertNotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import org.geoserver.data.test.MockData;
+import org.geoserver.web.GeoServerWicketTestSupport;
 import org.geoserver.wfs.kvp.BBoxKvpParser;
 import org.geoserver.wms.GetMapRequest;
 import org.geotools.api.referencing.FactoryException;
@@ -20,7 +22,7 @@ import org.geotools.util.factory.Hints;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class MapMLFormatLinkTest {
+public class MapMLFormatLinkTest extends GeoServerWicketTestSupport {
 
     @BeforeClass
     public static void setup() {
@@ -57,6 +59,7 @@ public class MapMLFormatLinkTest {
         String epsgCode = "EPSG:32632";
         Map<String, String> parameters = new HashMap<>();
         parameters.put("srs", epsgCode);
+        parameters.put("layers", MockData.LINES.getLocalPart());
         GetMapRequest request = new GetMapRequest();
         CoordinateReferenceSystem crs = CRS.decode(epsgCode, true);
         request.setCrs(crs);
@@ -78,6 +81,7 @@ public class MapMLFormatLinkTest {
         MapMLFormatLink link = new MapMLFormatLink();
         Map<String, String> parameters = new HashMap<>();
         parameters.put("srs", epsgCode);
+        parameters.put("layers", MockData.LINES.getLocalPart());
         GetMapRequest request = new GetMapRequest();
         request.setCrs(CRS.decode(epsgCode, true));
         link.customizeRequest(request, parameters);

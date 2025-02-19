@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
-import org.geoserver.config.GeoServer;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
 import org.geoserver.platform.ServiceException;
@@ -23,7 +22,6 @@ import org.geoserver.wms.WebMap;
 /** Handles a GetMap request that for a map in MapML HTML format. */
 public class MapMLHTMLOutputFormat implements GetMapOutputFormat {
     private WMS wms;
-    private GeoServer geoServer;
     private final Set<String> OUTPUT_FORMATS =
             Collections.unmodifiableSet(new HashSet<>(List.of(MapMLConstants.MAPML_HTML_MIME_TYPE)));
     static final MapProducerCapabilities MAPML_CAPABILITIES = new MapProducerCapabilities(false, true, true);
@@ -33,17 +31,15 @@ public class MapMLHTMLOutputFormat implements GetMapOutputFormat {
      *
      * @param wms the WMS
      */
-    public MapMLHTMLOutputFormat(WMS wms, GeoServer geoServer) {
+    public MapMLHTMLOutputFormat(WMS wms) {
         this.wms = wms;
-        this.geoServer = geoServer;
     }
 
     @Override
     public WebMap produceMap(WMSMapContent mapContent) throws ServiceException, IOException {
         Request request = Dispatcher.REQUEST.get();
         HttpServletRequest httpServletRequest = request.getHttpRequest();
-        MapMLDocumentBuilder mapMLDocumentBuilder =
-                new MapMLDocumentBuilder(mapContent, wms, geoServer, httpServletRequest);
+        MapMLDocumentBuilder mapMLDocumentBuilder = new MapMLDocumentBuilder(mapContent, wms, httpServletRequest);
         return new MapMLHTMLMap(mapContent, mapMLDocumentBuilder.getMapMLHTMLDocument());
     }
 

@@ -74,6 +74,9 @@ public class MapMLTestSupport extends WMSTestSupport {
         private String height;
         private String format;
         private boolean feature;
+        private boolean featureRep;
+        private boolean multiExtent;
+        private boolean tile;
 
         public String getName() {
             return name;
@@ -117,6 +120,18 @@ public class MapMLTestSupport extends WMSTestSupport {
 
         public boolean isFeature() {
             return feature;
+        }
+
+        public boolean isFeatureRep() {
+            return featureRep;
+        }
+
+        public boolean isMultiExtent() {
+            return multiExtent;
+        }
+
+        public boolean isTile() {
+            return tile;
         }
 
         public MapMLWMSRequest cql(String cql) {
@@ -174,14 +189,38 @@ public class MapMLTestSupport extends WMSTestSupport {
             return this;
         }
 
+        public MapMLWMSRequest featureRep(boolean featureRep) {
+            this.featureRep = featureRep;
+            return this;
+        }
+
+        public MapMLWMSRequest tile(boolean tile) {
+            this.tile = tile;
+            return this;
+        }
+
+        public MapMLWMSRequest multiExtent(boolean multiExtent) {
+            this.multiExtent = multiExtent;
+            return this;
+        }
+
         /** Get a MapML request */
         protected MockHttpServletRequest toHttpRequest() throws Exception {
             String path = null;
             cql(getCql() != null ? getCql() : "");
             MockHttpServletRequest httpRequest = null;
             String formatOptions = isFeature()
-                    ? MapMLConstants.MAPML_FEATURE_FO + ":true"
-                    : getFormat() != null ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png" : "";
+                    ? MapMLConstants.MAPML_FEATURE_FO + ":true;"
+                    : getFormat() != null ? MapMLConstants.MAPML_WMS_MIME_TYPE_OPTION + ":image/png;" : "";
+            if (isFeatureRep()) {
+                formatOptions += MapMLConstants.MAPML_USE_FEATURES_REP + ":true;";
+            }
+            if (isMultiExtent()) {
+                formatOptions += MapMLConstants.MAPML_MULTILAYER_AS_MULTIEXTENT + ":true;";
+            }
+            if (isTile()) {
+                formatOptions += MapMLConstants.MAPML_USE_TILES_REP + ":true;";
+            }
             if (getKvp() != null) {
                 path = "wms";
                 httpRequest = createRequest(path, getKvp());

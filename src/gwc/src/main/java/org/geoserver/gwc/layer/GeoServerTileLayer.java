@@ -1662,6 +1662,8 @@ public class GeoServerTileLayer extends TileLayer implements ProxyLayer, TileJSO
                         "WMS",
                         "request",
                         "GetLegendGraphic",
+                        "version",
+                        "1.1.0",
                         "format",
                         finalFormat,
                         "width",

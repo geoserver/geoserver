@@ -144,7 +144,7 @@ class FakeHttpServletRequest implements HttpServletRequest {
 
     @Override
     public String getServletPath() {
-        throw new ServletDebugException();
+        return "/wms";
     }
 
     @Override

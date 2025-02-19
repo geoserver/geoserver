@@ -129,6 +129,13 @@ geotiff11() {
   run_rest_test_suite_prefix "geotiff11" "05-wcs-dem-jpeg-tinytiles-" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWCS%26version%3D2.0.1%26request%3DGetCoverage%26coverageId%3Dtopp__tazbm%26compression%3DJPEG%26compression%3DJPEG%26jpeg_quality%3D75%26tiling%3Dtrue%26tileheight%3D32%26tilewidth%3D32"
 }
 
+wmts10 () {
+  echo $0
+
+  # The suite name is just "wmts", without a version number
+  run_rest_test_suite "wmts" "xml" "capabilities-url=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Fgwc%2Fservice%2Fwmts%3Fservice=WMTS%26request%3DGetCapabilities%26AcceptVersions%3D1.0.0"
+}
+
 gpkg12() {
   run_rest_test_suite_prefix "gpkg12" "01-wfs-single-table" "testng" "iut=http%3A%2F%2Fgeoserver%3A8080%2Fgeoserver%2Ftopp%2Fows%3Fservice%3DWFS%26version%3D1.0.0%26request%3DGetFeature%26typeName%3Dtopp%253Astates%26outputFormat%3Dapplication%2Fgeopackage%252Bsqlite3"
 

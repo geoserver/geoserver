@@ -109,21 +109,22 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
 
     private String createLinkWMTS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         if ((workspaceInfo == null) && (layerInfo == null)) {
-            return "../gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
+            return "../gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities";
         }
         if ((workspaceInfo != null) && (layerInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
                     + "/"
                     + layerInfo.getName()
-                    + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
+                    + "/gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities";
         }
         if ((workspaceInfo != null)) {
             return "../"
                     + workspaceInfo.getName()
-                    + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
+                    + "/gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities";
         }
-        return "../" + layerInfo.getName() + "/gwc/service/wmts?service=WMTS&version=1.1.1&request=GetCapabilities";
+        return "../" + layerInfo.getName()
+                + "/gwc/service/wmts?service=WMTS&acceptVersions=1.0.0&request=GetCapabilities";
     }
 
     private String createLinkTMS(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
@@ -171,7 +172,7 @@ public class GWCServiceDescriptionProvider extends ServiceDescriptionProvider {
             if (info.isEnabled() && null != app.getBean("gwcServiceWMTS")) {
                 links.add(new ServiceLinkDescription(
                         SERVICE_TYPE,
-                        new Version("1.1.1"),
+                        new Version("1.0.0"),
                         createLinkWMTS(workspaceInfo, layerInfo),
                         workspaceInfo != null ? workspaceInfo.getName() : null,
                         layerInfo != null ? layerInfo.getName() : null,

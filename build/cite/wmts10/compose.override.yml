@@ -1,0 +1,17 @@
+services:
+  geoserver:
+    image: ogccite/geoserver:wmts10
+    build:
+      args:
+        # Same as WMS 1.3, there is nothing special about WMTS 1.0 (so far)
+        GEOSERVER_DATA_DIR_SRC: "./wms13/citewms-1.3"
+
+  teamengine:
+    # Using custom image with WMTS 1.0 test suite to get a couple of fixes not yet merged
+    image: ogccite/ets-wmts10:1.11-SNAPSHOT-teamengine-5.7
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

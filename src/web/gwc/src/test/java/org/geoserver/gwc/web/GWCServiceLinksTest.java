@@ -84,18 +84,25 @@ public class GWCServiceLinksTest extends GeoServerWicketTestSupport {
         assertEquals(1, services.size());
         ServiceDescription wfs = services.get(0);
 
+        boolean wmsFound = false;
+        boolean wmtsFound = false;
         for (ServiceLinkDescription link : links) {
             // All links should match wfs service description
             assertEquals("crosslink", wfs.getServiceType(), link.getServiceType());
 
-            if (link.getProtocol().equals("wms")) {
-                assertTrue("version", link.getLink().contains("&version="));
-                assertTrue("service", link.getLink().contains("&service=WMS"));
-            } else if (link.getProtocol().equals("wmts")) {
-                assertTrue("version", link.getLink().contains("&version="));
-                assertTrue("service", link.getLink().contains("&service=WMTS"));
+            String protocol = link.getProtocol();
+            if (protocol.equals("WMS-C")) {
+                assertTrue("version", link.getLink().contains("version=1.1.1"));
+                assertTrue("service", link.getLink().contains("service=WMS"));
+                wmsFound = true;
+            } else if (protocol.equals("WMTS")) {
+                assertTrue("version", link.getLink().contains("acceptVersions=1.0.0"));
+                assertTrue("service", link.getLink().contains("service=WMTS"));
+                wmtsFound = true;
             }
         }
+        assertTrue(wmsFound);
+        assertTrue(wmtsFound);
     }
 
     @Test

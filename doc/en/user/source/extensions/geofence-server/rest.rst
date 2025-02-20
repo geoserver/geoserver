@@ -22,6 +22,9 @@ Encoding of a rule in XML::
 		<priority>..</priority>
 		<userName>..</userName>
 		<roleName>..</roleName>
+                <addressRange>..</addressRange>
+                <validAfter>..</validAfter>
+                <validBefore>..</validBefore>
 		<workspace>..</workspace>
 		<layer>..</layer>
 		<service>..</service>
@@ -59,7 +62,7 @@ Encoding of a rule in XML::
 
 Encoding of a rule in JSON::
 
-	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","subfield":"..","access":".."}}
+	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","validAfter": "..", "validBefore":"..", "workspace":"..","layer":"..","service":"..","request":"..","subfield":"..","access":".."}}
 
 In case a rule that has "any" ("*") for a particular field the field is either not included (default), left empty or specified with a single asterisk 
 (the latter two may be used for updates to distinguish from "do not change this field").
@@ -115,6 +118,12 @@ All filter parameters are optional.
    * - ipaddressAny
      - 0 or 1. 
      - Specify whether rules matching any IP address are included or not.
+   * - date
+     - string
+     - Filter rules by date. Format is `yyyy-MM-dd`.
+   * - dateAny
+     - 0 or 1. 
+     - Specify whether rules with no data range defined are included or not
    * - service
      - string
      - Filter rules on service (excludes all other specific services).

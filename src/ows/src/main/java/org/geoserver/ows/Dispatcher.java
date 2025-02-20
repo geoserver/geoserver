@@ -458,14 +458,20 @@ public class Dispatcher extends AbstractController {
      * HTTP request URI. Leading and trailing slashes are stripped from the request path before the context and path are
      * determined.
      *
-     * @param request the {@link Request} object whose context and path need to be initialized.
-     * @throws NullPointerException if the {@link Request} or its HTTP request is null.
-     *     <pre>
-     * Example:
+     * <p>Example:
+     *
+     * <pre>
      * If the request URI is "/app/resource/item", then:
      * - context: "app/resource"
      * - path: "item"
+     *
+     * If the request URI is "/geoserver/ne/countries/gwc/service/wmts", then:
+     * - context: "ne/countries/gwc/service"
+     * - path: "wmts"
      * </pre>
+     *
+     * @param request the {@link Request} object whose context and path need to be initialized.
+     * @throws NullPointerException if the {@link Request} or its HTTP request is null.
      */
     public static void initRequestContext(Request request) {
         // parse the request path into two components. (1) the 'path' which

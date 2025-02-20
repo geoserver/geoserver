@@ -23,6 +23,7 @@ import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.config.CapabilitiesCacheHeadersCallback;
 import org.geoserver.config.GeoServerInfo;
 import org.geoserver.config.ResourceErrorHandling;
@@ -114,6 +115,7 @@ public class GetCapabilitiesTest extends WFSTestSupport {
                 + " xsi:schemaLocation=\"http://www.opengis.net/wfs "
                 + " http://schemas.opengis.net/wfs/1.0.0/WFS-basic.xsd\"/>";
         Document doc = postAsDOM("wfs", xml);
+        print(doc);
 
         assertEquals("WFS_Capabilities", doc.getDocumentElement().getNodeName());
     }
@@ -314,9 +316,42 @@ public class GetCapabilitiesTest extends WFSTestSupport {
             getCatalog().save(layer);
             dom = getAsDOM("wfs?request=getCapabilities&version=1.0.0");
             assertXpathNotExists("//wfs:FeatureType[wfs:Name = '" + layerId + "']", dom);
+
+            dom = getAsDOM("cgf/wfs?request=getCapabilities&version=1.0.0");
+            assertXpathNotExists("//wfs:FeatureType[wfs:Name = '" + layerId + "']", dom);
+
+            // but you can see me if you ask directly for layer-specific virtual service
+            dom = getAsDOM("cgf/MLines/wfs?request=getCapabilities&version=1.0.0");
+            assertXpathExists("//wfs:FeatureType[wfs:Name='" + layerId + "']", dom);
         } finally {
             layer.setAdvertised(true);
             getCatalog().save(layer);
+        }
+    }
+
+    @Test
+    public void testWFSDisabledLayer() throws Exception {
+        String layerId = getLayerId(CiteTestData.MLINES);
+        LayerInfo layer = getCatalog().getLayerByName(layerId);
+        ResourceInfo resource = layer.getResource();
+        try {
+            // now you see me
+            Document dom = getAsDOM("cgf/MLines/wfs?request=getCapabilities&version=1.0.0");
+            assertXpathExists("//wfs:FeatureType[wfs:Name='" + layerId + "']", dom);
+
+            // now you don't!
+            resource.setServiceConfiguration(true);
+            resource.setDisabledServices(Collections.singletonList("wfs"));
+            getCatalog().save(resource);
+
+            dom = getAsDOM("cgf/MLines/wfs?request=getCapabilities&version=1.0.0");
+            assertXpathNotExists("//wfs:FeatureType[wfs:Name = '" + layerId + "']", dom);
+            assertXpathEvaluatesTo(
+                    "Service WFS is disabled for layer cgf:MLines", "normalize-space(//ows:Exception)", dom);
+        } finally {
+            resource.setServiceConfiguration(false);
+            resource.setDisabledServices(Collections.emptyList());
+            getCatalog().save(resource);
         }
     }
 

@@ -227,7 +227,7 @@ public class APIDispatcher extends AbstractController {
         dr.setHttpResponse(httpResponse);
         dr.setGet("GET".equalsIgnoreCase(httpRequest.getMethod()));
 
-        // setup a API specific contex object providing info about the current request
+        // setup a API specific context object providing info about the current request
         APIRequestInfo requestInfo = new APIRequestInfo(httpRequest, httpResponse, this);
         APIRequestInfo.set(requestInfo);
 
@@ -314,6 +314,7 @@ public class APIDispatcher extends AbstractController {
         Service service = new Service(
                 annotation.service(), handler.getBean(), new Version(annotation.service()), Collections.emptyList());
         dr.setServiceDescriptor(service);
+
         service = fireServiceDispatchedCallback(dr, service);
         // replace in case callbacks have replaced it
         dr.setServiceDescriptor(service);

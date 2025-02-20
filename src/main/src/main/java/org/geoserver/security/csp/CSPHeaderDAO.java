@@ -57,7 +57,7 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
      */
     private static final ThreadLocal<String> PROXY_POLICY = new ThreadLocal<>();
 
-    /** The GeoSerer configuration */
+    /** The GeoServer configuration */
     private final GeoServer geoServer;
 
     /** Watches the CSP configuration file for changes */

@@ -243,6 +243,7 @@ public class Tile {
 
     /**
      * Sets the value of the zoom property.
+     *
      * @param value allowed object is {@link BigInteger }
      */
     public void setZoom(BigInteger value) {

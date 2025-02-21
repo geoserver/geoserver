@@ -6,21 +6,18 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
-import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
-import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES_REP;
-import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP;
 import static org.geoserver.mapml.MapMLDocumentBuilder.extractCRS;
 import static org.geoserver.mapml.MapMLDocumentBuilder.toCommaDelimitedBbox;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
+import static org.geowebcache.grid.GridSetFactory.DEFAULT_PIXEL_SIZE_METER;
 
 import freemarker.template.TemplateNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
 import java.math.BigInteger;
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,7 +31,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
-
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
@@ -73,7 +69,6 @@ import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.GeoWebCacheException;
 import org.geowebcache.grid.BoundingBox;
-import org.geowebcache.grid.Grid;
 import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
 import org.geowebcache.grid.GridSubsetFactory;
@@ -691,9 +686,7 @@ public class MapMLFeatureUtil {
         return false;
     }
 
-    /**
-     * Convenience class to hold the information needed to simplify a feature collection
-     */
+    /** Convenience class to hold the information needed to simplify a feature collection */
     public static class FeatureCollectionInfoSimplifier {
         private final FeatureCollection featureCollection;
         private final LayerInfo layerInfo;
@@ -705,6 +698,7 @@ public class MapMLFeatureUtil {
 
         /**
          * Constructor
+         *
          * @param featureCollection
          * @param layerInfo
          * @param coverageInfo
@@ -761,26 +755,26 @@ public class MapMLFeatureUtil {
 
     /**
      * Calculate the best zoom level for a given bounding box
+     *
      * @param minx bounding box min x
      * @param maxx bounding box max x
      * @param gridSet the grid set
-     * @param imageWidth the image width
+     * @param imageWidthPixels the image width
      * @return the best zoom level
      */
-    private static int calculateBestZoomLevel(double minx, double maxx, GridSet gridSet, double imageWidth) {
+    private static int calculateBestZoomLevel(double minx, double maxx, GridSet gridSet, double imageWidthPixels) {
 
         // Calculate bounding box width
-        double boundingBoxWidth = (maxx - minx) * gridSet.getMetersPerUnit();
-
-        // Calculate resolution
-        double resolution = boundingBoxWidth / imageWidth;
+        double boundingBoxWidthMeters = (maxx - minx) * gridSet.getMetersPerUnit();
+        double imageWidthMeters = imageWidthPixels * DEFAULT_PIXEL_SIZE_METER;
+        double scaleDenominator = boundingBoxWidthMeters / imageWidthMeters;
 
         // Find the closest matching resolution
         int bestMatch = 0;
-        double minDifference = Math.abs(resolution - bestMatch);
+        double minDifference = Math.abs(scaleDenominator - bestMatch);
 
         for (int i = 0; i < gridSet.getNumLevels(); i++) {
-            double difference = Math.abs(resolution - gridSet.getGrid(i).getResolution());
+            double difference = Math.abs(scaleDenominator - gridSet.getGrid(i).getScaleDenominator());
             if (difference < minDifference) {
                 minDifference = difference;
                 bestMatch = i;

@@ -5,13 +5,12 @@
 package org.geoserver.mapml;
 
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.servlet.http.HttpServletRequest;
 import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -42,8 +41,6 @@ import org.geotools.util.factory.Hints;
 import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.MultiLineString;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class MapMLFeaturesBuilder {
 

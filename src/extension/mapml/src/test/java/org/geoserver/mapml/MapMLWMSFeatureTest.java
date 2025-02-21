@@ -160,20 +160,20 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
 
         Mapml mapmlFeatures2 = new MapMLWMSRequest()
                 .name("layerGroupWithRaster")
-                .bbox("-90,-45,90,45")
+                .bbox("-89,-44,-87,-42")
                 .srs("EPSG:4326")
                 .feature(true)
                 .getAsMapML();
         List<Tile> tiles2 = mapmlFeatures2.getBody().getTiles();
         assertEquals("Raster layer world should return tiles", 4, tiles2.size());
         MockHttpServletRequest request3 = createRequest(tiles2.get(0).getSrc());
-        assertEquals("-180.0,-90.0,0.0,90.0", request3.getParameter("BBOX"));
+        assertEquals("-90.0,-45.0,-87.1875,-42.1875", request3.getParameter("BBOX"));
         MockHttpServletRequest request4 = createRequest(tiles2.get(1).getSrc());
-        assertEquals("0.0,-90.0,180.0,90.0", request4.getParameter("BBOX"));
-        MockHttpServletRequest request5 = createRequest(tiles2.get(0).getSrc());
-        assertEquals("-180.0,-90.0,0.0,90.0", request5.getParameter("BBOX"));
-        MockHttpServletRequest request6 = createRequest(tiles2.get(1).getSrc());
-        assertEquals("0.0,-90.0,180.0,90.0", request6.getParameter("BBOX"));
+        assertEquals("-90.0,-42.1875,-87.1875,-39.375", request4.getParameter("BBOX"));
+        MockHttpServletRequest request5 = createRequest(tiles2.get(2).getSrc());
+        assertEquals("-87.1875,-45.0,-84.375,-42.1875", request5.getParameter("BBOX"));
+        MockHttpServletRequest request6 = createRequest(tiles2.get(3).getSrc());
+        assertEquals("-87.1875,-42.1875,-84.375,-39.375", request6.getParameter("BBOX"));
     }
 
     @Test

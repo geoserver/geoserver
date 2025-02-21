@@ -6,12 +6,12 @@ package org.geoserver.mapml;
 
 import static org.apache.commons.text.StringEscapeUtils.escapeHtml4;
 import static org.geoserver.mapml.MapMLConstants.DATE_FORMAT;
+import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS;
+import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS_DEFAULT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_FEATURE_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_MIME_TYPE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
-import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS;
-import static org.geoserver.mapml.MapMLConstants.MAPML_CREATE_FEATURE_LINKS_DEFAULT;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_REMOTE;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES_REP_DEFAULT;
@@ -54,7 +54,6 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.PublishedType;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
@@ -112,10 +111,7 @@ import org.geotools.renderer.crs.ProjectionHandlerFinder;
 import org.geotools.util.NumberRange;
 import org.geotools.util.logging.Logging;
 import org.geowebcache.filter.parameters.ParameterFilter;
-import org.geowebcache.grid.BoundingBox;
-import org.geowebcache.grid.GridSet;
 import org.geowebcache.grid.GridSubset;
-import org.geowebcache.grid.SRS;
 import org.locationtech.jts.geom.Envelope;
 
 /** Builds a MapML document from a WMSMapContent object */

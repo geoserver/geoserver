@@ -278,6 +278,21 @@ public class OpenIdConnectIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testEmptyStateParameter() throws Exception {
+        // Simulate the OpenID Provider sending the user back with an empty &state parameter.
+        // This happens e.g. when using Dex IdP and not sending a state parameter in the request to the OpenID Provider.
+        MockHttpServletRequest codeRequest = createRequest("web/?code=" + CODE + "&state=");
+        MockHttpServletResponse codeResponse = executeOnSecurityFilters(codeRequest);
+
+        // should be authenticated
+        SecurityContext context = new HttpSessionSecurityContextRepository()
+                .loadContext(new HttpRequestResponseHolder(codeRequest, codeResponse));
+        Authentication auth = context.getAuthentication();
+        assertNotNull("Authentication should not be null", auth);
+        assertEquals("andrea.aime@gmail.com", auth.getPrincipal());
+    }
+
+    @Test
     public void testIdTokenHintInEndSessionURI() throws Exception {
         GeoServerSecurityManager manager = getSecurityManager();
         OpenIdConnectFilterConfig config = (OpenIdConnectFilterConfig) manager.loadFilterConfig("openidconnect", true);

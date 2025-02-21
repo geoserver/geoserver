@@ -20,7 +20,7 @@ public class JdbcUrlSplitter {
             throw new IllegalArgumentException("Invalid JDBC url.");
 
         driverName = jdbcUrl.substring(5, pos1);
-        if ((pos2 = jdbcUrl.indexOf(';', pos1)) == -1) {
+        if ((pos2 = firstParamsSeparatorPosition(jdbcUrl)) == -1) {
             connUri = jdbcUrl.substring(pos1 + 1);
         } else {
             connUri = jdbcUrl.substring(pos1 + 1, pos2);
@@ -40,5 +40,11 @@ public class JdbcUrlSplitter {
         } else {
             database = connUri;
         }
+    }
+
+    private int firstParamsSeparatorPosition(String URL) {
+        int pos1 = URL.indexOf(';', 5);
+        int pos2 = URL.indexOf('?', 5);
+        return pos1 == -1 ? pos2 : pos2 == -1 ? pos1 : Math.min(pos1, pos2);
     }
 }

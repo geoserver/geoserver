@@ -302,7 +302,7 @@ public class MapMLWMSTest extends MapMLTestSupport {
         LayerGroupInfo lgi = cat.getLayerGroupByName("layerGroupWithRaster");
 
         MockRequestResponse requestResponse =
-                getMockRequestResponse(((PublishedInfo) lgi).getName(), null, null, "EPSG:3857", null, true, false);
+                getMockRequestResponse((lgi).getName(), null, null, "EPSG:3857", null, true, false);
 
         Mapml mapml = mapml(requestResponse.response);
         String title = mapml.getHead().getTitle();

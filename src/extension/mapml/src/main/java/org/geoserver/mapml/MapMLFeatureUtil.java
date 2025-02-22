@@ -10,6 +10,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_ATTRIBUTES_FO;
 import static org.geoserver.mapml.MapMLConstants.MAPML_SKIP_STYLES_FO;
 import static org.geoserver.mapml.MapMLDocumentBuilder.extractCRS;
 import static org.geoserver.mapml.MapMLDocumentBuilder.toCommaDelimitedBbox;
+import static org.geoserver.mapml.MapMLDocumentBuilder.useTiles;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
 import static org.geowebcache.grid.GridSetFactory.DEFAULT_PIXEL_SIZE_METER;
@@ -35,8 +36,10 @@ import org.geoserver.catalog.CoverageInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.ResourceInfo;
+import org.geoserver.gwc.GWC;
 import org.geoserver.gwc.layer.GeoServerTileLayer;
 import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
+import org.geoserver.mapml.tcrs.MapMLProjection;
 import org.geoserver.mapml.tcrs.TiledCRSConstants;
 import org.geoserver.mapml.tcrs.TiledCRSParams;
 import org.geoserver.mapml.template.MapMLMapTemplate;
@@ -82,6 +85,7 @@ public class MapMLFeatureUtil {
     public static final String BBOX_DISPLAY_NONE = ".bbox {display:none}";
     private static final MapMLMapTemplate mapMLMapTemplate = new MapMLMapTemplate();
     private static final MapMLEncoder encoder;
+    private static final GWC gwc = GWC.get();
 
     static {
         try {
@@ -113,6 +117,8 @@ public class MapMLFeatureUtil {
             HttpServletRequest request,
             GetMapRequest getMapRequest)
             throws IOException {
+
+        // Check if tiles were requested
 
         // Some stuff we are getting from the first layer
         LayerInfo firstLayerInfo = featureCollectionInfoSimplifiers.get(0).getLayerInfo();
@@ -205,7 +211,15 @@ public class MapMLFeatureUtil {
             } catch (TemplateNotFoundException e) {
                 LOGGER.log(Level.FINEST, MAPML_FEATURE_FTL + " Template not found", e);
             }
+            boolean useTileLinks = false;
             if (featureCollectionInfoSimplifier.getLayerInfo() != null) {
+                if (useTiles(getMapRequest)) {
+                    String crs = extractCRS(getMapRequest.getRawKvp());
+                    useTileLinks = gwc.hasTileLayer(featureCollectionInfoSimplifier.getLayerInfo())
+                            && gwc.getTileLayer(featureCollectionInfoSimplifier.getLayerInfo())
+                                            .getGridSubset(crs)
+                                    != null;
+                }
                 MapMLGenerator featureBuilder = new MapMLGenerator();
                 featureBuilder.setNumDecimals(featureCollectionInfoSimplifier.getNumDecimals());
                 featureBuilder.setForcedDecimal(featureCollectionInfoSimplifier.isForcedDecimal());
@@ -236,6 +250,13 @@ public class MapMLFeatureUtil {
                     }
                 }
             } else if (featureCollectionInfoSimplifier.getCoverageInfo() != null && request != null) {
+                if (useTiles(getMapRequest)) {
+                    String crs = extractCRS(getMapRequest.getRawKvp());
+                    useTileLinks = gwc.hasTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
+                            && gwc.getTileLayer(featureCollectionInfoSimplifier.getCoverageInfo())
+                                            .getGridSubset(crs)
+                                    != null;
+                }
                 try {
                     GridSet chosen = getGridSet(requestCRS);
                     if (chosen == null) {
@@ -257,18 +278,32 @@ public class MapMLFeatureUtil {
                             BoundingBox tileBbox = gridSubset.boundsFromIndex(tile1);
                             Envelope tileEnvelope = new Envelope(
                                     tileBbox.getMinX(), tileBbox.getMaxX(), tileBbox.getMinY(), tileBbox.getMaxY());
-                            String wms = getWMSLink(
-                                    tileEnvelope,
-                                    request,
-                                    getMapRequest,
-                                    featureCollectionInfoSimplifier,
-                                    chosen.getTileWidth(),
-                                    chosen.getTileHeight());
+                            String link = null;
+                            if (useTileLinks) {
+                                link = getWMTSLink(
+                                        featureCollectionInfoSimplifier
+                                                .getCoverageInfo()
+                                                .getName(),
+                                        style,
+                                        chosen.getName(),
+                                        request,
+                                        String.valueOf(zoomLevel),
+                                        String.valueOf(tileX),
+                                        String.valueOf(tileY));
+                            } else {
+                                link = getWMSLink(
+                                        tileEnvelope,
+                                        request,
+                                        getMapRequest,
+                                        featureCollectionInfoSimplifier,
+                                        chosen.getTileWidth(),
+                                        chosen.getTileHeight());
+                            }
                             Tile tile = new Tile();
                             tile.setRow(BigInteger.valueOf(tileY));
                             tile.setCol(BigInteger.valueOf(tileX));
                             tile.setZoom(BigInteger.valueOf(zoomLevel));
-                            tile.setSrc(wms);
+                            tile.setSrc(link);
                             tiles.add(tile);
                         }
                     }
@@ -278,6 +313,29 @@ public class MapMLFeatureUtil {
             }
         }
         return mapml;
+    }
+
+    private static String getWMTSLink(
+            String layerName,
+            String style,
+            String tilematrixset,
+            HttpServletRequest request,
+            String zoomLevel,
+            String column,
+            String row) {
+        String path = "gwc/service/wmts";
+        HashMap<String, String> params = new HashMap<>();
+        params.put("layer", layerName);
+        params.put("style", style);
+        params.put("tilematrixset", tilematrixset);
+        params.put("service", "WMTS");
+        params.put("request", "GetTile");
+        params.put("version", "1.0.0");
+        params.put("tilematrix", zoomLevel);
+        params.put("TileCol", column);
+        params.put("TileRow", row);
+        String baseUrl = ResponseUtils.baseURL(request);
+        return ResponseUtils.buildURL(baseUrl, path, params, URLMangler.URLType.SERVICE);
     }
 
     private static String getWMSLink(

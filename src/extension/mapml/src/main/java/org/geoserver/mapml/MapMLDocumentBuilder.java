@@ -648,7 +648,7 @@ public class MapMLDocumentBuilder {
      * @return boolean useTiles
      */
     @SuppressWarnings("unchecked")
-    private static boolean useTiles(GetMapRequest getMapRequest) {
+    public static boolean useTiles(GetMapRequest getMapRequest) {
         Optional useTilesOptional = Optional.ofNullable(getMapRequest
                 .getFormatOptions()
                 .getOrDefault(

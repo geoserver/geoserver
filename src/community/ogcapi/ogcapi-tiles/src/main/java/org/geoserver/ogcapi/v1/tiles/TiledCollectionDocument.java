@@ -81,7 +81,6 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         // backlinks in same and other formats
         addSelfLinks("ogc/tiles/v1/collections/" + id);
 
-        if (!summary) {
             // raw tiles links, if any (if the vector tiles plugin is missing or formats not
             // configured, will be empty)
             List<MimeType> tileTypes = tileLayer.getMimeTypes();
@@ -110,6 +109,7 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
                         .add(this);
             }
 
+        if (!summary) {
             // styles document links
             new LinksBuilder(StylesDocument.class, "ogc/tiles/v1/collections/")
                     .segment(id, true)

@@ -1170,23 +1170,6 @@ public class MapMLWMSTest extends MapMLTestSupport {
         assertEquals("RoadSegments-r2-s1", f2.getStyle());
     }
 
-    private void enableTileCaching(QName layerName, Catalog catalog) {
-        GWC gwc = applicationContext.getBean(GWC.class);
-        GWCConfig defaults = GWCConfig.getOldDefaults();
-        // it seems just the fact of retrieving the bean causes the
-        // GridSets to be added to the gwc GridSetBroker, but if you don't do
-        // this, they are not added automatically
-        MapMLGridsets mgs = applicationContext.getBean(MapMLGridsets.class);
-        GridSubset wgs84gridset = createGridSubSet(mgs.getGridSet("WGS84").get());
-        GridSubset osmtilegridset = createGridSubSet(mgs.getGridSet("OSMTILE").get());
-        LayerInfo layerInfo = catalog.getLayerByName(layerName.getLocalPart());
-        GeoServerTileLayer layerInfoTileLayer = new GeoServerTileLayer(layerInfo, defaults, gwc.getGridSetBroker());
-        layerInfoTileLayer.addGridSubset(wgs84gridset);
-        layerInfoTileLayer.addGridSubset(osmtilegridset);
-        layerInfoTileLayer.getInfo().getMimeFormats().add(TextMime.txtMapml.getMimeType());
-        gwc.save(layerInfoTileLayer);
-    }
-
     @Test
     public void testGetFeatureInfoMapML() throws Exception {
 

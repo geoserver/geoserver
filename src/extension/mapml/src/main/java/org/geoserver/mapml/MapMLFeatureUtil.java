@@ -281,10 +281,7 @@ public class MapMLFeatureUtil {
                             String link = null;
                             if (useTileLinks) {
                                 link = getWMTSLink(
-                                        featureCollectionInfoSimplifier
-                                                .getCoverageInfo()
-                                                .getName(),
-                                        style,
+                                        featureCollectionInfoSimplifier,
                                         chosen.getName(),
                                         request,
                                         String.valueOf(zoomLevel),
@@ -316,8 +313,7 @@ public class MapMLFeatureUtil {
     }
 
     private static String getWMTSLink(
-            String layerName,
-            String style,
+            FeatureCollectionInfoSimplifier featureCollectionInfoSimplifier,
             String tilematrixset,
             HttpServletRequest request,
             String zoomLevel,
@@ -325,8 +321,17 @@ public class MapMLFeatureUtil {
             String row) {
         String path = "gwc/service/wmts";
         HashMap<String, String> params = new HashMap<>();
+        String layerName =
+                featureCollectionInfoSimplifier.getCoverageInfo().getNamespace().getPrefix() != null
+                        ? featureCollectionInfoSimplifier
+                                        .getCoverageInfo()
+                                        .getNamespace()
+                                        .getPrefix() + ":"
+                                + featureCollectionInfoSimplifier
+                                        .getCoverageInfo()
+                                        .getName()
+                        : featureCollectionInfoSimplifier.getCoverageInfo().getName();
         params.put("layer", layerName);
-        params.put("style", style);
         params.put("tilematrixset", tilematrixset);
         params.put("service", "WMTS");
         params.put("request", "GetTile");

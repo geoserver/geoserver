@@ -8,6 +8,7 @@ import static org.geoserver.mapml.MapMLConstants.MAPML_USE_FEATURES;
 import static org.geoserver.mapml.MapMLConstants.MAPML_USE_TILES;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_FTL;
 import static org.geoserver.mapml.template.MapMLMapTemplate.MAPML_FEATURE_HEAD_FTL;
+import static org.geowebcache.grid.GridSubsetFactory.createGridSubSet;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,6 +30,10 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
+import org.geoserver.gwc.GWC;
+import org.geoserver.gwc.config.GWCConfig;
+import org.geoserver.gwc.layer.GeoServerTileLayer;
+import org.geoserver.mapml.gwc.gridset.MapMLGridsets;
 import org.geoserver.mapml.xml.Coordinates;
 import org.geoserver.mapml.xml.Feature;
 import org.geoserver.mapml.xml.LineString;
@@ -59,10 +64,14 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.Layer;
 import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
+import org.geowebcache.grid.GridSubset;
+import org.geowebcache.mime.TextMime;
 import org.junit.After;
 import org.junit.Test;
 import org.locationtech.jts.io.ParseException;
 import org.springframework.mock.web.MockHttpServletRequest;
+
+import javax.xml.namespace.QName;
 
 public class MapMLWMSFeatureTest extends MapMLTestSupport {
     @Override
@@ -107,6 +116,8 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         LayerInfo liRaster = cat.getLayerByName(MockData.WORLD.getLocalPart());
         liRaster.getResource().getMetadata().put(MAPML_USE_FEATURES, false);
         cat.save(liRaster);
+
+        disableTileCaching(MockData.WORLD, cat);
     }
 
     @Test
@@ -174,6 +185,33 @@ public class MapMLWMSFeatureTest extends MapMLTestSupport {
         assertEquals("-87.1875,-45.0,-84.375,-42.1875", request5.getParameter("BBOX"));
         MockHttpServletRequest request6 = createRequest(tiles2.get(3).getSrc());
         assertEquals("-87.1875,-42.1875,-84.375,-39.375", request6.getParameter("BBOX"));
+    }
+
+    @Test
+    public void testUseFeaturesRasterTileCache() throws Exception {
+        Catalog cat = getCatalog();
+        enableTileCaching(MockData.WORLD, cat);
+        Mapml mapmlFeatures3 = new MapMLWMSRequest()
+                .name("layerGroupWithRaster")
+                .bbox("-89,-44,-87,-42")
+                .srs("EPSG:4326")
+                .feature(true)
+                .tile(true)
+                .getAsMapML();
+        List<Tile> tiles3 = mapmlFeatures3.getBody().getTiles();
+        assertEquals("Raster layer world should return tiles", 4, tiles3.size());
+        MockHttpServletRequest request7 = createRequest(tiles3.get(0).getSrc());
+        assertEquals("16", request7.getParameter("TileRow"));
+        assertEquals("32", request7.getParameter("TileCol"));
+        MockHttpServletRequest request8 = createRequest(tiles3.get(1).getSrc());
+        assertEquals("17", request8.getParameter("TileRow"));
+        assertEquals("32", request8.getParameter("TileCol"));
+        MockHttpServletRequest request9 = createRequest(tiles3.get(2).getSrc());
+        assertEquals("16", request9.getParameter("TileRow"));
+        assertEquals("33", request9.getParameter("TileCol"));
+        MockHttpServletRequest request10 = createRequest(tiles3.get(3).getSrc());
+        assertEquals("17", request10.getParameter("TileRow"));
+        assertEquals("33", request10.getParameter("TileCol"));
     }
 
     @Test

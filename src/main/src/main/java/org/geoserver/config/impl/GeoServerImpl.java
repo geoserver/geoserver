@@ -51,6 +51,8 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     /** listeners */
     List<ConfigurationListener> listeners = new ArrayList<>();
 
+    private boolean catalogLoading;
+
     public GeoServerImpl() {
         this.facade = new DefaultGeoServerFacade(this);
     }
@@ -520,6 +522,6 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
 
     @Override
     public boolean isCatalogLoading() {
-        return catalog.isLoading();
+        return catalogLoading;
     }
 }

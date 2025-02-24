@@ -22,6 +22,9 @@ Encoding of a rule in XML::
 		<priority>..</priority>
 		<userName>..</userName>
 		<roleName>..</roleName>
+                <addressRange>..</addressRange>
+                <validAfter>..</validAfter>
+                <validBefore>..</validBefore>
 		<workspace>..</workspace>
 		<layer>..</layer>
 		<service>..</service>
@@ -59,7 +62,7 @@ Encoding of a rule in XML::
 
 Encoding of a rule in JSON::
 
-	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","workspace":"..","layer":"..","service":"..","request":"..","subfield":"..","access":".."}}
+	{"Rule": {"id":..,"priority":..,"userName":"..","roleName":"..","validAfter": "..", "validBefore":"..", "workspace":"..","layer":"..","service":"..","request":"..","subfield":"..","access":".."}}
 
 In case a rule that has "any" ("*") for a particular field the field is either not included (default), left empty or specified with a single asterisk 
 (the latter two may be used for updates to distinguish from "do not change this field").
@@ -99,40 +102,52 @@ All filter parameters are optional.
      - Used for paging a list of rules. Specifies the number of entries per page. Leave out for no paging. If specified, ``page`` should also be specified.
    * - userName
      - string
-     - Filter rules on username (excludes all other specified usernames).
+     - Filter rules on username (excludes all other specific usernames).
    * - userAny
      - 0 or 1. 
-     - Specify whether rules for 'any' username are included or not.
+     - Specify whether rules matching any username are included or not.
    * - roleName
      - string
-     - Filter rules on rolename (excludes all other specified rolenames).
+     - Filter rules on rolename (excludes all other specific rolenames).
    * - roleAny
      - 0 or 1. 
-     - Specify whether rules for 'any' rolename are included or not.
+     - Specify whether rules matching any rolename are included or not.
+   * - ipaddress
+     - string
+     - Filter rules on IP address range (only select rules with an address range that includes the passed IP address).
+   * - ipaddressAny
+     - 0 or 1. 
+     - Specify whether rules matching any IP address are included or not.
+   * - date
+     - string
+     - Filter rules by date. Format is `yyyy-MM-dd`.
+   * - dateAny
+     - 0 or 1. 
+     - Specify whether rules with no data range defined are included or not
    * - service
      - string
-     - Filter rules on service (excludes all other specified services).
+     - Filter rules on service (excludes all other specific services).
    * - serviceAny
      - 0 or 1. 
-     - Specify whether rules for 'any' service are included or not.
+     - Specify whether rules matching any service are included or not.
    * - request
      - string
-     - Filter rules on request (excludes all other specified requests).
+     - Filter rules on request (excludes all other specific requests).
    * - requestAny
      - 0 or 1. 
-     - Specify whether rules for 'any' request are included or not.
+     - Specify whether rules matching any request are included or not.
    * - workspace
      - string
-     - Filter rules on workspace (excludes all other specified workspaces).
+     - Filter rules on workspace (excludes all other specific workspaces).
    * - workspaceAny
      - 0 or 1. 
-     - Specify whether rules for 'any' workspace are included or not.
+     - Specify whether rules matching any workspace are included or not.
    * - layer
      - string
-     - Filter rules on layer (excludes all other specified layers).
+     - Filter rules on layer (excludes all other specific layers).
    * - layerAny
      - 0 or 1. 
-     - Specify whether rules for 'any' layer are included or not.
+     - Specify whether rules matching any layer are included or not.
 
 
 

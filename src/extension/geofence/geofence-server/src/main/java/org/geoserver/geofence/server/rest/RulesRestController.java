@@ -115,6 +115,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipaddress", required = false) String ipaddress,
+            @RequestParam(value = "ipaddressAny", required = false) Boolean ipaddressDefault,
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -133,6 +137,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 instanceId,
                 instanceName,
                 instanceDefault,
+                ipaddress,
+                ipaddressDefault,
+                date,
+                dateDefault,
                 serviceName,
                 serviceDefault,
                 requestName,
@@ -167,6 +175,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
             @RequestParam(value = "instanceId", required = false) Long instanceId,
             @RequestParam(value = "instanceName", required = false) String instanceName,
             @RequestParam(value = "instanceAny", required = false) Boolean instanceDefault,
+            @RequestParam(value = "ipaddress", required = false) String ipaddress,
+            @RequestParam(value = "ipaddressAny", required = false) Boolean ipaddressDefault,
+            @RequestParam(value = "date", required = false) String date,
+            @RequestParam(value = "dateAny", required = false) Boolean dateDefault,
             @RequestParam(value = "service", required = false) String serviceName,
             @RequestParam(value = "serviceAny", required = false) Boolean serviceDefault,
             @RequestParam(value = "request", required = false) String requestName,
@@ -185,6 +197,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
                 instanceId,
                 instanceName,
                 instanceDefault,
+                ipaddress,
+                ipaddressDefault,
+                date,
+                dateDefault,
                 serviceName,
                 serviceDefault,
                 requestName,
@@ -211,7 +227,7 @@ public class RulesRestController extends RestBaseController implements Sequentia
             produces = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public String insert(@RequestBody(required = true) JaxbRule rule) {
-        long priority = rule.getPriority() == null ? 0 : rule.getPriority().longValue();
+        long priority = rule.getPriority() == null ? 0 : rule.getPriority();
         if (adminService.getRuleByPriority(priority) != null) {
             adminService.shift(priority, 1);
         }
@@ -231,10 +247,9 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.POST)
     public @ResponseStatus(HttpStatus.OK) void update(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule =
-                    adminService.getRuleByPriority(rule.getPriority().longValue());
+            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority().longValue(), 1);
+                adminService.shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = adminService.get(id);
@@ -250,10 +265,9 @@ public class RulesRestController extends RestBaseController implements Sequentia
     @RequestMapping(value = "/rules/id/{id}", method = RequestMethod.PUT)
     public @ResponseStatus(HttpStatus.OK) void clearAndUpdate(@PathVariable("id") Long id, @RequestBody JaxbRule rule) {
         if (rule.getPriority() != null) {
-            ShortRule priorityRule =
-                    adminService.getRuleByPriority(rule.getPriority().longValue());
+            ShortRule priorityRule = adminService.getRuleByPriority(rule.getPriority());
             if (priorityRule != null && !Objects.equals(priorityRule.getId(), id)) {
-                adminService.shift(rule.getPriority().longValue(), 1);
+                adminService.shift(rule.getPriority(), 1);
             }
         }
         Rule theRule = new Rule();
@@ -284,6 +298,10 @@ public class RulesRestController extends RestBaseController implements Sequentia
             Long instanceId,
             String instanceName,
             Boolean instanceDefault,
+            String ipaddress,
+            Boolean ipaddressDefault,
+            String date,
+            Boolean dateDefault,
             String serviceName,
             Boolean serviceDefault,
             String requestName,
@@ -300,6 +318,8 @@ public class RulesRestController extends RestBaseController implements Sequentia
         setFilter(filter.getUser(), userName, userDefault);
         setFilter(filter.getRole(), roleName, groupDefault);
         setFilter(filter.getInstance(), instanceId, instanceName, instanceDefault);
+        setFilter(filter.getSourceAddress(), ipaddress, ipaddressDefault);
+        setFilter(filter.getDate(), date, dateDefault);
         setFilter(filter.getService(), serviceName, serviceDefault);
         setFilter(filter.getRequest(), requestName, requestDefault);
         setFilter(filter.getSubfield(), subfield, subfieldDefault);

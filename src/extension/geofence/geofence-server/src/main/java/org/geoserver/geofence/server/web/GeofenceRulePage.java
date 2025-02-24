@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
@@ -74,6 +75,7 @@ import org.geotools.api.filter.FilterFactory;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.api.filter.sort.SortOrder;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.util.logging.Logging;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPolygon;
@@ -88,11 +90,13 @@ import org.springframework.dao.DuplicateKeyException;
  */
 public class GeofenceRulePage extends GeoServerSecuredPage {
 
-    private static final long serialVersionUID = -3986495664060319256L;
+    private static final Logger LOGGER = Logging.getLogger(GeofenceRulePage.class);
+
+    private static final long serialVersionUID = 3800195664060319256L;
 
     private class LayerDetailsFormData implements Serializable {
 
-        private static final long serialVersionUID = 3045099348340468123L;
+        private static final long serialVersionUID = 3800199348340468123L;
 
         LayerType layerType;
 
@@ -115,7 +119,7 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
 
     private class RuleFormData implements Serializable {
 
-        private static final long serialVersionUID = 3045099348340468123L;
+        private static final long serialVersionUID = 3800199348340468123L;
 
         ShortRule rule;
 
@@ -425,6 +429,8 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
                 accessChoice;
 
         protected TextField<String> subfield;
+        protected TextField<String> validAfter;
+        protected TextField<String> validBefore;
 
         protected DropDownChoice<GrantType> grantTypeChoice;
 
@@ -494,6 +500,14 @@ public class GeofenceRulePage extends GeoServerSecuredPage {
             add(subfield = new TextField<>("subfield", ruleFormModel.bind("rule.subfield")));
             subfield.setOutputMarkupId(true);
             subfield.setOutputMarkupPlaceholderTag(true);
+
+            add(validAfter = new TextField<>("validAfter", ruleFormModel.bind("rule.validAfter")));
+            validAfter.setOutputMarkupId(true);
+            validAfter.setOutputMarkupPlaceholderTag(true);
+
+            add(validBefore = new TextField<>("validBefore", ruleFormModel.bind("rule.validBefore")));
+            validBefore.setOutputMarkupId(true);
+            validBefore.setOutputMarkupPlaceholderTag(true);
 
             add(
                     workspaceChoice = new DropDownChoice<>(

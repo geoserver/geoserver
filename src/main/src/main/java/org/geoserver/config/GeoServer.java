@@ -250,4 +250,7 @@ public interface GeoServer {
      * new one
      */
     void reload(Catalog catalog) throws Exception;
+
+    /** Checks if the catalog is currently loading or reloading. */
+    boolean isCatalogLoading();
 }

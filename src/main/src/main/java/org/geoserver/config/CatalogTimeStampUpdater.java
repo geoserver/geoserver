@@ -31,6 +31,7 @@ public class CatalogTimeStampUpdater implements CatalogListener {
     static final Logger LOGGER = Logging.getLogger(CatalogTimeStampUpdater.class);
 
     Catalog catalog;
+    private boolean catalogLoading;
 
     public CatalogTimeStampUpdater(Catalog catalog) {
 
@@ -56,10 +57,14 @@ public class CatalogTimeStampUpdater implements CatalogListener {
     }
 
     @Override
-    public void handleAddEvent(CatalogAddEvent event) throws CatalogException {}
+    public void handleAddEvent(CatalogAddEvent event) throws CatalogException {
+        catalogLoading = true;
+    }
 
     @Override
-    public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {}
+    public void handleRemoveEvent(CatalogRemoveEvent event) throws CatalogException {
+        catalogLoading = true;
+    }
 
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) throws CatalogException {
@@ -74,12 +79,21 @@ public class CatalogTimeStampUpdater implements CatalogListener {
             Date dateModified = new Date();
             info.setDateModified(dateModified);
         }
+        catalogLoading = true;
         LOGGER.finest(event.toString() + " :handleModifyEvent");
     }
 
     @Override
-    public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {}
+    public void handlePostModifyEvent(CatalogPostModifyEvent event) throws CatalogException {
+        catalogLoading = false;
+    }
 
     @Override
-    public void reloaded() {}
+    public void reloaded() {
+        catalogLoading = false;
+    }
+
+    public boolean isCatalogLoading() {
+        return catalogLoading;
+    }
 }

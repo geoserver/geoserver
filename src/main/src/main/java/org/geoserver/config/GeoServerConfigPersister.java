@@ -50,6 +50,8 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     GeoServerDataDirectory dd;
     XStreamPersister xp;
 
+    private boolean catalogLoading;
+
     public GeoServerConfigPersister(GeoServerResourceLoader rl, XStreamPersister xp) {
         this.rl = rl;
         this.dd = new GeoServerDataDirectory(rl);
@@ -58,6 +60,7 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
 
     @Override
     public void handleAddEvent(CatalogAddEvent event) {
+        catalogLoading = true;
         Object source = event.getSource();
         try {
             if (source instanceof WorkspaceInfo) {
@@ -94,6 +97,7 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
 
     @Override
     public void handleModifyEvent(CatalogModifyEvent event) {
+        catalogLoading = true;
         Object source = event.getSource();
 
         try {
@@ -169,6 +173,7 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
 
     @Override
     public void handlePostModifyEvent(CatalogPostModifyEvent event) {
+        catalogLoading = false;
         Object source = event.getSource();
         try {
             if (source instanceof WorkspaceInfo) {
@@ -205,6 +210,7 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
 
     @Override
     public void handleRemoveEvent(CatalogRemoveEvent event) {
+        catalogLoading = true;
         Object source = event.getSource();
         try {
             if (source instanceof WorkspaceInfo) {
@@ -650,5 +656,9 @@ public class GeoServerConfigPersister implements CatalogListener, ConfigurationL
     @Override
     public int getPriority() {
         return ExtensionPriority.HIGHEST;
+    }
+
+    public boolean isCatalogLoading() {
+        return catalogLoading;
     }
 }

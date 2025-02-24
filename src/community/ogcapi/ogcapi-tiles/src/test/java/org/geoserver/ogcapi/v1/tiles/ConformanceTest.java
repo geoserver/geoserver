@@ -20,16 +20,18 @@ public class ConformanceTest extends TilesTestSupport {
 
     private void checkConformance(DocumentContext json) {
         assertEquals(2, (int) json.read("$.length()", Integer.class));
-        assertEquals(9, (int) json.read("$.conformsTo.length()", Integer.class));
+        assertEquals(11, (int) json.read("$.conformsTo.length()", Integer.class));
         assertEquals(ConformanceClass.CORE, json.read("$.conformsTo[0]", String.class));
         assertEquals(ConformanceClass.COLLECTIONS, json.read("$.conformsTo[1]", String.class));
         assertEquals(TilesService.CC_TILE_CORE, json.read("$.conformsTo[2]", String.class));
         assertEquals(TilesService.CC_TILESET, json.read("$.conformsTo[3]", String.class));
-        assertEquals(TilesService.CC_MULTITILES, json.read("$.conformsTo[4]", String.class));
-        assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[5]", String.class));
-        assertEquals(TilesService.CC_TILES_TILE_MATRIX_SET, json.read("$.conformsTo[6]", String.class));
-        assertEquals(TilesService.CC_TILE_MATRIX_SET, json.read("$.conformsTo[7]", String.class));
-        assertEquals(TilesService.CC_TILE_MATRIX_SET_JSON, json.read("$.conformsTo[8]", String.class));
+        assertEquals(TilesService.CC_TILESETS, json.read("$.conformsTo[4]", String.class));
+        assertEquals(TilesService.CC_GEODATA_TILESET_LIST, json.read("$.conformsTo[5]", String.class));
+        assertEquals(TilesService.CC_GEODATA_TILESETS, json.read("$.conformsTo[6]", String.class));
+        assertEquals(TilesService.CC_INFO, json.read("$.conformsTo[7]", String.class));
+        assertEquals(TilesService.CC_TILES_TILE_MATRIX_SET, json.read("$.conformsTo[8]", String.class));
+        assertEquals(TilesService.CC_TILE_MATRIX_SET, json.read("$.conformsTo[9]", String.class));
+        assertEquals(TilesService.CC_TILE_MATRIX_SET_JSON, json.read("$.conformsTo[10]", String.class));
         // check the others as they get implemented
     }
 
@@ -52,8 +54,6 @@ public class ConformanceTest extends TilesTestSupport {
                 TilesService.CC_TILE_CORE, document.select("#content li:eq(2)").text());
         assertEquals(
                 TilesService.CC_TILESET, document.select("#content li:eq(3)").text());
-        assertEquals(
-                TilesService.CC_MULTITILES, document.select("#content li:eq(4)").text());
-        assertEquals(TilesService.CC_INFO, document.select("#content li:eq(5)").text());
+        assertEquals(TilesService.CC_INFO, document.select("#content li:eq(7)").text());
     }
 }

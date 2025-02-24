@@ -81,33 +81,33 @@ public class TiledCollectionDocument extends AbstractCollectionDocument<TileLaye
         // backlinks in same and other formats
         addSelfLinks("ogc/tiles/v1/collections/" + id);
 
-            // raw tiles links, if any (if the vector tiles plugin is missing or formats not
-            // configured, will be empty)
-            List<MimeType> tileTypes = tileLayer.getMimeTypes();
+        // raw tiles links, if any (if the vector tiles plugin is missing or formats not
+        // configured, will be empty)
+        List<MimeType> tileTypes = tileLayer.getMimeTypes();
 
-            dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
-            if (dataTiles) {
-                // tiles
-                new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
-                        .segment(id, true)
-                        .segment("tiles")
-                        .title("Tiles metadata as ")
-                        .rel(REL_TILESETS_VECTOR)
-                        .classification("tilesets-vector")
-                        .add(this);
-            }
+        dataTiles = tileTypes.stream().anyMatch(mt -> mt.isVector());
+        if (dataTiles) {
+            // tiles
+            new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
+                    .segment(id, true)
+                    .segment("tiles")
+                    .title("Tiles metadata as ")
+                    .rel(REL_TILESETS_VECTOR)
+                    .classification("tilesets-vector")
+                    .add(this);
+        }
 
-            // map tiles links (a layer might not have image tiles configured, need to check)
-            mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
-            if (mapTiles) {
-                new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
-                        .segment(id, true)
-                        .segment("map/tiles")
-                        .title("Map tiles metadata as ")
-                        .rel(REL_TILESETS_MAP)
-                        .classification("tilesets-maps")
-                        .add(this);
-            }
+        // map tiles links (a layer might not have image tiles configured, need to check)
+        mapTiles = tileTypes.stream().anyMatch(mt -> !mt.isVector());
+        if (mapTiles) {
+            new LinksBuilder(TilesDocument.class, "ogc/tiles/v1/collections/")
+                    .segment(id, true)
+                    .segment("map/tiles")
+                    .title("Map tiles metadata as ")
+                    .rel(REL_TILESETS_MAP)
+                    .classification("tilesets-maps")
+                    .add(this);
+        }
 
         if (!summary) {
             // styles document links

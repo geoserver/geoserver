@@ -55,7 +55,10 @@ public class GetTileTest extends TilesTestSupport {
                 + "/styles/BasicPolygons/map/tiles/EPSG:4326/EPSG:4326:0/0/0?f=image%2Fpng");
         assertEquals(200, sr.getStatus());
         assertEquals("image/png", sr.getContentType());
-        assertEquals("Content-disposition", "inline; filename=\"BasicPolygons_0_0_0.png\"", sr.getHeader("Content-disposition"));
+        assertEquals(
+                "Content-disposition",
+                "inline; filename=\"BasicPolygons_0_0_0.png\"",
+                sr.getHeader("Content-disposition"));
         checkRootTileHeaders(sr, "cite:BasicPolygons");
     }
 

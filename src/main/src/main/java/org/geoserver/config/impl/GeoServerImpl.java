@@ -517,4 +517,9 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
             }
         }
     }
+
+    @Override
+    public boolean isCatalogLoading() {
+        return catalog.isLoading();
+    }
 }

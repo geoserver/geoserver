@@ -11,6 +11,24 @@
 	  <br/>
 	  <div wicket:id="exclusions"></div>
 	  <div wicket:id="datastorename"></div>
+	  <div wicket:id="overridesContainer" class="qos-panel">
+          <h3>Overrides rules administration</h3>
+		  <div wicket:id="addOverridePanel"></div>
+
+          <table cellspacing="0" class="overrides-dataview" style="width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 18px; text-align: left;">
+              <tr style="background-color: #f2f2f2;">
+                  <th style="padding: 12px; border-bottom: 1px solid #ddd;">ID</th>
+                  <th style="padding: 12px; border-bottom: 1px solid #ddd;">Expression</th>
+                  <th style="padding: 12px; border-bottom: 1px solid #ddd;">Actions</th>
+              </tr>
+              <tr wicket:id="overridesview" style="border-bottom: 1px solid #ddd;">
+                  <td style="padding: 12px;"><span wicket:id="overridekey">[contactid]</span> </td>
+                  <td style="padding: 12px;"><span wicket:id="expression">[firstname]</span></td>
+                  <td style="padding: 12px;"><span>
+                  <a wicket:id="removeLink" class="remove-link">[Remove]</a></span></td>
+              </tr>
+          </table>
+	  </div>
 	</fieldset>
 </wicket:panel>
 </body>

@@ -5,6 +5,8 @@
  */
 package org.geoserver.catalog;
 
+import static org.geoserver.catalog.CoverageView.EnvelopeCompositionType.INTERSECTION;
+
 import com.sun.media.imageioimpl.common.BogusColorSpace;
 import it.geosolutions.imageio.maskband.DatasetLayout;
 import it.geosolutions.imageio.utilities.ImageIOUtilities;
@@ -27,6 +29,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.ColorModelFactory;
@@ -36,7 +41,6 @@ import javax.media.jai.RasterFactory;
 import javax.media.jai.operator.ConstantDescriptor;
 import org.apache.commons.lang3.ArrayUtils;
 import org.geoserver.catalog.CoverageView.CoverageBand;
-import org.geoserver.catalog.CoverageView.EnvelopeCompositionType;
 import org.geoserver.catalog.CoverageView.InputCoverageBand;
 import org.geoserver.catalog.CoverageViewHandler.CoveragesConsistencyChecker;
 import org.geotools.api.coverage.grid.Format;
@@ -73,10 +77,10 @@ import org.geotools.coverage.grid.io.imageio.GeoToolsWriteParams;
 import org.geotools.coverage.processing.CoverageProcessor;
 import org.geotools.data.DefaultResourceInfo;
 import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.gce.imagemosaic.ImageMosaicFormat;
 import org.geotools.geometry.GeneralBounds;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.image.ImageWorker;
-import org.geotools.parameter.DefaultParameterDescriptor;
 import org.geotools.parameter.DefaultParameterDescriptorGroup;
 import org.geotools.parameter.ParameterGroup;
 import org.geotools.referencing.CRS;
@@ -98,6 +102,16 @@ public class CoverageViewReader implements GridCoverage2DReader {
     private static final CoverageProcessor PROCESSOR = CoverageProcessor.getInstance();
 
     private static final Logger LOGGER = Logging.getLogger(CoverageViewReader.class);
+
+    /**
+     * Executor for parallel loading of coverages that do support multithreaded loading to start with (e.g., image
+     * mosaic). It's not limiting the number of threads, because when MT loading is one, that's already limited in the
+     * readers. It cannot be the same executor used by the image mosaic (ResourcePool#getCoverageExecutor) because that
+     * would cause deadlock (each read would use at least 2 threads, one inside the image mosaic and one inside the
+     * coverage view). Should we switch to allow parellel loading of coverages that do not support MT natively, a
+     * separate executor should be used.
+     */
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool();
 
     /** The CoverageView containing definition */
     CoverageView coverageView;
@@ -382,9 +396,27 @@ public class CoverageViewReader implements GridCoverage2DReader {
             Boolean includeCoverages)
             throws IOException {
         HashMap<String, GridCoverage2D> inputCoverages = new HashMap<>();
-        HashMap<String, GridCoverageReader> inputReaders = new HashMap<>();
+        HashMap<String, GridCoverage2DReader> inputReaders = new HashMap<>();
         GridCoverage2D dynamicAlphaSource = null;
         int nonNullCoverages = 0;
+        // bands selection parameter inside on final bands so they should not be propagated
+        // to the delegate reader
+        final GeneralParameterValue[] filteredParameters;
+        boolean multiThreadedLoading = false;
+        if (parameters != null) {
+            // creating a copy of parameters excluding the bands parameter
+            filteredParameters = Arrays.stream(parameters)
+                    .filter(parameter -> !matches(parameter, AbstractGridFormat.BANDS))
+                    .toArray(GeneralParameterValue[]::new);
+            // check if multi-threaded loading is enabled
+            multiThreadedLoading = Arrays.stream(parameters)
+                    .filter(parameter -> matches(parameter, ImageMosaicFormat.ALLOW_MULTITHREADING))
+                    .map(p -> Boolean.TRUE.equals(((ParameterValue) p).getValue()))
+                    .findFirst()
+                    .orElse(false);
+        } else {
+            filteredParameters = null;
+        }
         for (int bIdx : selectedBandIndices) {
             CoverageBand band = bands.get(bIdx);
             List<InputCoverageBand> selectedBands = band.getInputCoverageBands();
@@ -400,20 +432,15 @@ public class CoverageViewReader implements GridCoverage2DReader {
                 } else {
                     checker.checkConsistency(reader);
                 }
-                // bands selection parameter inside on final bands so they should not be propagated
-                // to the delegate reader
-                GeneralParameterValue[] filteredParameters = parameters;
-                if (parameters != null) {
-                    // creating a copy of parameters excluding the bands parameter
-                    filteredParameters = Arrays.stream(parameters)
-                            .filter(parameter -> !matches(parameter, AbstractGridFormat.BANDS))
-                            .toArray(GeneralParameterValue[]::new);
-                }
-                if (Boolean.TRUE.equals(includeCoverages)) {
+            }
+        }
+        if (Boolean.TRUE.equals(includeCoverages)) {
+            if (!multiThreadedLoading || EXECUTOR == null) {
+                for (String coverageName : inputReaders.keySet()) {
+                    GridCoverage2DReader reader = inputReaders.get(coverageName);
                     GridCoverage2D coverage = reader.read(filteredParameters);
                     if (coverage == null) {
-                        if (handler.isHomogeneousCoverages()
-                                || handler.getEnvelopeCompositionType() == EnvelopeCompositionType.INTERSECTION) {
+                        if (handler.isHomogeneousCoverages() || handler.getEnvelopeCompositionType() == INTERSECTION) {
                             return null;
                         }
                     } else {
@@ -424,23 +451,69 @@ public class CoverageViewReader implements GridCoverage2DReader {
                     }
                     inputCoverages.put(coverageName, coverage);
                 }
+            } else {
+                // parallel read
+                List<Future<ParallelLoadingResult>> futures = new ArrayList<>();
+                for (String coverageName : inputReaders.keySet()) {
+                    Future<ParallelLoadingResult> future = EXECUTOR.submit(() -> {
+                        GridCoverage2DReader reader = inputReaders.get(coverageName);
+                        GridCoverage2D coverage = reader.read(filteredParameters);
+                        return new ParallelLoadingResult(coverageName, reader, coverage);
+                    });
+                    futures.add(future);
+                }
+
+                // sequential post-processing
+                for (Future<ParallelLoadingResult> future : futures) {
+                    try {
+                        ParallelLoadingResult result = future.get();
+                        GridCoverage2D coverage = result.coverage;
+                        if (coverage == null) {
+                            if (handler.isHomogeneousCoverages()
+                                    || handler.getEnvelopeCompositionType() == INTERSECTION) {
+                                return null;
+                            }
+                        } else {
+                            nonNullCoverages++;
+                        }
+                        if (dynamicAlphaSource == null && hasDynamicAlpha(coverage, result.reader)) {
+                            dynamicAlphaSource = coverage;
+                        }
+                        inputCoverages.put(result.coverageName, coverage);
+                    } catch (Exception e) {
+                        throw new IOException(e);
+                    }
+                }
             }
         }
+
         ViewInputs inputAlphaNonNull =
                 new ViewInputs(bands, inputReaders, inputCoverages, dynamicAlphaSource, nonNullCoverages);
         return inputAlphaNonNull;
     }
 
+    static class ParallelLoadingResult {
+        String coverageName;
+        GridCoverage2DReader reader;
+        GridCoverage2D coverage;
+
+        public ParallelLoadingResult(String coverageName, GridCoverage2DReader reader, GridCoverage2D coverage) {
+            this.coverageName = coverageName;
+            this.reader = reader;
+            this.coverage = coverage;
+        }
+    }
+
     static class ViewInputs {
         private final List<CoverageBand> bands;
-        private final HashMap<String, GridCoverageReader> inputReaders;
+        private final HashMap<String, GridCoverage2DReader> inputReaders;
         private final HashMap<String, GridCoverage2D> inputCoverages;
         private final GridCoverage2D dynamicAlphaSource;
         private final int nonNullCoverages;
 
         public ViewInputs(
                 List<CoverageBand> bands,
-                HashMap<String, GridCoverageReader> inputReaders,
+                HashMap<String, GridCoverage2DReader> inputReaders,
                 HashMap<String, GridCoverage2D> inputCoverages,
                 GridCoverage2D dynamicAlphaSource,
                 int nonNullCoverages) {
@@ -467,7 +540,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             return nonNullCoverages;
         }
 
-        public HashMap<String, GridCoverageReader> getInputReaders() {
+        public HashMap<String, GridCoverage2DReader> getInputReaders() {
             return inputReaders;
         }
     }
@@ -558,7 +631,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         return mergedBands;
     }
 
-    private boolean matches(GeneralParameterValue parameter, DefaultParameterDescriptor<?> expected) {
+    private boolean matches(GeneralParameterValue parameter, ParameterDescriptor<?> expected) {
         return parameter.getDescriptor().getName().equals(expected.getName());
     }
 
@@ -948,7 +1021,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
     }
 
     private boolean viewHasPAM(ViewInputs info) {
-        Map<String, GridCoverageReader> readers = info.getInputReaders();
+        Map<String, GridCoverage2DReader> readers = info.getInputReaders();
         // iterate over the view bands and check for PAMs
         for (CoverageView.CoverageBand band : info.getBands()) {
             for (CoverageView.InputCoverageBand inputCoverageBand : band.getInputCoverageBands()) {

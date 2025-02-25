@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<wicket:head>
+    <style>
+        .form-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .form-group label {
+            width: 100px;
+            margin-right: 10px;
+        }
+        .form-group input {
+            flex: 1;
+        }
+        .form-group button {
+            margin-left: 110px;
+        }
+        .bordered-div {
+            border: 1px solid black;
+            padding: 10px;
+        }
+    </style>
+</wicket:head>
+<body>
+<wicket:panel class="bordered-div">
+    <div class="qos-panel">
+        <h4>Add Override rule</h4>
+        <form wicket:id="addOverrideForm">
+            <div class="form-group">
+                <label>Key:</label>
+                <input type="text" wicket:id="addOverrideKey" />
+            </div>
+            <div class="form-group">
+                <label>Expression:</label>
+                <input type="text" wicket:id="addOverrideExpression" />
+            </div>
+            <div class="form-group">
+                <button type="submit" wicket:id="addOverrideSubmitButton">Add Override expression</button>
+            </div>
+        </form>
+    </div>
+    <div wicket:id="addOverrideFeedback"></div>
+</wicket:panel>
+</body>
+</html>

@@ -10,8 +10,11 @@ import org.geoserver.smartdataloader.domain.DomainModelVisitor;
 public final class DomainEntitySimpleAttribute {
 
     private String name;
+    private String expression;
     private DomainAttributeType type;
     private boolean identifier;
+
+    public DomainEntitySimpleAttribute() {}
 
     public String getName() {
         return name;
@@ -35,6 +38,18 @@ public final class DomainEntitySimpleAttribute {
 
     public void setIdentifier(boolean identifier) {
         this.identifier = identifier;
+    }
+
+    public String getExpression() {
+        return expression != null ? expression : name;
+    }
+
+    public boolean hasExpression() {
+        return expression != null;
+    }
+
+    public void setExpression(String expression) {
+        this.expression = expression;
     }
 
     public void accept(DomainModelVisitor visitor) {

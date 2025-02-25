@@ -4,6 +4,9 @@
  */
 package org.geoserver.smartdataloader.domain;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * DomainModel configuration for Smart AppSchema. It keeps root entity and detailed information about selected user
  * attributes and relations that will be used for mappings to output formats.
@@ -13,6 +16,7 @@ package org.geoserver.smartdataloader.domain;
 public final class DomainModelConfig {
 
     private String rootEntityName;
+    private Map<String, String> overrideExpressions = new HashMap<>();
 
     public String getRootEntityName() {
         return rootEntityName;
@@ -20,5 +24,13 @@ public final class DomainModelConfig {
 
     public void setRootEntityName(String rootEntityName) {
         this.rootEntityName = rootEntityName;
+    }
+
+    public Map<String, String> getOverrideExpressions() {
+        return overrideExpressions;
+    }
+
+    public void setOverrideExpressions(Map<String, String> overrideExpressions) {
+        this.overrideExpressions = overrideExpressions;
     }
 }

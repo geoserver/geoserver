@@ -320,7 +320,8 @@ public final class AppSchemaUtils {
         return attributeMappingNode;
     }
 
-    static Node createAttributeMappingIdExpression(Document document, String typeMappingTarget, String OCQLValue) {
+    static Node createAttributeMappingIdExpression(
+            Document document, String typeMappingTarget, IdExpression idExpression) {
         int sep = typeMappingTarget.indexOf(":");
         String idPrefix = typeMappingTarget;
         if (sep != -1) idPrefix = typeMappingTarget.substring(sep + 1);
@@ -329,7 +330,12 @@ public final class AppSchemaUtils {
         targetAttributeNode.setTextContent(typeMappingTarget);
         Element sourceExpressionNode = document.createElement("idExpression");
         Element OCQLNode = document.createElement("OCQL");
-        OCQLValue = "strConcat('" + idPrefix + ".'," + OCQLValue + ")";
+        String OCQLValue = null;
+        if (idExpression.getExpression() == null) {
+            OCQLValue = "strConcat('" + idPrefix + ".'," + idExpression.getName() + ")";
+        } else {
+            OCQLValue = idExpression.getExpression();
+        }
         OCQLNode.setTextContent(OCQLValue);
         sourceExpressionNode.appendChild(OCQLNode);
         attributeMappingNode.appendChild(targetAttributeNode);
@@ -337,10 +343,15 @@ public final class AppSchemaUtils {
         return attributeMappingNode;
     }
 
-    static void updateAttributeMappingIdExpression(Node idExpression, String OCQLValue) {
-        Node ocqlIdExpr = idExpression.getFirstChild();
+    static void updateAttributeMappingIdExpression(Node idExpressionNode, IdExpression OCQLValue) {
+        Node ocqlIdExpr = idExpressionNode.getFirstChild();
         String strIdExpr = ocqlIdExpr.getTextContent();
-        strIdExpr = "strConcat(strConcat(" + strIdExpr + "," + "'.')," + OCQLValue + ")";
+        if (OCQLValue.getExpression() == null) {
+            strIdExpr = "strConcat(strConcat(" + strIdExpr + "," + "'.')," + OCQLValue.getName() + ")";
+        } else {
+            strIdExpr = OCQLValue.getExpression();
+        }
+
         ocqlIdExpr.setTextContent(strIdExpr);
     }
 

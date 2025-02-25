@@ -16,6 +16,9 @@ import javax.swing.tree.DefaultTreeModel;
 import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ChoiceRenderer;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -92,7 +95,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         super(componentId, storeEditForm);
         model = storeEditForm.getModel();
         setDefaultModel(model);
-        smartAppSchemaDataStoreInfo = ((DataStoreInfo) storeEditForm.getModel().getObject());
+        smartAppSchemaDataStoreInfo = (DataStoreInfo) model.getObject();
         // set helper variables
         selectedPostgisDataStoreId = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.DATASTORE_METADATA.key);
         selectedRootEntityName = getDataStoreInfoParam(SmartDataLoaderDataAccessFactory.ROOT_ENTITY.key);
@@ -105,6 +108,7 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
         buildDomainModelTreePanel(model);
         // build exclusions panel (it's hidden)
         buildHiddenParametersPanel(model);
+        buildOverridesView();
     }
 
     @Override
@@ -158,6 +162,13 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
                 target.add(datastorename);
             }
         });
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        String css = ".qos-panel { " + "border: 1px solid #c6e09b; " + "padding: 5px; " + " }";
+        response.render(CssHeaderItem.forCSS(css, "qosPanelCss"));
     }
 
     /** Helper method that creates dropdown for postgis datastore selection. */
@@ -429,6 +440,18 @@ public class SmartDataLoaderStoreEditPanel extends StoreEditPanel {
             convertTreeToSet((DefaultMutableTreeNode) aNode.getChildAt(i), nodes);
         }
         nodes.add(aNode);
+    }
+
+    private void buildOverridesView() {
+        WebMarkupContainer container = new WebMarkupContainer("overridesContainer");
+        container.setOutputMarkupId(true);
+        add(container);
+        IModel<DataStoreInfo> dsiModel = (IModel<DataStoreInfo>) this.model;
+        SmartOverridesRefreshingView overridesView = new SmartOverridesRefreshingView("overridesview", dsiModel);
+        container.add(overridesView);
+        OverrideAddPanel addOverridePanel =
+                new OverrideAddPanel("addOverridePanel", new SmartOverridesModel(dsiModel), overridesView);
+        container.add(addOverridePanel);
     }
 
     public static class DataStoreSummmary implements Serializable {

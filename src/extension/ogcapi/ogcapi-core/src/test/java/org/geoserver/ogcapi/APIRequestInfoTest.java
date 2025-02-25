@@ -9,6 +9,7 @@ import static org.geoserver.ogcapi.MappingJackson2YAMLMessageConverter.APPLICATI
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 import java.util.Collection;
@@ -50,6 +51,32 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
     @Test
     public void testLandingPage() throws Exception {
         testDuringOperationExecuted(ri -> assertEquals("ogc/hello/v1", ri.getServiceLandingPage()));
+    }
+
+    @Test
+    public void testLandingPageContext() throws Exception {
+        testDuringOperationExecuted("ogc/hello/v1", ri -> {
+            assertEquals("ogc/hello/v1", ri.getServiceLandingPage());
+            assertEquals("/geoserver/ogc/hello/v1", ri.getRequest().getRequestURI());
+        });
+    }
+
+    @Test
+    public void testLandingPageContextWorkspace() throws Exception {
+        testDuringOperationExecuted("cite/ogc/hello/v1", ri -> {
+            assertEquals(
+                    "http://localhost:8080/geoserver/cite/ogc/hello/v1",
+                    ri.getRequest().getRequestURL().toString());
+        });
+    }
+
+    @Test
+    public void testLandingPageContextWorkspaceLayer() throws Exception {
+        testDuringOperationExecuted("cite/Buildings/ogc/hello/v1", ri -> {
+            assertEquals(
+                    "http://localhost:8080/geoserver/cite/Buildings/ogc/hello/v1",
+                    ri.getRequest().getRequestURL().toString());
+        });
     }
 
     @Test
@@ -115,7 +142,24 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
         return applicationContext.getBean(APIDispatcher.class);
     }
 
+    /**
+     * Test {@code ogc/hello/v1} path to global service (ie with no context).
+     *
+     * @param consumer
+     * @throws Exception
+     */
     private void testDuringOperationExecuted(Consumer<APIRequestInfo> consumer) throws Exception {
+        testDuringOperationExecuted("ogc/hello/v1/", consumer);
+    }
+
+    /**
+     * Ask the APIDispatcher to process the provided path, testing the resulting APIRequestInfo.
+     *
+     * @param path
+     * @param consumer
+     * @throws Exception
+     */
+    private void testDuringOperationExecuted(final String path, Consumer<APIRequestInfo> consumer) throws Exception {
         APIDispatcher dispatcher = getAPIDispatcher();
         dispatcher.callbacks.add(new TestDispatcherCallback() {
             @Override
@@ -127,7 +171,14 @@ public class APIRequestInfoTest extends GeoServerSystemTestSupport {
             }
         });
         // check no exceptions have been thrown
-        JSONObject json = (JSONObject) getAsJSON("ogc/hello/v1/");
-        assertEquals("Landing page", json.get("message"));
+
+        JSONObject json = (JSONObject) getAsJSON(path);
+        if (!"Landing page".equals(json.get("message"))) {
+            if ("NoApplicableCode".equals(json.get("type")) && json.has("title")) {
+                fail(path + " failure: " + json.getString("title"));
+            } else {
+                fail(path + " failure: " + json.toString());
+            }
+        }
     }
 }

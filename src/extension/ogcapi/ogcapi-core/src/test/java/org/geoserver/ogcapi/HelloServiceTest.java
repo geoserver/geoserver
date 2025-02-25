@@ -465,7 +465,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
         MockHttpServletRequest request = setupRequestBase();
         request.setMethod("GET");
-        request.setPathInfo("/geoserver/ogc/hello/v1/" + path);
+        request.setServletPath("/geoserver/ogc");
+        request.setPathInfo("hello/v1/" + path);
         request.setRequestURI("/geoserver/ogc/hello/v1/" + path);
 
         CodeExpectingHttpServletResponse response = new CodeExpectingHttpServletResponse(new MockHttpServletResponse());
@@ -483,7 +484,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     private MockHttpServletRequest setupDeleteRequest() {
         MockHttpServletRequest request = setupRequestBase();
-        request.setPathInfo("/geoserver/ogc/hello/v1/delete");
+        request.setServletPath("/geoserver/ogc");
+        request.setPathInfo("hello/v1/delete");
         request.setRequestURI("/geoserver/ogc/hello/v1/delete");
         request.setMethod("DELETE");
 
@@ -492,7 +494,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     private MockHttpServletRequest setupPutRequest(String message, String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/hello/v1/default");
+        request.setServletPath("/geoserver/ogc");
+        request.setPathInfo("hello/v1/default");
         request.setMethod("PUT");
 
         request.setRequestURI("/geoserver/ogc/hello/v1/default");
@@ -503,7 +506,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     private MockHttpServletRequest setupEchoRequest(String message, String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/hello/v1/hello");
+        request.setServletPath("/geoserver/ogc");
+        request.setPathInfo("hello/v1/hello");
         request.setMethod("POST");
 
         request.setRequestURI("/geoserver/ogc/hello/v1/echo");
@@ -514,7 +518,8 @@ public class HelloServiceTest extends GeoServerSystemTestSupport {
 
     private MockHttpServletRequest setupHelloRequest(String... params) {
         MockHttpServletRequest request = setupRequestBase(params);
-        request.setPathInfo("/geoserver/ogc/hello/v1/hello");
+        request.setServletPath("/geoserver/ogc");
+        request.setPathInfo("hello/v1/hello");
         request.setMethod("GET");
         request.setRequestURI("/geoserver/ogc/hello/v1/hello");
 

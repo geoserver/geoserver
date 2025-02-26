@@ -18,23 +18,42 @@ Installing OGC API Features extension
 
 #. The feature service is available at: http://localhost:8080/geoserver/ogc/features/v1
 
-Docker use of OGC API Features module
-'''''''''''''''''''''''''''''''''''''
+Docker use of OGC API Features extension
+''''''''''''''''''''''''''''''''''''''''
 
-#. The nightly Docker image supports the use of OGC API Feature:
+#. The Docker image supports the use of OGC API Feature:
 
-   .. parsed-literal::
-      
-      docker pull docker.osgeo.org/geoserver:|release|
+   .. only:: not snapshot
+   
+      .. parsed-literal::
+
+         docker pull docker.osgeo.org/geoserver:|release|
+
+   .. only:: snapshot
+   
+      .. parsed-literal::
+   
+         docker pull docker.osgeo.org/geoserver:|version|.x
 
 #. To run with OGC API Features:
 
-   .. parsed-literal::
-  
-      docker run -it -p8080:8080 \\
-        --env INSTALL_EXTENSIONS=true \\
-        --env STABLE_EXTENSIONS="ogcapi-features" \\
-        docker.osgeo.org/geoserver:|version|.x
+   .. only:: not snapshot
+   
+      .. parsed-literal::
+      
+         docker run -it -p8080:8080 \\
+           --env INSTALL_EXTENSIONS=true \\
+           --env STABLE_EXTENSIONS="ogcapi-features" \\
+           docker.osgeo.org/geoserver:|release|
+   
+   .. only:: snapshot
+   
+      .. parsed-literal::
+   
+         docker run -it -p8080:8080 \\
+           --env INSTALL_EXTENSIONS=true \\
+           --env STABLE_EXTENSIONS="ogcapi-features" \\
+           docker.osgeo.org/geoserver:|version|.x
 
 #. The feature service is listed on the welcome page: http://localhost:8080/geoserver/
 

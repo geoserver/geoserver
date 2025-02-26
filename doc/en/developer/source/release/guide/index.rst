@@ -154,6 +154,7 @@ When creating the first release candidate of a series, there are some extra step
   * disable the maintenance jobs, and remove them from the geoserver view
   * create new jobs, copying from the existing stable jobs, and edit the branch.
   * modify the last line of the live-docs builds, changing ``stable`` to ``maintain`` for the previous stable branch. The new job you created should publish to ``stable``, and the main development branch will continue to publish to ``latest``.
+  * update geoserver-main-nightly docker build step to have parameters correct snapshot (example ``VERSION=2.29-SNAPSHOT``)
 
 * Update the cite tests on build.geoserver.org:
 

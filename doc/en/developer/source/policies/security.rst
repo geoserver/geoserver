@@ -195,8 +195,13 @@ Working with vulnerability reports
    * Publish the security advisory to make the vulnerability public
    
    * If you feel a statement is necessary, you may write an appropriate blog post.
-     
-        .. note:: Example: Statement on covering `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
+
+        .. note:: Examples statements:
+           
+           * `CVE-2024-36401 Remote Code Execution (RCE) vulnerability in evaluating property name expressions <https://geoserver.org/vulnerability/2024/09/12/cve-2024-36401.html>`__.
+           * `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
+        
+
 
 Publicly reported issue
 ^^^^^^^^^^^^^^^^^^^^^^^

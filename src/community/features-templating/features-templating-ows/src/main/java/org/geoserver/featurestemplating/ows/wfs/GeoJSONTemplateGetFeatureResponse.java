@@ -39,6 +39,8 @@ public class GeoJSONTemplateGetFeatureResponse extends BaseTemplateGetFeatureRes
 
         try (GeoJSONWriter writer = getOutputWriter(output)) {
             EncodingHints encodingHints = new EncodingHints();
+            SettingsInfo settings = gs.getSettings();
+            writer.setNumberOfDecimals(settings.getNumDecimals());
             writer.startTemplateOutput(encodingHints);
             iterateFeatureCollection(writer, featureCollection);
             if (!isSingleFeatureRequest() || !identifier.equals(TemplateIdentifier.GEOJSON))

@@ -23,6 +23,8 @@ Encoding of a rule in XML::
       <userName>..</userName>
       <roleName>..</roleName>
       <addressRange>..</addressRange>
+      <validAfter>..</validAfter>
+      <validBefore>..</validBefore>
       <service>..</service>
       <request>..</request>
       <workspace>..</workspace>
@@ -65,6 +67,8 @@ Encoding of a rule in JSON::
       "userName":"..",
       "roleName":"..",
       "addressRange",
+      "validAfter",
+      "validBefore",
       "service":"..",
       "request":"..",
       "subfield":"..",
@@ -125,6 +129,17 @@ Rule content
      - O
      - The range of calling IP addresses this rule should be applied to.  
        Example: ``192.168.0.0/16``
+   * - validAfter
+     - string
+     - O
+     - Date after which the rule is applied.
+       Format is ``yyyy-MM-dd``, example: ``2025-02-27``.
+       If ``validBefore`` is also given, the rule will be valid in the date range between ``validAfter`` and ``validBefore``.
+   * - validBefore
+     - string
+     - O
+     - Date before which the rule is applied. See also ``validAfter``.
+       Format is ``yyyy-MM-dd``, example: ``2025-02-27``.
    * - service
      - string
      - O
@@ -228,6 +243,12 @@ All filter parameters are optional.
    * - ipAddressAny
      - 0 or 1. 
      - Specify whether rules matching any IP address are included or not.
+   * - date
+     - string
+     - Filter rules by date. Only returns rules where ``date`` is between ``validAfter`` and ``validBefore``. Format is `yyyy-MM-dd`.
+   * - dateAny
+     - 0 or 1. 
+     - Specify whether rules with no data range defined are included or not
    * - service
      - string
      - Filter rules on service (excludes all other specific services).

@@ -7,6 +7,8 @@ package org.geoserver.geofence;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URL;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -375,7 +377,8 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
         }
 
         String ipAddress = retrieveCallerIpAddress();
-        RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user, ipAddress);
+        String date = DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now());
+        RuleFilter ruleFilter = buildRuleFilter(workspace, layer, user, ipAddress, date);
         AccessInfo accessInfo = rulesService.getAccessInfo(ruleFilter);
 
         if (accessInfo == null) {
@@ -700,10 +703,12 @@ public class GeofenceAccessManager implements ResourceAccessManager, DispatcherC
     }
 
     // Builds a rule filter to retrieve the AccessInfo for the resource
-    private RuleFilter buildRuleFilter(String workspace, String layer, Authentication user, String ipAddress) {
+    private RuleFilter buildRuleFilter(
+            String workspace, String layer, Authentication user, String ipAddress, String date) {
         RuleFilterBuilder builder = new RuleFilterBuilder(configurationManager.getConfiguration());
         return builder.withRequest(Dispatcher.REQUEST.get())
                 .withIpAddress(ipAddress)
+                .withDate(date)
                 .withWorkspace(workspace)
                 .withLayer(layer)
                 .withUser(user)

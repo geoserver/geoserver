@@ -44,13 +44,13 @@ To obtain the GeoServer, GWC and GeoTools revisions that have passed testing, na
 
 .. code-block:: none
 
-    version = 2.17-SNAPSHOT
+    version = 2.27-SNAPSHOT
     git revision = 1ee183d9af205080f1543dc94616bbe3b3e4f890
-    git branch = origin/2.17.x
-    build date = 19-Jul-2020 04:41
-    geotools version = 23-SNAPSHOT
+    git branch = origin/2.27.x
+    build date = 19-Jul-2024 04:41
+    geotools version = 27-SNAPSHOT
     geotools revision = 3bde6940610d228e01aec9de7c222823a2638664
-    geowebcache version = 1.17-SNAPSHOT
+    geowebcache version = 1.27-SNAPSHOT
     geowebcache revision = 27eec3fb31b8b4064ce8cc0894fa84d0ff97be61/27eec
     hudson build = -1
 
@@ -65,109 +65,208 @@ Release in JIRA
 
 3. Click in the Actions column for the version you are releasing and select Release. Update the Release Date to the current date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2 above.
 
-4. Check all the issues in this release for any that do not have a component and rectify (before running the announcement.py utility below.)
+4. Check all the issues in this release for any that do not have a component and rectify (before running the ``announcement.py`` utility below.)
+
+Create website download page
+----------------------------
+
+.. note:: Start this activity early to work on while release jobs are running. This will also serve to review resolved Jira issues before release notes are created.
+
+The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_.
+
+1. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.::
+
+     python3 announcement.py username password 2.29.1 --geotools 34.1 --geowebcache 1.29.1
+   
+   For the initial release in a series you will need to make:
+   
+   * A ``_layout`` html template updated for any new extensions
+   * A ``bin/templates/about229.md`` markdown snippet linking to new features and highlights
+   
+   Please read the instructions or script help for additional options beyond the example above.
+
+2. The generated announcement page header fields include the information required to generate a download page for the release.
+   
+   The page is generated from resolved Jira tickets:
+
+   * You may need to review closed pull requests and Jira tickets to double check what is being announced.
+   
+     ``https://github.com/geoserver/geoserver/compare/2.26.1...2.26.2``
+
+   * Check for Jira tickets without a component, often these are community modules.
+
+3. Check for security vulnerability section, generated when resolved Jira issue has "vulnerability" component.
+     
+   **Important:** Review :ref:`security_procedure` for expectations on what to include and write here.
+   
+   * Security fix is initially listed with a placeholder CVE:
+   
+     ::
+     
+        ## Security Considerations
+        
+       This release addresses security vulnerabilities and is considered an essential upgrade for production systems.
+        
+        * CVE-2024-36401 Critical <!-- https://github.com/geoserver/geoserver/security/advisories/GHSA-6jj6-gm7p-fcvv -->
+
+     
+     It is your judgement call on updating the wording of the recommendation to “recommended” or “essential” or “urgent” as you see fit.
+   
+   * When everyone has had an opportunity to update the details of the vulnerability are announced (editing prior blog posts).
+   
+     ::
+   
+       ## Security Considerations
+       
+       This release addresses security vulnerabilities and is considered an essential upgrade for production systems.
+       
+       * [CVE-2024-36401](https://github.com/geoserver/geoserver/security/advisories/GHSA-6jj6-gm7p-fcvv) Remote Code Execution (RCE) vulnerability in evaluating property name expression (Critical)
+     
+     The initial release of a series often includes several security fixes to disclose.
+     
+4. Review the new features, documenting each with a heading, screen snap, and thanking the appropriate developer and organization responsible. ::
+
+      ## File System Sandbox Isolation
+      
+      A file system sandbox is used to limit access for GeoServer Administrators and Workspace Administrators to specified file folders.
+      
+      * A system sandbox is established using ``GEOSERVER_FILESYSTEM_SANDBOX`` application property, and applies to the entire application, limiting GeoServer administrators to the ``<sandbox>`` folder, and individual workspace administrators into isolated ``<sandbox>/<workspace>`` folders.
+      
+      * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into ``<sandbox>/<workspace>`` folders to avoid accessing each others files.
+        
+        ![](/img/posts/2.26/filesystem-sandbox.png)
+      
+      Thanks to Andrea (GeoSolutions) for this important improvement at the bequest of [Munich RE](https://www.munichre.com/en.html).
+      
+      - [GSIP 229 - File system access isolation](https://github.com/geoserver/geoserver/wiki/GSIP-229)
+      - [File system sandboxing](https://docs.geoserver.org/2.26.x/en/user/security/sandbox.html) (User Manual)
+
+   
+   
+   
+   For the initial release in a series there may be several new features to document in this manner.
+
+5. Create a pull-request for the new website.
+   
+   For the initial release expect input from developers to highlight changes and work performed.
 
 If you are cutting the first RC of a series, create the stable branch
 ---------------------------------------------------------------------
 
 When creating the first release candidate of a series, there are some extra steps to create the new stable branch and update the version on the main development branch.
 
-* Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace::
+1. Checkout the main development branch and make sure it is up to date and that there are no changes in your local workspace::
 
-    git checkout main
-    git pull
-    git status
+     git checkout main
+     git pull
+     git status
 
-* Create the new stable branch and push it to GitHub; for example, if the main development branch is ``2.11-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
+2. Create the new stable branch and push it to GitHub; for example, if the main development branch is ``2.28-SNAPSHOT`` and the remote for the official GeoServer is called ``geoserver``::
 
-    git checkout -b 2.11.x
-    git push geoserver 2.11.x
+     git checkout -b 2.28.x
+     git push geoserver 2.28.x
 
-* Enable `GitHub branch protection <https://github.com/geoserver/geoserver/settings/branches>`_ for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
-
-* Checkout the main development branch::
-
-    git checkout main
-    
-* Update the version in all pom.xml files; for example, if changing the main development branch from ``2.17-SNAPSHOT`` to ``2.18-SNAPSHOT``.
-  
-  Edit :file:`build/rename.xml` to update GeoServer, GeoTools and GeoWebCache version numbers::
-  
-     <property name="current" value="2.17"/>
-     <property name="release" value="2.18"/>
-     ..
-     <replacefilter token="23-SNAPSHOT" value="24-SNAPSHOT"/>
-     <replacefilter token="1.17-SNAPSHOT" value="1.18-SNAPSHOT"/>
-
-     
-  And then run::
-    
-    ant -f build/rename.xml 
-    
-  .. note:: use of sed
-     
-     To update these files using sed::
-  
-      find . -name pom.xml -exec sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' {} \;
-
-     .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
-
-     Update release artifact paths and labels, for example, if changing the main development branch from ``2.11-SNAPSHOT`` to ``2.12-SNAPSHOT``::
-
-       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/bin.xml
-       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
-       sed -i 's/2.11-SNAPSHOT/2.12-SNAPSHOT/g' src/release/installer/win/wrapper.conf
-
-     .. note:: These can be written as a single ``sed`` command with multiple files.
-
-     Update GeoTools dependency; for example if changing from ``17-SNAPSHOT`` to ``18-SNAPSHOT``::
-
-       sed -i 's/17-SNAPSHOT/18-SNAPSHOT/g' src/pom.xml
-
-     Update GeoWebCache dependency; for example if changing from ``1.11-SNAPSHOT`` to ``1.12-SNAPSHOT``::
-
-       sed -i 's/1.11-SNAPSHOT/1.12-SNAPSHOT/g' src/pom.xml
-
-     Manually update hardcoded versions in configuration files:
-
-     * ``doc/en/developer/source/conf.py``
-     * ``doc/en/docguide/source/conf.py``
-     * ``doc/en/user/source/conf.py``
-
-* Add the new version to the documentation index (``doc/en/index.html``) just after line 105, e.g.::
-
-    <tr>
-      <td><strong><a href="https://geoserver.org/release/2.12.x/">2.12.x</a></strong></td>
-      <td><a href="2.12.x/en/user/">User Manual</a></td>
-      <td><a href="2.12.x/en/developer/">Developer Manual</a></td>
-    </tr>
-
-* Commit the changes and push to the main development branch on GitHub::
-
-      git commit -am "Updated version to 2.12-SNAPSHOT, updated GeoTools dependency to 18-SNAPSHOT, updated GeoWebCache dependency to 1.12-SNAPSHOT, and related changes"
-      git push geoserver main
-      
-* Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.12-SNAPSHOT``, create a Jira version ``2.12-RC1`` for the first release of the ``2.12.x`` series
-
-* Update the main, nightly and live-docs jobs on build.geoserver.org:
-  
-  * disable the maintenance jobs, and remove them from the geoserver view
-  * create new jobs, copying from the existing stable jobs, and edit the branch.
-  * modify the last line of the live-docs builds, changing ``stable`` to ``maintain`` for the previous stable branch. The new job you created should publish to ``stable``, and the main development branch will continue to publish to ``latest``.
-  * update geoserver-main-nightly docker build step to have parameters correct snapshot (example ``VERSION=2.29-SNAPSHOT``)
-
-* Update the cite tests on build.geoserver.org:
-
-  * disable the maintenance jobs, and remove them from the geoserver view
-  * create new jobs, copying from the existing main development branch jobs, editing the branch in the build command.
-
-* Announce on the developer group that the new stable branch has been created.
-
-* Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.12.x`` (for example):
+3. Enable `GitHub branch protection <https://github.com/geoserver/geoserver/settings/branches>`_ for the new stable branch: tick "Protect this branch" (only) and press "Save changes".
    
-  * ``README.md``
-  * ``doc/en/developer/source/conf.py``
-  * ``doc/en/user/source/conf.py``
+   Check: Branch protection is configured with a wild card, but you can confirm the pattern correctly protects the branch.
+
+3. Checkout the main development branch::
+
+     git checkout main
+    
+4. Update the version in all pom.xml files; for example, if changing the main development branch from ``2.28-SNAPSHOT`` to ``2.29-SNAPSHOT``.
+  
+   Edit :file:`build/rename.xml` to update GeoServer, GeoTools and GeoWebCache version numbers::
+   
+      <property name="current" value="2.28"/>
+      <property name="release" value="2.29"/>
+      ..
+      <replacefilter token="34-SNAPSHOT" value="35-SNAPSHOT"/>
+      <replacefilter token="1.28-SNAPSHOT" value="1.29-SNAPSHOT"/>
+
+   And then run::
+     
+     ant -f build/rename.xml 
+    
+   .. note:: use of sed
+      
+      To update these files using sed::
+   
+       find . -name pom.xml -exec sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' {} \;
+ 
+      .. note:: ``sed`` behaves differently on Linux vs. Mac OS X. If running on OS X, the ``-i`` should be followed by ``'' -e`` for each of these ``sed`` commands.
+ 
+      Update release artifact paths and labels, for example, if changing the main development branch from ``2.28-SNAPSHOT`` to ``2.29-SNAPSHOT``::
+ 
+        sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/bin.xml
+        sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/GeoServerEXE.nsi
+        sed -i 's/2.28-SNAPSHOT/2.29-SNAPSHOT/g' src/release/installer/win/wrapper.conf
+ 
+      .. note:: These can be written as a single ``sed`` command with multiple files.
+ 
+      Update GeoTools dependency; for example if changing from ``28-SNAPSHOT`` to ``29-SNAPSHOT``::
+ 
+        sed -i 's/34-SNAPSHOT/35-SNAPSHOT/g' src/pom.xml
+ 
+      Update GeoWebCache dependency; for example if changing from ``1.28-SNAPSHOT`` to ``1.29-SNAPSHOT``::
+ 
+        sed -i 's/1.28-SNAPSHOT/1.29-SNAPSHOT/g' src/pom.xml
+ 
+      Manually update hardcoded versions in configuration files:
+ 
+      * ``doc/en/developer/source/conf.py``
+      * ``doc/en/docguide/source/conf.py``
+      * ``doc/en/user/source/conf.py``
+
+5. Add the new version to the documentation index (``doc/en/index.html``) just after line 105, e.g.::
+
+     <tr>
+       <td><strong><a href="https://geoserver.org/release/2.29.x/">2.29.x</a></strong></td>
+       <td><a href="2.29.x/en/user/">User Manual</a></td>
+       <td><a href="2.29.x/en/developer/">Developer Manual</a></td>
+     </tr>
+
+6. Commit the changes and push to the main development branch on GitHub::
+
+       git commit -am "Updated version to 2.29-SNAPSHOT, updated GeoTools dependency to 35-SNAPSHOT, updated GeoWebCache dependency to 1.29-SNAPSHOT, and related changes"
+       git push geoserver main
+      
+7. Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.29-SNAPSHOT``, create a Jira version ``2.29.0`` for the first release of the ``2.29.x`` series
+
+8. Update the main, nightly and live-docs jobs on build.geoserver.org:
+  
+   1. Disable the maintenance jobs, and remove them from the geoserver view.
+    
+      **Warning**: If you wish to keep the ``geoserver-<version->docs`` job for emergencies be sure to edit the live-docs build to comment out publishing to `maintain` location.::
+      
+        # Change this when releasing
+        # LINK=maintain 
+        ...
+        # echo "link $VER to $LINK_PATH"
+        # ssh -oStrictHostKeyChecking=no -p 2223 $REMOTE "if [ -e $LINK_PATH ]; then rm $LINK_PATH; fi && ln -s $REMOTE_PATH $LINK_PATH"
+        #
+        # echo "docs published to https://docs.geoserver.org/$LINK/en/user"
+  
+   2. Create new jobs, copying from the existing stable jobs, and edit the branch.
+   3. For the previously stable version, modify the last line of `geoserver-<version>-docs`` job, changing ``stable`` to ``maintain`` so it published to the `maintain` location.::
+  
+        # Change this when releasing
+        LINK=maintain 
+
+      The new job you created should publish to ``stable``, and the main development branch will continue to publish to ``latest``.
+    
+   4. Update the **Dashboard > Manage Jenkins > System** global properties environmental variable used by the ``geoserver-main-nightly``` docker build step to have correct name for publishing ``main`` branch.
+    
+      * Name: ``GEOSERVER_MAIN_DOCKER_NAME``
+      * Value: ``2.29-SNAPSHOT``
+
+9. Announce on the developer group that the new stable branch has been created.
+
+10. Switch to the new branch and update the documentation links, replacing ``docs.geoserver.org/latest`` with ``docs.geoserver.org/2.29.x`` (for example):
+   
+    * ``README.md``
+    * ``doc/en/developer/source/conf.py``
+    * ``doc/en/user/source/conf.py``
 
 Build the Release
 -----------------
@@ -176,7 +275,7 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **BRANCH**
 
-  The branch to release from, "2.2.x", "2.1.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
+  The branch to release from, "2.29.x", "2.28.x", etc... This must be a stable branch. Releases are not performed from the main development branch.
 
 **REV**
 
@@ -184,15 +283,15 @@ Run the `geoserver-release <https://build.geoserver.org/view/geoserver/job/geose
 
 **VERSION**
 
-  The version/name of the release to build, "2.1.4", "2.2", etc...
+  The version/name of the release to build, "2.29.4", "2.28.2", etc...
 
 **GT_VERSION**
 
-  The GeoTools version to include in the release. This may be specified as a version number such as "8.0" or "2.7.5". Alternatively, the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
+  The GeoTools version to include in the release. This may be specified as a version number such as "34.0" or "33.4". Alternatively, the version may be specified as a Git branch/revision pair in the form ``<branch>@<revision>``. For example "main@36ba65jg53.....". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT). Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GWC_VERSION**
 
-  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.3-RC3". Alternatively, the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
+  The GeoWebCache version to include in the release. This may be specified as a version number such as "1.29.0". Alternatively, the version may be specified as a Git revision of the form ``<branch>@<revision>`` such as "master@1b3243jb...". Finally, this value may be left blank in which the version currently declared in the geoserver pom will be used (usually a SNAPSHOT).Git Again, this version must be a version number corresponding to an official GeoTools release.
 
 **GIT_USER**
 
@@ -216,7 +315,7 @@ Download and try out some of the artifacts from the above location and do a
 quick smoke test that there are no issues. Engage other developers to help
 test on the developer group.
 
-It is important to test the artifacts using the minimum supported version of Java (currently Java 11 in September 2023).
+It is important to test the artifacts using the minimum supported version of Java (currently Java 11 in March 2025).
 
 Publish the Release
 -------------------
@@ -292,19 +391,12 @@ Publish JIRA markdown release notes to GitHub tag:
    
    Locate the new tag from the list, and use :menuselection:`... --> Create release`
    
-   * Release title: `GeoServer 2.20.0`
+   * Release title: `GeoServer 2.29.0`
    * Write: Paste the markdown from Jira release notes editor
    * Set as the latest release: only tick this for stable releases, leave unticked for maintenance and support releases
    
    Use :guilabel:`Publish release` button to publish the release notes.
    
-Create the download page
-------------------------
-
-The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages repository <https://github.com/geoserver/geoserver.github.io>`_. Follow the `instructions <https://github.com/geoserver/geoserver.github.io#releases>`_ in the repository to create a release announcement.
-
-The announcement page header fields include the information required to generate a download page for the release. 
-
 Announce the Release
 --------------------
 
@@ -314,7 +406,8 @@ Mailing lists
 .. note:: This announcement should be made for all releases, including release candidates.
 
 Post an announcement on both the Discourse User and Developer groups announcing the
-release. The message should be relatively short. You can base it on the blog post.
+release. The message should be relatively short. You can base it on the blog post headings which often indicate new features to highlight.
+
 The following is an example::
 
    Subject: GeoServer 2.5.1 Released
@@ -323,9 +416,9 @@ The following is an example::
   
    The release is available for download from:
 
-   https://geoserver.org/release/2.5.1/
+   https://geoserver.org/release/2.29.0/
 
-   GeoServer 2.5.1 is the next stable release of GeoServer and is recommended for production deployment.
+   GeoServer 2.29.0 is the next stable release of GeoServer and is recommended for production deployment.
 
    This release comes with some exciting new features. The new and
    noteworthy include:
@@ -338,7 +431,7 @@ The following is an example::
    * Additional documentation for the image mosaic in the user guide with tutorials covering the plugin, raster time-series, time and elevation and footprint management.
    * WCS 2.0 support continues to improve with DescribeCoverage now supporting null values
    * Central Authentication Service (CAS) authentication has received a lot of QA this release and is now available in the GeoServer 2.5.x series.
-   * This release is made in conjunction with GeoTools 11.1
+   * This release is made in conjunction with GeoTools 34.0
    
    Along with many other improvements and bug fixes:
    

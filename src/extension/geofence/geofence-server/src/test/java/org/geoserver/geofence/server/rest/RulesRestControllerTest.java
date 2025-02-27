@@ -25,6 +25,7 @@ import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.geofence.GeofenceBaseTest;
 import org.geoserver.geofence.core.dao.DuplicateKeyException;
+import org.geoserver.geofence.core.model.IPAddressRange;
 import org.geoserver.geofence.core.model.LayerAttribute;
 import org.geoserver.geofence.core.model.Rule;
 import org.geoserver.geofence.core.model.enums.GrantType;
@@ -327,7 +328,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         // get the rules so we can access their id
         JaxbRuleList originalRules = controller.get(
                 0, 6, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null);
+                null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -586,7 +587,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getRuleLimits().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
         assertEquals(limits.getSpatialFilterType(), "INTERSECT");
@@ -626,7 +627,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getLayerDetails().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
         assertEquals(details.getSpatialFilterType(), "CLIP");
@@ -648,7 +649,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(r.getLayerDetails().getLayerType());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         r = list.getRules().get(0);
         assertNotNull(r);
         assertNotNull(r.getLayerDetails());
@@ -732,6 +733,60 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         XMLAssert.assertXMLEqual(expected, response);
     }
 
+    @Test
+    public void testIpFiltering() {
+
+        // Clean up
+        for (ShortRule r : adminService.getAll()) {
+            adminService.delete(r.getId());
+        }
+
+        IPAddressRange r1 = new IPAddressRange("192.168.0.0/16");
+        IPAddressRange r2 = new IPAddressRange("192.168.10.0/24");
+        IPAddressRange r3 = new IPAddressRange("10.0.0.0/8");
+
+        adminService.insert(new Rule(1, null, null, null, null, null, null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(2, null, null, null, r1, null, null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(3, null, null, null, r1, "s1", null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(4, null, null, null, r2, "s2", null, null, null, null, GrantType.ALLOW));
+        adminService.insert(new Rule(5, null, null, null, r3, null, null, null, null, null, GrantType.ALLOW));
+
+        validateRules(getByIpService(null, null, null, null), 1l, 2l, 3l, 4l, 5l);
+        validateRules(getByIpService("1.1.1.1", true, null, null), 1l); // NOPMD
+        validateRules(getByIpService("1.1.1.1", false, null, null)); // NOPMD
+        validateRules(getByIpService("192.168.1.1", true, null, null), 1l, 2l, 3l); // NOPMD
+        validateRules(getByIpService("192.168.1.1", false, null, null), 2l, 3l); // NOPMD
+        validateRules(getByIpService("192.168.1.1", true, "s2", true), 1l, 2l); // NOPMD
+        validateRules(getByIpService("192.168.1.1", false, null, null), 2l, 3l); // NOPMD
+        validateRules(getByIpService("192.168.10.1", true, null, null), 1l, 2l, 3l, 4); // NOPMD
+    }
+
+    JaxbRuleList getByIpService(String ip, Boolean ipIncludeDefault, String service, Boolean serviceIncludeDefault) {
+        return controller.get(
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                ip,
+                ipIncludeDefault,
+                service,
+                serviceIncludeDefault,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
     /** Helper method that checks if the rule already exists and create a new one by returning its ID. */
     protected long prepareGeoFenceTestRules(JaxbRule rule) {
         if (adminService.getCountAll() > 0) {
@@ -760,7 +815,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, String prefix, String... expectedUsers) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -778,7 +833,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, long... expectedPriorities) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null);
+                null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

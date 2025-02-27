@@ -17,7 +17,11 @@ import static org.junit.Assert.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.Date;
+import java.util.Arrays;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.custommonkey.xmlunit.XMLAssert;
@@ -313,22 +317,23 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     public void testMovingRules() {
         // create some rules for the test
         String prefix = UUID.randomUUID().toString();
-        adminService.insert(new Rule(
-                5, prefix + "-user5", prefix + "-role1", null, null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(
-                2, prefix + "-user2", prefix + "-role1", null, null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(
-                1, prefix + "-user1", prefix + "-role1", null, null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(
-                4, prefix + "-user4", prefix + "-role2", null, null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(
-                3, prefix + "-user3", prefix + "-role2", null, null, null, null, null, null, null, GrantType.ALLOW));
-        adminService.insert(new Rule(
-                6, prefix + "-user6", prefix + "-role6", null, null, null, null, null, null, null, GrantType.ALLOW));
+        adminService.insert(
+                new Rule(5, GrantType.ALLOW).setUsername(prefix + "-user5").setRolename(prefix + "-role1"));
+        adminService.insert(
+                new Rule(2, GrantType.ALLOW).setUsername(prefix + "-user2").setRolename(prefix + "-role1"));
+        adminService.insert(
+                new Rule(1, GrantType.ALLOW).setUsername(prefix + "-user1").setRolename(prefix + "-role1"));
+        adminService.insert(
+                new Rule(4, GrantType.ALLOW).setUsername(prefix + "-user4").setRolename(prefix + "-role2"));
+        adminService.insert(
+                new Rule(3, GrantType.ALLOW).setUsername(prefix + "-user3").setRolename(prefix + "-role2"));
+        adminService.insert(
+                new Rule(6, GrantType.ALLOW).setUsername(prefix + "-user6").setRolename(prefix + "-role6"));
+
         // get the rules so we can access their id
         JaxbRuleList originalRules = controller.get(
                 0, 6, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null);
+                null, null, null, null, null, null);
         validateRules(originalRules, prefix, "user1", "user2", "user3", "user4", "user5", "user6");
         // check rules per page
         validateRules(0, prefix, "user1", "user2");
@@ -587,7 +592,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getRuleLimits().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.Limits limits = r.getLimits();
         assertEquals(limits.getSpatialFilterType(), "INTERSECT");
@@ -627,7 +632,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 realRule.getLayerDetails().getSpatialFilterType().toString());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
         JaxbRule r = list.getRules().get(0);
         JaxbRule.LayerDetails details = r.getLayerDetails();
         assertEquals(details.getSpatialFilterType(), "CLIP");
@@ -649,11 +654,68 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
         assertNull(r.getLayerDetails().getLayerType());
         JaxbRuleList list = controller.get(
                 null, null, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
         r = list.getRules().get(0);
         assertNotNull(r);
         assertNotNull(r.getLayerDetails());
         assertNull(r.getLayerDetails().getLayerType());
+    }
+
+    @Test
+    public void testGetByDateRange() {
+        deleteAllRules();
+
+        controller.insert(new JaxbRule(new Rule(10, GrantType.ALLOW)));
+        controller.insert(new JaxbRule(new Rule(20, GrantType.ALLOW).setValidBefore(Date.valueOf("2025-01-10"))));
+        controller.insert(new JaxbRule(new Rule(30, GrantType.ALLOW).setValidAfter(Date.valueOf("2025-02-10"))));
+        controller.insert(new JaxbRule(new Rule(40, GrantType.ALLOW)
+                .setValidAfter(Date.valueOf("2025-03-10"))
+                .setValidBefore(Date.valueOf("2025-04-10"))));
+
+        assertRules(getByDate(null, false), new Integer[] {10, 20, 30, 40});
+        assertRules(getByDate("2025-01-05", true), new Integer[] {10, 20});
+        assertRules(getByDate("2025-01-05", false), new Integer[] {20});
+        assertRules(getByDate("2025-01-15", true), new Integer[] {10});
+        assertRules(getByDate("2025-01-15", false), new Integer[] {});
+        assertRules(getByDate("2025-02-15", true), new Integer[] {10, 30});
+        assertRules(getByDate("2025-03-15", true), new Integer[] {10, 30, 40});
+        assertRules(getByDate("2025-04-15", true), new Integer[] {10, 30});
+    }
+
+    private JaxbRuleList getByDate(String date, boolean includeDefault) {
+        return controller.get(
+                null,
+                null,
+                false,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                date,
+                includeDefault,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
+    }
+
+    private void assertRules(JaxbRuleList rules, Integer[] expectedPriorities) {
+        Set<Long> pri = rules.getRules().stream().map(r -> r.getPriority()).collect(Collectors.toSet());
+        Set<Long> exp = Arrays.asList(expectedPriorities).stream()
+                .map(i -> i.longValue())
+                .collect(Collectors.toSet());
+        assertEquals("Bad rule set returned", exp, pri);
     }
 
     @Test
@@ -735,15 +797,11 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     @Test
     public void testIpFiltering() {
-
-        // Clean up
-        for (ShortRule r : adminService.getAll()) {
-            adminService.delete(r.getId());
-        }
-
         IPAddressRange r1 = new IPAddressRange("192.168.0.0/16");
         IPAddressRange r2 = new IPAddressRange("192.168.10.0/24");
         IPAddressRange r3 = new IPAddressRange("10.0.0.0/8");
+
+        deleteAllRules();
 
         adminService.insert(new Rule(1, null, null, null, null, null, null, null, null, null, GrantType.ALLOW));
         adminService.insert(new Rule(2, null, null, null, r1, null, null, null, null, null, GrantType.ALLOW));
@@ -775,6 +833,8 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
                 null,
                 ip,
                 ipIncludeDefault,
+                null,
+                null,
                 service,
                 serviceIncludeDefault,
                 null,
@@ -789,14 +849,16 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
 
     /** Helper method that checks if the rule already exists and create a new one by returning its ID. */
     protected long prepareGeoFenceTestRules(JaxbRule rule) {
+        deleteAllRules();
+        return Long.parseLong(controller.insert(rule));
+    }
+
+    private void deleteAllRules() {
         if (adminService.getCountAll() > 0) {
             for (ShortRule r : adminService.getAll()) {
                 controller.delete(r.getId());
             }
         }
-
-        long id = Long.parseLong(controller.insert(rule));
-        return id;
     }
 
     /** Helper method that will validate a move result. */
@@ -815,7 +877,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, String prefix, String... expectedUsers) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
         validateRules(rules, prefix, expectedUsers);
     }
 
@@ -833,7 +895,7 @@ public class RulesRestControllerTest extends GeofenceBaseTest {
     private void validateRules(int page, long... expectedPriorities) {
         JaxbRuleList rules = controller.get(
                 page, 2, false, null, null, null, null, null, null, null, null, null, null, null, null, null, null,
-                null, null, null, null, null);
+                null, null, null, null, null, null, null);
         validateRules(rules, expectedPriorities);
     }
 

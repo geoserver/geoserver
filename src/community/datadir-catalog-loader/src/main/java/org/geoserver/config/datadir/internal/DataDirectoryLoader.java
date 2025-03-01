@@ -2,13 +2,14 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.datadir.internal;
+
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinPool.ForkJoinWorkerThreadFactory;
 import java.util.concurrent.ForkJoinWorkerThread;
@@ -19,41 +20,52 @@ import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.ServiceInfo;
-import org.geoserver.config.impl.GeoServerImpl;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.resource.FileSystemResourceStore;
 import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 
 /**
- * Provides methods to load both the {@link Catalog} and the {@link GeoServer} config from a data directory, returning
- * new instances of each.
+ * Coordinates the loading of both the {@link Catalog} and the {@link GeoServer} config from a GeoServer data directory,
+ * returning new instances of each.
  *
- * <p>The loading process is multi-threaded, and will take place in an {@link Executor} whose parallelism is determined
- * by an heuristic resolving to the minimum between {@code 16} and the number of available processors as reported by
- * {@link Runtime#availableProcessors()}, or overridden by the value passed through the environment variable or system
- * property {@literal DATADIR_LOAD_PARALLELISM}.
+ * <p>This class is the central coordinator for the optimized loading process, managing:
  *
- * @implNote a {@link DataDirectoryWalker} is created and used to delegate the actual loading logic to the
- *     {@link CatalogConfigLoader} and {@link GeoServerConfigLoader} collaborators.
+ * <ul>
+ *   <li>The thread pool used for parallel loading operations
+ *   <li>A single instance of {@link DataDirectoryWalker} for efficient directory traversal
+ *   <li>Delegation to specialized loader classes for catalog and config
+ *   <li>Resource cleanup after loading completes
+ * </ul>
+ *
+ * <p>The loading process is multi-threaded, and will take place in a {@link ForkJoinPool} whose parallelism is
+ * determined by an heuristic resolving to the minimum between {@code 16} and the number of available processors as
+ * reported by {@link Runtime#availableProcessors()}, or overridden by the value passed through the environment variable
+ * or system property {@literal GEOSERVER_DATA_DIR_LOADER_THREADS}.
+ *
+ * @implNote This class creates a {@link DataDirectoryWalker} for efficient directory traversal and delegates the actual
+ *     loading logic to the {@link CatalogLoader} and {@link ConfigLoader} collaborators. The directory walker is reused
+ *     between catalog and config loading to avoid redundant filesystem operations. The class also manages the shared
+ *     thread pool, configuring it with custom thread naming and exception handling.
  * @see DataDirectoryWalker
- * @see CatalogConfigLoader
- * @see GeoServerConfigLoader
+ * @see CatalogLoader
+ * @see ConfigLoader
+ * @see XStreamLoader
  */
 public class DataDirectoryLoader {
-
-    private static final String DATADIR_LOAD_PARALLELISM = "DATADIR_LOAD_PARALLELISM";
 
     private static final Logger LOGGER =
             Logging.getLogger(DataDirectoryLoader.class.getPackage().getName());
 
     private final DataDirectoryWalker fileWalk;
 
-    private boolean catalogLoaded, geoserverLoaded;
+    private boolean catalogLoaded;
+    private boolean geoserverLoaded;
 
-    private FileSystemResourceStore resourceStore;
+    private GeoServerDataDirectory dataDirectory;
     private List<XStreamServiceLoader<ServiceInfo>> serviceLoaders;
 
     private final ForkJoinPool executor;
@@ -62,19 +74,29 @@ public class DataDirectoryLoader {
     private final XStreamLoader xstreamLoader;
 
     public DataDirectoryLoader(
-            FileSystemResourceStore resourceStore, List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
+            GeoServerDataDirectory dataDirectory,
+            List<XStreamServiceLoader<ServiceInfo>> serviceLoaders,
+            XStreamPersisterFactory xpfac) {
 
-        this.resourceStore = resourceStore;
+        this.dataDirectory = dataDirectory;
         this.serviceLoaders = serviceLoaders;
-        Path dataDirRoot = resourceStore.get("").dir().toPath();
-        List<String> serviceFileNames =
-                serviceLoaders.stream().map(XStreamServiceLoader::getFilename).collect(Collectors.toList());
-        this.fileWalk = new DataDirectoryWalker(dataDirRoot, serviceFileNames);
-        this.executor = executor();
-        this.xstreamLoader = new XStreamLoader();
+        this.fileWalk = createWalker(dataDirectory, serviceLoaders);
+        this.executor = createExecutor();
+        this.xstreamLoader = new XStreamLoader(xpfac);
     }
 
-    private ForkJoinPool executor() {
+    private DataDirectoryWalker createWalker(
+            GeoServerDataDirectory dataDirectory, List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
+        Path dataDirRoot = dataDirectory.getRoot().dir().toPath();
+        List<String> serviceFileNames = resolveServiceFileNames(serviceLoaders);
+        return new DataDirectoryWalker(dataDirRoot, serviceFileNames);
+    }
+
+    private List<String> resolveServiceFileNames(List<XStreamServiceLoader<ServiceInfo>> serviceLoaders) {
+        return serviceLoaders.stream().map(XStreamServiceLoader::getFilename).collect(Collectors.toList());
+    }
+
+    private ForkJoinPool createExecutor() {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
         final int poolIndex = threadPoolId.incrementAndGet();
@@ -101,34 +123,27 @@ public class DataDirectoryLoader {
         };
     }
 
-    public CatalogImpl loadCatalog(CatalogImpl catalogImpl) throws Exception {
-        CatalogConfigLoader loader = new CatalogConfigLoader(catalogImpl, fileWalk, xstreamLoader, executor);
+    public void loadCatalog(CatalogImpl catalogImpl) throws Exception {
+        CatalogLoader loader = new CatalogLoader(catalogImpl, fileWalk, xstreamLoader, executor);
         try {
-            CatalogImpl catalog = loader.loadCatalog();
+            loader.loadCatalog();
             this.catalogLoaded = true;
             tryDispose();
-            return catalog;
         } catch (Exception e) {
             dispose();
             throw e;
         }
     }
 
-    public GeoServerImpl loadGeoServer(Catalog realCatalog) throws Exception {
-        Objects.requireNonNull(realCatalog);
+    public void loadGeoServer(GeoServer gs) throws Exception {
+        Objects.requireNonNull(gs);
 
-        GeoServerImpl gs = new GeoServerImpl();
-        // required when depersisting workspace settings and services
-        gs.setCatalog(realCatalog);
-
-        GeoServerConfigLoader loader =
-                new GeoServerConfigLoader(fileWalk, xstreamLoader, executor, gs, resourceStore, serviceLoaders);
+        ConfigLoader loader = new ConfigLoader(fileWalk, xstreamLoader, executor, gs, dataDirectory, serviceLoaders);
 
         try {
-            GeoServerImpl geoserver = loader.loadGeoServer();
+            loader.loadGeoServer();
             this.geoserverLoaded = true;
             tryDispose();
-            return geoserver;
         } catch (Exception e) {
             dispose();
             throw e;
@@ -149,7 +164,7 @@ public class DataDirectoryLoader {
     }
 
     private int determineParallelism() {
-        String configuredParallelism = GeoServerExtensions.getProperty(DATADIR_LOAD_PARALLELISM);
+        String configuredParallelism = GeoServerExtensions.getProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
         final int processors = Runtime.getRuntime().availableProcessors();
         final int defParallelism = Math.min(processors, 16);
         int parallelism = defParallelism;
@@ -167,9 +182,10 @@ public class DataDirectoryLoader {
                         Level.WARNING,
                         () -> String.format(
                                 "Configured parallelism is invalid: %s=%s, using default of %d",
-                                DATADIR_LOAD_PARALLELISM, configuredParallelism, defParallelism));
+                                GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
             } else {
-                logTailMessage = "as indicated by the " + DATADIR_LOAD_PARALLELISM + " environment variable";
+                logTailMessage = "as indicated by the " + GEOSERVER_DATA_DIR_LOADER_THREADS
+                        + " environment variable or System property";
             }
         }
         LOGGER.log(Level.CONFIG, "Catalog and configuration loader uses {0} threads {1}", new Object[] {

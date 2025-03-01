@@ -45,6 +45,12 @@ class ValidatingOAuth2RestTemplate extends OAuth2RestTemplate {
 
         OAuth2AccessToken result = null;
         try {
+            // prevent error in AuthorizationCodeAccessTokenProvider from spring-security-oauth2
+            // when oidc provider sends empty "&state=" parameter
+            String stateKey = oauth2Context.getAccessTokenRequest().getStateKey();
+            if (stateKey != null && stateKey.isEmpty()) {
+                oauth2Context.getAccessTokenRequest().setStateKey(null);
+            }
             result = super.acquireAccessToken(oauth2Context);
             return result;
         } finally {

@@ -125,7 +125,7 @@ You can add GeoServer Extensions - the container will download them during start
    
       docker run -it -p8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
-        --env STABLE_EXTENSIONS="ysld,h2" \\
+        --env STABLE_EXTENSIONS="ysld,ogcapi-features" \\
         docker.osgeo.org/geoserver:|release|
 
 .. only:: snapshot
@@ -134,26 +134,36 @@ You can add GeoServer Extensions - the container will download them during start
 
       docker run -it -p8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
-        --env STABLE_EXTENSIONS="ysld,h2" \\
+        --env STABLE_EXTENSIONS="ysld,ogcapi-features" \\
         docker.osgeo.org/geoserver:|version|.x
 
 
-This will download and install the YSLD and H2 extension.
+This will download and install the :ref:`YSLD <ysld_styling>` and :ref:`OGCAPI - Features <ogcapi-features>` extension.
 
 Here is a list of available extensions (taken from the `build server <https://build.geoserver.org/geoserver/main/ext-latest/>`__):
 
 ::
 
-    app-schema   gdal            jp2k          ogr-wps          web-resource
-    authkey      geofence        libjpeg-turbo oracle           wmts-multi-dimensional
-    cas          geofence-server mapml         params-extractor wps-cluster-hazelcast
-    charts       geopkg-output   mbstyle       printing         wps-download
-    control-flow grib            mongodb       pyramid          wps-jdbc
-    css          gwc-s3          monitor       querylayer       wps
-    csw          h2              mysql         sldservice       xslt
-    db2          imagemap        netcdf-out    sqlserver        ysld
-    dxf          importer        netcdf        vectortiles      
-    excel        inspire         ogr-wfs       wcs2_0-eo
+    app-schema               grib                     ogr-wps                  
+    authkey                  gwc-s3                   oracle                   
+    cas                      h2                       params-extractor         
+    charts                   iau                      printing                 
+    control-flow             importer                 pyramid                  
+    css                      inspire                  querylayer               
+    csw-iso                  jp2k                     rat                      
+    csw                      libjpeg-turbo            sldservice               
+    db2                      mapml                    sqlserver                
+    dxf                      mbstyle                  vectortiles              
+    excel                    metadata                 wcs2_0-eo                
+    feature-pregeneralized   mongodb                  web-resource             
+    gdal                     monitor                  wmts-multi-dimensional   
+    geofence                 mysql                    wps-cluster-hazelcas     
+    geofence-server-h2       netcdf-out               wps-download             
+    geofence-server-postgres netcdf                   wps-jdbc                 
+    geofence-wps             ogcapi-features          wps                      
+    geopkg-output            ogr-wfs                  ysld                     
+
+
 
 Testing Geoserver Community modules
 -----------------------------------
@@ -184,34 +194,33 @@ Working with a Nightly build is a good way to test community modules and provide
       docker run -it -p8080:8080 \\
         --env INSTALL_EXTENSIONS=true \\
         --env STABLE_EXTENSIONS="ysld,h2" \\
-        --env COMMUNITY_EXTENSIONS="ogcapi-features,ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
+        --env COMMUNITY_EXTENSIONS="ogcapi-images,ogcapi-maps,ogcapi-styles,ogcapi-tiles" \\
         docker.osgeo.org/geoserver:|version|.x
    
    For the current list see GeoServer `build server <https://build.geoserver.org/geoserver/main/community-latest/>`__.
    
    ::
    
-    activeMQ-broker            jdbcconfig                 proxy-base-ext
-    backup-restore             jdbcstore                  s3-geotiff
-    cog                        jms-cluster                sec-keycloak
-    colormap                   libdeflate                 sec-oauth2-geonode
-    cov-json                   mbtiles                    sec-oauth2-github
-    dds                        mbtiles-store              sec-oauth2-google
-    dyndimension               mongodb-schemaless         sec-oauth2-openid-connect
-    elasticsearch              ncwms                      smart-data-loader
-    features-templating        netcdf-ghrsst              solr
-    flatgeobuf                 notification               spatialjson
-    gdal-wcs                   ogcapi-coverages           stac-datastore
-    gdal-wps                   ogcapi-dggs                taskmanager-core
-    geopkg                     ogcapi-features            taskmanager-s3
-    gpx                        ogcapi-images              vector-mosaic
-    gsr                        ogcapi-maps                vsi
-    gwc-azure-blobstore        ogcapi-styles              webp
-    gwc-mbtiles                ogcapi-tiled-features      wps-remote
-    gwc-sqlite                 ogcapi-tiles
-    hz-cluster                 ogr-datastore
-    importer-jdbc              opensearch-eo
-    jdbc-metrics
-
-
-    
+       acl                           gwc-mbtiles                     ogcapi-tiles
+       activeMQ-broker               gwc-sqlite                      ogr-datastore
+       backup-restore                hz-cluster                      opensearch-eo
+       cog-azure                     imagemap                        proxy-base-ext
+       cog-google                    importer-jdbc                   s3-geotiff
+       cog-http                      jdbc-metrics                    sec-keycloak
+       cog-s3                        jdbcconfig                      sec-oauth2-geonode
+       colormap                      jdbcstore                       sec-oauth2-github
+       cov-json                      jms-cluster                     sec-oauth2-google
+       datadir-catalog-loader        libdeflate                      sec-oauth2-openid
+       dds                           mbtiles                         smart-data-loader
+       elasticsearch                 mbtiles-store                   solr
+       features-autopopulate         mongodb-schemaless              spatialjson
+       features-templating           monitor-kafka                   stac-datastore
+       flatgeobuf                    ncwms                           taskmanager-core
+       gdal-wcs                      netcdf-ghrsst                   taskmanager-s3
+       gdal-wps                      notification                    vector-mosaic
+       geopkg                        ogcapi-coverages                vsi
+       gpx                           ogcapi-dggs                     webp
+       graticule                     ogcapi-images                   wfs-freemarker
+       gsr                           ogcapi-maps                     wps-longitudinal-profile
+       gwc-azure-blobstore           ogcapi-styles                   wps-remote
+                                     ogcapi-tiled-features           xslt

@@ -7,8 +7,12 @@
 package org.geoserver.security.jdbc;
 
 import org.geoserver.security.GeoServerRoleService;
+import org.junit.ClassRule;
 
 public class H2JNDIRoleServiceTest extends JDBCRoleServiceTest {
+
+    @ClassRule
+    public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
 
     @Override
     protected String getFixtureId() {

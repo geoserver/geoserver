@@ -8,8 +8,12 @@ package org.geoserver.security.jdbc;
 
 import org.geoserver.security.GeoServerRoleService;
 import org.geoserver.security.GeoServerUserGroupService;
+import org.junit.ClassRule;
 
 public class H2JNDIUserDetailsServiceTest extends JDBCUserDetailsServiceTest {
+
+    @ClassRule
+    public static final H2JNDITestConfig jndiConfig = new H2JNDITestConfig();
 
     @Override
     protected String getFixtureId() {

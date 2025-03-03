@@ -11,11 +11,15 @@ import static org.geoserver.platform.GeoServerExtensions.bean;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import javax.servlet.http.HttpServletRequest;
+import org.geoserver.security.WorkspaceAdminAuthorizer;
 import org.geoserver.security.config.SecurityInterceptorFilterConfig;
 import org.geoserver.security.config.SecurityNamedServiceConfig;
+import org.geoserver.security.impl.WorkspaceAdminRestAccessRule;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.access.SecurityMetadataSource;
 import org.springframework.security.authentication.AuthenticationTrustResolver;
@@ -25,6 +29,7 @@ import org.springframework.security.authorization.AuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.access.intercept.AuthorizationFilter;
+import org.springframework.security.web.util.UrlUtils;
 
 /**
  * Security interceptor filter
@@ -75,8 +80,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
                             || IS_AUTHENTICATED_ANONYMOUSLY.equals(attribute.getAttribute()));
         }
 
-        private AuthorizationDecision vote(
-                Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
+        private AuthorizationDecision vote(Authentication authentication, Collection<ConfigAttribute> attributes) {
             AuthorizationDecision result = ACCESS_ABSTAIN;
             for (ConfigAttribute attribute : attributes) {
                 if (this.supports(attribute)) {
@@ -108,7 +112,39 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
                     Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
-            return vote(authentication.get(), request, attributes);
+            return vote(authentication.get(), attributes);
+        }
+    }
+
+    private static final class WorkspaceAdminAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
+
+        private SecurityMetadataSource metadata;
+
+        public WorkspaceAdminAuthorizationManager(SecurityMetadataSource metadata) {
+            this.metadata = metadata;
+        }
+
+        @Override
+        public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
+
+            final Authentication auth = authentication.get();
+            Optional<WorkspaceAdminAuthorizer> authorizer = WorkspaceAdminAuthorizer.get();
+            if (authorizer.isEmpty()) {
+                return ACCESS_ABSTAIN;
+            }
+            if (!authorizer.orElseThrow().isFullyAuthenticated(auth)) {
+                return ACCESS_DENIED;
+            }
+
+            final String uri = UrlUtils.buildRequestUrl(request);
+            final HttpMethod method = HttpMethod.valueOf(request.getMethod());
+            Collection<ConfigAttribute> attributes = metadata.getAttributes(request);
+            boolean match = attributes.stream()
+                    .filter(WorkspaceAdminRestAccessRule.class::isInstance)
+                    .map(WorkspaceAdminRestAccessRule.class::cast)
+                    .anyMatch(rule -> rule.matches(uri, method));
+
+            return match && authorizer.orElseThrow().isWorkspaceAdmin(auth) ? ACCESS_GRANTED : ACCESS_ABSTAIN;
         }
     }
 
@@ -127,8 +163,7 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
             this.metadata = metadata;
         }
 
-        private AuthorizationDecision vote(
-                Authentication authentication, Object object, Collection<ConfigAttribute> attributes) {
+        private AuthorizationDecision vote(Authentication authentication, Collection<ConfigAttribute> attributes) {
             if (authentication == null) {
                 return ACCESS_DENIED;
             }
@@ -152,49 +187,57 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest request) {
             Collection<ConfigAttribute> attributes =
                     Optional.ofNullable(metadata.getAttributes(request)).orElse(Collections.emptySet());
-            return vote(authentication.get(), request, attributes);
+            return vote(authentication.get(), attributes);
         }
     }
 
     /**
-     * Compound {@link AuthorizationManager} implementation forwards the check to delegates. <br>
-     * Based on org.springframework.security.access.vote.AffirmativeBased, which is deprecated with Spring Security 5.8.
+     * Compound {@link AuthorizationManager} implementation forwards the check to delegates.
+     *
+     * <p>Simply polls all configured {@link AuthorizationManager} delegates and grants access if any voted
+     * affirmatively. Denies access only if there was a deny vote AND no affirmative votes.
+     *
+     * <p>If every {@link AuthorizationManager} delegate abstained from voting, the decision will be based on the
+     * {@code allowIfAllAbstainDecisions} argument.
+     *
+     * @implNote Based on {@code org.springframework.security.access.vote.AffirmativeBased}, which is deprecated with
+     *     Spring Security 5.8.
      */
     private static final class AffirmativeAuthorizationManager implements AuthorizationManager<HttpServletRequest> {
 
-        private AuthorizationManager<HttpServletRequest> delegate1;
-        private AuthorizationManager<HttpServletRequest> delegate2;
+        private List<AuthorizationManager<HttpServletRequest>> delegates;
         private boolean allowIfAllAbstainDecisions;
 
         /**
-         * @param delegate1
-         * @param delegate2
+         * @param delegates
          * @param allowIfAllAbstainDecisions
          */
         public AffirmativeAuthorizationManager(
-                AuthorizationManager<HttpServletRequest> delegate1,
-                AuthorizationManager<HttpServletRequest> delegate2,
-                boolean allowIfAllAbstainDecisions) {
+                List<AuthorizationManager<HttpServletRequest>> delegates, boolean allowIfAllAbstainDecisions) {
             super();
-            this.delegate1 = delegate1;
-            this.delegate2 = delegate2;
+            this.delegates = delegates;
             this.allowIfAllAbstainDecisions = allowIfAllAbstainDecisions;
         }
 
         @Override
         public AuthorizationDecision check(Supplier<Authentication> authentication, HttpServletRequest object) {
-            AuthorizationDecision d1 = delegate1.check(authentication, object);
-            AuthorizationDecision d2 = delegate2.check(authentication, object);
-            if (d1 == null && d2 == null) {
-                return allowIfAllAbstainDecisions ? ACCESS_GRANTED : ACCESS_DENIED;
+            int deny = 0;
+            for (AuthorizationManager<HttpServletRequest> delegate : delegates) {
+                AuthorizationDecision result = delegate.check(authentication, object);
+                boolean abstain = result == ACCESS_ABSTAIN;
+                if (!abstain) {
+                    if (result.isGranted()) {
+                        return ACCESS_GRANTED;
+                    } else {
+                        ++deny;
+                    }
+                }
             }
-            if (d1 != null && d1.isGranted()) {
-                return ACCESS_GRANTED;
+            if (deny > 0) {
+                return ACCESS_DENIED;
             }
-            if (d2 != null && d2.isGranted()) {
-                return ACCESS_GRANTED;
-            }
-            return ACCESS_DENIED;
+            // To get this far, every delegate AuthorizationManager abstained
+            return allowIfAllAbstainDecisions ? ACCESS_GRANTED : ACCESS_DENIED;
         }
     }
 
@@ -206,8 +249,10 @@ public class GeoServerSecurityInterceptorFilter extends GeoServerCompositeFilter
         boolean allowIfAllAbstainDecisions = siConfig.isAllowIfAllAbstainDecisions();
 
         AuthenticatedAuthorizationManager aam = new AuthenticatedAuthorizationManager(source);
+        WorkspaceAdminAuthorizationManager waam = new WorkspaceAdminAuthorizationManager(source);
         RoleAuthorizationManager ram = new RoleAuthorizationManager(source);
-        AffirmativeAuthorizationManager am = new AffirmativeAuthorizationManager(aam, ram, allowIfAllAbstainDecisions);
+        AffirmativeAuthorizationManager am =
+                new AffirmativeAuthorizationManager(List.of(aam, waam, ram), allowIfAllAbstainDecisions);
         AuthorizationFilter filter = new AuthorizationFilter(am);
 
         getNestedFilters().add(filter);

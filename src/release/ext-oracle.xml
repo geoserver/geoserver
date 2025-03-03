@@ -17,7 +17,7 @@
         <outputDirectory></outputDirectory>
         <includes>
             <include>gt-jdbc-oracle-*.jar</include>
-            <include>ojdbc8-*.jar</include>
+            <include>ojdbc11-*.jar</include>
         </includes>
         <excludes>
             <exclude>*-tests-*.jar</exclude>

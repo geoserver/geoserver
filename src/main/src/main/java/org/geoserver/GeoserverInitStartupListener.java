@@ -91,38 +91,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
         LOGGER.config("Logging policy: " + policy);
         GeoTools.init((Hints) null);
 
-        // Custom GeoTools ImagingListener used to ignore common warnings
-        JAI.getDefaultInstance().setImagingListener(new ImagingListener() {
-            final Logger LOGGER = Logging.getLogger("javax.media.jai");
-
-            @Override
-            public boolean errorOccurred(String message, Throwable thrown, Object where, boolean isRetryable)
-                    throws RuntimeException {
-                if (isSerializableRenderedImageFinalization(where, thrown)) {
-                    LOGGER.log(Level.FINEST, message, thrown);
-                } else if (message.contains("Continuing in pure Java mode")) {
-                    LOGGER.log(Level.FINE, message, thrown);
-                } else {
-                    LOGGER.log(Level.INFO, message, thrown);
-                }
-                return false; // we are not trying to recover
-            }
-
-            private boolean isSerializableRenderedImageFinalization(Object where, Throwable t) {
-                if (!(where instanceof SerializableRenderedImage)) {
-                    return false;
-                }
-
-                // check if it's the finalizer
-                StackTraceElement[] elements = t.getStackTrace();
-                for (StackTraceElement element : elements) {
-                    if (element.getMethodName().equals("finalize")
-                            && element.getClassName().endsWith("SerializableRenderedImage")) return true;
-                }
-
-                return false;
-            }
-        });
+        initJAIDefaultInstance();
 
         // setup concurrent operation registry
         JAI jaiDef = JAI.getDefaultInstance();
@@ -218,6 +187,48 @@ public class GeoserverInitStartupListener implements ServletContextListener {
                 TimeUnit.MILLISECONDS,
                 new LinkedBlockingQueue<>());
         Hints.putSystemDefault(Hints.EXECUTOR_SERVICE, executor);
+    }
+
+    /** Sets a custom ImagingListener used to ignore common warnings */
+    public static void initJAIDefaultInstance() {
+        JAI jaiDef = JAI.getDefaultInstance();
+        if (!(jaiDef.getImagingListener() instanceof GeoServerImagingListener)) {
+            jaiDef.setImagingListener(new GeoServerImagingListener());
+        }
+    }
+
+    private static final class GeoServerImagingListener implements ImagingListener {
+        private static final Logger LOGGER = Logging.getLogger("javax.media.jai");
+
+        @Override
+        public boolean errorOccurred(String message, Throwable thrown, Object where, boolean isRetryable)
+                throws RuntimeException {
+            if (isSerializableRenderedImageFinalization(where, thrown)) {
+                LOGGER.log(Level.FINEST, message, thrown);
+            } else if (message.contains("Continuing in pure Java mode")) {
+                LOGGER.log(Level.FINE, message, thrown);
+            } else if (thrown instanceof RuntimeException && !(where instanceof OperationRegistry)) {
+                throw (RuntimeException) thrown;
+            } else {
+                LOGGER.log(Level.INFO, message, thrown);
+            }
+            return false; // we are not trying to recover
+        }
+
+        private boolean isSerializableRenderedImageFinalization(Object where, Throwable t) {
+            if (!(where instanceof SerializableRenderedImage)) {
+                return false;
+            }
+
+            // check if it's the finalizer
+            StackTraceElement[] elements = t.getStackTrace();
+            for (StackTraceElement element : elements) {
+                if (element.getMethodName().equals("finalize")
+                        && element.getClassName().endsWith("SerializableRenderedImage")) return true;
+            }
+
+            return false;
+        }
     }
 
     /**

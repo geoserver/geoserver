@@ -71,6 +71,7 @@ import org.apache.http.message.BasicHeaderValueParser;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.GeoserverInitStartupListener;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -334,6 +335,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
+
+            // Use GeoServer's JAI ImagingListener
+            GeoserverInitStartupListener.initJAIDefaultInstance();
 
             getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);

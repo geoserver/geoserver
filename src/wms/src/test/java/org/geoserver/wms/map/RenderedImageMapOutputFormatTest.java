@@ -1682,6 +1682,29 @@ public class RenderedImageMapOutputFormatTest extends WMSTestSupport {
         assertNotNull(image);
         assertBlank("testFaultyStyleDoesntBreak", image);
     }
+
+    @Test
+    public void testJAIImagingListenerException() throws Exception {
+        // this style contains a Jiffle script that will cause a JiffleRuntimeException to be thrown and passed to the
+        // JAI ImagingListener set by org.geoserver.GeoserverInitStartupListener
+        String layer = MockData.TASMANIA_DEM.getPrefix() + ":" + MockData.TASMANIA_DEM.getLocalPart();
+        MockHttpServletResponse response = getAsServletResponse(
+                "wms?request=GetMap&format=image/png&width=256&height=256&srs=EPSG:4326&bbox=-180,-90,180,90&layers="
+                        + layer
+                        + "&sld_body=<StyledLayerDescriptor><NamedLayer><Name>"
+                        + layer
+                        + "</Name><UserStyle><FeatureTypeStyle><Transformation><Function name=\"ras:Jiffle\">"
+                        + "<Function name=\"parameter\"><Literal>coverage</Literal></Function>"
+                        + "<Function name=\"parameter\"><Literal>script</Literal><Literal>dest=src[1000,1000];</Literal>"
+                        + "</Function></Function></Transformation><Rule><RasterSymbolizer/></Rule>"
+                        + "</FeatureTypeStyle></UserStyle></NamedLayer></StyledLayerDescriptor>");
+        assertEquals("text/xml;charset=UTF-8", response.getContentType());
+        String content = response.getContentAsString();
+        assertThat(content, containsString("ServiceExceptionReport"));
+        assertThat(content, containsString("jiffle.runtime.JiffleRuntimeException"));
+        assertThat(content, containsString(" is outside bounds of image: src"));
+    }
+
     /**
      * This dummy producer adds no functionality to DefaultRasterMapOutputFormat, just implements a void
      * formatImageOutputStream to have a concrete class over which test that DefaultRasterMapOutputFormat correctly

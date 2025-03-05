@@ -1,0 +1,50 @@
+name: Validate Commit Messages
+on: pull_request
+
+jobs:
+  check-commits:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Fetch PR Commits
+        run: |
+          commits=$(gh pr view ${{ github.event.pull_request.number }} --json commits --jq '.commits[].message')
+          echo "$commits" > commit_messages.txt
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate Commit Messages
+        run: |
+          regex="^\[GEOS-[0-9]{4,}\] .+"  # Enforce format
+          issues=()
+          error_found=false
+
+          while IFS= read -r line; do
+            if ! [[ $line =~ $regex ]]; then
+              echo "❌ Invalid commit message format: '$line'"
+              error_found=true
+            fi
+
+            issue=$(echo "$line" | grep -o "\[GEOS-[0-9]\{4,\}\]")  # Extract issue reference
+            issue_number=$(echo "$issue" | grep -o "[0-9]\{4,\}")
+
+            if [[ " ${issues[@]} " =~ " $issue " ]]; then
+              echo "❌ Duplicate issue reference detected: $issue"
+              error_found=true
+            fi
+
+            # Check if the issue exists on JIRA
+            response=$(curl -s -o /dev/null -w "%{http_code}" "https://osgeo-org.atlassian.net/browse/GEOS-$issue_number")
+            if [[ "$response" -ne 200 ]]; then
+              echo "❌ Issue $issue does not exist in OSGeo JIRA"
+              error_found=true
+            fi
+
+            issues+=("$issue")
+          done < commit_messages.txt
+
+          if $error_found; then
+            exit 1
+          fi

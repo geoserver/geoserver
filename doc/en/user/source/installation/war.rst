@@ -12,7 +12,7 @@ Servlet 4            Tomcat 9   GeoServer 2
            Servlet 6 Tomcat 10  not compatible
 ========== ========= ========== ====================
 
-.. note:: GeoServer is tested using Tomcat 9, and this is the recommended application server. Current versions of GeoServer require Tomcat version 9. This version supports Java Enterprise Edition Servlet API 3 and annotation processing that GeoServer requires. Tomcat 10 uses Jakarta EE Servlet API 6 which GeoServer is the subject of `GeoServer 3 crowdfunding <https://geoserver.org/sponsor/gs3-crowdfunding>`_. Other application servers have been known to work, but are not tested regularly by community members.
+.. note:: GeoServer is tested using Tomcat 9, and this is the recommended application server. Tomcat 9 provides Java Enterprise Edition Servlet API 3 and annotation processing that GeoServer requires. GeoServer is not compatible with Tomcat 10, which provides Jakarta EE Servlet API 6 which is the goal of `GeoServer 3 crowdfunding <https://geoserver.org/sponsor/gs3-crowdfunding>`_. Other application servers have been known to work, but are not tested regularly by community members.
  
 Installation
 ------------

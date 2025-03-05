@@ -18,10 +18,6 @@
   <packaging>jar</packaging>
   <name>GeoServer JDBC Security Module</name>
 
-  <properties>
-    <test.exclude.pattern>**/*JNDI*Test*</test.exclude.pattern>
-  </properties>
-
   <dependencies>
     <dependency>
       <groupId>org.geoserver</groupId>
@@ -50,6 +46,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.github.h-thurow</groupId>
+      <artifactId>simple-jndi</artifactId>
+      <version>0.25.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -68,22 +70,4 @@
     </plugins>
   </build>
 
-  <profiles>
-    <profile>
-      <!-- placing this in a profile since it interfers with running from the
-           development environemtn with the startup of the jdbc datastores -->
-      <id>secJdbcJndiTest</id>
-      <properties>
-        <test.exclude.pattern>none</test.exclude.pattern>
-      </properties>
-      <dependencies>
-        <dependency>
-          <groupId>simple-jndi</groupId>
-          <artifactId>simple-jndi</artifactId>
-          <version>0.11.4.1</version>
-          <scope>test</scope>
-        </dependency>
-      </dependencies>
-    </profile>
-  </profiles>
 </project>

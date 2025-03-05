@@ -84,19 +84,22 @@ public class WMSLayerController extends AbstractCatalogController {
             @PathVariable(required = false) String storeName,
             @RequestParam(required = false, defaultValue = "false") boolean quietOnNotFound,
             @RequestParam(required = false, defaultValue = "configured") String list) {
+        Object result;
         switch (list) {
             case "available":
-                LOGGER.fine(() -> logMessage("GET available WMS layers from ", workspaceName, storeName, null));
-                return new AvailableResources(
+                result = new AvailableResources(
                         getAvailableLayersInternal(workspaceName, storeName, quietOnNotFound), "wmsLayerName");
-            case "configured":
-                LOGGER.fine(() -> logMessage("GET configured WMS layers from ", workspaceName, storeName, null));
+                break;
 
-                return wrapList(
+            case "configured":
+                result = wrapList(
                         getConfiguredLayersInternal(workspaceName, storeName, quietOnNotFound), WMSLayerInfo.class);
+                break;
             default:
                 throw new RestException("Unknown list type " + list, HttpStatus.NOT_IMPLEMENTED);
         }
+        LOGGER.fine(() -> logMessage("GET " + list + " WMS layers from ", workspaceName, storeName, null));
+        return result;
     }
 
     Collection<WMSStoreInfo> getStoresInternal(NamespaceInfo ns, String storeName, boolean quietOnNotFound) {
@@ -153,10 +156,8 @@ public class WMSLayerController extends AbstractCatalogController {
             @PathVariable(required = false) String storeName,
             @PathVariable String layerName) {
 
-        LOGGER.fine(() -> logMessage("GET", workspaceName, storeName, layerName));
-
         WMSLayerInfo layer = getResourceInternal(workspaceName, storeName, layerName);
-
+        LOGGER.fine(() -> logMessage("GET", workspaceName, storeName, layerName));
         return wrapObject(layer, WMSLayerInfo.class);
     }
 
@@ -220,13 +221,12 @@ public class WMSLayerController extends AbstractCatalogController {
             @PathVariable String layerName,
             @RequestParam(name = "calculate", required = false) String calculate) {
 
-        LOGGER.fine(() -> logMessage("PUT", workspaceName, storeName, layerName));
-
         WMSLayerInfo original = getResourceInternal(workspaceName, storeName, layerName);
         calculateOptionalFields(update, original, calculate);
         new CatalogBuilder(catalog).updateWMSLayer(original, update);
         catalog.validate(original, false).throwIfInvalid();
         catalog.getResourcePool().clear(original.getStore());
+        LOGGER.fine(() -> logMessage("PUT", workspaceName, storeName, layerName));
         catalog.save(original);
     }
 
@@ -237,12 +237,8 @@ public class WMSLayerController extends AbstractCatalogController {
             @PathVariable String layerName,
             @RequestParam(name = "recurse", defaultValue = "false") boolean recurse) {
 
-        LOGGER.fine(() -> logMessage("DELETE", workspaceName, storeName, layerName));
-
         WMSLayerInfo resource = this.getResourceInternal(workspaceName, storeName, layerName);
-
         List<LayerInfo> layers = catalog.getLayers(resource);
-
         if (recurse) {
             // by recurse we clear out all the layers that public this resource
             for (LayerInfo l : layers) {
@@ -254,7 +250,7 @@ public class WMSLayerController extends AbstractCatalogController {
                 throw new RestException("wms layer referenced by layer(s)", HttpStatus.FORBIDDEN);
             }
         }
-
+        LOGGER.fine(() -> logMessage("DELETE", workspaceName, storeName, layerName));
         catalog.remove(resource);
     }
 

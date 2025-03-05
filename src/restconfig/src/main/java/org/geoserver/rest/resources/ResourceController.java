@@ -166,7 +166,7 @@ public class ResourceController extends RestBaseController {
             path = Paths.BASE;
         } else {
             if (LOGGER.isLoggable(Level.FINE)) {
-                LOGGER.fine("Undefined resource path: '" + path + "'");
+                LOGGER.fine("Undefined resource path: '" + path.replaceAll("\\.\\.+", "") + "'");
             }
             throw new ResourceNotFoundException("Undefined resource path:");
         }

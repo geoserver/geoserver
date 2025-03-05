@@ -8,7 +8,6 @@ package org.geoserver.wfs.xml;
 import java.io.Reader;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServer;
@@ -23,7 +22,6 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.util.Converters;
-import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.OptionalComponentParameter;
 import org.geotools.xsd.Parser;
@@ -41,8 +39,6 @@ import org.xml.sax.InputSource;
  * @author Justin Deoliveira, OpenGeo
  */
 public class WFSXmlUtils {
-
-    private static final Logger LOGGER = Logging.getLogger(WFSXmlUtils.class);
 
     public static final String ENTITY_EXPANSION_LIMIT = "org.geoserver.wfs.xml.entityExpansionLimit";
 

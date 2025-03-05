@@ -3564,6 +3564,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         cv.setName("waterways");
 
         addLayer();
+        catalog.add(cs);
         catalog.add(cv);
 
         LayerInfo l2 = newLayer(cv, s);

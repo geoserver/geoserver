@@ -635,6 +635,21 @@
       </dependencies>
     </profile>
     <profile>
+      <id>monitor-micrometer</id>
+      <activation>
+        <property>
+          <name>monitoring</name>
+        </property>
+      </activation>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-monitor-micrometer</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
       <id>ogr</id>
       <dependencies>
         <dependency>

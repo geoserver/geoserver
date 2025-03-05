@@ -177,8 +177,6 @@ public class LayerGroupController extends AbstractCatalogController {
         }
         checkFullAdminRequired(workspaceName);
 
-        LOGGER.info(
-                "PUT layer group " + layerGroupName + (workspaceName != null ? ", workspace " + workspaceName : ""));
         LayerGroupInfo original = workspaceName != null
                 ? catalog.getLayerGroupByName(workspaceName, layerGroupName)
                 : catalog.getLayerGroupByName(layerGroupName);
@@ -197,6 +195,8 @@ public class LayerGroupController extends AbstractCatalogController {
                         HttpStatus.FORBIDDEN);
             }
         }
+        LOGGER.info(
+                "PUT layer group " + layerGroupName + (workspaceName != null ? ", workspace " + workspaceName : ""));
 
         new CatalogBuilder(catalog).updateLayerGroup(original, lg);
         catalog.save(original);

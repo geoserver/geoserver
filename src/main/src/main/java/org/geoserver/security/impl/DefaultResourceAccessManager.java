@@ -7,6 +7,8 @@ package org.geoserver.security.impl;
 
 import static org.geoserver.security.impl.DataAccessRule.ANY;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -14,9 +16,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.tuple.Pair;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -81,6 +85,9 @@ import org.springframework.security.core.Authentication;
 public class DefaultResourceAccessManager implements ResourceAccessManager {
     static final Logger LOGGER = Logging.getLogger(DefaultResourceAccessManager.class);
 
+    static final int FILTERCACHE_SIZE = 100;
+    static final int FILTERCACHE_EXPIRY_TIME = 60;
+
     /**
      * Flag to enable previous resource filter building logic. This could be used to prevent performance regressions in
      * JDCBConfig. Defaults to False.
@@ -116,6 +123,11 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
     long lastLoaded = Long.MIN_VALUE;
 
     LayerGroupContainmentCache groupsCache;
+
+    Cache<Pair<Authentication, Class<? extends CatalogInfo>>, Filter> filterCache = CacheBuilder.newBuilder()
+            .maximumSize(FILTERCACHE_SIZE)
+            .expireAfterAccess(FILTERCACHE_EXPIRY_TIME, TimeUnit.MINUTES)
+            .build();
 
     /**
      * Pass a reference to the raw, unsecured catalog. The reference is used to evaluate the relationship between layers
@@ -323,6 +335,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         if (lastLoaded < daoLastModified || force) {
             root = buildAuthorizationTree(dao);
             lastLoaded = daoLastModified;
+            filterCache.invalidateAll();
         }
     }
 
@@ -493,12 +506,26 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
+        Filter filter = filterCache.getIfPresent(Pair.of(user, clazz));
+        if (filter == null) {
+            filter = getSecurityFilterInternal(user, clazz);
+            if (filter != null) {
+                filterCache.put(Pair.of(user, clazz), filter);
+            }
+        }
+        if (filter == null) {
+            return InMemorySecurityFilter.buildUserAccessFilter(this, user);
+        } else {
+            return filter;
+        }
+    }
+
+    public Filter getSecurityFilterInternal(Authentication user, Class<? extends CatalogInfo> clazz) {
         if (getMode() == CatalogMode.CHALLENGE) {
             // If we're in CHALLENGE mode, we cannot pre-filter
             // for the other types we have no clue, use the in memory filtering
-            return InMemorySecurityFilter.buildUserAccessFilter(this, user);
+            return null;
         }
-
         if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
             // base access
             boolean rootAccess = canAccess(user, root);
@@ -553,7 +580,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
             }
         } else {
             // for the other types we have no clue, use the in memory filtering
-            return InMemorySecurityFilter.buildUserAccessFilter(this, user);
+            return null;
         }
     }
 

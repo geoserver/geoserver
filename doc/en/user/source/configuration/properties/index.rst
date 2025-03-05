@@ -326,7 +326,9 @@ GeoServer Property Reference
      - x
      - x
      - x
-     
+
+.. _application_properties_setting:
+
 Setting Application property
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

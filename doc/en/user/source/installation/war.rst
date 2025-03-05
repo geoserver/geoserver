@@ -5,7 +5,14 @@ Web archive
 
 GeoServer is packaged as a standalone servlet for use with existing application servers such as `Apache Tomcat <https://tomcat.apache.org/>`_ and `Jetty <https://jetty.org/>`_.
 
-.. note:: GeoServer has been mostly tested using Tomcat, and so is the recommended application server. Current versions of GeoServer require Tomcat version 9.x. This version supports Servlet API 3 and annotation processing that GeoServer implements, but has not made the change from Java EE to Jakarta EE, which `GeoServer has also not yet made, see:  <https://github.com/geoserver/geoserver/wiki/Jakarta-EE>`_. Other application servers have been known to work, but are not guaranteed.
+========= ========== ========== ====================
+JavaEE    JakarataEE Tomcat     GeoSever
+========== ========= ========== ====================
+Servlet 4            Tomcat 9   GeoServer 2
+           Servlet 6 Tomcat 10  not compatible
+========== ========= ========== ====================
+
+.. note:: GeoServer is tested using Tomcat 9, and this is the recommended application server. Current versions of GeoServer require Tomcat version 9. This version supports Java Enterprise Edition Servlet API 3 and annotation processing that GeoServer requires. Tomcat 10 uses Jakarta EE Servlet API 6 which GeoServer is the subject of `GeoServer 3 crowdfunding <https://geoserver.org/sponsor/gs3-crowdfunding>`_. Other application servers have been known to work, but are not tested regularly by community members.
  
 Installation
 ------------

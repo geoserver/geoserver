@@ -25,7 +25,7 @@ IMG Sample
 
 Data was provided by GeoSolutions with redistribution rights.
 
-MOASIC Sample
+MOSAIC Sample
 -------------
 
 Data was provided by GeoSolutions with redistribution rights.
@@ -62,7 +62,7 @@ Coming from GeoTools sample data, simplified. The GeoTools file (statepop.shp) c
 Tasmania
 --------
 
-The data is derived from the <Digital Chart of the World `http://en.wikipedia.org/wiki/Digital_Chart_of_the_World`> , which according to wikipedia is "is freely available as of 2006".
+The data is derived from the <Digital Chart of the World `http://en.wikipedia.org/wiki/Digital_Chart_of_the_World`> , which according to Wikipedia is "is freely available as of 2006".
 
 Referenced Copyright Statement:
 http://en.wikipedia.org/wiki/Vector_map#Copyrights

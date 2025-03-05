@@ -266,7 +266,7 @@ public class StyleController extends AbstractCatalogController {
     }
 
     protected StyleInfo getStyleInternal(String styleName, String workspace) {
-        LOGGER.fine("GET style " + styleName);
+
         StyleInfo sinfo = catalog.getStyleByName(workspace, styleName);
 
         if (sinfo == null) {
@@ -276,6 +276,7 @@ public class StyleController extends AbstractCatalogController {
             }
             throw new ResourceNotFoundException(message);
         } else {
+            LOGGER.fine("GET style " + styleName);
             return sinfo;
         }
     }
@@ -308,7 +309,6 @@ public class StyleController extends AbstractCatalogController {
             }
             catalog.remove(style);
         }
-
         catalog.getResourcePool().deleteStyle(style, purge);
 
         LOGGER.info("DELETE style " + styleName);

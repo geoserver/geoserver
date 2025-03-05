@@ -12,7 +12,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -31,7 +30,6 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
-import org.geoserver.platform.GeoServerEnvironment;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.smartdataloader.data.store.ExclusionsDomainModelVisitor;
@@ -227,7 +225,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         try {
             // TODO need to review (since it's forcing to get a JDBC datastore based on parameters.
             // Not sure what happen with JNDI)
-            Map<String, Serializable> connectionParameters = resolveParams(jdbcDataStoreInfo.getConnectionParameters());
+            Map<String, Serializable> connectionParameters = jdbcDataStoreInfo.getConnectionParameters();
             jdbcDataStore = factory.createDataStore(connectionParameters);
             DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
                     jdbcDataStore, connectionParameters.get("passwd").toString());
@@ -287,24 +285,7 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
     private DataStoreInfo getDataStoreInfo(Map<String, Serializable> params) throws IOException {
         String jdbcDataStoreId = lookup(DATASTORE_METADATA, params, String.class);
         Catalog catalog = getGeoServer().getCatalog();
-        return catalog.getDataStore(jdbcDataStoreId);
-    }
-
-    static Map<String, Serializable> resolveParams(Map<String, Serializable> params) {
-        GeoServerEnvironment env = GeoServerExtensions.bean(GeoServerEnvironment.class);
-        Map<String, Serializable> clone = new HashMap<>();
-        for (Map.Entry<String, Serializable> entry : params.entrySet()) {
-            clone.put(entry.getKey(), resolveValue(entry.getValue(), env));
-        }
-        LOGGER.log(Level.FINE, "Resolved parameters: {0}", clone);
-        return clone;
-    }
-
-    private static Serializable resolveValue(Serializable value, GeoServerEnvironment env) {
-        if (!(value instanceof CharSequence) || !GeoServerEnvironment.allowEnvParametrization()) {
-            return value;
-        }
-        return (Serializable) env.resolveValue(value);
+        return catalog.getResourcePool().clone(catalog.getDataStore(jdbcDataStoreId), true);
     }
 
     /** Helper method to build urls in the context of a new AppSchemaDataAccess instance. */

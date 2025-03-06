@@ -41,6 +41,8 @@ import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
 
 /**
  * Faster alternative to {@link DefaultGeoServerLoader}, especially over network drives like NFS shares.
@@ -113,6 +115,19 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         this.dataDirectory = dataDirectory;
         this.securityManager = securityManager;
         setXStreamPeristerFactory(xpf);
+    }
+
+    /**
+     * Utility method to check if usage of this geoserver loader is enabled. Defaults to {@code true}, unless disabled
+     * by the {@literal GEOSERVER_DATA_DIR_LOADER_ENABLED} environment variable or System property, as returned by
+     * {@link GeoServerExtensions#getProperty(String, ApplicationContext)}
+     */
+    public static boolean isEnabled(@Nullable ApplicationContext context) {
+        String value = GeoServerExtensions.getProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED, context);
+        if (null == value) {
+            return true;
+        }
+        return Boolean.parseBoolean(value);
     }
 
     @Override

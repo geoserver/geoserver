@@ -3,7 +3,8 @@
 --     psql -U <database owner> <database> < dataset-sf0.sql
 SET client_encoding = 'UTF8';
 
-\c cite
+\connect cite_wfs20
+
 SET ROLE cite;
 
 drop table if exists "PrimitiveGeoFeature";

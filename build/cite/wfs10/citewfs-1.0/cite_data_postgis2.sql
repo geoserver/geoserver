@@ -11,7 +11,7 @@
 
 -- Uncomment and change this to the user who has permissions to drop and
 -- create tables in this db.
-\connect cite cite
+\connect cite_wfs10 cite
 
 --create extension postgis;
 

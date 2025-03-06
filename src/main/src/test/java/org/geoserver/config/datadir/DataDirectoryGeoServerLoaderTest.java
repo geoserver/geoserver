@@ -10,14 +10,13 @@ import static org.geoserver.data.test.CiteTestData.TASMANIA_BM;
 import static org.geoserver.data.test.CiteTestData.TASMANIA_DEM;
 import static org.geoserver.data.test.CiteTestData.WORLD;
 import static org.geoserver.data.test.SystemTestData.MULTIBAND;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import com.thoughtworks.xstream.XStream;
 import java.io.IOException;
@@ -47,6 +46,7 @@ import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
+import org.geoserver.config.GeoServerLoaderProxy;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService1;
@@ -80,7 +80,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
     @Before
     public void preflight() {
-        assertThat(GeoServerExtensions.bean(GeoServerLoader.class), instanceOf(DataDirectoryGeoServerLoader.class));
+        assertTrue(DataDirectoryGeoServerLoader.isEnabled(applicationContext));
     }
 
     @After
@@ -123,7 +123,9 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     }
 
     private DataDirectoryGeoServerLoader getLoader() {
-        return (DataDirectoryGeoServerLoader) GeoServerExtensions.bean(GeoServerLoader.class);
+        GeoServerLoader loader =
+                GeoServerExtensions.bean(GeoServerLoaderProxy.class).getLoader();
+        return (DataDirectoryGeoServerLoader) loader;
     }
 
     @Test
@@ -139,8 +141,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         WorkspaceInfo ws1 = getCatalog().getWorkspaces().get(0);
         GeoServerDataDirectory dataDirectory = getDataDirectory();
         dataDirectory.config(ws1).delete();
-        DataDirectoryGeoServerLoader loader =
-                (DataDirectoryGeoServerLoader) GeoServerExtensions.bean(GeoServerLoader.class);
+        DataDirectoryGeoServerLoader loader = getLoader();
         loader.reload();
 
         assertNull(getCatalog().getWorkspace(ws1.getId()));

@@ -213,7 +213,7 @@ class XStreamLoader {
      * {@link GeoServerSecurityManager} itself causes Spring to force loading beans unresolved beans and ultimately to
      * deadlock when called from a different thread than the {@code main} thread.
      */
-    private XStreamPersister getXStream(Catalog catalog) {
+    XStreamPersister getXStream(Catalog catalog) {
         XStreamPersister xp = XP.get();
         if (xp == null) {
             xp = xpf.createXMLPersister();

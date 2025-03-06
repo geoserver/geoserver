@@ -266,7 +266,7 @@ class DataDirectoryWalker {
 
     public List<WorkspaceDirectory> workspaces() {
         if (workspaces == null) {
-            Path workspacesRoot = dataDirRoot.resolve("workspaces");
+            Path workspacesRoot = workspacesRoot();
             List<Path> workspaceDirectories = subdirectories(workspacesRoot);
             workspaces = workspaceDirectories.stream()
                     .map(this::newWorkspace)
@@ -277,12 +277,25 @@ class DataDirectoryWalker {
         return workspaces;
     }
 
+    private Path workspacesRoot() {
+        Path workspacesRoot = dataDirRoot.resolve("workspaces");
+        return workspacesRoot;
+    }
+
     public Optional<Path> gsGlobal() {
         return optionalFile(dataDirRoot.resolve("global.xml"));
     }
 
     public Optional<Path> gsLogging() {
         return optionalFile(dataDirRoot.resolve("logging.xml"));
+    }
+
+    public Optional<Path> defaultWorkspace() {
+        return optionalFile(getDefaultWorkspaceFile());
+    }
+
+    public Path getDefaultWorkspaceFile() {
+        return workspacesRoot().resolve("default.xml");
     }
 
     private Optional<Path> optionalFile(Path file) {

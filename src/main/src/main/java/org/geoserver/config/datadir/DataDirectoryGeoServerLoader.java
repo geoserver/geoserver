@@ -34,13 +34,17 @@ import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.FileSystemResourceStore;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.ResourceStore;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geotools.api.data.DataStoreFactorySpi;
 import org.geotools.api.filter.Filter;
 import org.geotools.util.factory.GeoTools;
 import org.geotools.util.logging.Logging;
+import org.springframework.context.ApplicationContext;
+import org.springframework.lang.Nullable;
 
 /**
  * Faster alternative to {@link DefaultGeoServerLoader}, especially over network drives like NFS shares.
@@ -113,6 +117,19 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
         this.dataDirectory = dataDirectory;
         this.securityManager = securityManager;
         setXStreamPeristerFactory(xpf);
+    }
+
+    /**
+     * Utility method to check if usage of this geoserver loader is enabled. Defaults to {@code true}, unless disabled
+     * by the {@literal GEOSERVER_DATA_DIR_LOADER_ENABLED} environment variable or System property, as returned by
+     * {@link GeoServerExtensions#getProperty(String, ApplicationContext)}
+     */
+    public static boolean isEnabled(@Nullable ApplicationContext context) {
+        String value = GeoServerExtensions.getProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED, context);
+        if (null == value) {
+            return true;
+        }
+        return Boolean.parseBoolean(value);
     }
 
     @Override
@@ -193,6 +210,14 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     @Override
     protected void readConfiguration(GeoServer geoServer, XStreamPersister xp) throws Exception {
         LOGGER.config("Loading GeoServer config...");
+
+        // look for services.xml, if it exists assume we are dealing with an old data directory
+        Resource legacyGlobalConfig = resourceLoader.get("services.xml");
+        if (Resources.exists(legacyGlobalConfig)) {
+            super.readConfiguration(geoServer, xp);
+            return;
+        }
+
         Stopwatch stopWatch = Stopwatch.createStarted();
 
         loader().loadGeoServer(geoServer);

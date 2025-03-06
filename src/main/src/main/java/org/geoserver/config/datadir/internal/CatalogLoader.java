@@ -8,6 +8,9 @@ package org.geoserver.config.datadir.internal;
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNull;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
@@ -31,6 +34,7 @@ import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.config.datadir.internal.DataDirectoryWalker.LayerDirectory;
 import org.geoserver.config.datadir.internal.DataDirectoryWalker.StoreDirectory;
 import org.geoserver.config.datadir.internal.DataDirectoryWalker.WorkspaceDirectory;
+import org.geoserver.config.util.XStreamPersister;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
@@ -97,11 +101,39 @@ class CatalogLoader {
         try {
             loadGlobalStyles();
             loadWorkspaces(fileWalk.workspaces().stream());
+            setDefaultWorkspace();
             loadGlobalLayerGroups();
         } finally {
             this.catalog.setExtendedValidation(extendedValidation);
         }
         LOGGER.config(format("Depersisted %,d Catalog files.", readFileCount.get()));
+    }
+
+    private void setDefaultWorkspace() {
+        // set the default workspace, this value might be null in the case of coming
+        // from a 2.0.0 data directory. See https://osgeo-org.atlassian.net/browse/GEOS-3440
+        Optional<Path> defaultWorkspaceFile = fileWalk.defaultWorkspace();
+
+        if (defaultWorkspaceFile.isPresent()) {
+            Optional<WorkspaceInfo> defaultWorkspace = depersist(defaultWorkspaceFile.orElseThrow());
+            defaultWorkspace = defaultWorkspace.map(WorkspaceInfo::getId).map(catalog::getWorkspace);
+            if (defaultWorkspace.isPresent()) {
+                WorkspaceInfo ws = defaultWorkspace.orElseThrow();
+                NamespaceInfo ns = catalog.getNamespaceByPrefix(ws.getName());
+                catalog.setDefaultWorkspace(ws);
+                catalog.setDefaultNamespace(ns);
+                return;
+            }
+        }
+        WorkspaceInfo ws = catalog.getDefaultWorkspace();
+        if (ws != null) {
+            Path path = fileWalk.getDefaultWorkspaceFile();
+            try {
+                persist(ws, path);
+            } catch (IOException e) {
+                LOGGER.log(Level.WARNING, "Failed to persist " + ws + " at '" + path + "'", e);
+            }
+        }
     }
 
     private void loadGlobalStyles() {
@@ -235,5 +267,12 @@ class CatalogLoader {
         Optional<C> info = xstreamLoader.depersist(file, this.catalog);
         if (info.isPresent()) readFileCount.incrementAndGet();
         return info;
+    }
+
+    private void persist(Info info, Path path) throws IOException {
+        XStreamPersister persister = xstreamLoader.getXStream(catalog);
+        try (OutputStream out = Files.newOutputStream(path)) {
+            persister.save(info, out);
+        }
     }
 }

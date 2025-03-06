@@ -15,10 +15,12 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.DefaultGeoServerLoader;
@@ -105,6 +107,15 @@ public class DefaultGeoServerLoaderCompatibilityTest extends GeoServerSystemTest
                 datadirLoaderCatalog.getResources(ResourceInfo.class));
         checkEquals(defaultLoaderCatalog.getLayers(), datadirLoaderCatalog.getLayers());
         checkEquals(defaultLoaderCatalog.getLayerGroups(), datadirLoaderCatalog.getLayerGroups());
+
+        assertEquals(defaultLoaderCatalog.getDefaultWorkspace(), datadirLoaderCatalog.getDefaultWorkspace());
+        assertEquals(defaultLoaderCatalog.getDefaultNamespace(), datadirLoaderCatalog.getDefaultNamespace());
+
+        for (WorkspaceInfo ws : defaultLoaderCatalog.getWorkspaces()) {
+            DataStoreInfo expected = defaultLoaderCatalog.getDefaultDataStore(ws);
+            DataStoreInfo actual = datadirLoaderCatalog.getDefaultDataStore(ws);
+            assertEquals(expected, actual);
+        }
     }
 
     private void addLayerGroup(Catalog catalog) {

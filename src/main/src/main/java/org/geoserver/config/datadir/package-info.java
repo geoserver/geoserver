@@ -24,8 +24,6 @@
  * <ul>
  *   <li>{@link org.geoserver.config.datadir.DataDirectoryGeoServerLoader} - The main entry point that replaces the
  *       default GeoServerLoader
- *   <li>{@link org.geoserver.config.datadir.config.DataDirectoryGeoServerLoaderConfiguration} - Spring configuration to
- *       register the loader
  * </ul>
  *
  * <p>Internal implementation details are in the {@link org.geoserver.config.datadir.internal} package.

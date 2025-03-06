@@ -76,7 +76,7 @@ import org.springframework.lang.Nullable;
  * <p>The catalog loading process follows GeoServer's directory structure hierarchy and loads objects in the correct
  * dependency order to ensure proper object relationships.
  */
-public class CatalogLoader {
+class CatalogLoader {
 
     private static final Logger LOGGER =
             Logging.getLogger(CatalogLoader.class.getPackage().getName());

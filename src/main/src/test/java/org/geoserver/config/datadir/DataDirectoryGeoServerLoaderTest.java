@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.config;
+package org.geoserver.config.datadir;
 
 import static java.util.Objects.requireNonNull;
 import static org.geoserver.data.test.CiteTestData.ROTATED_CAD;
@@ -43,7 +43,12 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
-import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
+import org.geoserver.config.GeoServerLoaderProxy;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService1;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService2;
 import org.geoserver.config.impl.GeoServerImpl;
@@ -66,7 +71,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.geoserver.config.DataDirectoryGeoServerLoader} acting as the default
+ * Test suite for {@link org.geoserver.config.datadir.DataDirectoryGeoServerLoader} acting as the default
  * {@link GeoServerLoader}
  */
 @TestSetup(run = TestSetupFrequency.REPEAT)
@@ -118,16 +123,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertNotNull(catalog.getLayerByName(prefixedName));
     }
 
-    private DataDirectoryGeoServerLoader getLoader() {
-        return (DataDirectoryGeoServerLoader) GeoServerExtensions.bean(GeoServerLoader.class);
-    }
-
-    @Test
-    public void destroy() {
-        DataDirectoryGeoServerLoader loader = getLoader();
-        assertNotNull(loader.fileWalk);
-        loader.destroy();
-        assertNull(loader.fileWalk);
+    private GeoServerLoaderProxy getLoader() {
+        return GeoServerExtensions.bean(GeoServerLoaderProxy.class);
     }
 
     @Test
@@ -135,8 +132,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         WorkspaceInfo ws1 = getCatalog().getWorkspaces().get(0);
         GeoServerDataDirectory dataDirectory = getDataDirectory();
         dataDirectory.config(ws1).delete();
-        DataDirectoryGeoServerLoader loader = getLoader();
-        loader.reload();
+        getLoader().reload();
 
         assertNull(getCatalog().getWorkspace(ws1.getId()));
     }

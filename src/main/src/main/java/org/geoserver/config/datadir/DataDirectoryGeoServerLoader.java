@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.config;
+package org.geoserver.config.datadir;
 
 import com.google.common.base.Stopwatch;
 import java.util.concurrent.Executor;
@@ -21,11 +21,11 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.config.datadir.CatalogLoader;
-import org.geoserver.config.datadir.ConfigLoader;
-import org.geoserver.config.datadir.DataDirectoryWalker;
+import org.geoserver.config.DefaultGeoServerLoader;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
@@ -244,8 +244,6 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     private DataDirectoryWalker fileWalker() {
         if (fileWalk == null) {
-            // the xpf field in the super class is package private
-            XStreamPersisterFactory xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
             fileWalk = new DataDirectoryWalker(dataDirectory, xpf);
         }
         return fileWalk;

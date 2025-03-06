@@ -4,7 +4,7 @@
  */
 package org.geoserver.config.datadir;
 
-import static org.geoserver.config.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -12,7 +12,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.ServletContext;
-import org.geoserver.config.DataDirectoryGeoServerLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

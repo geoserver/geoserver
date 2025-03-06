@@ -5,8 +5,13 @@
  */
 package org.geoserver.config;
 
+import static java.util.Objects.requireNonNull;
+
+import org.geoserver.config.datadir.DataDirectoryGeoServerLoader;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -76,7 +81,7 @@ public class GeoServerLoaderProxy
     protected GeoServerLoader lookupGeoServerLoader(ApplicationContext appContext) {
         GeoServerLoader loader = GeoServerExtensions.bean(GeoServerLoader.class, appContext);
         if (loader == null) {
-            loader = new DefaultGeoServerLoader(resourceLoader);
+            loader = createDefaultLoader(appContext);
         }
         return loader;
     }
@@ -84,5 +89,26 @@ public class GeoServerLoaderProxy
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
         loader.initializeDefaultStyles(geoServer.getCatalog());
+    }
+
+    /**
+     * @param appContext required for {@link DataDirectoryGeoServerLoader#isEnabled(ApplicationContext)}
+     * @return a new instance of {@link DataDirectoryGeoServerLoader} if {@link DataDirectoryGeoServerLoader#isEnabled()
+     *     enabled}, or {@link DefaultGeoServerLoader} otherwise.
+     */
+    protected GeoServerLoader createDefaultLoader(ApplicationContext appContext) {
+        if (DataDirectoryGeoServerLoader.isEnabled(appContext)) {
+            GeoServerDataDirectory dataDirectory =
+                    requireNonNull(GeoServerExtensions.bean(GeoServerDataDirectory.class));
+            GeoServerSecurityManager securityManager =
+                    requireNonNull(GeoServerExtensions.bean(GeoServerSecurityManager.class));
+            XStreamPersisterFactory xspf = requireNonNull(GeoServerExtensions.bean(XStreamPersisterFactory.class));
+            return new DataDirectoryGeoServerLoader(dataDirectory, securityManager, xspf);
+        }
+        return new DefaultGeoServerLoader(resourceLoader);
+    }
+
+    public GeoServerLoader getLoader() {
+        return loader;
     }
 }

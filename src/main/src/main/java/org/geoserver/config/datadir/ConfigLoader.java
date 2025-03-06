@@ -46,7 +46,7 @@ import org.springframework.lang.Nullable;
  * <p>This class works closely with the service loaders defined in the GeoServer extension system to load and configure
  * service objects appropriately.
  */
-public class ConfigLoader {
+class ConfigLoader {
 
     private static final Logger LOGGER =
             Logging.getLogger(ConfigLoader.class.getPackage().getName());

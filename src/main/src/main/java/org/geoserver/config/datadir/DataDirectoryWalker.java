@@ -46,7 +46,7 @@ import org.springframework.lang.NonNull;
  * <p>The inner classes ({@link WorkspaceDirectory}, {@link StoreDirectory}, {@link LayerDirectory}) represent the
  * different directory types in the GeoServer data directory hierarchy and provide type-safe access to their contents.
  */
-public class DataDirectoryWalker {
+class DataDirectoryWalker {
 
     private static final Logger LOGGER =
             Logging.getLogger(DataDirectoryWalker.class.getPackage().getName());

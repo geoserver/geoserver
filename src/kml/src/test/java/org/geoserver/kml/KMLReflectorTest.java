@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import de.micromata.opengis.kml.v_2_2_0.Kml;
+import java.awt.RenderingHints.Key;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
@@ -21,14 +22,18 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -59,12 +64,32 @@ import org.geoserver.kml.regionate.CachedHierarchyRegionatingStrategy;
 import org.geoserver.ows.kvp.FormatOptionsKvpParser;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.wms.GetMapRequest;
+import org.geoserver.wms.MapLayerInfo;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
+import org.geotools.api.data.DataAccess;
+import org.geotools.api.data.FeatureListener;
+import org.geotools.api.data.Query;
+import org.geotools.api.data.QueryCapabilities;
+import org.geotools.api.data.ResourceInfo;
+import org.geotools.api.data.SimpleFeatureSource;
+import org.geotools.api.feature.simple.SimpleFeature;
+import org.geotools.api.feature.simple.SimpleFeatureType;
+import org.geotools.api.feature.type.Name;
+import org.geotools.api.filter.Filter;
+import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.collection.AbstractFeatureCollection;
+import org.geotools.feature.simple.SimpleFeatureBuilder;
+import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.map.FeatureLayer;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.util.xml.SimpleNamespaceContext;
 import org.w3c.dom.Document;
@@ -985,6 +1010,145 @@ public class KMLReflectorTest extends WMSTestSupport {
                                                     .toExternalForm())
                                 }));
         unmarshaller.unmarshal(document);
+    }
+
+    // This unit test is provided for manual testing by a developer and is ignored by default since
+    // it can take several
+    // minutes or longer to either run successfully or throw an OutOfMemoryError. This test may not
+    // throw an OOM with
+    // the old XSLT-based transformation if the JVM memory limit is sufficiently high.
+    @Ignore
+    @Test
+    public void testKmlTransformationMemoryUsage() throws Exception {
+        // create a dummy feature source with a fixed number of features
+        int size = 10000000;
+        SimpleFeatureTypeBuilder ftb = new SimpleFeatureTypeBuilder();
+        ftb.setName("test");
+        ftb.setSRS("EPSG:4326");
+        ftb.add("geom", Point.class);
+        SimpleFeatureType ft = ftb.buildFeatureType();
+        SimpleFeatureBuilder fb = new SimpleFeatureBuilder(ft);
+        fb.add(new GeometryFactory().createPoint(new Coordinate(0, 0)));
+        SimpleFeatureSource fs =
+                new SimpleFeatureSource() {
+
+                    @Override
+                    public void removeFeatureListener(FeatureListener listener) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public Set<Key> getSupportedHints() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SimpleFeatureType getSchema() {
+                        return ft;
+                    }
+
+                    @Override
+                    public QueryCapabilities getQueryCapabilities() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public Name getName() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public ResourceInfo getInfo() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public DataAccess<SimpleFeatureType, SimpleFeature> getDataStore() {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public int getCount(Query query) throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public ReferencedEnvelope getBounds(Query query) throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public ReferencedEnvelope getBounds() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public void addFeatureListener(FeatureListener listener) {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SimpleFeatureCollection getFeatures(Query query) throws IOException {
+                        return new AbstractFeatureCollection(ft) {
+
+                            @Override
+                            public int size() {
+                                throw new UnsupportedOperationException();
+                            }
+
+                            @Override
+                            protected Iterator<SimpleFeature> openIterator() {
+                                return new Iterator<>() {
+                                    int i = 0;
+
+                                    @Override
+                                    public SimpleFeature next() {
+                                        return fb.buildFeature(String.valueOf(i++));
+                                    }
+
+                                    @Override
+                                    public boolean hasNext() {
+                                        return i < size;
+                                    }
+                                };
+                            }
+
+                            @Override
+                            public ReferencedEnvelope getBounds() {
+                                return new ReferencedEnvelope(
+                                        -180, 0, -90, 90, DefaultGeographicCRS.WGS84);
+                            }
+                        };
+                    }
+
+                    @Override
+                    public SimpleFeatureCollection getFeatures(Filter filter) throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+
+                    @Override
+                    public SimpleFeatureCollection getFeatures() throws IOException {
+                        throw new UnsupportedOperationException();
+                    }
+                };
+
+        GetMapRequest req = new GetMapRequest();
+        req.setBaseUrl("http://localhost:8080/geoserver");
+        req.setLayers(List.of(new MapLayerInfo(fs)));
+        req.setRawKvp(new HashMap<>());
+        WMSMapContent mapContent = new WMSMapContent(req);
+        mapContent.addLayer(new FeatureLayer(fs, getCatalog().getStyleByName("point").getStyle()));
+        mapContent
+                .getViewport()
+                .setBounds(new ReferencedEnvelope(-180, 0, -90, 90, DefaultGeographicCRS.WGS84));
+        mapContent.setMapHeight(256);
+        mapContent.setMapWidth(256);
+
+        KMLMapOutputFormat of = new KMLMapOutputFormat(getWMS());
+        KMLMap map = of.produceMap(mapContent);
+        new KMLEncoder().encode(map.getKml(), OutputStream.nullOutputStream(), null);
+        // old XSLT implementation should throw an OutOfMemorError but new implementation should
+        // complete successfully
     }
 
     @Test

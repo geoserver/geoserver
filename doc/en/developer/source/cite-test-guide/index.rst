@@ -748,13 +748,14 @@ Shortly before a major (2.xx.0) release, the following process should be followe
    vim docker-compose.yml
    :%s/____password____/new_password/
 
-#.  Start up the Docker services (PostgreSQL & 7x GeoServer instances)
+#.  Start up the Docker services (PostgreSQL & 7x GeoServer instances) against an empty database directory
 
    .. code-block:: shell
 
+   rm -rf /home/cite/postgis-data/wfs
    docker-compose -f docker-compose.yml up
 
-This will spin up a postgres service which will be populated with 3 different WFS databases each startup (ref: postgis-data/init-scripts).
+This will spin up a postgres service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts).
 
 It will also spin up 7 geoserver services, typically 1 data directory per Cite test (e.g. wfs20), although it is noted that features10, wms11 and wms13 all run off the same wms13 data directory, and geotiff11 uses the wcs11 data directory.
 

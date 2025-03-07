@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.wicket.Component;
@@ -212,7 +213,8 @@ public class StatusPageTest extends GeoServerWicketTestSupport {
     }
 
     /** Extra tab definition that will be added to GeoServer status page. */
-    public static final class ExtraTabDefinition implements StatusPage.TabDefinition {
+    @SuppressWarnings("serial")
+    public static final class ExtraTabDefinition implements StatusPage.TabDefinition, Serializable {
 
         @Override
         public String getTitleKey() {

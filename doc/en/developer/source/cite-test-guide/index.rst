@@ -730,20 +730,20 @@ Shortly before a major (2.xx.0) release, the following process should be followe
 #. Log into cite.geoserver.org via hop, then
 
    .. code-block:: shell
-   
+
    cd /home/cite
 
 #. Create a local docker image tagged ``geoserver-docker.osgeo.org/geoserver:2.27.x`` from the latest nightly build at https://build.geoserver.org/geoserver/2.27.x using the build steps from https://github.com/geoserver/docker.git
 
    .. code-block:: shell
-   
+
     cd geoserver-docker/build && git pull && ./release.sh build 2.27-SNAPSHOT
     docker image ls
 
 #. Checkout the latest Cite tests from https://github.com/geoserver/geoserver.git and change the GeoServer Admin password
 
    .. code-block:: shell
-   
+
     cd geoserver-main/build/cite && git pull  
     vim docker-compose.yml  
     :%s/____password____/new_password/

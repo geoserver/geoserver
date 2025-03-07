@@ -104,4 +104,9 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
 
         return url;
     }
+
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + " [beanName=" + beanName + "]";
+    }
 }

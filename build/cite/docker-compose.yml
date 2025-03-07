@@ -152,7 +152,13 @@ services:
       POSTGRES_PASSWORD: postgroot_password
     volumes:
       - /home/cite/postgis-data/wfs:/var/lib/postgresql/data:rw
-      - /home/cite/postgis-data/init-scripts:/docker-entrypoint-initdb.d # to initialise WFS DBs each startup
+      # initialise WFS DBs each startup
+      - ./wfs20/01-init-user.sh:/docker-entrypoint-initdb.d/21-init-user-wfs20.sh
+      - ./wfs11/01-init-user.sh:/docker-entrypoint-initdb.d/22-init-user-wfs11.sh
+      - ./wfs10/01-init-user.sh:/docker-entrypoint-initdb.d/23-init-user-wfs10.sh
+      - ./wfs20/citewfs-2.0/dataset-sf0-postgis2.sql:/docker-entrypoint-initdb.d/31-setup-db-wfs20.sql
+      - ./wfs11/citewfs-1.1/dataset-sf0-postgis2.sql:/docker-entrypoint-initdb.d/32-setup-db=wfs11.sql
+      - ./wfs10/citewfs-1.0/cite_data_postgis2.sql:/docker-entrypoint-initdb.d/33-setup-db-wfs10.sql
     healthcheck:
       test: pg_isready -U cite -d cite_wfs20 -h localhost -t 5 || exit 1
       interval: 10s

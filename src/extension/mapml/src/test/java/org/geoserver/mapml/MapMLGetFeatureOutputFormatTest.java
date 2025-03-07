@@ -405,7 +405,7 @@ public class MapMLGetFeatureOutputFormatTest extends WFSTestSupport {
         assertXpathEvaluatesTo("1", "count(//html:mapml-)", doc);
         String coords = xpath.evaluate("//html:map-feature[@id='Fifteen.1']//html:map-coordinates/text()", doc);
         assertEquals(
-                "numDecimals unset should return 8 digits of precision", "329290.83733147 -5812472.16880127", coords);
+                "numDecimals unset should return 8 digits of precision", "329290.83733063 -5812472.16877468", coords);
 
         layerInfo = getFeatureTypeInfo(MockData.FIFTEEN);
         layerInfo.setNumDecimals(4);

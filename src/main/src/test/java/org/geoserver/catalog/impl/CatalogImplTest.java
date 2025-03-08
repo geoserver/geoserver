@@ -6,6 +6,7 @@
 package org.geoserver.catalog.impl;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static java.util.Objects.requireNonNull;
 import static org.geoserver.catalog.Predicates.acceptAll;
 import static org.geoserver.catalog.Predicates.asc;
 import static org.geoserver.catalog.Predicates.contains;
@@ -21,9 +22,11 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -3713,5 +3716,27 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         LayerGroupInfo g1 = catalog.getFacade().getLayerGroupByName(lg.getName());
         LayerGroupInfo g2 = catalog.getFacade().getLayerGroupByName(lg.getName());
         assertTrue(LayerGroupInfo.equals(g1, g2));
+    }
+
+    @Test
+    public void testSyncAssignsNewCatalogProperty() {
+        assumeTrue(catalog instanceof CatalogImpl); // only relevant for CatalogImpl.sync()
+        addLayer();
+        assertNotNull(catalog.getStyle(s.getId()));
+        assertNotNull(catalog.getDataStore(ds.getId()));
+        assertNotNull(catalog.getFeatureType(ft.getId()));
+
+        CatalogImpl target = new CatalogImpl();
+        target.sync((CatalogImpl) catalog);
+
+        StyleInfoImpl style = (StyleInfoImpl) ModificationProxy.unwrap(requireNonNull(target.getStyle(s.getId())));
+        DataStoreInfoImpl store =
+                (DataStoreInfoImpl) ModificationProxy.unwrap(requireNonNull(target.getDataStore(ds.getId())));
+        FeatureTypeInfoImpl featureType =
+                (FeatureTypeInfoImpl) ModificationProxy.unwrap(requireNonNull(target.getFeatureType(ft.getId())));
+
+        assertSame(target, style.getCatalog());
+        assertSame(target, store.getCatalog());
+        assertSame(target, featureType.getCatalog());
     }
 }

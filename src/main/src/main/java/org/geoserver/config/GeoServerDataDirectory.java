@@ -255,7 +255,7 @@ public class GeoServerDataDirectory {
      * @return A {@link Resource}
      */
     public @Nonnull Resource defaultWorkspaceConfig() {
-        Resource r = getRoot("default.xml");
+        Resource r = getWorkspaces("default.xml");
         assert r != null;
         return r;
     }

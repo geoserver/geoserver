@@ -17,6 +17,7 @@ import org.geoserver.catalog.impl.CatalogFactoryImpl;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.platform.GeoServerExtensionsHelper;
+import org.geoserver.platform.resource.Resource;
 import org.geotools.api.style.ExternalGraphic;
 import org.geotools.api.style.GraphicalSymbol;
 import org.geotools.api.style.PointSymbolizer;
@@ -74,6 +75,12 @@ public class GeoServerDataDirectoryTest {
         assertEquals(
                 dataDir.getLayerGroups((WorkspaceInfo) null, "test").path(),
                 dataDir.getLayerGroups("test").path());
+    }
+
+    @Test
+    public void testDefaultWorkspaceConfig() {
+        Resource resource = dataDir.defaultWorkspaceConfig();
+        assertEquals(dataDir.getRoot().get("workspaces").get("default.xml").path(), resource.path());
     }
 
     @Test

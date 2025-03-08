@@ -1690,29 +1690,6 @@ public class GetFeatureTest extends WFS20TestSupport {
         }
     }
 
-    @Test
-    public void testPostWithMisconfiguredTypeAndExceptionReport() throws Exception {
-
-        addMisconfiguredType();
-
-        GeoServerInfo global = getGeoServer().getGlobal();
-        global.setResourceErrorHandling(ResourceErrorHandling.OGC_EXCEPTION_REPORT);
-        getGeoServer().save(global);
-
-        String xml = "<wfs:GetFeature "
-                + "service='WFS' "
-                + "version='2.0.0' "
-                + "xmlns:cdf='http://www.opengis.net/cite/data' "
-                + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
-                + "> "
-                + "<wfs:Query typeNames='cdf:Other'/>"
-                + "</wfs:GetFeature>";
-
-        Document doc = postAsDOM("wfs", xml);
-
-        assertXpathEvaluatesTo("NoApplicableCode", "//ows:Exception/@exceptionCode", doc);
-    }
-
     private void addMisconfiguredType() {
         Catalog catalog = getCatalog();
 

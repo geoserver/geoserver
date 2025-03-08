@@ -160,14 +160,16 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
 
     protected void resolve(StyleInfo style) {
         setId(style);
+        StyleInfoImpl s = (StyleInfoImpl) style;
+        s.setCatalog(getCatalog());
 
         // resolve the workspace
-        WorkspaceInfo ws = style.getWorkspace();
+        WorkspaceInfo ws = s.getWorkspace();
         if (ws != null) {
             WorkspaceInfo resolved = ResolvingProxy.resolve(getCatalog(), ws);
             if (resolved != null) {
                 resolved = unwrap(resolved);
-                style.setWorkspace(resolved);
+                s.setWorkspace(resolved);
             } else {
                 LOGGER.log(
                         Level.INFO,
@@ -193,6 +195,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     protected void resolve(StoreInfo store) {
         setId(store);
         StoreInfoImpl s = (StoreInfoImpl) store;
+        s.setCatalog(getCatalog());
 
         // resolve the workspace
         WorkspaceInfo resolved = ResolvingProxy.resolve(getCatalog(), s.getWorkspace());
@@ -211,6 +214,7 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
     protected void resolve(ResourceInfo resource) {
         setId(resource);
         ResourceInfoImpl r = (ResourceInfoImpl) resource;
+        r.setCatalog(getCatalog());
 
         // resolve the store
         StoreInfo store = ResolvingProxy.resolve(getCatalog(), r.getStore());

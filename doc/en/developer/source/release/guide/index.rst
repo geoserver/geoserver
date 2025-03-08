@@ -237,6 +237,11 @@ This job will rsync all the artifacts located at::
 
 to the SourceForge FRS server. Navigate to `SourceForge <https://sourceforge.net/projects/geoserver/>`__ and verify that the artifacts have been uploaded properly. If this is the latest stable release, set the necessary flags (you will need to be logged in as a SourceForge admin user) on the ``.exe`` and ``.bin`` artifacts so that they show up as the appropriate default for users downloading on the Windows and Linux platforms. This does not apply to maintenance or support releases.
 
+Cite Certification
+------------------
+
+For a major (2.xx.0) release, follow the `instructions <https://docs.geoserver.org/main/en/developer/cite-test-guide/index.html#cite-certification>`__ to obtain certification, and include it in the release notes below.
+
 Release notes
 -------------
 

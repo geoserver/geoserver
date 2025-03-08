@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.catalog.datadir.internal;
+package org.geoserver.config.datadir.internal;
 
 import static java.util.Objects.requireNonNull;
 
@@ -14,7 +14,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -25,6 +24,23 @@ import org.geoserver.config.util.XStreamServiceLoader;
 import org.geotools.util.logging.Logging;
 import org.springframework.lang.NonNull;
 
+/**
+ * Provides efficient traversal of the GeoServer data directory structure.
+ *
+ * <p>This class implements a specialized walker that understands the GeoServer data directory structure and provides
+ * hierarchical access to workspaces, stores, layers, and other configuration entities with minimal filesystem
+ * operations. Key features include:
+ *
+ * <ul>
+ *   <li>Single-pass traversal of the data directory structure
+ *   <li>Caching of workspace directories for reuse between catalog and config loading
+ *   <li>Specialized inner classes for working with different directory types
+ *   <li>Lazy loading of directory contents to minimize filesystem operations
+ * </ul>
+ *
+ * <p>The inner classes ({@link WorkspaceDirectory}, {@link StoreDirectory}, {@link LayerDirectory}) represent the
+ * different directory types in the GeoServer data directory hierarchy and provide type-safe access to their contents.
+ */
 class DataDirectoryWalker {
 
     private static final Logger LOGGER =
@@ -37,47 +53,113 @@ class DataDirectoryWalker {
      */
     private List<String> serviceFileNames;
 
+    /**
+     * Represents a workspace directory in the GeoServer data directory.
+     *
+     * <p>Provides access to workspace-related files including:
+     *
+     * <ul>
+     *   <li>workspace.xml - Workspace configuration
+     *   <li>namespace.xml - Associated namespace configuration
+     *   <li>settings.xml - Workspace-specific settings (if present)
+     *   <li>Service configuration files (optional)
+     *   <li>Style files in the styles/ subdirectory
+     *   <li>Layer group files in the layergroups/ subdirectory
+     *   <li>Store directories (for datastore, coveragestore, etc.)
+     * </ul>
+     *
+     * <p>This class caches the list of service configuration files present in the workspace to avoid repeated
+     * filesystem operations.
+     */
     static class WorkspaceDirectory {
-        public final @NonNull Path workspaceFile;
-        public final @NonNull Path namespaceFile;
-        public final @NonNull Optional<Path> settings;
-        public final @NonNull Set<String> serviceInfoFileNames;
+        private final @NonNull Path directory;
+        private final @NonNull DataDirectoryWalker walker;
 
-        private @NonNull DataDirectoryWalker walker;
+        /** Cached set of service configuration file names present in this workspace directory */
+        private Set<String> serviceInfoFileNames = Set.of();
 
-        WorkspaceDirectory(
-                Path ws,
-                Path ns,
-                Optional<Path> settings,
-                Set<String> serviceInfoFileNames,
-                DataDirectoryWalker walker) {
-            requireNonNull(ws);
-            requireNonNull(ns);
-            requireNonNull(settings);
-            requireNonNull(serviceInfoFileNames);
+        private WorkspaceDirectory(Path directory, DataDirectoryWalker walker) {
+            requireNonNull(directory);
             requireNonNull(walker);
-            this.workspaceFile = ws;
-            this.namespaceFile = ns;
-            this.settings = settings;
-            this.serviceInfoFileNames = serviceInfoFileNames;
+            this.directory = directory;
             this.walker = walker;
         }
 
+        public static Optional<WorkspaceDirectory> newInstance(
+                Path workspaceDirectory, DataDirectoryWalker childWalker) {
+
+            WorkspaceDirectory wd = new WorkspaceDirectory(workspaceDirectory, childWalker);
+            Path ws = wd.workspaceFile();
+            Path ns = wd.namespaceFile();
+
+            final boolean wsExists = Files.isRegularFile(ws);
+            final boolean nsExists = Files.isRegularFile(ns);
+
+            if (wsExists && nsExists) {
+                // cache which ServiceInfo xml files are in the workspace directory to make a
+                // single pass
+                List<String> availableServiceFileNames = childWalker.serviceFileNames;
+                wd.serviceInfoFileNames = availableServiceFileNames.stream()
+                        .filter(f -> Files.isRegularFile(workspaceDirectory.resolve(f)))
+                        .collect(Collectors.toSet());
+
+                return Optional.of(wd);
+            }
+            if (!wsExists) LOGGER.severe("workspace.xml missing at " + workspaceDirectory);
+            if (!nsExists) LOGGER.severe("namespace.xml missing at " + workspaceDirectory + " ignoring workspace");
+            return Optional.empty();
+        }
+
+        public Path directory() {
+            return directory;
+        }
+
+        public Path workspaceFile() {
+            return directory.resolve("workspace.xml");
+        }
+
+        public Path namespaceFile() {
+            return directory.resolve("namespace.xml");
+        }
+
+        public Optional<Path> settingsFile() {
+            return Optional.of(directory.resolve("settings.xml")).filter(Files::isRegularFile);
+        }
+
+        public Set<String> serviceInfoFileNames() {
+            return serviceInfoFileNames;
+        }
+
         public Stream<StoreDirectory> stores() {
-            return walker.stores(workspaceFile.getParent());
+            return walker.stores(directory);
         }
 
         public List<Path> styles() {
-            return walker.childXmlFiles(workspaceFile.resolveSibling("styles"));
+            return walker.childXmlFiles(directory.resolve("styles"));
         }
 
         public List<Path> layerGroups() {
-            return walker.childXmlFiles(workspaceFile.resolveSibling("layergroups"));
+            return walker.childXmlFiles(directory.resolve("layergroups"));
         }
     }
 
+    /**
+     * Represents a store directory in the GeoServer data directory.
+     *
+     * <p>A store directory contains:
+     *
+     * <ul>
+     *   <li>A store configuration file (datastore.xml, coveragestore.xml, wmsstore.xml, etc.)
+     *   <li>Subdirectories for each layer associated with the store
+     * </ul>
+     *
+     * <p>This class provides access to the store configuration file and methods to traverse the contained layer
+     * directories.
+     */
     static class StoreDirectory {
+        /** The path to the store configuration file (datastore.xml, coveragestore.xml, etc.) */
         public final @NonNull Path storeFile;
+
         private @NonNull DataDirectoryWalker walker;
 
         public StoreDirectory(Path storeFile, DataDirectoryWalker walker) {
@@ -93,8 +175,23 @@ class DataDirectoryWalker {
         }
     }
 
+    /**
+     * Represents a layer directory in the GeoServer data directory.
+     *
+     * <p>A layer directory contains:
+     *
+     * <ul>
+     *   <li>A layer.xml file with layer configuration
+     *   <li>A resource configuration file (featuretype.xml, coverage.xml, wmslayer.xml, etc.)
+     * </ul>
+     *
+     * <p>This class provides access to both the layer configuration file and the resource configuration file.
+     */
     static class LayerDirectory {
+        /** The path to the resource configuration file (featuretype.xml, coverage.xml, etc.) */
         public final @NonNull Path resourceFile;
+
+        /** The path to the layer.xml configuration file */
         public final @NonNull Path layerFile;
 
         public LayerDirectory(Path resourceFile, Path layerFile) {
@@ -169,14 +266,20 @@ class DataDirectoryWalker {
 
     public List<WorkspaceDirectory> workspaces() {
         if (workspaces == null) {
-            Path workspacesRoot = dataDirRoot.resolve("workspaces");
+            Path workspacesRoot = workspacesRoot();
             List<Path> workspaceDirectories = subdirectories(workspacesRoot);
             workspaces = workspaceDirectories.stream()
                     .map(this::newWorkspace)
-                    .filter(Objects::nonNull)
+                    .filter(Optional::isPresent)
+                    .map(Optional::orElseThrow)
                     .collect(Collectors.toList());
         }
         return workspaces;
+    }
+
+    private Path workspacesRoot() {
+        Path workspacesRoot = dataDirRoot.resolve("workspaces");
+        return workspacesRoot;
     }
 
     public Optional<Path> gsGlobal() {
@@ -185,6 +288,14 @@ class DataDirectoryWalker {
 
     public Optional<Path> gsLogging() {
         return optionalFile(dataDirRoot.resolve("logging.xml"));
+    }
+
+    public Optional<Path> defaultWorkspace() {
+        return optionalFile(getDefaultWorkspaceFile());
+    }
+
+    public Path getDefaultWorkspaceFile() {
+        return workspacesRoot().resolve("default.xml");
     }
 
     private Optional<Path> optionalFile(Path file) {
@@ -196,27 +307,8 @@ class DataDirectoryWalker {
         workspaces = null;
     }
 
-    private WorkspaceDirectory newWorkspace(Path wsdir) {
-        Path ws = wsdir.resolve("workspace.xml");
-        Path ns = wsdir.resolve("namespace.xml");
-
-        final boolean wsExists = Files.isRegularFile(ws);
-        final boolean nsExists = Files.isRegularFile(ns);
-        if (wsExists && nsExists) {
-
-            Optional<Path> settings = optionalFile(wsdir.resolve("settings.xml"));
-            // cache which ServiceInfo xml files are in the workspace directory to make a single
-            // pass
-            Set<String> serviceInfoFiles = serviceFileNames.stream()
-                    .filter(f -> Files.isRegularFile(wsdir.resolve(f)))
-                    .collect(Collectors.toSet());
-
-            return new WorkspaceDirectory(ws, ns, settings, serviceInfoFiles, this);
-        }
-        if (!wsExists) LOGGER.warning("workspace.xml missing at " + wsdir);
-        if (!nsExists) LOGGER.warning("namespace.xml missing at " + wsdir + " ignoring workspace");
-
-        return null;
+    private Optional<WorkspaceDirectory> newWorkspace(Path wsdir) {
+        return WorkspaceDirectory.newInstance(wsdir, this);
     }
 
     private List<Path> subdirectories(Path parent) {
@@ -229,8 +321,8 @@ class DataDirectoryWalker {
 
     private List<Path> children(Path parent, String glob) {
         if (Files.isDirectory(parent)) {
-            try {
-                return toStream(parent, Files.newDirectoryStream(parent, glob));
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(parent, glob)) {
+                return toList(directoryStream);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -240,8 +332,8 @@ class DataDirectoryWalker {
 
     private List<Path> children(Path parent, DirectoryStream.Filter<Path> filter) {
         if (Files.isDirectory(parent)) {
-            try {
-                return toStream(parent, Files.newDirectoryStream(parent, filter));
+            try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(parent, filter)) {
+                return toList(directoryStream);
             } catch (IOException e) {
                 throw new UncheckedIOException(e);
             }
@@ -249,11 +341,7 @@ class DataDirectoryWalker {
         return Collections.emptyList();
     }
 
-    private List<Path> toStream(Path parent, DirectoryStream<Path> children) throws IOException {
-        try {
-            return Lists.newArrayList(children);
-        } finally {
-            children.close();
-        }
+    private List<Path> toList(Iterable<Path> children) {
+        return Lists.newArrayList(children);
     }
 }

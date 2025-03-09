@@ -224,7 +224,7 @@ are three types of predicates that can be used:
       PARAM((?i)^service$,(?i)^wms$)
   
 * **PROP(key,value_regex)**: Returns true if the value for the property key matches the regex. The key
-  is case-sensitive and must contain must contain the string ``GeoServer``, ``GeoTools``, or
+  is case-sensitive and must contain the string ``GeoServer``, ``GeoTools``, or
   ``GeoWebCache`` anywhere in the key (case-insensitive). The regex will be tested against an empty
   string if the property is not set. This is primarily intended for the default configuration and
   may not be useful to administrators.
@@ -275,7 +275,7 @@ the desired behavior.
 
 .. note::
     Because the CSP is set so early in GeoServer's request handling, a current limitation is that
-    it can not use proxy base URLs that are built from the HTTP request headers.
+    it cannot use proxy base URLs that are built from the HTTP request headers.
 
 Leaving the directives blank will cause this rule to use the directives from the first preceding
 rule with directives. No header value will be assigned if all preceding rules have no directives.
@@ -325,7 +325,7 @@ fallback directives from the default value::
 
     base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
 
-The keyword ``NONE`` can be used to specify that no header value will be assigned to rquests when
+The keyword ``NONE`` can be used to specify that no header value will be assigned to requests when
 there are CSP configuration errors.
 
 
@@ -337,7 +337,7 @@ The  environmental variable ``org.geoserver.web.csp.strict`` intended to allow a
 * ``true``: Content Security Policy violations will be blocked by the browser, with use of header ``Content-Security-Policy``.
 * ``false``: Content Security Policy violations will be reported in the developer tools console, with use header ``Content-Security-Policy-Report-Only``.
 
-  This setting is intended to report CSP violations to the browser javascript console, so you can review and troubleshoot.
+  This setting is intended to report CSP violations to the browser JavaScript console, so you can review and troubleshoot.
 
 .. _security_csp_featureinfo_html_script:
 
@@ -346,7 +346,7 @@ WFS GetFeatureInfo CSP Policy
 
 The :ref:`application property <application_properties>` ``GEOSERVER_FEATUREINFO_HTML_SCRIPT`` controls the ``Content-Security-Policy`` for WFS GetFeatureInfo response limiting the use of fonts, images, style or script resources.
 
-* ``SELF``: The default value, restricts template authors to content provided by GeoServer.
+* ``SELF``: The default value; restricts template authors to content provided by GeoServer.
 
 * ``UNSAFE``: No restriction
   

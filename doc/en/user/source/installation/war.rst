@@ -59,7 +59,7 @@ Tomcat Hardening
 ----------------
 Hide the Tomcat version in error responses and its error details.
 
-1. To remove the Tomcat version, create following file with empty parameters
+1. To remove the Tomcat version, create the following file with empty parameters
    ::
    
     cd $CATALINA_HOME (where Tomcat binaries are installed)
@@ -70,7 +70,7 @@ Hide the Tomcat version in error responses and its error details.
     server.built=
     EOF
 
-2. Additionally add to :file:`server.xml` the ErrorReportValve to disable showReport and showServerInfo. This is used to hide errors handled globally by tomcat in host section.
+2. Additionally add to :file:`server.xml` the ErrorReportValve to disable showReport and showServerInfo. This is used to hide errors handled globally by tomcat in the host section.
 
    ``vi ./conf/server.xml``
 
@@ -151,7 +151,7 @@ Update GeoServer:
 
 * Follow the :ref:`installation_upgrade` to update :file:`geoserver.war`.
 
-  Before you start ensure you have moved your data directory to an external location not located inside the :file:`webapps/geoserver/data` folder.
+  Before you start, ensure you have moved your data directory to an external location not located inside the :file:`webapps/geoserver/data` folder.
 
 * Be sure to stop the application server before deploying updated :file:`geoserver.war`.
   
@@ -165,7 +165,7 @@ Update Tomcat:
 
 * Update regularly at least the container application! And repeat the hardening process.
 
-  There are a lot of geoserver installations visible with outdated Tomcat versions.
+  There are a lot of GeoServer installations visible with outdated Tomcat versions.
 
 Uninstallation
 --------------

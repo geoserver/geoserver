@@ -120,6 +120,9 @@ public class ConfigurationPasswordEncryptionHelper {
 
         toEncrypt = CACHE.get(factory.getClass());
         if (toEncrypt != null) {
+            if (storeType != null && null == STORE_INFO_TYPE_CACHE.putIfAbsent(storeType, toEncrypt)) {
+                LOGGER.fine("Cached encryption fields for storeType " + storeType);
+            }
             return toEncrypt;
         }
 
@@ -129,7 +132,7 @@ public class ConfigurationPasswordEncryptionHelper {
         }
 
         toEncrypt = Collections.emptySet();
-        if (info != null && info.getConnectionParameters() != null) {
+        if (info.getConnectionParameters() != null) {
             toEncrypt = new HashSet<>(3);
             for (Param p : factory.getParametersInfo()) {
                 if (p.isPassword()) {

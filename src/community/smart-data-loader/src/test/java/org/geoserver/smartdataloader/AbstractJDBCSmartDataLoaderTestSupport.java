@@ -46,7 +46,10 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
         testSetup.setFixture(fixture);
         testSetup.setUp();
         this.dataSource = testSetup.getDataSource();
+        this.afterSetup();
     }
+
+    protected void afterSetup() {}
 
     protected Properties getFixture() {
         File fixtureFile = FixtureUtilities.getFixtureFile(getFixtureDirectory(), fixtureHelper.getFixtureId());

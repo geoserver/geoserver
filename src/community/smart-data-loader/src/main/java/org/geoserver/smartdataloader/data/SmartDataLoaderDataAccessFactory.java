@@ -230,10 +230,10 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
         try {
             // TODO need to review (since it's forcing to get a JDBC datastore based on parameters.
             // Not sure what happen with JNDI)
-            jdbcDataStore = factory.createDataStore(jdbcDataStoreInfo.getConnectionParameters());
+            Map<String, Serializable> connectionParameters = jdbcDataStoreInfo.getConnectionParameters();
+            jdbcDataStore = factory.createDataStore(connectionParameters);
             DataStoreMetadataConfig config = new JdbcDataStoreMetadataConfig(
-                    jdbcDataStore,
-                    jdbcDataStoreInfo.getConnectionParameters().get("passwd").toString());
+                    jdbcDataStore, connectionParameters.get("passwd").toString());
             dsm = (new DataStoreMetadataFactory()).getDataStoreMetadata(config);
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Sql exception while retrieving metadata from the DB " + e.getMessage());
@@ -305,9 +305,8 @@ public class SmartDataLoaderDataAccessFactory implements DataAccessFactory {
     /** Method that allows to get a DataStoreInfo based on a set of parameters. */
     private DataStoreInfo getDataStoreInfo(Map<String, Serializable> params) throws IOException {
         String jdbcDataStoreId = lookup(DATASTORE_METADATA, params, String.class);
-        Catalog c = getGeoServer().getCatalog();
-        DataStoreInfo ds = c.getDataStore(jdbcDataStoreId);
-        return ds;
+        Catalog catalog = getGeoServer().getCatalog();
+        return catalog.getResourcePool().clone(catalog.getDataStore(jdbcDataStoreId), true);
     }
 
     /** Helper method to build urls in the context of a new AppSchemaDataAccess instance. */

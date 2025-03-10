@@ -21,11 +21,15 @@ import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.CoverageInfo;
+import org.geoserver.catalog.CoverageStoreInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
@@ -35,6 +39,9 @@ import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
+import org.geoserver.catalog.WMSStoreInfo;
+import org.geoserver.catalog.WMTSLayerInfo;
+import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
@@ -198,17 +205,58 @@ class CatalogLoader {
         }
     }
 
-    private void addToCatalog(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) doAddToCatalog((WorkspaceInfo) info, catalog::add);
-        else if (info instanceof NamespaceInfo) doAddToCatalog((NamespaceInfo) info, catalog::add);
-        else if (info instanceof StoreInfo) doAddToCatalog((StoreInfo) info, catalog::add);
-        else if (info instanceof ResourceInfo) doAddToCatalog((ResourceInfo) info, catalog::add);
-        else if (info instanceof LayerInfo) doAddToCatalog((LayerInfo) info, catalog::add);
-        else if (info instanceof LayerGroupInfo) doAddToCatalog((LayerGroupInfo) info, catalog::add);
-        else if (info instanceof StyleInfo) doAddToCatalog((StyleInfo) info, catalog::add);
+    private <C extends CatalogInfo> C addToCatalog(C info) {
+        if (info instanceof WorkspaceInfo)
+            doAddToCatalog((WorkspaceInfo) info, catalog::add, i -> ((WorkspaceInfo) info).getName());
+        else if (info instanceof NamespaceInfo)
+            doAddToCatalog((NamespaceInfo) info, catalog::add, i -> (((NamespaceInfo) info).getPrefix()));
+        else if (info instanceof StoreInfo)
+            doAddToCatalog((StoreInfo) info, catalog::add, i -> (((StoreInfo) info).getName()));
+        else if (info instanceof ResourceInfo)
+            doAddToCatalog((ResourceInfo) info, catalog::add, i -> {
+                ResourceInfo r = (ResourceInfo) info;
+                return r.getName() + ", " + (r.isEnabled() ? "enabled" : "disabled");
+            });
+        else if (info instanceof LayerInfo)
+            doAddToCatalog((LayerInfo) info, catalog::add, i -> (((LayerInfo) info).getName()));
+        else if (info instanceof LayerGroupInfo)
+            doAddToCatalog((LayerGroupInfo) info, catalog::add, i -> (((LayerGroupInfo) info).getName()));
+        else if (info instanceof StyleInfo)
+            doAddToCatalog((StyleInfo) info, catalog::add, i -> (((StyleInfo) info).getName()));
         else {
             throw new IllegalArgumentException(format("Unexpected value: %s", info));
         }
+        return info;
+    }
+
+    private <I extends CatalogInfo> Optional<I> doAddToCatalog(I info, Consumer<I> saver, Function<I, String> name) {
+        try {
+            resolve(info);
+            saver.accept(info);
+            LOGGER.log(Level.CONFIG, () -> format("Loaded %s %s", typeOf(info), name.apply(info)));
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e, () -> format("Failed to load %s %s", typeOf(info), info.getId()));
+            return Optional.empty();
+        }
+        return Optional.of(info);
+    }
+
+    /** @return a string "type-of" proxy for logging purposes */
+    private <I extends CatalogInfo> String typeOf(I proxy) {
+        if (proxy instanceof WorkspaceInfo) return "workspace";
+        if (proxy instanceof NamespaceInfo) return "namespace";
+        if (proxy instanceof DataStoreInfo) return "data store";
+        if (proxy instanceof CoverageStoreInfo) return "coverage store";
+        if (proxy instanceof WMSStoreInfo) return "WMS store";
+        if (proxy instanceof WMTSStoreInfo) return "WMTS store";
+        if (proxy instanceof FeatureTypeInfo) return "feature type";
+        if (proxy instanceof CoverageInfo) return "coverage";
+        if (proxy instanceof WMSLayerInfo) return "WMS layer";
+        if (proxy instanceof WMTSLayerInfo) return "WMTS layer";
+        if (proxy instanceof LayerInfo) return "layer";
+        if (proxy instanceof LayerGroupInfo) return "layer group";
+        if (proxy instanceof StyleInfo) return "style";
+        return "unknown type";
     }
 
     private void setDefaultWorkspace() {
@@ -334,18 +382,6 @@ class CatalogLoader {
             LOGGER.log(Level.SEVERE, "Unable to keep up adding parsed CatalogInfos to the queue", e);
             Thread.currentThread().interrupt(); // Restore interrupted status
         }
-    }
-
-    private <I extends CatalogInfo> Optional<I> doAddToCatalog(I info, Consumer<I> saver) {
-        try {
-            resolve(info);
-            saver.accept(info);
-            LOGGER.log(Level.FINE, () -> format("Added to Catalog: %s[%s]", info, info.getId()));
-        } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e, () -> format("Error adding to the catalog %s", info));
-            return Optional.empty();
-        }
-        return Optional.of(info);
     }
 
     private void resolve(CatalogInfo info) {
@@ -556,18 +592,6 @@ class CatalogLoader {
             throw new IllegalStateException(msg);
         }
         return resolved;
-    }
-
-    /** @return a string "type-of" proxy for logging purposes */
-    private <I extends CatalogInfo> String typeOf(I proxy) {
-        if (proxy instanceof WorkspaceInfo) return "WorkspaceInfo";
-        if (proxy instanceof NamespaceInfo) return "NamespaceInfo";
-        if (proxy instanceof StoreInfo) return "StoreInfo";
-        if (proxy instanceof ResourceInfo) return "ResourceInfo";
-        if (proxy instanceof LayerInfo) return "LayerInfo";
-        if (proxy instanceof LayerGroupInfo) return "LayerGroupInfo";
-        if (proxy instanceof StyleInfo) return "StyleInfo";
-        return "unknown type";
     }
 
     private void loadLayerGroups(Stream<Path> stream) {

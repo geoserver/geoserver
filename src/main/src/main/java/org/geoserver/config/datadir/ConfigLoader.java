@@ -58,7 +58,7 @@ class ConfigLoader {
     private final AtomicLong readFileCount = new AtomicLong();
 
     /** Successfully added workspace-specific {@link ServiceInfo}s */
-    private final AtomicLong worspaceServices = new AtomicLong();
+    private final AtomicLong services = new AtomicLong();
     /** Successfully added workspace-specific {@link SettingsInfo}s */
     private final AtomicLong workspaceSettings = new AtomicLong();
 
@@ -77,7 +77,7 @@ class ConfigLoader {
      */
     public void loadGeoServer() {
         readFileCount.set(0);
-        worspaceServices.set(0);
+        services.set(0);
         workspaceSettings.set(0);
 
         // temporarily set the raw catalog to avoid decorators forcing spring to resolve beans and deadlock on the main
@@ -101,9 +101,9 @@ class ConfigLoader {
 
             log(
                     Level.CONFIG,
-                    "Depersisted {0} Config files, {1} workspace services, {2} workspace settings",
+                    "Loaded {0} Config files, {1} services, {2} workspace settings",
                     readFileCount,
-                    worspaceServices,
+                    services,
                     workspaceSettings);
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Thread interrupted while loading the catalog", e);
@@ -267,7 +267,10 @@ class ConfigLoader {
     }
 
     private void addService(ServiceInfo service) {
-        add(service, geoServer::add).ifPresent(s -> this.worspaceServices.incrementAndGet());
+        add(service, geoServer::add).ifPresent(s -> {
+            this.services.incrementAndGet();
+            LOGGER.config(() -> "Loaded service '" + s.getId() + "', " + (s.isEnabled() ? "enabled" : "disabled"));
+        });
     }
 
     private <I extends Info> Optional<I> add(I info, Consumer<I> saver) {

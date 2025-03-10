@@ -16,6 +16,9 @@
   <artifactId>community</artifactId>
   <packaging>pom</packaging>
   <name>Community Space</name>
+  <modules>
+    <module>csv</module>
+  </modules>
 
   <dependencies>
     <!-- Do not add any other dependency here, modules shall explicitly declare their dependencies -->
@@ -119,6 +122,12 @@
       </modules>
     </profile>
     <profile>
+      <id>csv</id>
+      <modules>
+        <module>csv</module>
+      </modules>
+    </profile>
+    <profile>
       <id>communityRelease</id>
       <modules>
         <module>dds</module>
@@ -180,6 +189,7 @@
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
         <module>acl</module>
+        <module>csv</module>
       </modules>
     </profile>
     <profile>

@@ -371,7 +371,16 @@
         <configId>release</configId>
       </properties>
     </profile>
-
+    <profile>
+      <id>csv</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-csv</artifactId>
+          <version>2.27-SNAPSHOT</version>
+        </dependency>
+      </dependencies>
+    </profile>
     <profile>
       <id>graticule</id>
       <dependencies>

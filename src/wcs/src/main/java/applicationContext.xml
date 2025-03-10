@@ -53,4 +53,6 @@
     <bean id="coverageCleaner" class="org.geoserver.wcs.CoverageCleanerCallback"/>
     
     <bean id="wcsResourceVoter" class="org.geoserver.wcs.WCSResourceVoter"/>
+
+    <bean id="wcsResponseClipper" class="org.geoserver.wcs.WCSCoverageClipCallback"/>
 </beans>

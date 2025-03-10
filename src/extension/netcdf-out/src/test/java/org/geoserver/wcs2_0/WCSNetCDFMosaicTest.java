@@ -13,6 +13,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assume.assumeTrue;
 
+import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -54,6 +55,7 @@ import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.io.netcdf.NetCDFReader;
 import org.geotools.coverage.io.netcdf.crs.NetCDFCRSAuthorityFactory;
 import org.geotools.feature.NameImpl;
+import org.geotools.geometry.GeneralBounds;
 import org.geotools.imageio.netcdf.utilities.NetCDFUtilities;
 import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.DateRange;
@@ -811,6 +813,46 @@ public class WCSNetCDFMosaicTest extends WCSNetCDFBaseTest {
             calendar.setTime(((DateRange) c.getProperty("TIME")).getMinValue());
             assertEquals(0, calendar.get(Calendar.HOUR));
             assertEquals(startingYear++, calendar.get(Calendar.YEAR));
+        }
+    }
+
+    @Test
+    public void testClip() throws Exception {
+        // http response from the request inside the string
+        String wkt = "POLYGON((400000 6300000, 500000 6300000, 450000 6500000, 400000 6300000))";
+        MockHttpServletResponse response = getAsServletResponse("ows?request=GetCoverage&service=WCS&version=2.0.1"
+                + "&coverageId=wcs__Band1&format=application/x-netcdf&clip=" + wkt);
+        assertNotNull(response);
+        byte[] netcdfOut = getBinary(response);
+        File file = File.createTempFile("netcdf", "outclip.nc", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, netcdfOut);
+
+        NetCDFReader reader = null;
+        GridCoverage2D coverage = null;
+        try {
+            // check the general envelope has been cut
+            reader = new NetCDFReader(file, null);
+            GeneralBounds envelope = reader.getOriginalEnvelope();
+            int TOLERANCE = 4000;
+            assertEquals(400000, envelope.getMinimum(0), TOLERANCE);
+            assertEquals(500000, envelope.getMaximum(0), TOLERANCE);
+            assertEquals(6300000, envelope.getMinimum(1), TOLERANCE);
+            assertEquals(6500000, envelope.getMaximum(1), TOLERANCE);
+
+            // check the data has been cut
+            coverage = reader.read(null);
+            // .. outside of the triangle
+            Point2D.Double position = new Point2D.Double(410000, 6400000);
+            double[] pixel = new double[1];
+            coverage.evaluate(position, pixel);
+            assertEquals(0, pixel[0], 0d);
+            // .. inside the triangle
+            position = new Point2D.Double(450000, 6400000);
+            coverage.evaluate(position, pixel);
+            assertEquals(48, pixel[0], 0d);
+        } finally {
+            if (coverage != null) coverage.dispose(true);
+            if (reader != null) reader.dispose();
         }
     }
 }

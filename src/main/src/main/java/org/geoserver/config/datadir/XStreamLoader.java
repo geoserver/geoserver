@@ -7,11 +7,10 @@ package org.geoserver.config.datadir;
 import com.thoughtworks.xstream.XStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
 import java.util.logging.Level;
@@ -20,6 +19,7 @@ import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.impl.ResolvingProxy;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.platform.GeoServerExtensions;
@@ -57,8 +57,6 @@ class XStreamLoader {
 
     private XStreamPersisterFactory xpf;
 
-    private Catalog catalog;
-
     /**
      * Holds per-thread {@link XStreamPersister}s. No need to call {@link ThreadLocal#remove()} because the calling
      * thread dies with the managed {@link ForkJoinPool} used to call {@link #depersist}.
@@ -68,11 +66,6 @@ class XStreamLoader {
     /** @param xpfac {@link XStreamPersister} factory providing a new instance for each Thread */
     public XStreamLoader(XStreamPersisterFactory xpfac) {
         this.xpf = xpfac;
-    }
-
-    /** @param catalog the GeoServer catalog instance (used for resolving references) */
-    public void setCatalog(Catalog catalog) {
-        this.catalog = catalog;
     }
 
     /**
@@ -85,6 +78,8 @@ class XStreamLoader {
      * <ol>
      *   <li>First, the file contents are loaded using a {@link ForkJoinPool.ManagedBlocker}
      *   <li>Then, the XML content is parsed using a thread-local {@link XStreamPersister}
+     *   <li>The {@link XStreamPersister} has no {@code Catalog} set, hence it won't resolve {@link ResolvingProxy
+     *       proxies}. That's to be done by the caller in a thread-safe way.
      * </ol>
      *
      * <p>Any errors during loading or parsing are properly logged, and an empty Optional is returned in case of
@@ -96,16 +91,23 @@ class XStreamLoader {
      */
     public <C extends Info> Optional<C> depersist(Path file) {
 
-        try (InputStream in = Files.newInputStream(file, StandardOpenOption.READ)) {
-            return Optional.of(parse(in));
-        } catch (IOException e) {
+        try {
+            // potentially offload the I/O to another thread to avoid blocking
+            byte[] contents = load(file);
+            if (contents != null) {
+                return Optional.of(parse(contents));
+            }
+        } catch (RuntimeException e) {
             logParseError(file, e);
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.SEVERE, "Therad interruped while parsing " + file + ". Aborting.", e);
+            Thread.currentThread().interrupt();
         }
         return Optional.empty();
     }
 
     public void persist(CatalogInfo info, Path path) throws IOException {
-        XStreamPersister persister = getXStream(catalog);
+        XStreamPersister persister = getXStream();
         try (OutputStream out = Files.newOutputStream(path)) {
             persister.save(info, out);
         }
@@ -129,19 +131,15 @@ class XStreamLoader {
      * @param <C> the type of the configuration or catalog object to deserialize
      * @param contents the XML input stream to parse
      * @return the deserialized object, or null if parsing failed
-     * @throws IOException if an error occurs during parsing
+     * @throws UncheckedIOException if an error occurs during parsing
      */
-    public <C extends Info> C parse(byte[] contents) throws IOException {
-        return parse(new ByteArrayInputStream(contents));
-    }
-
     @SuppressWarnings("unchecked")
-    private <C extends Info> C parse(InputStream contents) throws IOException {
+    private <C extends Info> C parse(byte[] contents) {
         try {
-            XStreamPersister xp = getXStream(catalog);
-            return (C) xp.load(contents, Info.class);
-        } catch (RuntimeException xe) {
-            throw new IOException(xe);
+            XStreamPersister xp = getXStream();
+            return (C) xp.load(new ByteArrayInputStream(contents), Info.class);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -157,18 +155,12 @@ class XStreamLoader {
      *
      * @param file the path to the file to load
      * @return an Optional containing the file contents as a byte array, or empty if loading failed
+     * @throws InterruptedException
      */
-    public Optional<byte[]> load(Path file) {
-        FileLoader block = new FileLoader(file);
-        try {
-            ForkJoinPool.managedBlock(block);
-        } catch (RuntimeException e) {
-            LOGGER.log(Level.SEVERE, "Error loading contents of " + file, e);
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "Interrupted!", e);
-            Thread.currentThread().interrupt();
-        }
-        return block.contents();
+    private byte[] load(Path file) throws InterruptedException {
+        FileLoader offloadingRead = new FileLoader(file);
+        ForkJoinPool.managedBlock(offloadingRead);
+        return offloadingRead.contents();
     }
 
     /** Logs errors that occur during XML parsing in a consistent format. */
@@ -186,7 +178,7 @@ class XStreamLoader {
      * the parallel processing pipeline.
      *
      * <p>The file contents are loaded into memory in the {@link #block()} method and made available through the
-     * {@link #contents()} method, which returns the file contents wrapped in an Optional.
+     * {@link #contents()} method.
      */
     static class FileLoader implements ForkJoinPool.ManagedBlocker {
         private final Path file;
@@ -197,8 +189,8 @@ class XStreamLoader {
             this.file = f;
         }
 
-        Optional<byte[]> contents() {
-            return Optional.ofNullable(contents);
+        byte[] contents() {
+            return contents;
         }
 
         @Override
@@ -232,13 +224,12 @@ class XStreamLoader {
      * make the whole catalog loading fail. Instead, DataDirectoryGeoServerLoader will decode them after the fact in a
      * safe way and disable the failing stores
      */
-    private XStreamPersister getXStream(Catalog catalog) {
+    private XStreamPersister getXStream() {
         XStreamPersister xp = XP.get();
         if (xp == null) {
             xp = xpf.createXMLPersister();
             XP.set(xp);
         }
-        xp.setCatalog(catalog);
         xp.setUnwrapNulls(false);
         xp.setEncryptPasswordFields(false);
         return xp;

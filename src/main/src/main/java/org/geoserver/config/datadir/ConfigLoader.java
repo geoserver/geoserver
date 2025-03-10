@@ -85,7 +85,6 @@ class ConfigLoader {
         final Catalog realCatalog = geoServer.getCatalog();
         Catalog rawCatalog = rawCatalog(realCatalog);
         geoServer.setCatalog(rawCatalog);
-        fileWalk.setCatalog(rawCatalog);
 
         ForkJoinPool executor = ExecutorFactory.createExecutor();
         try {

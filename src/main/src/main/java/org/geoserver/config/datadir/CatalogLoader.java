@@ -46,7 +46,9 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupStyle;
+import org.geoserver.catalog.impl.MapInfoImpl;
 import org.geoserver.catalog.impl.ResolvingProxy;
+import org.geoserver.catalog.impl.ResourceInfoImpl;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.datadir.DataDirectoryWalker.LayerDirectory;
@@ -98,13 +100,12 @@ class CatalogLoader {
         this.fileWalk = fileWalk;
     }
 
-    private BlockingQueue<byte[]> sourceQueue = new LinkedBlockingQueue<>(1_000);
-    private static final byte[] TERMINAL_TOKEN = new byte[0];
+    private BlockingQueue<CatalogInfo> sourceQueue = new LinkedBlockingQueue<>(1_000);
+    private static final CatalogInfo TERMINAL_TOKEN = new MapInfoImpl();
 
     public void loadCatalog() {
         final boolean extendedValidation = this.catalog.isExtendedValidation();
         this.catalog.setExtendedValidation(false);
-        fileWalk.setCatalog(catalog);
 
         ForkJoinPool executor = ExecutorFactory.createExecutor();
         try {
@@ -193,11 +194,11 @@ class CatalogLoader {
     private void consumeQueue(ForkJoinPool executor) {
         while (!executor.isShutdown()) {
             try {
-                byte[] contents = sourceQueue.take();
-                if (contents == TERMINAL_TOKEN) {
+                CatalogInfo info = sourceQueue.take();
+                if (info == TERMINAL_TOKEN) {
                     return;
                 }
-                parse(contents).ifPresent(this::addToCatalog);
+                addToCatalog(info);
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Unable to keep consuming the queue of loaded catalog files", e);
                 Thread.currentThread().interrupt(); // Restore interrupted status
@@ -206,23 +207,20 @@ class CatalogLoader {
     }
 
     private <C extends CatalogInfo> C addToCatalog(C info) {
-        if (info instanceof WorkspaceInfo)
-            doAddToCatalog((WorkspaceInfo) info, catalog::add, i -> ((WorkspaceInfo) info).getName());
-        else if (info instanceof NamespaceInfo)
-            doAddToCatalog((NamespaceInfo) info, catalog::add, i -> (((NamespaceInfo) info).getPrefix()));
-        else if (info instanceof StoreInfo)
-            doAddToCatalog((StoreInfo) info, catalog::add, i -> (((StoreInfo) info).getName()));
+        if (info instanceof WorkspaceInfo) {
+            doAddToCatalog((WorkspaceInfo) info, catalog::add, WorkspaceInfo::getName);
+        } else if (info instanceof NamespaceInfo) {
+            doAddToCatalog((NamespaceInfo) info, catalog::add, NamespaceInfo::getPrefix);
+        } else if (info instanceof StoreInfo) doAddToCatalog((StoreInfo) info, catalog::add, StoreInfo::getName);
         else if (info instanceof ResourceInfo)
             doAddToCatalog((ResourceInfo) info, catalog::add, i -> {
                 ResourceInfo r = (ResourceInfo) info;
                 return r.getName() + ", " + (r.isEnabled() ? "enabled" : "disabled");
             });
-        else if (info instanceof LayerInfo)
-            doAddToCatalog((LayerInfo) info, catalog::add, i -> (((LayerInfo) info).getName()));
+        else if (info instanceof LayerInfo) doAddToCatalog((LayerInfo) info, catalog::add, LayerInfo::getName);
         else if (info instanceof LayerGroupInfo)
-            doAddToCatalog((LayerGroupInfo) info, catalog::add, i -> (((LayerGroupInfo) info).getName()));
-        else if (info instanceof StyleInfo)
-            doAddToCatalog((StyleInfo) info, catalog::add, i -> (((StyleInfo) info).getName()));
+            doAddToCatalog((LayerGroupInfo) info, catalog::add, LayerGroupInfo::getName);
+        else if (info instanceof StyleInfo) doAddToCatalog((StyleInfo) info, catalog::add, StyleInfo::getName);
         else {
             throw new IllegalArgumentException(format("Unexpected value: %s", info));
         }
@@ -355,7 +353,7 @@ class CatalogLoader {
     }
 
     private void loadStore(StoreDirectory storeDir) {
-        Optional<byte[]> store = load(storeDir.storeFile);
+        Optional<StoreInfo> store = depersist(storeDir.storeFile);
         if (store.isPresent()) {
             addToQueue(store.orElseThrow());
             loadLayers(storeDir.layers());
@@ -367,15 +365,15 @@ class CatalogLoader {
     }
 
     private void loadResourceAndLayer(LayerDirectory layerDir) {
-        Optional<byte[]> resource = load(layerDir.resourceFile);
-        Optional<byte[]> layer = load(layerDir.layerFile);
+        Optional<ResourceInfo> resource = depersist(layerDir.resourceFile);
+        Optional<LayerInfo> layer = depersist(layerDir.layerFile);
         if (resource.isPresent() && layer.isPresent()) {
             addToQueue(resource.orElseThrow());
             addToQueue(layer.orElseThrow());
         }
     }
 
-    private void addToQueue(byte[] info) {
+    private void addToQueue(CatalogInfo info) {
         try {
             sourceQueue.put(info);
         } catch (InterruptedException e) {
@@ -384,9 +382,42 @@ class CatalogLoader {
         }
     }
 
+    /**
+     * Aids {@link #doAddToCatalog()} in resolving the {@link ResolvingProxy} links in {@code info}.
+     * {@link #doAddToCatalog()} is in turn safely called from a working thread (for workspaces, namespaces, and
+     * styles), or from the calling thread ({@code main} during the startup process).
+     *
+     * <p>If a reference can't be resolved, an {@link IllegalStateException} is thrown, causing the object not being
+     * added to the catalog.
+     *
+     * @throws IllegalStateException if a referred object is a {@link ResolvingProxy} and can't be dereferenced in the
+     *     catalog
+     */
+    @SuppressWarnings("PMD.EmptyControlStatement")
     private void resolve(CatalogInfo info) {
-        if (info instanceof LayerInfo) resolve((LayerInfo) info);
-        if (info instanceof LayerGroupInfo) resolve((LayerGroupInfo) info);
+        if (info instanceof WorkspaceInfo) {
+            // no-op
+        } else if (info instanceof NamespaceInfo) {
+            // no-op
+        } else if (info instanceof StoreInfo) {
+            StoreInfo store = (StoreInfo) info;
+            store.setWorkspace(resolveProxy(store.getWorkspace(), info));
+        } else if (info instanceof ResourceInfo) {
+            // note, gotta use ResourceInfoImpl.rawStore() cause the subclasses will override getStore() with a cast to
+            // their concrete store types that will fail when the store is a ResolvingProxy
+            ResourceInfoImpl res = (ResourceInfoImpl) info;
+            res.setStore(resolveProxy(res.rawStore(), res));
+            res.setNamespace(resolveProxy(res.getNamespace(), res));
+        } else if (info instanceof LayerInfo) {
+            resolve((LayerInfo) info);
+        } else if (info instanceof LayerGroupInfo) {
+            resolve((LayerGroupInfo) info);
+        } else if (info instanceof StyleInfo) {
+            StyleInfo style = (StyleInfo) info;
+            style.setWorkspace(resolveProxy(style.getWorkspace(), info));
+        } else {
+            LOGGER.warning("Unknown CatalogInfo: " + info);
+        }
     }
 
     private void resolve(LayerInfo l) {
@@ -425,9 +456,8 @@ class CatalogLoader {
             LOGGER.severe(
                     format("Layer %s has no default style, assigned '%s'", l.prefixedName(), defaultStyle.getName()));
         } else {
-            // note: it'd be better to just call resolveLayerStyle for a dangling proxy but there's a test
-            // (org.geoserver.catalog.impl.CatalogProxiesTest)
-            // that actually checks that it resolved to null
+            // note: would it be better to just call resolveLayerStyle for a dangling proxy? but there's a test
+            // (org.geoserver.catalog.impl.CatalogProxiesTest) that actually checks that it resolved to null
             if (null == resolveProxy(defaultStyle, l, false)) {
                 l.setDefaultStyle(null);
                 LOGGER.severe(
@@ -567,6 +597,7 @@ class CatalogLoader {
         }
     }
 
+    /** @throws IllegalStateException if the {@code proxy} does not resolve to an object in the catalog */
     private <I extends CatalogInfo> I resolveProxy(I proxy, CatalogInfo referent) {
         return resolveProxy(proxy, referent, true);
     }
@@ -595,36 +626,18 @@ class CatalogLoader {
     }
 
     private void loadLayerGroups(Stream<Path> stream) {
-        load(stream).forEach(this::addToQueue);
-    }
-
-    private Optional<byte[]> load(Path file) {
-        return fileWalk.getXStreamLoader().load(file);
-    }
-
-    private Stream<byte[]> load(Stream<Path> stream) {
-        return stream.parallel().map(this::load).filter(Optional::isPresent).map(Optional::orElseThrow);
+        depersist(stream, LayerGroupInfo.class).forEach(this::addToQueue);
     }
 
     private <C extends CatalogInfo> Optional<C> depersist(Path file) {
-        return load(file).flatMap(this::parse);
+        return fileWalk.getXStreamLoader().depersist(file);
     }
 
     private <C extends CatalogInfo> Stream<C> depersist(Stream<Path> stream, Class<C> type) {
-        return load(stream)
-                .map(this::parse)
+        return stream.map(this::depersist)
                 .filter(Optional::isPresent)
                 .map(Optional::orElseThrow)
                 .map(type::cast);
-    }
-
-    private <C extends CatalogInfo> Optional<C> parse(byte[] contents) {
-        try {
-            return Optional.of(fileWalk.getXStreamLoader().parse(contents));
-        } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error parsing", e);
-            return Optional.empty();
-        }
     }
 
     private void persist(CatalogInfo info, Path path) throws IOException {

@@ -20,7 +20,6 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.geoserver.catalog.Catalog;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -82,10 +81,6 @@ class DataDirectoryWalker {
 
     public GeoServerDataDirectory getDataDirectory() {
         return dataDirectory;
-    }
-
-    public void setCatalog(Catalog catalog) {
-        xstreamLoader.setCatalog(catalog);
     }
 
     public XStreamLoader getXStreamLoader() {

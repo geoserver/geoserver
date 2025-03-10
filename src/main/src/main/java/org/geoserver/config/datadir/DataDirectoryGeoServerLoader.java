@@ -24,6 +24,8 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -76,6 +78,16 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      * use
      */
     public static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
+
+    static {
+        try {
+            // preemptively initialize the CRS subsystem to avoid factory lookups deadlocking while being hit
+            // concurrently at #readCatalog
+            CRS.decode("EPSG:4326");
+        } catch (FactoryException e) {
+            LOGGER.log(Level.WARNING, "Error initializing CRS factories", e);
+        }
+    }
 
     private final GeoServerDataDirectory dataDirectory;
     private final GeoServerSecurityManager securityManager;

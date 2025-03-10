@@ -599,4 +599,91 @@ public class GetCoverageKvpTest extends WCSKVPTestSupport {
                     "http://www.opengis.net/def/crs/IAU/0/49900", nodes.item(i).getNodeValue());
         }
     }
+
+    @Test
+    public void testClipWorldNoCRS() throws Exception {
+        String halfWorld = "POLYGON((0 -90, 0 90, 180 90, 180 -90, 0 -90))";
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world&clip=" + halfWorld);
+
+        testCoverage(response, "halfWorld", (reader, coverage) -> {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:4326");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            GeneralBounds expected = new GeneralBounds(new double[] {0, -90}, new double[] {180, 90});
+            expected.setCoordinateReferenceSystem(crs);
+            assertEnvelopeEquals(expected, 1, (GeneralBounds) coverage.getEnvelope(), 1);
+        });
+    }
+
+    @Test
+    public void testClipWorldReprojected() throws Exception {
+        String halfWorld = "SRID=4326;POLYGON((0 -85, 0 85, 180 85, 180 -85, 0 -85))";
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world&outputCrs=EPSG:3857&clip="
+                        + halfWorld);
+
+        testCoverage(response, "halfWorld", (reader, coverage) -> {
+            CoordinateReferenceSystem crs = CRS.decode("EPSG:3857");
+            assertTrue(CRS.equalsIgnoreMetadata(reader.getCoordinateReferenceSystem(), crs));
+
+            GeneralBounds expected =
+                    new GeneralBounds(new double[] {0, -1.99663728E7}, new double[] {2.00375083E7, 1.99663728E7});
+            expected.setCoordinateReferenceSystem(crs);
+            assertEnvelopeEquals(expected, 1, (GeneralBounds) coverage.getEnvelope(), 1e6);
+        });
+    }
+
+    @Test
+    public void testClipInvalidGeometryType() throws Exception {
+        String point = "POINT(0 -85)";
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world&outputCrs=EPSG:3857&clip="
+                        + point);
+        checkOws20Exception(response, 400, "InvalidParameterValue", "clip");
+    }
+
+    @Test
+    public void testClipInvalidWkt() throws Exception {
+        String point = "POINT(0";
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=sf__world&outputCrs=EPSG:3857&clip="
+                        + point);
+        checkOws20Exception(response, 400, "InvalidParameterValue", "clip");
+    }
+
+    @Test
+    public void testClipOutside() throws Exception {
+        // rectangle over europe, but layer is covering tasmania
+        String europe = "POLYGON((35 -10, 70 -10, 70 40, 70 -10, 35 -10))";
+        MockHttpServletResponse response = getAsServletResponse(
+                "wcs?request=GetCoverage&service=WCS&version=2.0.1&coverageId=BlueMarble&clip=" + europe);
+        String message = checkOws20Exception(response, 400, "InvalidParameterValue", "clip");
+        assertEquals("Clip polygon does not overlap coverage data", message);
+    }
+
+    public interface CoverageChecker {
+        void check(GeoTiffReader reader, GridCoverage2D coverage) throws Exception;
+    }
+
+    private void testCoverage(MockHttpServletResponse response, String fileName, CoverageChecker checker)
+            throws Exception {
+        // got back a tiff
+        assertEquals("image/tiff", response.getContentType());
+        assertEquals(200, response.getStatus());
+
+        byte[] tiffContents = getBinary(response);
+        File file = File.createTempFile(fileName, fileName + ".tiff", new File("./target"));
+        FileUtils.writeByteArrayToFile(file, tiffContents);
+
+        // check the tiff structure is the one requested
+        final GeoTiffReader reader = new GeoTiffReader(file);
+        GridCoverage2D coverage = null;
+        try {
+            coverage = reader.read(null);
+            checker.check(reader, coverage);
+        } finally {
+            clean(reader, coverage);
+        }
+    }
 }

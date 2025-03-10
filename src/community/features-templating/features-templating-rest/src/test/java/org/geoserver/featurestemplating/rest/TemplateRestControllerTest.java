@@ -184,6 +184,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             + "  \t<topp:wkt_geom>$${toWKT(the_geom)}</topp:wkt_geom>\n"
             + "  </topp:states>\n"
             + "</gft:Template>";
+    public static final String XHTMLTEMPLATE_NAME = "xhtmltemplate";
 
     @Test
     public void testPostGetPutGetDeleteJson() throws Exception {
@@ -236,6 +237,21 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             response = deleteAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/cdf/featurestemplates/foo2");
             assertEquals(HttpStatus.NO_CONTENT.value(), response.getStatus());
             assertNull(TemplateInfoDAO.get().findByFullName("cdf:foo2"));
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testPostErrorMessage() throws Exception {
+        try {
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cdf/featuretypes/stations/featurestemplates?templateName=foo2",
+                    GML_TEMPLATE,
+                    MediaType.APPLICATION_XML_VALUE);
+            assertEquals(404, response.getStatus());
+            assertEquals("FeatureType stations not found", response.getContentAsString());
         } finally {
             TemplateInfoDAO.get().deleteAll();
         }
@@ -331,7 +347,7 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
     public void testFindAll() throws Exception {
         newTemplateInfo("jsontemplate", "json", null, null, JSON_TEMPLATE);
         newTemplateInfo("gmltemplate", "xml", "cdf", null, GML_TEMPLATE);
-        newTemplateInfo("xhtmltemplate", "xhtml", "cdf", "Fifteen", XHTML_TEMPLATE);
+        newTemplateInfo(XHTMLTEMPLATE_NAME, "xhtml", "cdf", "Fifteen", XHTML_TEMPLATE);
 
         newTemplateInfo("jsontemplate2", "json", "cdf", "Fifteen", JSON_TEMPLATE_2);
         newTemplateInfo("gmltemplate2", "xml", null, null, GML_TEMPLATE_2);
@@ -422,6 +438,21 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             deleteAsServletResponse(RestBaseController.ROOT_PATH + "/featurestemplates/testJsonTemplateCache");
         } finally {
             Dispatcher.REQUEST.set(null);
+        }
+    }
+
+    @Test
+    public void testGetByFeatureType() throws Exception {
+        try {
+            newTemplateInfo("jsontemplate", "json", null, null, JSON_TEMPLATE);
+            newTemplateInfo("gmltemplate", "xml", "cdf", null, GML_TEMPLATE);
+            newTemplateInfo(XHTMLTEMPLATE_NAME, "xhtml", "cdf", "Fifteen", XHTML_TEMPLATE);
+            MockHttpServletResponse response = getAsServletResponse(RestBaseController.ROOT_PATH
+                    + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/" + XHTMLTEMPLATE_NAME + ".xml");
+            assertEquals(200, response.getStatus());
+            assertEquals(XHTML_TEMPLATE.trim(), response.getContentAsString());
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
         }
     }
 }

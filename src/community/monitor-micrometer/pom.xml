@@ -29,7 +29,6 @@
       <groupId>org.geoserver.extension</groupId>
       <artifactId>gs-monitor-core</artifactId>
       <version>${project.version}</version>
-      <scope>compile</scope>
     </dependency>
 
     <dependency>

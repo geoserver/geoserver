@@ -9,14 +9,18 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Optional;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.featurestemplating.builders.impl.RootBuilder;
 import org.geoserver.featurestemplating.builders.impl.StaticBuilder;
@@ -30,6 +34,7 @@ import org.geoserver.featurestemplating.configuration.TemplateRule;
 import org.geoserver.featurestemplating.configuration.TemplateRuleService;
 import org.geoserver.ows.Dispatcher;
 import org.geoserver.ows.Request;
+import org.geoserver.platform.resource.Resource;
 import org.geoserver.rest.RestBaseController;
 import org.geoserver.rest.RestException;
 import org.geoserver.rest.catalog.CatalogRESTTestSupport;
@@ -453,6 +458,110 @@ public class TemplateRestControllerTest extends CatalogRESTTestSupport {
             assertEquals(XHTML_TEMPLATE.trim(), response.getContentAsString());
         } finally {
             TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testPostByFeatureType() throws Exception {
+        try {
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates?templateName=foo2",
+                    GML_TEMPLATE,
+                    MediaType.APPLICATION_XML_VALUE);
+            assertEquals(201, response.getStatus());
+            assertEquals("foo2", response.getContentAsString());
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testPostZipByFeatureType() throws Exception {
+        try {
+            URL url = getClass().getResource("test-template.zip");
+            byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(url));
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates",
+                    bytes,
+                    MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+            assertEquals(201, response.getStatus());
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findByFullName("cdf:Fifteen:test-template");
+            assertNotNull(templateInfo);
+            assertEquals(
+                    unzip("test-template.zip", getClass()).trim(),
+                    getTemplateContentByFullName(templateInfo.getFullName()).orElseGet(() -> null));
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testPutByFeatureType() throws Exception {
+        TemplateInfoDAO.get().deleteAll();
+        try {
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates?templateName=foo3",
+                    XHTML_TEMPLATE,
+                    MediaType.APPLICATION_XHTML_XML_VALUE);
+            assertEquals(201, response.getStatus());
+
+            response = putAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/foo3",
+                    XHTML_TEMPLATE_2,
+                    MediaType.APPLICATION_XHTML_XML_VALUE);
+            assertEquals(201, response.getStatus());
+            getTemplateContentByFullName("cdf:Fifteen:foo3")
+                    .ifPresentOrElse(
+                            content -> assertEquals(XHTML_TEMPLATE_2.trim(), content),
+                            () -> assertNull("Template not found"));
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    @Test
+    public void testPutZipByFeatureType() throws Exception {
+        try {
+            URL url = getClass().getResource("test-template.zip");
+            byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(url));
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates",
+                    bytes,
+                    MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+            assertEquals(201, response.getStatus());
+            url = getClass().getResource("test-template2.zip");
+            bytes = FileUtils.readFileToByteArray(URLs.urlToFile(url));
+            response = putAsServletResponse(
+                    RestBaseController.ROOT_PATH
+                            + "/workspaces/cdf/featuretypes/Fifteen/featurestemplates/test-template",
+                    bytes,
+                    MediaTypeExtensions.APPLICATION_ZIP_VALUE);
+            assertEquals(201, response.getStatus());
+            TemplateInfo templateInfo = TemplateInfoDAO.get().findByFullName("cdf:Fifteen:test-template");
+            assertNotNull(templateInfo);
+            assertEquals(
+                    unzip("test-template2.zip", getClass()).trim(),
+                    getTemplateContentByFullName(templateInfo.getFullName()).orElseGet(() -> null));
+        } finally {
+            TemplateInfoDAO.get().deleteAll();
+        }
+    }
+
+    private Optional<String> getTemplateContentByFullName(String templateName) {
+        TemplateInfo templateInfo = TemplateInfoDAO.get().findByFullName(templateName);
+        if (templateInfo == null) {
+            return Optional.empty();
+        }
+        Resource resource = TemplateFileManager.get().getTemplateResource(templateInfo);
+        if (resource.getType() != Resource.Type.RESOURCE) {
+            throw new IllegalArgumentException("Template with fullName " + templateInfo.getFullName() + " not found");
+        }
+        try {
+            return Optional.of(StringUtils.toEncodedString(resource.getContents(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }

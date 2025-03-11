@@ -196,6 +196,8 @@ Java system property:
 
    CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"
 
+.. _optimized-datadir-loader:
+
 Optimized data directory loader
 -------------------------------
 

@@ -3,7 +3,7 @@
 Installing the Monitor Micrometer Extension
 ===========================================
 
-As a community module, the package needs to be downloaded from the `nightly builds <https://build.geoserver.org/geoserver/>`_,
+As a community module, the package needs to be built from source code or downloaded from the `nightly builds <https://build.geoserver.org/geoserver/>`_,
 picking the community folder of the corresponding GeoServer series (e.g. if working on GeoServer main development branch nightly
 builds, pick the zip file form ``main/community-latest``).
 

@@ -8,6 +8,7 @@ import com.google.common.base.Stopwatch;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.HTTPStoreInfo;
@@ -71,13 +72,13 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName());
 
     /** Environment variable or System property to disable this GeoServerLoader as the default one */
-    public static final String GEOSERVER_DATA_DIR_LOADER_ENABLED = "GEOSERVER_DATA_DIR_LOADER_ENABLED";
+    static final String GEOSERVER_DATA_DIR_LOADER_ENABLED = "GEOSERVER_DATA_DIR_LOADER_ENABLED";
 
     /**
      * Environment variable or System property to bypass the parallelism heuristics and set a fixed number of threads to
      * use
      */
-    public static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
+    static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
 
     static {
         try {
@@ -95,11 +96,16 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     /** Lazily created by {@link #fileWalker()} */
     DataDirectoryWalker fileWalk;
 
+    private GeoServerConfigurationLock configLock;
+
     public DataDirectoryGeoServerLoader(
-            GeoServerDataDirectory dataDirectory, GeoServerSecurityManager securityManager) {
+            GeoServerDataDirectory dataDirectory,
+            GeoServerSecurityManager securityManager,
+            GeoServerConfigurationLock configLock) {
         super(dataDirectory.getResourceLoader());
         this.dataDirectory = dataDirectory;
         this.securityManager = securityManager;
+        this.configLock = configLock;
     }
 
     /**
@@ -245,7 +251,7 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     private DataDirectoryWalker fileWalker() {
         if (fileWalk == null) {
-            fileWalk = new DataDirectoryWalker(dataDirectory, xpf);
+            fileWalk = new DataDirectoryWalker(dataDirectory, xpf, configLock);
         }
         return fileWalk;
     }

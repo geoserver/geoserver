@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
@@ -30,7 +31,6 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
@@ -81,10 +81,10 @@ public class DefaultGeoServerLoaderCompatibilityTest extends GeoServerSystemTest
     }
 
     private DataDirectoryGeoServerLoader newLoader() {
-        GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        GeoServerDataDirectory dataDirectory = new GeoServerDataDirectory(resourceLoader);
-        return new DataDirectoryGeoServerLoader(dataDirectory, secManager);
+        GeoServerConfigurationLock configLock = new GeoServerConfigurationLock();
+        GeoServerDataDirectory dataDirectory = super.getDataDirectory();
+        return new DataDirectoryGeoServerLoader(dataDirectory, secManager, configLock);
     }
 
     @Test

@@ -7,6 +7,7 @@ package org.geoserver.config;
 
 import static java.util.Objects.requireNonNull;
 
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.config.datadir.DataDirectoryGeoServerLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
@@ -97,12 +98,15 @@ public class GeoServerLoaderProxy
      */
     protected GeoServerLoader createDefaultLoader(ApplicationContext appContext) {
         if (DataDirectoryGeoServerLoader.isEnabled(appContext)) {
-            GeoServerDataDirectory dataDirectory =
-                    requireNonNull(GeoServerExtensions.bean(GeoServerDataDirectory.class));
-            GeoServerSecurityManager securityManager =
-                    requireNonNull(GeoServerExtensions.bean(GeoServerSecurityManager.class));
-            return new DataDirectoryGeoServerLoader(dataDirectory, securityManager);
+            GeoServerDataDirectory dataDirectory = getBean(GeoServerDataDirectory.class);
+            GeoServerSecurityManager securityManager = getBean(GeoServerSecurityManager.class);
+            GeoServerConfigurationLock configLock = getBean(GeoServerConfigurationLock.class);
+            return new DataDirectoryGeoServerLoader(dataDirectory, securityManager, configLock);
         }
         return new DefaultGeoServerLoader(resourceLoader);
+    }
+
+    protected <T> T getBean(Class<T> type) {
+        return requireNonNull(GeoServerExtensions.bean(type));
     }
 }

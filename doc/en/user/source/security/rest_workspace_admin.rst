@@ -36,11 +36,16 @@ The default workspace administrator access rules are defined in a template that 
 * ``/rest/layers/**=rw`` - Full access to layers (filtered by secure catalog to only show layers in managed workspaces)
 * ``/rest/styles.{ext}=r`` - Read-only access to global styles listing (JSON/XML)
 * ``/rest/styles/**=r`` - Read-only access to all global styles (for use in layers within the workspace)
+* ``/rest/templates.{ext}=r`` - Read-only access to global templates listing (JSON/XML)
+* ``/rest/templates/**=r`` - Read-only access to all global templates (for reference when creating workspace-specific templates)
 
 .. note::
-   Workspace-specific styles are accessed through the workspace endpoint, for example:
-   ``/rest/workspaces/{workspace}/styles/**``. Workspace administrators have full access (read/write)
-   to styles within their assigned workspaces, but only read access to global styles.
+   Workspace-specific resources are accessed through the workspace endpoint, for example:
+   ``/rest/workspaces/{workspace}/styles/**``, ``/rest/workspaces/{workspace}/templates/**``, 
+   and ``/rest/workspaces/{workspace}/layergroups/**``. Workspace administrators have full access (read/write) 
+   to styles, templates, and layer groups within their assigned workspaces, but only read access to global 
+   styles and templates. Workspace administrators have no access to global layer groups. Layers and layer groups 
+   in workspace-administered workspaces can reference global styles.
 
 **Resource Access:**
 

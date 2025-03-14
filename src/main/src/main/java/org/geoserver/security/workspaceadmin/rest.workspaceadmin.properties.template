@@ -51,9 +51,16 @@
 # The secured catalog will only allow access to layers in its adminable workspaces 
 /rest/layers/**=rw
 
+# Workspace administrators don't have access to global layer groups
+# All workspace-specific layer groups are handled by the /rest/workspaces/{workspace}/layergroups/** pattern
+
 # A workspace admin needs read-only access to global styles
 /rest/styles.{ext}=r
 /rest/styles/**=r
+
+# A workspace admin needs read-only access to global templates
+/rest/templates.{ext}=r
+/rest/templates/**=r
 
 # Resource access
 # ---------------

@@ -30,16 +30,65 @@ import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 
-/** Utility class to work with nested layer groups and extract selected sub-parts of it */
+/**
+ * Utility class to work with nested layer groups and extract selected sub-parts of it.
+ *
+ * <p>This helper provides methods to:
+ *
+ * <ul>
+ *   <li>Navigate through nested layer group structures
+ *   <li>Retrieve all layers, styles, and groups contained within a layer group
+ *   <li>Calculate bounding boxes for layer groups based on their contained layers
+ *   <li>Handle layer group styles and style groups
+ *   <li>Detect recursive references and loops in layer group structures
+ *   <li>Process layer groups for rendering
+ * </ul>
+ *
+ * <p>The helper accommodates different layer group modes (EO, SINGLE, CONTAINER, etc.) and handles special cases such
+ * as null layers with style groups and WMS remote layers.
+ */
 public class LayerGroupHelper {
 
     protected static Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.catalog");
 
     private LayerGroupInfo group;
 
-    /** @param group */
+    final Catalog catalog;
+
+    /**
+     * Constructs a new helper for the specified layer group.
+     *
+     * <p>This constructor uses the default GeoServer catalog obtained via {@link #catalog()}.
+     */
     public LayerGroupHelper(LayerGroupInfo group) {
+        this(catalog(), group);
+    }
+
+    /**
+     * Constructs a new helper for the specified layer group with a specific catalog.
+     *
+     * <p>This constructor allows specifying an explicit catalog instance instead of using the default one. This is
+     * useful to ensure the proper catalog instance is used, for example during startup, when a temporary catalog is
+     * populated from the data directory.
+     *
+     * @param catalog the catalog to use for resolving references, must not be null
+     * @param group the layer group to be worked with, must not be null
+     */
+    public LayerGroupHelper(Catalog catalog, LayerGroupInfo group) {
+        this.catalog = catalog;
         this.group = group;
+    }
+
+    /**
+     * Retrieves the default GeoServer catalog from the application context.
+     *
+     * <p>This method uses {@link GeoServerExtensions} to look up the catalog bean from the application context. It's
+     * used by the default constructor to obtain the catalog when none is explicitly provided.
+     *
+     * @return the default GeoServer catalog instance
+     */
+    private static Catalog catalog() {
+        return (Catalog) GeoServerExtensions.bean("catalog");
     }
 
     /** */
@@ -49,7 +98,7 @@ public class LayerGroupHelper {
         return layers;
     }
 
-    private static void allLayers(LayerGroupInfo group, List<LayerInfo> layers) {
+    private void allLayers(LayerGroupInfo group, List<LayerInfo> layers) {
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
             layers.add(group.getRootLayer());
         }
@@ -90,7 +139,7 @@ public class LayerGroupHelper {
         return layerInfos;
     }
 
-    private static void allLayers(CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
+    private void allLayers(CoordinateReferenceSystem crs, LayerGroupStyle groupStyle, List<LayerInfo> layers) {
         List<PublishedInfo> published = groupStyle.getLayers();
         List<StyleInfo> styles = groupStyle.getStyles();
         int pSize = published.size();
@@ -186,7 +235,7 @@ public class LayerGroupHelper {
         return styles;
     }
 
-    private static void allStyles(LayerGroupInfo group, List<StyleInfo> styles) {
+    private void allStyles(LayerGroupInfo group, List<StyleInfo> styles) {
         if (LayerGroupInfo.Mode.EO.equals(group.getMode())) {
             styles.add(group.getRootLayerStyle());
         }
@@ -225,7 +274,7 @@ public class LayerGroupHelper {
         return layers;
     }
 
-    private static void allLayersForRendering(
+    private void allLayersForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<LayerInfo> layers, boolean root) {
         switch (group.getMode()) {
             case EO:
@@ -282,7 +331,7 @@ public class LayerGroupHelper {
         return styles;
     }
 
-    private static void allStylesForRendering(
+    private void allStylesForRendering(
             LayerGroupInfo group, LayerGroupStyle groupStyle, List<StyleInfo> styles, boolean root) {
         switch (group.getMode()) {
             case EO:
@@ -487,8 +536,7 @@ public class LayerGroupHelper {
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
     @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkLoops(
-            LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
+    private boolean checkLoops(LayerGroupInfo group, List<LayerGroupStyle> groupStyles, Stack<LayerGroupInfo> path) {
         if (groupStyles != null) {
             for (LayerGroupStyle groupStyle : groupStyles) {
                 if (checkLoops(group, groupStyle.getLayers(), groupStyle.getStyles(), path)) {
@@ -509,7 +557,7 @@ public class LayerGroupHelper {
      * @return true if the LayerGroup contains itself, or another LayerGroup contains itself
      */
     @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkLoops(
+    private boolean checkLoops(
             LayerGroupInfo group, List<PublishedInfo> layers, List<StyleInfo> styles, Stack<LayerGroupInfo> path) {
         path.push(group);
         if (layers != null) {
@@ -553,15 +601,14 @@ public class LayerGroupHelper {
      * @return true if the style group contains itself, or another LayerGroup contains itself
      */
     @SuppressWarnings("PMD.ReplaceVectorWithList")
-    private static boolean checkStyleGroupLoops(
-            StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
+    private boolean checkStyleGroupLoops(StyleInfo styleGroup, LayerGroupInfo group, Stack<LayerGroupInfo> path) {
         try {
             StyledLayerDescriptor sld = styleGroup.getSLD();
 
             final boolean[] hasLoop = {false};
             sld.accept(
                     new GeoServerSLDVisitorAdapter(
-                            (Catalog) GeoServerExtensions.bean("catalog"),
+                            catalog,
                             group.getBounds() == null ? null : group.getBounds().getCoordinateReferenceSystem()) {
 
                         private final IllegalStateException recursionException =
@@ -626,7 +673,7 @@ public class LayerGroupHelper {
         return false;
     }
 
-    private static void expandStyleGroup(
+    private void expandStyleGroup(
             StyleInfo styleGroup, CoordinateReferenceSystem crs, List<LayerInfo> layers, List<StyleInfo> styles) {
         if (layers == null) {
             layers = new ArrayList<>();
@@ -637,7 +684,7 @@ public class LayerGroupHelper {
 
         try {
             StyledLayerDescriptor sld = styleGroup.getSLD();
-            StyleGroupHelper helper = new StyleGroupHelper((Catalog) GeoServerExtensions.bean("catalog"), crs);
+            StyleGroupHelper helper = new StyleGroupHelper(catalog, crs);
             sld.accept(helper);
             layers.addAll(helper.getLayers());
             styles.addAll(helper.getStyles());

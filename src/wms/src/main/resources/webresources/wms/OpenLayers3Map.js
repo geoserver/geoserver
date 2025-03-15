@@ -5,7 +5,7 @@ var tiled;
 
 window.onload = function() {
 
-  var pureCoverage = document.getElementById('pureCoverage').value;
+  var pureCoverage = document.getElementById('pureCoverage').value === "true";
   // if this is just a coverage or a group of them, disable a few items,
   // and default to jpeg format
   var format = 'image/png';

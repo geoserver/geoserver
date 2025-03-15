@@ -991,7 +991,7 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException("Layer group has different number of styles than layers");
         }
 
-        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        LayerGroupHelper helper = new LayerGroupHelper(this, layerGroup);
         Stack<LayerGroupInfo> loopPath = helper.checkLoops();
         if (loopPath != null) {
             throw new IllegalArgumentException("Layer group is in a loop: " + helper.getLoopAsString(loopPath));

@@ -10,6 +10,8 @@ import static java.util.Objects.requireNonNull;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ExecutionException;
@@ -97,7 +99,7 @@ class CatalogLoader {
         this.sanitizer = new CatalogLoaderSanitizer(this);
     }
 
-    private BlockingQueue<CatalogInfo> sourceQueue = new LinkedBlockingQueue<>(1_000);
+    private BlockingQueue<CatalogInfo> sourceQueue = new LinkedBlockingQueue<>(10_000);
     private static final CatalogInfo TERMINAL_TOKEN = new MapInfoImpl();
 
     /**
@@ -336,16 +338,21 @@ class CatalogLoader {
      * @param executor the thread pool to check for shutdown status
      */
     private void consumeQueue(ForkJoinPool executor) {
+        List<CatalogInfo> infos = new ArrayList<>();
         while (!executor.isShutdown()) {
             try {
-                CatalogInfo info = sourceQueue.take();
-                if (info == TERMINAL_TOKEN) {
-                    return;
+                int drained = sourceQueue.drainTo(infos);
+                if (drained == 0) infos.add(sourceQueue.take()); // block if drain failed
+                for (CatalogInfo info : infos) {
+                    if (info == TERMINAL_TOKEN) {
+                        return;
+                    }
+                    addToCatalog(info);
                 }
-                addToCatalog(info);
+                infos.clear();
             } catch (InterruptedException e) {
                 LOGGER.log(Level.SEVERE, "Unable to keep consuming the queue of loaded catalog files", e);
-                Thread.currentThread().interrupt(); // Restore interrupted status
+                Thread.currentThread().interrupt();
             }
         }
     }

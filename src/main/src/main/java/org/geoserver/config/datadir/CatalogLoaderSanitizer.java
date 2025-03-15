@@ -11,13 +11,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.CoverageInfo;
@@ -28,22 +24,15 @@ import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.PublishedInfo;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.catalog.WMTSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
-import org.geoserver.catalog.impl.AbstractCatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
-import org.geoserver.catalog.impl.LayerGroupInfoImpl;
-import org.geoserver.catalog.impl.LayerGroupStyle;
 import org.geoserver.catalog.impl.ResolvingProxy;
-import org.geoserver.catalog.impl.ResourceInfoImpl;
-import org.geoserver.catalog.impl.StyleInfoImpl;
+import org.geoserver.catalog.impl.ResolvingProxyResolver;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.GeoServerLoader;
@@ -171,7 +160,7 @@ class CatalogLoaderSanitizer {
         fileWalk.lock();
         try {
             if (catalog.getStyleByName(styleName) == null) {
-                copySld(styleName, sld);
+                copySld(sld);
                 // create a style for it
                 StyleInfo s = catalog.getFactory().createStyle();
                 s.setName(styleName);
@@ -189,7 +178,7 @@ class CatalogLoaderSanitizer {
         }
     }
 
-    private void copySld(String styleName, String sld) throws IOException {
+    private void copySld(String sld) throws IOException {
         // copy the file out to the data directory if necessary
         GeoServerDataDirectory dataDirectory = loader.fileWalk.getDataDirectory();
         Resource styleResource = dataDirectory.getStyles(sld);
@@ -238,194 +227,11 @@ class CatalogLoaderSanitizer {
         return true;
     }
 
-    /**
-     * Aids {@link CatalogLoader#doAddToCatalog()} in resolving the {@link ResolvingProxy} links in {@code info}.
-     *
-     * <p>If a reference can't be resolved, an {@link IllegalStateException} is thrown, causing the object not being
-     * added to the catalog.
-     *
-     * @throws IllegalStateException if a referred object is a {@link ResolvingProxy} and can't be dereferenced in the
-     *     catalog
-     */
-    @SuppressWarnings("PMD.EmptyControlStatement")
+    /** Aids {@link CatalogLoader#doAddToCatalog()} in resolving the {@link ResolvingProxy} links in {@code info}. */
     public void resolveProxies(CatalogInfo info) {
-        if (info instanceof WorkspaceInfo) {
-            // no-op
-        } else if (info instanceof NamespaceInfo) {
-            // no-op
-        } else if (info instanceof StoreInfo) {
-            StoreInfo store = (StoreInfo) info;
-            store.setWorkspace(resolveProxy(store.getWorkspace(), info));
-        } else if (info instanceof ResourceInfo) {
-            // note, gotta use ResourceInfoImpl.rawStore() cause the subclasses will override getStore() with a cast to
-            // their concrete store types that will fail when the store is a ResolvingProxy
-            ResourceInfoImpl res = (ResourceInfoImpl) info;
-            res.setStore(resolveProxy(res.rawStore(), res));
-            res.setNamespace(resolveProxy(res.getNamespace(), res));
-        } else if (info instanceof LayerInfo) {
-            resolveProxies((LayerInfo) info);
-        } else if (info instanceof LayerGroupInfo) {
-            resolveProxies((LayerGroupInfo) info);
-        } else if (info instanceof StyleInfo) {
-            StyleInfo style = (StyleInfo) info;
-            style.setWorkspace(resolveProxy(style.getWorkspace(), info));
-        } else {
-            LOGGER.warning("Unknown CatalogInfo: " + info);
-        }
-    }
-
-    /** Resolves the resource, missing styles are removed from the list of styles */
-    private void resolveProxies(LayerInfo l) {
-        l.setResource(resolveProxy(l.getResource(), l));
-        resolveDefaultStyle(l);
-
-        Set<StyleInfo> styles = l.getStyles();
-        boolean resolveStyles = styles != null
-                && !styles.isEmpty()
-                && !(l.getResource() instanceof WMSLayerInfo); // avoid loading remote styles
-        if (resolveStyles) {
-            List<StyleInfo> resolved = styles.stream()
-                    .map(s -> resolveProxy(s, l, false))
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            styles.clear();
-            styles.addAll(resolved);
-        }
-    }
-
-    private void resolveDefaultStyle(LayerInfo l) {
-        StyleInfo defaultStyle = l.getDefaultStyle();
-        if (defaultStyle == null) {
-            LOGGER.severe(format("Layer %s has no default style", l.prefixedName()));
-        } else {
-            // note: would it be better to just assign a default style here for a dangling proxy? but there's a test
-            // (org.geoserver.catalog.impl.CatalogProxiesTest) that actually checks that it resolved to null
-            if (null == resolveProxy(defaultStyle, l, false)) {
-                l.setDefaultStyle(null);
-                LOGGER.severe(
-                        format("Layer %s has a dangling default style %s", l.prefixedName(), defaultStyle.getId()));
-            }
-        }
-        l.setDefaultStyle(defaultStyle);
-    }
-
-    /**
-     * Resolves all proxy references in a LayerGroupInfo, except layers and styles, that are resolved by
-     * {@link AbstractCatalogFacade#add}.
-     *
-     * <p>This includes the workspace, root layer, root layer style, and all contained layers and styles.
-     *
-     * @param layerGroup the layer group to resolve references for
-     */
-    protected void resolveProxies(LayerGroupInfo layerGroup) {
-        LayerGroupInfoImpl lg = (LayerGroupInfoImpl) layerGroup;
-
-        lg.setWorkspace(resolveProxy(lg.getWorkspace(), lg, false));
-        lg.setRootLayer(resolveProxy(lg.getRootLayer(), lg, false));
-        lg.setRootLayerStyle(resolveProxy(lg.getRootLayerStyle(), lg, false));
-
-        if (lg.getLayers() != null && !lg.getLayers().isEmpty()) {
-            resolveLayerGroupLayers(lg.getLayers(), lg);
-        }
-        if (lg.getStyles() != null && !lg.getStyles().isEmpty()) {
-            resolveLayerGroupStyles(lg.getLayers(), lg.getStyles(), lg);
-        }
-
-        // now resolves layers and styles defined in layer group styles
-        for (LayerGroupStyle groupStyle : lg.getLayerGroupStyles()) {
-            resolveLayerGroupLayers(groupStyle.getLayers(), lg);
-            resolveLayerGroupStyles(groupStyle.getLayers(), groupStyle.getStyles(), lg);
-        }
-    }
-
-    /**
-     * Resolves proxy references for styles in a layer group
-     *
-     * <p>This method handles the special case where a style in a layer group might represent a LayerGroupStyle name
-     * rather than a regular catalog style.
-     *
-     * @param assignedLayers the layers that the styles are assigned to
-     * @param styles the styles to resolve
-     */
-    private void resolveLayerGroupStyles(
-            List<PublishedInfo> assignedLayers, List<StyleInfo> styles, LayerGroupInfo referrer) {
         CatalogImpl catalog = loader.catalog;
-        for (int i = 0; i < styles.size(); i++) {
-            StyleInfo style = styles.get(i);
-            if (style == null) {
-                continue;
-            }
-            PublishedInfo assignedLayer = assignedLayers.get(i);
-            StyleInfo resolved = null;
-            if (assignedLayer instanceof LayerGroupInfo) {
-                // Special case we might have a StyleInfo representing only the name of a LayerGroupStyle thus not
-                // present in Catalog.
-                // We take the ref and create a new object without searching in catalog.
-                String ref = ResolvingProxy.getRef(style);
-                if (ref != null) {
-                    StyleInfo styleInfo = new StyleInfoImpl(catalog);
-                    styleInfo.setName(ref);
-                    resolved = styleInfo;
-                }
-            }
-            if (resolved == null) resolved = resolveProxy(style, referrer, false);
-
-            styles.set(i, resolved);
-        }
-    }
-
-    /**
-     * Resolves proxy references for layers in a layer group.
-     *
-     * <p>This method handles the special case during catalog loading where nested published items might not be loaded
-     * yet, keeping the original proxy reference in such cases.
-     *
-     * @param layers the list of layers to resolve references for
-     * @param referrer object that links to layers, for logging purposes
-     */
-    private void resolveLayerGroupLayers(List<PublishedInfo> layers, LayerGroupInfo referrer) {
-        for (int i = 0; i < layers.size(); i++) {
-            PublishedInfo layer = layers.get(i);
-            if (layer == null) {
-                continue;
-            }
-            PublishedInfo resolved = resolveProxy(layer, referrer, false);
-            if (resolved == null && (layer instanceof LayerInfo || layer instanceof LayerGroupInfo)) {
-                // special case to handle catalog loading, when nested publishibles might not be
-                // loaded.
-                resolved = layer;
-            }
-            layers.set(i, resolved);
-        }
-    }
-
-    /** @throws IllegalStateException if the {@code proxy} does not resolve to an object in the catalog */
-    private <I extends CatalogInfo> I resolveProxy(I proxy, CatalogInfo referrer) {
-        return resolveProxy(proxy, referrer, true);
-    }
-
-    /**
-     * @param proxy the potential {@link ResolvingProxy proxy} reference to resolve
-     * @param referrer the object holding a reference to {@code proxy}, only used for logging
-     * @param fail whether to fail with an {@code IllegalStateException} if the {@code proxy} can't be resolved to an
-     *     object in the catalog
-     * @return The resolved object, {@code null} if {@code proxy} itself was {@code null}, or {@code fail == false} and
-     *     the object didn't resolve
-     * @throws IllegalStateException if the {@code proxy} does not resolve to an object in the catalog and {@code fail
-     *     == true}
-     */
-    private <I extends CatalogInfo> I resolveProxy(I proxy, CatalogInfo referrer, boolean fail) {
-        if (proxy == null) return null;
-        CatalogImpl catalog = loader.catalog;
-        I resolved = ResolvingProxy.resolve(catalog, proxy);
-        if (resolved == null && fail) {
-            String msg = format(
-                    "%s[%s] has a missing link to %s[%s]. Object ignored.",
-                    referrer, referrer.getId(), typeOf(proxy), proxy.getId());
-            LOGGER.severe(msg);
-            throw new IllegalStateException(msg);
-        }
-        return resolved;
+        catalog.resolve(info); // only ensures collection properties are initialized if null
+        ResolvingProxyResolver.resolve(info, catalog); // resolves proxies
     }
 
     /**

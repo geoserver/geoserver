@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import org.geoserver.GeoServerConfigurationLock;
@@ -73,6 +74,7 @@ import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -89,6 +91,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     @Before
     public void preflight() {
         assertTrue(DataDirectoryGeoServerLoader.isEnabled(applicationContext));
+        Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName())
+                .setLevel(Level.CONFIG);
     }
 
     @After

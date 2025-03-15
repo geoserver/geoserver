@@ -458,7 +458,6 @@ public abstract class GeoServerLoader {
         if (!Resources.exists(f)) {
             // assume 2.x style data directory
             Stopwatch sw = logStart();
-            LOGGER.config("Loading catalog " + resourceLoader.getBaseDirectory());
             catalog2 = (CatalogImpl) readCatalog(xp);
             logStop(sw.stop(), catalog2);
         } else {
@@ -1042,7 +1041,7 @@ public abstract class GeoServerLoader {
     }
 
     protected Stopwatch logStart() {
-        LOGGER.log(Level.INFO, "Loading catalog from {0}", resourceLoader.getBaseDirectory());
+        LOGGER.log(Level.CONFIG, "Loading catalog {0}", resourceLoader.getBaseDirectory());
         return Stopwatch.createStarted();
     }
 

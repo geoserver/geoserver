@@ -8,7 +8,6 @@ import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVE
 import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,13 +28,19 @@ public class DataDirectoryGeoServerLoaderConfigurationTest {
 
     @Before
     public void setUp() {
-        // preflight: no sys prop nor env var set
-        assertNull(System.getProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED));
-        assertNull(System.getenv(GEOSERVER_DATA_DIR_LOADER_ENABLED));
+        // clean up also before in case the env variables are set when running the tests (e.g. during development)
+        cleanUp();
     }
 
     @After
-    public void cleanUp() {
+    public void tearDown() {
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED);
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
+        environmentVariables.clear(GEOSERVER_DATA_DIR_LOADER_ENABLED, GEOSERVER_DATA_DIR_LOADER_THREADS);
+    }
+
+    private void cleanUp() {
+        environmentVariables.clear(GEOSERVER_DATA_DIR_LOADER_ENABLED, GEOSERVER_DATA_DIR_LOADER_THREADS);
         System.clearProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED);
         System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
     }

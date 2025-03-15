@@ -7,7 +7,9 @@ package org.geoserver.catalog;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
 import java.util.List;
@@ -17,6 +19,7 @@ import org.geoserver.catalog.LayerGroupInfo.Mode;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.MockTestData;
+import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerMockTestSupport;
 import org.geotools.api.referencing.FactoryException;
 import org.geotools.api.referencing.NoSuchAuthorityCodeException;
@@ -327,6 +330,25 @@ public class LayerGroupHelperTest extends GeoServerMockTestSupport {
         // null CRS should get null bounds
         helper.calculateBoundsFromCRS(null);
         assertNull(nested.getBounds());
+    }
+
+    @Test
+    public void testUseProvidedCatalog() {
+        Catalog catalog = mock(Catalog.class);
+        LayerGroupHelper helper = new LayerGroupHelper(catalog, container);
+        assertSame(catalog, helper.catalog);
+    }
+
+    @Test
+    public void testDefaultsToCatalogBean() {
+        Catalog catalog = mock(Catalog.class);
+        GeoServerExtensionsHelper.singleton("catalog", catalog, Catalog.class);
+        try {
+            LayerGroupHelper helper = new LayerGroupHelper(container);
+            assertSame(catalog, helper.catalog);
+        } finally {
+            GeoServerExtensionsHelper.init(null);
+        }
     }
 
     private ReferencedEnvelope aggregateEnvelopes(LayerInfo... layers) {

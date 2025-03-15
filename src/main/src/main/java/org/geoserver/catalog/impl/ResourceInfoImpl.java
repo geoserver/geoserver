@@ -354,6 +354,14 @@ public abstract class ResourceInfoImpl implements ResourceInfo {
         return store;
     }
 
+    /**
+     * Allows access to the raw store property without the casting performed by subclasses. This is convenient during
+     * the catalog load process to avoid class cast exceptions when the store is a resolving proxy
+     */
+    StoreInfo rawStore() {
+        return store;
+    }
+
     @Override
     public void setStore(StoreInfo store) {
         this.store = store;

@@ -27,8 +27,10 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.ResourcePool;
+import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSLayerInfo;
 import org.geoserver.catalog.WMSStoreInfo;
@@ -234,7 +236,7 @@ public abstract class GeoServerLoader {
 
     protected GeoServerResourceLoader resourceLoader;
     GeoServer geoserver;
-    XStreamPersisterFactory xpf = new XStreamPersisterFactory();
+    protected XStreamPersisterFactory xpf = new XStreamPersisterFactory();
 
     // JD: this is a hack for the moment, it is used only to maintain tests since the test setup
     // relies
@@ -455,10 +457,9 @@ public abstract class GeoServerLoader {
         CatalogImpl catalog2;
         if (!Resources.exists(f)) {
             // assume 2.x style data directory
-            Stopwatch sw = Stopwatch.createStarted();
-            LOGGER.config("Loading catalog " + resourceLoader.getBaseDirectory());
+            Stopwatch sw = logStart();
             catalog2 = (CatalogImpl) readCatalog(xp);
-            LOGGER.config("Read catalog in " + sw.stop());
+            logStop(sw.stop(), catalog2);
         } else {
             // import old style catalog, register the persister now so that we start
             // with a new version of the catalog
@@ -490,7 +491,7 @@ public abstract class GeoServerLoader {
     }
 
     /** Reads the catalog from disk. */
-    Catalog readCatalog(XStreamPersister xp) throws Exception {
+    protected Catalog readCatalog(XStreamPersister xp) throws Exception {
         CatalogImpl catalog = new CatalogImpl();
         catalog.setResourceLoader(resourceLoader);
         xp.setCatalog(catalog);
@@ -1037,5 +1038,24 @@ public abstract class GeoServerLoader {
         if (geoserver != null) {
             geoserver.dispose();
         }
+    }
+
+    protected Stopwatch logStart() {
+        LOGGER.log(Level.CONFIG, "Loading catalog {0}", resourceLoader.getBaseDirectory());
+        return Stopwatch.createStarted();
+    }
+
+    protected void logStop(Stopwatch stoppedSw, final Catalog catalog) {
+        String msg = String.format(
+                "Read Catalog in %s: workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d.",
+                stoppedSw,
+                catalog.count(WorkspaceInfo.class, Predicates.acceptAll()),
+                catalog.count(NamespaceInfo.class, Predicates.acceptAll()),
+                catalog.count(StyleInfo.class, Predicates.acceptAll()),
+                catalog.count(StoreInfo.class, Predicates.acceptAll()),
+                catalog.count(ResourceInfo.class, Predicates.acceptAll()),
+                catalog.count(LayerInfo.class, Predicates.acceptAll()),
+                catalog.count(LayerGroupInfo.class, Predicates.acceptAll()));
+        LOGGER.config(msg);
     }
 }

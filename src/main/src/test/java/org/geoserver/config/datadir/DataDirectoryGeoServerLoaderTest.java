@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.config;
+package org.geoserver.config.datadir;
 
 import static java.util.Objects.requireNonNull;
 import static org.geoserver.data.test.CiteTestData.ROTATED_CAD;
@@ -10,6 +10,7 @@ import static org.geoserver.data.test.CiteTestData.TASMANIA_BM;
 import static org.geoserver.data.test.CiteTestData.TASMANIA_DEM;
 import static org.geoserver.data.test.CiteTestData.WORLD;
 import static org.geoserver.data.test.SystemTestData.MULTIBAND;
+import static org.geoserver.platform.resource.Resource.Type.RESOURCE;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -25,15 +26,20 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.NamespaceInfo;
+import org.geoserver.catalog.Predicates;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
+import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
@@ -43,7 +49,13 @@ import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.catalog.impl.StyleInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
-import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport;
+import org.geoserver.catalog.util.CloseableIterator;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
+import org.geoserver.config.GeoServerLoaderProxy;
+import org.geoserver.config.ServiceInfo;
+import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService1;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService2;
 import org.geoserver.config.impl.GeoServerImpl;
@@ -55,18 +67,20 @@ import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.platform.resource.Resource;
+import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
 import org.geoserver.test.TestSetupFrequency;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.util.logging.Logging;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * Test suite for {@link org.geoserver.config.DataDirectoryGeoServerLoader} acting as the default
+ * Test suite for {@link org.geoserver.config.datadir.DataDirectoryGeoServerLoader} acting as the default
  * {@link GeoServerLoader}
  */
 @TestSetup(run = TestSetupFrequency.REPEAT)
@@ -77,6 +91,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     @Before
     public void preflight() {
         assertTrue(DataDirectoryGeoServerLoader.isEnabled(applicationContext));
+        Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName())
+                .setLevel(Level.CONFIG);
     }
 
     @After
@@ -118,16 +134,8 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertNotNull(catalog.getLayerByName(prefixedName));
     }
 
-    private DataDirectoryGeoServerLoader getLoader() {
-        return (DataDirectoryGeoServerLoader) GeoServerExtensions.bean(GeoServerLoader.class);
-    }
-
-    @Test
-    public void destroy() {
-        DataDirectoryGeoServerLoader loader = getLoader();
-        assertNotNull(loader.fileWalk);
-        loader.destroy();
-        assertNull(loader.fileWalk);
+    private GeoServerLoaderProxy getLoader() {
+        return GeoServerExtensions.bean(GeoServerLoaderProxy.class);
     }
 
     @Test
@@ -135,8 +143,7 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         WorkspaceInfo ws1 = getCatalog().getWorkspaces().get(0);
         GeoServerDataDirectory dataDirectory = getDataDirectory();
         dataDirectory.config(ws1).delete();
-        DataDirectoryGeoServerLoader loader = getLoader();
-        loader.reload();
+        getLoader().reload();
 
         assertNull(getCatalog().getWorkspace(ws1.getId()));
     }
@@ -159,7 +166,6 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
     /** Verify there are no dangling references to the temporary catalog */
     @Test
-    @Ignore("Re-enable once the fix for GEOS-11755 is merged")
     public void loadCatalogResolvedCatalogProperties() {
         DataDirectoryGeoServerLoader loader = newLoader();
         CatalogImpl newCatalog = new CatalogImpl();
@@ -287,13 +293,64 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
 
     @Test
     public void testAssignsDefaultWorkspace() throws Exception {
-        // TODO: use the commented out line instead once the fix for GEOS-11756 is merged
-        // assertTrue(getDataDirectory().defaultWorkspaceConfig().delete());
-        assertTrue(getDataDirectory().getWorkspaces("default.xml").delete());
+        deleteDefaultWorkspaceFile();
 
         Catalog catalog = getCatalog();
         getLoader().reload();
         assertNotNull(catalog.getDefaultWorkspace());
+    }
+
+    /** @throws behavior in {@link CatalogLoader#setDefaultWorkspace()} */
+    @Test
+    public void testAssignsDefaultWorkspaceIsPredictably() throws Exception {
+        Catalog catalog = getCatalog();
+
+        WorkspaceInfo abc = addWorkspace("abc");
+        // preflight
+        SortBy sortByName = Predicates.sortBy("name", true);
+        try (CloseableIterator<WorkspaceInfo> list =
+                catalog.list(WorkspaceInfo.class, Predicates.acceptAll(), 0, 1, sortByName)) {
+            assertTrue(list.hasNext());
+            WorkspaceInfo ws = list.next();
+            assertEquals(abc, ws);
+        }
+
+        // assert the default workspace is consistently chosen as the first one sorted by name
+        deleteDefaultWorkspaceFile();
+        assertDefaultWorkspace(abc);
+
+        WorkspaceInfo aaa = addWorkspace("aaa");
+        deleteDefaultWorkspaceFile();
+        assertDefaultWorkspace(aaa);
+
+        catalog.remove(catalog.getNamespaceByPrefix(aaa.getName()));
+        catalog.remove(aaa);
+        assertDefaultWorkspace(abc);
+    }
+
+    private void assertDefaultWorkspace(WorkspaceInfo expected) throws Exception {
+        getLoader().reload();
+        Catalog catalog = getCatalog();
+        assertNotNull(catalog.getWorkspaceByName(expected.getName()));
+        assertEquals(expected, catalog.getDefaultWorkspace());
+    }
+
+    private void deleteDefaultWorkspaceFile() {
+        Resource defaultWorkspaceConfig = getDataDirectory().defaultWorkspaceConfig();
+        assertTrue(defaultWorkspaceConfig.delete());
+    }
+
+    private WorkspaceInfo addWorkspace(String name) {
+        Catalog catalog = getCatalog();
+        WorkspaceInfo ws = catalog.getFactory().createWorkspace();
+        ws.setName(name);
+        catalog.add(ws);
+
+        NamespaceInfo ns = catalog.getFactory().createNamespace();
+        ns.setPrefix(ws.getName());
+        ns.setURI(ws.getName());
+        catalog.add(ns);
+        return ws;
     }
 
     @Test
@@ -589,6 +646,42 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         assertEquals(service, loaded);
     }
 
+    @Test
+    public void initializeDefaultStyle() throws Exception {
+        GeoServerResourceLoader resourceLoader = getResourceLoader();
+        Resource styles = resourceLoader.get("styles");
+        assertTrue(styles.dir().isDirectory());
+
+        deleteStyle(StyleInfo.DEFAULT_POINT, "default_point.sld");
+        deleteStyle(StyleInfo.DEFAULT_LINE, "default_line.sld");
+        deleteStyle(StyleInfo.DEFAULT_POLYGON, "default_polygon.sld");
+        deleteStyle(StyleInfo.DEFAULT_RASTER, "default_raster.sld");
+        deleteStyle(StyleInfo.DEFAULT_GENERIC, "default_generic.sld");
+
+        getLoader().reload();
+
+        styles = resourceLoader.get("styles");
+        assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_POINT + ".xml").getType());
+        assertEquals(RESOURCE, styles.get("default_point.sld").getType());
+        assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_LINE + ".xml").getType());
+        assertEquals(RESOURCE, styles.get("default_line.sld").getType());
+        assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_POLYGON + ".xml").getType());
+        assertEquals(RESOURCE, styles.get("default_polygon.sld").getType());
+        assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_RASTER + ".xml").getType());
+        assertEquals(RESOURCE, styles.get("default_raster.sld").getType());
+        assertEquals(RESOURCE, styles.get(StyleInfo.DEFAULT_GENERIC + ".xml").getType());
+        assertEquals(RESOURCE, styles.get("default_generic.sld").getType());
+    }
+
+    private void deleteStyle(String infoName, String sldFile) {
+        GeoServerResourceLoader resourceLoader = getResourceLoader();
+        Resource styles = resourceLoader.get("styles");
+        Resource xml = styles.get(infoName + ".xml");
+        Resource sld = styles.get(sldFile);
+        assertTrue(!Resources.exists(xml) || xml.delete());
+        assertTrue(!Resources.exists(sld) || sld.delete());
+    }
+
     private void persist(Info info, Resource file) throws IOException {
         try (OutputStream out = file.out()) {
             XStreamPersister persister = persister();
@@ -628,13 +721,17 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
     }
 
     private DataDirectoryGeoServerLoader newLoader() {
-        GeoServerResourceLoader resourceLoader = super.getResourceLoader();
-        return newLoader(resourceLoader);
+        GeoServerResourceLoader resourceLoader = getResourceLoader();
+        GeoServerSecurityManager secManager = getSecurityManager();
+        GeoServerConfigurationLock configLock = GeoServerExtensions.bean(GeoServerConfigurationLock.class);
+        return newLoader(resourceLoader, secManager, configLock);
     }
 
-    private DataDirectoryGeoServerLoader newLoader(GeoServerResourceLoader resourceLoader) {
-        GeoServerSecurityManager secManager = getSecurityManager();
+    private DataDirectoryGeoServerLoader newLoader(
+            GeoServerResourceLoader resourceLoader,
+            GeoServerSecurityManager secManager,
+            GeoServerConfigurationLock configLock) {
         GeoServerDataDirectory dataDirectory = new GeoServerDataDirectory(resourceLoader);
-        return new DataDirectoryGeoServerLoader(dataDirectory, secManager);
+        return new DataDirectoryGeoServerLoader(dataDirectory, secManager, configLock);
     }
 }

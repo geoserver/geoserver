@@ -5,7 +5,7 @@
 package org.geoserver.config.datadir;
 
 import static java.lang.String.format;
-import static org.geoserver.config.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.ForkJoinPool;
@@ -18,23 +18,49 @@ import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
 import org.springframework.util.StringUtils;
 
+/**
+ * Utility class for creating and configuring thread pools used by the data directory loader.
+ *
+ * <p>This factory creates {@link ForkJoinPool} instances with appropriate naming conventions, exception handling, and
+ * parallelism levels based on system configuration.
+ *
+ * @see DataDirectoryGeoServerLoader#GEOSERVER_DATA_DIR_LOADER_THREADS
+ */
 class ExecutorFactory {
 
     private static final Logger LOGGER =
             Logging.getLogger(ExecutorFactory.class.getPackage().getName());
 
+    /** Counter used to generate unique identifiers for thread pools */
     private static final AtomicInteger threadPoolId = new AtomicInteger();
 
+    /** Private constructor to prevent instantiation of this utility class. */
     private ExecutorFactory() {
         // private constructor, utility class
     }
 
+    /**
+     * Creates a new {@link ForkJoinPool} configured for data directory loading tasks.
+     *
+     * <p>The parallelism level is determined based on system properties and available processors. The pool uses custom
+     * thread naming and exception handling to facilitate debugging.
+     *
+     * @return a configured {@link ForkJoinPool} instance ready to execute data directory loading tasks
+     */
     public static ForkJoinPool createExecutor() {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
         return new ForkJoinPool(parallelism, threadFactory(), uncaughtExceptionHandler(), asyncMode);
     }
 
+    /**
+     * Creates a thread factory that produces worker threads with descriptive names.
+     *
+     * <p>The thread names follow the pattern "DatadirLoader-{poolId}-worker-{threadId}" to help with identification
+     * during debugging.
+     *
+     * @return a thread factory for creating worker threads
+     */
     private static ForkJoinWorkerThreadFactory threadFactory() {
 
         final int poolIndex = threadPoolId.incrementAndGet();
@@ -47,7 +73,11 @@ class ExecutorFactory {
         };
     }
 
-    /** @return an UncaughtExceptionHandler to log an error message in case of unrecoverable exception */
+    /**
+     * Creates an exception handler to properly log unhandled exceptions in worker threads.
+     *
+     * @return an UncaughtExceptionHandler to log an error message in case of unrecoverable exception
+     */
     private static UncaughtExceptionHandler uncaughtExceptionHandler() {
         return (t, ex) -> {
             String msg = format(
@@ -56,7 +86,20 @@ class ExecutorFactory {
         };
     }
 
-    private static int determineParallelism() {
+    /**
+     * Determines the appropriate parallelism level for the thread pool.
+     *
+     * <p>This method considers:
+     *
+     * <ul>
+     *   <li>The {@code GEOSERVER_DATA_DIR_LOADER_THREADS} system property or environment variable
+     *   <li>The number of available processors on the system
+     *   <li>A sensible default and maximum to prevent resource exhaustion
+     * </ul>
+     *
+     * @return the number of threads to use in the pool
+     */
+    static int determineParallelism() {
         String configuredParallelism = GeoServerExtensions.getProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
         final int processors = Runtime.getRuntime().availableProcessors();
         final int defParallelism = Math.min(processors, 16);
@@ -75,6 +118,13 @@ class ExecutorFactory {
                         Level.WARNING,
                         () -> String.format(
                                 "Configured parallelism is invalid: %s=%s, using default of %d",
+                                GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
+            } else if (parallelism > processors) {
+                parallelism = processors;
+                LOGGER.log(
+                        Level.WARNING,
+                        () -> String.format(
+                                "Configured parallelism is invalid: %s=%s, using maximum of %d as per available processors",
                                 GEOSERVER_DATA_DIR_LOADER_THREADS, configuredParallelism, defParallelism));
             } else {
                 logTailMessage = "as indicated by the " + GEOSERVER_DATA_DIR_LOADER_THREADS

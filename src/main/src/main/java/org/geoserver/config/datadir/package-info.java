@@ -25,7 +25,7 @@
  * <p>Main classes in this package:
  *
  * <ul>
- *   <li>{@link org.geoserver.config.DataDirectoryGeoServerLoader} - The main entry point that replaces the
+ *   <li>{@link org.geoserver.config.datadir.DataDirectoryGeoServerLoader} - The main entry point that replaces the
  *       {@link org.geoserver.config.DefaultGeoServerLoader}. Coordinates the overall loading process
  * </ul>
  *

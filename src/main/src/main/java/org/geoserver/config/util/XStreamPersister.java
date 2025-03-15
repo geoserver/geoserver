@@ -1335,16 +1335,11 @@ public class XStreamPersister {
 
         @Override
         public Object fromString(String str) {
-            // try with the supported authorities
-            Set<String> authorities = CRS.getSupportedAuthorities(false);
-            for (String authority : authorities) {
-                if (str.toLowerCase().startsWith(authority.toLowerCase() + ":")) {
-                    try {
-                        return CRS.decode(str);
-                    } catch (Exception e) {
-                        // ignore
-                    }
-                }
+            // try as a valid code
+            try {
+                return CRS.decode(str);
+            } catch (Exception e) {
+                // ignore
             }
 
             // if none was supported, try with WKT

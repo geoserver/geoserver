@@ -50,6 +50,32 @@ public abstract class DataStoreUtils {
     /** logger */
     static Logger LOGGER = Logging.getLogger("org.geoserver.data");
 
+    /** A cache of available data access factories, used to avoid the cost of looking them up every time. */
+    enum DataAccessFactoryCache {
+        INSTANCE;
+
+        private List<DataAccessFactory> factories;
+
+        DataAccessFactoryCache() {
+            factories = new ArrayList<>();
+            Iterator<DataAccessFactory> it = DataAccessFinder.getAvailableDataStores();
+            while (it.hasNext()) {
+                factories.add(it.next());
+            }
+            for (DataAccessFactoryProducer producer : GeoServerExtensions.extensions(DataAccessFactoryProducer.class)) {
+                try {
+                    factories.addAll(producer.getDataStoreFactories());
+                } catch (Throwable t) {
+                    LOGGER.log(Level.WARNING, "Error occurred loading data access factories. Ignoring producer", t);
+                }
+            }
+        }
+
+        public List<DataAccessFactory> getFactories() {
+            return factories;
+        }
+    }
+
     /**
      * Looks up the {@link DataAccess} using the given params, verbatim, and then eventually wraps it into a renaming
      * wrapper so that feature type names are good ones from the wfs point of view (that is, no ":" in the type names)
@@ -239,20 +265,7 @@ public abstract class DataStoreUtils {
     }
 
     public static Collection<DataAccessFactory> getAvailableDataStoreFactories() {
-        List<DataAccessFactory> factories = new ArrayList<>();
-        Iterator<DataAccessFactory> it = DataAccessFinder.getAvailableDataStores();
-        while (it.hasNext()) {
-            factories.add(it.next());
-        }
-
-        for (DataAccessFactoryProducer producer : GeoServerExtensions.extensions(DataAccessFactoryProducer.class)) {
-            try {
-                factories.addAll(producer.getDataStoreFactories());
-            } catch (Throwable t) {
-                LOGGER.log(Level.WARNING, "Error occured loading data access factories. " + "Ignoring producer", t);
-            }
-        }
-
+        List<DataAccessFactory> factories = DataAccessFactoryCache.INSTANCE.getFactories();
         return factories;
     }
 

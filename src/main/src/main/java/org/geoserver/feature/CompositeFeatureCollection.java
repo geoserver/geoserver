@@ -233,7 +233,7 @@ public class CompositeFeatureCollection<T extends FeatureType, F extends Feature
      * @return
      */
     public boolean isSimple() {
-        for (FeatureCollection collection : collections) {
+        for (FeatureCollection<T, F> collection : collections) {
             if (!(collection instanceof SimpleFeatureCollection)
                     && !(collection.getSchema() instanceof SimpleFeatureType)) {
                 return false;

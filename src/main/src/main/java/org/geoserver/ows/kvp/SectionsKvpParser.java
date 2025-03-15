@@ -27,7 +27,8 @@ public abstract class SectionsKvpParser extends KvpParser {
     @SuppressWarnings("unchecked")
     public Object parse(String value) throws Exception {
         EObject sections = createObject();
-        ((Collection) EMFUtils.get(sections, "section")).addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
+        ((Collection<Object>) EMFUtils.get(sections, "section"))
+                .addAll(KvpUtils.readFlat(value, KvpUtils.INNER_DELIMETER));
         return sections;
     }
 

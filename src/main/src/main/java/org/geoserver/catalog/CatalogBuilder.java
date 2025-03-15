@@ -328,7 +328,7 @@ public class CatalogBuilder {
      *
      * <p>The resulting object is not added to the catalog, it must be done by the calling code after the fact.
      */
-    public FeatureTypeInfo buildFeatureType(FeatureSource featureSource) {
+    public FeatureTypeInfo buildFeatureType(@SuppressWarnings("rawtypes") FeatureSource featureSource) {
         if (store == null || !(store instanceof DataStoreInfo)) {
             throw new IllegalStateException("Data store not set.");
         }
@@ -419,7 +419,8 @@ public class CatalogBuilder {
      *
      * <p>This method calls through to {@link #doSetupBounds(ResourceInfo, Object)}.
      */
-    public void setupBounds(FeatureTypeInfo ftinfo, FeatureSource featureSource) throws IOException {
+    public void setupBounds(FeatureTypeInfo ftinfo, @SuppressWarnings("rawtypes") FeatureSource featureSource)
+            throws IOException {
         doSetupBounds(ftinfo, featureSource);
     }
 
@@ -464,7 +465,8 @@ public class CatalogBuilder {
     }
 
     /** Fills in metadata on the {@link FeatureTypeInfo} from an underlying feature source. */
-    public void setupMetadata(FeatureTypeInfo ftinfo, FeatureSource featureSource) throws IOException {
+    public void setupMetadata(FeatureTypeInfo ftinfo, @SuppressWarnings("rawtypes") FeatureSource featureSource)
+            throws IOException {
 
         org.geotools.api.data.ResourceInfo rinfo = null;
         try {
@@ -537,6 +539,7 @@ public class CatalogBuilder {
      * than access it through the catalog. This allows for this method to be called for info objects
      * that might not be part of the catalog.
      */
+    @SuppressWarnings("rawtypes")
     ReferencedEnvelope getNativeBounds(ResourceInfo rinfo, Object data) throws IOException {
         ReferencedEnvelope bounds = null;
         if (rinfo instanceof FeatureTypeInfo) {
@@ -651,7 +654,8 @@ public class CatalogBuilder {
      * @param data A feature source (possibily null)
      * @param extensive if true an extenstive lookup will be performed (more accurate, but might take various seconds)
      */
-    public void lookupSRS(FeatureTypeInfo ftinfo, FeatureSource data, boolean extensive) throws IOException {
+    public void lookupSRS(FeatureTypeInfo ftinfo, @SuppressWarnings("rawtypes") FeatureSource data, boolean extensive)
+            throws IOException {
         CoordinateReferenceSystem crs = ftinfo.getNativeCRS();
         if (crs == null) {
             if (data != null) {
@@ -1052,9 +1056,8 @@ public class CatalogBuilder {
         }
 
         // supported formats
-        final List formats = CoverageStoreUtils.listDataFormats();
-        for (Object o : formats) {
-            final Format fTmp = (Format) o;
+        final List<Format> formats = CoverageStoreUtils.listDataFormats();
+        for (Format fTmp : formats) {
             final String fName = fTmp.getName();
 
             if (fName.equalsIgnoreCase("WorldImage")) {
@@ -1177,9 +1180,6 @@ public class CatalogBuilder {
                 throw new Exception("Unable to acquire test coverage and color model for format:" + format.getName());
             }
             SampleModel sm = imageLayout.getSampleModel(null);
-            if (cm == null) {
-                throw new Exception("Unable to acquire test coverage and sample model for format:" + format.getName());
-            }
             final int numBands = sm.getNumBands();
             sampleDimensions = new GridSampleDimension[numBands];
             // setting bands names.
@@ -1204,7 +1204,7 @@ public class CatalogBuilder {
             dim.setName(name);
 
             StringBuilder label = new StringBuilder("GridSampleDimension".intern());
-            final Unit uom = sd.getUnits();
+            final Unit<?> uom = sd.getUnits();
 
             String uName = name.toUpperCase();
             if (uom != null) {
@@ -1482,7 +1482,7 @@ public class CatalogBuilder {
         return wli;
     }
 
-    void formatUOM(StringBuilder label, Unit uom) {
+    void formatUOM(StringBuilder label, Unit<?> uom) {
         String formatted = UnitFormat.getInstance().format(uom);
         label.append(formatted);
     }

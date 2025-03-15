@@ -20,6 +20,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class SecuredSimpleFeatureSource extends SecuredFeatureSource<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureSource {
 

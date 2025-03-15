@@ -59,6 +59,7 @@ public abstract class ServiceLoader {
         service.setTitle((String) properties.get("title"));
         service.setAbstract((String) properties.get("abstract"));
 
+        @SuppressWarnings("rawtypes")
         Map metadataLink = (Map) properties.get("metadataLink");
         if (metadataLink != null) {
             MetadataLinkInfo ml = gs.getCatalog().getFactory().createMetadataLink();
@@ -68,7 +69,7 @@ public abstract class ServiceLoader {
             service.setMetadataLink(ml);
         }
 
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         List<KeywordInfo> keywords = (List) properties.get("keywords");
         if (keywords != null) {
             service.getKeywords().addAll(keywords);

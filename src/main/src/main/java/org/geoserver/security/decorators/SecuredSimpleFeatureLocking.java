@@ -28,6 +28,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class SecuredSimpleFeatureLocking extends SecuredFeatureLocking<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureLocking {
 

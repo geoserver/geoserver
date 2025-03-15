@@ -64,6 +64,7 @@ public class RetypingDataStoreTest {
 
     private String fid;
 
+    @SuppressWarnings("serial")
     @Before
     public void setUp() throws Exception {
         data = File.createTempFile("retype", "data", new File("./target"));
@@ -217,6 +218,7 @@ public class RetypingDataStoreTest {
         expect(ds.getFeatureSource("trees")).andReturn(fs);
         replay(ds);
 
+        @SuppressWarnings("serial")
         RetypingDataStore rts = new RetypingDataStore(ds) {
             @Override
             protected String transformFeatureTypeName(String originalName) {

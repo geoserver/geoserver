@@ -73,6 +73,7 @@ import org.springframework.util.Assert;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class SecureCatalogImpl extends AbstractDecorator<Catalog> implements Catalog {
 
     /**

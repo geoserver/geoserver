@@ -24,7 +24,7 @@ public class EnviromentInjectionCallback extends AbstractDispatcherCallback {
         // see if we have an env map already parsed in the request
         Object obj = request.getKvp().get("env");
         @SuppressWarnings("unchecked")
-        Map<String, Object> envVars = obj instanceof Map ? (Map) obj : null;
+        Map<String, Object> envVars = obj instanceof Map ? (Map<String, Object>) obj : null;
 
         // inject the current user in it
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();

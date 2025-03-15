@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("rawtypes")
 public abstract class AbstractAccesRuleDAOConcurrencyTest<D extends AbstractAccessRuleDAO> {
 
     protected static final int DEFAULT_LOOPS = 10000;

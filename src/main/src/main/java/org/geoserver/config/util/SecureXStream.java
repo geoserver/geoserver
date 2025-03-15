@@ -362,7 +362,7 @@ public class SecureXStream extends XStream {
         try {
             Class<?> type =
                     Class.forName(className, false, getClassLoaderReference().getReference());
-            Constructor constructor = type.getConstructor(constructorParamTypes);
+            Constructor<?> constructor = type.getConstructor(constructorParamTypes);
             Object instance = constructor.newInstance(constructorParamValues);
             if (instance instanceof Converter) {
                 registerConverter((Converter) instance, priority);
@@ -425,6 +425,7 @@ public class SecureXStream extends XStream {
      *
      * @author Andrea Aime - GeoSolutions
      */
+    @SuppressWarnings("serial")
     static class ForbiddenClassExceptionEx extends RuntimeException {
 
         public ForbiddenClassExceptionEx(String message, Throwable cause) {

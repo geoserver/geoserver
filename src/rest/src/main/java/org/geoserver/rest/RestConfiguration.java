@@ -102,6 +102,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     protected void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
         Catalog catalog = (Catalog) applicationContext.getBean("catalog");
@@ -223,7 +224,7 @@ public class RestConfiguration extends DelegatingWebMvcConfiguration {
     @Override
     protected void addFormatters(FormatterRegistry registry) {
         // add all configured Spring Converter classes to allow extension/pluggability
-        for (Converter converter : GeoServerExtensions.extensions(Converter.class)) {
+        for (@SuppressWarnings("rawtypes") Converter converter : GeoServerExtensions.extensions(Converter.class)) {
             registry.addConverter(converter);
         }
         // finally, allow any other WebMvcConfigurer in the application context to do its thing

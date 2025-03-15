@@ -47,7 +47,7 @@ public class DefaultGeoServerLoader extends GeoServerLoader {
     protected void loadGeoServer(final GeoServer geoServer, XStreamPersister xp) throws Exception {
         if (listener == null) {
             // add event listener which persists changes
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "rawtypes"})
             final List<XStreamServiceLoader<ServiceInfo>> loaders =
                     (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
             listener = new ServicePersister(loaders, geoServer);

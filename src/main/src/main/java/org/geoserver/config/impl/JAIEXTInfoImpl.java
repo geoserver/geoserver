@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.geoserver.config.JAIEXTInfo;
 import org.geotools.image.ImageWorker;
 
+@SuppressWarnings("serial")
 public class JAIEXTInfoImpl implements JAIEXTInfo {
 
     /** Available JAI operations */

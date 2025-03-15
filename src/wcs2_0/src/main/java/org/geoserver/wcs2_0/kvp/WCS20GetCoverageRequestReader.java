@@ -21,7 +21,7 @@ import org.geoserver.ows.kvp.EMFKvpRequestReader;
 import org.geoserver.ows.util.KvpUtils;
 import org.geoserver.platform.OWS20Exception;
 import org.geoserver.wcs2_0.WCS20Const;
-import org.geoserver.wcs2_0.exception.WCS20Exception;
+import org.geotools.api.filter.sort.SortBy;
 import org.geotools.wcs.v2_0.Interpolation;
 import org.geotools.wcs.v2_0.RangeSubset;
 import org.geotools.wcs.v2_0.Scaling;
@@ -43,6 +43,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         super(GetCoverageType.class, WCS20_FACTORY);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public Object read(Object request, Map<String, Object> kvp, Map<String, Object> rawKvp) throws Exception {
         GetCoverageType gc = (GetCoverageType) super.read(request, kvp, rawKvp);
@@ -52,8 +53,8 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         if (subsets instanceof DimensionSubsetType) {
             gc.getDimensionSubset().add((DimensionSubsetType) subsets);
         } else if (subsets instanceof List) {
-            for (Object subset : (List) subsets) {
-                gc.getDimensionSubset().add((DimensionSubsetType) subset);
+            for (DimensionSubsetType subset : (List<DimensionSubsetType>) subsets) {
+                gc.getDimensionSubset().add(subset);
             }
         }
 
@@ -72,7 +73,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         return gc;
     }
 
-    private void parseGeoTiffExtension(GetCoverageType gc, Map kvp) {
+    private void parseGeoTiffExtension(GetCoverageType gc, Map<String, Object> kvp) {
         // the early spec draft had un-qualified params, keeping it for backwards compatibility
         List<String> geoTiffParams = Arrays.asList(
                 "compression", "jpeg_quality", "predictor", "interleave", "tiling", "tileheight", "tilewidth");
@@ -81,13 +82,17 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         parseSimpleContentList(gc, kvp, geoTiffParams, GEOTIFF_NS, "geotiff");
     }
 
-    private void parseCRSExtension(GetCoverageType gc, Map kvp) {
+    private void parseCRSExtension(GetCoverageType gc, Map<String, Object> kvp) {
         List<String> geoTiffParams = Arrays.asList("subsettingCrs", "outputCrs");
         parseSimpleContentList(gc, kvp, geoTiffParams, CRS_NS, null);
     }
 
     private void parseSimpleContentList(
-            GetCoverageType gc, Map kvp, List<String> geoTiffParams, String namespace, String kvpPrefix) {
+            GetCoverageType gc,
+            Map<String, Object> kvp,
+            List<String> geoTiffParams,
+            String namespace,
+            String kvpPrefix) {
         for (String param : geoTiffParams) {
             String key = param;
             if (kvpPrefix != null) {
@@ -105,7 +110,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private void parseScalingExtension(GetCoverageType gc, Map kvp) {
+    private void parseScalingExtension(GetCoverageType gc, Map<String, Object> kvp) {
         boolean found = false;
         ScalingType scaling = WCS20_FACTORY.createScalingType();
         if (kvp.containsKey("scalefactor")) {
@@ -138,7 +143,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private void parseRangeSubsetExtension(GetCoverageType gc, Map kvp) {
+    private void parseRangeSubsetExtension(GetCoverageType gc, Map<String, Object> kvp) {
         if (kvp.containsKey("rangesubset")) {
             ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
             item.setNamespace(RangeSubset.NAMESPACE);
@@ -148,7 +153,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private void parseInterpolationExtension(GetCoverageType gc, Map kvp) {
+    private void parseInterpolationExtension(GetCoverageType gc, Map<String, Object> kvp) {
         if (kvp.containsKey("interpolation")) {
             ExtensionItemType item = WCS20_FACTORY.createExtensionItemType();
             item.setNamespace(Interpolation.NAMESPACE);
@@ -158,7 +163,7 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
         }
     }
 
-    private void parseOverviewPolicyExtension(GetCoverageType gc, Map kvp) {
+    private void parseOverviewPolicyExtension(GetCoverageType gc, Map<String, Object> kvp) {
         if (kvp.containsKey(WCS20Const.OVERVIEW_POLICY_EXTENSION_LOWERCASE)) {
             Object item = kvp.get(WCS20Const.OVERVIEW_POLICY_EXTENSION_LOWERCASE);
             if (item instanceof ExtensionItemType) {
@@ -172,18 +177,18 @@ public class WCS20GetCoverageRequestReader extends EMFKvpRequestReader {
     protected void setValue(EObject eObject, String property, Object value) {
         if ("sortBy".equalsIgnoreCase(property)) {
             // we get an arraylist of arraylists
-            List sorts = (List) value;
+            List<List<SortBy>> sorts = (List<List<SortBy>>) value;
             final int sortsSize = sorts.size();
             if (sortsSize != 1) {
                 throw new OWS20Exception(
                         "Invalid sortBy specification, expecting sorts for just one coverage, but got "
                                 + sortsSize
                                 + " instead",
-                        WCS20Exception.WCS20ExceptionCode.InvalidParameterValue,
+                        OWS20Exception.OWSExceptionCode.InvalidParameterValue,
                         "sortBy");
             }
             final GetCoverageType getCoverage = (GetCoverageType) (eObject);
-            getCoverage.getSortBy().addAll((List) sorts.get(0));
+            getCoverage.getSortBy().addAll(sorts.get(0));
         } else {
             super.setValue(eObject, property, value);
         }

@@ -59,6 +59,7 @@ import org.vfny.geoserver.global.GeoServerFeatureSource;
  * RetypeFeatureTypeCallback implementation, it does not break or override the functionality provided by
  * GeoServerFeatureSource wrapper.
  */
+@SuppressWarnings("rawtypes")
 public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
 
     public static final String LONG_LAT_NO_GEOM_ON_THE_FLY_LAYER_FILE = "longlat.properties";
@@ -224,6 +225,7 @@ public class RetypeFeatureTypeCallbackTest extends GeoServerSystemTestSupport {
         }
     }
 
+    @SuppressWarnings("serial")
     public static class TestRetypedSource extends DecoratingSimpleFeatureSource {
 
         private final FeatureTypeInfo featureTypeInfo;

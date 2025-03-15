@@ -63,6 +63,7 @@ public class RetypingFeatureSource implements SimpleFeatureSource, Wrapper {
         this.typeMap = typeMap;
     }
 
+    @SuppressWarnings("serial")
     RetypingFeatureSource(SimpleFeatureSource wrapped, final FeatureTypeMap typeMap) throws IOException {
         this.wrapped = wrapped;
         this.typeMap = typeMap;

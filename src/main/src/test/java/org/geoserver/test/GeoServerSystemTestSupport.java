@@ -218,6 +218,7 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * In IDEs during development GeoTools sources can be in the classpath of GeoServer tests, this resolver allows them
      * to be resolved while blocking the rest
      */
+    @SuppressWarnings("serial")
     public static final EntityResolver RESOLVE_DISABLED_PROVIDER_DEVMODE = new PreventLocalEntityResolver() {
         @Override
         public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
@@ -979,10 +980,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
      * @param path The path for the request, minus any query string parameters.
      * @param kvp The key value pairs to be put in teh query string.
      */
-    protected MockHttpServletRequest createRequest(String path, Map kvp) {
+    protected MockHttpServletRequest createRequest(String path, Map<?, ?> kvp) {
         StringBuffer q = new StringBuffer();
-        for (Object o : kvp.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+        for (Map.Entry<?, ?> entry : kvp.entrySet()) {
             q.append(entry.getKey()).append("=").append(entry.getValue());
             q.append("&");
         }
@@ -1622,16 +1622,16 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         final DispatcherServlet dispatcher = getDispatcher();
 
         // build a filter chain so that we can test with filters as well
+        @SuppressWarnings("serial")
         HttpServlet servlet = new HttpServlet() {
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
                 try {
                     // excute the pre handler step
-                    Collection interceptors =
+                    Collection<HandlerInterceptor> interceptors =
                             GeoServerExtensions.extensions(HandlerInterceptor.class, applicationContext);
-                    for (Object value : interceptors) {
-                        HandlerInterceptor interceptor = (HandlerInterceptor) value;
+                    for (HandlerInterceptor interceptor : interceptors) {
                         interceptor.preHandle(request, response, dispatcher);
                     }
 

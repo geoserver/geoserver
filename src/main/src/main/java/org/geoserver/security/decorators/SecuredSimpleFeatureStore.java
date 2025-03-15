@@ -27,6 +27,7 @@ import org.geotools.data.simple.SimpleFeatureCollection;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("serial")
 public class SecuredSimpleFeatureStore extends SecuredFeatureStore<SimpleFeatureType, SimpleFeature>
         implements SimpleFeatureStore {
 

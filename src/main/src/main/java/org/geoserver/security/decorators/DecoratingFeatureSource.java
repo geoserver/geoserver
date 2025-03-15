@@ -28,6 +28,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Andrea Aime
  */
+@SuppressWarnings("serial")
 public abstract class DecoratingFeatureSource<T extends FeatureType, F extends Feature>
         extends AbstractDecorator<FeatureSource<T, F>> implements FeatureSource<T, F> {
 

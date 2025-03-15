@@ -29,7 +29,7 @@ public class CollectionConverter extends com.thoughtworks.xstream.converters.col
     }
 
     @Override
-    public boolean canConvert(Class type) {
+    public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
         if (type != null) {
             String typeName = type.getName();
             if (typeName.equals(ARRAY_LIST)

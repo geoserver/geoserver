@@ -27,6 +27,7 @@ import org.geotools.api.util.InternationalString;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.GrowableInternationalString;
 
+@SuppressWarnings("serial")
 public class LayerGroupInfoImpl implements LayerGroupInfo {
 
     protected String id;

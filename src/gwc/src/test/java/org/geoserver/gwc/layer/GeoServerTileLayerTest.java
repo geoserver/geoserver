@@ -569,7 +569,7 @@ public class GeoServerTileLayerTest {
         BoundingBox bbox = new BoundingBox(0, 0, 10, 10);
 
         Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         Resource result = layerInfoTileLayer.getFeatureInfo(convTile, bbox, 100, 100, 50, 50);
@@ -618,7 +618,7 @@ public class GeoServerTileLayerTest {
         convTile.servletReq = new MockHttpServletRequest();
 
         Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerInfoTileLayer.getTileJSON();
@@ -680,7 +680,7 @@ public class GeoServerTileLayerTest {
         convTile.servletReq = new MockHttpServletRequest();
 
         Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
@@ -756,7 +756,7 @@ public class GeoServerTileLayerTest {
         convTile.servletReq = new MockHttpServletRequest();
 
         Resource mockResult = mock(Resource.class);
-        ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+        ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
         when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
         TileJSON result = layerGroupInfoVectorTileLayer.getTileJSON();
@@ -860,7 +860,7 @@ public class GeoServerTileLayerTest {
 
         public GeoServerTileLayer prepareTileLayer() throws Exception {
             Resource mockResult = mock(Resource.class);
-            ArgumentCaptor<Map> argument = ArgumentCaptor.forClass(Map.class);
+            ArgumentCaptor<Map<String, String>> argument = ArgumentCaptor.forClass(Map.class);
             when(mockGWC.dispatchOwsRequest(argument.capture(), any())).thenReturn(mockResult);
 
             return new GeoServerTileLayer(layerInfo, defaults, gridSetBroker);

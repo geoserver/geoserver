@@ -27,6 +27,7 @@ import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.logging.Logging;
 
+@SuppressWarnings("serial")
 public class LayerInfoImpl implements LayerInfo {
 
     static final Logger LOGGER = Logging.getLogger(LayerInfoImpl.class);

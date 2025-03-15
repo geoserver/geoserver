@@ -72,6 +72,7 @@ public class FullyRetypingDataStoreTest {
 
     private String fid;
 
+    @SuppressWarnings("serial")
     @Before
     public void setUp() throws Exception {
         // setup property file
@@ -258,6 +259,7 @@ public class FullyRetypingDataStoreTest {
         expect(ds.getFeatureSource("trees")).andReturn(fs);
         replay(ds);
 
+        @SuppressWarnings("serial")
         RetypingDataStore rts = new RetypingDataStore(ds) {
             @Override
             protected String transformFeatureTypeName(String originalName) {

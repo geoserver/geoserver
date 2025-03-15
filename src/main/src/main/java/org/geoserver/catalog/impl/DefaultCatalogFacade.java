@@ -1166,8 +1166,8 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             } else if (v2 == null) {
                 return 1;
             }
-            Comparable c1 = (Comparable) v1;
-            Comparable c2 = (Comparable) v2;
+            Comparable<Object> c1 = (Comparable<Object>) v1;
+            Comparable<Object> c2 = (Comparable<Object>) v2;
             return c1.compareTo(c2);
         };
     }

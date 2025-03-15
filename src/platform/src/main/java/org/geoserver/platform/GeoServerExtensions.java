@@ -23,7 +23,6 @@ import org.geotools.util.logging.Logging;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.web.context.WebApplicationContext;
@@ -43,7 +42,7 @@ import org.springframework.web.context.WebApplicationContext;
  * @author Justin Deoliveira, The Open Planning Project
  * @author Andrea Aime, The Open Planning Project
  */
-public class GeoServerExtensions implements ApplicationContextAware, ApplicationListener {
+public class GeoServerExtensions implements ApplicationContextAware, ApplicationListener<ContextRefreshedEvent> {
 
     /** logger */
     protected static final Logger LOGGER = Logging.getLogger("org.geoserver.platform");
@@ -149,7 +148,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
                 && !ExtensionFilter.class.isAssignableFrom(extensionPoint)) {
 
             List<T> secondary = new ArrayList<>();
-            for (ExtensionProvider xp : extensions(ExtensionProvider.class, context)) {
+            for (ExtensionProvider<T> xp : extensions(ExtensionProvider.class, context)) {
                 try {
                     if (extensionPoint.isAssignableFrom(xp.getExtensionPoint())) {
                         secondary.addAll(xp.getExtensions(extensionPoint));
@@ -162,7 +161,6 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         }
 
         // load from factory spi
-        @SuppressWarnings("unchecked")
         List<T> spiExtensions = (List<T>) spiCache.get(extensionPoint);
         if (spiExtensions == null) {
             spiExtensions = new ArrayList<>();
@@ -377,11 +375,9 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
-        if (event instanceof ContextRefreshedEvent) {
-            extensionsCache.clear();
-            singletonBeanCache.clear();
-        }
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        extensionsCache.clear();
+        singletonBeanCache.clear();
     }
 
     /**

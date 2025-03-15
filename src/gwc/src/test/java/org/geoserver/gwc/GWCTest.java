@@ -376,15 +376,15 @@ public class GWCTest {
         assertTrue(extensions.contains(genv));
 
         JDBCConfiguration jdbcConfiguration = new JDBCConfiguration();
-        if (GeoWebCacheEnvironment.ALLOW_ENV_PARAMETRIZATION) {
+        if (GeoWebCacheExtensions.bean(GeoWebCacheEnvironment.class).isAllowEnvParametrization()) {
             jdbcConfiguration.setDialect("${TEST_ENV_PROPERTY}");
         } else {
             jdbcConfiguration.setDialect("HSQL");
         }
         File jdbcConfigurationFile = File.createTempFile("jdbcConfigurationFile", ".tmp", tmpDir().dir());
-        jdbcConfiguration.store(jdbcConfiguration, jdbcConfigurationFile);
+        JDBCConfiguration.store(jdbcConfiguration, jdbcConfigurationFile);
 
-        JDBCConfiguration loadedConf = jdbcConfiguration.load(jdbcConfigurationFile);
+        JDBCConfiguration loadedConf = JDBCConfiguration.load(jdbcConfigurationFile);
         jdbcStorage.setApplicationContext(appContext);
 
         expect(jdbcStorage.getJDBCDiskQuotaConfig()).andReturn(loadedConf).anyTimes();

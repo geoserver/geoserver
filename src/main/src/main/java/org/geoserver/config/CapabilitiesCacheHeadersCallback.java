@@ -109,7 +109,7 @@ public class CapabilitiesCacheHeadersCallback extends AbstractDispatcherCallback
                 return new String[][] {{HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate"}};
             } else {
                 // will add only if not already there
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings({"unchecked", "rawtypes"})
                 Map<String, String> map = (Map) ArrayUtils.toMap(headers);
                 map.putIfAbsent(HttpHeaders.CACHE_CONTROL, "max-age=0, must-revalidate");
                 headers = new String[map.size()][2];

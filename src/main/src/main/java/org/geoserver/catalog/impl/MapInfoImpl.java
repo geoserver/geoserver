@@ -11,6 +11,7 @@ import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.MapInfo;
 
+@SuppressWarnings("serial")
 public class MapInfoImpl implements MapInfo {
 
     String id;

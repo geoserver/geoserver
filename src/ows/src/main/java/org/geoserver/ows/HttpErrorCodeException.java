@@ -12,6 +12,7 @@ package org.geoserver.ows;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+@SuppressWarnings("serial")
 public class HttpErrorCodeException extends RuntimeException {
 
     /** the error code */

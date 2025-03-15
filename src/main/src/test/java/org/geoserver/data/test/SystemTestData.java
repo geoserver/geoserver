@@ -77,7 +77,12 @@ import org.geotools.util.logging.Logging;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-@SuppressWarnings({"PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
+@SuppressWarnings({
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation",
+    "unchecked",
+    "rawtypes"
+})
 public class SystemTestData extends CiteTestData {
 
     /** Multiband tiff */
@@ -88,7 +93,6 @@ public class SystemTestData extends CiteTestData {
     /** Keys for overriding default layer properties */
     public static class LayerProperty<T> {
 
-        @SuppressWarnings("unchecked")
         T get(Map<LayerProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
@@ -105,7 +109,6 @@ public class SystemTestData extends CiteTestData {
     /** Keys for overriding default layer properties */
     public static class StyleProperty<T> {
 
-        @SuppressWarnings("unchecked")
         T get(Map<StyleProperty, Object> map, T def) {
             return map != null && map.containsKey(this) ? (T) map.get(this) : def;
         }
@@ -959,7 +962,6 @@ public class SystemTestData extends CiteTestData {
         for (XStreamServiceLoader loader : loaders) {
             if (serviceClass.equals(loader.getServiceClass())) {
                 // create a new one
-                @SuppressWarnings("unchecked")
                 T created = (T) loader.create(geoServer);
 
                 // grab the old one, if it exists

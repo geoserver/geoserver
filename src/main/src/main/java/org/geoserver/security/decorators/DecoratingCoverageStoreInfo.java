@@ -28,6 +28,7 @@ import org.geotools.util.factory.Hints;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public class DecoratingCoverageStoreInfo extends AbstractDecorator<CoverageStoreInfo> implements CoverageStoreInfo {
 
     public DecoratingCoverageStoreInfo(CoverageStoreInfo delegate) {

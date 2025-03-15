@@ -24,6 +24,7 @@ import org.geotools.util.logging.Logging;
  * @author Christian Mueller
  * @author Justin Deoliveira
  */
+@SuppressWarnings("serial")
 public class CatalogRepository implements Repository, Serializable {
 
     /** logger */
@@ -40,6 +41,7 @@ public class CatalogRepository implements Repository, Serializable {
 
     @Override
     public DataStore dataStore(Name name) {
+        @SuppressWarnings("rawtypes")
         DataAccess da = access(name);
         if (da instanceof DataStore) {
             return (DataStore) da;
@@ -79,6 +81,7 @@ public class CatalogRepository implements Repository, Serializable {
             }
 
             try {
+                @SuppressWarnings("rawtypes")
                 DataAccess da = ds.getDataStore(null);
                 if (da instanceof DataStore) {
                     dataStores.add((DataStore) da);

@@ -166,7 +166,7 @@ public class GeoServerExceptions {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
+        @SuppressWarnings({"unchecked", "rawtypes"})
         public Enumeration<String> getKeys() {
             return (Enumeration) props.keys();
         }

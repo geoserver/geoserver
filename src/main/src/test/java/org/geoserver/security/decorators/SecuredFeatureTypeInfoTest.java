@@ -56,6 +56,7 @@ public class SecuredFeatureTypeInfoTest extends SecuredResourceInfoTest<FeatureT
         return 500;
     }
 
+    @SuppressWarnings("serial")
     static class TestVectorAccessLimits extends VectorAccessLimits {
 
         static final Query THE_QUERY = new Query();
@@ -78,11 +79,13 @@ public class SecuredFeatureTypeInfoTest extends SecuredResourceInfoTest<FeatureT
 
         // mocks for the getFeatureSource call
         FeatureTypeInfo fti = Mockito.mock(FeatureTypeInfo.class);
+        @SuppressWarnings("rawtypes")
         FeatureSource fs = Mockito.mock(SimpleFeatureSource.class);
         Mockito.when(fti.getFeatureSource(null, null)).thenReturn(fs);
 
         // build the secured feature type and grab a secure source
         SecuredFeatureTypeInfo secured = new SecuredFeatureTypeInfo(fti, wp);
+        @SuppressWarnings("rawtypes")
         SecuredFeatureSource securedSource = (SecuredFeatureSource) secured.getFeatureSource(null, null);
         assertNotNull(securedSource);
 

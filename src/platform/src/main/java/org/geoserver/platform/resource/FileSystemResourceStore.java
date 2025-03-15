@@ -214,11 +214,9 @@ public class FileSystemResourceStore implements ResourceStore {
             }
             try {
                 return new FileInputStream(file) {
-                    boolean closed = false;
 
                     @Override
                     public void close() throws IOException {
-                        closed = true;
                         super.close();
                         lock.release();
                     }

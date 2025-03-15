@@ -62,7 +62,7 @@ public class XmlTestUtil {
     }
 
     /** Match a document where one node matched the XPath expression, and it also matches the given matcher. */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasOneNode(final String xPath, final Matcher<? super Node> matcher) {
         return hasNodes(xPath, (Matcher) contains(matcher));
     }
@@ -71,7 +71,7 @@ public class XmlTestUtil {
         return hasOneNode(xPath, any(Node.class));
     }
     /** Match a document at least one of the nodes matched by the given XPath expression matches the given matcher. */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Matcher<Document> hasNode(final String xPath, final Matcher<Node> matcher) {
         return hasNodes(xPath, (Matcher) hasItem(matcher));
     }

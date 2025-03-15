@@ -43,6 +43,7 @@ import org.geotools.util.logging.Logging;
  * A simple data store that can be used to rename feature types (despite the name, the only retyping considered is the
  * name change, thought it would not be that hard to extend it so that it could shave off some attribute too)
  */
+@SuppressWarnings("serial")
 public class RetypingDataStore extends DecoratingDataStore {
     static final Logger LOGGER = Logging.getLogger(RetypingDataStore.class);
 
@@ -163,6 +164,7 @@ public class RetypingDataStore extends DecoratingDataStore {
         return new RetypingFeatureCollection.RetypingFeatureReader(reader, map.getFeatureType(query));
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public SimpleFeatureSource getFeatureSource(String typeName) throws IOException {
         FeatureTypeMap map = getTypeMapBackwards(typeName, true);

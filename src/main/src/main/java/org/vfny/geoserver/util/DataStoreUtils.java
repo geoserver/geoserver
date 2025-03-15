@@ -141,7 +141,7 @@ public abstract class DataStoreUtils {
      * Initializes a newly created data store factory by processing the {@link DataStoreFactoryInitializer} extension
      * point.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     static DataAccessFactory initializeDataStoreFactory(DataAccessFactory factory) {
         List<DataStoreFactoryInitializer> initializers =
                 GeoServerExtensions.extensions(DataStoreFactoryInitializer.class);

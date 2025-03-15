@@ -39,9 +39,9 @@ import java.util.TreeMap;
  * @author Joe Walnes
  * @author J&ouml;rg Schaible
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TreeMapConverter extends MapConverter {
 
-    @SuppressWarnings("unchecked")
     private static final class NullComparator extends Mapper.Null implements Comparator {
         @Override
         public int compare(Object o1, Object o2) {
@@ -74,7 +74,6 @@ public class TreeMapConverter extends MapConverter {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         TreeMap result = null;
         final Comparator comparator = unmarshalComparator(mapper(), reader, context, result);

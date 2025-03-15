@@ -60,7 +60,7 @@ public class CatalogIntegrationTest extends GeoServerSystemTestSupport {
 
         GeoServerExtensions extension = GeoServerExtensions.bean(GeoServerExtensions.class);
         if (extension == null) {
-            GeoServerExtensionsHelper.init(this.applicationContext);
+            GeoServerExtensionsHelper.init(GeoServerSystemTestSupport.applicationContext);
         }
 
         File root = testData.getDataDirectoryRoot();

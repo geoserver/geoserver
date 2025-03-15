@@ -134,7 +134,7 @@ public class OwsUtils {
                 throw new IllegalArgumentException("No such property '" + prop + "' for object " + result);
             }
             try {
-                result = g.invoke(result, null);
+                result = g.invoke(result);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -164,7 +164,7 @@ public class OwsUtils {
         }
 
         @SuppressWarnings("unchecked")
-        Map<Object, Object> o1 = (Map) o;
+        Map<Object, Object> o1 = (Map<Object, Object>) o;
         o1.put(key, value);
     }
 
@@ -275,6 +275,7 @@ public class OwsUtils {
      * @param target The target object.
      * @param clazz The class of source and target.
      */
+    @SuppressWarnings("unchecked")
     public static <T> void copy(T source, T target, Class<? extends T> clazz) {
         ClassProperties properties = getClassProperties(clazz);
         for (String p : properties.properties()) {
@@ -293,16 +294,16 @@ public class OwsUtils {
             }
 
             try {
-                Object newValue = getter.invoke(source, null);
+                Object newValue = getter.invoke(source);
                 if (newValue == null) {
                     continue;
                     // TODO: make this a flag whether to overwrite with null values
                 }
                 if (setter == null) {
                     if (Collection.class.isAssignableFrom(type)) {
-                        updateCollectionProperty(target, (Collection) newValue, getter);
+                        updateCollectionProperty(target, (Collection<Object>) newValue, getter);
                     } else if (Map.class.isAssignableFrom(type)) {
-                        updateMapProperty(target, (Map) newValue, getter);
+                        updateMapProperty(target, (Map<Object, Object>) newValue, getter);
                     }
                     continue;
                 }
@@ -337,7 +338,7 @@ public class OwsUtils {
 
             // if the getter returns null, call the setter
             try {
-                Object value = g.invoke(object, null);
+                Object value = g.invoke(object);
                 if (value == null) {
                     // first attempt to instantiate the type directly in case the method declares
                     // a non interface or abstract class
@@ -371,8 +372,8 @@ public class OwsUtils {
 
     /** Helper method for updating a collection based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
-    static void updateCollectionProperty(Object object, Collection newValue, Method getter) throws Exception {
-        Collection<Object> oldValue = (Collection) getter.invoke(object, null);
+    static void updateCollectionProperty(Object object, Collection<Object> newValue, Method getter) throws Exception {
+        Collection<Object> oldValue = (Collection<Object>) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.addAll(newValue);
@@ -381,8 +382,8 @@ public class OwsUtils {
 
     /** Helper method for updating a map based property. Only used if setter is null. */
     @SuppressWarnings("unchecked")
-    static void updateMapProperty(Object object, Map newValue, Method getter) throws Exception {
-        Map<Object, Object> oldValue = (Map) getter.invoke(object, null);
+    static void updateMapProperty(Object object, Map<Object, Object> newValue, Method getter) throws Exception {
+        Map<Object, Object> oldValue = (Map<Object, Object>) getter.invoke(object);
         if (oldValue != null) {
             oldValue.clear();
             oldValue.putAll(newValue);

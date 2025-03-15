@@ -20,7 +20,7 @@ public class DefaultComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterO
 
     static final Logger LOGGER = Logging.getLogger(DefaultComplexGeoJsonWriterOptions.class);
 
-    private static Class NON_FEATURE_TYPE_PROXY;
+    private static Class<?> NON_FEATURE_TYPE_PROXY;
 
     static {
         try {
@@ -42,7 +42,7 @@ public class DefaultComplexGeoJsonWriterOptions implements ComplexGeoJsonWriterO
     }
 
     @Override
-    public boolean canHandle(List<FeatureCollection> features) {
+    public boolean canHandle(@SuppressWarnings("rawtypes") List<FeatureCollection> features) {
         return true;
     }
 

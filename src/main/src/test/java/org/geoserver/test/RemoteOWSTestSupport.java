@@ -41,6 +41,7 @@ public class RemoteOWSTestSupport {
 
     static Boolean remoteWFSStatesAvailable;
 
+    @SuppressWarnings("rawtypes")
     public static boolean isRemoteWFSStatesAvailable(Logger logger) {
         if (remoteWFSStatesAvailable == null) {
             // let's see if the remote ows tests are enabled to start with

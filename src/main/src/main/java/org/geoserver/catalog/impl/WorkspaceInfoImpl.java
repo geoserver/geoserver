@@ -11,6 +11,7 @@ import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.WorkspaceInfo;
 
+@SuppressWarnings("serial")
 public class WorkspaceInfoImpl implements WorkspaceInfo, Serializable {
 
     protected String id;

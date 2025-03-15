@@ -34,7 +34,7 @@ public class ModuleStatusPanel extends Panel {
 
     GSModalWindow popup;
 
-    AjaxLink msgLink;
+    AjaxLink<?> msgLink;
 
     public ModuleStatusPanel(String id, AbstractStatusPage parent) {
         super(id);

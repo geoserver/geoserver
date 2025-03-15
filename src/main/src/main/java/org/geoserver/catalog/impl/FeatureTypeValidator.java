@@ -48,6 +48,7 @@ class FeatureTypeValidator {
         boolean temporaryVirtualTable = false;
         JDBCDataStore jds = null;
         try {
+            @SuppressWarnings("rawtypes")
             DataAccess access = fti.getStore().getDataStore(null);
             if (!(access instanceof DataStore)) return;
             DataStore ds = (DataStore) access;
@@ -125,7 +126,7 @@ class FeatureTypeValidator {
             Class<?> binding = attribute.getBinding();
             if (binding != null) {
                 ExpressionTypeVisitor typeVisitor = new ExpressionTypeVisitor(schema);
-                Class expressionType = (Class) expression.accept(typeVisitor, null);
+                Class<?> expressionType = (Class<?>) expression.accept(typeVisitor, null);
                 if (!Object.class.equals(expressionType)
                         && !expressionType.equals(binding)
                         && !binding.equals(String.class) // can do even without a Converter

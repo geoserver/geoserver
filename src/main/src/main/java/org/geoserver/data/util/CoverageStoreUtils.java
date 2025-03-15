@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.geotools.api.coverage.grid.Format;
+import org.geotools.api.parameter.GeneralParameterValue;
 import org.geotools.api.parameter.ParameterDescriptor;
 import org.geotools.api.parameter.ParameterValue;
 import org.geotools.api.parameter.ParameterValueGroup;
@@ -57,19 +58,19 @@ public final class CoverageStoreUtils {
     }
 
     /** Utility method for finding Params */
-    public static ParameterValue find(Format format, String key) {
+    public static ParameterValue<?> find(Format format, String key) {
         return find(format.getReadParameters(), key);
     }
 
     /** Utility methods for find param by key */
-    public static ParameterValue find(ParameterValueGroup params, String key) {
-        List list = params.values();
-        Iterator it = list.iterator();
-        ParameterDescriptor descr;
-        ParameterValue val;
+    public static ParameterValue<?> find(ParameterValueGroup params, String key) {
+        List<GeneralParameterValue> list = params.values();
+        Iterator<GeneralParameterValue> it = list.iterator();
+        ParameterDescriptor<?> descr;
+        ParameterValue<?> val;
 
         while (it.hasNext()) {
-            val = (ParameterValue) it.next();
+            val = (ParameterValue<?>) it.next();
             descr = val.getDescriptor();
 
             if (key.equalsIgnoreCase(descr.getName().toString())) {
@@ -147,7 +148,7 @@ public final class CoverageStoreUtils {
         return Collections.synchronizedList(list);
     }
 
-    public static Map defaultParams(String description) {
+    public static Map<String, Object> defaultParams(String description) {
         return Collections.synchronizedMap(defaultParams(aquireFactory(description)));
     }
 
@@ -156,15 +157,15 @@ public final class CoverageStoreUtils {
         ParameterValueGroup params = factory.getReadParameters();
 
         if (params != null) {
-            List list = params.values();
-            Iterator it = list.iterator();
-            ParameterDescriptor descr = null;
-            ParameterValue val = null;
+            List<GeneralParameterValue> list = params.values();
+            Iterator<GeneralParameterValue> it = list.iterator();
+            ParameterDescriptor<?> descr = null;
+            ParameterValue<?> val = null;
             String key;
             Object value;
 
             while (it.hasNext()) {
-                val = (ParameterValue) it.next();
+                val = (ParameterValue<?>) it.next();
                 descr = val.getDescriptor();
 
                 key = descr.getName().toString();

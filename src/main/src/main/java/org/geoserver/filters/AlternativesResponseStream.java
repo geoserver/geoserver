@@ -6,7 +6,6 @@
 package org.geoserver.filters;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,11 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 public class AlternativesResponseStream extends ServletOutputStream {
     HttpServletResponse myResponse;
     ServletOutputStream myStream;
-    Set myCompressibleTypes;
+    Set<Pattern> myCompressibleTypes;
     Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
     long contentLength;
 
-    public AlternativesResponseStream(HttpServletResponse response, Set compressible, long contentLength)
+    public AlternativesResponseStream(HttpServletResponse response, Set<Pattern> compressible, long contentLength)
             throws IOException {
         super();
         myResponse = response;
@@ -92,10 +91,7 @@ public class AlternativesResponseStream extends ServletOutputStream {
     protected boolean isCompressible(String mimetype) {
         String stripped = stripParams(mimetype);
 
-        Iterator it = myCompressibleTypes.iterator();
-
-        while (it.hasNext()) {
-            Pattern pat = (Pattern) it.next();
+        for (Pattern pat : myCompressibleTypes) {
             Matcher matcher = pat.matcher(stripped);
             if (matcher.matches()) return true;
         }

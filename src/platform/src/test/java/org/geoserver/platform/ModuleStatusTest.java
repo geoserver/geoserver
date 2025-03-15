@@ -43,7 +43,7 @@ public class ModuleStatusTest {
         expect(appContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[0]);
         EasyMock.replay(status, appContext);
 
-        List<ModuleStatus> list = gse.extensions(ModuleStatus.class);
+        List<ModuleStatus> list = GeoServerExtensions.extensions(ModuleStatus.class);
         assertEquals("test interfact mock", "test", status.getName());
         assertEquals("found module status", 2, list.size());
 

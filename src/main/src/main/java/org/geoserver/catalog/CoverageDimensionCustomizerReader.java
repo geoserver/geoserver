@@ -64,6 +64,7 @@ import tech.units.indriya.format.SimpleUnitFormat;
  *
  * @author Daniele Romagnoli - GeoSolutions SAS
  */
+@SuppressWarnings("rawtypes")
 public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
 
     static final String LINE_SEPARATOR = System.getProperty("line.separator", "\n");
@@ -472,6 +473,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     /** Utility class to wrap a GridCoverage by overriding its sampleDimensions and properties */
+    @SuppressWarnings("serial")
     public static class GridCoverageWrapper extends GridCoverage2D implements Wrapper {
 
         /** A custom propertySource allowing to redefine properties (since getProperties return a clone) */
@@ -551,6 +553,7 @@ public class CoverageDimensionCustomizerReader implements GridCoverage2DReader {
     }
 
     /** Wrap a GridSampleDimension by overriding categories, ranges, null values and name. */
+    @SuppressWarnings("serial")
     static class WrappedSampleDimension extends GridSampleDimension implements SampleDimension {
 
         /** The original sample dimension */

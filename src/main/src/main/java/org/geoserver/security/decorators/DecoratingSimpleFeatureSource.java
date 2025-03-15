@@ -28,6 +28,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Josh Vote, CSIRO Earth Science and Resource Engineering
  */
+@SuppressWarnings("serial")
 public abstract class DecoratingSimpleFeatureSource extends AbstractDecorator<SimpleFeatureSource>
         implements SimpleFeatureSource {
 

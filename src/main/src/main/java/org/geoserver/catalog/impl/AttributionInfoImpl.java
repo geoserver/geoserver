@@ -12,6 +12,7 @@ import org.geoserver.catalog.AttributionInfo;
  *
  * @author David Winslow <dwinslow@opengeo.org>
  */
+@SuppressWarnings("serial")
 public class AttributionInfoImpl implements AttributionInfo {
     private String id;
     private String title;

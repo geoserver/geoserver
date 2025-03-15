@@ -14,7 +14,8 @@ import org.geoserver.wms.GetLegendGraphicRequest;
 
 abstract class AbstractGetLegendGraphicResponse extends Response {
 
-    public AbstractGetLegendGraphicResponse(final Class binding, final String outputFormat) {
+    public AbstractGetLegendGraphicResponse(
+            @SuppressWarnings("rawtypes") final Class binding, final String outputFormat) {
         super(binding, caseInsensitive(outputFormat));
     }
 

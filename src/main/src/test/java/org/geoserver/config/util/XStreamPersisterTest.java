@@ -205,6 +205,7 @@ public class XStreamPersisterTest {
         assertEquals(g1, g2);
     }
 
+    @SuppressWarnings("serial")
     static class MyServiceInfo extends ServiceInfoImpl {
 
         String foo;
@@ -1210,6 +1211,7 @@ public class XStreamPersisterTest {
 
         // print(in(out));
 
+        @SuppressWarnings("rawtypes")
         Multimap mmap2 = persister.load(in(out), Multimap.class);
         assertEquals(mmap, mmap2);
     }
@@ -1488,7 +1490,7 @@ public class XStreamPersisterTest {
         String xml = "<global/>";
         GeoServerInfo gs = persister.load(new ByteArrayInputStream(xml.getBytes()), GeoServerInfo.class);
 
-        XMLAssert.assertEquals(gs.getSettings(), new SettingsInfoImpl());
+        assertEquals(gs.getSettings(), new SettingsInfoImpl());
     }
 
     @Test
@@ -1587,6 +1589,7 @@ public class XStreamPersisterTest {
         // the class
         assertTrue(converter.canConvert(GrowableInternationalString.class));
         // a subclass
+        @SuppressWarnings("serial")
         GrowableInternationalString anonymous = new GrowableInternationalString() {
             @Override
             public synchronized String toString(Locale locale) {
@@ -1641,6 +1644,7 @@ public class XStreamPersisterTest {
         tx.transform(new StreamSource(in), new StreamResult(System.out));
     }
 
+    @SuppressWarnings("serial")
     static class SweetBanana implements Serializable {
         String scientificName;
 

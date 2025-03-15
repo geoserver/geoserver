@@ -121,9 +121,9 @@ public class OwsUtilsTest {
     }
 
     class Baz {
-        Map map;
+        Map<?, ?> map;
 
-        public Map getMap() {
+        public Map<?, ?> getMap() {
             return map;
         }
     }

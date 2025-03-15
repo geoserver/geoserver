@@ -26,7 +26,7 @@ import org.geotools.util.factory.Hints;
  * @author Andrea Aime - GeoSolutions
  * @source $URL$
  */
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 class ListComplexFeatureCollection extends BaseFeatureCollection {
 
     /** wrapped list of features containing the contents */

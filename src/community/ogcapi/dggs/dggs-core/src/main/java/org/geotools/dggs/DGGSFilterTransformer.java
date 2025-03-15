@@ -98,7 +98,7 @@ public class DGGSFilterTransformer extends DuplicatingFilterVisitor {
                     iterators.add(dggs.polygon(polygon, resolution, true));
                 }
                 @SuppressWarnings("unchecked")
-                Iterator<Zone> zones = IteratorUtils.chainedIterator(iterators.toArray(n -> new Iterator[n]));
+                Iterator<Zone> zones = IteratorUtils.chainedIterator(iterators.toArray(Iterator[]::new));
                 return getFilterFrom(dggs, zones, resolution);
             }
         }

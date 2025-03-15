@@ -751,7 +751,7 @@ public class CoverageViewTest extends GeoServerSystemTestSupport {
 
         CoverageInfo info = getCatalog().getCoverageByName(BANDS_FLAGS_VIEW);
         GridCoverageReader reader = info.getGridCoverageReader(null, null);
-        GridCoverage2D coverage = (GridCoverage2D) reader.read(null);
+        GridCoverage2D coverage = (GridCoverage2D) reader.read();
         assertEquals(11, coverage.getRenderedImage().getSampleModel().getNumBands());
         coverage.dispose(true);
     }

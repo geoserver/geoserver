@@ -33,7 +33,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
     public void handleServiceChange(
             ServiceInfo service, List<String> propertyNames, List<Object> oldValues, List<Object> newValues) {
 
-        XStreamServiceLoader loader = findServiceLoader(service);
+        XStreamServiceLoader<ServiceInfo> loader = findServiceLoader(service);
 
         // handle the case of a service changing workspace and move the file
         int i = propertyNames.indexOf("workspace");
@@ -70,7 +70,7 @@ public class ServicePersister extends ConfigurationListenerAdapter {
 
     @Override
     public void handleServiceRemove(ServiceInfo service) {
-        XStreamServiceLoader loader = findServiceLoader(service);
+        XStreamServiceLoader<ServiceInfo> loader = findServiceLoader(service);
         try {
             Resource dir =
                     service.getWorkspace() != null ? dir(service.getWorkspace()) : resourceLoader.get(Paths.BASE);
@@ -80,21 +80,15 @@ public class ServicePersister extends ConfigurationListenerAdapter {
         }
     }
 
+    @SuppressWarnings("unchecked")
     <T extends ServiceInfo> XStreamServiceLoader<T> findServiceLoader(T service) {
-        XStreamServiceLoader loader = null;
         for (XStreamServiceLoader<ServiceInfo> l : loaders) {
             if (l.getServiceClass().isInstance(service)) {
-                loader = l;
-                break;
+                return (XStreamServiceLoader<T>) l;
             }
         }
 
-        if (loader == null) {
-            throw new IllegalArgumentException("No loader for " + service.getType());
-        }
-        @SuppressWarnings("unchecked")
-        XStreamServiceLoader<T> result = loader;
-        return result;
+        throw new IllegalArgumentException("No loader for " + service.getType());
     }
 
     Resource dir(WorkspaceInfo ws) throws IOException {

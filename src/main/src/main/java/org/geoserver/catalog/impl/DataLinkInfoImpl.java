@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import org.geoserver.catalog.DataLinkInfo;
 
+@SuppressWarnings("serial")
 public class DataLinkInfoImpl implements DataLinkInfo {
 
     String id;

@@ -23,6 +23,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -31,12 +32,12 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
     protected HttpServletResponse origResponse = null;
     protected AlternativesResponseStream stream = null;
     protected PrintWriter writer = null;
-    protected Set formatsToCompress;
+    protected Set<Pattern> formatsToCompress;
     protected String requestedURL;
     protected Logger logger = org.geotools.util.logging.Logging.getLogger("org.geoserver.filters");
     private long contentLength = -1;
 
-    public GZIPResponseWrapper(HttpServletResponse response, Set toCompress, String url) {
+    public GZIPResponseWrapper(HttpServletResponse response, Set<Pattern> toCompress, String url) {
         super(response);
         requestedURL = url;
         origResponse = response;

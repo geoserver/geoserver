@@ -9,6 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +30,7 @@ public class CoverageUtilsTest {
         ParameterDescriptor<Color> pdescriptor = ImageMosaicFormat.OUTPUT_TRANSPARENT_COLOR;
         ParameterValue<Color> pvalue = pdescriptor.createValue();
         String key = pdescriptor.getName().getCode();
-        Map values = Collections.singletonMap(key, "0xFFFFFF");
+        Map<String, Serializable> values = Collections.singletonMap(key, "0xFFFFFF");
         Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
         assertTrue(value instanceof Color);
         assertEquals(Color.WHITE, value);
@@ -40,7 +41,7 @@ public class CoverageUtilsTest {
         ParameterDescriptor<Integer> pdescriptor = ImageMosaicFormat.MAX_ALLOWED_TILES;
         ParameterValue<Integer> pvalue = pdescriptor.createValue();
         String key = pdescriptor.getName().getCode();
-        Map values = Collections.singletonMap(key, "1");
+        Map<String, Serializable> values = Collections.singletonMap(key, "1");
         Object value = CoverageUtils.getCvParamValue(key, pvalue, values);
         assertTrue(value instanceof Integer);
         assertEquals(Integer.valueOf(1), value);
@@ -59,6 +60,6 @@ public class CoverageUtilsTest {
                 filter,
                 ImageMosaicFormat.FILTER.getName().getCode());
         assertEquals(1, newParams.length);
-        assertEquals(filter, ((ParameterValue) newParams[0]).getValue());
+        assertEquals(filter, ((ParameterValue<?>) newParams[0]).getValue());
     }
 }

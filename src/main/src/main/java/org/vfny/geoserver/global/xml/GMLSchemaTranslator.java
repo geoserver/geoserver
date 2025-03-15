@@ -83,7 +83,7 @@ public class GMLSchemaTranslator extends NameSpaceTranslator {
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      */
     @Override
-    public Set getElements() {
+    public Set<NameSpaceElement> getElements() {
         return elements;
     }
 
@@ -195,6 +195,7 @@ class AbstractFeatureCollectionBaseElement extends NameSpaceElement {
         return null;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;
@@ -249,6 +250,7 @@ class AbstractFeatureCollectionElement extends NameSpaceElement {
         return null;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Class<FeatureCollection> getJavaClass() {
         return FeatureCollection.class;

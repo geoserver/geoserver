@@ -57,7 +57,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Object secure(Object object, WrapperPolicy policy) {
         // null check
         if (object == null) return null;
@@ -115,7 +115,7 @@ public class DefaultSecureDataFactory implements SecuredObjectFactory {
         } else if (SimpleFeatureIterator.class.isAssignableFrom(clazz)) {
             return new SecuredSimpleFeatureIterator((SimpleFeatureIterator) object);
         } else if (FeatureIterator.class.isAssignableFrom(clazz)) {
-            return new SecuredFeatureIterator((FeatureIterator) object);
+            return new SecuredFeatureIterator<>((FeatureIterator) object);
         }
 
         // try coverage readers and formats

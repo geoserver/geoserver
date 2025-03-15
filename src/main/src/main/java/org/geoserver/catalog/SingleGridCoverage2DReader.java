@@ -152,11 +152,13 @@ public class SingleGridCoverage2DReader implements GridCoverage2DReader {
         return delegate.getCoordinateReferenceSystem(coverageName);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters(this.coverageName);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         checkCoverageName(coverageName);

@@ -9,6 +9,7 @@ import org.geoserver.config.ContactInfo;
 import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 
+@SuppressWarnings("serial")
 public class ContactInfoImpl implements ContactInfo {
 
     private String id = "contact";

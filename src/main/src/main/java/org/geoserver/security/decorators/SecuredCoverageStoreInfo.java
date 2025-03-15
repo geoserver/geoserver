@@ -13,6 +13,7 @@ import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 
+@SuppressWarnings("serial")
 public class SecuredCoverageStoreInfo extends DecoratingCoverageStoreInfo {
     WrapperPolicy policy;
 

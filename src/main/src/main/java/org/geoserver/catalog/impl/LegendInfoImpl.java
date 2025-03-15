@@ -7,6 +7,7 @@ package org.geoserver.catalog.impl;
 
 import org.geoserver.catalog.LegendInfo;
 
+@SuppressWarnings("serial")
 public class LegendInfoImpl implements LegendInfo {
 
     String id;

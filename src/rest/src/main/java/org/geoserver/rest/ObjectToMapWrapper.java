@@ -89,7 +89,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
             return (SimpleHash) object;
         }
         if (object instanceof Collection) {
-            Collection c = (Collection) object;
+            Collection<?> c = (Collection<?>) object;
             if (c.isEmpty() || clazz.isAssignableFrom(c.iterator().next().getClass())) {
                 SimpleHash hash = new SimpleHash(this.wrapper);
                 hash.put("values", new CollectionModel(c, this));
@@ -141,7 +141,7 @@ public class ObjectToMapWrapper<T> extends BeansWrapper {
             Class<?> valueClass = getClassForUnwrapping(value);
             if (value instanceof Collection) {
                 List<Object> values = new ArrayList<>();
-                for (Object o : (Collection) value) {
+                for (Object o : (Collection<?>) value) {
                     valueClass = getClassForUnwrapping(o);
                     if (valueClass == null) {
                         values.add(o == null ? "" : o.toString());

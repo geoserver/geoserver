@@ -56,6 +56,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Andrea Aime - GeoSolutions
  */
+@SuppressWarnings("rawtypes")
 public class ReaderDimensionsAccessor {
 
     /** UTC_TIME_ZONE */

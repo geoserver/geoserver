@@ -22,7 +22,7 @@ public class Hello {
         return null;
     }
 
-    public Map getClientProperties() {
+    public Map<?, ?> getClientProperties() {
         return null;
     }
 
@@ -30,7 +30,7 @@ public class Hello {
         return null;
     }
 
-    public List getKeywords() {
+    public List<String> getKeywords() {
         return null;
     }
 

@@ -47,6 +47,7 @@ import org.springframework.web.context.request.RequestContextHolder;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements Catalog {
 
     /**
@@ -484,7 +485,6 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
         }
 
         /** Delegate objects might also need to be wrapped */
-        @SuppressWarnings("unchecked") // for collection wrapping, we don't know the type
         private Object wrapNested(Object result) {
             // need to test type by type to build the right type of proxy
             // (would have otherwise tested for CatalogInfo instead)
@@ -510,7 +510,8 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
             return result;
         }
 
-        private Collection newCollection(Collection source) {
+        @SuppressWarnings("unchecked")
+        private Collection<Object> newCollection(Collection<?> source) {
             try {
                 return source.getClass().getDeclaredConstructor().newInstance();
             } catch (InstantiationException
@@ -532,11 +533,13 @@ public class LocalWorkspaceCatalog extends AbstractCatalogDecorator implements C
 
         public static <T> List<T> createList(List<T> object, Class<T> clazz) {
             return new ProxyList<>(object, clazz) {
+                @SuppressWarnings("hiding")
                 @Override
                 protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
                     return create(proxyObject, proxyInterface);
                 }
 
+                @SuppressWarnings("hiding")
                 @Override
                 protected <T> T unwrapProxy(T proxy, Class<T> proxyInterface) {
                     return unwrap(proxy);

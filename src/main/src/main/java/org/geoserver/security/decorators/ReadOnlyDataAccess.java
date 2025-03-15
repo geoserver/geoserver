@@ -26,6 +26,7 @@ import org.geotools.api.feature.type.Name;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public class ReadOnlyDataAccess<T extends FeatureType, F extends Feature> extends DecoratingDataAccess<T, F> {
 
     static final String READ_ONLY = "This data access is read only";

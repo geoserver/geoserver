@@ -18,6 +18,7 @@ public abstract class ServiceFactoryExtension<T extends ServiceInfo> implements 
         this.serviceClass = serviceClass;
     }
 
+    @SuppressWarnings("hiding")
     @Override
     public <T> boolean canCreate(Class<T> clazz) {
         return serviceClass.equals(clazz);

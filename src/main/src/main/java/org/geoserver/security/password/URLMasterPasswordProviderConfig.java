@@ -12,6 +12,7 @@ import java.net.URL;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class URLMasterPasswordProviderConfig extends MasterPasswordProviderConfig {
 
     /** default password filename */

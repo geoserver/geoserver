@@ -12,6 +12,7 @@ import org.geoserver.security.WrapperPolicy;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wmts.WebMapTileServer;
 
+@SuppressWarnings("serial")
 public class SecuredWMTSStoreInfo extends DecoratingWMTSStoreInfo {
 
     WrapperPolicy policy;

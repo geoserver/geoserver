@@ -63,11 +63,11 @@ public abstract class NameSpaceTranslator {
         }
 
         Set<NameSpaceElement> r = new HashSet<>();
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse != null) {
                 Class<?> cls = nse.getJavaClass();
@@ -90,17 +90,17 @@ public abstract class NameSpaceTranslator {
      * @return Set a set of associated NameSpaceElements
      * @see String#indexOf(String)
      */
-    public Set getAssociatedTypes(String type) {
+    public Set<NameSpaceElement> getAssociatedTypes(String type) {
         if (type == null) {
             return null;
         }
 
         Set<NameSpaceElement> r = new HashSet<>();
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse != null) {
                 String name = nse.getTypeRefName();
@@ -133,11 +133,11 @@ public abstract class NameSpaceTranslator {
             return false;
         }
 
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse == null) {
                 continue;
@@ -172,11 +172,11 @@ public abstract class NameSpaceTranslator {
             return false;
         }
 
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse == null) {
                 continue;
@@ -205,7 +205,7 @@ public abstract class NameSpaceTranslator {
      *
      * @return Set
      */
-    public abstract Set getElements();
+    public abstract Set<NameSpaceElement> getElements();
 
     /**
      * getElements purpose.
@@ -215,17 +215,17 @@ public abstract class NameSpaceTranslator {
      * @param type Class the class of elements to get
      * @return Set
      */
-    public Set getElements(Class<?> type) {
+    public Set<NameSpaceElement> getElements(Class<?> type) {
         if (type == null) {
             return null;
         }
 
         Set<NameSpaceElement> r = new HashSet<>();
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if ((nse != null) && type.equals(nse.getJavaClass())) {
                 r.add(nse);
@@ -246,11 +246,11 @@ public abstract class NameSpaceTranslator {
             return null;
         }
 
-        Set elems = getElements();
-        Iterator i = elems.iterator();
+        Set<NameSpaceElement> elems = getElements();
+        Iterator<NameSpaceElement> i = elems.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse != null) {
                 if (name.equals(nse.getTypeRefName())) {
@@ -280,17 +280,17 @@ public abstract class NameSpaceTranslator {
      * returns true for isDefault(). Sorry for the hackiness, I need to get a release out.
      */
     public NameSpaceElement getDefaultElement(Class<?> type) {
-        Set posibilities = getElements(type);
+        Set<NameSpaceElement> posibilities = getElements(type);
 
         // System.out.println("getting default for type: " + type + " = " + posibilities);
         if (posibilities.isEmpty()) {
             return null;
         }
 
-        Iterator i = posibilities.iterator();
+        Iterator<NameSpaceElement> i = posibilities.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse != null) {
                 if (nse.isDefault()) {
@@ -313,7 +313,7 @@ public abstract class NameSpaceTranslator {
             return null;
         }
 
-        Set posibilities = getElements(type);
+        Set<NameSpaceElement> posibilities = getElements(type);
 
         if (posibilities.isEmpty()) {
             return null;
@@ -327,10 +327,10 @@ public abstract class NameSpaceTranslator {
             return (NameSpaceElement) posibilities.toArray()[0];
         }
 
-        Iterator i = posibilities.iterator();
+        Iterator<NameSpaceElement> i = posibilities.iterator();
 
         while (i.hasNext()) {
-            NameSpaceElement nse = (NameSpaceElement) i.next();
+            NameSpaceElement nse = i.next();
 
             if (nse != null) {
                 if (name.equals(nse.getTypeRefName())) {

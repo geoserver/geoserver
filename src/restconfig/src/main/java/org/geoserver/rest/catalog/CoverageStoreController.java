@@ -201,7 +201,7 @@ public class CoverageStoreController extends AbstractCatalogController {
     }
 
     @Override
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter<?> converter) {
         persister.setCallback(new XStreamPersister.Callback() {
             @Override
             protected Class<CoverageStoreInfo> getObjectClass() {
@@ -267,9 +267,8 @@ public class CoverageStoreController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(SimpleHash model, Collection object) {
-                for (Object w : object) {
-                    CoverageStoreInfo wk = (CoverageStoreInfo) w;
+            protected void wrapInternal(SimpleHash model, Collection<CoverageStoreInfo> object) {
+                for (CoverageStoreInfo wk : object) {
                     wrapInternal(null, model, wk);
                 }
             }

@@ -42,6 +42,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class AbstractCatalogDecorator extends AbstractDecorator<Catalog> implements Catalog {
 
     public AbstractCatalogDecorator(Catalog catalog) {

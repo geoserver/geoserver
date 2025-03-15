@@ -22,7 +22,7 @@ import org.springframework.util.ClassUtils;
 public class ProxyUtils {
 
     /** Avoids the cost of looking up over and over the same proxy class */
-    static final Map<ProxyClassConstructorKey, Constructor> PROXY_CLASS_CACHE = new ConcurrentHashMap<>();
+    static final Map<ProxyClassConstructorKey, Constructor<?>> PROXY_CLASS_CACHE = new ConcurrentHashMap<>();
 
     static final class ProxyClassConstructorKey {
         Class<?> c1;
@@ -127,7 +127,7 @@ public class ProxyUtils {
             }
         }
         if (object instanceof ProxyList) {
-            return (T) ((ProxyList) object).proxyList;
+            return (T) ((ProxyList<?>) object).proxyList;
         }
 
         return object;

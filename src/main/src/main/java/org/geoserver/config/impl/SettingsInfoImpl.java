@@ -13,6 +13,7 @@ import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.config.ContactInfo;
 import org.geoserver.config.SettingsInfo;
 
+@SuppressWarnings("serial")
 public class SettingsInfoImpl implements SettingsInfo {
 
     protected String id;

@@ -510,6 +510,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         DataStoreInfo sf = cat.getDataStoreByName("sf");
 
+        @SuppressWarnings("rawtypes")
         FeatureSource fs = sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
         FeatureTypeInfo ft = cat.getFactory().createFeatureType();
         ft.setNativeName("PrimitiveGeoFeature");
@@ -529,6 +530,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
 
         DataStoreInfo sf = cat.getDataStoreByName("sf");
 
+        @SuppressWarnings("rawtypes")
         FeatureSource fs = sf.getDataStore(null).getFeatureSource(toName(MockData.PRIMITIVEGEOFEATURE));
         FeatureTypeInfo ft = cat.getFactory().createFeatureType();
         ft.setNativeName("PrimitiveGeoFeature");
@@ -561,6 +563,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
                 .anyTimes();
         replay(rInfo);
 
+        @SuppressWarnings("rawtypes")
         FeatureSource fs = createMock(FeatureSource.class);
         expect(fs.getSchema()).andReturn(ft).anyTimes();
         expect(fs.getInfo()).andReturn(rInfo).anyTimes();
@@ -583,6 +586,7 @@ public class CatalogBuilderTest extends GeoServerMockTestSupport {
         expect(ftInfo.getKeywords()).andReturn(null);
         replay(ftInfo);
 
+        @SuppressWarnings("rawtypes")
         FeatureSource fs = createMock(FeatureSource.class);
         expect(fs.getInfo()).andThrow(new UnsupportedOperationException());
         replay(fs);

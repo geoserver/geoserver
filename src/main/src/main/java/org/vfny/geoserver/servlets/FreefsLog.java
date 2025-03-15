@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Chris Holmes, TOPP
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class FreefsLog extends HttpServlet {
 
     /** Initializes logging and config. */

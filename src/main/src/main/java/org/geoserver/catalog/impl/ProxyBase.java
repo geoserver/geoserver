@@ -57,7 +57,7 @@ public class ProxyBase implements InvocationHandler {
     }
 
     protected Object handleGetUnSet(Object proxy, Method method, String property) throws Throwable {
-        return method.invoke(proxy, null);
+        return method.invoke(proxy);
     }
 
     protected void handleSet(Object proxy, Method method, Object value, String property) throws Throwable {

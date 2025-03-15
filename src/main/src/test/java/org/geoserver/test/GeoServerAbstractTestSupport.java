@@ -515,10 +515,9 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
      * @param path The path for the request, minus any query string parameters.
      * @param kvp The key value pairs to be put in teh query string.
      */
-    protected MockHttpServletRequest createRequest(String path, Map kvp) {
+    protected MockHttpServletRequest createRequest(String path, Map<?, ?> kvp) {
         StringBuffer q = new StringBuffer();
-        for (Object o : kvp.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+        for (Map.Entry<?, ?> entry : kvp.entrySet()) {
             q.append(entry.getKey()).append("=").append(entry.getValue());
             q.append("&");
         }
@@ -1058,16 +1057,17 @@ public abstract class GeoServerAbstractTestSupport extends OneTimeSetupTest {
         final DispatcherServlet dispatcher = getDispatcher();
 
         // build a filter chain so that we can test with filters as well
+        @SuppressWarnings("serial")
         HttpServlet servlet = new HttpServlet() {
             @Override
             protected void service(HttpServletRequest request, HttpServletResponse response)
                     throws ServletException, IOException {
                 try {
                     // excute the pre handler step
-                    Collection interceptors =
+                    Collection<HandlerInterceptor> interceptors =
                             GeoServerExtensions.extensions(HandlerInterceptor.class, applicationContext);
-                    for (Object value : interceptors) {
-                        HandlerInterceptor interceptor = (HandlerInterceptor) value;
+                    for (HandlerInterceptor value : interceptors) {
+                        HandlerInterceptor interceptor = value;
                         interceptor.preHandle(request, response, dispatcher);
                     }
 

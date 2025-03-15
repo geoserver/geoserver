@@ -41,6 +41,7 @@ import org.geotools.util.factory.Hints;
  *
  * @author Andrea Aime - TOPP
  */
+@SuppressWarnings("serial")
 public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
 
     protected static final String GET_CAPABILITIES = "GetCapabilities";
@@ -52,6 +53,7 @@ public class SecuredFeatureTypeInfo extends DecoratingFeatureTypeInfo {
         this.policy = policy;
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public FeatureType getFeatureType() throws IOException {
 

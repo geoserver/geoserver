@@ -33,6 +33,7 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.xml.styling.SLDParser;
 import org.junit.Test;
 import org.vfny.geoserver.util.SLDValidator;
+import org.xml.sax.SAXException;
 
 public class StyleGeneratorTest {
 
@@ -96,7 +97,7 @@ public class StyleGeneratorTest {
 
             // make sure it's valid
             SLDValidator validator = new SLDValidator();
-            List errors = validator.validateSLD(new ByteArrayInputStream(input));
+            List<SAXException> errors = validator.validateSLD(new ByteArrayInputStream(input));
             assertEquals(0, errors.size());
 
             return null;
@@ -151,7 +152,7 @@ public class StyleGeneratorTest {
 
             // make sure it's valid
             SLDValidator validator = new SLDValidator();
-            List errors = validator.validateSLD(new ByteArrayInputStream(input));
+            List<SAXException> errors = validator.validateSLD(new ByteArrayInputStream(input));
             assertEquals(0, errors.size());
 
             return null;

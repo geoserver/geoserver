@@ -296,12 +296,12 @@ public class WMSRequests {
 
             if (req.getRawKvp().get("filter") != null) {
                 // split out the filter we need
-                List filters = KvpUtils.readFlat(req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
-                params.put("filter", (String) filters.get(index));
+                List<String> filters = KvpUtils.readFlat(req.getRawKvp().get("filter"), KvpUtils.OUTER_DELIMETER);
+                params.put("filter", filters.get(index));
             } else if (req.getRawKvp().get("cql_filter") != null) {
                 // split out the filter we need
-                List filters = KvpUtils.readFlat(req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
-                params.put("cql_filter", (String) filters.get(index));
+                List<String> filters = KvpUtils.readFlat(req.getRawKvp().get("cql_filter"), KvpUtils.CQL_DELIMITER);
+                params.put("cql_filter", filters.get(index));
             } else if (req.getRawKvp().get("featureid") != null) {
                 // semantics of feature id slightly different, replicate entire value
                 params.put("featureid", req.getRawKvp().get("featureid"));

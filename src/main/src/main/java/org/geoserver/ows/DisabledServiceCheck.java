@@ -62,7 +62,7 @@ public class DisabledServiceCheck implements DispatcherCallback {
 
         if (m != null) {
             try {
-                ServiceInfo info = (ServiceInfo) m.invoke(s, null);
+                ServiceInfo info = (ServiceInfo) m.invoke(s);
 
                 if (info == null) {
                     // log a warning, we could not perform an important check

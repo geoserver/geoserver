@@ -10,6 +10,7 @@ package org.geoserver.security.password;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class URLMasterPasswordProviderException extends MasterPasswordProviderException {
 
     public static final String URL_REQUIRED = "URL_REQUIRED";

@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 /** User supplied regular expression check. */
+@SuppressWarnings("serial")
 public class RegexURLCheck extends AbstractURLCheck implements Serializable {
 
     private String regex;

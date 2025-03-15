@@ -42,6 +42,7 @@ public abstract class ProxyList<T> extends AbstractList<T> {
     }
 
     /** Wraps an object from the underlying list in the proxy. */
+    @SuppressWarnings("hiding")
     protected abstract <T> T createProxy(T proxyObject, Class<T> proxyInterface);
 
     /**
@@ -50,5 +51,6 @@ public abstract class ProxyList<T> extends AbstractList<T> {
      * <p>Note: This method should handle the case of the object not being a proxy instance, but an regular instance of
      * proxyInterface.
      */
+    @SuppressWarnings("hiding")
     protected abstract <T> T unwrapProxy(T proxy, Class<T> proxyInterface);
 }

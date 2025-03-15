@@ -910,7 +910,7 @@ public abstract class GeoServerLoader {
             }
 
             // load services
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings({"unchecked", "rawtypes"})
             final List<XStreamServiceLoader<ServiceInfo>> loaders =
                     (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
             loadServices(resourceLoader.get(""), true, loaders, geoServer);

@@ -23,6 +23,7 @@ import org.geotools.api.filter.Filter;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public class SecuredFeatureLocking<T extends FeatureType, F extends Feature> extends SecuredFeatureStore<T, F>
         implements FeatureLocking<T, F> {
 

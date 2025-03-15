@@ -70,7 +70,7 @@ public class GWCGeoServerRESTConfigurationProvider implements ContextualConfigur
     /** @author groldan */
     private final class RESTConverterHelper implements Converter {
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return GeoServerTileLayer.class.equals(type);
         }
 

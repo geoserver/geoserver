@@ -91,7 +91,7 @@ public class EntityResolverProviderTest {
     @Test
     public void testEntityResolverDefaultBehaviour() throws Exception {
         EntityResolverProvider provider = new EntityResolverProvider(null);
-        provider.setEntityResolver(new AllowListEntityResolver(null));
+        EntityResolverProvider.setEntityResolver(new AllowListEntityResolver(null));
         EntityResolver resolver = provider.getEntityResolver();
 
         // Confirm schema is available from public location
@@ -152,7 +152,7 @@ public class EntityResolverProviderTest {
     @Test
     public void testEntityResolverPreventLocal() throws Exception {
         EntityResolverProvider provider = new EntityResolverProvider(null);
-        provider.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
+        EntityResolverProvider.setEntityResolver(PreventLocalEntityResolver.INSTANCE);
         EntityResolver resolver = provider.getEntityResolver();
 
         // Confirm schema is available from public location

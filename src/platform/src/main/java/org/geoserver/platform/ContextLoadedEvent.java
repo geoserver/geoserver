@@ -13,6 +13,7 @@ import org.springframework.context.event.ApplicationContextEvent;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class ContextLoadedEvent extends ApplicationContextEvent {
 
     public ContextLoadedEvent(ApplicationContext source) {

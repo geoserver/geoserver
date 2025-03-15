@@ -30,16 +30,15 @@ public class EMFLogger extends RequestObjectLogger {
     @Override
     protected void log(Object obj, int level, StringBuffer log) {
         EObject object = (EObject) obj;
-        List properties = object.eClass().getEAllStructuralFeatures();
+        List<EStructuralFeature> properties = object.eClass().getEAllStructuralFeatures();
 
-        for (Object o : properties) {
-            EStructuralFeature property = (EStructuralFeature) o;
+        for (EStructuralFeature property : properties) {
             Object value = object.eGet(property);
 
             // skip empty properties
             if (value == null
-                    || (value instanceof Collection && ((Collection) value).isEmpty())
-                    || (value instanceof Map && ((Map) value).isEmpty())) {
+                    || (value instanceof Collection && ((Collection<?>) value).isEmpty())
+                    || (value instanceof Map && ((Map<?, ?>) value).isEmpty())) {
                 continue;
             }
 
@@ -52,7 +51,7 @@ public class EMFLogger extends RequestObjectLogger {
                 log.append(":");
                 log(value, level + 1, log);
             } else if (value instanceof Collection) {
-                log(property.getName(), (Collection) value, level + 1, log);
+                log(property.getName(), (Collection<?>) value, level + 1, log);
             } else {
                 log.append(property.getName());
                 log.append(" = " + value);
@@ -60,7 +59,7 @@ public class EMFLogger extends RequestObjectLogger {
         }
     }
 
-    protected void log(String property, Collection collection, int level, StringBuffer log) {
+    protected void log(String property, Collection<?> collection, int level, StringBuffer log) {
         int count = 0;
         for (Object o : collection) {
             String pc = property + "[" + count + "]";
@@ -69,7 +68,7 @@ public class EMFLogger extends RequestObjectLogger {
                 log.append(":");
                 log(o, level, log);
             } else if (o instanceof Collection) {
-                log(pc, (Collection) o, level + 1, log);
+                log(pc, (Collection<?>) o, level + 1, log);
             } else {
                 log.append(pc).append(" = " + o);
             }

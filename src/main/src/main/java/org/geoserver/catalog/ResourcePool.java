@@ -300,6 +300,7 @@ public class ResourcePool {
      *
      * <p>The concrete Map implementation is determined by {@link #createDataStoreCache()}.
      */
+    @SuppressWarnings("rawtypes")
     public Map<String, DataAccess> getDataStoreCache() {
         return dataStoreCache;
     }
@@ -972,12 +973,11 @@ public class ResourcePool {
                 }
 
                 if (type != null) {
-                    List children = Schemas.getChildElementDeclarations(type, true);
+                    List<XSDElementDeclaration> children = Schemas.getChildElementDeclarations(type, true);
                     for (Iterator<AttributeTypeInfo> i = atts.iterator(); i.hasNext(); ) {
                         AttributeTypeInfo at = i.next();
                         boolean found = false;
-                        for (Object child : children) {
-                            XSDElementDeclaration ce = (XSDElementDeclaration) child;
+                        for (XSDElementDeclaration ce : children) {
                             if (at.getName().equals(ce.getName())) {
                                 found = true;
                                 if (ce.getContainer() instanceof XSDParticle) {
@@ -1115,7 +1115,7 @@ public class ResourcePool {
         do {
             String name = UUID.randomUUID().toString();
             temporaryName = new NameImpl(nsURI, name);
-        } while (Arrays.asList(typeNames).contains(temporaryName));
+        } while (typeNames.contains(temporaryName));
         if (!initializer.initialize(info, dataAccess, temporaryName)) {
             temporaryName = null;
         }
@@ -1518,7 +1518,7 @@ public class ResourcePool {
         } else if (targetUnit != null && targetUnit.isCompatible(SI.METRE)) {
             // ok, we assume the target is not a geographic one, but we might
             // have to convert between meters and feet maybe
-            @SuppressWarnings("unchecked") // cannot convert between two Unit<?>....
+            @SuppressWarnings({"unchecked", "rawtypes"}) // cannot convert between two Unit<?>....
             UnitConverter converter = mt.getUnit().getConverterTo((Unit) targetUnit);
             return converter.convert(mt.doubleValue());
         } else {
@@ -1686,6 +1686,7 @@ public class ResourcePool {
      * @param urlString the url string to parse, which may actually be a path
      * @return an object appropriate for passing to a grid coverage reader
      */
+    @SuppressWarnings("rawtypes")
     public static Object getCoverageStoreSource(
             String urlString, CoverageInfo coverageInfo, CoverageStoreInfo coverageStoreInfo, Hints hints) {
         List<CoverageReaderInputObjectConverter> converters =
@@ -1986,9 +1987,7 @@ public class ResourcePool {
             client = HTTPClientFinder.createClient(HTTPConnectionPooling.class);
             if (info.getMaxConnections() > 0 && client instanceof HTTPConnectionPooling) {
                 int maxConnections = info.getMaxConnections();
-                @SuppressWarnings("PMD.CloseResource") // wrapped and returned
-                HTTPConnectionPooling mtClient = (HTTPConnectionPooling) client;
-                mtClient.setMaxConnections(maxConnections);
+                ((HTTPConnectionPooling) client).setMaxConnections(maxConnections);
             }
         } else {
             client = HTTPClientFinder.createClient(new Hints(Hints.HTTP_CLIENT, SimpleHttpClient.class));
@@ -2334,11 +2333,10 @@ public class ResourcePool {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void clear() {
-            for (Entry entry : entrySet()) {
+            for (Entry<K, V> entry : entrySet()) {
                 try {
-                    dispose((K) entry.getKey(), (V) entry.getValue());
+                    dispose(entry.getKey(), entry.getValue());
                 } catch (Exception e) {
                     LOGGER.log(Level.WARNING, "Error dispoing entry: " + entry, e);
                 }
@@ -2379,6 +2377,7 @@ public class ResourcePool {
      *
      * @see ResourcePool#dataStoreCache
      */
+    @SuppressWarnings("rawtypes")
     class DataStoreCache extends CatalogResourceCache<String, DataAccess> {
         /**
          * Ensure data access entry is removed from catalog, and ensure DataAccess dispose is called to return system
@@ -2512,10 +2511,8 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
-                @SuppressWarnings("PMD.CloseResource") // actually closing here
-                Closeable closeable = (Closeable) client;
                 try {
-                    closeable.close();
+                    ((Closeable) client).close();
                 } catch (IOException e) {
                     LOGGER.log(Level.FINE, "Failure while disposing the http client for a WMS store", e);
                 }
@@ -2532,10 +2529,8 @@ public class ResourcePool {
                 // dispose the client, and the connection pool hosted into it as a consequence
                 // the connection pool additionally holds a few threads that are also getting
                 // disposed with this call
-                @SuppressWarnings("PMD.CloseResource") // actually closing here
-                Closeable closeable = (Closeable) client;
                 try {
-                    closeable.close();
+                    ((Closeable) client).close();
                 } catch (IOException e) {
                     LOGGER.log(Level.FINE, "Failure while disposing the http client for a WMTS store", e);
                 }
@@ -2607,7 +2602,7 @@ public class ResourcePool {
      *
      * @param da Data access
      */
-    void fireDisposed(DataStoreInfo dataStore, DataAccess da) {
+    void fireDisposed(DataStoreInfo dataStore, @SuppressWarnings("rawtypes") DataAccess da) {
         for (Listener l : listeners) {
             try {
                 l.disposed(dataStore, da);
@@ -2648,7 +2643,7 @@ public class ResourcePool {
     public static interface Listener {
 
         /** Event fired when a data store is evicted from the resource pool. */
-        void disposed(DataStoreInfo dataStore, DataAccess da);
+        void disposed(DataStoreInfo dataStore, @SuppressWarnings("rawtypes") DataAccess da);
 
         /** Event fired when a coverage store is evicted from the resource pool. */
         void disposed(CoverageStoreInfo coverageStore, GridCoverageReader gcr);

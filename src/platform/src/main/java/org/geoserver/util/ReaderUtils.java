@@ -437,6 +437,7 @@ public class ReaderUtils {
      * @param keywordsElem The root element to look for children in.
      * @return The list of keywords that were found.
      */
+    @SuppressWarnings("rawtypes")
     public static List getKeyWords(Element keywordsElem) {
         if (keywordsElem == null) {
             return Collections.emptyList();

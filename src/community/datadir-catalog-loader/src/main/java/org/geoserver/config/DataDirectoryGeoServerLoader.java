@@ -11,14 +11,7 @@ import java.util.logging.Logger;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.HTTPStoreInfo;
-import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.NamespaceInfo;
-import org.geoserver.catalog.Predicates;
-import org.geoserver.catalog.ResourceInfo;
-import org.geoserver.catalog.StoreInfo;
-import org.geoserver.catalog.StyleInfo;
-import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
 import org.geoserver.config.datadir.CatalogLoader;
@@ -31,7 +24,6 @@ import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
-import org.geotools.api.filter.Filter;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -133,14 +125,11 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      */
     @Override
     protected Catalog readCatalog(XStreamPersister xp) throws Exception {
-        Stopwatch startedStopWatch = logStart();
         CatalogImpl catalog = newTemporaryCatalog();
         catalog.setResourceLoader(resourceLoader);
 
         CatalogLoader catalogLoader = new CatalogLoader(catalog, fileWalker());
         catalogLoader.loadCatalog();
-
-        logStop(startedStopWatch.stop(), catalog);
 
         decryptStorePasswords(catalog);
 
@@ -249,25 +238,5 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             fileWalk = new DataDirectoryWalker(dataDirectory, xpf);
         }
         return fileWalk;
-    }
-
-    private Stopwatch logStart() {
-        LOGGER.log(Level.INFO, "Loading catalog from {0}", resourceLoader.getBaseDirectory());
-        return Stopwatch.createStarted();
-    }
-
-    private void logStop(Stopwatch stoppedSw, final Catalog catalog) {
-        final Filter all = Predicates.acceptAll();
-        String msg = String.format(
-                "Loaded Catalog in %s: workspaces: %,d, namespaces: %,d, styles: %,d, stores: %,d, resources: %,d, layers: %,d, layer groups: %,d.",
-                stoppedSw,
-                catalog.count(WorkspaceInfo.class, all),
-                catalog.count(NamespaceInfo.class, all),
-                catalog.count(StyleInfo.class, all),
-                catalog.count(StoreInfo.class, all),
-                catalog.count(ResourceInfo.class, all),
-                catalog.count(LayerInfo.class, all),
-                catalog.count(LayerGroupInfo.class, all));
-        LOGGER.config(msg);
     }
 }

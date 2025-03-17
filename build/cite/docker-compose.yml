@@ -1,147 +1,92 @@
+# YAML & anchor defined here, docker-compose ignores any top-level definition starting x-...
+#    and used further down with the syntax   <<: *
+
+x-geoserver-common-config: &geoserver-common-config
+    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    environment:
+      INSTALL_EXTENSIONS: "true"
+      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
+      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
+      GEOSERVER_ADMIN_USER: "admin"
+      GEOSERVER_ADMIN_PASSWORD: "____password____"
+    healthcheck:
+      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
+      interval: 1m
+      retries: 3
+      timeout: 20s
+
+#  
+
 services:
   geoserver-wms:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8081:8080"
     environment:
       PROXY_BASE_URL: "https://g1.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wms13/citewms-1.3:/opt/geoserver_data/:rw
-      - /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-        # download from https://build.geoserver.org/geoserver/2.25.x/community-latest/geoserver-2.25-SNAPSHOT-ogcapi-features-plugin.zip
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
+
   geoserver-wfs20:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8082:8080"
     environment:
       PROXY_BASE_URL: "https://g2.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wfs20/citewfs-2.0:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
     depends_on:
       - postgres
+
   geoserver-wfs11:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8083:8080"
     environment:
       PROXY_BASE_URL: "https://g3.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wfs11/citewfs-1.1:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
     depends_on:
       - postgres
+
   geoserver-wfs10:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8084:8080"
     environment:
       PROXY_BASE_URL: "https://g4.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wfs10/citewfs-1.0:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
     depends_on:
       - postgres
 
   geoserver-wcs11:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8085:8080"
     environment:
       PROXY_BASE_URL: "https://g5.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wcs11/citewcs-1.1:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
 
   geoserver-wcs10:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8086:8080"
     environment:
       PROXY_BASE_URL: "https://g6.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/wcs10/citewcs-1.0:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
 
   geoserver-gpkg12:
-    image: geoserver-docker.osgeo.org/geoserver:2.27.x
+    <<: *geoserver-common-config
     ports:
       - "8087:8080"
     environment:
       PROXY_BASE_URL: "https://g7.cite.geoserver.org/geoserver"
-      INSTALL_EXTENSIONS: "true"
-      STABLE_EXTENSIONS: "ogcapi-features,geopkg-output"
-      EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
-      GEOSERVER_ADMIN_USER: "admin"
-      GEOSERVER_ADMIN_PASSWORD: "____password____"
     volumes:
       - /home/cite/geoserver-main/build/cite/gpkg12/citegpkg-1.2:/opt/geoserver_data/:rw
-        #- /home/cite/additional_libs:/opt/additional_libs:ro # by mounting this we can install libs from host on startup
-    healthcheck:
-      test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
-      interval: 1m
-      retries: 3
-      timeout: 20s
+
 
   postgres:
     image: postgis/postgis:17-3.5
@@ -164,4 +109,3 @@ services:
       interval: 10s
       retries: 5
       timeout: 10s
-

@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -335,6 +336,7 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
         if (lastLoaded < daoLastModified || force) {
             root = buildAuthorizationTree(dao);
             lastLoaded = daoLastModified;
+            // The filter cache must be invalidated, since the security rules have changed!!!
             filterCache.invalidateAll();
         }
     }
@@ -506,26 +508,35 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
 
     @Override
     public Filter getSecurityFilter(Authentication user, Class<? extends CatalogInfo> clazz) {
-        Filter filter = filterCache.getIfPresent(Pair.of(user, clazz));
-        if (filter == null) {
-            filter = getSecurityFilterInternal(user, clazz);
-            if (filter != null) {
-                filterCache.put(Pair.of(user, clazz), filter);
+        checkPropertyFile();
+        if (supportsPrefilter(user, clazz)) {
+            try {
+                return filterCache.get(Pair.of(user, clazz), () -> buildSecurityPrefilter(user, clazz));
+            } catch (ExecutionException e) {
+                // this should never happen
+                LOGGER.log(Level.WARNING, "Failed to build security prefilter", e);
             }
         }
-        if (filter == null) {
-            return InMemorySecurityFilter.buildUserAccessFilter(this, user);
-        } else {
-            return filter;
-        }
+        return InMemorySecurityFilter.buildUserAccessFilter(this, user);
     }
 
-    public Filter getSecurityFilterInternal(Authentication user, Class<? extends CatalogInfo> clazz) {
+    protected boolean supportsPrefilter(Authentication user, Class<? extends CatalogInfo> clazz) {
         if (getMode() == CatalogMode.CHALLENGE) {
             // If we're in CHALLENGE mode, we cannot pre-filter
             // for the other types we have no clue, use the in memory filtering
-            return null;
+            return false;
+        } else {
+            return WorkspaceInfo.class.isAssignableFrom(clazz)
+                    || PublishedInfo.class.isAssignableFrom(clazz)
+                    || ResourceInfo.class.isAssignableFrom(clazz)
+                    || CoverageInfo.class.isAssignableFrom(clazz)
+                    || StyleInfo.class.isAssignableFrom(clazz)
+                    || LayerGroupInfo.class.isAssignableFrom(clazz);
+            // for the other types we have no clue, use the in memory filtering
         }
+    }
+
+    protected Filter buildSecurityPrefilter(Authentication user, Class<? extends CatalogInfo> clazz) {
         if (WorkspaceInfo.class.isAssignableFrom(clazz)) {
             // base access
             boolean rootAccess = canAccess(user, root);
@@ -579,8 +590,9 @@ public class DefaultResourceAccessManager implements ResourceAccessManager {
                 return rootAccess ? Predicates.and(exceptions) : Predicates.or(exceptions);
             }
         } else {
-            // for the other types we have no clue, use the in memory filtering
-            return null;
+            // this should never happen (if supportsPrefilter is verified first)
+            LOGGER.log(Level.WARNING, "Attempted to build unsupported security prefilter");
+            return Filter.EXCLUDE;
         }
     }
 

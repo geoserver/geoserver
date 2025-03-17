@@ -5,8 +5,13 @@
  */
 package org.geoserver.config;
 
+import static java.util.Objects.requireNonNull;
+
+import org.geoserver.GeoServerConfigurationLock;
+import org.geoserver.config.datadir.DataDirectoryGeoServerLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.GeoServerResourceLoader;
+import org.geoserver.security.GeoServerSecurityManager;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.ApplicationContext;
@@ -76,7 +81,7 @@ public class GeoServerLoaderProxy
     protected GeoServerLoader lookupGeoServerLoader(ApplicationContext appContext) {
         GeoServerLoader loader = GeoServerExtensions.bean(GeoServerLoader.class, appContext);
         if (loader == null) {
-            loader = new DefaultGeoServerLoader(resourceLoader);
+            loader = createDefaultLoader(appContext);
         }
         return loader;
     }
@@ -84,5 +89,24 @@ public class GeoServerLoaderProxy
     @Override
     public void initialize(GeoServer geoServer) throws Exception {
         loader.initializeDefaultStyles(geoServer.getCatalog());
+    }
+
+    /**
+     * @param appContext required for {@link DataDirectoryGeoServerLoader#isEnabled(ApplicationContext)}
+     * @return a new instance of {@link DataDirectoryGeoServerLoader} if {@link DataDirectoryGeoServerLoader#isEnabled()
+     *     enabled}, or {@link DefaultGeoServerLoader} otherwise.
+     */
+    protected GeoServerLoader createDefaultLoader(ApplicationContext appContext) {
+        if (DataDirectoryGeoServerLoader.isEnabled(appContext)) {
+            GeoServerDataDirectory dataDirectory = getBean(GeoServerDataDirectory.class);
+            GeoServerSecurityManager securityManager = getBean(GeoServerSecurityManager.class);
+            GeoServerConfigurationLock configLock = getBean(GeoServerConfigurationLock.class);
+            return new DataDirectoryGeoServerLoader(dataDirectory, securityManager, configLock);
+        }
+        return new DefaultGeoServerLoader(resourceLoader);
+    }
+
+    protected <T> T getBean(Class<T> type) {
+        return requireNonNull(GeoServerExtensions.bean(type));
     }
 }

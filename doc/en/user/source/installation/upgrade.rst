@@ -82,6 +82,26 @@ It is anticipated that future work may further restrict the default policy in th
 
 * GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
 
+Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starting in GeoServer 2.27.0, the configuration loading process has been optimized for faster startup times, particularly for large catalogs and network filesystem deployments.
+
+With this enhancement, catalog and configuration loading is now up to 3× faster on local disks and up to 10× faster on network filesystems.
+
+Potential Considerations:
+"""""""""""""""""""""""""
+
+**Check Compatibility**: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.
+
+Configuration:
+""""""""""""""
+
+No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the
+`GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property. See the section :ref:`datadir-loader` for details.
+
+For a deeper dive into this enhancement, refer to the GeoServer Improvement Proposal `GSIP 231 <https://github.com/geoserver/geoserver/wiki/GSIP-231>`_.
+
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

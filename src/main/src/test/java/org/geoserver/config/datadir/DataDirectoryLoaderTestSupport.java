@@ -49,7 +49,7 @@ import org.springframework.lang.Nullable;
  * Support to configure some concrete {@link ServiceInfo} classes and xstream loaders for tests, since there're no
  * implementations in gs-main
  */
-public class DataDirectoryLoaderTestSupport {
+class DataDirectoryLoaderTestSupport {
     public static interface TestService1 extends ServiceInfo {
 
         @SuppressWarnings("serial")

@@ -4,7 +4,7 @@
  */
 package org.geoserver.config.datadir;
 
-import static org.geoserver.config.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertEquals;
@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.Info;
@@ -23,7 +24,6 @@ import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.config.DataDirectoryGeoServerLoader;
 import org.geoserver.config.DefaultGeoServerLoader;
 import org.geoserver.config.GeoServer;
 import org.geoserver.config.GeoServerDataDirectory;
@@ -31,7 +31,6 @@ import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensions;
-import org.geoserver.platform.GeoServerResourceLoader;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.test.GeoServerSystemTestSupport;
 import org.geoserver.test.TestSetup;
@@ -82,10 +81,10 @@ public class DefaultGeoServerLoaderCompatibilityTest extends GeoServerSystemTest
     }
 
     private DataDirectoryGeoServerLoader newLoader() {
-        GeoServerResourceLoader resourceLoader = super.getResourceLoader();
         GeoServerSecurityManager secManager = getSecurityManager();
-        GeoServerDataDirectory dataDirectory = new GeoServerDataDirectory(resourceLoader);
-        return new DataDirectoryGeoServerLoader(dataDirectory, secManager);
+        GeoServerConfigurationLock configLock = new GeoServerConfigurationLock();
+        GeoServerDataDirectory dataDirectory = super.getDataDirectory();
+        return new DataDirectoryGeoServerLoader(dataDirectory, secManager, configLock);
     }
 
     @Test

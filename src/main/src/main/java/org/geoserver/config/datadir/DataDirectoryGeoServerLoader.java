@@ -2,28 +2,39 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.config;
+package org.geoserver.config.datadir;
 
 import com.google.common.base.Stopwatch;
 import java.util.concurrent.Executor;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.geoserver.GeoServerConfigurationLock;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.CatalogValidator;
 import org.geoserver.catalog.DataStoreInfo;
+import org.geoserver.catalog.FeatureTypeCallback;
 import org.geoserver.catalog.HTTPStoreInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.RetypeFeatureTypeCallback;
+import org.geoserver.catalog.ServiceResourceVoter;
+import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.config.datadir.CatalogLoader;
-import org.geoserver.config.datadir.ConfigLoader;
-import org.geoserver.config.datadir.DataDirectoryWalker;
+import org.geoserver.config.DefaultGeoServerLoader;
+import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerDataDirectory;
+import org.geoserver.config.GeoServerLoader;
 import org.geoserver.config.util.XStreamPersister;
-import org.geoserver.config.util.XStreamPersisterFactory;
+import org.geoserver.config.util.XStreamPersisterInitializer;
+import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geoserver.platform.resource.Resource;
 import org.geoserver.platform.resource.Resources;
 import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
+import org.geoserver.util.EntityResolverProvider;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
@@ -69,13 +80,23 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
             Logging.getLogger(DataDirectoryGeoServerLoader.class.getPackage().getName());
 
     /** Environment variable or System property to disable this GeoServerLoader as the default one */
-    public static final String GEOSERVER_DATA_DIR_LOADER_ENABLED = "GEOSERVER_DATA_DIR_LOADER_ENABLED";
+    static final String GEOSERVER_DATA_DIR_LOADER_ENABLED = "GEOSERVER_DATA_DIR_LOADER_ENABLED";
 
     /**
      * Environment variable or System property to bypass the parallelism heuristics and set a fixed number of threads to
      * use
      */
-    public static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
+    static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
+
+    static {
+        try {
+            // preemptively initialize the CRS subsystem to avoid factory lookups deadlocking while being hit
+            // concurrently at #readCatalog
+            CRS.decode("EPSG:4326");
+        } catch (FactoryException e) {
+            LOGGER.log(Level.WARNING, "Error initializing CRS factories", e);
+        }
+    }
 
     private final GeoServerDataDirectory dataDirectory;
     private final GeoServerSecurityManager securityManager;
@@ -83,11 +104,16 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     /** Lazily created by {@link #fileWalker()} */
     DataDirectoryWalker fileWalk;
 
+    private GeoServerConfigurationLock configLock;
+
     public DataDirectoryGeoServerLoader(
-            GeoServerDataDirectory dataDirectory, GeoServerSecurityManager securityManager) {
+            GeoServerDataDirectory dataDirectory,
+            GeoServerSecurityManager securityManager,
+            GeoServerConfigurationLock configLock) {
         super(dataDirectory.getResourceLoader());
         this.dataDirectory = dataDirectory;
         this.securityManager = securityManager;
+        this.configLock = configLock;
     }
 
     /**
@@ -104,6 +130,12 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     public void destroy() {
         this.fileWalk = null;
         super.destroy(); // calls geoserver.dispose()
+    }
+
+    @Override
+    protected void loadCatalog(Catalog catalog, XStreamPersister xp) throws Exception {
+        initializeDependencies();
+        super.loadCatalog(catalog, xp);
     }
 
     /**
@@ -233,10 +265,28 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     private DataDirectoryWalker fileWalker() {
         if (fileWalk == null) {
-            // the xpf field in the super class is package private
-            XStreamPersisterFactory xpf = GeoServerExtensions.bean(XStreamPersisterFactory.class);
-            fileWalk = new DataDirectoryWalker(dataDirectory, xpf);
+            fileWalk = new DataDirectoryWalker(dataDirectory, xpf, configLock);
         }
         return fileWalk;
+    }
+
+    /** Warm up the extensions cache with all the extensions used during the loading process to avoid race conditions */
+    private void initializeDependencies() {
+        preLoadExtensions(EntityResolverProvider.class);
+        preLoadExtensions(CatalogValidator.class);
+        preLoadExtensions(StyleHandler.class);
+        preLoadExtensions(FeatureTypeCallback.class);
+        preLoadExtensions(RetypeFeatureTypeCallback.class);
+        preLoadExtensions(ServiceResourceVoter.class);
+        preLoadExtensions(XStreamPersisterInitializer.class);
+        preLoadExtensions(XStreamServiceLoader.class);
+    }
+
+    private void preLoadExtensions(Class<?> extensionType) {
+        try {
+            GeoServerExtensions.extensions(extensionType);
+        } catch (RuntimeException e) {
+            LOGGER.log(Level.SEVERE, "Error preloading " + extensionType.getCanonicalName(), e);
+        }
     }
 }

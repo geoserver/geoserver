@@ -1,6 +1,6 @@
 .. _crs_coordtransforms:
 
-.. |EPSG_V| replace:: EPSG version 7.9.0
+.. |EPSG_V| replace:: EPSG version 11.0.31
 
 Coordinate Operations
 =====================
@@ -46,16 +46,20 @@ NTv2
 .. csv-table::
    :header: Source CRS, Target CRS, Grid File Name, Source Info
 
+   3906,8685,MGI1901_TO_SRBETRS89_NTv2.gsb,"Republic Geodetic Authority, Serbia; www.rgz.gov.rs"
+   4122,4269,GS7783.GSB,Nova Scotia Geomatics Centre via ISO Geodetic Register.
    4122,4326,NB7783v2.gsb,OGP
    4122,4326,NS778301.gsb,OGP
    4122,4326,PE7783V2.gsb,OGP
-   4122,4617,NB7783v2.gsb,New Brunswick Geographic Information Corporation land and water information standards manual.
-   4122,4617,NS778301.gsb,Nova Scotia Geomatics Centre -  Contact aflemmin@linux1.nsgc.gov.ns.ca or telephone 902-667-6409
-   4122,4617,PE7783V2.gsb,PEI Department of Transportation & Public Works
+   4122,8237,NB7783v2.gsb,New Brunswick Geographic Information Corporation land and water information standards manual.
+   4122,8237,PE7783V2.gsb,PEI Department of Transportation & Public Works
+   4122,8240,NS778301.gsb,Nova Scotia Geomatics Centre -  Contact aflemmin@linux1.nsgc.gov.ns.ca or telephone 902-667-6409
+   4122,8252,NS778302.gsb,Nova Scotia Geomatics Centre via ISO Geodetic Register.
    4149,4150,CHENyx06a.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
    4149,4151,CHENyx06_ETRS.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
    4149,4258,CHENyx06_ETRS.gsb,Bundesamt für Landestopografie swisstopo; www.swisstopo.ch
    4149,4326,CHENyx06_ETRS.gsb,IOGP
+   4170,4674,SIRGAS1995-to-SIRGAS2000.gsb,"SIRGAS Working Group I, ""Relación y modelos de transformación entre las soluciones SIRGAS95, SIRGAS2000 y SIR17P01. Resultados obtenidos"", presented at SIMPOSIO SIRGAS 2021 Perú, 29 Nov-01 Dec 2021."
    4171,4275,rgf93_ntf.gsb,ESRI
    4202,4283,A66 National (13.09.01).gsb,GDA Technical Manual. http://www.icsm.gov.au/gda
    4202,4283,SEAust_21_06_00.gsb,Office of Surveyor General Victoria; http://www.land.vic.gov.au/
@@ -70,61 +74,141 @@ NTv2
    4225,4326,CA7072_003.gsb,OGP
    4225,4674,CA7072_003.gsb,IBGE.
    4230,4258,"100800401.gsb","Geodesy Unit, Cartographic Institute of Catalonia (ICC);  http://www.icc.cat"
+   4230,4258,BALR2009.gsb,"National Geographic Institute of Spain (IGN), http://www.ign.es"
+   4230,4258,PENR2009.gsb,"National Geographic Institute of Spain (IGN), http://www.ign.es"
    4230,4258,SPED2ETV2.gsb,"Instituto Geográfico Nacional, www.cnig.es"
    4230,4326,SPED2ETV2.gsb,OGP
+   4230,4670,"35160622_47161840_E50_F89.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4230,6706,"35160622_47161840_E50_F00.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4237,9067,hu_bme_hd72corr.gsb,Budapest University of Technology and Economics (BME) - Faculty of Civil Engineering. https://github.com/OSGeoLabBp/eov2etrs/blob/master/etrs2eov_doc.rst
+   4237,9067,hu_sgo_hd72corr.gsb,"Lechner Knowledge Center, Satellite Geodesy Observatory (SGO), https://eht2.gnssnet.hu"
    4258,4275,rgf93_ntf.gsb,OGP
-   4267,4269,NTv2_0.gsb,http://www.geod.nrcan.gc.ca/products/html-public/GSDapps/English/NTv2_Fact_Sheet.html
-   4267,4269,QUE27-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4258,9364,TN15-ETRS89-to-TPEN11-IRF.gsb,Network Rail.
+   4258,9372,TN15-ETRS89-to-MML07-IRF.gsb,Network Rail.
+   4258,9384,TN15-ETRS89-to-AbInvA96_2020-IRF.gsb,Transport Scotland.
+   4258,9453,TN15-ETRS89-to-GBK19-IRF.gsb,Network Rail.
+   4258,9739,TN15-ETRS89-to-EOS21-IRF.gsb,Network Rail.
+   4258,9758,TN15-ETRS89-to-ECML14_NB-IRF.gsb,Network Rail.
+   4258,9763,TN15-ETRS89-to-EWR2-IRF.gsb,Network Rail.
+   4258,9866,TN15-ETRS89-to-MRH21-IRF.gsb,Network Rail.
+   4258,9871,TN15-ETRS89-to-MOLDOR11-IRF.gsb,Network Rail.
+   4258,9939,TN15-ETRS89-to-EBBWV14-IRF.gsb,Network Rail.
+   4258,9964,TN15-ETRS89-to-HULLEE13-IRF.gsb,Network Rail.
+   4258,9969,TN15-ETRS89-to-SCM22-IRF.gsb,Network Rail.
+   4258,9974,TN15-ETRS89-to-FNL22-IRF.gsb,Network Rail.
+   4258,10158,s34j_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10175,TN15-ETRS89-to-DoPw22-IRF.gsb,"Network Rail, UK."
+   4258,10185,TN15-ETRS89-to-ShAb07-IRF.gsb,"Network Rail, UK."
+   4258,10191,TN15-ETRS89-to-CNH22-IRF.gsb,Network Rail.
+   4258,10196,TN15-ETRS89-to-CWS13-IRF.gsb,Network Rail.
+   4258,10204,TN15-ETRS89-to-DIBA15-IRF.gsb,Network Rail.
+   4258,10209,TN15-ETRS89-to-GWPBS22-IRF.gsb,Network Rail.
+   4258,10214,TN15-ETRS89-to-GWWAB22-IRF.gsb,Network Rail.
+   4258,10219,TN15-ETRS89-to-GWWWA22-IRF.gsb,Network Rail.
+   4258,10224,TN15-ETRS89-to-MALS09-IRF.gsb,Network Rail.
+   4258,10229,TN15-ETRS89-to-OxWo08-IRF.gsb,Network Rail.
+   4258,10237,TN15-ETRS89-to-SYC20-IRF.gsb,Network Rail.
+   4258,10249,s34s_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10252,s45b_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10256,gs_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10260,gsb_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10265,kk_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10268,os_2022.gsb,"The Danish Agency for Data Supply and Infrastructure, https://sdfi.dk"
+   4258,10272,TN15-ETRS89-to-SMITB20-IRF.gsb,"Network Rail, UK."
+   4258,10277,TN15-ETRS89-to-RBEPP12-IRF.gsb,"Network Rail, UK."
+   4258,10468,TN15-ETRS89-to-COV23-IRF.gsb,Coventry City Council.
+   4258,10623,TN15-ETRS89-to-ECML14-IRF.gsb,Network Rail.
+   4258,10628,TN15-ETRS89-to-WC05-IRF.gsb,Network Rail.
+   4258,20033,TN15-ETRS89-to-MWC18-IRF.gsb,Network Rail.
+   4265,4230,"35160622_47161840_R40_E50.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4265,4670,"35160622_47161840_R40_F89.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4265,6706,"35160622_47161840_R40_F00.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4267,4269,NA27NA83.GSB,Geodetic Service of Quebec.
+   4267,4269,NTv2_0.gsb,"NR Canada, https://www.nrcan.gc.ca/"
+   4267,4269,SK27-83.gsb,Saskatchewan Information Services Corporation (ISC) via ISO Geodetic Register.
+   4267,4326,NA27SCRS.GSB,OGP
    4267,4326,NTv2_0.gsb,OGP
-   4267,4326,QUE27-98.gsb,OGP
    4267,4326,SK27-98.gsb,OGP
-   4267,4617,NB2783v2.gsb,"""Generation of a NAD27-NAD83(CSRS) NTv2-type Grid Shift File for New Brunswick"", Marcelo C. Santos and Carlos A. Garcia, Department of Geodesy and Geomatics Engineering, University of New Brunswick, October, 2011 via Service New Brunswick."
-   4267,4617,QUE27-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
-   4267,4617,SK27-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
+   4267,8237,BC_27_98.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4267,8237,NB2783v2.gsb,"""Generation of a NAD27-NAD83(CSRS) NTv2-type Grid Shift File for New Brunswick"", Marcelo C. Santos and Carlos A. Garcia, Department of Geodesy and Geomatics Engineering, University of New Brunswick, October, 2011 via Service New Brunswick."
+   4267,8237,QUE27-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4267,8237,SK27-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
+   4267,8240,CRD27_00.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4267,8240,NVI27_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4267,8240,ON27CSv1.GSB,Land Information Ontario via ISO Geodetic Register.
+   4267,8240,TO27CSv1.GSB,"Natural Resources Canada (NRCan), https://natural-resources.canada.ca"
+   4267,8246,BC_27_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
    4269,4326,AB_CSRS.DAC,OGP
-   4269,4326,NAD83-98.gsb,OGP
+   4269,4326,NA83SCRS.GSB,OGP
    4269,4326,SK83-98.gsb,OGP
-   4269,4617,AB_CSRS.DAC,Geodetic Control Section; Land and Forest Svc; Alberta Environment; http://www3.gov.ab.ca/env/land/dos/
-   4269,4617,NAD83-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
-   4269,4617,SK83-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
+   4269,8237,BC_93_98.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4269,8237,NAD83-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4269,8237,SK83-98.gsb,Dir Geodetic Surveys; SaskGeomatics Div.; Saskatchewan Property Management Company.
+   4269,8240,CRD93_00.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4269,8240,NVI93_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4269,8240,ON83CSv1.GSB,Land Information Ontario via ISO Geodetic Register.
+   4269,8246,AB_CSRS.DAC,Geodetic Control Section; Land and Forest Svc; Alberta Environment; http://www3.gov.ab.ca/env/land/dos/
+   4269,8246,BC_93_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   4269,8252,NLCSRSV4A.GSB,"Canadian Geodetic Survey, Natural Resources Canada (NrCan)."
+   4269,8255,ABCSRSV7.GSB,"NR Canada, https://webapp.geod.nrcan.gc.ca/geod/data-donnees/transformations.php"
    4272,4167,nzgd2kgrid0005.gsb,Land Information New Zealand: LINZS25000 Standard for New Zealand Geodetic Datum 2000; 16 November 2007.
    4272,4326,nzgd2kgrid0005.gsb,OGP
    4274,4258,D73_ETRS89_geo.gsb,Instituto Geografico Portugues; http://www.igeo.pt
    4277,4258,OSTN02_NTv2.gsb,"Ordnance Survey of Great Britain, http://www.gps.gov.uk"
    4277,4258,OSTN15_NTv2_OSGBtoETRS.gsb,Ordnance Survey of Great Britain.
    4277,4326,OSTN02_NTv2.gsb,OGP
-   4277,4326,OSTN15_NTv2_OSGBtoETRS.gsb,IOGP
-   4283,7844,COCOS_C_V1.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au)
+   4277,4326,OSTN15_NTv2_OSGBtoETRS.gsb,EPSG
+   4283,4326,GDA94_GDA2020_conformal_and_distortion.gsb,ANZLIC Intergovernmental Committee on Surveying and Mapping (ICSM) (http://www.icsm.gov.au).
    4283,7844,GDA94_GDA2020_conformal.gsb,GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (http://www.icsm.gov.au).
    4283,7844,GDA94_GDA2020_conformal_and_distortion.gsb,GDA2020 Technical Manual and ICSM Datum Technical Fact Sheet TN1 (http://www.icsm.gov.au).
-   4283,7844,XMAS_C_V1.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au).
+   4283,7844,GDA94_GDA2020_conformal_christmas_island.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au).
+   4283,7844,GDA94_GDA2020_conformal_cocos_island.gsb,GDA2020 Technical Manual (http://www.icsm.gov.au)
    4289,4258,rdtrans2008.gsb,"Kadaster and Rijkswaterstaat CIV, working together under the name RDNAP."
+   4289,4258,rdtrans2018.gsb,"NSGI: Netherlands partnership of Kadaster, Rijkswaterstaat and Hydrographic Service, http://www.nsgi.nl/."
    4300,4258,tm75_etrs89.gsb,ESRI Ireland.
    4300,4326,tm75_etrs89.gsb,OGP
    4301,4612,tky2jgd.gsb,ESRI
    4301,6668,tky2jgd.gsb,OGP
    4312,4258,AT_GIS_GRID.gsb,Federal Office of Metrology and Surveying (BEV); http://www.bev.gv.at
+   4312,4258,AT_GIS_GRID_2021_09_28.gsb,Federal Office of Metrology and Surveying (BEV); http://www.bev.gv.at
    4313,4258,bd72lb72_etrs89lb08.gsb,IGN Brussels www.ngi.be
-   4314,4258,BETA2007.gsb,BKG via EuroGeographics http://crs.bkg.bund.de/crs-eu/
+   4314,4258,BETA2007.gsb,BKG via EuroGeographics https://crs.bkg.bund.de/ or https://www.crs-geo.eu/
+   4314,4258,BWTA2017.gsb,Landesamt für Geoinformation und Landentwicklung - Baden-Württemberg (LGL).
+   4314,4258,HeTa2010.gsb,Hessisches Landesamt für Bodenmanagement und Geoinformation (HLBG).
+   4314,4258,SeTa2016.gsb,"Landesamt für Vermessung, Geoinformation und Landentwicklung - Saarland (LVGL)."
    4314,4326,BETA2007.gsb,OGP
    4326,4275,rgf93_ntf.gsb,OGP
+   4326,7844,GDA94_GDA2020_conformal_and_distortion.gsb,ANZLIC Intergovernmental Committee on Surveying and Mapping (ICSM) (http://www.icsm.gov.au).
    4608,4269,May76v20.gsb,Geodetic Survey of Canada  http://www.geod.nrcan.gc.ca/
    4608,4326,May76v20.gsb,OGP
-   4609,4269,CGQ77-83.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
-   4609,4326,CGQ77-98.gsb,OGP
-   4609,4617,CGQ77-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4608,8240,ON76CSv1.GSB,Land Information Ontario via ISO Geodetic Register.
+   4609,4269,CQ77NA83.GSB,Geodetic Service of Quebec.
+   4609,4326,CQ77NA83.GSB,OGP
+   4609,8237,CGQ77-98.gsb,Geodetic Service of Quebec. Contact alain.bernard@mrn.gouv.qc.ca
+   4612,4326,touhokutaiheiyouoki2011.gsb,IOGP
    4612,6668,touhokutaiheiyouoki2011.gsb,ESRI
    4618,4326,SAD69_003.gsb,OGP
    4618,4674,SAD69_003.gsb,IBGE.
+   4659,8086,ISN93_ISN2016.gsb,"National Land Survey of Iceland, www.lmi.is."
+   4670,6706,"35160622_47161840_F89_F00.gsb","Istituto Geografico Militare (IGM), www.igmi.org"
+   4674,8987,SIRGAS2000-to-SIRGAS-CONSIR17P01.gsb,"SIRGAS Working Group I, ""Relación y modelos de transformación entre las soluciones SIRGAS95, SIRGAS2000 y SIR17P01. Resultados obtenidos"", presented at SIMPOSIO SIRGAS 2021 Perú, 29 Nov-01 Dec 2021."
    4745,4258,NTv2_SN.gsb,Saxony State Spatial Data and Land Survey Corporation (GeoSN).
    4745,4326,BETA2007.gsb,OGP
+   4746,4258,de_tlbg_thuringen_NTv2gridTH.gsb,Thüringer Landesamt für Bodenmanagement und Geoinformation (TLBG).
    4746,4326,BETA2007.gsb,OGP
    4749,4644,RGNC1991_NEA74Noumea.gsb,ESRI
    4749,4662,RGNC1991_IGN72GrandeTerre.gsb,ESRI
+   5324,8086,ISN2004_ISN2016.gsb,"National Land Survey of Iceland, www.lmi.is."
    5524,4326,CA61_003.gsb,OGP
    5524,4674,CA61_003.gsb,IBGE.
    5527,4326,SAD96_003.gsb,OGP
    5527,4674,SAD96_003.gsb,IBGE.
+   8237,8240,CRD98_00.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   8237,8240,NVI98_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   8237,8246,BC_98_05.GSB,"GeoBC, Government of British Columbia, via ISO Geodetic Register."
+   9299,4258,HS2TN15_NTv2.gsb,HS2 Limited.
+   9777,4275,rgf93_ntf.gsb,ESRI
+   9782,4275,rgf93_ntf.gsb,IOGP
 
 .. The SQL statement::
    SELECT DISTINCT source_crs_code SOURCE_CRS, target_crs_code TARGET_CRS, val.param_value_file_ref GRID_FILE_NAME, information_source SOURCE_INFO

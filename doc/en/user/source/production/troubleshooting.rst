@@ -13,9 +13,9 @@ The :ref:`web_admin` is used to configure the GeoServer application, and is ofte
 Oops, something went wrong
 ``````````````````````````
 
-An unexpected problem that is encountered when using the web administration console is reported as a ``org.apache.wicket.WicketRuntimeException``, with additional information shown in the form of a Java Stack Trace.
+An unexpected problem that is encountered when using the web administration console is reported as an ``org.apache.wicket.WicketRuntimeException``, with additional information shown in the form of a Java Stack Trace.
 
-Failures in GeoSever often show up as Java stack traces. It is important to read the entire stack trace all the way through to the end to determine the initial cause.
+Failures in GeoServer often show up as Java stack traces. It is important to read the entire stack trace all the way through to the end to determine the initial cause.
 
 **Example: File System Permission**
 
@@ -32,12 +32,12 @@ Here is an example where GeoServer application did not have write permission in 
 Reading the entire stack trace from the bottom to the top:
 
 1. It was unable to access a directory due to file permission.
-2. This occured when attempting to create ``security/masterpw.digest``
+2. This occurred when attempting to create ``security/masterpw.digest``
 3. WicketRuntimeException indicates this failure was observed in the user interface.
    
    This was so unexpected or unusual the user interface displays an "Oops something went wrong" page and was unable to continue.
 
-Assessment: For this specific example the error occured when setting up the ``security`` folder. This is something GeoServer does when starting the first time. Without a default security configuration user interface was unable to function.
+Assessment: For this specific example the error occurred when setting up the ``security`` folder. This is something GeoServer does when starting the first time. Without a default security configuration user interface was unable to function.
 
 .. _csp_strict:
 
@@ -67,14 +67,14 @@ The use of Content Security Policy headers is an additional safety precaution in
 
 * GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`security_csp` for very detailed information.
   
-  These facilities can be used mitigate CSP problems that have been reported with administration console, extensions or a community modules.
+  These facilities can be used to mitigate CSP problems that have been reported with administration console, extensions or a community modules.
 
 To restore access to the user interface when troubleshooting you may choose to disable CSP enforcement with the environmental variable ``org.geoserver.web.csp.strict``:
 
-* ``true``: Content Security Policy violations will be blocked by the browser use use of header ``Content-Security-Policy``.
+* ``true``: Content Security Policy violations will be blocked by the browser use of header ``Content-Security-Policy``.
 * ``false``: Content Security Policy violations will be reported in the developer tools console only with header ``Content-Security-Policy-Report-Only``.
 
-This setting is intended to report CSP violations to the browser javascript console, so you can review and troubleshoot.
+This setting is intended to report CSP violations to the browser JavaScript console, so you can review and troubleshoot.
 
 Web Services
 ------------
@@ -110,7 +110,7 @@ GeoServer provides a request logging capability that is inactive by default. Whe
    
    Global Settings
 
-To track a history of the incoming requests:
+To track the history of the incoming requests:
 
 1. Enable request logging by navigating to :menuselection:`Settings > Global` page, scroll down to **Logging Settings**, and  :ref:`Enable Request Logging <config_globalsettings_log_request>`.
 
@@ -350,7 +350,7 @@ To see **how the memory is actually being used in a succinct way** the following
 By the dump we can see most of the memory is used by the GeoServer code itself (first 5 items) followed by the HSQL cache holding a few rows of the EPSG database. In case of a memory leak a few object types will hold the vast majority of the live heap.
 Mind, to look for a leak the dump should be gathered with the server almost idle. If, for example, the server is under a load of GetMap requests the main memory usage will be the byte[] holding the images while they are rendered, but that is not a leak, it's legitimate and temporary usage.
 
-In case of memory leaks a developer will probably ask for a **full heap dump** to analyze with a high end profiling tool. Such dump can be generated with the following command::
+In case of memory leaks a developer will probably ask for a **full heap dump** to analyze with a high end profiling tool. Such a dump can be generated with the following command::
 
     > jmap -dump:live,file=/tmp/dump.hprof 17251
     Dumping heap to /tmp/dump.hprof ...
@@ -367,6 +367,6 @@ XStream
 
 GeoServer and GeoWebCache use XStream to read and write XML for configuration and for their REST APIs.  In order to do this securely, it needs a list of Java classes that are safe to convert between objects and XML.  If a class not on that list is given to XStream, it will generate the error ``com.thoughtworks.xstream.security.ForbiddenClassException``.  The specific class that was a problem should also be included.  This may be a result of the lists of allowed classes missing a class, which should be reported as a bug, or it may be caused by an extension/plugin not adding its classes to the list (finally, it could be someone trying to perform a "Remote Execution" attack, which is what the allow-list is designed to prevent).
 
-This can be worked around by setting the system properties ``GEOSERVER_XSTREAM_WHITELIST`` for GeoServer or ``GEOWEBCACHE_XSTREAM_WHITELIST`` for GeoWebCache to a semicolon separated list of qualified class names.  The class names may include wildcards ``?`` for a single character, ``*`` for any number of characters not including the separator ``.``, and ``**`` for any number of characters including separators.  For instance, ``org.example.blah.SomeClass; com.demonstration.*; ca.test.**`` will allow, the specific class ``org.example.blah.SomeClass``, any class immediately within the package ``com.demonstration``, and any class within the package ``ca.test`` or any of its descendant packages.
+This can be worked around by setting the system properties ``GEOSERVER_XSTREAM_WHITELIST`` for GeoServer or ``GEOWEBCACHE_XSTREAM_WHITELIST`` for GeoWebCache to a semicolon separated list of qualified class names.  The class names may include wildcards ``?`` for a single character, ``*`` for any number of characters not including the separator ``.``, and ``**`` for any number of characters including separators.  For instance, ``org.example.blah.SomeClass; com.demonstration.*; ca.test.**`` will allow the specific class ``org.example.blah.SomeClass``, any class immediately within the package ``com.demonstration``, and any class within the package ``ca.test`` or any of its descendant packages.
 
 ``GEOSERVER_XSTREAM_WHITELIST`` and ``GEOWEBCACHE_XSTREAM_WHITELIST`` should only be used as a workaround until GeoServer, GWC, or the extension causing the problem has been updated, so please report to the users list the missing classes as soon as possible.

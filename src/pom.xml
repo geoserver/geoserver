@@ -104,7 +104,7 @@
     <ant.version>1.10.11</ant.version>
     <httpclient.version>4.5.14</httpclient.version>
     <imageio-ext.version>1.4.14</imageio-ext.version>
-    <jaiext.version>1.1.29</jaiext.version>
+    <jaiext.version>1.1.30</jaiext.version>
     <java.awt.headless>true</java.awt.headless>
     <sun.java2d.d3d>true</sun.java2d.d3d>
     <jvm.opts></jvm.opts>
@@ -124,7 +124,7 @@
     <interactive.image>false</interactive.image>
     <windows.leniency>true</windows.leniency>
     <gf.version>3.8-SNAPSHOT</gf.version>
-    <mf.version>2.3.2</mf.version>
+    <mf.version>2.3.3</mf.version>
     <jasypt.version>1.9.3</jasypt.version>
     <hibernate-version>5.6.15.Final</hibernate-version>
     <opengeo-geodb.version>0.9</opengeo-geodb.version>

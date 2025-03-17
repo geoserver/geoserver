@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.sql.DatabaseMetaData;
 import java.util.Properties;
 import javax.sql.DataSource;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadata;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataConfig;
 import org.geoserver.smartdataloader.metadata.DataStoreMetadataFactory;
@@ -42,7 +46,10 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
         testSetup.setFixture(fixture);
         testSetup.setUp();
         this.dataSource = testSetup.getDataSource();
+        this.afterSetup();
     }
+
+    protected void afterSetup() {}
 
     protected Properties getFixture() {
         File fixtureFile = FixtureUtilities.getFixtureFile(getFixtureDirectory(), fixtureHelper.getFixtureId());
@@ -111,6 +118,20 @@ public abstract class AbstractJDBCSmartDataLoaderTestSupport extends GeoServerSy
         NodeList sds = appSchemaDoc.getElementsByTagName("sourceDataStores");
         if (sds != null && sds.getLength() > 0) {
             sds.item(0).getParentNode().removeChild(sds.item(0));
+        }
+    }
+
+    protected void saveDocument(Document doc, String filepath) {
+        try (FileOutputStream output = new FileOutputStream(filepath)) {
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(javax.xml.transform.OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(output);
+            transformer.transform(source, result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 }

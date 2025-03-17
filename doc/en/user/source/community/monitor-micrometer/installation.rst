@@ -3,11 +3,10 @@
 Installing the Monitor Micrometer Extension
 ===========================================
 
-As a community module, the package needs to be built from source code or downloaded from the `nightly builds <https://build.geoserver.org/geoserver/>`_,
-picking the community folder of the corresponding GeoServer series (e.g. if working on GeoServer main development branch nightly
-builds, pick the zip file form ``main/community-latest``).
+#. Visit the :website:`website download <download>` page and download :download_community:`monitor-micrometer`.
 
-To install the module, unpack the zip file contents into GeoServer own ``WEB-INF/lib`` directory and
-restart GeoServer.
+#. Extract the downloaded archive and copy the JAR files into the servlet container's ``WEB-INF/lib`` directory.
 
-For the module to work, the :ref:`monitor_extension` extensions must also be installed.
+#. Restart GeoServer.
+
+.. note:: For the module to work, the :ref:`monitor_extension` extension must also be installed.

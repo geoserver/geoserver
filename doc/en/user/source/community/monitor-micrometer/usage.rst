@@ -33,7 +33,7 @@ For further details, refer to the `Monitoring Extension documentation <https://d
 | The total number of bytes comprising the response to the request.
 | Available metrics types:
 
-    * **``requests_response_length_bytes`` (summary)**: tracks the length of responses (``sum``) and their number (``count``).
+    * **requests_response_length_bytes (summary)**: tracks the length of responses (``sum``) and their number (``count``).
     * **requests_response_length_bytes_max (gauge)**: tracks the highest recorded response length at a given moment (``max``).
 
 * ``requests_processing_seconds``

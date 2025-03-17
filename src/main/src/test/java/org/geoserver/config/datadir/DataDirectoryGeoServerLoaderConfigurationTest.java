@@ -4,15 +4,15 @@
  */
 package org.geoserver.config.datadir;
 
-import static org.geoserver.config.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_ENABLED;
+import static org.geoserver.config.datadir.DataDirectoryGeoServerLoader.GEOSERVER_DATA_DIR_LOADER_THREADS;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import javax.servlet.ServletContext;
-import org.geoserver.config.DataDirectoryGeoServerLoader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -28,14 +28,21 @@ public class DataDirectoryGeoServerLoaderConfigurationTest {
 
     @Before
     public void setUp() {
-        // preflight: no sys prop nor env var set
-        assertNull(System.getProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED));
-        assertNull(System.getenv(GEOSERVER_DATA_DIR_LOADER_ENABLED));
+        // clean up also before in case the env variables are set when running the tests (e.g. during development)
+        cleanUp();
     }
 
     @After
-    public void cleanUp() {
+    public void tearDown() {
         System.clearProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED);
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
+        environmentVariables.clear(GEOSERVER_DATA_DIR_LOADER_ENABLED, GEOSERVER_DATA_DIR_LOADER_THREADS);
+    }
+
+    private void cleanUp() {
+        environmentVariables.clear(GEOSERVER_DATA_DIR_LOADER_ENABLED, GEOSERVER_DATA_DIR_LOADER_THREADS);
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_ENABLED);
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
     }
 
     @Test
@@ -90,5 +97,60 @@ public class DataDirectoryGeoServerLoaderConfigurationTest {
 
         when(servletContext.getInitParameter(GEOSERVER_DATA_DIR_LOADER_ENABLED)).thenReturn("TRUE");
         assertTrue(DataDirectoryGeoServerLoader.isEnabled(appContext));
+    }
+
+    @Test
+    public void testDetermineParallelismDefault() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        int expected = Math.min(availableProcessors, 16);
+        assertEquals(expected, ExecutorFactory.determineParallelism());
+    }
+
+    @Test
+    public void testDetermineParallelismBadArgument() {
+        int availableProcessors = Runtime.getRuntime().availableProcessors();
+        int expected = Math.min(availableProcessors, 16);
+
+        System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, "N.a.N.");
+        assertEquals(expected, ExecutorFactory.determineParallelism());
+
+        System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, "0");
+        assertEquals(expected, ExecutorFactory.determineParallelism());
+
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
+
+        environmentVariables.set(GEOSERVER_DATA_DIR_LOADER_THREADS, "not an int");
+        assertEquals(expected, ExecutorFactory.determineParallelism());
+
+        environmentVariables.set(GEOSERVER_DATA_DIR_LOADER_THREADS, "0");
+        assertEquals(expected, ExecutorFactory.determineParallelism());
+    }
+
+    @Test
+    public void testDetermineParallelism() {
+        final int max = Runtime.getRuntime().availableProcessors();
+
+        System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, "1");
+        assertEquals(1, ExecutorFactory.determineParallelism());
+
+        System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, String.valueOf(max));
+        assertEquals(max, ExecutorFactory.determineParallelism());
+
+        System.clearProperty(GEOSERVER_DATA_DIR_LOADER_THREADS);
+
+        environmentVariables.set(GEOSERVER_DATA_DIR_LOADER_THREADS, "1");
+        assertEquals(1, ExecutorFactory.determineParallelism());
+
+        environmentVariables.set(GEOSERVER_DATA_DIR_LOADER_THREADS, String.valueOf(max));
+        assertEquals(max, ExecutorFactory.determineParallelism());
+    }
+
+    @Test
+    public void testDetermineParallellismTooMany() {
+        final int max = Runtime.getRuntime().availableProcessors();
+        final int tooMany = 1 + max;
+
+        System.setProperty(GEOSERVER_DATA_DIR_LOADER_THREADS, String.valueOf(tooMany));
+        assertEquals(max, ExecutorFactory.determineParallelism());
     }
 }

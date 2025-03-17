@@ -20,7 +20,8 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.geoserver.catalog.Catalog;
+import org.geoserver.GeoServerConfigurationLock;
+import org.geoserver.GeoServerConfigurationLock.LockType;
 import org.geoserver.config.GeoServerDataDirectory;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.util.XStreamPersisterFactory;
@@ -46,7 +47,7 @@ import org.springframework.lang.NonNull;
  * <p>The inner classes ({@link WorkspaceDirectory}, {@link StoreDirectory}, {@link LayerDirectory}) represent the
  * different directory types in the GeoServer data directory hierarchy and provide type-safe access to their contents.
  */
-public class DataDirectoryWalker {
+class DataDirectoryWalker {
 
     private static final Logger LOGGER =
             Logging.getLogger(DataDirectoryWalker.class.getPackage().getName());
@@ -62,8 +63,12 @@ public class DataDirectoryWalker {
      */
     private final List<String> serviceFileNames;
 
-    public DataDirectoryWalker(GeoServerDataDirectory dataDirectory, XStreamPersisterFactory xpf) {
+    private GeoServerConfigurationLock configLock;
+
+    public DataDirectoryWalker(
+            GeoServerDataDirectory dataDirectory, XStreamPersisterFactory xpf, GeoServerConfigurationLock configLock) {
         this.dataDirectory = dataDirectory;
+        this.configLock = configLock;
         this.xstreamLoader = new XStreamLoader(xpf);
         // cache all possible service loaders and their file names, and force #findServiceLoaders()
         this.serviceLoaders = findServiceLoaders();
@@ -84,12 +89,27 @@ public class DataDirectoryWalker {
         return dataDirectory;
     }
 
-    public void setCatalog(Catalog catalog) {
-        xstreamLoader.setCatalog(catalog);
-    }
-
     public XStreamLoader getXStreamLoader() {
         return xstreamLoader;
+    }
+
+    /**
+     * Grab a config lock, to be used when a sanitization task needs to change the data directory during startup.
+     *
+     * <p>GeoServerConfigurationLock implementations (such as in GeoServer Cloud) may grab a cluster-wide lock to
+     * support concurrent start ups on a shared directory.
+     */
+    public void lock() {
+        getConfigurationLock().lock(LockType.WRITE);
+    }
+
+    /** Release the config {@link #lock()} */
+    public void unlock() {
+        getConfigurationLock().unlock();
+    }
+
+    public GeoServerConfigurationLock getConfigurationLock() {
+        return configLock;
     }
 
     public Path getRoot() {

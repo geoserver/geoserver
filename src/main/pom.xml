@@ -255,6 +255,12 @@
       <artifactId>gt-iau-wkt</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <!-- used for tests that require environment variables -->
+      <groupId>com.github.stefanbirkner</groupId>
+      <artifactId>system-rules</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <build>

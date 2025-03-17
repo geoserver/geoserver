@@ -92,10 +92,15 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             if (!oldName.equals(newName)) {
                 ConcurrentHashMap<Class<LayerInfo>, Map<Name, LayerInfo>> names = nameMultiMap;
                 Map<Name, LayerInfo> nameMap = getMapForValue(names, LayerInfoImpl.class);
-                LayerInfo value = nameMap.remove(oldName);
-                // handle case of feature type without a corresponding layer
-                if (value != null) {
-                    nameMap.put(newName, value);
+                writeLock.lock();
+                try {
+                    LayerInfo value = nameMap.remove(oldName);
+                    // handle case of feature type without a corresponding layer
+                    if (value != null) {
+                        nameMap.put(newName, value);
+                    }
+                } finally {
+                    writeLock.unlock();
                 }
             }
         }
@@ -170,10 +175,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     @Override
     public void remove(StoreInfo store) {
         store = unwrap(store);
-
-        synchronized (stores) {
-            stores.remove(store);
-        }
+        stores.remove(store);
     }
 
     @Override
@@ -271,18 +273,14 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     @Override
     public ResourceInfo add(ResourceInfo resource) {
         resolve(resource);
-        synchronized (resources) {
-            resources.add(resource);
-        }
+        resources.add(resource);
         return ModificationProxy.create(resource, ResourceInfo.class);
     }
 
     @Override
     public void remove(ResourceInfo resource) {
         resource = unwrap(resource);
-        synchronized (resources) {
-            resources.remove(resource);
-        }
+        resources.remove(resource);
     }
 
     @Override
@@ -467,18 +465,13 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     @Override
     public MapInfo add(MapInfo map) {
         resolve(map);
-        synchronized (maps) {
-            maps.add(map);
-        }
-
+        maps.add(map);
         return ModificationProxy.create(map, MapInfo.class);
     }
 
     @Override
     public void remove(MapInfo map) {
-        synchronized (maps) {
-            maps.remove(unwrap(map));
-        }
+        maps.remove(unwrap(map));
     }
 
     @Override
@@ -533,9 +526,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     @Override
     public LayerGroupInfo add(LayerGroupInfo layerGroup) {
         resolve(layerGroup);
-        synchronized (layerGroups) {
-            layerGroups.add(layerGroup);
-        }
+        layerGroups.add(layerGroup);
         return ModificationProxy.create(layerGroup, LayerGroupInfo.class);
     }
 
@@ -544,9 +535,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
      */
     @Override
     public void remove(LayerGroupInfo layerGroup) {
-        synchronized (layerGroups) {
-            layerGroups.remove(unwrap(layerGroup));
-        }
+        layerGroups.remove(unwrap(layerGroup));
     }
 
     /* (non-Javadoc)
@@ -800,17 +789,13 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
     @Override
     public StyleInfo add(StyleInfo style) {
         resolve(style);
-        synchronized (styles) {
-            styles.add(style);
-        }
+        styles.add(style);
         return ModificationProxy.create(style, StyleInfo.class);
     }
 
     @Override
     public void remove(StyleInfo style) {
-        synchronized (styles) {
-            styles.remove(unwrap(style));
-        }
+        styles.remove(unwrap(style));
     }
 
     @Override

@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.logging.Level;
@@ -38,6 +42,19 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     ConcurrentHashMap<Class<T>, Map<Name, T>> nameMultiMap = new ConcurrentHashMap<>();
     Function<T, Name> nameMapper;
     static final Predicate<?> TRUE = x -> true;
+
+    /**
+     * Guards against mutating operations that affect multiple resources (e.g. {@link #idMultiMap} and
+     * {@link #nameMultiMap})
+     */
+    protected final ReadWriteLock lock = new ReentrantReadWriteLock();
+    /**
+     * We only use the write-lock here since all read operations work against a single concurrent map. Subclasses are
+     * free to use both the read and write locks if they need to guard unsafe data structures.
+     *
+     * @see NamespaceInfoLookup
+     */
+    protected final Lock writeLock = new ReentrantLock();
 
     /** Returns {@link CatalogInfoLookup#TRUE} in a type-safe way */
     @SuppressWarnings("unchecked")
@@ -86,9 +103,14 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         }
         Map<Name, T> nameMap = getMapForValue(nameMultiMap, value);
         Name name = nameMapper.apply(value);
-        nameMap.put(name, value);
         Map<String, T> idMap = getMapForValue(idMultiMap, value);
-        return idMap.put(value.getId(), value);
+        writeLock.lock();
+        try {
+            nameMap.put(name, value);
+            return idMap.put(value.getId(), value);
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     public Collection<T> values() {
@@ -101,11 +123,16 @@ class CatalogInfoLookup<T extends CatalogInfo> {
     }
 
     public T remove(T value) {
-        Name name = nameMapper.apply(value);
         Map<Name, T> nameMap = getMapForValue(nameMultiMap, value);
-        nameMap.remove(name);
         Map<String, T> idMap = getMapForValue(idMultiMap, value);
-        return idMap.remove(value.getId());
+        Name name = nameMapper.apply(value);
+        writeLock.lock();
+        try {
+            nameMap.remove(name);
+            return idMap.remove(value.getId());
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /** Updates the value in the name map. The new value must be a ModificationProxy */
@@ -118,14 +145,24 @@ class CatalogInfoLookup<T extends CatalogInfo> {
         Name newName = nameMapper.apply(proxiedValue);
         if (!oldName.equals(newName)) {
             Map<Name, T> nameMap = getMapForValue(nameMultiMap, actualValue);
-            nameMap.remove(oldName);
-            nameMap.put(newName, actualValue);
+            writeLock.lock();
+            try {
+                nameMap.remove(oldName);
+                nameMap.put(newName, actualValue);
+            } finally {
+                writeLock.unlock();
+            }
         }
     }
 
     public void clear() {
-        idMultiMap.clear();
-        nameMultiMap.clear();
+        writeLock.lock();
+        try {
+            idMultiMap.clear();
+            nameMultiMap.clear();
+        } finally {
+            writeLock.unlock();
+        }
     }
 
     /**
@@ -172,7 +209,6 @@ class CatalogInfoLookup<T extends CatalogInfo> {
                 }
             }
         }
-
         return null;
     }
 
@@ -223,23 +259,27 @@ class CatalogInfoLookup<T extends CatalogInfo> {
 
     /** Sets the specified catalog into all CatalogInfo objects contained in this lookup */
     public CatalogInfoLookup<T> setCatalog(Catalog catalog) {
-        for (Map<Name, T> valueMap : nameMultiMap.values()) {
-            if (valueMap != null) {
-                for (T v : valueMap.values()) {
-                    if (v instanceof CatalogInfo) {
-                        Method setter = OwsUtils.setter(v.getClass(), "catalog", Catalog.class);
-                        if (setter != null) {
-                            try {
-                                setter.invoke(v, catalog);
-                            } catch (Exception e) {
-                                LOGGER.log(Level.FINE, "Failed to switch CatalogInfo to new catalog impl", e);
+        writeLock.lock();
+        try {
+            for (Map<Name, T> valueMap : nameMultiMap.values()) {
+                if (valueMap != null) {
+                    for (T v : valueMap.values()) {
+                        if (v instanceof CatalogInfo) {
+                            Method setter = OwsUtils.setter(v.getClass(), "catalog", Catalog.class);
+                            if (setter != null) {
+                                try {
+                                    setter.invoke(v, catalog);
+                                } catch (Exception e) {
+                                    LOGGER.log(Level.FINE, "Failed to switch CatalogInfo to new catalog impl", e);
+                                }
                             }
                         }
                     }
                 }
             }
+        } finally {
+            writeLock.unlock();
         }
-
         return this;
     }
 }

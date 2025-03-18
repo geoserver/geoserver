@@ -11,4 +11,4 @@ To install the WFS FlatGeobuf output format extension:
 
 #. Perform any configuration required by your servlet container, and then restart.
 
-The result will be a new datastore (which can be a file or a directory) and a new WFS output format (``outputFormat=application/flatgeobuf``)
+The result will be a new datastore (which can be a file or a directory) and a new WFS output format (``&outputFormat=application/flatgeobuf``)

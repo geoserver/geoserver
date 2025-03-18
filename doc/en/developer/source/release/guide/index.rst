@@ -68,7 +68,7 @@ Release in Jira
 4. Check all the issues in this release for any that do not have a component and rectify (before running the ``announcement.py`` utility below.)
 
 GeoServer release announcement
------------------------------
+------------------------------
 
 .. note:: Start this activity early to work on while release jobs are running. This will also serve to review resolved Jira issues before release notes are created.
 

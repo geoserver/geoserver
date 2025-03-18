@@ -15,14 +15,13 @@ import org.springframework.security.web.AuthenticationEntryPoint;
  * {@link GeoServerExceptionTranslationFilter} configuration object.
  *
  * <p>The property {@link #authenticationFilterName} is the name of an authentication filter providing the
- * {@link AuthenticationEntryPoint} object. The entry point is needed in the case of of a
- * {@link AuthenticationException}.
+ * {@link AuthenticationEntryPoint} object. The entry point is needed in the case of an {@link AuthenticationException}.
  *
  * <p>IMPORTANT: if no authentication entry point is given, {@link GeoServerExceptionTranslationFilter} uses the entry
  * point found in the servlet request attribute {@link GeoServerSecurityFilter#AUTHENTICATION_ENTRY_POINT_HEADER}
  *
  * <p>The property {@link #accessDeniedErrorPage} is optional and needed in case of an {@link AccessDeniedException}.
- * Geoserver default is <b>/accessDenied.jsp</b>
+ * Geoserver default is <b>/accessDenied.html</b>
  *
  * @author christian
  */

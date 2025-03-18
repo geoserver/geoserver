@@ -72,7 +72,7 @@ public class FilePublisher extends AbstractURLPublisher {
     @Override
     protected String getMimeType(String reqPath, String filename) {
         String mimeType = super.getMimeType(reqPath, filename);
-        if (!"/index.html".equals(reqPath)) {
+        if (!("/index.html".equals(reqPath) || "/accessDenied.html".equals(reqPath))) {
             String lowerCaseMime = mimeType.toLowerCase();
             // force using the static web files directory for html/javascript files and only allow
             // the html/javascript mime types when the system property is set to true to mitigate

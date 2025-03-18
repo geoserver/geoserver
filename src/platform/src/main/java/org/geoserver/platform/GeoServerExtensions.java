@@ -478,7 +478,7 @@ public class GeoServerExtensions implements ApplicationContextAware, Application
         // than strictly necessary
 
         final String[] typeStrs = {
-            "Property override",
+            "Property override ",
             "Java environment variable ",
             "Servlet context parameter ",
             "System environment variable "

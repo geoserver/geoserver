@@ -201,6 +201,7 @@
      <property name="mappings">
        <props>
         <prop key="/www/**">filePublisher</prop>
+        <prop key="/accessDenied.html">filePublisher</prop>
        </props>
      </property>
   </bean>

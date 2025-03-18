@@ -51,6 +51,8 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
     /** listeners */
     List<ConfigurationListener> listeners = new ArrayList<>();
 
+    private boolean catalogLoading;
+
     public GeoServerImpl() {
         this.facade = new DefaultGeoServerFacade(this);
     }
@@ -516,5 +518,10 @@ public class GeoServerImpl implements GeoServer, ApplicationContextAware {
                 LOGGER.log(Level.SEVERE, "A GeoServer lifecycle handler threw an exception during " + name, t);
             }
         }
+    }
+
+    @Override
+    public boolean isCatalogLoading() {
+        return catalogLoading;
     }
 }

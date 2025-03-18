@@ -22,7 +22,7 @@ asking a volunteer to perform the release.
 Notify developer group
 ^^^^^^^^^^^^^^^^^^^^^^
 
-Post a message on the `GeoServer developer group <https://discourse.osgeo.org/c/geoserver/developer/63>`_ a few days in advance, even though the release date has been agreed upon before hand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.
+Post a message on the `GeoServer developer group <https://discourse.osgeo.org/c/geoserver/developer/63>`_ a few days in advance, even though the release date has been agreed upon beforehand. It is a good idea to remind developers to get any fixes 24 hours prior to release day, and to start a team discussion to identify any known blockers.
 
 Prerequisites
 -------------
@@ -32,7 +32,7 @@ The following are necessary to perform a GeoServer release:
 #. Commit access to the GeoServer `Git repository <https://github.com/geoserver/geoserver>`_
 #. Build access to `Jenkins <https://build.geoserver.org/jenkins/>`_
 #. Edit access to the GeoServer `Blog <https://blog.geoserver.org>`_
-#. Administration rights to GeoServer `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`__
+#. Administration rights to GeoServer `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`__
 #. Release/file management privileges in `SourceForge <https://sourceforge.net/projects/geoserver/>`_
 
 Versions and revisions
@@ -56,18 +56,18 @@ To obtain the GeoServer, GWC and GeoTools revisions that have passed testing, na
 
 Since most GeoServer releases require official GeoTools and GeoWebCache releases, the GeoTools and GeoWebCache revisions are usually not needed - the version numbers are used instead.
 
-Release in JIRA
+Release in Jira
 ---------------
 
-1. Navigate to the `GeoServer project page <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased>`_ in JIRA.
+1. Navigate to the `GeoServer project page <https://osgeo-org.atlassian.net/projects/GEOS?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page&status=released-unreleased>`_ in Jira.
 
-2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.  Enter the current date as the Start Date and use the date from the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`_ for the Release Date.
+2. Add a new version for the next version to be released after the current release. For example, if you are releasing GeoServer 2.11.5, create version 2.11.6.  Enter the current date as the Start Date and use the date from the `release schedule <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`_ for the Release Date. For the final scheduled (archive) release of a series (typically 2.xx.6), do still create the next version (e.g. 2.xx.7) with a Description of `End of life, may not be released ever`.
 
 3. Click in the Actions column for the version you are releasing and select Release. Update the Release Date to the current date when prompted. If there are still unsolved issues remaining in this release, you will be prompted to move them to an unreleased version. If so, choose the new version you created in step 2 above.
 
 4. Check all the issues in this release for any that do not have a component and rectify (before running the ``announcement.py`` utility below.)
 
-GeoServer release anouncement
+GeoServer release announcement
 -----------------------------
 
 .. note:: Start this activity early to work on while release jobs are running. This will also serve to review resolved Jira issues before release notes are created.
@@ -96,7 +96,7 @@ The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages 
    * Check for Jira tickets without a component, often these are community modules.
      
      Tip: To determine the correct component check the pull-request for the ticket. The files changed indicate
-     what component has been modigied.
+     what component has been modified.
 
 3. Check for security vulnerability section, generated when resolved Jira issue has "vulnerability" component.
      
@@ -135,7 +135,7 @@ The `GeoServer website <https://geoserver.org/>`_ is managed as a `GitHub Pages 
       
       * A system sandbox is established using ``GEOSERVER_FILESYSTEM_SANDBOX`` application property, and applies to the entire application, limiting GeoServer administrators to the ``<sandbox>`` folder, and individual workspace administrators into isolated ``<sandbox>/<workspace>`` folders.
       
-      * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into ``<sandbox>/<workspace>`` folders to avoid accessing each others files.
+      * A regular sandbox can be configured from the **Security > Data** screen, and is used to limit individual workspace administrators into ``<sandbox>/<workspace>`` folders to avoid accessing each other's files.
         
         ![](/img/posts/2.26/filesystem-sandbox.png)
       
@@ -234,7 +234,7 @@ When creating the first release candidate of a series, there are some extra step
        git commit -am "Updated version to 2.29-SNAPSHOT, updated GeoTools dependency to 35-SNAPSHOT, updated GeoWebCache dependency to 1.29-SNAPSHOT, and related changes"
        git push geoserver main
       
-7. Create the new RC version in `JIRA <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.29-SNAPSHOT``, create a Jira version ``2.29.0`` for the first release of the ``2.29.x`` series
+7. Create the new RC version in `Jira <https://osgeo-org.atlassian.net/projects/GEOS>`_ for issues on the main development branch; for example, if the main development branch is now ``2.29-SNAPSHOT``, create a Jira version ``2.29.0`` for the first release of the ``2.29.x`` series
 
 8. Update the main, nightly and live-docs jobs on build.geoserver.org:
   
@@ -346,9 +346,9 @@ This job will tag the release located in::
    
    https://github.com/geoserver/geoserver/tags/<RELEASE>
 
-Publish JIRA markdown release notes to GitHub tag:
+Publish Jira markdown release notes to GitHub tag:
 
-#. Select the correct release from `JIRA Releases <https://osgeo-org.atlassian.net/projects/GEOS?orderField=RANK&selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&status=released>`__ page.
+#. Select the correct release from `Jira Releases <https://osgeo-org.atlassian.net/projects/GEOS?orderField=RANK&selectedItem=com.atlassian.jira.jira-projects-plugin%3Arelease-page&status=released>`__ page.
 
 #. From the release page, locate the :guilabel:`Release notes` button at the top of the page to open the release notes edit
   

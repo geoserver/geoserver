@@ -9,6 +9,7 @@ x-geoserver-common-config: &geoserver-common-config
       EXTRA_JAVA_OPTS: "-Xms512M -Xmx512M"
       GEOSERVER_ADMIN_USER: "admin"
       GEOSERVER_ADMIN_PASSWORD: "____password____"
+      GEOSERVER_CONSOLE_DISABLED: "true"
     healthcheck:
       test: curl --fail "http://localhost:8080/geoserver/web/wicket/resource/org.geoserver.web.GeoServerBasePage/img/logo.png" || exit 1
       interval: 1m

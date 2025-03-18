@@ -108,7 +108,7 @@ GeoServer has adopted a coordinated vulnerability disclosure model, as outlined 
   1. The reported vulnerability has been verified by working with the geoserver-security list
   2. GitHub `security advisory <https://github.com/geoserver/geoserver/security>`_ is used to reserve a CVE number
   3. A fix or documentation clarification is accepted and backported to both the "stable" and "maintenance" branches
-  4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__, or issued via emergency update)
+  4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__, or issued via emergency update). If the disclosure happens when issuing a ".0" release, please allow a few extra months for those that are up to date to the old maintenance, but have not yet jumped to the new maintenance (that was stable just before the new .0 release).
   5. The CVE vulnerability is published with mitigation and patch instructions
 
   This represents a balance between transparency and participation that does not overwhelm participants. Those seeking greater visibility are encouraged to volunteer with the geoserver-security list; or work with one of the `commercial support providers <https://geoserver.org/support/>`__ who participate on behalf of their customers.

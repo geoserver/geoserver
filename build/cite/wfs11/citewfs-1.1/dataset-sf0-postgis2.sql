@@ -3,7 +3,7 @@
 --     psql -U <database owner> <database> < dataset-sf0.sql
 SET client_encoding = 'UTF8';
 
-\connect cite cite
+\connect cite_wfs11 cite
 
 --drop table "PrimitiveGeoFeature";
 create table "PrimitiveGeoFeature" ( 

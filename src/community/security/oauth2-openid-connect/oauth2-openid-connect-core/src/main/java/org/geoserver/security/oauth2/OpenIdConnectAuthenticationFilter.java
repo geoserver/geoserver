@@ -390,12 +390,14 @@ public class OpenIdConnectAuthenticationFilter extends GeoServerOAuthAuthenticat
                 }
             }
         }
+        if (idToken != null) {
 
-        final String endSessionUrl = ((OpenIdConnectFilterConfig) filterConfig)
-                .buildEndSessionUrl(idToken)
-                .toString();
-        super.logout(request, response, authentication);
+            final String endSessionUrl = ((OpenIdConnectFilterConfig) filterConfig)
+                    .buildEndSessionUrl(idToken)
+                    .toString();
+            super.logout(request, response, authentication);
 
-        request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, endSessionUrl);
+            request.setAttribute(GeoServerLogoutFilter.LOGOUT_REDIRECT_ATTR, endSessionUrl);
+        }
     }
 }

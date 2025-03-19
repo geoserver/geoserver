@@ -99,13 +99,14 @@ public class GeoServerExceptionTranslationFilter extends GeoServerCompositeFilte
 
         AccessDeniedHandlerImpl accessDeniedHandler = new AccessDeniedHandlerImpl();
 
-        if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())) {
-            // check if page exists
+        if (StringUtils.hasLength(authConfig.getAccessDeniedErrorPage())
+                && !"/accessDenied.jsp".equals(authConfig.getAccessDeniedErrorPage())) {
+            // check if page exists and ignore erroneous access denied page (HTTP) 403 (see GEOS-4943)
+            // The page /accessDeniedPage.jsp does not exist and would not work if it exists.
             if (GeoServerExtensions.file(authConfig.getAccessDeniedErrorPage()) != null)
                 accessDeniedHandler.setErrorPage(authConfig.getAccessDeniedErrorPage());
             else LOGGER.warning("Cannot find: " + authConfig.getAccessDeniedErrorPage());
         }
-
         filter.setAccessDeniedHandler(accessDeniedHandler);
 
         filter.afterPropertiesSet();

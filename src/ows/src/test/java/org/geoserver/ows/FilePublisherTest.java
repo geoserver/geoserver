@@ -210,6 +210,9 @@ public class FilePublisherTest {
         String content =
                 doTestTypeAndDisposition("", "index.html", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
         assertEquals("GOOD", content);
+        content = doTestTypeAndDisposition(
+                "", "accessDenied.html", MediaType.TEXT_HTML, MediaType.TEXT_HTML_VALUE, "inline");
+        assertEquals("DENIED", content);
     }
 
     private String doTestTypeAndDisposition(

@@ -978,43 +978,7 @@ public class DefaultCatalogFacade extends AbstractCatalogFacade implements Catal
             other.styles = styles.setCatalog(catalog);
         } else {
             // do a manual import
-            for (WorkspaceInfo ws : workspaces.values()) {
-                dao.add(ws);
-            }
-            for (NamespaceInfo ns : namespaces.values()) {
-                dao.add(ns);
-            }
-            for (StoreInfo store : stores.values()) {
-                dao.add(store);
-            }
-            for (ResourceInfo resource : resources.values()) {
-                dao.add(resource);
-            }
-            for (StyleInfo s : styles.values()) {
-                dao.add(s);
-            }
-            for (LayerInfo l : layers.values()) {
-                dao.add(l);
-            }
-            for (LayerGroupInfo lg : layerGroups.values()) {
-                dao.add(lg);
-            }
-            for (MapInfo m : maps) {
-                dao.add(m);
-            }
-            if (defaultWorkspace != null) {
-                dao.setDefaultWorkspace(defaultWorkspace);
-            }
-            if (defaultNamespace != null) {
-                dao.setDefaultNamespace(defaultNamespace);
-            }
-
-            for (Map.Entry<String, DataStoreInfo> e : defaultStores.entrySet()) {
-                WorkspaceInfo ws = workspaces.findById(e.getKey(), WorkspaceInfo.class);
-                if (null != ws) {
-                    dao.setDefaultDataStore(ws, e.getValue());
-                }
-            }
+            syncFromTo(this, dao, false);
         }
     }
 

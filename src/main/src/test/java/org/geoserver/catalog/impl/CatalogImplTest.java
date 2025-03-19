@@ -3434,11 +3434,12 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         l.setTitle("Global");
 
         addLayer();
-        catalog.add(cs);
-        catalog.add(cv);
 
         LayerInfo l2 = newLayer(cv, s);
         l2.setTitle("Global");
+
+        catalog.add(cs);
+        catalog.add(cv);
         catalog.add(l2);
 
         Filter filter = Predicates.exactTermSearch("global");
@@ -3567,6 +3568,7 @@ public class CatalogImplTest extends GeoServerSystemTestSupport {
         cv.setName("waterways");
 
         addLayer();
+        catalog.add(cs);
         catalog.add(cv);
 
         LayerInfo l2 = newLayer(cv, s);

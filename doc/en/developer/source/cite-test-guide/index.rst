@@ -755,24 +755,28 @@ Shortly before a major (2.xx.0) release, the following process should be followe
     rm -rf /home/cite/postgis-data/wfs
     docker-compose -f docker-compose.yml up
 
-This will spin up a postgres service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts in build/cite/wfsxx/).
+This will spin up a PostgreSQL service which will be populated with 3 different WFS databases if the database is empty (using the cite init-scripts in build/cite/wfsxx/).
 
-It will also spin up 7 geoserver services, typically 1 data directory per Cite test (e.g. wfs20), although it is noted that features10, wms11 and wms13 all run off the same wms13 data directory, and geotiff11 uses the wcs11 data directory.
+It will also spin up 7 GeoServer services, typically 1 data directory per Cite test (e.g. wfs20), although it is noted that features10, wmts10, wms11 and wms13 all run off the same wms13 data directory, and wcs20 and geotiff11 use the wcs11 data directory.
 
 #. Log into https://cite.opengeospatial.org/teamengine and if necessary create Test Sessions for all the tests that GeoServer should pass:
 
     #. OGC API - Features	1.0	https://g1.cite.geoserver.org/geoserver/cite/ogc/features/v1
-    #. Web Map Service (WMS)	1.3.0	https://g1.cite.geoserver.org/geoserver/cite/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.3.0
-    #. Web Map Service (WMS)	1.1.1	https://g1.cite.geoserver.org/geoserver/cite/wms?SERVICE=WMS&REQUEST=GetCapabilities&VERSION=1.1.1
+    #. Web Map Tile Service (WMTS)	1.0.0	https://g1.cite.geoserver.org/geoserver/gwc/service/wmts?service=WMTS&request=GetCapabilities&AcceptVersions=1.0.0 `**`
+    #. Web Map Service (WMS)	1.3.0	https://g1.cite.geoserver.org/geoserver/cite/wms?service=wms&request=GetCapabilities&version=1.3.0
+    #. Web Map Service (WMS)	1.1.1	https://g1.cite.geoserver.org/geoserver/cite/wms?service=wms&request=GetCapabilities&version=1.1.1
     #. Web Feature Service (WFS)	2.0	https://g2.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=2.0.0
     #. Web Feature Service (WFS)	1.1.0	https://g3.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=1.1.0
     #. Web Feature Service (WFS)	1.0.0	https://g4.cite.geoserver.org/geoserver/wfs?service=wfs&request=GetCapabilities&version=1.0.0
+    #. Web Coverage Service (WCS)	2.0.1	https://g5.cite.geoserver.org/geoserver/wcs?service=WCS&request=GetCapabilities&version=2.0.1 (yes, uppercase WCS is needed) `**`
     #. Web Coverage Service (WCS)	1.1.1	https://g5.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.1.1
     #. Web Coverage Service (WCS)	1.0.0	https://g6.cite.geoserver.org/geoserver/wcs?service=wcs&request=GetCapabilities&version=1.0.0
     #. GeoPackage	1.2	https://g7.cite.geoserver.org/geoserver/topp/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=topp:states&outputFormat=application/geopackage%2bsqlite3
     #. GeoTiff	1.1	https://g5.cite.geoserver.org/geoserver/wms?service=WMS&version=1.1.0&request=GetMap&layers=topp:tazbm&bbox=146.49999999999477,-44.49999999999785,147.99999999999474,-42.99999999999787&width=767&height=768&srs=EPSG:4326&styles=&format=image/geotiff
     
     Follow the Run xxx tests instructions above for all the tests settings.  Run them one at a time, it should take less than 1 hour to complete, sometimes with manual visual checks (WMS).
+	
+	`**` These ones are currently still failing.
 
 #. Note all the test sessions that passed (hopefully all of them!) and provide these to our OSGeo contact (currently kalxas), along with your TE username and password (yes, ridiculous!)
 

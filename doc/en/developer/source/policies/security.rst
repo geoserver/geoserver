@@ -111,15 +111,6 @@ GeoServer has adopted a coordinated vulnerability disclosure model, as outlined 
   4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__, or issued via emergency update)
   5. The CVE vulnerability is published with mitigation and patch instructions
 
-  4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__).
-     
-     For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule.
-
-  5. The CVE vulnerability is published with mitigation and patch instructions once everyone has had an opportunity to update.
-     
-     In practice this means that a batch of issues are disclosed alongside each initial release. Be considerate of those following at a slower paced maintenance release schedule, when two stable releases are made in a row it may be up to three months until they have a maintenance release to update to!
-     
-     For an urgent vulnerability where stable and maintenance have both been issued the blog post should indicate when disclosure is expected (example "everyone has two weeks until public disclosure").
   This represents a balance between transparency and participation that does not overwhelm participants. Those seeking greater visibility are encouraged to volunteer with the geoserver-security list; or work with one of the `commercial support providers <https://geoserver.org/support/>`__ who participate on behalf of their customers.
 
 Working with vulnerability reports

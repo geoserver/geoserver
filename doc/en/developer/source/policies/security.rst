@@ -108,6 +108,9 @@ GeoServer has adopted a coordinated vulnerability disclosure model, as outlined 
   1. The reported vulnerability has been verified by working with the geoserver-security list
   2. GitHub `security advisory <https://github.com/geoserver/geoserver/security>`_ is used to reserve a CVE number
   3. A fix or documentation clarification is accepted and backported to both the "stable" and "maintenance" branches
+  4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__, or issued via emergency update)
+  5. The CVE vulnerability is published with mitigation and patch instruction
+
   4. A fix is included for the "stable" and "maintenance" downloads (`released as scheduled <https://github.com/geoserver/geoserver/wiki/Release-Schedule>`__).
      
      For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule.
@@ -187,9 +190,13 @@ Working with vulnerability reports
    .. note:: It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.
 
 5. Disclosure:
-   
-   * Wait until the vulnerability has been addressed, for BOTH the stable and maintenance versions, before publishing.
-   
+
+   * Wait until the vulnerability has been addressed, for BOTH in stable and maintenance releases, before publishing.
+
+     In practice this means that a batch of issues are disclosed alongside each initial release. Be considerate of those following at a slower paced maintenance release schedule, when two stable releases are made in a row it may be up to three months until they have a maintenance release to update to!
+     
+     For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule. In this case the blog post should indicate when disclosure is expected (example "everyone has two weeks until public disclosure").
+
    * Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.
   
       .. note:: Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.

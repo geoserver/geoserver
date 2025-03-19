@@ -2191,7 +2191,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             bfConfig.setClassName(GeoServerExceptionTranslationFilter.class.getName());
             bfConfig.setName(filterName);
             bfConfig.setAuthenticationFilterName(null);
-            bfConfig.setAccessDeniedErrorPage("/accessDenied.jsp");
+            bfConfig.setAccessDeniedErrorPage("/accessDenied.html");
             saveFilter(bfConfig);
         }
         filterName = GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER;
@@ -2201,7 +2201,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             bfConfig.setClassName(GeoServerExceptionTranslationFilter.class.getName());
             bfConfig.setName(filterName);
             bfConfig.setAuthenticationFilterName(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
-            bfConfig.setAccessDeniedErrorPage("/accessDenied.jsp");
+            bfConfig.setAccessDeniedErrorPage("/accessDenied.html");
             saveFilter(bfConfig);
         }
 
@@ -2482,7 +2482,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage does not exist and
+     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage.jsp does not exist and
      * would not work if it exists.
      */
     void removeErroneousAccessDeniedPage() throws Exception {

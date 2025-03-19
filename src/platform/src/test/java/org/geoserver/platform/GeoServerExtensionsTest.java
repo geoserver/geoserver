@@ -241,6 +241,7 @@ public class GeoServerExtensionsTest {
         expect(appContext.getBeanNamesForType(GeoServerExtensionsTest.class)).andReturn(new String[0]);
         expect(appContext.getBeanNamesForType(ExtensionProvider.class)).andReturn(new String[] {"testKey2"});
 
+        @SuppressWarnings("rawtypes")
         ExtensionProvider xp = createMock(ExtensionProvider.class);
         expect(xp.getExtensionPoint()).andReturn(GeoServerExtensionsTest.class);
         expect(xp.getExtensions(GeoServerExtensionsTest.class)).andReturn(Arrays.asList(this));

@@ -55,6 +55,7 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+@SuppressWarnings("rawtypes")
 public class LegacyCatalogImporter {
 
     /** logger */

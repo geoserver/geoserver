@@ -42,6 +42,7 @@ import org.locationtech.jts.geom.Geometry;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public class SecuredFeatureSource<T extends FeatureType, F extends Feature> extends DecoratingFeatureSource<T, F> {
 
     static final Logger LOGGER = Logging.getLogger(SecuredFeatureSource.class);

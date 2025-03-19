@@ -83,12 +83,12 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
         clearOutBody(req);
 
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", body.getBytes());
-        Map params = wrapper.getParameterMap();
+        Map<String, String[]> params = wrapper.getParameterMap();
         assertEquals(4, params.size());
-        assertEquals("1", ((String[]) params.get("a"))[0]);
-        assertEquals("2", ((String[]) params.get("b"))[0]);
-        assertEquals("3", ((String[]) params.get("c"))[0]);
-        assertEquals("4", ((String[]) params.get("d"))[0]);
+        assertEquals("1", params.get("a")[0]);
+        assertEquals("2", params.get("b")[0]);
+        assertEquals("3", params.get("c")[0]);
+        assertEquals("4", params.get("d")[0]);
     }
 
     @SuppressWarnings("PMD.EmptyWhileStmt")
@@ -111,7 +111,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
         // should not NPE like it did
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", body.getBytes());
-        Map params = wrapper.getParameterMap();
+        Map<String, String[]> params = wrapper.getParameterMap();
         assertEquals(0, params.size());
     }
 
@@ -125,7 +125,7 @@ public class BufferedRequestWrapperTest extends RequestWrapperTestSupport {
 
         // should not NPE like it did
         BufferedRequestWrapper wrapper = new BufferedRequestWrapper(req, "UTF-8", "".getBytes());
-        Map params = wrapper.getParameterMap();
+        Map<String, String[]> params = wrapper.getParameterMap();
         assertEquals(0, params.size());
     }
 }

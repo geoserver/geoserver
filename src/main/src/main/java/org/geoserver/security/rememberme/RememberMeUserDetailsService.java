@@ -52,6 +52,7 @@ public class RememberMeUserDetailsService implements UserDetailsService {
         this.securityManager = securityManager;
     }
 
+    @SuppressWarnings("serial")
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException, DataAccessException {
         Matcher m = TOKEN_PATTERN.matcher(username);

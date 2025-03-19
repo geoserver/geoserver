@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Logger;
 import org.geotools.util.logging.Logging;
 import org.junit.Test;
+import org.xml.sax.SAXException;
 
 public class SLDValidatorTest {
 
@@ -20,7 +21,7 @@ public class SLDValidatorTest {
     @Test
     public void testValid() throws Exception {
         SLDValidator validator = new SLDValidator();
-        List errors = validator.validateSLD(getClass().getResourceAsStream("valid.sld"));
+        List<SAXException> errors = validator.validateSLD(getClass().getResourceAsStream("valid.sld"));
 
         // showErrors(errors);
         assertTrue(errors.isEmpty());
@@ -29,7 +30,7 @@ public class SLDValidatorTest {
     @Test
     public void testInvalid() throws Exception {
         SLDValidator validator = new SLDValidator();
-        List errors = validator.validateSLD(getClass().getResourceAsStream("invalid.sld"));
+        List<SAXException> errors = validator.validateSLD(getClass().getResourceAsStream("invalid.sld"));
 
         // showErrors(errors);
         assertFalse(errors.isEmpty());
@@ -39,7 +40,7 @@ public class SLDValidatorTest {
     @Test
     public void testi18nValid() throws Exception {
         SLDValidator validator = new SLDValidator();
-        List errors = validator.validateSLD(getClass().getResourceAsStream("validi18n.sld"));
+        List<SAXException> errors = validator.validateSLD(getClass().getResourceAsStream("validi18n.sld"));
         assertTrue(errors.isEmpty());
     }
 

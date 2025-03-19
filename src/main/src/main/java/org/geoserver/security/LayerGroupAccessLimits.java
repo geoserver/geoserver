@@ -6,6 +6,7 @@
 package org.geoserver.security;
 
 /** Access limits to a layer group. */
+@SuppressWarnings("serial")
 public class LayerGroupAccessLimits extends AccessLimits {
 
     public LayerGroupAccessLimits(CatalogMode mode) {

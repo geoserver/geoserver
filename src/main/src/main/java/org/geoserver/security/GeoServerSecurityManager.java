@@ -153,8 +153,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.event.ApplicationContextEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -177,7 +177,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Justin Deoliveira, OpenGeo
  */
-public class GeoServerSecurityManager implements ApplicationContextAware, ApplicationListener {
+public class GeoServerSecurityManager implements ApplicationContextAware, ApplicationListener<ApplicationContextEvent> {
 
     private static final String VERSION_PROPERTIES = "version.properties";
 
@@ -359,7 +359,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     @Override
-    public void onApplicationEvent(ApplicationEvent event) {
+    public void onApplicationEvent(ApplicationContextEvent event) {
         if (event instanceof ContextLoadedEvent) {
             reload();
         }
@@ -483,7 +483,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
             @Override
             @SuppressWarnings("unchecked")
-            public boolean canConvert(Class cls) {
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class cls) {
                 return cls.isAssignableFrom(RoleSource.class);
             }
 
@@ -3139,7 +3139,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         }
 
         @Override
-        public boolean canConvert(Class type) {
+        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
             return GeoServerSecurityFilterChain.class.isAssignableFrom(type);
         }
 

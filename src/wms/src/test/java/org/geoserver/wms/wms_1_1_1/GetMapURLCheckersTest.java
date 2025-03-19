@@ -124,7 +124,7 @@ public class GetMapURLCheckersTest extends WMSTestSupport {
         return getResourceAsString(GetMapURLCheckersTest.class, resource);
     }
 
-    private static String getResourceAsString(Class loader, String resource) throws IOException {
+    private static String getResourceAsString(Class<?> loader, String resource) throws IOException {
         try (InputStream is = loader.getResourceAsStream(resource)) {
             return IOUtils.toString(is, StandardCharsets.UTF_8);
         }

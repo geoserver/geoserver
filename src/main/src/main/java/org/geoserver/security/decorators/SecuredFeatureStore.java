@@ -39,6 +39,7 @@ import org.geotools.feature.FeatureCollection;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public class SecuredFeatureStore<T extends FeatureType, F extends Feature> extends SecuredFeatureSource<T, F>
         implements FeatureStore<T, F> {
 

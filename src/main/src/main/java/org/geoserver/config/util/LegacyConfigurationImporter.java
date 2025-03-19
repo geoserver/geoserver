@@ -145,7 +145,8 @@ public class LegacyConfigurationImporter {
         geoServer.setLogging(logging);
 
         // read services
-        for (LegacyServiceLoader sl : GeoServerExtensions.extensions(LegacyServiceLoader.class)) {
+        for (@SuppressWarnings("rawtypes")
+        LegacyServiceLoader sl : GeoServerExtensions.extensions(LegacyServiceLoader.class)) {
             try {
                 sl.setReader(reader);
 
@@ -168,7 +169,7 @@ public class LegacyConfigurationImporter {
     }
 
     @SuppressWarnings("unchecked")
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz, T def) {
+    protected <T extends Object> T get(@SuppressWarnings("rawtypes") Map map, String key, Class<T> clazz, T def) {
         Object o = map.get(key);
         if (o == null) {
             if (def != null) {
@@ -193,7 +194,7 @@ public class LegacyConfigurationImporter {
         return (T) o;
     }
 
-    protected <T extends Object> T get(Map map, String key, Class<T> clazz) {
+    protected <T extends Object> T get(@SuppressWarnings("rawtypes") Map map, String key, Class<T> clazz) {
         return get(map, key, clazz, null);
     }
 }

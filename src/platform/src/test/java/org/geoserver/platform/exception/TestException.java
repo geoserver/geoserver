@@ -5,4 +5,5 @@
  */
 package org.geoserver.platform.exception;
 
+@SuppressWarnings("serial")
 public class TestException extends GeoServerException {}

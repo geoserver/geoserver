@@ -11,6 +11,7 @@ import com.thoughtworks.xstream.mapper.PackageAliasingMapper;
  * Variant of {@link PackageAliasingMapper} that only applies aliases when reading a serialized representation. When
  * writing to a serialized representation it delegates to the wrapped {@link Mapper}
  */
+@SuppressWarnings("serial")
 public class OneWayPackageAliasingMapper extends PackageAliasingMapper {
     private final Mapper wrapped;
 
@@ -20,7 +21,7 @@ public class OneWayPackageAliasingMapper extends PackageAliasingMapper {
     }
 
     @Override
-    public String serializedClass(final Class type) {
+    public String serializedClass(@SuppressWarnings("rawtypes") final Class type) {
         return wrapped.serializedClass(type);
     }
 }

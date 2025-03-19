@@ -58,6 +58,7 @@ import org.geotools.factory.CommonFactoryFinder;
  * @author Justin Deoliveira, The Open Planning Project
  *     <p>TODO: this class should use BeanUtils for all reflection stuff
  */
+@SuppressWarnings("serial")
 public class ModificationProxy implements WrappingProxy, Serializable {
 
     /** the proxy object */
@@ -88,7 +89,6 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
     /** Intercepts getter and setter methods, as well as {@link CatalogInfo#accept(CatalogVisitor)}. */
     @Override
-    @SuppressWarnings("unchecked") // lots of generic behavior, cannot use params
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
         String property = null;
@@ -102,29 +102,29 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             } else {
                 // if collection, create a wrapper
                 if (Collection.class.isAssignableFrom(method.getReturnType())) {
-                    Collection real = (Collection) method.invoke(proxyObject, null);
+                    Collection<?> real = (Collection<?>) method.invoke(proxyObject);
                     if (real == null) {
                         // in this case there is nothing we can do
                         return null;
                     }
-                    Collection wrap = ModificationProxyCloner.cloneCollection(real, true);
+                    Collection<?> wrap = ModificationProxyCloner.cloneCollection(real, true);
                     properties().put(property, wrap);
                     // we also need to store a clone of the initial state as the collection
                     // might be a live one
-                    Collection clone = ModificationProxyCloner.cloneCollection(real, false);
+                    Collection<?> clone = ModificationProxyCloner.cloneCollection(real, false);
                     oldCollectionValues().put(property, clone);
                     return wrap;
                 } else if (Map.class.isAssignableFrom(method.getReturnType())) {
-                    Map real = (Map) method.invoke(proxyObject, null);
+                    Map<?, ?> real = (Map<?, ?>) method.invoke(proxyObject);
                     if (real == null) {
                         // in this case there is nothing we can do
                         return null;
                     }
-                    Map wrap = ModificationProxyCloner.cloneMap(real, true);
+                    Map<?, ?> wrap = ModificationProxyCloner.cloneMap(real, true);
                     properties().put(property, wrap);
                     // we also need to store a clone of the initial state as the collection
                     // might be a live one
-                    Map clone = ModificationProxyCloner.cloneMap(real, false);
+                    Map<?, ?> clone = ModificationProxyCloner.cloneMap(real, false);
                     oldCollectionValues().put(property, clone);
                     return wrap;
                 }
@@ -154,10 +154,9 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             // in case this is a live indirection, resolve it. Typically this means
             // the reference is dangling, and we are going to avoid a wrapper around null
             if (result instanceof Proxy && Proxy.getInvocationHandler(result) instanceof ResolvingProxy) {
-                ResolvingProxy rp = ProxyUtils.handler(result, ResolvingProxy.class);
                 // try to resolve, and return null if the reference is dangling
                 final Catalog catalog = (Catalog) GeoServerExtensions.bean("catalog");
-                result = rp.resolve(catalog, result);
+                result = ResolvingProxy.resolve(catalog, result);
             }
 
             // intercept result and wrap it in a proxy if it is another Info object
@@ -231,16 +230,16 @@ public class ModificationProxy implements WrappingProxy, Serializable {
 
                     // handle collection case
                     if (Collection.class.isAssignableFrom(g.getReturnType())) {
-                        Collection c = (Collection) g.invoke(proxyObject, null);
+                        Collection<Object> c = (Collection<Object>) g.invoke(proxyObject);
                         c.clear();
-                        for (Object o : (Collection) v) {
+                        for (Object o : (Collection<Object>) v) {
                             // element of a collection
                             commitIfNeeded(o);
                             c.add(unwrap(o));
                         }
                     } else if (Map.class.isAssignableFrom(g.getReturnType())) {
-                        Map proxied = (Map) v;
-                        Map m = (Map) g.invoke(proxyObject, null);
+                        Map<Object, Object> proxied = (Map<Object, Object>) v;
+                        Map<Object, Object> m = (Map<Object, Object>) g.invoke(proxyObject);
                         m.clear();
                         for (Object key : proxied.keySet()) {
                             Object uk = unwrap(key);
@@ -255,7 +254,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                             // another info is the changed property, it could be one of two cases
                             // 1) the info object was changed in place: x.getY().setFoo(...)
                             // 2) a new info object was set x.setY(...)
-                            Info original = (Info) g.invoke(proxyObject, null);
+                            Info original = (Info) g.invoke(proxyObject);
                             Info modified = (Info) unwrap(v);
                             if (original == modified) {
                                 // case 1, in this case get the proxy and commit it
@@ -336,8 +335,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     /** Flag which indicates whether any properties of the object being proxied are changed. */
     public boolean isDirty() {
         boolean dirty = false;
-        for (Iterator i = properties().entrySet().iterator(); i.hasNext() && !dirty; ) {
-            Map.Entry e = (Map.Entry) i.next();
+        for (Iterator<Map.Entry<String, Object>> i = properties().entrySet().iterator(); i.hasNext() && !dirty; ) {
+            Map.Entry<String, Object> e = i.next();
             if (e.getValue() instanceof Proxy) {
                 ModificationProxy h = handler(e.getValue());
                 if (h != null && !h.isDirty()) {
@@ -345,7 +344,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                 }
             } else {
                 try {
-                    Object orig = unwrap(getter((String) e.getKey()).invoke(proxyObject, null));
+                    Object orig = unwrap(getter(e.getKey()).invoke(proxyObject));
                     if (orig == null) {
                         if (e.getValue() == null) {
                             continue;
@@ -376,7 +375,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                     // value is not the same as the current value of the property on the object
                     Object curr = unwrap(value);
                     try {
-                        Object orig = unwrap(getter(propertyName).invoke(proxyObject, null));
+                        Object orig = unwrap(getter(propertyName).invoke(proxyObject));
                         if (curr == orig) {
                             continue;
                         }
@@ -416,7 +415,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                         throw new IllegalArgumentException("No such property: " + propertyName);
                     }
 
-                    oldValues.add(g.invoke(proxyObject, null));
+                    oldValues.add(g.invoke(proxyObject));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -441,11 +440,11 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     Method getter(String propertyName) {
         Method g = null;
         try {
-            g = proxyObject.getClass().getMethod("get" + propertyName, null);
+            g = proxyObject.getClass().getMethod("get" + propertyName);
         } catch (NoSuchMethodException e1) {
             // could be boolean
             try {
-                g = proxyObject.getClass().getMethod("is" + propertyName, null);
+                g = proxyObject.getClass().getMethod("is" + propertyName);
             } catch (NoSuchMethodException e2) {
             }
         }
@@ -489,7 +488,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
                         property.setValue(unwrap(replacement));
                     }
                 } else if (value instanceof Collection) {
-                    Collection clone = cloneCollection((Collection) value);
+                    Collection<Object> clone = cloneCollection((Collection<?>) value);
                     property.setValue(clone);
                 } else if (value instanceof MetadataMap) {
                     MetadataMap clone = cloneMetadataMap((MetadataMap) value);
@@ -503,8 +502,8 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             for (Entry<String, Object> oce : oldCollectionValues.entrySet()) {
                 Object value = oce.getValue();
                 if (value instanceof Collection) {
-                    Collection oldCollection = (Collection) value;
-                    Collection clone = cloneCollection(oldCollection);
+                    Collection<?> oldCollection = (Collection<?>) value;
+                    Collection<Object> clone = cloneCollection(oldCollection);
                     oce.setValue(clone);
                 } else if (value instanceof MetadataMap) {
                     MetadataMap clone = cloneMetadataMap((MetadataMap) value);
@@ -535,10 +534,12 @@ public class ModificationProxy implements WrappingProxy, Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    private Collection cloneCollection(Collection oldCollection) {
+    private Collection<Object> cloneCollection(Collection<?> oldCollection) {
+        @SuppressWarnings("rawtypes")
         Class<? extends Collection> oldCollectionClass = oldCollection.getClass();
         try {
-            Collection clone = oldCollectionClass.getDeclaredConstructor().newInstance();
+            Collection<Object> clone =
+                    oldCollectionClass.getDeclaredConstructor().newInstance();
             for (Object o : oldCollection) {
                 if (o instanceof CatalogInfo) {
                     CatalogInfo replacement = replaceCatalogInfo((CatalogInfo) o);
@@ -651,6 +652,7 @@ public class ModificationProxy implements WrappingProxy, Serializable {
             super(list, clazz);
         }
 
+        @SuppressWarnings("hiding")
         @Override
         protected <T> T createProxy(T proxyObject, Class<T> proxyInterface) {
             if (proxyObject instanceof Proxy) {

@@ -7,6 +7,7 @@ package org.geoserver.gwc.wmts;
 import org.geoserver.config.impl.ServiceInfoImpl;
 
 /** Default implementation of WMTS information holder. */
+@SuppressWarnings("serial")
 public class WMTSInfoImpl extends ServiceInfoImpl implements WMTSInfo {
     @Override
     public String getType() {

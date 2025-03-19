@@ -47,6 +47,7 @@ public class PropertyDataStoreRelativeUrlTest extends GeoServerSystemTestSupport
         assertNotNull(f);
         assertTrue(f instanceof PropertyDataStoreFactory);
 
+        @SuppressWarnings("rawtypes")
         DataAccess store = getGeoServer().getCatalog().getResourcePool().getDataStore(info);
 
         assertEquals(

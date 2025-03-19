@@ -20,6 +20,7 @@ import org.geotools.api.util.ProgressListener;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.util.factory.Hints;
 
+@SuppressWarnings("serial")
 public class SecuredCoverageInfo extends DecoratingCoverageInfo {
 
     WrapperPolicy policy;

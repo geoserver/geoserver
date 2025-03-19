@@ -23,6 +23,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  * @param <T>
  * @param <F>
  */
+@SuppressWarnings("serial")
 public abstract class DecoratingDataAccess<T extends FeatureType, F extends Feature>
         extends AbstractDecorator<DataAccess<T, F>> implements DataAccess<T, F> {
 

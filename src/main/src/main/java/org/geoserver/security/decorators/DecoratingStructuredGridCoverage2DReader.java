@@ -126,11 +126,13 @@ public abstract class DecoratingStructuredGridCoverage2DReader implements Struct
         delegate.dispose();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters();
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         return delegate.getDynamicParameters(coverageName);

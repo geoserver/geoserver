@@ -90,7 +90,7 @@ public abstract class XStreamCatalogListConverter extends XStreamMessageConverte
         });
         xstream.registerConverter(new Converter() {
             @Override
-            public boolean canConvert(Class type) {
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                 return clazz.isAssignableFrom(type);
             }
 

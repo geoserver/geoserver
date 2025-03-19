@@ -30,6 +30,7 @@ import org.geotools.data.DataUtilities;
  *
  * @author Andrea Aime - TOPP
  */
+@SuppressWarnings("serial")
 public class ReadOnlyDataStore extends org.geotools.data.store.DecoratingDataStore {
 
     WrapperPolicy policy;

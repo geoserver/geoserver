@@ -32,6 +32,7 @@ import org.geotools.feature.FeatureCollection;
  * @author Gabriel Rold?n
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class GeoServerFeatureStore extends GeoServerFeatureSource implements SimpleFeatureStore {
     /**
      * Creates a new DEFQueryFeatureLocking object.

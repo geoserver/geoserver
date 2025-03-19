@@ -6,6 +6,7 @@
 package org.geoserver.security;
 
 /** Access limits to a style. */
+@SuppressWarnings("serial")
 public class StyleAccessLimits extends AccessLimits {
 
     public StyleAccessLimits(CatalogMode mode) {

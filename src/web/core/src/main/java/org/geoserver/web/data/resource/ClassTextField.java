@@ -29,10 +29,11 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
 /** An {@link AutoCompleteTextField} dealing with common attribute type bindings */
-class ClassTextField extends AutoCompleteTextField<Class> {
+@SuppressWarnings("serial")
+class ClassTextField extends AutoCompleteTextField<Class<?>> {
 
     /** List of well known class names this component will auto-complete to */
-    private static final List<Class> BINDINGS = Arrays.asList(
+    private static final List<Class<?>> BINDINGS = Arrays.asList(
                     // alphanumeric
                     String.class,
                     Boolean.class,
@@ -59,17 +60,17 @@ class ClassTextField extends AutoCompleteTextField<Class> {
             .collect(Collectors.collectingAndThen(Collectors.toList(), ImmutableList::copyOf));
 
     // Has a simplified setup thanks to class simple names having no overlaps
-    private static final Map<String, Class> NAME_TO_CLASS =
+    private static final Map<String, Class<?>> NAME_TO_CLASS =
             BINDINGS.stream().collect(Collectors.toMap(c -> c.getSimpleName(), c -> c));
-    private static final Map<Class, String> CLASS_TO_NAME =
+    private static final Map<Class<?>, String> CLASS_TO_NAME =
             BINDINGS.stream().collect(Collectors.toMap(c -> c, c -> c.getSimpleName()));
 
-    public ClassTextField(String id, IModel<Class> model) {
+    public ClassTextField(String id, IModel<Class<?>> model) {
         super("type", model, new ClassNameRenderer());
     }
 
     @Override
-    protected Iterator<Class> getChoices(String s) {
+    protected Iterator<Class<?>> getChoices(String s) {
         return BINDINGS.iterator();
     }
 
@@ -79,10 +80,10 @@ class ClassTextField extends AutoCompleteTextField<Class> {
         return (IConverter<C>) new ClassNameConverter();
     }
 
-    private static class ClassNameConverter implements IConverter<Class> {
+    private static class ClassNameConverter implements IConverter<Class<?>> {
         @Override
-        public Class convertToObject(String s, Locale locale) throws ConversionException {
-            Class result = NAME_TO_CLASS.get(s);
+        public Class<?> convertToObject(String s, Locale locale) throws ConversionException {
+            Class<?> result = NAME_TO_CLASS.get(s);
             // allow for user selected type names too
             if (result == null)
                 try {
@@ -94,20 +95,20 @@ class ClassTextField extends AutoCompleteTextField<Class> {
         }
 
         @Override
-        public String convertToString(Class c, Locale locale) {
+        public String convertToString(Class<?> c, Locale locale) {
             return ClassTextField.getClassName(c);
         }
     }
 
-    private static String getClassName(Class c) {
+    private static String getClassName(Class<?> c) {
         String name = CLASS_TO_NAME.get(c);
         if (name == null) return c.getName(); // if not a common one, use the full name
         return name;
     }
 
-    private static class ClassNameRenderer extends AbstractAutoCompleteTextRenderer<Class> {
+    private static class ClassNameRenderer extends AbstractAutoCompleteTextRenderer<Class<?>> {
         @Override
-        protected String getTextValue(Class c) {
+        protected String getTextValue(Class<?> c) {
             return getClassName(c);
         }
     }

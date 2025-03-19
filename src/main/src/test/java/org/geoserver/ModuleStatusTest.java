@@ -14,9 +14,8 @@ import org.junit.Test;
 
 public class ModuleStatusTest extends GeoServerSystemTestSupport {
     @Test
-    public void ModuleStatusTest() {
-        GeoServerExtensions gse = new GeoServerExtensions();
-        List<ModuleStatus> statusBeans = gse.extensions(ModuleStatus.class);
+    public void moduleStatusTest() {
+        List<ModuleStatus> statusBeans = GeoServerExtensions.extensions(ModuleStatus.class);
         assertEquals("gs-main", statusBeans.get(0).getModule());
         assertEquals("GeoServer Main", statusBeans.get(0).getName());
     }

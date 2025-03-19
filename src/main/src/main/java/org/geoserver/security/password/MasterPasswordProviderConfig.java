@@ -12,6 +12,7 @@ import org.geoserver.security.config.BaseSecurityNamedServiceConfig;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class MasterPasswordProviderConfig extends BaseSecurityNamedServiceConfig {
 
     boolean readOnly;

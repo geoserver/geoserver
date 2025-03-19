@@ -42,6 +42,7 @@ public class DefaultGeoServerLoaderTest {
 
     static interface HelloServiceInfo extends ServiceInfo {}
 
+    @SuppressWarnings("serial")
     static final class HelloServiceInfoImpl extends ServiceInfoImpl implements HelloServiceInfo {
         @Override
         public String getType() {

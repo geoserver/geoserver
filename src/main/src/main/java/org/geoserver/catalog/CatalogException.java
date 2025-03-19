@@ -10,6 +10,7 @@ package org.geoserver.catalog;
  *
  * @author Justin Deoliveira, OpenGeo
  */
+@SuppressWarnings("serial")
 public class CatalogException extends RuntimeException {
 
     public CatalogException() {

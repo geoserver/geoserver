@@ -35,7 +35,7 @@ public class TimeParser extends DateTimeParser {
     }
 
     @Override
-    public void checkMaxTimes(Set result, int maxValues) {
+    public void checkMaxTimes(@SuppressWarnings("rawtypes") Set result, int maxValues) {
         // limiting number of elements we can create
         if (maxValues > 0 && result.size() > maxValues) {
             throw new ServiceException(

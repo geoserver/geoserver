@@ -14,6 +14,7 @@ import org.geoserver.util.InternationalStringUtils;
 import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 
+@SuppressWarnings("serial")
 public class LayerGroupStyleImpl implements LayerGroupStyle {
 
     private String id = getClass().getSimpleName().concat("--").concat(new UID().toString());

@@ -70,6 +70,7 @@ import org.geotools.util.factory.Hints.ConfigurationMetadataKey;
  * @author Gabriel Roldan
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSource> implements SimpleFeatureSource {
     /** Shared package logger */
     private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.vfny.geoserver.global");
@@ -347,7 +348,7 @@ public class GeoServerFeatureSource extends AbstractDecorator<SimpleFeatureSourc
         Integer offset = null, maxFeatures = null;
         if (sortBy != null && sortBy != SortBy.UNSORTED) {
             if (!source.getQueryCapabilities().supportsSorting(sortBy)) {
-                query.setSortBy(null);
+                query.setSortBy();
 
                 // if paging is in and we cannot do sorting natively
                 // we should not let the datastore handle it: we need to sort first, then

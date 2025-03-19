@@ -22,6 +22,7 @@ import org.xml.sax.ext.EntityResolver2;
  *
  * @author Jody Garnett (GeoCat)
  */
+@SuppressWarnings("serial")
 public class AllowListEntityResolver implements EntityResolver2, Serializable {
 
     /** Wildcard '*' location indicating unrestricted http(s) access */

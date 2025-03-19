@@ -27,6 +27,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Andrea Aime
  */
+@SuppressWarnings("serial")
 public class DecoratingLayerInfo extends AbstractDecorator<LayerInfo> implements LayerInfo {
 
     public DecoratingLayerInfo(LayerInfo delegate) {

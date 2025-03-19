@@ -37,6 +37,7 @@ public class GwcServiceProxy {
 
     private final GeoWebCacheDispatcher gwcDispatcher;
 
+    @SuppressWarnings("serial")
     public GwcServiceProxy() {
         serviceInfo = new ServiceInfoImpl() {
             @Override

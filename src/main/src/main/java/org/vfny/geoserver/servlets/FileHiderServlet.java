@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author aaime
  */
+@SuppressWarnings("serial")
 public class FileHiderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)

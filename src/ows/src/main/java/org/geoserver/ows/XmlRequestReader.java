@@ -99,7 +99,7 @@ public abstract class XmlRequestReader {
      * <p>The <tt>kvp</tt> is used to support mixed style reading of the request object from xml and from a set of key
      * value pairs. This map is often empty.
      */
-    public abstract Object read(Object request, Reader reader, Map kvp) throws Exception;
+    public abstract Object read(Object request, Reader reader, @SuppressWarnings("rawtypes") Map kvp) throws Exception;
 
     /** Two XmlReaders considered equal if namespace,element, and version properties are the same. */
     @Override

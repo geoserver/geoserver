@@ -47,13 +47,13 @@ public class CoverageUtils {
                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (!params.values().isEmpty())) {
-            List list = params.values();
-            final Iterator it = list.iterator();
+            List<GeneralParameterValue> list = params.values();
+            final Iterator<GeneralParameterValue> it = list.iterator();
             while (it.hasNext()) {
-                final ParameterValue val = (ParameterValue) it.next();
+                final ParameterValue<?> val = (ParameterValue<?>) it.next();
 
                 if (val != null) {
-                    final ParameterDescriptor descr = val.getDescriptor();
+                    final ParameterDescriptor<?> descr = val.getDescriptor();
                     final String _key = descr.getName().toString();
 
                     if ("namespace".equals(_key)) {
@@ -69,8 +69,8 @@ public class CoverageUtils {
                     }
                     final Object value = val.getValue();
 
-                    @SuppressWarnings("unchecked")
-                    ParameterValue pv =
+                    @SuppressWarnings({"unchecked", "rawtypes"})
+                    ParameterValue<?> pv =
                             new DefaultParameterDescriptor(_key, value.getClass(), null, value).createValue();
                     parameters.add(pv);
                 }
@@ -82,11 +82,12 @@ public class CoverageUtils {
         }
     }
 
-    public static GeneralParameterValue[] getParameters(ParameterValueGroup params, Map values) {
+    public static GeneralParameterValue[] getParameters(ParameterValueGroup params, Map<String, Serializable> values) {
         return getParameters(params, values, false);
     }
 
-    public static GeneralParameterValue[] getParameters(ParameterValueGroup params, Map values, boolean readGeom) {
+    public static GeneralParameterValue[] getParameters(
+            ParameterValueGroup params, Map<String, Serializable> values, boolean readGeom) {
         final List<ParameterValue<?>> parameters = new ArrayList<>();
         final String readGeometryKey =
                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
@@ -123,7 +124,7 @@ public class CoverageUtils {
                     //
                     // /////////////////////////////////////////////////////////
                     final Object value = CoverageUtils.getCvParamValue(_key, val, values);
-                    @SuppressWarnings("unchecked")
+                    @SuppressWarnings({"unchecked", "rawtypes"})
                     DefaultParameterDescriptor pd =
                             new DefaultParameterDescriptor(_key, descr.getValueClass(), null, value);
                     parameters.add(pd.createValue());
@@ -144,13 +145,13 @@ public class CoverageUtils {
                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString();
 
         if ((params != null) && (!params.values().isEmpty())) {
-            final List list = params.values();
-            final Iterator it = list.iterator();
+            final List<GeneralParameterValue> list = params.values();
+            final Iterator<GeneralParameterValue> it = list.iterator();
             while (it.hasNext()) {
-                final ParameterValue val = (ParameterValue) it.next();
+                final ParameterValue<?> val = (ParameterValue<?>) it.next();
 
                 if (val != null) {
-                    final ParameterDescriptor descr = val.getDescriptor();
+                    final ParameterDescriptor<?> descr = val.getDescriptor();
 
                     final String _key = descr.getName().toString();
 
@@ -194,7 +195,7 @@ public class CoverageUtils {
 
     /** */
     public static Object getCvParamValue(
-            final String key, ParameterValue param, final List paramValues, final int index) {
+            final String key, ParameterValue<?> param, final List<?> paramValues, final int index) {
         Object value = null;
 
         try {
@@ -253,12 +254,13 @@ public class CoverageUtils {
         return value;
     }
 
-    private static String getParamValue(final List paramValues, final int index) {
+    private static String getParamValue(final List<?> paramValues, final int index) {
         return (String) paramValues.get(index);
     }
 
     /** */
-    public static Object getCvParamValue(final String key, ParameterValue param, final Map params) {
+    public static Object getCvParamValue(
+            final String key, ParameterValue<?> param, final Map<String, Serializable> params) {
         Object value = null;
 
         try {
@@ -394,7 +396,7 @@ public class CoverageUtils {
         for (GeneralParameterDescriptor pd : parameterDescriptors) {
             // in case of match of any alias add a param value to the lot
             if (aliases.contains(pd.getName().getCode())) {
-                final ParameterValue pv = (ParameterValue) pd.createValue();
+                final ParameterValue<?> pv = (ParameterValue<?>) pd.createValue();
                 pv.setValue(value);
 
                 // if it's in the list already, override

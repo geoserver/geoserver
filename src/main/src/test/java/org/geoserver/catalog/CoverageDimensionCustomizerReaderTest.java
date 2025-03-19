@@ -36,6 +36,7 @@ import org.geotools.util.NumberRange;
 import org.junit.Test;
 import tech.units.indriya.unit.BaseUnit;
 
+@SuppressWarnings("rawtypes")
 public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSupport {
 
     private static final double DELTA = 1E-4;
@@ -210,6 +211,7 @@ public class CoverageDimensionCustomizerReaderTest extends GeoServerSystemTestSu
         GridSampleDimension wrappedDim = WrappedSampleDimension.build(sampleDim, coverageDim);
 
         // run the copy constructor
+        @SuppressWarnings("serial")
         GridSampleDimension copy = new GridSampleDimension(wrappedDim) {
                     // the constructor is visible only to subclasses, hence this hack
                 };

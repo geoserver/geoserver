@@ -72,11 +72,10 @@ public class GeoServerFactoryImpl implements GeoServerFactory, ApplicationContex
     @Override
     public <T> T create(Class<T> clazz) {
         if (applicationContext != null) {
-            Collection extensions = applicationContext
+            Collection<Extension> extensions = applicationContext
                     .getBeansOfType(GeoServerFactory.Extension.class)
                     .values();
-            for (Object o : extensions) {
-                Extension extension = (Extension) o;
+            for (Extension extension : extensions) {
                 if (extension.canCreate(clazz)) {
                     return extension.create(clazz);
                 }

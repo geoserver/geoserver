@@ -60,6 +60,7 @@ public class TransformFeatureTypeCallback {
     }
 
     private DataStore getDataStore(FeatureTypeInfo fti) throws IOException {
+        @SuppressWarnings("rawtypes")
         DataAccess da = fti.getStore().getDataStore(null);
         if (da instanceof DataStore) return (DataStore) da;
 

@@ -85,6 +85,7 @@ import org.geotools.util.logging.Logging;
  *     <p>TODO: remove synchronized blocks, make setting of default workspace/namespace part of dao contract TODO: move
  *     resolve() to dao
  */
+@SuppressWarnings("serial")
 public class CatalogImpl implements Catalog {
 
     /** logger */
@@ -225,9 +226,9 @@ public class CatalogImpl implements Catalog {
                 setDefaultDataStore(workspace, null);
 
                 // default removed, choose another store to become default if possible
-                List dstores = getStoresByWorkspace(workspace, DataStoreInfo.class);
+                List<DataStoreInfo> dstores = getStoresByWorkspace(workspace, DataStoreInfo.class);
                 if (!dstores.isEmpty()) {
-                    setDefaultDataStore(workspace, (DataStoreInfo) dstores.get(0));
+                    setDefaultDataStore(workspace, dstores.get(0));
                 }
             }
         }
@@ -796,8 +797,8 @@ public class CatalogImpl implements Catalog {
 
         // clean up eventual dangling references to missing alternate styles
         Set<StyleInfo> styles = layer.getStyles();
-        for (Iterator it = styles.iterator(); it.hasNext(); ) {
-            StyleInfo styleInfo = (StyleInfo) it.next();
+        for (Iterator<StyleInfo> it = styles.iterator(); it.hasNext(); ) {
+            StyleInfo styleInfo = it.next();
             if (styleInfo == null) {
                 it.remove();
             }
@@ -917,7 +918,7 @@ public class CatalogImpl implements Catalog {
     }
 
     @Override
-    @SuppressWarnings("PMD.UnusedLocalVariable")
+    @SuppressWarnings({"PMD.UnusedLocalVariable", "unused"})
     public void add(LayerGroupInfo layerGroup) {
         layerGroup = resolve(layerGroup);
         validate(layerGroup, true);
@@ -1732,6 +1733,7 @@ public class CatalogImpl implements Catalog {
         dispatcher.removeListeners(listenerClass);
     }
 
+    @SuppressWarnings("rawtypes")
     public Iterator search(String cql) {
         // TODO Auto-generated method stub
         return null;

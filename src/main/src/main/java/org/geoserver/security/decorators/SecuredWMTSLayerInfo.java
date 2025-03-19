@@ -19,6 +19,7 @@ import org.geotools.ows.wmts.model.WMTSLayer;
  *
  * @author Emanuele Tajariol (etj at geo-solutions dot it)
  */
+@SuppressWarnings("serial")
 public class SecuredWMTSLayerInfo extends DecoratingWMTSLayerInfo {
 
     WrapperPolicy policy;

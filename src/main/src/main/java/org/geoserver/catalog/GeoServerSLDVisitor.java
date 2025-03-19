@@ -308,6 +308,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
 
             List<LayerInfo> layers = new ArrayList<>();
             // not sure if this has side-effects
+            @SuppressWarnings("unused")
             Style[] layerStyles = ul.getUserStyles(); // NOPMD
 
             for (FeatureTypeConstraint featureConstraint : featureConstraints) {
@@ -419,6 +420,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         return layerInfo;
     }
 
+    @SuppressWarnings("serial")
     protected static class FeatureSourceWrappingFeatureTypeInfoImpl extends FeatureTypeInfoImpl {
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource;
 
@@ -470,6 +472,7 @@ public abstract class GeoServerSLDVisitor extends AbstractStyleVisitor {
         }
     }
 
+    @SuppressWarnings("serial")
     protected static class StyleWrappingStyleInfoImpl extends StyleInfoImpl {
         Style style;
 

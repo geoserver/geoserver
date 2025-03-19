@@ -285,7 +285,7 @@ public abstract class RestBaseController implements RequestBodyAdvice {
      *
      * <p>Subclasses should override this to implement custom functionality
      */
-    public void configurePersister(XStreamPersister persister, XStreamMessageConverter converter) {}
+    public void configurePersister(XStreamPersister persister, XStreamMessageConverter<?> converter) {}
 
     /**
      * Default (empty) implementation of configurePersister. This will be called by the default implementation of

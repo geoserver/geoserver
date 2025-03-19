@@ -30,6 +30,7 @@ import org.geotools.util.DateRange;
 import org.geotools.util.NumberRange;
 import org.junit.Test;
 
+@SuppressWarnings("rawtypes")
 public class ReaderDimensionAccessorTest {
 
     static class MockDimensionReader extends AbstractGridCoverage2DReader {

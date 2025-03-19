@@ -45,6 +45,7 @@ import org.geoserver.web.wicket.ReorderableTablePanel;
 import org.geotools.util.logging.Logging;
 
 /** Component editing a list of {@link AttributeTypeInfo} */
+@SuppressWarnings("serial")
 class AttributeTypeInfoEditor extends Panel {
 
     static final Logger LOGGER = Logging.getLogger(AttributeTypeInfoEditor.class);
@@ -71,7 +72,7 @@ class AttributeTypeInfoEditor extends Panel {
     private final ReorderableTablePanel<AttributeTypeInfo> table;
     private final Component parent;
 
-    public AttributeTypeInfoEditor(String id, IModel model, Component parent) {
+    public AttributeTypeInfoEditor(String id, IModel<?> model, Component parent) {
         super(id, model);
         this.parent = parent;
 
@@ -86,7 +87,7 @@ class AttributeTypeInfoEditor extends Panel {
         add(table);
     }
 
-    private static List<AttributeTypeInfo> getAttributes(IModel model, Component parent) {
+    private static List<AttributeTypeInfo> getAttributes(IModel<?> model, Component parent) {
         FeatureTypeInfo typeInfo = (FeatureTypeInfo) model.getObject();
         List<AttributeTypeInfo> attributes = typeInfo.getAttributes();
 
@@ -98,7 +99,7 @@ class AttributeTypeInfoEditor extends Panel {
         // attributes available, but could be old and lack the binding
         if (attributes.stream().anyMatch(a -> a.getBinding() == null)) {
             List<AttributeTypeInfo> nativeAttributes = loadNativeAttributes(typeInfo, parent);
-            Map<String, Class> bindings =
+            Map<String, Class<?>> bindings =
                     nativeAttributes.stream().collect(Collectors.toMap(a -> a.getName(), a -> a.getBinding()));
             for (AttributeTypeInfo at : attributes) {
                 if (at.getBinding() == null) {
@@ -156,6 +157,7 @@ class AttributeTypeInfoEditor extends Panel {
         @SuppressWarnings("unchecked")
         protected Component getComponentForProperty(
                 String id, IModel<AttributeTypeInfo> itemModel, Property<AttributeTypeInfo> property) {
+            @SuppressWarnings("rawtypes")
             IModel model = property.getModel(itemModel);
             if (property == NAME) {
                 Fragment f = new Fragment(id, "text", getParent());
@@ -165,7 +167,7 @@ class AttributeTypeInfoEditor extends Panel {
                 return f;
             } else if (property == BINDING) {
                 Fragment f = new Fragment(id, "type", getParent());
-                TextField<Class> type = new ClassTextField(id, model);
+                TextField<Class<?>> type = new ClassTextField(id, model);
                 f.add(type);
                 return f;
             } else if (property == SOURCE) {
@@ -177,7 +179,6 @@ class AttributeTypeInfoEditor extends Panel {
             } else if (property == DESCRIPTION) {
                 Fragment f = new Fragment(id, "description", getParent());
                 TextArea<String> source = new TextArea<>("description", model) {
-                    @SuppressWarnings("unchecked")
                     @Override
                     public <C> IConverter<C> getConverter(Class<C> type) {
                         return (IConverter<C>) new InternationalStringConverter();

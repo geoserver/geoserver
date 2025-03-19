@@ -37,6 +37,7 @@ import java.util.TreeSet;
  * @author Joe Walnes
  * @author J&ouml;rg Schaible
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class TreeSetConverter extends CollectionConverter {
     public TreeSetConverter(Mapper mapper) {
         super(mapper, TreeSet.class);
@@ -50,7 +51,6 @@ public class TreeSetConverter extends CollectionConverter {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
         Comparator unmarshalledComparator = TreeMapConverter.unmarshalComparator(mapper(), reader, context, null);
         boolean inFirstElement = unmarshalledComparator instanceof Mapper.Null;

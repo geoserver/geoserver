@@ -14,6 +14,7 @@ import org.geotools.util.Range;
 /**
  * Represents the parsed acceptable range. For elevation it's simple numbers, for dates it's a number of milliseconds.
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class AcceptableRange {
 
     /**
@@ -63,7 +64,6 @@ public class AcceptableRange {
         this.dataType = dataType;
     }
 
-    @SuppressWarnings("unchecked")
     public Range getSearchRange(Object value) {
         if (value instanceof Range) {
             Range range = (Range) value;

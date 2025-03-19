@@ -80,7 +80,7 @@ public abstract class SecurityNamedServicesTogglePanel<T extends SecurityNamedSe
         @Override
         protected void populateItem(final ListItem<T> item) {
             IModel<T> model = item.getModel();
-            AjaxLink toggle = buildToggleLink(item, model);
+            AjaxLink<?> toggle = buildToggleLink(item, model);
             toggle.add(new Label("name", new PropertyModel<>(model, "name")));
 
             boolean first = item.getIndex() == 0;

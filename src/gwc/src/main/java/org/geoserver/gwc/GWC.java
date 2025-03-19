@@ -1040,7 +1040,7 @@ public class GWC implements DisposableBean, InitializingBean, ApplicationContext
     }
 
     /** Method for checking if CQL_FILTER list and FILTER lists are equals */
-    private boolean checkFilter(List filter, List cqlFilter, Map<String, ParameterFilter> filters) {
+    private boolean checkFilter(List<Filter> filter, List<Filter> cqlFilter, Map<String, ParameterFilter> filters) {
         // Check if the two filters are equals and the FILTER parameter is not a ParameterFilter
         // Check is done only if the FILTER parameter is not present
         if (!filters.containsKey("FILTER")) {

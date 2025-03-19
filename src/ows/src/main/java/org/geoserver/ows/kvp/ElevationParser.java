@@ -56,7 +56,7 @@ public class ElevationParser {
      * @return A list of doubles, or an empty list of the {@code value} string is null or empty.
      * @throws ParseException if the string can not be parsed.
      */
-    @SuppressWarnings({"unchecked"})
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public Collection parse(String value) throws ParseException {
         if (value == null) {
             return Collections.emptyList();
@@ -143,7 +143,7 @@ public class ElevationParser {
         }
     }
 
-    public void checkMaxElevations(Set result, int maxValues) {
+    public void checkMaxElevations(@SuppressWarnings("rawtypes") Set result, int maxValues) {
         // limiting number of elements we can create
         if (maxValues > 0 && result.size() > maxValues) {
             throw new ServiceException(

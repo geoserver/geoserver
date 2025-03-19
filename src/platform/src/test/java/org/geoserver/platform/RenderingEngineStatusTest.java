@@ -11,7 +11,7 @@ import org.junit.Test;
 public class RenderingEngineStatusTest {
 
     @Test
-    public void RenderingEngineStatusTest() {
+    public void renderingEngineStatusTest() {
         RenderingEngineStatus res = new RenderingEngineStatus();
         assertTrue(res.getMessage().isPresent());
     }

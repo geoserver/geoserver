@@ -52,7 +52,7 @@ public class GenericUnWrapperTest {
         } catch (Exception expected) {
         }
         GenericUnWrapper.CONNECTION_METHODS.put(
-                WrapperConnection.class, WrapperConnection.class.getMethod("getUnderlyingConnection", null));
+                WrapperConnection.class, WrapperConnection.class.getMethod("getUnderlyingConnection"));
 
         assertTrue(unwrapper.canUnwrap(wrapper));
         assertSame(connection, unwrapper.unwrap(wrapper));
@@ -65,7 +65,7 @@ public class GenericUnWrapperTest {
         Connection wrapper = new WrapperConnection(connection);
 
         GenericUnWrapper.CONNECTION_METHODS.put(
-                WrapperConnection.class, WrapperConnection.class.getMethod("getUnderlyingConnection", null));
+                WrapperConnection.class, WrapperConnection.class.getMethod("getUnderlyingConnection"));
 
         UnWrapper uw = DataSourceFinder.getUnWrapper(wrapper);
         assertNotNull("registed and canUnwrap", uw);

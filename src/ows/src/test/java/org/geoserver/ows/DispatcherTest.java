@@ -92,7 +92,7 @@ public class DispatcherTest {
         req.httpRequest = request;
         dispatcher.init(req);
 
-        Map map = dispatcher.readOpContext(req);
+        Map<String, String> map = Dispatcher.readOpContext(req);
 
         Assert.assertEquals("hello", map.get("service"));
 
@@ -100,14 +100,14 @@ public class DispatcherTest {
         request.setContextPath("/geoserver");
         request.setRequestURI("/geoserver/foobar/hello");
         request.setMethod("get");
-        map = dispatcher.readOpContext(req);
+        map = Dispatcher.readOpContext(req);
         Assert.assertEquals("hello", map.get("service"));
 
         request = new MockHttpServletRequest();
         request.setContextPath("/geoserver");
         request.setRequestURI("/geoserver/foobar/hello/");
         request.setMethod("get");
-        map = dispatcher.readOpContext(req);
+        map = Dispatcher.readOpContext(req);
 
         Assert.assertEquals("hello", map.get("service"));
     }

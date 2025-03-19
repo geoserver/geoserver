@@ -9,6 +9,7 @@ import org.geoserver.catalog.CatalogVisitor;
 import org.geoserver.catalog.MetadataMap;
 import org.geoserver.catalog.NamespaceInfo;
 
+@SuppressWarnings("serial")
 public class NamespaceInfoImpl implements NamespaceInfo {
 
     protected String id;

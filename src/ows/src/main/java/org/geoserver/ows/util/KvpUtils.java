@@ -130,7 +130,7 @@ public class KvpUtils {
      *     in this class or one of its children
      * @return A list of typenames, made from the featureId filters.
      */
-    public static List getTypesFromFids(String rawFidList) {
+    public static List<String> getTypesFromFids(String rawFidList) {
         List<String> typeList = new ArrayList<>();
         List<List<String>> unparsed = readNested(rawFidList);
         Iterator<List<String>> i = unparsed.listIterator();
@@ -192,7 +192,7 @@ public class KvpUtils {
      * @return A list of the tokenized string.
      * @see #readFlat(String, org.geoserver.ows.util.KvpUtils.Tokenizer)
      */
-    public static List readFlat(String rawList, String delimiter) {
+    public static List<String> readFlat(String rawList, String delimiter) {
         Tokenizer delim;
         if (KEYWORD_DELIMITER.getRegExp().equals(delimiter)) {
             delim = KEYWORD_DELIMITER;
@@ -559,7 +559,7 @@ public class KvpUtils {
      * @param kvp map of key value pairs
      * @param key key used to lookup a single value
      */
-    public static String getSingleValue(Map kvp, String key) {
+    public static String getSingleValue(Map<String, ?> kvp, String key) {
         Object value = kvp.get(key);
         if (value == null) {
             return null;
@@ -745,13 +745,12 @@ public class KvpUtils {
         return sb.toString();
     }
 
-    public static String caseInsensitiveParam(Map params, String paramname, String defaultValue) {
+    public static String caseInsensitiveParam(Map<String, ?> params, String paramname, String defaultValue) {
         String value = defaultValue;
 
-        for (Object o : params.entrySet()) {
-            Map.Entry entry = (Map.Entry) o;
+        for (Map.Entry<String, ?> entry : params.entrySet()) {
             if (entry.getKey() instanceof String) {
-                if (paramname.equalsIgnoreCase((String) entry.getKey())) {
+                if (paramname.equalsIgnoreCase(entry.getKey())) {
                     Object obj = entry.getValue();
                     value = obj instanceof String
                             ? (String) obj
@@ -777,7 +776,7 @@ public class KvpUtils {
      * @param kvp map of key value pairs
      * @param param retrieve the first value for the parameter
      */
-    public static String firstValue(Map kvp, String param) {
+    public static String firstValue(Map<String, Object> kvp, String param) {
         Object o = kvp.get(param);
         if (o == null) {
             return null;

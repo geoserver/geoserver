@@ -10,6 +10,7 @@ import java.text.MessageFormat;
  * An exception suitable for translation in the Wicket UI, by providing a key and a set of parameters, as well as a
  * default message to be used for logging and the REST API.
  */
+@SuppressWarnings("serial")
 public class ValidationException extends RuntimeException {
 
     private final String key;

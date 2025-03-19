@@ -34,13 +34,13 @@ public class ReprojectingFeatureCollectionTest {
         DefaultFeatureCollection features = new DefaultFeatureCollection(null, b.getFeatureType());
         features.add(f);
 
-        try (FeatureIterator it = features.features()) {
+        try (FeatureIterator<SimpleFeature> it = features.features()) {
             assertEquals("bar", it.next().getUserData().get("foo"));
         }
 
         ReprojectingFeatureCollection reprojected =
                 new ReprojectingFeatureCollection(features, CRS.decode("EPSG:3005"));
-        try (FeatureIterator it = reprojected.features()) {
+        try (FeatureIterator<SimpleFeature> it = reprojected.features()) {
             assertEquals("bar", it.next().getUserData().get("foo"));
         }
     }

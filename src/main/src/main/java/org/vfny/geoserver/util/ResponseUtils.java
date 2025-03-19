@@ -89,7 +89,7 @@ public final class ResponseUtils {
         return content;
     }
 
-    public static List validate(InputSource xml, URL schemaURL, boolean skipTargetNamespaceException) {
+    public static List<SAXException> validate(InputSource xml, URL schemaURL, boolean skipTargetNamespaceException) {
         return validate(xml, schemaURL, skipTargetNamespaceException, null);
     }
 

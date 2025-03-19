@@ -183,6 +183,7 @@ import org.locationtech.jts.geom.Geometry;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+@SuppressWarnings("rawtypes")
 public class XStreamPersister {
 
     private static final String DEFAULT_LOCALE = "default";
@@ -2565,7 +2566,6 @@ public class XStreamPersister {
     class InternationalStringConverter extends AbstractReflectionConverter {
 
         @Override
-        @SuppressWarnings("unchecked")
         public boolean canConvert(Class aClass) {
             // REST config actually tries to de-serialize based on InternationalString only
             return InternationalString.class.isAssignableFrom(aClass);
@@ -2649,7 +2649,6 @@ public class XStreamPersister {
 
     class LayerGroupStyleConverter extends AbstractReflectionConverter {
         @Override
-        @SuppressWarnings("unchecked")
         public boolean canConvert(Class type) {
             return LayerGroupStyle.class.isAssignableFrom(type);
         }

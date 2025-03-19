@@ -44,6 +44,7 @@ import org.geotools.util.decorate.AbstractDecorator;
  *
  * @author Davide Savazzi - GeoSolutions
  */
+@SuppressWarnings("serial")
 public abstract class AbstractFilteredCatalog extends AbstractDecorator<Catalog> implements Catalog {
 
     public AbstractFilteredCatalog(Catalog catalog) {

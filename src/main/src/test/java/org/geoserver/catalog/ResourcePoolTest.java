@@ -334,7 +334,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
                 super(catalog);
                 dataStoreCache = new DataStoreCache() {
                     @Override
-                    protected void dispose(String name, DataAccess dataStore) {
+                    protected void dispose(String name, @SuppressWarnings("rawtypes") DataAccess dataStore) {
                         disposeCalled = true;
                         super.dispose(name, dataStore);
                     }
@@ -363,6 +363,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void testConfigureFeatureTypeCacheSize() {
         GeoServer gs = getGeoServer();
         GeoServerInfo global = gs.getGlobal();
@@ -524,7 +525,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         GridCoverage2D gc = null;
         try {
             // check that we maintain the native info if we don't have any
-            gc = (GridCoverage2D) reader.read(null);
+            gc = (GridCoverage2D) reader.read();
             assertEquals(-9999d, CoverageUtilities.getNoDataProperty(gc).getAsSingleValue(), 0d);
         } finally {
             if (gc != null) {
@@ -765,6 +766,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
         FeatureTypeInfo featureTypeInfo = cat.getFeatureTypeByName("Lines");
         featureTypeInfo.getAttributes().addAll(featureTypeInfo.attributes());
+        @SuppressWarnings("rawtypes")
         FeatureSource source = resourcePool.getFeatureSource(featureTypeInfo, null);
 
         assertTrue(source instanceof SimpleFeatureLocking);
@@ -897,11 +899,9 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetParamsFixesDatabaseFilePath() {
-        Catalog catalog = getCatalog();
-        ResourcePool pool = new ResourcePool(catalog);
         DataStoreInfo ds = getCatalog().getFactory().createDataStore();
         ds.getConnectionParameters().put("database", "file:data/test.gpkg");
-        Map newParams = pool.getParams(ds.getConnectionParameters(), getResourceLoader());
+        Map<String, Serializable> newParams = ResourcePool.getParams(ds.getConnectionParameters(), getResourceLoader());
         GeoServerDataDirectory dataDir = new GeoServerDataDirectory(getResourceLoader());
         String absolutePath = dataDir.get("data/test.gpkg").dir().getAbsolutePath();
         assertNotEquals(newParams.get("database"), "file:data/test.gpkg");
@@ -910,11 +910,9 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
 
     @Test
     public void testGetParamsFixesCSVFilePath() {
-        Catalog catalog = getCatalog();
-        ResourcePool pool = new ResourcePool(catalog);
         DataStoreInfo ds = getCatalog().getFactory().createDataStore();
         ds.getConnectionParameters().put("file", "file:data/locations.csv");
-        Map newParams = pool.getParams(ds.getConnectionParameters(), getResourceLoader());
+        Map<String, Serializable> newParams = ResourcePool.getParams(ds.getConnectionParameters(), getResourceLoader());
         GeoServerDataDirectory dataDir = new GeoServerDataDirectory(getResourceLoader());
         String absolutePath = dataDir.get("data/locations.csv").file().getAbsolutePath();
         assertNotEquals(newParams.get("file"), "file:locations.csv");
@@ -940,6 +938,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void testDefaultGeometry() throws IOException {
         FeatureTypeInfo featureType = getCatalog().getResourceByName("cdf", "Nulls", FeatureTypeInfo.class);
         GeometryDescriptor schemaDefaultGeometry = featureType.getFeatureType().getGeometryDescriptor();
@@ -1027,6 +1026,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void testGetDataStoreConcurrency() throws Exception {
         ResourcePool pool = null;
         List<ResourcePoolLatchedThread<DataStoreInfo, DataAccess>> threads = null;
@@ -1058,6 +1058,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    @SuppressWarnings("rawtypes")
     public void testNonBlockingThreadOnGetStore() throws Exception {
         // test that if a thread is accessing a store in the cache
         // and is blocked, other threads can retrieve other instances from the cache.
@@ -1292,7 +1293,7 @@ public class ResourcePoolTest extends GeoServerSystemTestSupport {
         return threads;
     }
 
-    private void killThreads(List threads) {
+    private void killThreads(@SuppressWarnings("rawtypes") List threads) {
         if (threads != null && !threads.isEmpty()) {
             for (Object thread : threads) {
                 if (thread instanceof Thread) {

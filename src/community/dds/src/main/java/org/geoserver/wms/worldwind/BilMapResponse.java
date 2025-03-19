@@ -14,6 +14,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.nio.ByteOrder;
 import java.util.HashMap;
 import java.util.List;
@@ -267,7 +268,7 @@ public final class BilMapResponse extends RenderedImageMapResponse {
         // Reading the coverage
         //
         // /////////////////////////////////////////////////////////
-        Map<Object, Object> parameters = new HashMap<Object, Object>();
+        Map<String, Serializable> parameters = new HashMap<>();
         parameters.put(
                 AbstractGridFormat.READ_GRIDGEOMETRY2D.getName().toString(),
                 new GridGeometry2D(new GeneralGridEnvelope(destinationSize), destinationEnvelopeInSourceCRS));

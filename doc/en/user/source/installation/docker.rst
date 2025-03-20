@@ -150,7 +150,7 @@ Here is a list of available extensions (taken from the `build server <https://bu
     charts       geopkg-output   mbstyle       printing         wps-download
     control-flow grib            mongodb       pyramid          wps-jdbc
     css          gwc-s3          monitor       querylayer       wps
-    csw          h2              mysql         sldservice       xslt
+    csw          h2              mysql         sldservice       
     db2                          netcdf-out    sqlserver        ysld
     dxf          importer        netcdf        vectortiles      
     excel        inspire         ogr-wfs       wcs2_0-eo

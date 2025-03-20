@@ -69,7 +69,6 @@ officially part of the GeoServer releases. They are however built along with the
    taskmanager/index
    vector-mosaic/index
    vsi/index
-   xslt/index
    web-service-auth/index
    webp/index
    wfs-freemarker/index

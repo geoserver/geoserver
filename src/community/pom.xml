@@ -149,7 +149,6 @@
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>
-        <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
@@ -384,12 +383,6 @@
       <id>oseo</id>
       <modules>
         <module>oseo</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>jdbc-metrics</id>
-      <modules>
-        <module>jdbc-metrics</module>
       </modules>
     </profile>
     <profile>

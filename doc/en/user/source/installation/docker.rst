@@ -164,7 +164,6 @@ Here is a list of available extensions (taken from the `build server <https://bu
     geopkg-output            ogr-wfs                  ysld                     
 
 
-
 Testing Geoserver Community modules
 -----------------------------------
 

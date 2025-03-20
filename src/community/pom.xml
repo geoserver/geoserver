@@ -171,7 +171,6 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
-        <module>xslt</module>
         <module>imagemap</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
@@ -547,12 +546,6 @@
       <id>proxy-base-ext</id>
       <modules>
         <module>proxy-base-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>xslt</id>
-      <modules>
-        <module>xslt</module>
       </modules>
     </profile>
     <profile>

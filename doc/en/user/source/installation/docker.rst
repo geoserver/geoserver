@@ -211,7 +211,6 @@ Working with a Nightly build is a good way to test community modules and provide
     gwc-sqlite                 ogcapi-tiles
     hz-cluster                 ogr-datastore
     importer-jdbc              opensearch-eo
-    jdbc-metrics
 
 
     

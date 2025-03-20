@@ -250,10 +250,6 @@ public class AclContainerIntegrationTest extends GeoServerSystemTestSupport {
         return wfsCaps;
     }
 
-    public void loginAsAdmin() {
-        login("admin", "geoserver", "ADMIN", "ROLE_ADMINISTRATOR");
-    }
-
     public void loginAsAnonymous() {
         login("anonymous", "", "ROLE_ANONYMOUS");
     }

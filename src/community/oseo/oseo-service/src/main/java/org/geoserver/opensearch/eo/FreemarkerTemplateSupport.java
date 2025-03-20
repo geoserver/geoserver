@@ -4,11 +4,12 @@
  */
 package org.geoserver.opensearch.eo;
 
+import static org.geoserver.template.GeoServerMemberAccessPolicy.FULL_ACCESS;
+
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import org.geoserver.catalog.WorkspaceInfo;
 import org.geoserver.ows.LocalWorkspace;
@@ -88,10 +89,9 @@ public class FreemarkerTemplateSupport {
 
     Configuration getTemplateConfiguration(Class<?> clazz) {
         return configurationCache.computeIfAbsent(clazz, k -> {
-            Configuration cfg = TemplateUtils.getSafeConfiguration();
-            cfg.setObjectWrapper(new FeatureWrapper(FC_FACTORY));
-            cfg.setDefaultEncoding(StandardCharsets.UTF_8.name());
-            return cfg;
+            Configuration templateConfig =
+                    TemplateUtils.getSafeConfiguration(new FeatureWrapper(FC_FACTORY), FULL_ACCESS, null);
+            return templateConfig;
         });
     }
 }

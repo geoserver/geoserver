@@ -195,3 +195,53 @@ Java system property:
 .. code-block:: console
 
    CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_REQUIRE_FILE=/mnt/server/geoserver_data/global.xml:/mnt/server/data"
+
+.. _datadir-loader:
+
+Data directory loader
+-------------------------------
+
+GeoServer includes a data directory loader that is designed to efficiently load configuration files, especially for deployments with large data directories. This loader is enabled by default.
+
+Benefits
+^^^^^^^^
+
+The data directory loader provides several advantages:
+
+* **Parallel Processing**: Both I/O calls and XML parsing of catalog and configuration files are parallelized
+* **Efficient Directory Traversal**: Makes a single pass over the ``workspaces`` directory tree, loading most catalog and configuration files in one pass
+* **Network Performance**: Particularly beneficial for deployments using network filesystems like NFS, which are typically slow when serving many small files
+
+Configuration
+^^^^^^^^^^^^^
+
+The data directory loader can be configured with the following environment variables or system properties:
+
+* ``GEOSERVER_DATA_DIR_LOADER_ENABLED``: Controls whether the data directory loader optimizations are used.
+   * ``true``: Default setting, used to enable data directory optimizations.
+   * ``false``: Used to disable the optimizations and fall back to the traditional loader used prior to GeoServer 2.27 release.
+
+* ``GEOSERVER_DATA_DIR_LOADER_THREADS``: Controls the number of threads used for loading and parsing
+   * By default, the loader uses a heuristic that selects the minimum between ``16`` and the number of available processors as reported by the JVM
+   * Set to a specific number to override this heuristic (e.g., ``8`` to use 8 threads)
+   * Values less than or equal to zero will produce a warning and fall back to the default heuristic
+
+Example usage with environment variables:
+
+.. code-block:: bash
+
+   # Disable the optimized loader
+   export GEOSERVER_DATA_DIR_LOADER_ENABLED=false
+
+   # Use 8 threads for loading
+   export GEOSERVER_DATA_DIR_LOADER_THREADS=8
+
+   # Start GeoServer
+   ./bin/startup.sh
+
+Example usage with system properties:
+
+.. code-block:: bash
+
+   # Start GeoServer with customized loader settings
+   CATALINA_OPTS="${CATALINA_OPTS} -DGEOSERVER_DATA_DIR_LOADER_ENABLED=true -DGEOSERVER_DATA_DIR_LOADER_THREADS=4"

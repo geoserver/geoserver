@@ -30,24 +30,78 @@ The general GeoServer upgrade process is as follows:
 Notes on upgrading specific versions
 ------------------------------------
 
+MapML Multi-Layer As Multi-Extent Configuration (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.28, the configuration option for MapML Multi-Layer as Multi-Extent has been moved from 
+the WMS Administration page to the Publishing tab of the Layer Group configuration. Backwards compatibility 
+with previously configured MapML implementations is maintained through the population of Layer Group metadata 
+if the option was previously enabled in the WMS Administration page. For more information, see :ref:`mapml_installation`.
+
+FreeMarker Template Method Access (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As of GeoServer 2.27, FreeMarker templates are now restricted from accessing methods related to
+certain sensitive classes to mitigate the impact of malicious templates. Most templates that can
+be modified by administrators will also be limited to only accessing getter methods. For more
+information about this, see :ref:`tutorials_getfeatureinfo_html_access`.
+
+The following is an example of the exception message seen when processing a
+template that previously worked but is blocked by the new restrictions:
+
+  ::
+
+    Caused by: freemarker.core.InvalidReferenceException: The following has evaluated to null or missing:
+    ==> features[0].type.catalog  [in template "content_en_US.ftl" at line 1, column 3]
+
 Content Security Policy (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As of GeoServer 2.27, the Content-Security-Policy HTTP response header will be enabled by default
-in order to mitigate cross-site scripting and clickjacking attacks. The default header value is
-intended to **block** the use of inline JavaScript in all HTML output except in cases where it is
-required (e.g., OpenLayers maps). It is possible that future work may further restrict the default
-policy.
+The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site
+scripting and clickjacking attacks. The default header value asks the browser **block** the use of inline
+JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).
+It is anticipated that future work may further restrict the default policy in the interests of safety.
 
-Most uers without any customized HTML output should not experience any issues. Users who need
-inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output should see
-:ref:`tutorials_getfeatureinfo_html_csp`. Users experiencing issues with static web files or custom
-classes/plugins generating HTML output may need to update their settings. For more information, see
-:ref:`production_config_csp`.
+* It is expected that the web administration console functions correctly, along with extensions and community modules.
 
-.. note::
-    It is recommended that static web files be disabled if they are not necessary in order to
-    mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+* If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
+  
+  * If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.
+  
+  * With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
+
+* Users who need inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of  :ref:`GEOSERVER_FEATUREINFO_HTML_SCRIPT <security_csp_featureinfo_html_script>` application property.
+
+* Users experiencing issues with static web files or custom classes/plugins generating HTML output may need to update their settings.
+
+  For more information, see :ref:`production_config_csp`.
+
+  .. note::
+     It is recommended that static web files be disabled if they are not necessary in order to
+     mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
+* GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
+
+Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Starting in GeoServer 2.27.0, the configuration loading process has been optimized for faster startup times, particularly for large catalogs and network filesystem deployments.
+
+With this enhancement, catalog and configuration loading is now up to 3× faster on local disks and up to 10× faster on network filesystems.
+
+Potential Considerations:
+"""""""""""""""""""""""""
+
+**Check Compatibility**: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.
+
+Configuration:
+""""""""""""""
+
+No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the
+`GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property. See the section :ref:`datadir-loader` for details.
+
+For a deeper dive into this enhancement, refer to the GeoServer Improvement Proposal `GSIP 231 <https://github.com/geoserver/geoserver/wiki/GSIP-231>`_.
+
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

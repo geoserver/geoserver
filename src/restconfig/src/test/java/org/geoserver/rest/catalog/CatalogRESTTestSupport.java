@@ -63,6 +63,6 @@ public abstract class CatalogRESTTestSupport extends GeoServerSystemTestSupport 
 
     @Before
     public void login() throws Exception {
-        login("admin", "geoserver", "ROLE_ADMINISTRATOR");
+        loginAsAdmin();
     }
 }

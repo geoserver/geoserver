@@ -183,6 +183,70 @@ certain functionality of custom HTML templates even with the ``UNSAFE`` property
     Allowing unsafe scripts could allow cross-site scripting attacks and should only be done if you
     can fully trust your template authors.
 
+.. _tutorials_getfeatureinfo_html_access:
+
+Accessing Instance Methods
+``````````````````````````
+
+Access to instance methods in FreeMarker templates is controlled by a block list, an allow list,
+and a boolean flag that restricts access to only getter methods.
+
+The block list contains a list of classes and packages and blocks access to a method if either the
+template object's class or the method's return type is in the block list. The default block list
+contains classes that are known to provided sensitive functionality and the
+``GEOSERVER_FREEMARKER_BLOCK_LIST`` system property can be set to block additional classes and
+packages. The default block list is:
+
+* ``java.io.InputStream``
+* ``java.io.OutputStream``
+* ``java.lang.Class``
+* ``java.lang.ClassLoader``
+* ``java.lang.reflect.InvocationHandler``
+* ``java.lang.reflect.``
+* ``java.security.``
+* ``org.geoserver.catalog.Catalog``
+* ``org.geoserver.platform.resource.ResourceStore``
+* ``org.geotools.api.data.DataAccess``
+* ``org.geotools.api.coverage.grid.GridCoverageReader``
+* ``org.geotools.api.coverage.grid.GridCoverageWriter``
+
+The allow list contains a list of classes and packages and allows access to a method if both the
+template object's class and the method's return type are either a primitive type (e.g., ``int``) or
+in the allow list. The default allow list allows access to JDK, GeoServer, GeoTools and JTS geometry
+classes and the ``GEOSERVER_FREEMARKER_ALLOW_LIST`` system property can be set to allow additional
+classes and packages. The default allow list is:
+
+* ``java.``
+* ``javax.xml.namespace.QName``
+* ``net.opengis.``
+* ``org.geoserver.``
+* ``org.geotools.``
+* ``org.locationtech.jts.geom.``
+
+.. note::
+    A class must be both in the allow list and not in the block list to be allowed and it is not
+    possible to use the system properties to allow a class that is in the default block list.
+
+The ``GEOSERVER_FREEMARKER_BLOCK_LIST`` and ``GEOSERVER_FREEMARKER_ALLOW_LIST`` properties allow a
+comma-separated list of class names and package name prefixes. For example, when specifying
+``-DGEOSERVER_FREEMARKER_BLOCK_LIST=org.geoserver.catalog.MetadataMap,org.geotools.api.util.``, the
+class ``org.geoserver.catalog.MetadataMap`` and all classes in the package ``org.geotools.api.util``
+will be blocked for use in templates.
+
+An additional security precaution, that is enabled by default, restricts access to only getter
+methods (e.g., ``getTitle``, ``isEnabled``). Templates should be accessing these as Java Bean
+properties (e.g., ``object.title``) rather than calling the method directly even though that is
+allowed. The ``GEOSERVER_FREEMARKER_API_EXPOSED`` system property can be set to ``true`` to allow
+access to all instance methods that pass the allow and block list checks. While the default allow
+and block lists should be sufficient to prevent malicious templates from causing any significant
+impact to GeoServer, this feature will help protect against future GeoServer enhancements exposing
+sensitive functionality to templates.
+
+.. note::
+    The MapML, OGC API and OpenSearch for EO extension and community modules require access to
+    non-getter methods in their FreeMarker templates for backwards-compatibility and are not
+    affected by that setting but the class restrictions apply to all templates.
+
 Accessing static methods
 ````````````````````````
 It is possible to call static methods and variables from within Freemarker templates to enable more sophisticated templates. 
@@ -219,5 +283,5 @@ In this case GeoServer exposes a ``statics`` variable you can use in templates t
 	</#list>
 	</ul>
 
-.. note::
+.. warning::
 	Unrestricted access as shown above is only recommended if you can fully trust your template authors.

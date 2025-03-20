@@ -29,6 +29,10 @@
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="geoserverlogfile"/>
         </Logger>
+        <Logger name="org.geoserver.config" level="CONFIG" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
         <Logger name="org.vfny.geoserver" level="CONFIG" additivity="false">
             <AppenderRef ref="stdout"/>
             <AppenderRef ref="geoserverlogfile"/>

@@ -172,18 +172,25 @@ public class CatalogImpl implements Catalog {
         }
 
         validate(store, true);
+        StoreInfo resolved = resolve(store);
+        beforeadded(resolved);
 
-        // TODO: remove synchronized block, need transactions
+        final boolean checkDefaultStore = store instanceof DataStoreInfo;
+        DataStoreInfo defaultDataStore = checkDefaultStore ? getDefaultDataStore(store.getWorkspace()) : null;
+
         StoreInfo added;
-        synchronized (facade) {
-            StoreInfo resolved = resolve(store);
-            beforeadded(resolved);
-            added = facade.add(resolved);
-
-            // if there is no default store use this one as the default
-            if (getDefaultDataStore(store.getWorkspace()) == null && store instanceof DataStoreInfo) {
-                setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
+        if (checkDefaultStore && defaultDataStore == null) {
+            // TODO: remove synchronized block, need transactions
+            synchronized (facade) {
+                added = facade.add(resolved);
+                // if there is no default store use this one as the default
+                if (getDefaultDataStore(store.getWorkspace()) == null) {
+                    setDefaultDataStore(store.getWorkspace(), (DataStoreInfo) store);
+                }
             }
+        } else {
+            // no need to synchronize
+            added = facade.add(resolved);
         }
         added(added);
     }
@@ -992,7 +999,7 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException("Layer group has different number of styles than layers");
         }
 
-        LayerGroupHelper helper = new LayerGroupHelper(layerGroup);
+        LayerGroupHelper helper = new LayerGroupHelper(this, layerGroup);
         Stack<LayerGroupInfo> loopPath = helper.checkLoops();
         if (loopPath != null) {
             throw new IllegalArgumentException("Layer group is in a loop: " + helper.getLoopAsString(loopPath));
@@ -1252,15 +1259,20 @@ public class CatalogImpl implements Catalog {
         validate(namespace, true);
 
         NamespaceInfo added;
-        synchronized (facade) {
-            final NamespaceInfo resolved = resolve(namespace);
-            beforeadded(namespace);
-            added = facade.add(resolved);
-            if (getDefaultNamespace() == null) {
-                setDefaultNamespace(resolved);
-            }
-        }
+        final NamespaceInfo resolved = resolve(namespace);
+        beforeadded(namespace);
 
+        NamespaceInfo defaultNamespace = getDefaultNamespace();
+        if (defaultNamespace == null) {
+            synchronized (facade) {
+                added = facade.add(resolved);
+                if (getDefaultNamespace() == null) {
+                    setDefaultNamespace(resolved);
+                }
+            }
+        } else {
+            added = facade.add(resolved);
+        }
         added(added);
     }
 
@@ -1382,16 +1394,21 @@ public class CatalogImpl implements Catalog {
             throw new IllegalArgumentException("Workspace with name '" + workspace.getName() + "' already exists.");
         }
 
-        WorkspaceInfo added;
-        synchronized (facade) {
-            beforeadded(workspace);
-            added = facade.add(workspace);
-            // if there is no default workspace use this one as the default
-            if (getDefaultWorkspace() == null) {
-                setDefaultWorkspace(workspace);
-            }
-        }
+        beforeadded(workspace);
 
+        WorkspaceInfo defaultWorkspace = getDefaultWorkspace();
+        WorkspaceInfo added;
+        if (defaultWorkspace == null) {
+            synchronized (facade) {
+                added = facade.add(workspace);
+                // if there is no default workspace use this one as the default
+                if (getDefaultWorkspace() == null) {
+                    setDefaultWorkspace(workspace);
+                }
+            }
+        } else {
+            added = facade.add(workspace);
+        }
         added(added);
     }
 

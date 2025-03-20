@@ -54,14 +54,23 @@ jobs:
     strategy:
       fail-fast: false  # Prevents other matrix jobs from being canceled if one fails
       matrix:
-        #suite: [ogcapi-features10, wcs10, wcs11, wfs10, wfs11, wms10, wms11, wms13]
-        suite: [ogcapi-features10, wms11, wms13, wfs10, wfs11, wfs20, wcs11, geotiff11]
-
+        suite: [ogcapi-features10, wms11, wms13, wmts10, wfs10, wfs11, wfs20, wcs11, geotiff11, gpkg12]
     steps:
       - name: Checkout repository (shallow clone)
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.8
 
       - name: Download geoserver.war artifact
         uses: actions/download-artifact@v4
@@ -103,6 +112,12 @@ jobs:
         if: always()
         working-directory: build/cite
         run: make print-full-failures
+
+      - name: Print GeoServer full version
+        if: always()
+        working-directory: build/cite
+        run: make geoserver-version
+
 
       - name: Print GeoServer logs
         if: always()

@@ -101,6 +101,12 @@ GeoServer Property Reference
      - x
      - x
      - x
+   * - org.geoserver.web.csp.strict
+       
+       :ref:`csp_strict`, default true.
+     - x
+     -
+     - 
    * - org.geoserver.catalog.loadingThreads
        
        Number of threads used to load catalogue (Default 4).
@@ -187,7 +193,7 @@ GeoServer Property Reference
      - x
    * - GEOSERVER_DISABLE_STATIC_WEB_FILES
        
-       :doc:`/tutorials/staticfiles`, default false
+       :ref:`production_config_static_files`, default false
      - x
      - x
      - x
@@ -199,7 +205,31 @@ GeoServer Property Reference
      - x
    * - GEOSERVER_FEATUREINFO_HTML_SCRIPT
        
-       :doc:`/tutorials/GetFeatureInfo/html`, default SELF
+       :ref:`security_csp_featureinfo_html_script`, default SELF
+     - x
+     - x
+     - x
+   * - GEOSERVER_FORCE_FREEMARKER_ESCAPING
+
+       :doc:`/production/config`, default true
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_ALLOW_LIST
+
+       :doc:`/tutorials/GetFeatureInfo/html`
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_BLOCK_LIST
+
+       :doc:`/tutorials/GetFeatureInfo/html`
+     - x
+     - x
+     - x
+   * - GEOSERVER_FREEMARKER_API_EXPOSED
+
+       :doc:`/tutorials/GetFeatureInfo/html`, default false
      - x
      - x
      - x
@@ -392,7 +422,9 @@ GeoServer Property Reference
      - x
      - x
      - x
-     
+
+.. _application_properties_setting:
+
 Setting Application property
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -23,6 +23,7 @@ public class RuleFilterBuilder {
 
     private Request owsRequest;
     private String ipAddress;
+    private String date;
     private String workspace;
     private String layer;
     private Authentication user;
@@ -53,6 +54,17 @@ public class RuleFilterBuilder {
      */
     public RuleFilterBuilder withIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
+        return this;
+    }
+
+    /**
+     * Set the date.
+     *
+     * @param date the date of the request in format yyyy-mm-dd
+     * @return this builder.
+     */
+    public RuleFilterBuilder withDate(String date) {
+        this.date = date;
         return this;
     }
 
@@ -132,6 +144,12 @@ public class RuleFilterBuilder {
         } else {
             LOGGER.log(Level.WARNING, "No source IP address found");
             ruleFilter.setSourceAddress(RuleFilter.SpecialFilterType.DEFAULT);
+        }
+        if (date != null) {
+            ruleFilter.setDate(date);
+        } else {
+            LOGGER.log(Level.WARNING, "No date found");
+            ruleFilter.setDate(RuleFilter.SpecialFilterType.DEFAULT);
         }
 
         LOGGER.log(Level.FINE, "ResourceInfo filter: {0}", ruleFilter);

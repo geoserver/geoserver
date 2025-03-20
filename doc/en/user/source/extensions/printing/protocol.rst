@@ -345,7 +345,7 @@ Support the TMS tile layout.
 
 Resources:
 
-* Quick intro to TMS requests: http://geowebcache.org/docs/current/services/tms.html
+* Quick intro to TMS requests: https://geowebcache.osgeo.org/docs/current/services/tms.html
 * TMS Spec (Not an Official Standard): http://wiki.osgeo.org/wiki/Tile_Map_Service_Specification
 
 Xyz

@@ -196,6 +196,26 @@ When the Bearer Token path is used, the opaque token is provided by the client g
 the authorization server on the `introspection endpoint <https://datatracker.ietf.org/doc/html/rfc7662#page-4>`_,
 which must be configured. The roles are again read from the userinfo endpoint.
 
+Authentication caching
+----------------------
+
+The OpenId connect support can make a lot of requests to the OIDC server.
+
+In a scenario where bearer encrypted tokens are used, in encrypted form, and with roles extraction from the userinfo endpoint,
+a WMS client sending tokens for each request will trigger the following requests to the OIDC server:
+
+* The bearer token is used against the ``token`` endpoint for username extraction
+
+* Then it’s used against the ``instrospection`` endpoint for validation (which also contains the exp attribute, see later)
+
+* It's finally used against the ``userinfo`` to extract the roles
+
+With clients performing many small tiled requests, the traffic to the OIDC server may becomes excessive.
+
+However, tokens have an ``exp`` attribute, a UNIX epoch indicating the token's expiry.
+The :guilabel:`cache authentication` setting makes GeoServer cache the authentication against that token
+until expiration to reduce traffic.
+
 SSL Trusted Certificates
 ------------------------
 

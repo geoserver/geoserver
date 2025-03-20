@@ -31,8 +31,11 @@ import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.geoserver.catalog.AttributeTypeInfo;
 import org.geoserver.catalog.Catalog;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerInfo;
+import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.data.test.TestData;
@@ -46,6 +49,7 @@ import org.geoserver.wfs.WFSInfo;
 import org.geotools.filter.v2_0.FES;
 import org.geotools.gml3.v3_2.GML;
 import org.geotools.wfs.v2_0.WFS;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -1654,5 +1658,95 @@ public class GetFeatureTest extends WFS20TestSupport {
         for (int i = 0; i < count; i++) {
             assertXpathEvaluatesTo(srs, "//iau:MarsPoi/iau:geom/gml:Point/@srsName", doc);
         }
+    }
+
+    @Test
+    public void testPostWithMisconfiguredTypeAndSkip() throws Exception {
+
+        addMisconfiguredType();
+
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS);
+        getGeoServer().save(global);
+
+        String xml = "<wfs:GetFeature "
+                + "service='WFS' "
+                + "version='2.0.0' "
+                + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
+                + "> "
+                + "<wfs:Query typeNames='cdf:Other'/>"
+                + "</wfs:GetFeature>";
+
+        Document doc = postAsDOM("wfs", xml);
+        assertGML32(doc);
+
+        NodeList features = doc.getElementsByTagName("cdf:Other");
+        assertNotEquals(0, features.getLength());
+
+        for (int i = 0; i < features.getLength(); i++) {
+            Element feature = (Element) features.item(i);
+            assertTrue(feature.hasAttribute("gml:id"));
+        }
+    }
+
+    @Test
+    public void testPostWithMisconfiguredTypeAndExceptionReport() throws Exception {
+
+        addMisconfiguredType();
+
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.OGC_EXCEPTION_REPORT);
+        getGeoServer().save(global);
+
+        String xml = "<wfs:GetFeature "
+                + "service='WFS' "
+                + "version='2.0.0' "
+                + "xmlns:cdf='http://www.opengis.net/cite/data' "
+                + "xmlns:wfs='http://www.opengis.net/wfs/2.0' "
+                + "> "
+                + "<wfs:Query typeNames='cdf:Other'/>"
+                + "</wfs:GetFeature>";
+
+        Document doc = postAsDOM("wfs", xml);
+
+        assertXpathEvaluatesTo("NoApplicableCode", "//ows:Exception/@exceptionCode", doc);
+    }
+
+    private void addMisconfiguredType() {
+        Catalog catalog = getCatalog();
+
+        DataStoreInfo misconfiguredTypeDataStore = catalog.getFactory().createDataStore();
+        misconfiguredTypeDataStore.setName("misconfigured_type_store");
+        misconfiguredTypeDataStore.setEnabled(true);
+        catalog.add(misconfiguredTypeDataStore);
+
+        FeatureTypeInfo misconfiguredType = catalog.getFactory().createFeatureType();
+        misconfiguredType.setName("misconfigured_type");
+        misconfiguredType.setEnabled(true);
+        misconfiguredType.setStore(misconfiguredTypeDataStore);
+        catalog.add(misconfiguredType);
+    }
+
+    @After
+    public void deleteMisconfiguredType() {
+        Catalog catalog = getCatalog();
+
+        FeatureTypeInfo misconfiguredType = catalog.getFeatureTypeByName("misconfigured_type");
+        if (misconfiguredType != null) {
+            catalog.remove(misconfiguredType);
+        }
+
+        DataStoreInfo misconfiguredTypeDataStore = catalog.getDataStoreByName("misconfigured_type_store");
+        if (misconfiguredTypeDataStore != null) {
+            catalog.remove(misconfiguredTypeDataStore);
+        }
+    }
+
+    @After
+    public void resetResourceErrorHandling() {
+        GeoServerInfo global = getGeoServer().getGlobal();
+        global.setResourceErrorHandling(ResourceErrorHandling.OGC_EXCEPTION_REPORT);
+        getGeoServer().save(global);
     }
 }

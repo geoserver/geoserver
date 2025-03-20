@@ -411,7 +411,7 @@
         </dependency>
         <dependency>
           <groupId>com.oracle.database.jdbc</groupId>
-          <artifactId>ojdbc8</artifactId>
+          <artifactId>ojdbc11</artifactId>
         </dependency>
       </dependencies>
     </profile>
@@ -606,11 +606,6 @@
     </profile>
     <profile>
       <id>monitor-hibernate</id>
-      <activation>
-        <property>
-          <name>monitoring</name>
-        </property>
-      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
@@ -621,11 +616,6 @@
     </profile>
     <profile>
       <id>monitor-kafka</id>
-      <activation>
-        <property>
-          <name>monitoring</name>
-        </property>
-      </activation>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
@@ -635,10 +625,20 @@
       </dependencies>
     </profile>
     <profile>
-      <id>ogr</id>
+      <id>monitor-micrometer</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.community</groupId>
+          <artifactId>gs-monitor-micrometer</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>ogr</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ogr-wfs</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -648,7 +648,7 @@
       <id>ogr-wps</id>
       <dependencies>
         <dependency>
-          <groupId>org.geoserver.community</groupId>
+          <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-ogr-wps</artifactId>
           <version>${project.version}</version>
         </dependency>
@@ -1066,12 +1066,43 @@
       </dependencies>
     </profile>
     <profile>
-      <id>geofence-server</id>
+      <id>geofence-server-h2</id>
       <dependencies>
         <dependency>
           <groupId>org.geoserver.extension</groupId>
           <artifactId>gs-geofence-server</artifactId>
           <version>${project.version}</version>
+        </dependency>
+        <!-- Older versions of h2 fail in drop/create tables   -->
+        <!-- This version may break netcdf/grib modules        -->
+        <dependency>
+          <groupId>com.h2database</groupId>
+          <artifactId>h2</artifactId>
+          <version>2.3.232</version>
+        </dependency>
+        <dependency>
+          <groupId>org.opengeo</groupId>
+          <artifactId>geodb</artifactId>
+          <version>${opengeo-geodb.version}</version>
+        </dependency>
+      </dependencies>
+    </profile>
+    <profile>
+      <id>geofence-server-postgres</id>
+      <dependencies>
+        <dependency>
+          <groupId>org.geoserver.extension</groupId>
+          <artifactId>gs-geofence-server</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>org.postgresql</groupId>
+          <artifactId>postgresql</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>org.postgis</groupId>
+          <artifactId>postgis-jdbc</artifactId>
+          <version>${postgis.jdbc.version}</version>
         </dependency>
       </dependencies>
     </profile>
@@ -1888,16 +1919,6 @@
         <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-iau-wkt</artifactId>
-        </dependency>
-      </dependencies>
-    </profile>
-    <profile>
-      <id>datadir-catalog-loader</id>
-      <dependencies>
-        <dependency>
-          <groupId>org.geoserver.community</groupId>
-          <artifactId>gs-datadir-catalog-loader</artifactId>
-          <version>${gs.version}</version>
         </dependency>
       </dependencies>
     </profile>

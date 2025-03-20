@@ -60,6 +60,7 @@ import org.geotools.referencing.operation.transform.AffineTransform2D;
 import org.geotools.util.NumberRange;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.math.DD;
 import org.vfny.geoserver.wcs.WcsException;
@@ -130,6 +131,46 @@ public class WCSUtils {
         final ParameterValueGroup param = PROCESSOR.getOperation("CoverageCrop").getParameters();
         param.parameter("Source").setValue(coverage);
         param.parameter("Envelope").setValue(bounds);
+        param.parameter("ROI").setValue(roi);
+
+        return (GridCoverage2D) PROCESSOR.doOperation(param);
+    }
+
+    /**
+     * Crops the coverage to the specific crop geometry, which is supposed to be in the same CRS as the coverage itself.
+     *
+     * @param coverage The coverage to be cropped
+     * @param crop The geometry to crop to (must be in the same CRS as the coverage, and either a Polygon or a
+     *     MultiPolygon)
+     */
+    public static GridCoverage2D crop(final GridCoverage2D coverage, final Geometry crop) {
+        // checks
+        final ReferencedEnvelope cropBounds =
+                new ReferencedEnvelope(crop.getEnvelopeInternal(), coverage.getCoordinateReferenceSystem2D());
+        final ReferencedEnvelope coverageBounds = new ReferencedEnvelope(coverage.getEnvelope());
+        if (cropBounds.contains((org.locationtech.jts.geom.Envelope) coverageBounds)) {
+            return coverage;
+        }
+
+        // if the intersection is so small that we'll end up reading nothing, return null
+        // instead of failing at the JAI level
+        ReferencedEnvelope intersection = cropBounds.intersection(coverageBounds);
+        if (getEnvelopeInRasterSpace(intersection, coverage.getGridGeometry()).isEmpty()) return null;
+
+        Geometry roi;
+        if (crop instanceof Polygon) {
+            Polygon polygon = (Polygon) crop;
+            roi = polygon.getFactory().createMultiPolygon(new Polygon[] {polygon});
+        } else if (crop instanceof MultiPolygon) {
+            roi = crop;
+        } else {
+            throw new IllegalArgumentException("Unsupported geometry type: " + crop.getClass());
+        }
+
+        // perform the crops
+        final ParameterValueGroup param = PROCESSOR.getOperation("CoverageCrop").getParameters();
+        param.parameter("Source").setValue(coverage);
+        param.parameter("Envelope").setValue(cropBounds);
         param.parameter("ROI").setValue(roi);
 
         return (GridCoverage2D) PROCESSOR.doOperation(param);

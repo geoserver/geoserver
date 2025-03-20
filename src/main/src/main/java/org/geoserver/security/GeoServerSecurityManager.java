@@ -191,9 +191,11 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
 
     private static final Version VERSION_2_5 = new Version("2.5");
 
+    private static final Version VERSION_2_6 = new Version("2.6");
+
     private static final Version BASE_VERSION = VERSION_2_1;
 
-    private static final Version CURR_VERSION = VERSION_2_5;
+    private static final Version CURR_VERSION = VERSION_2_6;
 
     private static final String VERSION = "version";
 
@@ -400,6 +402,9 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             if (securityVersion.compareTo(VERSION_2_5) < 0) {
                 migrateFrom24();
             }
+            if (securityVersion.compareTo(VERSION_2_6) < 0) {
+                migrateFrom25();
+            }
             if (securityVersion.compareTo(CURR_VERSION) < 0) {
                 writeCurrentVersion();
             }
@@ -455,6 +460,21 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
         try (OutputStream os = properties.out()) {
             p.store(os, "Current version of the security directory. Do not remove or alter this file");
         }
+    }
+
+    void migrateFrom25() throws Exception {
+        // the REST request chain patterns through the version 2.5 security configuration, did not cover all valid paths
+        // to access to root REST endpoint. This iterates over each request chain and, if its patterns match the old
+        // REST patterns, updates the chain to the new REST patterns.
+        SecurityManagerConfig config = loadSecurityConfig();
+        for (RequestFilterChain chain : config.getFilterChain().getRequestChains()) {
+            if (GeoServerSecurityFilterChain.REST_CHAIN_2_5.equals(chain.getPatterns())) {
+                chain.setPatterns(new ArrayList<>(List.of(GeoServerSecurityFilterChain.REST_CHAIN.split(","))));
+            } else if (GeoServerSecurityFilterChain.GWC_REST_CHAIN_2_5.equals(chain.getPatterns())) {
+                chain.setPatterns(new ArrayList<>(List.of(GeoServerSecurityFilterChain.GWC_REST_CHAIN.split(","))));
+            }
+        }
+        saveSecurityConfig(config);
     }
 
     void migrateFrom24() throws SecurityConfigException, IOException {
@@ -2171,7 +2191,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             bfConfig.setClassName(GeoServerExceptionTranslationFilter.class.getName());
             bfConfig.setName(filterName);
             bfConfig.setAuthenticationFilterName(null);
-            bfConfig.setAccessDeniedErrorPage("/accessDenied.jsp");
+            bfConfig.setAccessDeniedErrorPage("/accessDenied.html");
             saveFilter(bfConfig);
         }
         filterName = GeoServerSecurityFilterChain.GUI_EXCEPTION_TRANSLATION_FILTER;
@@ -2181,7 +2201,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
             bfConfig.setClassName(GeoServerExceptionTranslationFilter.class.getName());
             bfConfig.setName(filterName);
             bfConfig.setAuthenticationFilterName(GeoServerSecurityFilterChain.FORM_LOGIN_FILTER);
-            bfConfig.setAccessDeniedErrorPage("/accessDenied.jsp");
+            bfConfig.setAccessDeniedErrorPage("/accessDenied.html");
             saveFilter(bfConfig);
         }
 
@@ -2462,7 +2482,7 @@ public class GeoServerSecurityManager implements ApplicationContextAware, Applic
     }
 
     /**
-     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage does not exist and
+     * Remove erroneous access denied page (HTTP) 403 (see GEOS-4943) The page /accessDeniedPage.jsp does not exist and
      * would not work if it exists.
      */
     void removeErroneousAccessDeniedPage() throws Exception {

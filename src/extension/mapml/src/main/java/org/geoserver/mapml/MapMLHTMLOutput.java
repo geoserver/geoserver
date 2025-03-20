@@ -112,7 +112,7 @@ public class MapMLHTMLOutput {
                 .append("</title>\n")
                 .append("<meta charset='utf-8'>\n")
                 .append("<script type=\"module\"  src=\"")
-                .append(buildViewerPath(request))
+                .append(buildViewerPath(request, "viewer/widget/mapml.js"))
                 .append("\"></script>\n")
                 .append("<style>\n")
                 .append("html, body { height: 100%; }\n")
@@ -148,21 +148,25 @@ public class MapMLHTMLOutput {
                 .append("src=\"")
                 .append(sourceUrL)
                 .append("\" checked></map-layer>\n")
-                .append("</mapml-viewer>\n")
-                .append("</body>\n")
-                .append("</html>");
+                .append("</mapml-viewer>\n");
+        appendProjectionText(projType, sb);
+        sb.append("</body>\n").append("</html>");
         return sb.toString();
     }
 
     private void appendProjectionScript(MapMLProjection projType, StringBuilder sb) {
         if (!projType.isBuiltIn()) {
-            sb.append("<script type=\"module\">\n")
-                    .append("let customProjectionDefinition = `\n")
-                    .append(buildDefinition(projType.getTiledCRS(), 10))
-                    .append("let map = document.querySelector(\"mapml-viewer\");\n")
-                    .append("let cProjection = map.defineCustomProjection(customProjectionDefinition);\n")
-                    .append("map.projection = cProjection;\n")
-                    .append("</script>");
+            sb.append("<script type=\"module\" src=\"")
+                    .append(buildViewerPath(request, "js/custom-projection.js"))
+                    .append("\"></script>\n");
+        }
+    }
+
+    private void appendProjectionText(MapMLProjection projType, StringBuilder sb) {
+        if (!projType.isBuiltIn()) {
+            sb.append("<textarea id=\"customProjection\" style=\"display: none;\">\n")
+                    .append(escapeHtml4(buildDefinition(projType.getTiledCRS(), 10)))
+                    .append("</textarea>");
         }
     }
 
@@ -220,13 +224,13 @@ public class MapMLHTMLOutput {
                 .append("\"proj4string\" : \"")
                 .append(projString)
                 .append("\"\n")
-                .append("}`;\n");
+                .append("}\n");
         return sb.toString();
     }
 
-    private String buildViewerPath(HttpServletRequest request) {
+    private String buildViewerPath(HttpServletRequest request, String path) {
         String base = ResponseUtils.baseURL(request);
-        return ResponseUtils.buildURL(base, "/mapml/viewer/widget/mapml.js", null, URLMangler.URLType.RESOURCE);
+        return ResponseUtils.buildURL(base, "/mapml/" + path, null, URLMangler.URLType.RESOURCE);
     }
 
     private int computeZoom(MapMLProjection projType, ReferencedEnvelope projectedBbox) {

@@ -173,6 +173,7 @@
         <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
+        <module>monitor-micrometer</module>
         <module>graticule</module>
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
@@ -424,6 +425,12 @@
       <id>monitor-kafka</id>
       <modules>
         <module>monitor-kafka</module>
+      </modules>
+    </profile>
+    <profile>
+      <id>monitor-micrometer</id>
+      <modules>
+        <module>monitor-micrometer</module>
       </modules>
     </profile>
     <profile>

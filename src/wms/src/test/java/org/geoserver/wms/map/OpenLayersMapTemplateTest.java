@@ -5,12 +5,9 @@
  */
 package org.geoserver.wms.map;
 
-import static org.geoserver.template.TemplateUtils.FM_VERSION;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import freemarker.ext.beans.BeansWrapper;
-import freemarker.template.Configuration;
 import freemarker.template.Template;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,7 +19,6 @@ import java.util.Map;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import org.geoserver.data.test.MockData;
-import org.geoserver.template.TemplateUtils;
 import org.geoserver.wms.GetMapRequest;
 import org.geoserver.wms.WMSMapContent;
 import org.geoserver.wms.WMSTestSupport;
@@ -34,11 +30,7 @@ public class OpenLayersMapTemplateTest extends WMSTestSupport {
 
     @Test
     public void test() throws Exception {
-        Configuration cfg = TemplateUtils.getSafeConfiguration();
-        cfg.setClassForTemplateLoading(OpenLayersMapOutputFormat.class, "");
-        cfg.setObjectWrapper(new BeansWrapper(FM_VERSION));
-
-        Template template = cfg.getTemplate("OpenLayers2MapTemplate.ftl");
+        Template template = AbstractOpenLayersMapOutputFormat.templateConfig.getTemplate("OpenLayers2MapTemplate.ftl");
         assertNotNull(template);
 
         GetMapRequest request = createGetMapRequest(MockData.BASIC_POLYGONS);

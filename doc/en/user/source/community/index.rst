@@ -51,6 +51,7 @@ officially part of the GeoServer releases. They are however built along with the
    libdeflate/index
    mbtiles/index
    monitor-kafka/index
+   monitor-micrometer/index
    ncwms/index
    netcdf-ghrsst/index
    notification/index
@@ -73,4 +74,3 @@ officially part of the GeoServer releases. They are however built along with the
    webp/index
    wfs-freemarker/index
    wps-longitudinal-profile/index
-   datadir-catalog-loader/index

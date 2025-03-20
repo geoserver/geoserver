@@ -77,6 +77,7 @@ public class GSModalWindow extends Panel {
         if (this.unloadConfirmation) {
             target.prependJavaScript("\n  $(window).off('beforeunload', GSModalWindow.onbeforeunload);");
         }
+
         if (this.windowClosedCallback != null) {
             this.windowClosedCallback.onClose(target);
         }
@@ -126,12 +127,13 @@ public class GSModalWindow extends Panel {
     public void show(AjaxRequestTarget target) {
         this.delegate.open(target);
         StringBuilder script = new StringBuilder();
-        script.append("\n  $('.w_content_container').css('height', '");
+        script.append("\n  $('.wicket-modal').css('height', '");
         script.append(this.initialHeight);
         script.append("px');");
         script.append("\n  $('.wicket-modal').css('width', '");
         script.append(this.initialWidth);
         script.append("px');");
+        script.append("\n  GSModalWindow.initialize();");
         script.append("\n  GSModalWindow.center();");
         if (this.unloadConfirmation) {
             script.append("\n  $(window).on('beforeunload', GSModalWindow.onbeforeunload);");

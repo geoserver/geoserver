@@ -52,7 +52,7 @@ Change the path inside ``<param-value>`` to the desired cache path (such as :fil
 GeoWebCache with multiple GeoServer instances
 ---------------------------------------------
 
-For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances. If you want to configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the `standalone GeoWebCache <http://geowebcache.org>`_.
+For stability reasons, it is not recommended to use the embedded GeoWebCache with multiple GeoServer instances. If you want to configure GeoWebCache as a front-end for multiple instances of GeoServer, we recommend using the `standalone GeoWebCache <https://geowebcache.osgeo.org>`_.
 
 .. _gwc_data_security:
 

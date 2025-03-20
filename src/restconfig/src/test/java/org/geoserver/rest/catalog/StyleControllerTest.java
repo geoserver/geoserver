@@ -1139,36 +1139,43 @@ public class StyleControllerTest extends CatalogRESTTestSupport {
 
     @Test
     public void testPostToWorkspaceSLDPackage() throws Exception {
-        File tempDir = new File(System.getProperty("java.io.tmpdir"));
-        int initialSize = tempDir.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
+        File testTemp = new File("./target/sld-temp");
+        testTemp.mkdirs();
+        StyleController.TEMP_DIR_ROOT = testTemp.toPath();
 
-        Catalog cat = getCatalog();
-        assertNull(cat.getStyleByName("gs", "foo"));
+        try {
+            Catalog cat = getCatalog();
+            assertNull(cat.getStyleByName("gs", "foo"));
 
-        URL zip = getClass().getResource("test-data/foo.zip");
-        byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
+            URL zip = getClass().getResource("test-data/foo.zip");
+            byte[] bytes = FileUtils.readFileToByteArray(URLs.urlToFile(zip));
+            int initialSize = testTemp.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
 
-        MockHttpServletResponse response =
-                postAsServletResponse(RestBaseController.ROOT_PATH + "/workspaces/gs/styles", bytes, "application/zip");
-        assertEquals(201, response.getStatus());
-        assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
-        assertNotNull(cat.getStyleByName("gs", "foo"));
-        assertNotNull(cat.getStyleByName("gs", "foo").getDateCreated());
+            MockHttpServletResponse response = postAsServletResponse(
+                    RestBaseController.ROOT_PATH + "/workspaces/gs/styles", bytes, "application/zip");
+            assertEquals(201, response.getStatus());
+            assertEquals(MediaType.TEXT_PLAIN_VALUE, response.getContentType());
+            assertNotNull(cat.getStyleByName("gs", "foo"));
+            assertNotNull(cat.getStyleByName("gs", "foo").getDateCreated());
 
-        Document d = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo.sld");
+            Document d = getAsDOM(RestBaseController.ROOT_PATH + "/workspaces/gs/styles/foo.sld");
 
-        assertEquals("StyledLayerDescriptor", d.getDocumentElement().getNodeName());
-        XpathEngine engine = XMLUnit.newXpathEngine();
-        NodeList list = engine.getMatchingNodes(
-                "//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource",
-                d);
-        assertEquals(1, list.getLength());
-        Element onlineResource = (Element) list.item(0);
-        assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
-        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
-        assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
-        int finalSize = tempDir.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
-        assertEquals(initialSize, finalSize);
+            assertEquals("StyledLayerDescriptor", d.getDocumentElement().getNodeName());
+            XpathEngine engine = XMLUnit.newXpathEngine();
+            NodeList list = engine.getMatchingNodes(
+                    "//sld:StyledLayerDescriptor/sld:NamedLayer/sld:UserStyle/sld:FeatureTypeStyle/sld:Rule/sld:PointSymbolizer/sld:Graphic/sld:ExternalGraphic/sld:OnlineResource",
+                    d);
+            assertEquals(1, list.getLength());
+            Element onlineResource = (Element) list.item(0);
+            assertEquals("gear.png", onlineResource.getAttribute("xlink:href"));
+            assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/gear.png"));
+            assertNotNull(getCatalog().getResourceLoader().find("workspaces/gs/styles/foo.sld"));
+            int finalSize = testTemp.listFiles(f -> f.getName().startsWith(SLD_TEMP_PREFIX)).length;
+            assertEquals(initialSize, finalSize);
+        } finally {
+            // reset to system default
+            StyleController.TEMP_DIR_ROOT = null;
+        }
     }
 
     @Test

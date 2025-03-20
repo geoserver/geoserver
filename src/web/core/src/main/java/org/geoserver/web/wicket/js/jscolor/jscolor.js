@@ -74,9 +74,13 @@ var jscolor = {
 			if(!e[i].color && e[i].className && (m = e[i].className.match(matchClass))) {
 				var prop = {}
 				if(m[3]) {
-					try {
-						eval('prop='+m[3])
-					} catch(eInvalidProp) {}
+                    // Start GEOS-11669 Changes
+                    // Original Code:
+					// try {
+					// 	eval('prop='+m[3])
+					// } catch(eInvalidProp) {}
+                    prop = JSON.parse(m[3]);
+                    // End GEOS-11669 Changes
 				}
 				e[i].color = new jscolor.color(e[i], prop)
 			}

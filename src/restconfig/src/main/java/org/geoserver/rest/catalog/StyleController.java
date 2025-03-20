@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -79,6 +80,12 @@ public class StyleController extends AbstractCatalogController {
 
     private static final Logger LOGGER = Logging.getLogger(StyleController.class);
     static final String SLD_TEMP_PREFIX = "_sld";
+    /**
+     * Used by tests to store the controller temporary files (to avoid issues with concurrent builds all changing the
+     * contents of the temp directory), defaults to <code>null</code>, in that case it's going to use the temporary
+     * directory provided by the system.
+     */
+    static Path TEMP_DIR_ROOT = null;
 
     @Autowired
     public StyleController(@Qualifier("catalog") Catalog catalog) {
@@ -572,7 +579,10 @@ public class StyleController extends AbstractCatalogController {
      * @throws IOException if there was an error extracting the archive
      */
     private File unzipSldPackage(InputStream object) throws IOException {
-        File tempDir = Files.createTempDirectory(SLD_TEMP_PREFIX).toFile();
+        File tempDir;
+        if (TEMP_DIR_ROOT == null)
+            tempDir = Files.createTempDirectory(SLD_TEMP_PREFIX).toFile();
+        else tempDir = Files.createTempDirectory(TEMP_DIR_ROOT, SLD_TEMP_PREFIX).toFile();
 
         org.geoserver.util.IOUtils.decompress(object, tempDir);
 

@@ -11,11 +11,6 @@ GeoServer documentation is released using [Creative Commons Attribution 4.0 Inte
 
 The documentation is written with [sphinx-build](https://www.sphinx-doc.org/en/master/), which is a Python documentation generator.
 
-Install Python (macOS example):
-```
-brew install python
-```
-
 To install ``sphinx-build`` and ``sphinx-autobuild`` using ``requirements.txt``:
 ```
 pip3 install -r requirements.txt

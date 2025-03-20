@@ -1715,6 +1715,57 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
     }
 
     @Test
+    public void testWmtsGetCapabilitiesVersionNegotiationSuccesful() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMTSInfo wmts = gs.getService(WMTSInfo.class);
+        wmts.setCiteCompliant(true);
+        gs.save(wmts);
+
+        try {
+            // getting the capabilities document
+            MockHttpServletResponse response = getAsServletResponse(
+                    "/gwc/service/wmts?service=WMTS&request=GetCapabilities&acceptVersions=2.0.0,1.5.0,1.0.0");
+            // check that the request was successful
+            // assertThat(response.getStatus(), is(200));
+            // parse XML response content
+            Document document = dom(response, false);
+
+            // negotiation succesfull, we should get the 1.0.0 version
+            assertEquals("1.0.0", WMTS_XPATH_10.evaluate("//wmts:Capabilities/@version", document));
+        } finally {
+            wmts.setCiteCompliant(false);
+            gs.save(wmts);
+        }
+    }
+
+    @Test
+    public void testWmtsGetCapabilitiesVersionNegotiationFail() throws Exception {
+        GeoServer gs = getGeoServer();
+        WMTSInfo wmts = gs.getService(WMTSInfo.class);
+        wmts.setCiteCompliant(true);
+        gs.save(wmts);
+
+        try {
+            // getting the capabilities document
+            MockHttpServletResponse response = getAsServletResponse(
+                    "/gwc/service/wmts?service=WMTS&request=GetCapabilities&acceptVersions=2.0.0,1.5.0");
+            // check that the request was successful
+            assertThat(response.getStatus(), is(400));
+            // parse XML response content
+            Document document = dom(response, false);
+            print(document);
+
+            // negotiation failed, and reported as such
+            assertEquals(
+                    "VersionNegotiationFailed",
+                    WMTS_XPATH_10.evaluate("/ows:ExceptionReport/ows:Exception/@exceptionCode", document));
+        } finally {
+            wmts.setCiteCompliant(false);
+            gs.save(wmts);
+        }
+    }
+
+    @Test
     public void testGetCapabilitiesRequestRestEndpoints() throws Exception {
 
         int totLayers = getCatalog().getLayers().size() + 1; // one cached layer group
@@ -1795,7 +1846,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
 
         // check legend backlink and that it has the workspace specification
         assertEquals(
-                "http://localhost:8080/geoserver/cite/ows?service=WMS&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=cite%3ABasicPolygons",
+                "http://localhost:8080/geoserver/cite/ows?service=WMS&request=GetLegendGraphic&version=1.1.0&format=image%2Fpng&width=20&height=20&layer=cite%3ABasicPolygons",
                 WMTS_XPATH_10.evaluate(
                         "//wmts:Contents/wmts:Layer[ows:Title='BasicPolygons']/wmts:Style/wmts:LegendURL/@xlink:href",
                         doc));

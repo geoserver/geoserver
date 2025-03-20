@@ -67,6 +67,9 @@ public class ImportProcessTest extends WPSTestSupport {
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings4");
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings5");
         removeLayer(SystemTestData.CITE_PREFIX, "Buildings6");
+        removeLayer(SystemTestData.CITE_PREFIX, "Buildings7");
+        removeLayer(SystemTestData.CITE_PREFIX, "Buildings8");
+        removeLayer(SystemTestData.CITE_PREFIX, "BuildingsCancelled");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "data");
         removeStore(SystemTestData.CITE_PREFIX, SystemTestData.CITE_PREFIX + "raster");
         removeStore(SystemTestData.IAU_PREFIX, SystemTestData.IAU_PREFIX + "marsCoverageStore");
@@ -166,7 +169,7 @@ public class ImportProcessTest extends WPSTestSupport {
                             null,
                             SystemTestData.CITE_PREFIX,
                             SystemTestData.CITE_PREFIX,
-                            "Buildings2",
+                            "BuildingsCancelled",
                             null,
                             null,
                             null,

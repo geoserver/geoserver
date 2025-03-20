@@ -158,7 +158,7 @@ public class MapMLStyleVisitorTest extends MapMLTestSupport {
                 .getAsMapML();
         assertEquals(
                 "The polygon features are represented as is because line sybolizers can paint a polygon too",
-                "class org.geoserver.mapml.xml.MultiPolygon",
+                "class org.geoserver.mapml.xml.Polygon",
                 mapmlFeatures
                         .getBody()
                         .getFeatures()

@@ -70,6 +70,12 @@ public abstract class GeoServerSecurityFilter extends AbstractGeoServerSecurityS
         return authenticateFromCache(filter, request, false);
     }
 
+    /**
+     * Tries to authenticate from cache if a key can be derived and the {@link Authentication} object is not in the
+     * cache, the key will be returned.
+     *
+     * <p>A not <code>null</code> return value indicates a missing cache entry
+     */
     protected String authenticateFromCache(
             AuthenticationCachingFilter filter, HttpServletRequest request, boolean force) {
 

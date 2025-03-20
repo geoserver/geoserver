@@ -20,6 +20,8 @@ The GeoServer logging profiles assign logging levels to specific server operatio
 
 In addition to the built-in profiles you may setup a custom logging profile, or override the logging configuration completely (even to use another logging library altogether).
 
+.. _logging_builtin:
+
 Built-in logging profiles
 -------------------------
 
@@ -39,6 +41,8 @@ The built-in logging profiles are installed into your data directory the first t
 * Copy the contents from the download links above
 
 For a description of these logging profiles see :ref:`config_globalsettings_log_profile`. Additional built-in logging profiles are supplied by installed extensions (example :download:`IMPORTER_LOGGING </../../../../src/extension/importer/core/src/main/resources/IMPORTER_LOGGING.xml>` profile is built into the importer extension).
+
+.. _logging_custom:
 
 Custom logging profiles
 -----------------------

@@ -71,6 +71,7 @@ import org.apache.http.message.BasicHeaderValueParser;
 import org.custommonkey.xmlunit.XMLUnit;
 import org.custommonkey.xmlunit.XpathEngine;
 import org.custommonkey.xmlunit.exceptions.XpathException;
+import org.geoserver.GeoserverInitStartupListener;
 import org.geoserver.catalog.CascadeDeleteVisitor;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CoverageInfo;
@@ -115,6 +116,7 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.GeoServerUserGroupService;
 import org.geoserver.security.GeoServerUserGroupStore;
 import org.geoserver.security.auth.TestingAuthenticationCache;
+import org.geoserver.security.impl.AbstractGeoServerSecurityService;
 import org.geoserver.security.impl.DataAccessRule;
 import org.geoserver.security.impl.DataAccessRuleDAO;
 import org.geoserver.security.impl.GeoServerRole;
@@ -333,6 +335,9 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
 
             // Allow resolution of XSDs from local file system
             EntityResolverProvider.setEntityResolver(RESOLVE_DISABLED_PROVIDER_DEVMODE);
+
+            // Use GeoServer's JAI ImagingListener
+            GeoserverInitStartupListener.initJAIDefaultInstance();
 
             getSecurityManager().setAuthenticationCache(new TestingAuthenticationCache());
             onSetUp(testData);
@@ -803,6 +808,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         this.password = password;
     }
 
+    /** Login as the {@literal admin} user with roles {@literal ADMIN, ROLE_ADMINISTRATOR} */
+    protected Authentication loginAsAdmin() {
+        return login(
+                "admin",
+                "geoserver",
+                AbstractGeoServerSecurityService.DEFAULT_LOCAL_ADMIN_ROLE,
+                GeoServerRole.ADMIN_ROLE.getAuthority());
+    }
+
     /**
      * Sets up the authentication context for the test.
      *
@@ -915,13 +929,15 @@ public class GeoServerSystemTestSupport extends GeoServerBaseTestSupport<SystemT
         request.setServerPort(8080);
         request.setContextPath("/geoserver");
         request.setRequestURI(ResponseUtils.stripQueryString(ResponseUtils.appendPath("/geoserver/", path)));
-        // request.setRequestURL(ResponseUtils.appendPath("http://localhost:8080/geoserver", path )
-        // );
         request.setQueryString(ResponseUtils.getQueryString(path));
         request.setRemoteAddr("127.0.0.1");
         request.setServletPath(ResponseUtils.makePathAbsolute(ResponseUtils.stripRemainingPath(path)));
         request.setPathInfo(
                 ResponseUtils.makePathAbsolute(ResponseUtils.stripBeginningPath(ResponseUtils.stripQueryString(path))));
+        if (request.getPathInfo().equals("/")) {
+            request.setPathInfo(request.getServletPath());
+            request.setServletPath("");
+        }
         request.addHeader("Host", "localhost:8080");
 
         // deal with authentication

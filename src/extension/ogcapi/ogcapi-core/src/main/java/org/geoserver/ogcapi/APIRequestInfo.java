@@ -215,8 +215,9 @@ public class APIRequestInfo {
      * @return
      */
     public String getRequestPath() {
-        String pathInfo = request.getPathInfo();
         String servletPath = request.getServletPath();
+        String pathInfo = request.getPathInfo();
+
         return ResponseUtils.appendPath(servletPath, pathInfo);
     }
 

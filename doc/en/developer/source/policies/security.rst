@@ -181,9 +181,13 @@ Working with vulnerability reports
    .. note:: It is our policy not to provide details at this time. Any deeply concerned parties can volunteer on the geoserver-security email list, or arrange a vendor relationship with a service provider.
 
 5. Disclosure:
-   
-   * Wait until the vulnerability has been addressed, for BOTH the stable and maintenance versions, before publishing.
-   
+
+   * Wait until the vulnerability has been addressed, for BOTH in stable and maintenance releases, before publishing.
+
+     In practice this means that a batch of issues are disclosed alongside each initial release. Be considerate of those following at a slower paced maintenance release schedule, when two stable releases are made in a row it may be up to three months until they have a maintenance release to update to!
+     
+     For an urgent vulnerability both "stable" and "maintenance" may be issued concurrently via an emergency update rather than following the expected schedule. In this case the blog post should indicate when disclosure is expected (example "everyone has two weeks until public disclosure").
+
    * Update prior release announcements, and placeholder Jira issue, with the complete title of the vulnerability.
   
       .. note:: Example: Security considerations section showing a mix of disclosed and not yet disclosed (no hyperlink) vulnerabilities.
@@ -195,8 +199,13 @@ Working with vulnerability reports
    * Publish the security advisory to make the vulnerability public
    
    * If you feel a statement is necessary, you may write an appropriate blog post.
-     
-        .. note:: Example: Statement on covering `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
+
+        .. note:: Examples statements:
+           
+           * `CVE-2024-36401 Remote Code Execution (RCE) vulnerability in evaluating property name expressions <https://geoserver.org/vulnerability/2024/09/12/cve-2024-36401.html>`__.
+           * `Jiffle and GeoTools RCE vulnerabilities <https://geoserver.org/vulnerability/2022/04/11/geoserver-2-jiffle-jndi-rce.html>`__.
+        
+
 
 Publicly reported issue
 ^^^^^^^^^^^^^^^^^^^^^^^

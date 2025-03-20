@@ -105,7 +105,7 @@
     <bean id="geoServer" class="org.geoserver.config.impl.GeoServerImpl">
       <property name="catalog" ref="catalog"/>
     </bean>
-    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy">
+    <bean id="geoServerLoader" class="org.geoserver.config.GeoServerLoaderProxy" depends-on="extensions,dataDirectory,geoServerSecurityManager,configurationLock">
       <constructor-arg ref="resourceLoader"/>
     </bean>
     
@@ -201,6 +201,7 @@
      <property name="mappings">
        <props>
         <prop key="/www/**">filePublisher</prop>
+        <prop key="/accessDenied.html">filePublisher</prop>
        </props>
      </property>
   </bean>

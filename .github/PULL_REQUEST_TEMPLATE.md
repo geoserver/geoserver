@@ -9,7 +9,6 @@ Ask in a comment if you have troubles with any of them. -->
 - [ ] I have read the [contribution guidelines](https://github.com/geoserver/geoserver/blob/main/CONTRIBUTING.md).
 - [ ] I have sent a [Contribution Licence Agreement](https://docs.geoserver.org/latest/en/developer/policies/committing.html) (not required for small changes, e.g., fixing typos in documentation).
 - [ ] First PR targets the `main` branch (backports managed later; ignore for branch specific issues).
-- [ ] All the build checks are green ([see automated QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html)).
 
 For core and extension modules:
 
@@ -22,3 +21,5 @@ For core and extension modules:
 - [ ] Each commit has a single objective (if there are multiple commits, each has a separate JIRA ticket describing its goal).
 
 <!--Submitting the PR does not require you to check all items, but by the time it gets merged, they should be either satisfied or not applicable.-->
+
+The PR will be merged when all the build checks are green ([see automated QA checks](https://docs.geoserver.org/latest/en/developer/qa-guide/index.html)), there is a code committer review, and the checklist has been fulfilled.

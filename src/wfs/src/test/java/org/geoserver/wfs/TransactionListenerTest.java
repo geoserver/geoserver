@@ -14,6 +14,7 @@ import net.opengis.wfs.InsertElementType;
 import net.opengis.wfs.UpdateElementType;
 import org.geoserver.data.test.CiteTestData;
 import org.geotools.api.feature.Feature;
+import org.geotools.data.DataUtilities;
 import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -129,6 +130,52 @@ public class TransactionListenerTest extends WFSTestSupport {
         assertEquals(TransactionEventType.POST_INSERT, secondEvent.getType());
         Feature inserted = listener.features.get(1);
         assertEquals(fid, inserted.getIdentifier().getID());
+    }
+
+    @Test
+    public void testOrderedInsert() throws Exception {
+        // perform an insert
+        String insert = "<wfs:Transaction service=\"WFS\" version=\"1.0.0\" "
+                + "xmlns:cgf=\"http://www.opengis.net/cite/geometry\" "
+                + "xmlns:ogc=\"http://www.opengis.net/ogc\" "
+                + "xmlns:wfs=\"http://www.opengis.net/wfs\" "
+                + "xmlns:gml=\"http://www.opengis.net/gml\"> "
+                + "<wfs:Insert> "
+                + "<cgf:Lines>"
+                + "<cgf:lineStringProperty>"
+                + "<gml:LineString>"
+                + "<gml:coordinates decimal=\".\" cs=\",\" ts=\" \">"
+                + "494475.71056415,5433016.8189323 494982.70115662,5435041.95096618"
+                + "</gml:coordinates>"
+                + "</gml:LineString>"
+                + "</cgf:lineStringProperty>"
+                + "<cgf:id>t0002</cgf:id>"
+                + "</cgf:Lines>"
+                + "<cgf:Points>"
+                + "<cgf:pointProperty>"
+                + "<gml:Point><gml:coordinates>15,15</gml:coordinates></gml:Point>"
+                + "</cgf:pointProperty>"
+                + "<cgf:id>t0005</cgf:id>"
+                + "</cgf:Points>"
+                + "</wfs:Insert>"
+                + "</wfs:Transaction>";
+
+        postAsDOM("wfs", insert);
+        assertEquals(4, listener.events.size());
+
+        // get the first event pre insert
+        TransactionEvent firstPreEvent = listener.events.get(0);
+        assertEquals(TransactionEventType.PRE_INSERT, firstPreEvent.getType());
+        assertEquals(
+                "t0002",
+                DataUtilities.list(firstPreEvent.getAffectedFeatures()).get(0).getAttribute("id"));
+
+        // get the sevond event pre insert
+        TransactionEvent secondPreEvent = listener.events.get(2);
+        assertEquals(TransactionEventType.PRE_INSERT, secondPreEvent.getType());
+        assertEquals(
+                "t0005",
+                DataUtilities.list(secondPreEvent.getAffectedFeatures()).get(0).getAttribute("id"));
     }
 
     @Test

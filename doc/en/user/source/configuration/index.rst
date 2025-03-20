@@ -12,6 +12,7 @@ It also describes how to view the GeoServer instance status.
    status
    contact
    service-metadata/index
+   ogc-api-services/index
    globalsettings
    image_processing/index
    raster_access

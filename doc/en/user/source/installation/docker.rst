@@ -151,7 +151,7 @@ Here is a list of available extensions (taken from the `build server <https://bu
     control-flow grib            mongodb       pyramid          wps-jdbc
     css          gwc-s3          monitor       querylayer       wps
     csw          h2              mysql         sldservice       xslt
-    db2          imagemap        netcdf-out    sqlserver        ysld
+    db2                          netcdf-out    sqlserver        ysld
     dxf          importer        netcdf        vectortiles      
     excel        inspire         ogr-wfs       wcs2_0-eo
 

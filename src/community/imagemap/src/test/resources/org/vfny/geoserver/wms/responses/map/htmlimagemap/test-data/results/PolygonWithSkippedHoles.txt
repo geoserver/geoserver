@@ -1,3 +1,0 @@
-<map name="PolygonWithSkippedHoles">
-<area shape="poly" id="BasicPolygons.1107531493630.0"  coords="0,600 600,600 600,0 0,0 0,600"/>
-</map>

@@ -172,7 +172,6 @@
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
         <module>xslt</module>
-        <module>imagemap</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
         <module>monitor-micrometer</module>
@@ -553,12 +552,6 @@
       <id>xslt</id>
       <modules>
         <module>xslt</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>imagemap</id>
-      <modules>
-        <module>imagemap</module>
       </modules>
     </profile>
     <profile>

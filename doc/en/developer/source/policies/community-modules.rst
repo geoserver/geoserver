@@ -139,15 +139,15 @@ The following outlines the steps to be taken in order to add a new community mod
              </profile>
            </profiles>
 
-        .. warning::
+   .. warning::
 
-           If the community module depends on any other community modules, 
-           they too should be included in the profile definition.
+      If the community module depends on any other community modules,
+      they too should be included in the profile definition.
 
-        .. warning::
+   .. warning::
 
-           Ensure that the name of the profile matches the name of the 
-           community module
+      Ensure that the name of the profile matches the name of the
+      community module
 
 Promoting a community module
 ----------------------------

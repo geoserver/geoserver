@@ -29,7 +29,7 @@ of persisting it. Two options are provided out of the box:
 
 By default the extension will do neither and simply maintain data for only
 the most recent requests. The data is stored in memory meaning that if the
-server is restarted or shutdown this information is lost.The 
+server is restarted or shutdown this information is lost. The 
 :ref:`monitor_configuration` section provides a comprehensive guide to 
 configuring the monitor extension.  
 

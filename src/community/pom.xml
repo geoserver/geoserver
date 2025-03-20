@@ -170,7 +170,6 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
-        <module>datadir-catalog-loader</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
         <module>monitor-micrometer</module>
@@ -527,12 +526,6 @@
       <id>proxy-base-ext</id>
       <modules>
         <module>proxy-base-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>datadir-catalog-loader</id>
-      <modules>
-        <module>datadir-catalog-loader</module>
       </modules>
     </profile>
     <profile>

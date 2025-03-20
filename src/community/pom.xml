@@ -428,12 +428,6 @@
       </modules>
     </profile>
     <profile>
-      <id>monitor-hibernate</id>
-      <modules>
-        <module>monitor-hibernate</module>
-      </modules>
-    </profile>
-    <profile>
       <id>monitor-kafka</id>
       <modules>
         <module>monitor-kafka</module>

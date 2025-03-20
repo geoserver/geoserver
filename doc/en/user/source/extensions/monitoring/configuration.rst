@@ -16,8 +16,6 @@ The ``monitor.properties`` file is the main configuration file whose contents ar
 described in the following sections. The ``filter.properties`` 
 allows for :ref:`filtering <request_filters>` out those requests from being monitored.
 
-Database persistence with hibernate is described in more detail in the :ref:`monitor_db` section.
-
 .. _monitor_storage:
 
 Monitor Storage
@@ -29,8 +27,6 @@ How request data is persisted is configurable via the ``storage`` property defin
 * **memory** - Request data is to be persisted in memory alone.
 
 The default value is ``memory``.
-
-The "monitor hibernate" community module allows to also store the requests in a relational database.
 
 Memory Storage
 ^^^^^^^^^^^^^^

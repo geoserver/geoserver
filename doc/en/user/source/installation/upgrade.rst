@@ -60,27 +60,35 @@ Content Security Policy (GeoServer 2.27 and newer)
 The Content-Security-Policy HTTP response header are now enabled by default in order to mitigate cross-site
 scripting and clickjacking attacks. The default header value asks the browser **block** the use of inline
 JavaScript in all HTML output except in cases where it is required (e.g., OpenLayers maps).
+
 It is anticipated that future work may further restrict the default policy in the interests of safety.
 
-* It is expected that the web administration console functions correctly, along with extensions and community modules.
+1. It is expected that the web administration console functions correctly, along with extensions and community modules.
 
-* If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
+2. Before sarting double your :ref:`proxy base url <proxy_base>` setting is correct.
+
+   .. warning:: CSP restructions will detect if this information is inconsistent preventing the user interface from functioning.
+
+3. If you have problems with the administration console being frozen or not working, please see :ref:`csp_strict` for details on how to restore access during troubleshooting.
   
-  * If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.
+   * If you encounter any CSP problems please let us know, as an open-source project we depend on public feedback and testing to report CSP problems found.
   
-  * With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
+   * With these improved CSP safety measures GeoServer may now detect vulnerabilities in your environment that were previously undetected.
 
-* Users who need inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of  :ref:`GEOSERVER_FEATUREINFO_HTML_SCRIPT <security_csp_featureinfo_html_script>` application property.
+4. Managing CSP restrictions in GeoServer:
+   
+   * When using inline JavaScript in custom FreeMarker templates for WMS GetFeatureInfo HTML output will require use of :ref:`GEOSERVER_FEATUREINFO_HTML_SCRIPT <security_csp_featureinfo_html_script>` application property.
 
-* Users experiencing issues with static web files or custom classes/plugins generating HTML output may need to update their settings.
+   * If you expeereince issues with static web files or custom classes/plugins generating HTML output may need to update their settings.
 
-  For more information, see :ref:`production_config_csp`.
+     For more information, see :ref:`production_config_csp`.
 
-  .. note::
-     It is recommended that static web files be disabled if they are not necessary in order to
-     mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+     .. note::
 
-* GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
+        It is recommended that static web files be disabled if they are not necessary in order to
+        mitigate cross-site scripting attacks. For more information, see :ref`tutorials_staticfiles`.
+
+   * GeoServer provides tools for administrators to control content security policy headers, see GeoServer Security section on :ref:`Content Security Policy Reference <security_csp>` for very detailed information.
 
 Faster Startup for Large Catalogs (GeoServer 2.27 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -90,18 +98,15 @@ Starting in GeoServer 2.27.0, the configuration loading process has been optimiz
 With this enhancement, catalog and configuration loading is now up to 3× faster on local disks and up to 10× faster on network filesystems.
 
 Potential Considerations:
-"""""""""""""""""""""""""
 
-**Check Compatibility**: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.
+* **Check Compatibility**: Although the new loader is a drop-in replacement, verify that your existing configurations and extensions work as expected. Testing in a staging environment before deploying to production is recommended.
 
 Configuration:
-""""""""""""""
 
-No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the
-`GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property. See the section :ref:`datadir-loader` for details.
+* No additional configuration is required for standard setups. However, if you encounter any issues, you can disable the optimized loader by setting the
+  `GEOSERVER_DATA_DIR_LOADER_ENABLED=false` environment variable or system property.
 
-For a deeper dive into this enhancement, refer to the GeoServer Improvement Proposal `GSIP 231 <https://github.com/geoserver/geoserver/wiki/GSIP-231>`_.
-
+For additional information see :ref:`datadir-loader` documentation.
 
 REST API URL Checks (GeoServer 2.26 and newer)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

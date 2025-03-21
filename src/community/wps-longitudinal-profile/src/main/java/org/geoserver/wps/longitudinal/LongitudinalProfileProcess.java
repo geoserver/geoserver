@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -26,6 +27,7 @@ import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.config.GeoServer;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wps.WPSException;
 import org.geoserver.wps.gs.GeoServerProcess;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.feature.Feature;
@@ -96,10 +98,12 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             meta = {"mimeTypes=application/json"},
             type = LongitudinalProfileProcessResult.class)
     public LongitudinalProfileProcessResult execute(
-            @DescribeParameter(name = "layerName", description = "Input raster name", min = 1) String layerName,
+            @DescribeParameter(name = "layerName", description = "Input raster name", min = 0) String layerName,
+            @DescribeParameter(name = "coverage", description = "Input coverage", min = 0) GridCoverage2D coverage,
             @DescribeParameter(name = "adjustmentLayerName", description = "adjustment layer name", min = 0)
                     String adjustmentLayerName,
-            @DescribeParameter(name = "geometry", description = "geometry for profile", min = 1) Geometry geometry,
+            @DescribeParameter(name = "geometry", description = "geometry for profile", min = 1)
+                    final Geometry geometry,
             @DescribeParameter(name = "distance", description = "distance between points", min = 1) double distance,
             @DescribeParameter(name = "targetProjection", description = "projection for result", min = 0)
                     CoordinateReferenceSystem projection,
@@ -118,27 +122,17 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                     ExecutionException {
 
         long startTime = System.currentTimeMillis();
-        LOGGER.fine("Starting processing at:"
-                + startTime
-                + " with params: "
-                + SEP
-                + " layer name: "
-                + layerName
-                + SEP
-                + " adjustment layer name: "
-                + adjustmentLayerName
-                + SEP
-                + " geometry: "
-                + geometry
-                + SEP
-                + " distance: "
-                + distance
-                + SEP
-                + " altitude index: "
-                + altitudeIndex
-                + SEP
-                + " altitude name: "
-                + altitudeName);
+        LOGGER.fine(() -> {
+            StringJoiner joiner = new StringJoiner(SEP);
+            joiner.add("Starting processing at:" + startTime + " with params: ")
+                    .add("layer name: " + layerName)
+                    .add("adjustment layer name: " + adjustmentLayerName)
+                    .add("geometry: " + geometry)
+                    .add("distance: " + distance)
+                    .add("altitude index: " + altitudeIndex)
+                    .add("altitude name: " + altitudeName);
+            return joiner.toString();
+        });
         if (projection != null) {
             LOGGER.fine(" targetProjection: " + projection.getName());
         }
@@ -148,25 +142,32 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
             projection = (CoordinateReferenceSystem) geometry.getUserData();
         }
 
-        CoverageInfo coverageInfo = geoServer.getCatalog().getCoverageByName(layerName);
-
-        FeatureSource adjustmentFeatureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
-
-        Geometry denseLine;
-        // If geometry does not contain any info on CRS we will use CRS of layer
-        CoordinateReferenceSystem defaultCrs = coverageInfo.getCRS();
-        if (geometry instanceof LineString) {
-            if (geometry.getUserData() != null) {
-                defaultCrs = (CoordinateReferenceSystem) geometry.getUserData();
-            }
-            denseLine = densifyLine(distance, (LineString) geometry, defaultCrs);
+        GridCoverage2D gridCoverage2D;
+        if (layerName != null) {
+            CoverageInfo coverageInfo = geoServer.getCatalog().getCoverageByName(layerName);
+            GridCoverage2DReader gridCoverageReader =
+                    (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
+            gridCoverage2D = gridCoverageReader.read(null);
+        } else if (coverage != null) {
+            gridCoverage2D = coverage;
         } else {
-            denseLine = geometry;
+            throw new WPSException("Either layerName or coverage must be provided");
         }
 
-        if (!coverageInfo.getCRS().equals(defaultCrs)) {
-            denseLine = reprojectGeometry(defaultCrs, coverageInfo.getCRS(), denseLine);
+        // check the geometry, reproject if necessary, densify it
+        if (!(geometry instanceof LineString)) throw new IllegalArgumentException("Geometry must be a LineString");
+
+        // If geometry does not contain any info on CRS we will use CRS of the input coverage
+        CoordinateReferenceSystem coverageCRS = gridCoverage2D.getCoordinateReferenceSystem2D();
+        LineString reprojected = (LineString) geometry;
+        if (geometry.getUserData() instanceof CoordinateReferenceSystem) {
+            CoordinateReferenceSystem lineCRS = (CoordinateReferenceSystem) geometry.getUserData();
+            if (CRS.isTransformationRequired(lineCRS, coverageCRS)) {
+                reprojected = (LineString) reprojectGeometry(lineCRS, coverageCRS, geometry);
+            }
         }
+
+        Geometry denseLine = densifyLine(distance, reprojected, coverageCRS);
 
         List<ProfileInfo> profileInfos = new ArrayList<>();
         double positiveAltitude = 0;
@@ -174,8 +175,6 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         double previousAltitude = 0;
         double totalDistance = 0;
         Geometry previousPoint = null;
-
-        CoordinateReferenceSystem coverageCrs = coverageInfo.getCRS();
 
         // Create an array with all geometry vertices
         Coordinate[] coords = denseLine.getCoordinates();
@@ -194,10 +193,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         List<List<ProfileVertice>> chunks = divide(vertices, chunkSize);
 
         List<Future<List<ProfileVertice>>> treated = new ArrayList<>();
-        GridCoverage2DReader gridCoverageReader = (GridCoverage2DReader) coverageInfo.getGridCoverageReader(null, null);
-        GridCoverage2D gridCoverage2D = gridCoverageReader.read(null);
 
         // Process parallel altitude reading
+        FeatureSource adjustmentFeatureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
         for (List<ProfileVertice> chunk : chunks) {
             treated.add(executor.submit(new AltitudeReaderThread(
                     chunk, altitudeIndex, adjustmentFeatureSource, altitudeName, gridCoverage2D)));
@@ -209,7 +207,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         }
 
         // Sort vertices by their number
-        result.sort(new Comparator<ProfileVertice>() {
+        result.sort(new Comparator<>() {
             @Override
             public int compare(ProfileVertice pv1, ProfileVertice pv2) {
                 return pv1.number.compareTo(pv2.number);
@@ -223,7 +221,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
 
             double profileAltitude = v.getAltitude() - previousAltitude;
             if (projection != null) {
-                point = reprojectGeometry(coverageCrs, projection, point);
+                point = reprojectGeometry(coverageCRS, projection, point);
             }
 
             Coordinate coordinate = point.getCoordinate();
@@ -367,7 +365,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         List<List<ProfileVertice>> parts = new ArrayList<>();
         final int N = list.size();
         for (int i = 0; i < N; i += L) {
-            parts.add(new ArrayList<ProfileVertice>(list.subList(i, Math.min(N, i + L))));
+            parts.add(new ArrayList<>(list.subList(i, Math.min(N, i + L))));
         }
         return parts;
     }

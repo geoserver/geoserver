@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -16,19 +17,30 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Future;
 import javax.xml.namespace.QName;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONNull;
 import net.sf.json.JSONObject;
+import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
+import org.geoserver.wps.longitudinal.LongitudinalProfileProcess;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.data.util.DefaultProgressListener;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 import org.w3c.dom.Document;
 
 public class LongitudinalProfileProcessTest extends WPSTestSupport {
     // layers
-    private static final QName PROFILE = new QName(MockData.DEFAULT_URI, "dataProfile", MockData.DEFAULT_PREFIX);
+    public static final String COVERAGE_LAYER_NAME = "dataProfile";
+    private static final QName PROFILE = new QName(MockData.DEFAULT_URI, COVERAGE_LAYER_NAME, MockData.DEFAULT_PREFIX);
     private static final QName ADJ_LAYER = new QName(MockData.DEFAULT_URI, "AdjustmentLayer", MockData.DEFAULT_PREFIX);
 
     // test constants
@@ -92,7 +104,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         String requestXml = loadTemplate(
                 TEMPLATE_BASIC,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
+                        "LAYER_NAME", COVERAGE_LAYER_NAME,
                         "GEOMETRY", LINESTRING_2154_WKT,
                         "DISTANCE", "0.1"));
 
@@ -112,11 +124,11 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         String requestXml = loadTemplate(
                 TEMPLATE_BASIC,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
+                        "LAYER_NAME", COVERAGE_LAYER_NAME,
                         "GEOMETRY", LINESTRING_2154_WKT,
                         "DISTANCE", "300"));
 
-        checkBasicProfile(requestXml, "dataProfile");
+        checkBasicProfile(requestXml, COVERAGE_LAYER_NAME);
     }
 
     @Test
@@ -177,10 +189,14 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         String requestXml = loadTemplate(
                 TEMPLATE_TARGET_PROJECTION,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
-                        "GEOMETRY", LINESTRING_2154_WKT,
-                        "DISTANCE", "300",
-                        "TARGET_PROJECTION", "EPSG:3857"));
+                        "LAYER_NAME",
+                        COVERAGE_LAYER_NAME,
+                        "GEOMETRY",
+                        LINESTRING_2154_WKT,
+                        "DISTANCE",
+                        "300",
+                        "TARGET_PROJECTION",
+                        "EPSG:3857"));
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
@@ -191,7 +207,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertEquals(5600680.0, infos.get("firstPointY"));
         assertEquals(537077.4, infos.get("lastPointX"));
         assertEquals(5601034.5, infos.get("lastPointY"));
-        assertEquals("dataProfile", infos.get("layer"));
+        assertEquals(COVERAGE_LAYER_NAME, infos.get("layer"));
         assertEquals(8, infos.get("processedPoints"));
         assertNotNull(infos.get("executedTime"));
         JSONArray profile = response.getJSONArray("profile");
@@ -224,14 +240,14 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         String request2154 = loadTemplate(
                 TEMPLATE_BASIC,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
+                        "LAYER_NAME", COVERAGE_LAYER_NAME,
                         "GEOMETRY", LINESTRING_2154_EWKT,
                         "DISTANCE", "300"));
 
         String request4326 = loadTemplate(
                 TEMPLATE_BASIC,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
+                        "LAYER_NAME", COVERAGE_LAYER_NAME,
                         "GEOMETRY", LINESTRING_4326_EWKT,
                         "DISTANCE", "300"));
 
@@ -259,10 +275,14 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         String requestXml = loadTemplate(
                 TEMPLATE_ALL_PARAMETERS,
                 Map.of(
-                        "LAYER_NAME", "dataProfile",
-                        "GEOMETRY", LINESTRING_2154_WKT,
-                        "DISTANCE", "200",
-                        "TARGET_PROJECTION", "EPSG:4326"));
+                        "LAYER_NAME",
+                        COVERAGE_LAYER_NAME,
+                        "GEOMETRY",
+                        LINESTRING_2154_WKT,
+                        "DISTANCE",
+                        "200",
+                        "TARGET_PROJECTION",
+                        "EPSG:4326"));
 
         JSONObject response = (JSONObject) postAsJSON(root(), requestXml, "application/xml");
         JSONObject infos = response.getJSONObject("infos");
@@ -273,7 +293,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertEquals(44.867462, infos.get("firstPointY"));
         assertEquals(4.8246484, infos.get("lastPointX"));
         assertEquals(44.869717, infos.get("lastPointY"));
-        assertEquals("dataProfile", infos.get("layer"));
+        assertEquals(COVERAGE_LAYER_NAME, infos.get("layer"));
         assertEquals(11, infos.get("processedPoints"));
         assertNotNull(infos.get("executedTime"));
         JSONArray profile = response.getJSONArray("profile");
@@ -299,5 +319,48 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertEquals(66.208275, profile9.get("slope"));
         assertEquals(4.826243, profile9.get("x"));
         assertEquals(44.86841, profile9.get("y"));
+    }
+
+    @Test
+    public void processCancellationTest() throws Exception {
+        GeoServer geoServer = getGeoServer();
+        CountDownLatch latch = new CountDownLatch(1);
+        LongitudinalProfileProcess process = new LongitudinalProfileProcess(geoServer) {
+            @Override
+            protected double calculateSlope(
+                    CoordinateReferenceSystem projection, Geometry previousPoint, Geometry point, double altitude)
+                    throws TransformException {
+                // wait for the latch to be released, to ensure the process cannot finish before
+                // the cancellation gets issued
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                return super.calculateSlope(projection, previousPoint, point, altitude);
+            }
+        };
+
+        Geometry geometry = new WKTReader().read(LINESTRING_2154_WKT);
+        DefaultProgressListener monitor = new DefaultProgressListener();
+
+        // start in background thread
+        Future<LongitudinalProfileProcess.LongitudinalProfileProcessResult> future =
+                CompletableFuture.supplyAsync(() -> {
+                    try {
+                        return process.execute(COVERAGE_LAYER_NAME, null, null, geometry, 300, null, 0, null, monitor);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        // perform cancellation
+        monitor.setCanceled(true);
+
+        // release the latch to allow the process to finish
+        latch.countDown();
+
+        // check the result is null (cancelled)
+        assertNull(future.get());
     }
 }

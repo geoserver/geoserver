@@ -6,6 +6,7 @@ package org.geoserver.wps.longitudinal;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.filter.text.cql2.CQL;
@@ -31,6 +33,7 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+    private final ProgressListener monitor;
 
     private List<ProfileVertice> pvs;
     GridCoverage2D gridCoverage2D;
@@ -43,12 +46,14 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             int altitudeIndex,
             FeatureSource adjustmentFeatureSource,
             String altitudeName,
-            GridCoverage2D gridCoverage2D) {
+            GridCoverage2D gridCoverage2D,
+            ProgressListener monitor) {
         this.pvs = pvs;
         this.gridCoverage2D = gridCoverage2D;
         this.altitudeIndex = altitudeIndex;
         this.adjustmentFeatureSource = adjustmentFeatureSource;
         this.altitudeName = altitudeName;
+        this.monitor = monitor;
     }
 
     @Override
@@ -61,10 +66,9 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
 
         Map<Geometry, Double> adjGeomValues = new HashMap<>();
         if (adjustmentFeatureSource != null) {
-            Query query;
-            Filter filter;
-            filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
-            query = new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
+            Filter filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
+            Query query =
+                    new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
             try (FeatureIterator<?> featureIterator =
                     adjustmentFeatureSource.getFeatures(query).features()) {
                 while (featureIterator.hasNext()) {
@@ -72,6 +76,7 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
                     Geometry g = (Geometry) f.getDefaultGeometryProperty().getValue();
                     Double altitude = (Double) f.getProperty(altitudeName).getValue();
                     adjGeomValues.put(g, altitude);
+                    if (monitor.isCanceled()) return Collections.emptyList();
                 }
             }
         }
@@ -92,6 +97,8 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             double altitude = getAltitude(
                     gridCoverage2D, new Position2D(pv.getCoordinate().x, pv.getCoordinate().y), altitudeIndex);
             pv.setAltitude(altitude - altCorrection);
+
+            if (monitor.isCanceled()) return null;
         }
         return pvs;
     }

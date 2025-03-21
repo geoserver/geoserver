@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wps:Execute version="1.0.0" service="WPS"
+             xmlns:wps="http://www.opengis.net/wps/1.0.0"
+             xmlns:ows="http://www.opengis.net/ows/1.1"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:xlink="http://www.w3.org/1999/xlink"
+             xsi:schemaLocation="http://www.opengis.net/wps/1.0.0 wpsAll.xsd">
+    <ows:Identifier>gs:LongitudinalProfile</ows:Identifier>
+    <wps:DataInputs>
+        <wps:Input>
+            <ows:Identifier>coverage</ows:Identifier>
+            <wps:Reference mimeType="image/tiff"
+                           xlink:href="http://geoserver/wcs?service=WCS&amp;request=GetCoverage&amp;version=2.0.1&amp;coverageId=${COVERAGE_ID}"
+                           method="GET" />
+        </wps:Input>
+        <wps:Input>
+            <ows:Identifier>geometry</ows:Identifier>
+            <wps:Data>
+                <wps:ComplexData mimeType="application/ewkt"><![CDATA[${GEOMETRY}]]></wps:ComplexData>
+            </wps:Data>
+        </wps:Input>
+        <wps:Input>
+            <ows:Identifier>distance</ows:Identifier>
+            <wps:Data>
+                <wps:LiteralData>${DISTANCE}</wps:LiteralData>
+            </wps:Data>
+        </wps:Input>
+    </wps:DataInputs>
+    <wps:ResponseForm>
+        <wps:RawDataOutput mimeType="application/json">
+            <ows:Identifier>result</ows:Identifier>
+        </wps:RawDataOutput>
+    </wps:ResponseForm>
+</wps:Execute>

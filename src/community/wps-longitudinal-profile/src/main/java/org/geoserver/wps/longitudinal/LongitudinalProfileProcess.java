@@ -37,8 +37,10 @@ import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.crs.GeographicCRS;
 import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.referencing.operation.TransformException;
+import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.GridCoverage2D;
 import org.geotools.coverage.grid.io.GridCoverage2DReader;
+import org.geotools.data.util.NullProgressListener;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.process.factory.DescribeParameter;
@@ -69,8 +71,10 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
     private static final String SEP = System.lineSeparator();
     public static final int DEFAULT_MAX_POINTS = 10000;
+    public static final int DEFAULT_CHUNK_SIZE = 1000;
 
     private final GeoServer geoServer;
+    private int chunkSize;
     private int maxPoints;
 
     private ExecutorService executor;
@@ -88,6 +92,15 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         } catch (NumberFormatException e) {
             LOGGER.warning("Can't parse wpsLongitudinalMaxPoints property, must be an integer. Will use " + maxPoints
                     + " instead.");
+        }
+
+        // Chunk size for parallel processing
+        this.chunkSize = DEFAULT_CHUNK_SIZE;
+        try {
+            chunkSize = Integer.parseInt(GeoServerExtensions.getProperty("wpsLongitudinalVerticesChunkSize"));
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Can't parse wpsLongitudinalVerticesChunkSize property, must be an integer. Will use "
+                    + chunkSize + " instead.");
         }
 
         // Create threads executor
@@ -133,9 +146,15 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                             name = "altitudeName",
                             description = "name of altitude attribute on adjustment layer",
                             min = 0)
-                    String altitudeName)
+                    String altitudeName,
+            ProgressListener monitor)
             throws IOException, FactoryException, TransformException, CQLException, InterruptedException,
                     ExecutionException {
+        // null safety for the progress listener
+        if (monitor == null) {
+            monitor = new NullProgressListener();
+        }
+        monitor.started();
 
         long startTime = System.currentTimeMillis();
         LOGGER.fine(() -> {
@@ -198,28 +217,22 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                 .mapToObj(i -> new ProfileVertice(i, coords[i], null))
                 .collect(Collectors.toList());
 
-        // Divide vertices array in chunks
-        int chunkSize = 1000;
-        try {
-            chunkSize = Integer.parseInt(GeoServerExtensions.getProperty("wpsLongitudinalVerticesChunkSize"));
-        } catch (NumberFormatException e) {
-            LOGGER.warning(
-                    "Can't parse wpsLongitudinalVerticesChunkSize property, must be an integer. Will use 1000 instead.");
-        }
         List<List<ProfileVertice>> chunks = divide(vertices, chunkSize);
-
         List<Future<List<ProfileVertice>>> treated = new ArrayList<>();
 
         // Process parallel altitude reading
         FeatureSource adjustmentFeatureSource = getAdjustmentLayerFeatureSource(adjustmentLayerName);
         for (List<ProfileVertice> chunk : chunks) {
             treated.add(executor.submit(new AltitudeReaderThread(
-                    chunk, altitudeIndex, adjustmentFeatureSource, altitudeName, gridCoverage2D)));
+                    chunk, altitudeIndex, adjustmentFeatureSource, altitudeName, gridCoverage2D, monitor)));
         }
 
         List<ProfileVertice> result = new ArrayList<>();
         for (Future<List<ProfileVertice>> f : treated) {
-            result.addAll(f.get());
+            List<ProfileVertice> futureResult = f.get();
+            // check for cancellation, but don't stop the executor, as it's used for other process calls as well
+            if (monitor.isCanceled()) return null;
+            result.addAll(futureResult);
         }
 
         // Sort vertices by their number
@@ -231,6 +244,9 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         });
 
         for (ProfileVertice v : result) {
+            // check for cancellation
+            if (monitor.isCanceled()) return null;
+
             CoordinateSequence2D coordinateSequence = new CoordinateSequence2D(
                     v.getCoordinate().getX(), v.getCoordinate().getY());
             Geometry point = new Point(coordinateSequence, GEOMETRY_FACTORY);
@@ -269,6 +285,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         OperationInfo operationInfo = buildOperationInfo(
                 layerName, startTime, profileInfos, positiveAltitude, negativeAltitude, totalDistance);
 
+        monitor.complete();
         return new LongitudinalProfileProcessResult(profileInfos, operationInfo);
     }
 
@@ -283,7 +300,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         return densify(lineString, distanceInTargetCrsUnits);
     }
 
-    private static double calculateSlope(
+    protected double calculateSlope(
             CoordinateReferenceSystem projection, Geometry previousPoint, Geometry point, double altitude)
             throws TransformException {
         return altitude * 100 / distanceInMeters(projection, previousPoint, point);
@@ -348,7 +365,7 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         return JTS.transform(geometry, tx);
     }
 
-    private FeatureSource<? extends FeatureType, ? extends Feature> getAdjustmentLayerFeatureSource(
+    protected FeatureSource<? extends FeatureType, ? extends Feature> getAdjustmentLayerFeatureSource(
             String adjustmentLayerName) throws IOException {
         FeatureSource<? extends FeatureType, ? extends Feature> featureSource = null;
         if (adjustmentLayerName != null && !adjustmentLayerName.isBlank()) {

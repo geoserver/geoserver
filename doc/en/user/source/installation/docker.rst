@@ -163,8 +163,6 @@ Here is a list of available extensions (taken from the `build server <https://bu
     geofence-wps             ogcapi-features          wps                      
     geopkg-output            ogr-wfs                  ysld                     
 
-
-
 Testing Geoserver Community modules
 -----------------------------------
 

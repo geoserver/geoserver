@@ -27,9 +27,20 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 
 public class LongitudinalProfileProcessTest extends WPSTestSupport {
+    // layers
     private static final QName PROFILE = new QName(MockData.DEFAULT_URI, "dataProfile", MockData.DEFAULT_PREFIX);
     private static final QName ADJ_LAYER = new QName(MockData.DEFAULT_URI, "AdjustmentLayer", MockData.DEFAULT_PREFIX);
 
+    // test constants
+    public static final String PROCESS_FAILED_PATH = "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed";
+    public static final String EXCEPTION_MESSAGE_PATH =
+            PROCESS_FAILED_PATH + "/ows:ExceptionReport/ows:Exception/ows:ExceptionText";
+    public static final String TEMPLATE_BASIC = "templateBasic.xml";
+    public static final String TEMPLATE_CHAINING = "templateChaining.xml";
+    public static final String TEMPLATE_TARGET_PROJECTION = "templateTargetProjection.xml";
+    public static final String TEMPLATE_ALL_PARAMETERS = "templateAllParameters.xml";
+
+    // test inputs
     private static final String LINESTRING_2154_WKT =
             "LINESTRING(843478.269971218 6420348.7621933, 843797.900998497 6420021.75658605, 844490.474212848 6420187.03857354, 844102.691178047 6420613.93854596)";
     private static final String LINESTRING_2154_EWKT = "SRID=2154;" + LINESTRING_2154_WKT;
@@ -71,17 +82,35 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         Document d = postAsDOM(root(), requestXml);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
 
-        assertXpathExists("/wps:ExecuteResponse/wps:Status/wps:ProcessFailed", d);
-        String msg = xp.evaluate(
-                "/wps:ExecuteResponse/wps:Status/wps:ProcessFailed/ows:ExceptionReport/ows:Exception/ows:ExceptionText",
-                d);
+        assertXpathExists(PROCESS_FAILED_PATH, d);
+        String msg = xp.evaluate(EXCEPTION_MESSAGE_PATH, d);
         assertThat(msg, containsString("Either layerName or coverage must be provided"));
+    }
+
+    @Test
+    public void testTooManyPoints() throws Exception {
+        String requestXml = loadTemplate(
+                TEMPLATE_BASIC,
+                Map.of(
+                        "LAYER_NAME", "dataProfile",
+                        "GEOMETRY", LINESTRING_2154_WKT,
+                        "DISTANCE", "0.1"));
+
+        Document d = postAsDOM(root(), requestXml);
+        assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
+
+        assertXpathExists(PROCESS_FAILED_PATH, d);
+        String msg = xp.evaluate(EXCEPTION_MESSAGE_PATH, d);
+        assertThat(
+                msg,
+                containsString("Too many points in the line, please increase the distance parameter "
+                        + "or reduce the line length. Would extract 17461 points, but maximum is 10000"));
     }
 
     @Test
     public void testBasicProfileLayer() throws Exception {
         String requestXml = loadTemplate(
-                "templateBasic.xml",
+                TEMPLATE_BASIC,
                 Map.of(
                         "LAYER_NAME", "dataProfile",
                         "GEOMETRY", LINESTRING_2154_WKT,
@@ -93,7 +122,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     @Test
     public void testBasicProfileCoverage() throws Exception {
         String requestXml = loadTemplate(
-                "templateChaining.xml",
+                TEMPLATE_CHAINING,
                 Map.of(
                         "COVERAGE_ID", "gs__dataProfile",
                         "GEOMETRY", LINESTRING_2154_WKT,
@@ -146,7 +175,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     @Test
     public void testReprojectCRS() throws Exception {
         String requestXml = loadTemplate(
-                "templateTargetProjection.xml",
+                TEMPLATE_TARGET_PROJECTION,
                 Map.of(
                         "LAYER_NAME", "dataProfile",
                         "GEOMETRY", LINESTRING_2154_WKT,
@@ -193,14 +222,14 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     @Test
     public void testCorrectReprojection() throws Exception {
         String request2154 = loadTemplate(
-                "templateBasic.xml",
+                TEMPLATE_BASIC,
                 Map.of(
                         "LAYER_NAME", "dataProfile",
                         "GEOMETRY", LINESTRING_2154_EWKT,
                         "DISTANCE", "300"));
 
         String request4326 = loadTemplate(
-                "templateBasic.xml",
+                TEMPLATE_BASIC,
                 Map.of(
                         "LAYER_NAME", "dataProfile",
                         "GEOMETRY", LINESTRING_4326_EWKT,
@@ -228,7 +257,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
     @Test
     public void testAllParams() throws Exception {
         String requestXml = loadTemplate(
-                "templateAllParameters.xml",
+                TEMPLATE_ALL_PARAMETERS,
                 Map.of(
                         "LAYER_NAME", "dataProfile",
                         "GEOMETRY", LINESTRING_2154_WKT,

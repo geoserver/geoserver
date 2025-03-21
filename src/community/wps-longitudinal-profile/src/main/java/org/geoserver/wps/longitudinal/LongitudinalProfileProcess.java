@@ -68,18 +68,33 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
     private static final String SEP = System.lineSeparator();
+    public static final int DEFAULT_MAX_POINTS = 10000;
 
     private final GeoServer geoServer;
+    private int maxPoints;
 
     private ExecutorService executor;
 
     public LongitudinalProfileProcess(GeoServer geoServer) {
         this.geoServer = geoServer;
 
+        // for reference, 18k points would currently use 1MB of memory (56 bytes per point)
+        this.maxPoints = DEFAULT_MAX_POINTS;
+        try {
+            String maxPointsStr = GeoServerExtensions.getProperty("wpsLongitudinalMaxPoints");
+            if (maxPointsStr != null && !maxPointsStr.isEmpty()) {
+                maxPoints = Integer.parseInt(maxPointsStr);
+            }
+        } catch (NumberFormatException e) {
+            LOGGER.warning("Can't parse wpsLongitudinalMaxPoints property, must be an integer. Will use " + maxPoints
+                    + " instead.");
+        }
+
         // Create threads executor
         int nbTreads = Runtime.getRuntime().availableProcessors();
         try {
-            nbTreads = Integer.parseInt(GeoServerExtensions.getProperty("wpsLongitudinalMaxThreadPoolSize"));
+            String maxThreads = GeoServerExtensions.getProperty("wpsLongitudinalMaxThreadPoolSize");
+            if (maxThreads != null && !maxThreads.isEmpty()) nbTreads = Integer.parseInt(maxThreads);
         } catch (NumberFormatException e) {
             LOGGER.warning(
                     "Can't parse wpsLongitudinalMaxThreadPoolSize property, must be an integer. Will use Runtime.getRuntime().availableProcessors() instead.");
@@ -104,7 +119,8 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
                     String adjustmentLayerName,
             @DescribeParameter(name = "geometry", description = "geometry for profile", min = 1)
                     final Geometry geometry,
-            @DescribeParameter(name = "distance", description = "distance between points", min = 1) double distance,
+            @DescribeParameter(name = "distance", description = "distance between points in meters", min = 1)
+                    double distance,
             @DescribeParameter(name = "targetProjection", description = "projection for result", min = 0)
                     CoordinateReferenceSystem projection,
             @DescribeParameter(
@@ -256,11 +272,15 @@ public class LongitudinalProfileProcess implements GeoServerProcess, DisposableB
         return new LongitudinalProfileProcessResult(profileInfos, operationInfo);
     }
 
-    private Geometry densifyLine(Double distance, LineString lineString, CoordinateReferenceSystem crs) {
+    private Geometry densifyLine(double distance, LineString lineString, CoordinateReferenceSystem crs) {
         double distanceInTargetCrsUnits =
                 metersToCrsUnits(crs, lineString.getCentroid().getCoordinate(), distance);
-        Geometry denseLine = densify(lineString, distanceInTargetCrsUnits);
-        return denseLine;
+        long expectedPoints = (long) Math.ceil(lineString.getLength() / distanceInTargetCrsUnits);
+        if (expectedPoints > maxPoints)
+            throw new WPSException(
+                    "Too many points in the line, please increase the distance parameter or reduce the line length. "
+                            + "Would extract " + expectedPoints + " points, but maximum is " + maxPoints);
+        return densify(lineString, distanceInTargetCrsUnits);
     }
 
     private static double calculateSlope(

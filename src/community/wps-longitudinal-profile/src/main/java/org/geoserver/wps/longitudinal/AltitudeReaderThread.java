@@ -27,7 +27,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 
-public class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
+class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();

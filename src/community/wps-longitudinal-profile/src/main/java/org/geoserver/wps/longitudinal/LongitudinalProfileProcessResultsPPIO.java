@@ -4,6 +4,8 @@
  */
 package org.geoserver.wps.longitudinal;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.StreamWriteFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -11,7 +13,9 @@ import org.geoserver.wps.ppio.CDataPPIO;
 
 public class LongitudinalProfileProcessResultsPPIO extends CDataPPIO {
 
-    static final ObjectMapper MAPPER = new ObjectMapper();
+    static final ObjectMapper MAPPER = new ObjectMapper(JsonFactory.builder()
+            .enable(StreamWriteFeature.USE_FAST_DOUBLE_WRITER)
+            .build());
 
     public LongitudinalProfileProcessResultsPPIO() {
         super(

@@ -2,7 +2,7 @@
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
-package org.geoserver.wps.longitudinal.test;
+package org.geoserver.wps.longitudinal;
 
 import static org.custommonkey.xmlunit.XMLAssert.assertXpathExists;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -28,12 +28,12 @@ import org.geoserver.config.GeoServer;
 import org.geoserver.data.test.MockData;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.wps.WPSTestSupport;
-import org.geoserver.wps.longitudinal.LongitudinalProfileProcess;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.api.referencing.operation.TransformException;
 import org.geotools.data.util.DefaultProgressListener;
 import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.WKTReader;
 import org.w3c.dom.Document;
 
@@ -106,7 +106,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
                 Map.of(
                         "LAYER_NAME", COVERAGE_LAYER_NAME,
                         "GEOMETRY", LINESTRING_2154_WKT,
-                        "DISTANCE", "0.1"));
+                        "DISTANCE", "0.01"));
 
         Document d = postAsDOM(root(), requestXml);
         assertEquals("wps:ExecuteResponse", d.getDocumentElement().getNodeName());
@@ -116,7 +116,7 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertThat(
                 msg,
                 containsString("Too many points in the line, please increase the distance parameter "
-                        + "or reduce the line length. Would extract 17461 points, but maximum is 10000"));
+                        + "or reduce the line length. Would extract 174603 points, but maximum is 50000"));
     }
 
     @Test
@@ -288,7 +288,8 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         JSONObject infos = response.getJSONObject("infos");
         assertEquals(195.69, infos.get("altitudePositive"));
         assertEquals(-67.03, infos.get("altitudeNegative"));
-        assertEquals(0.020068234, infos.get("totalDistance"));
+        // check it's a meaningful distance in meters, not some random number in degrees
+        assertEquals(1746.9653, infos.get("totalDistance"));
         assertEquals(4.8166676, infos.get("firstPointX"));
         assertEquals(44.867462, infos.get("firstPointY"));
         assertEquals(4.8246484, infos.get("lastPointX"));
@@ -300,21 +301,21 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         assertEquals(11, profile.size());
 
         JSONObject profile3 = (JSONObject) profile.get(3);
-        assertEquals(0.0049660658, profile3.get("totalDistanceToThisPoint"));
+        assertEquals(457.51718, profile3.get("totalDistanceToThisPoint"));
         assertEquals(155.56, profile3.get("altitude"));
         assertEquals(102.00278, profile3.get("slope"));
         assertEquals(4.8206177, profile3.get("x"));
         assertEquals(44.864452, profile3.get("y"));
 
         JSONObject profile6 = (JSONObject) profile.get(6);
-        assertEquals(0.011652884, profile6.get("totalDistanceToThisPoint"));
+        assertEquals(991.8213, profile6.get("totalDistanceToThisPoint"));
         assertEquals(144.7, profile6.get("altitude"));
         assertEquals(81.24586, profile6.get("slope"));
         assertEquals(4.827228, profile6.get("x"));
         assertEquals(44.86546, profile6.get("y"));
 
         JSONObject profile9 = (JSONObject) profile.get(9);
-        assertEquals(0.018006066, profile9.get("totalDistanceToThisPoint"));
+        assertEquals(1554.6177, profile9.get("totalDistanceToThisPoint"));
         assertEquals(127.35, profile9.get("altitude"));
         assertEquals(66.208275, profile9.get("slope"));
         assertEquals(4.826243, profile9.get("x"));
@@ -326,18 +327,23 @@ public class LongitudinalProfileProcessTest extends WPSTestSupport {
         GeoServer geoServer = getGeoServer();
         CountDownLatch latch = new CountDownLatch(1);
         LongitudinalProfileProcess process = new LongitudinalProfileProcess(geoServer) {
+
             @Override
-            protected double calculateSlope(
-                    CoordinateReferenceSystem projection, Geometry previousPoint, Geometry point, double altitude)
-                    throws TransformException {
-                // wait for the latch to be released, to ensure the process cannot finish before
-                // the cancellation gets issued
-                try {
-                    latch.await();
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-                return super.calculateSlope(projection, previousPoint, point, altitude);
+            protected DistanceSlopeCalculator getDistanceSlopeCalculator(CoordinateReferenceSystem projection) {
+                return new DistanceSlopeCalculator(projection) {
+
+                    @Override
+                    public void next(Point next, double altitude) throws TransformException {
+                        // wait for the latch to be released, to ensure the process cannot finish before
+                        // the cancellation gets issued
+                        try {
+                            latch.await();
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                        super.next(next, altitude);
+                    }
+                };
             }
         };
 

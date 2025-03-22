@@ -13,14 +13,14 @@ window.onload = function() {
     // if this is just a coverage or a group of them, disable a few items,
     // and default to jpeg format
     format = 'image/png';
-    pureCoverage = document.getElementById('pureCoverage').value;
+    pureCoverage = document.getElementById('pureCoverage').value === "true";
     if(pureCoverage) {
         document.getElementById('antialiasSelector').disabled = true;
         document.getElementById('jpeg').selected = true;
         format = "image/jpeg";
     }
 
-    supportsFiltering = document.getElementById('supportsFiltering').value;
+    supportsFiltering = document.getElementById('supportsFiltering').value === "true";
     if (!supportsFiltering) {
         document.getElementById('filterType').disabled = true;
         document.getElementById('filter').disabled = true;

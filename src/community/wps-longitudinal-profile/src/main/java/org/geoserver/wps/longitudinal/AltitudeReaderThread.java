@@ -4,8 +4,9 @@
  */
 package org.geoserver.wps.longitudinal;
 
+import static java.math.RoundingMode.HALF_UP;
+
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +17,18 @@ import java.util.stream.Collectors;
 import org.geotools.api.data.FeatureSource;
 import org.geotools.api.data.Query;
 import org.geotools.api.feature.Feature;
+import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.filter.Filter;
+import org.geotools.api.filter.FilterFactory;
+import org.geotools.api.referencing.FactoryException;
+import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
+import org.geotools.api.referencing.operation.MathTransform;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.FeatureIterator;
-import org.geotools.filter.text.cql2.CQL;
-import org.geotools.geometry.Position2D;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.jaitools.jts.CoordinateSequence2D;
 import org.locationtech.jts.geom.Coordinate;
@@ -33,11 +40,12 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
     static final Logger LOGGER = Logging.getLogger(AltitudeReaderThread.class);
 
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
+    private static final FilterFactory FF = CommonFactoryFinder.getFilterFactory();
     private final ProgressListener monitor;
-
+    private final CoverageSampler sampler;
+    private final DistanceSlopeCalculator calculator;
+    private MathTransform tx;
     private List<ProfileVertice> pvs;
-    GridCoverage2D gridCoverage2D;
-    private int altitudeIndex;
     FeatureSource adjustmentFeatureSource;
     String altitudeName;
 
@@ -47,13 +55,21 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             FeatureSource adjustmentFeatureSource,
             String altitudeName,
             GridCoverage2D gridCoverage2D,
-            ProgressListener monitor) {
+            DistanceSlopeCalculator calculator,
+            ProgressListener monitor)
+            throws FactoryException {
         this.pvs = pvs;
-        this.gridCoverage2D = gridCoverage2D;
-        this.altitudeIndex = altitudeIndex;
         this.adjustmentFeatureSource = adjustmentFeatureSource;
         this.altitudeName = altitudeName;
         this.monitor = monitor;
+        this.calculator = calculator;
+        this.sampler = new CoverageSampler(gridCoverage2D, altitudeIndex);
+
+        // do we need to reproject the points?
+        CoordinateReferenceSystem targetProjection = calculator.getProjection();
+        CoordinateReferenceSystem sourceProjection = gridCoverage2D.getCoordinateReferenceSystem2D();
+        if (CRS.isTransformationRequired(sourceProjection, targetProjection))
+            this.tx = CRS.findMathTransform(sourceProjection, targetProjection, true);
     }
 
     @Override
@@ -66,9 +82,10 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
 
         Map<Geometry, Double> adjGeomValues = new HashMap<>();
         if (adjustmentFeatureSource != null) {
-            Filter filter = CQL.toFilter("INTERSECTS(the_geom, " + geometry.toText() + ")");
-            Query query =
-                    new Query(adjustmentFeatureSource.getSchema().getName().getLocalPart(), filter);
+            FeatureType schema = adjustmentFeatureSource.getSchema();
+            Filter filter =
+                    FF.intersects(FF.property(schema.getGeometryDescriptor().getName()), FF.literal(geometry));
+            Query query = new Query(schema.getName().getLocalPart(), filter);
             try (FeatureIterator<?> featureIterator =
                     adjustmentFeatureSource.getFeatures(query).features()) {
                 while (featureIterator.hasNext()) {
@@ -81,53 +98,46 @@ class AltitudeReaderThread implements Callable<List<ProfileVertice>> {
             }
         }
 
+        boolean first = true;
         for (ProfileVertice pv : pvs) {
             LOGGER.fine("processing position:" + pv.getCoordinate());
-            Double altCorrection = 0.0;
-            for (Map.Entry<Geometry, Double> entry : adjGeomValues.entrySet()) {
-                if (entry.getKey()
-                        .intersects(new Point(
-                                new CoordinateSequence2D(pv.getCoordinate().x, pv.getCoordinate().y),
-                                GEOMETRY_FACTORY))) {
-                    altCorrection = entry.getValue();
-                    break;
-                }
+            Point point =
+                    new Point(new CoordinateSequence2D(pv.getCoordinate().x, pv.getCoordinate().y), GEOMETRY_FACTORY);
+            Double altCorrection = getAltitudeCorrection(adjGeomValues, point);
+
+            double altitude = sampler.sample(pv.getCoordinate());
+            double roundedAltitude =
+                    BigDecimal.valueOf(altitude).setScale(2, HALF_UP).doubleValue();
+            pv.setAltitude(roundedAltitude - altCorrection);
+
+            // reproject if necessary
+            if (this.tx != null) {
+                point = (Point) JTS.transform(point, tx);
+                pv.setCoordinate(point.getCoordinate());
             }
 
-            double altitude = getAltitude(
-                    gridCoverage2D, new Position2D(pv.getCoordinate().x, pv.getCoordinate().y), altitudeIndex);
-            pv.setAltitude(altitude - altCorrection);
+            // compute distance and slope
+            calculator.next(point, pv.getAltitude());
+            if (first) {
+                first = false;
+            } else {
+                pv.setDistancePrevious(calculator.getDistance());
+                pv.setSlope(calculator.getSlope());
+            }
 
             if (monitor.isCanceled()) return null;
         }
         return pvs;
     }
 
-    private static double getAltitude(GridCoverage2D gridCoverage2D, Position2D position2D, int altitudeIndex) {
-        double altitude = calculateAltitude(gridCoverage2D.evaluate(position2D), altitudeIndex);
-        // Round altitude
-        altitude =
-                BigDecimal.valueOf(altitude).setScale(2, RoundingMode.HALF_UP).doubleValue();
-
-        return altitude;
-    }
-
-    private static double calculateAltitude(Object obj, int altitudeIndex) {
-        Class<?> objectClass = obj.getClass();
-        if (objectClass.isArray()) {
-            switch (objectClass.getComponentType().getName()) {
-                case "byte":
-                    return ((byte[]) obj)[altitudeIndex];
-                case "int":
-                    return ((int[]) obj)[altitudeIndex];
-                case "float":
-                    return ((float[]) obj)[altitudeIndex];
-                case "double":
-                    return ((double[]) obj)[altitudeIndex];
-                default:
-                    // Do nothing
+    private static Double getAltitudeCorrection(Map<Geometry, Double> adjGeomValues, Point point) {
+        Double altCorrection = 0.0;
+        for (Map.Entry<Geometry, Double> entry : adjGeomValues.entrySet()) {
+            if (entry.getKey().intersects(point)) {
+                altCorrection = entry.getValue();
+                break;
             }
         }
-        throw new IllegalArgumentException();
+        return altCorrection;
     }
 }

@@ -229,7 +229,7 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
         namespaces.put("crs", "http://www.opengis.net/wcs/crs/1.0");
         namespaces.put("ows", "http://www.opengis.net/ows/2.0");
         namespaces.put("xlink", "http://www.w3.org/1999/xlink");
-        namespaces.put("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+        namespaces.put("int", "https://www.opengis.net/wcs/interpolation/1.0");
         namespaces.put("gmlcov", "http://www.opengis.net/gmlcov/1.0");
         namespaces.put("swe", "http://www.opengis.net/swe/2.0");
         namespaces.put("gml", "http://www.opengis.net/gml/3.2");
@@ -335,15 +335,15 @@ public abstract class WCSTestSupport extends GeoServerSystemTestSupport {
                 dom);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])",
+                "count(//wcs:ServiceMetadata/wcs:Extension/int:InterpolationMetadata[int:InterpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor'])",
                 dom);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])",
+                "count(//wcs:ServiceMetadata/wcs:Extension/int:InterpolationMetadata[int:InterpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/linear'])",
                 dom);
         assertXpathEvaluatesTo(
                 "1",
-                "count(//wcs:ServiceMetadata/wcs:Extension[int:interpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])",
+                "count(//wcs:ServiceMetadata/wcs:Extension/int:InterpolationMetadata[int:InterpolationSupported='http://www.opengis.net/def/interpolation/OGC/1/cubic'])",
                 dom);
 
         // check that the bbox in the utm11 layer is reported as configured

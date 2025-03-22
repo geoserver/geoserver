@@ -1,0 +1,17 @@
+services:
+  geoserver:
+    image: ogccite/geoserver:wcs20
+    build:
+      args:
+        # Yes, the same as WCS 1.1, no need to change
+        GEOSERVER_DATA_DIR_SRC: "./wcs11/citewcs-1.1"
+
+  teamengine:
+    # Use the latest build to get the CITE test suite fixes from GeoServer
+    image: ogccite/ets-wcs20:latest
+    healthcheck:
+      test: "curl -f http://localhost:8080/teamengine/ || exit 1"
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 5s

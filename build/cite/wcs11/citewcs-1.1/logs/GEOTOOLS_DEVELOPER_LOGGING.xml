@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This log4j configuration file needs to stay here, and is used as a default logging setup   -->
+<!-- during data_dir upgrades and in case the chosen logging config isn't available.            -->
+<Configuration name="GEOTOOLS_DEVELOPER_LOGGING" status="fatal" dest="out">
+    <!-- As GeoTools uses java.util.logging levels instead of log4j, GeoServer makes the        -->
+    <!-- following mappings to adjust the log4j levels specified in this file.                  -->
+    <!--                                                                                        -->
+    <!-- Log4J Level          java.util.logging Level                                           -->
+    <!-- ==================== =======================                                           -->
+    <!-- ALL                   ALL                                                              -->
+    <!-- FINEST                FINEST                                                           -->
+    <!-- TRACE                 FINER                                                            -->
+    <!-- DEBUG                 FINE                                                             -->
+    <!-- CONFIG                CONFIG                                                           -->
+    <!-- INFO                  INFO                                                             -->
+    <!-- WARN                  WARNING                                                          -->
+    <!-- ERROR                 SEVERE                                                           -->
+    <!-- FATAL                 FATAL                                                            -->
+    <!-- OFF                   OFF                                                              -->
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+        </Console>
+        <RollingFile name="geoserverlogfile">
+            <filename>logs/geoserver.log</filename>
+            <filePattern>logs/geoserver-%i.log</filePattern>
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="20 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="3" fileIndex="min"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+
+        <Logger name="org.geotools" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.factory" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.renderer" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.data" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.feature" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.filter" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.geotools.filter" level="trace" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.geoserver" level="CONFIG" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+        <Logger name="org.vfny.geoserver" level="CONFIG" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Logger name="org.springframework" level="warn" additivity="false">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Logger>
+
+        <Root level="warn">
+            <AppenderRef ref="stdout"/>
+            <AppenderRef ref="geoserverlogfile"/>
+        </Root>
+    </Loggers>
+</Configuration>

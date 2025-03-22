@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<values>
+ <value key="url">http://geoserver:8080/geoserver/ows?request=GetCapabilities&amp;service=WCS</value>
+ <value key="core">core</value>
+ <value key="scaling">scaling</value>
+ <value key="range_subsetting">range_subsetting</value>
+ <value key="crs">crs</value>
+</values>

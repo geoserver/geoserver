@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This log4j configuration file needs to stay here, and is used as the default logging setup -->
+<!-- during data_dir upgrades and in case the chosen logging config isn't available.            -->
+<Configuration name="QUIET_LOGGING" status="off" dest="out">
+    <Appenders>
+        <Console name="stdout" target="SYSTEM_OUT">
+            <PatternLayout pattern="%date{dd MMM HH:mm:ss} %-6level [%logger{2}] - %msg%n%throwable{filters(org.junit,org.apache.maven,sun.reflect,java.lang.reflect)}"/>
+        </Console>
+    </Appenders>
+    <Loggers>
+        <Root level="off">
+            <AppenderRef ref="stdout"/>
+        </Root>
+    </Loggers>
+</Configuration>

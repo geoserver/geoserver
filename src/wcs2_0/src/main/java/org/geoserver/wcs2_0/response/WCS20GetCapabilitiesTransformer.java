@@ -135,7 +135,7 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
             // register namespaces provided by extended capabilities
             NamespaceSupport namespaces = getNamespaceSupport();
             namespaces.declarePrefix("wcs", "http://www.opengis.net/wcs/2.0");
-            namespaces.declarePrefix("int", "http://www.opengis.net/WCS_service-extension_interpolation/1.0");
+            namespaces.declarePrefix("int", "https://www.opengis.net/wcs/interpolation/1.0");
 
             namespaces.declarePrefix("crs", "http://www.opengis.net/wcs/crs/1.0");
 
@@ -304,10 +304,13 @@ public class WCS20GetCapabilitiesTransformer extends TransformerBase {
                 element("crs:crsSupported", code);
             }
             end("crs:CrsMetadata");
+
             // add the supported interpolation methods
-            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
-            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
-            element("int:interpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            start("int:InterpolationMetadata");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/nearest-neighbor");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/linear");
+            element("int:InterpolationSupported", "http://www.opengis.net/def/interpolation/OGC/1/cubic");
+            end("int:InterpolationMetadata");
 
             end("wcs:Extension");
 

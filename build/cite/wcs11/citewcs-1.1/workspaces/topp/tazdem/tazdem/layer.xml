@@ -1,0 +1,17 @@
+<layer>
+  <name>tazdem</name>
+  <id>LayerInfoImpl--14e58cab:19359ba45ca:-7ff0</id>
+  <path>/</path>
+  <type>RASTER</type>
+  <defaultStyle>
+    <id>StyleInfoImpl--14e58cab:19359ba45ca:-7ffa</id>
+  </defaultStyle>
+  <resource class="coverage">
+    <id>CoverageInfoImpl--14e58cab:19359ba45ca:-7ff1</id>
+  </resource>
+  <attribution>
+    <logoWidth>0</logoWidth>
+    <logoHeight>0</logoHeight>
+  </attribution>
+  <dateModified>2024-11-23 16:02:32.38 UTC</dateModified>
+</layer>

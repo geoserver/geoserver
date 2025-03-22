@@ -81,7 +81,7 @@ ifndef suite
 	@$(MAKE) help
 	@exit 1
 endif
-ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 geotiff11 gpkg12))
+ifneq (,$(filter $(suite),ogcapi-features10 wms11 wms13 wmts10 wfs10 wfs20 wcs11 wcs20 geotiff11 gpkg12))
 	@$(MAKE) test-rest suite=$(suite)
 else
 	@$(MAKE) test-cli suite=$(suite)

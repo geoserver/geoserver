@@ -1,0 +1,108 @@
+<coverage>
+  <id>CoverageInfoImpl--14e58cab:19359ba45ca:-7ff1</id>
+  <name>tazdem</name>
+  <nativeName>tazdem</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--14e58cab:19359ba45ca:-7ffe</id>
+  </namespace>
+  <title>Tasmania dem</title>
+  <description>Tasmania dem portion from GTOPO30 data set</description>
+  <keywords>
+    <string>WCS</string>
+    <string>tazdem</string>
+    <string>tazdem</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>144.999999999998</minx>
+    <maxx>145.9999999999976</maxx>
+    <miny>-42.999999999986805</miny>
+    <maxy>-40.99999999998761</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>144.999999999998</minx>
+    <maxx>145.9999999999976</maxx>
+    <miny>-42.999999999986805</miny>
+    <maxy>-40.99999999998761</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="dirName">tazdem_tazdem</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--14e58cab:19359ba45ca:-7ff8</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <nativeFormat>GeoTIFF</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>120 240</high>
+    </range>
+    <transform>
+      <scaleX>0.00833333333333</scaleX>
+      <scaleY>-0.00833333333333</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>145.00416666666467</translateX>
+      <translateY>-41.00416666665427</translateY>
+    </transform>
+    <crs>EPSG:4326</crs>
+  </grid>
+  <supportedFormats>
+    <string>GEOTIFF</string>
+    <string>TIFF</string>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>DEBUG</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+    <string>bilinear</string>
+    <string>bicubic</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>GRAY_INDEX</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <nullValues>
+        <double>-9999.0</double>
+      </nullValues>
+      <dimensionType>
+        <name>UNSIGNED_16BITS</name>
+      </dimensionType>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:4326</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:4326</string>
+  </responseSRS>
+  <parameters>
+    <entry>
+      <string>RescalePixels</string>
+      <boolean>false</boolean>
+    </entry>
+  </parameters>
+</coverage>

@@ -1,0 +1,104 @@
+<global>
+  <settings>
+    <id>SettingsInfoImpl--14e58cab:19359ba45ca:-7fee</id>
+    <contact>
+      <id>contact</id>
+      <address>349 West 12th Street #3</address>
+      <addressCity>New York</addressCity>
+      <addressCountry>USA</addressCountry>
+      <addressPostalCode>10014</addressPostalCode>
+      <addressState>New York</addressState>
+      <addressType>Office</addressType>
+      <contactEmail>nobody@openplans.org</contactEmail>
+      <contactFacsimile>646.390.2624</contactFacsimile>
+      <contactOrganization>The Open Planning Project</contactOrganization>
+      <contactPerson>Chris Holmes</contactPerson>
+      <contactPosition>Tecnical director</contactPosition>
+      <contactVoice>212.796.4220</contactVoice>
+    </contact>
+    <charset>UTF-8</charset>
+    <numDecimals>8</numDecimals>
+    <onlineResource>http://geoserver.org</onlineResource>
+    <verbose>false</verbose>
+    <verboseExceptions>false</verboseExceptions>
+    <metadata>
+      <map>
+        <entry>
+          <string>CogSettings.Key</string>
+          <cogSettings>
+            <useCachingStream>false</useCachingStream>
+            <rangeReaderSettings>HTTP</rangeReaderSettings>
+          </cogSettings>
+        </entry>
+        <entry>
+          <string>quietOnNotFound</string>
+          <boolean>false</boolean>
+        </entry>
+      </map>
+    </metadata>
+    <localWorkspaceIncludesPrefix>false</localWorkspaceIncludesPrefix>
+    <showCreatedTimeColumnsInAdminList>false</showCreatedTimeColumnsInAdminList>
+    <showModifiedTimeColumnsInAdminList>false</showModifiedTimeColumnsInAdminList>
+    <useHeadersProxyURL>false</useHeadersProxyURL>
+  </settings>
+  <jai>
+    <allowInterpolation>false</allowInterpolation>
+    <recycling>true</recycling>
+    <tilePriority>5</tilePriority>
+    <tileThreads>7</tileThreads>
+    <memoryCapacity>0.5</memoryCapacity>
+    <memoryThreshold>0.75</memoryThreshold>
+    <imageIOCache>false</imageIOCache>
+    <pngAcceleration>false</pngAcceleration>
+    <jpegAcceleration>true</jpegAcceleration>
+    <allowNativeMosaic>false</allowNativeMosaic>
+    <allowNativeWarp>false</allowNativeWarp>
+    <pngEncoderType>NATIVE</pngEncoderType>
+    <jaiext>
+      <jaiExtOperations class="sorted-set">
+        <string>Affine</string>
+        <string>BandCombine</string>
+        <string>BandMerge</string>
+        <string>BandSelect</string>
+        <string>Binarize</string>
+        <string>Border</string>
+        <string>ColorConvert</string>
+        <string>Crop</string>
+        <string>ErrorDiffusion</string>
+        <string>Format</string>
+        <string>ImageFunction</string>
+        <string>Lookup</string>
+        <string>Mosaic</string>
+        <string>Null</string>
+        <string>OrderedDither</string>
+        <string>Rescale</string>
+        <string>Scale</string>
+        <string>Stats</string>
+        <string>Translate</string>
+        <string>Warp</string>
+        <string>algebric</string>
+        <string>operationConst</string>
+      </jaiExtOperations>
+    </jaiext>
+  </jai>
+  <coverageAccess>
+    <maxPoolSize>5</maxPoolSize>
+    <corePoolSize>5</corePoolSize>
+    <keepAliveTime>30000</keepAliveTime>
+    <queueType>UNBOUNDED</queueType>
+    <imageIOCacheThreshold>10240</imageIOCacheThreshold>
+  </coverageAccess>
+  <metadata>
+    <entry key="logRequestsEnabled">true</entry>
+    <entry key="logHeadersEnabled">false</entry>
+    <entry key="logBodiesEnabled">true</entry>
+  </metadata>
+  <updateSequence>29</updateSequence>
+  <featureTypeCacheSize>0</featureTypeCacheSize>
+  <globalServices>true</globalServices>
+  <xmlPostRequestLogBufferSize>4096</xmlPostRequestLogBufferSize>
+  <xmlExternalEntitiesEnabled>false</xmlExternalEntitiesEnabled>
+  <trailingSlashMatch>true</trailingSlashMatch>
+  <webUIMode>DEFAULT</webUIMode>
+  <allowStoredQueriesPerWorkspace>true</allowStoredQueriesPerWorkspace>
+</global>

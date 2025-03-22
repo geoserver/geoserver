@@ -1,0 +1,130 @@
+<coverage>
+  <id>CoverageInfoImpl--14e58cab:19359ba45ca:-7ff5</id>
+  <name>tazbm</name>
+  <nativeName>tazbm</nativeName>
+  <namespace>
+    <id>NamespaceInfoImpl--14e58cab:19359ba45ca:-7ffe</id>
+  </namespace>
+  <title>Tasmania Bluemarble portion</title>
+  <description>Tasmania Bluemarble portion extracted with the file GDAL utilities</description>
+  <keywords>
+    <string>WCS</string>
+    <string>dem</string>
+    <string>tazbm</string>
+  </keywords>
+  <nativeCRS>GEOGCS[&quot;WGS 84&quot;, 
+  DATUM[&quot;World Geodetic System 1984&quot;, 
+    SPHEROID[&quot;WGS 84&quot;, 6378137.0, 298.257223563, AUTHORITY[&quot;EPSG&quot;,&quot;7030&quot;]], 
+    AUTHORITY[&quot;EPSG&quot;,&quot;6326&quot;]], 
+  PRIMEM[&quot;Greenwich&quot;, 0.0, AUTHORITY[&quot;EPSG&quot;,&quot;8901&quot;]], 
+  UNIT[&quot;degree&quot;, 0.017453292519943295], 
+  AXIS[&quot;Geodetic longitude&quot;, EAST], 
+  AXIS[&quot;Geodetic latitude&quot;, NORTH], 
+  AUTHORITY[&quot;EPSG&quot;,&quot;4326&quot;]]</nativeCRS>
+  <srs>EPSG:4326</srs>
+  <nativeBoundingBox>
+    <minx>146.49999999999477</minx>
+    <maxx>147.99999999999474</maxx>
+    <miny>-44.49999999999785</miny>
+    <maxy>-42.99999999999787</maxy>
+    <crs>EPSG:4326</crs>
+  </nativeBoundingBox>
+  <latLonBoundingBox>
+    <minx>146.49999999999477</minx>
+    <maxx>147.99999999999474</maxx>
+    <miny>-44.49999999999785</miny>
+    <maxy>-42.99999999999787</maxy>
+    <crs>EPSG:4326</crs>
+  </latLonBoundingBox>
+  <enabled>true</enabled>
+  <metadata>
+    <entry key="dirName">dem_tazbm</entry>
+  </metadata>
+  <store class="coverageStore">
+    <id>CoverageStoreInfoImpl--14e58cab:19359ba45ca:-7ff7</id>
+  </store>
+  <serviceConfiguration>false</serviceConfiguration>
+  <simpleConversionEnabled>false</simpleConversionEnabled>
+  <internationalTitle/>
+  <internationalAbstract/>
+  <nativeFormat>GeoTIFF</nativeFormat>
+  <grid dimension="2">
+    <range>
+      <low>0 0</low>
+      <high>360 360</high>
+    </range>
+    <transform>
+      <scaleX>0.0041666666666666</scaleX>
+      <scaleY>-0.0041666666666666</scaleY>
+      <shearX>0.0</shearX>
+      <shearY>0.0</shearY>
+      <translateX>146.5020833333281</translateX>
+      <translateY>-43.0020833333312</translateY>
+    </transform>
+    <crs>EPSG:4326</crs>
+  </grid>
+  <supportedFormats>
+    <string>GEOTIFF</string>
+    <string>TIFF</string>
+    <string>GIF</string>
+    <string>PNG</string>
+    <string>JPEG</string>
+    <string>DEBUG</string>
+  </supportedFormats>
+  <interpolationMethods>
+    <string>nearest neighbor</string>
+    <string>bilinear</string>
+    <string>bicubic</string>
+  </interpolationMethods>
+  <defaultInterpolationMethod>nearest neighbor</defaultInterpolationMethod>
+  <dimensions>
+    <coverageDimension>
+      <name>RED_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>GREEN_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+    <coverageDimension>
+      <name>BLUE_BAND</name>
+      <description>GridSampleDimension[-Infinity,Infinity]</description>
+      <range>
+        <min>-inf</min>
+        <max>inf</max>
+      </range>
+      <unit>W.m-2.Sr-1</unit>
+      <dimensionType>
+        <name>UNSIGNED_8BITS</name>
+      </dimensionType>
+    </coverageDimension>
+  </dimensions>
+  <requestSRS>
+    <string>EPSG:4326</string>
+  </requestSRS>
+  <responseSRS>
+    <string>EPSG:4326</string>
+  </responseSRS>
+  <parameters>
+    <entry>
+      <string>RescalePixels</string>
+      <boolean>false</boolean>
+    </entry>
+  </parameters>
+</coverage>

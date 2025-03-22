@@ -38,6 +38,7 @@ Process accepts following parameters:
 **Required:**
 
 #. layerName - name of the raster layer (coverage) which will be used for altitude profile creation
+#. coverage - the actual raster to be used for altitude profile creation. This is an alternative to layerName, allows for process chaining (a chained process might have computed the input coverage)
 #. geometry - geometry in wkt or ewkt format, along which the altitude profile will be created. If wkt is used, its CRS will be assumed as CRS of coverage.
 #. distance - maximal distance between points of altitude profile
 
@@ -80,3 +81,14 @@ The profile object contains an array of points.
 .. note::
    It's possible to set wpsLongitudinalMaxThreadPoolSize (integer value) environment variable to limit the size of the extension's thread pool.
    It's possible to set wpsLongitudinalVerticesChunkSize (integer value) environment variable to define number of vertices processed in a chunk.
+
+Tunables and safeguards
+-----------------------
+
+The WPS longitudinal profile process is designed to be used with large datasets and may extract
+many points from the input geometry. To avoid performance issues, the process has a number of tunables and safeguards,
+that the system administrator can specify as system or environement variables:
+
+* ``wpsLongitudinalMaxPoints``: maximum number of points to be extracted from the input geometry. The default value is 50000 (amounts to a memory usage of a few megabytes).
+* ``wpsLongitudinalMaxThreadPoolSize``: size of the background thread pool used by the process to speed up calculations (all calls use the same pool). The default value matches the numbers of CPU threads.
+* ``wpsLongitudinalVerticesChunkSize```: number of vertices processed in a single background thread call. The default value is 5000.

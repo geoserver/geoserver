@@ -38,6 +38,8 @@ import org.vfny.geoserver.util.Requests;
 
 public class ContentSecurityPolicyTest {
 
+    private static final CSPConfiguration DEFAULT_CONFIG = CSPDefaultConfiguration.newInstance();
+
     @ClassRule
     public static TemporaryFolder folder = new TemporaryFolder();
 
@@ -69,13 +71,7 @@ public class ContentSecurityPolicyTest {
 
     @Before
     public void resetDAO() throws Exception {
-        // read config from disk to remove in-memory changes
-        dao.reset();
-        // set report only to false and save it to disk
-        CSPConfiguration config = dao.getConfig();
-        config.setReportOnly(false);
-        dao.setConfig(config);
-        // read config from disk again since system properties are read only once
+        dao.setConfig(DEFAULT_CONFIG);
         dao.reset();
     }
 
@@ -86,6 +82,7 @@ public class ContentSecurityPolicyTest {
         System.clearProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_POLICY);
         System.clearProperty(CSPUtils.GEOSERVER_CSP_FALLBACK);
         System.clearProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES);
+        System.clearProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION);
         System.clearProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS);
         System.clearProperty(Requests.PROXY_PARAM);
         System.clearProperty("GEOSERVER_DISABLE_STATIC_WEB_FILES");
@@ -97,6 +94,7 @@ public class ContentSecurityPolicyTest {
         // no header if config disabled
         CSPConfiguration config = dao.getConfig();
         config.setEnabled(false);
+        dao.setConfig(config);
         assertHeader(null, "GET", null, null, null);
     }
 
@@ -105,6 +103,7 @@ public class ContentSecurityPolicyTest {
         // no header if all policies disabled
         CSPConfiguration config = dao.getConfig();
         config.getPolicies().forEach(p -> p.setEnabled(false));
+        dao.setConfig(config);
         assertHeader(null, "GET", null, null, null);
     }
 
@@ -113,6 +112,7 @@ public class ContentSecurityPolicyTest {
         // no header if all rules disabled
         CSPConfiguration config = dao.getConfig();
         config.getPolicies().forEach(p -> p.getRules().forEach(r -> r.setEnabled(false)));
+        dao.setConfig(config);
         assertHeader(null, "GET", null, null, null);
     }
 
@@ -144,249 +144,396 @@ public class ContentSecurityPolicyTest {
 
     @Test
     public void testGET() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", null, null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testHEAD() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "HEAD", null, null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "HEAD", null, null, null);
     }
 
     @Test
     public void testPOST() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "POST", null, null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "POST", null, null, null);
     }
 
     @Test
     public void testPUT() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "PUT", null, null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "PUT", null, null, null);
     }
 
     @Test
     public void testDELETE() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "DELETE", null, null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "DELETE", null, null, null);
     }
 
     @Test
     public void testInjectProxyBaseURLNotSet() throws Exception {
         // no proxy base URL is set
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
         CSPConfiguration config = dao.getConfig();
         config.setInjectProxyBase(true);
-        assertHeader(actual, "GET", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testInjectProxyBaseURLWithoutPort() throws Exception {
         // no proxy base URL is set
-        String actual =
-                "base-uri 'self'; form-action 'self' http://foo; default-src 'none'; child-src 'self' http://foo; "
-                        + "connect-src 'self' http://foo; font-src 'self' http://foo; "
-                        + "img-src 'self' http://foo data:; style-src 'self' http://foo 'unsafe-inline'; "
-                        + "script-src 'self' http://foo;, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self' http://foo; "
+                + "connect-src 'self' http://foo; font-src 'self' http://foo; img-src 'self' http://foo data:; "
+                + "style-src 'self' http://foo 'unsafe-inline'; script-src 'self' http://foo; "
+                + "form-action 'self' http://foo; frame-ancestors 'self';";
         System.setProperty(Requests.PROXY_PARAM, "http://foo");
         CSPConfiguration config = dao.getConfig();
         config.setInjectProxyBase(true);
-        assertHeader(actual, "GET", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testInjectProxyBaseURLWithPort() throws Exception {
         // no proxy base URL is set
-        String actual =
-                "base-uri 'self'; form-action 'self' http://foo:8080; default-src 'none'; child-src 'self' http://foo:8080; "
-                        + "connect-src 'self' http://foo:8080; font-src 'self' http://foo:8080; "
-                        + "img-src 'self' http://foo:8080 data:; style-src 'self' http://foo:8080 'unsafe-inline'; "
-                        + "script-src 'self' http://foo:8080;, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self' http://foo:8080; "
+                + "connect-src 'self' http://foo:8080; font-src 'self' http://foo:8080; "
+                + "img-src 'self' http://foo:8080 data:; style-src 'self' http://foo:8080 'unsafe-inline'; "
+                + "script-src 'self' http://foo:8080; form-action 'self' http://foo:8080; frame-ancestors 'self';";
         System.setProperty(Requests.PROXY_PARAM, "http://foo:8080");
         CSPConfiguration config = dao.getConfig();
         config.setInjectProxyBase(true);
-        assertHeader(actual, "GET", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testInjectProxyBaseURLRequestToProxy() throws Exception {
         // no proxy base URL is set
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
         System.setProperty(Requests.PROXY_PARAM, "http://localhost");
         CSPConfiguration config = dao.getConfig();
         config.setInjectProxyBase(true);
-        assertHeader(actual, "GET", null, null, null);
-    }
-
-    @Test
-    public void testInjectProxyBaseURLNothingToInject() throws Exception {
-        CSPConfiguration config = dao.getConfig();
-        config.setInjectProxyBase(true);
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors 'self';", "HEAD", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testStaticWebFileDisabled() throws Exception {
         System.setProperty("GEOSERVER_DISABLE_STATIC_WEB_FILES", "true");
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileScriptSelf() throws Exception {
         System.setProperty("GEOSERVER_STATIC_WEB_FILES_SCRIPT", "SELF");
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileNoRemoteResources() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self' 'unsafe-inline' 'unsafe-eval';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                + "script-src 'self' 'unsafe-inline' 'unsafe-eval'; form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileInvalidRemoteResources() throws Exception {
         System.setProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES, "~!@#$");
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self' 'unsafe-inline' 'unsafe-eval';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                + "script-src 'self' 'unsafe-inline' 'unsafe-eval'; form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileRemoteResourcesProperty() throws Exception {
         System.setProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES, "http://foo");
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self' http://foo; img-src 'self' http://foo data:; "
-                        + "style-src 'self' http://foo 'unsafe-inline'; "
-                        + "script-src 'self' http://foo 'unsafe-inline' 'unsafe-eval';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self' http://foo; img-src 'self' http://foo data:; "
+                + "style-src 'self' http://foo 'unsafe-inline'; "
+                + "script-src 'self' http://foo 'unsafe-inline' 'unsafe-eval'; form-action 'self'; "
+                + "frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileRemoteResourcesField() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self' http://bar; img-src 'self' http://bar data:; "
-                        + "style-src 'self' http://bar 'unsafe-inline'; "
-                        + "script-src 'self' http://bar 'unsafe-inline' 'unsafe-eval';, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self' http://bar; img-src 'self' http://bar data:; "
+                + "style-src 'self' http://bar 'unsafe-inline'; "
+                + "script-src 'self' http://bar 'unsafe-inline' 'unsafe-eval'; form-action 'self'; "
+                + "frame-ancestors 'self';";
         CSPConfiguration config = dao.getConfig();
         config.setRemoteResources("http://bar");
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testStaticWebFileRemoteResourcesPropertyAndField() throws Exception {
         System.setProperty(CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES, "http://foo");
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self' http://foo; img-src 'self' http://foo data:; "
-                        + "style-src 'self' http://foo 'unsafe-inline'; "
-                        + "script-src 'self' http://foo 'unsafe-inline' 'unsafe-eval';, frame-ancestors 'self';";
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self' http://foo; img-src 'self' http://foo data:; "
+                + "style-src 'self' http://foo 'unsafe-inline'; "
+                + "script-src 'self' http://foo 'unsafe-inline' 'unsafe-eval'; form-action 'self'; "
+                + "frame-ancestors 'self';";
         CSPConfiguration config = dao.getConfig();
         config.setRemoteResources("http://bar");
-        assertHeader(actual, "GET", "/www/index.html", null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", "/www/index.html", null, null);
     }
 
     @Test
     public void testIndexPage() throws Exception {
-        String actual =
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
-                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
-                        + "script-src 'self' 'unsafe-inline';, frame-ancestors 'self';";
-        assertHeader(actual, "GET", "/index.html", null, null);
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                + "script-src 'self' 'unsafe-inline'; form-action 'self'; frame-ancestors 'self';";
+        assertHeader(expected, "GET", "/index.html", null, null);
+    }
+
+    @Test
+    public void testFormActionPropertyValid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self' https:; frame-ancestors 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION, "'self' https:");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionPropertyMissingSelf() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self' https:; frame-ancestors 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION, "https:");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionPropertyInvalid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "frame-ancestors 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION, "~!@#$%^&*()_+");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionPropertyHIDE() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "frame-ancestors 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION, "HIDE");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionFieldValid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self' http:; frame-ancestors 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFormAction("'self' http:");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionFieldMissingSelf() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self' http:; frame-ancestors 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFormAction("http:");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionFieldInvalid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "frame-ancestors 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFormAction("~!@#$%^&*()_+");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionFieldHIDE() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "frame-ancestors 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFormAction("HIDE");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFormActionPropertyAndField() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self' https:; frame-ancestors 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FORM_ACTION, "https:");
+        CSPConfiguration config = dao.getConfig();
+        config.setFormAction("http:");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testFrameAncestorsSAMEORIGIN() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self';";
         System.setProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_POLICY, "SAMEORIGIN");
-        CSPConfiguration config = dao.getConfig();
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors 'self';", "GET", null, null, null);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testFrameAncestorsDENY() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'none';";
         System.setProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_POLICY, "DENY");
-        CSPConfiguration config = dao.getConfig();
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors 'none';", "GET", null, null, null);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testFrameAncestorsALLOWFROM() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
         System.setProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_POLICY, "ALLOW-FROM http://foo");
-        CSPConfiguration config = dao.getConfig();
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader(null, "GET", null, null, null);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testFrameAncestorsXFrameDisabled() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
         System.setProperty(SecurityHeadersFilter.GEOSERVER_XFRAME_SHOULD_SET_POLICY, "false");
-        CSPConfiguration config = dao.getConfig();
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader(null, "GET", null, null, null);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
-    public void testFrameAncestorsProperty() throws Exception {
+    public void testFrameAncestorsPropertyValid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self' https:;";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS, "'self' https:");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsPropertyMissingSelf() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self' https:;";
         System.setProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS, "https:");
-        CSPConfiguration config = dao.getConfig();
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors https:;", "GET", null, null, null);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
-    public void testFrameAncestorsField() throws Exception {
+    public void testFrameAncestorsPropertyInvalid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS, "~!@#$%^&*()_+");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsPropertyHIDE() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
+        System.setProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS, "HIDE");
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsFieldValid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self' http:;";
+        CSPConfiguration config = dao.getConfig();
+        config.setFrameAncestors("'self' http:");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsFieldMissingSelf() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self' http:;";
         CSPConfiguration config = dao.getConfig();
         config.setFrameAncestors("http:");
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors http:;", "GET", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsFieldInvalid() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFrameAncestors("~!@#$%^&*()_+");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
+    }
+
+    @Test
+    public void testFrameAncestorsFieldHIDE() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self';";
+        CSPConfiguration config = dao.getConfig();
+        config.setFrameAncestors("HIDE");
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     @Test
     public void testFrameAncestorsPropertyAndField() throws Exception {
+        String expected = "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                + "form-action 'self'; frame-ancestors 'self' https:;";
         System.setProperty(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS, "https:");
         CSPConfiguration config = dao.getConfig();
         config.setFrameAncestors("http:");
-        config.getPolicies().get(0).setEnabled(false);
-        assertHeader("frame-ancestors https:;", "GET", null, null, null);
+        dao.setConfig(config);
+        assertHeader(expected, "GET", null, null, null);
     }
 
     private static void assertHeader(

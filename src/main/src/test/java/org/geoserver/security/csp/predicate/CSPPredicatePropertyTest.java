@@ -20,7 +20,7 @@ import org.springframework.mock.web.MockHttpServletRequest;
 
 public class CSPPredicatePropertyTest {
 
-    private static final String KEY = CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS;
+    private static final String KEY = CSPUtils.GEOSERVER_CSP_REMOTE_RESOURCES;
 
     private MockHttpServletRequest request = null;
 
@@ -67,14 +67,14 @@ public class CSPPredicatePropertyTest {
     @Test
     public void testPredicateFieldSetMatches() {
         System.clearProperty(KEY);
-        this.config.setFrameAncestors("true");
+        this.config.setRemoteResources("true");
         assertTrue(new CSPPredicateProperty(KEY, "^true$").test(this.wrapper));
     }
 
     @Test
     public void testPredicateFieldSetNotMatches() {
         System.clearProperty(KEY);
-        this.config.setFrameAncestors("false");
+        this.config.setRemoteResources("false");
         assertFalse(new CSPPredicateProperty(KEY, "^true$").test(this.wrapper));
     }
 

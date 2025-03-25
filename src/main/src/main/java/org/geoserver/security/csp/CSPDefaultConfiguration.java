@@ -17,16 +17,18 @@ public final class CSPDefaultConfiguration {
         List<CSPRule> rules1 = new ArrayList<>();
         rules1.add(new CSPRule(
                 "static-html-files",
-                "Allow unsafe scripts and remote resources on static HTML pages unless " + "disabled by a property.",
+                "Allow unsafe scripts and remote resources on static HTML pages unless disabled by a property.",
                 true,
                 "PATH(^/www/.*\\.html?$) "
                         + "AND PROP(GEOSERVER_DISABLE_STATIC_WEB_FILES,(?i)^(?!true$).*$) "
                         + "AND PROP(GEOSERVER_STATIC_WEB_FILES_SCRIPT,(?i)^(UNSAFE)?$)",
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                        + "connect-src 'self'; font-src 'self' ${geoserver.csp.remoteResources}; "
+                "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                        + "font-src 'self' ${geoserver.csp.remoteResources}; "
                         + "img-src 'self' ${geoserver.csp.remoteResources} data:; "
                         + "style-src 'self' ${geoserver.csp.remoteResources} 'unsafe-inline'; "
-                        + "script-src 'self' ${geoserver.csp.remoteResources} 'unsafe-inline' 'unsafe-eval';"));
+                        + "script-src 'self' ${geoserver.csp.remoteResources} 'unsafe-inline' 'unsafe-eval'; "
+                        + "form-action ${geoserver.csp.formAction}; "
+                        + "frame-ancestors ${geoserver.csp.frameAncestors};"));
         rules1.add(new CSPRule(
                 "ows-wms-featureinfo-html",
                 "Allow unsafe scripts and remote resources on WMS GetFeatureInfo HTML "
@@ -74,50 +76,24 @@ public final class CSPDefaultConfiguration {
                 "Allow unsafe scripts on the index.html page.",
                 true,
                 "PATH(^/index\\.html$)",
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
+                "base-uri 'self'; default-src 'none'; child-src 'self'; "
                         + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                        + "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';"));
+                        + "style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; "
+                        + "form-action ${geoserver.csp.formAction}; "
+                        + "frame-ancestors ${geoserver.csp.frameAncestors};"));
         rules1.add(new CSPRule(
                 "other-requests",
                 "Block unsafe scripts on all other requests.",
                 true,
                 "",
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
+                "base-uri 'self'; default-src 'none'; child-src 'self'; "
                         + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                        + "style-src 'self' 'unsafe-inline'; script-src 'self';"));
-        List<CSPRule> rules2 = new ArrayList<>();
-        rules2.add(new CSPRule(
-                "frame-ancestors-property",
-                "Set frame-ancestors based on the CSP frame ancestors property or setting " + "when it is configured.",
-                true,
-                "PROP(geoserver.csp.frameAncestors,(?i)^[a-z0-9'\\*][a-z0-9_\\-':/\\.\\* ]{4,}$)",
-                "frame-ancestors ${geoserver.csp.frameAncestors};"));
-        rules2.add(new CSPRule(
-                "frame-ancestors-self",
-                "Pages can be displayed in frames with the same origin. This rule depends "
-                        + "on the properties for the X-Frame-Options header.",
-                true,
-                "PROP(geoserver.xframe.shouldSetPolicy,(?i)^(true)?$) "
-                        + "AND PROP(geoserver.xframe.policy,^(SAMEORIGIN)?$)",
-                "frame-ancestors 'self';"));
-        rules2.add(new CSPRule(
-                "frame-ancestors-none",
-                "Pages can not be displayed in any frames. This rule depends on the "
-                        + "properties for the X-Frame-Options header.",
-                true,
-                "PROP(geoserver.xframe.shouldSetPolicy,(?i)^(true)?$) " + "AND PROP(geoserver.xframe.policy,^DENY$)",
-                "frame-ancestors 'none';"));
-        rules2.add(new CSPRule(
-                "frame-ancestors-not-set",
-                "Pages can be displayed in frames with any origin. This rule depends on "
-                        + "the properties for the X-Frame-Options header.",
-                true,
-                "",
-                "NONE"));
+                        + "style-src 'self' 'unsafe-inline'; script-src 'self'; "
+                        + "form-action ${geoserver.csp.formAction}; "
+                        + "frame-ancestors ${geoserver.csp.frameAncestors};"));
         List<CSPPolicy> policies = new ArrayList<>();
         policies.add(new CSPPolicy(
-                "other-directives", "Rules to set the base-uri, form-action and fetch directives", true, rules1));
-        policies.add(new CSPPolicy("frame-ancestors", "Rules to set the frame-ancestors directive", true, rules2));
+                "geoserver-csp", "Rules to set GeoServer's Content-Security-Policy header", true, rules1));
         CSPConfiguration config = new CSPConfiguration();
         config.setPolicies(policies);
         return config.parseFilters();

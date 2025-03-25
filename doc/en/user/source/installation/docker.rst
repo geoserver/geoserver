@@ -162,6 +162,7 @@ Here is a list of available extensions (taken from the `build server <https://bu
     geofence-server-postgres netcdf                   wps-jdbc                 
     geofence-wps             ogcapi-features          wps                      
     geopkg-output            ogr-wfs                  ysld                     
+    datadir-catalog-loader
 
 
 Testing Geoserver Community modules
@@ -177,7 +178,7 @@ Working with a Nightly build is a good way to test community modules and provide
    When the developer has met the documentation and quality assurance standards for GeoServer they may
    ask for the module to be included in GeoServer.
    
-   If you are interested in helping out please contact the developer (list in the :file:`pom.xml` file for the module).
+   If you are interested in helping out, please make contact via the `developer forum <https://discourse.osgeo.org/c/geoserver/developer/63>`__.
    
    Reference:
    
@@ -203,13 +204,13 @@ Working with a Nightly build is a good way to test community modules and provide
        acl                           gwc-mbtiles                     ogcapi-tiles
        activeMQ-broker               gwc-sqlite                      ogr-datastore
        backup-restore                hz-cluster                      opensearch-eo
-       cog-azure                     imagemap                        proxy-base-ext
+       cog-azure                                                     proxy-base-ext
        cog-google                    importer-jdbc                   s3-geotiff
-       cog-http                      jdbc-metrics                    sec-keycloak
+       cog-http                                                      sec-keycloak
        cog-s3                        jdbcconfig                      sec-oauth2-geonode
        colormap                      jdbcstore                       sec-oauth2-github
        cov-json                      jms-cluster                     sec-oauth2-google
-       datadir-catalog-loader        libdeflate                      sec-oauth2-openid
+                                     libdeflate                      sec-oauth2-openid
        dds                           mbtiles                         smart-data-loader
        elasticsearch                 mbtiles-store                   solr
        features-autopopulate         mongodb-schemaless              spatialjson
@@ -222,4 +223,4 @@ Working with a Nightly build is a good way to test community modules and provide
        graticule                     ogcapi-images                   wfs-freemarker
        gsr                           ogcapi-maps                     wps-longitudinal-profile
        gwc-azure-blobstore           ogcapi-styles                   wps-remote
-                                     ogcapi-tiled-features           xslt
+                                     ogcapi-tiled-features               

@@ -85,6 +85,7 @@ public class VFSWorker {
                      *     org.apache.commons.vfs2.FileSelector#traverseDescendents(org.apache.commons.vfs2.FileSelectInfo)
                      */
                     @Override
+                    @Deprecated
                     public boolean traverseDescendents(FileSelectInfo folderInfo) throws Exception {
                         return true;
                     }

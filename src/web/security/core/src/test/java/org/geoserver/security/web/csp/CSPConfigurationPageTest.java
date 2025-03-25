@@ -10,6 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.Serializable;
 import java.net.MalformedURLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
@@ -51,10 +52,10 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
 
     @Before
     public void startConfigurationPage() throws Exception {
-        getDao().setConfig(defaultConfig());
+        getDao().setConfig(newTestConfig());
         login();
         tester.startPage(CSPConfigurationPage.class);
-        this.expectedConfig = defaultConfig();
+        this.expectedConfig = newTestConfig();
         assertConfigPage(this.expectedConfig, 0);
     }
 
@@ -102,12 +103,14 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         // verify that config changes are saved
         this.expectedConfig.setEnabled(false);
         this.expectedConfig.setInjectProxyBase(true);
-        this.expectedConfig.setRemoteResources("http://geoserver.org");
-        this.expectedConfig.setFrameAncestors("'self' http://geoserver.org");
+        this.expectedConfig.setRemoteResources("http://cdn.foo.org");
+        this.expectedConfig.setFormAction("'self' http://login.foo.org");
+        this.expectedConfig.setFrameAncestors("'self' http://foo.org");
         tester.newFormTester("form")
                 .setValue("enabled", this.expectedConfig.isEnabled())
                 .setValue("injectProxyBase", this.expectedConfig.isInjectProxyBase())
                 .setValue("remoteResources", this.expectedConfig.getRemoteResources())
+                .setValue("formAction", this.expectedConfig.getFormAction())
                 .setValue("frameAncestors", this.expectedConfig.getFrameAncestors())
                 .submit("save");
         tester.assertNoErrorMessage();
@@ -120,8 +123,9 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.newFormTester("form")
                 .setValue("enabled", false)
                 .setValue("injectProxyBase", true)
-                .setValue("remoteResources", "http://geoserver.org")
-                .setValue("frameAncestors", "'self' http://geoserver.org")
+                .setValue("remoteResources", "http://cdn.foo.org")
+                .setValue("formAction", "'self' http://login.foo.org")
+                .setValue("frameAncestors", "'self' http://foo.org")
                 .submit("cancel");
         tester.assertNoErrorMessage();
         assertConfig(this.expectedConfig);
@@ -323,10 +327,9 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertNoErrorMessage();
         tester.assertModelValue(
                 "form:testResult",
-                "base-uri 'self'; form-action 'self'; default-src 'none'; child-src 'self'; "
-                        + "connect-src 'self'; font-src 'self'; img-src 'self' data:; "
-                        + "style-src 'self' 'unsafe-inline'; script-src 'self';, "
-                        + "frame-ancestors 'self';");
+                "base-uri 'self'; default-src 'none'; child-src 'self'; connect-src 'self'; "
+                        + "font-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; "
+                        + "script-src 'self'; form-action 'self'; frame-ancestors 'self';");
     }
 
     @Test
@@ -346,6 +349,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
                 config.isAllowOverride(),
                 config.isInjectProxyBase(),
                 config.getRemoteResources(),
+                config.getFormAction(),
                 config.getFrameAncestors(),
                 config.getPolicies(),
                 offset);
@@ -357,6 +361,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
             boolean allowOverride,
             boolean injectProxyBase,
             String remoteResources,
+            String formAction,
             String frameAncestors,
             List<CSPPolicy> policies,
             int offset) {
@@ -367,6 +372,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         tester.assertModelValue("form:allowOverride", allowOverride);
         tester.assertModelValue("form:injectProxyBase", injectProxyBase);
         tester.assertModelValue("form:remoteResources", remoteResources);
+        tester.assertModelValue("form:formAction", formAction);
         tester.assertModelValue("form:frameAncestors", frameAncestors);
         tester.assertComponent("form:policies", CSPPolicyPanel.class);
         tester.assertComponent("form:policies:add", AjaxLink.class);
@@ -467,6 +473,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
                 expectedConfig.isEnabled(),
                 expectedConfig.isInjectProxyBase(),
                 expectedConfig.getRemoteResources(),
+                expectedConfig.getFormAction(),
                 expectedConfig.getFrameAncestors(),
                 expectedConfig.getPolicies());
     }
@@ -475,6 +482,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
             boolean enabled,
             boolean injectProxyBase,
             String remoteResources,
+            String formAction,
             String frameAncestors,
             List<CSPPolicy> policies)
             throws Exception {
@@ -482,6 +490,7 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(enabled, actualConfig.isEnabled());
         assertEquals(injectProxyBase, actualConfig.isInjectProxyBase());
         assertEquals(remoteResources, actualConfig.getRemoteResources());
+        assertEquals(formAction, actualConfig.getFormAction());
         assertEquals(frameAncestors, actualConfig.getFrameAncestors());
         assertEquals(policies.size(), actualConfig.getPolicies().size());
         for (int i = 0; i < policies.size(); i++) {
@@ -528,9 +537,11 @@ public class CSPConfigurationPageTest extends GeoServerWicketTestSupport {
         assertEquals(directives, actualRule.getDirectives());
     }
 
-    private static CSPConfiguration defaultConfig() {
-        // get a new copy of the default configuration
-        return new CSPConfiguration(DEFAULT_CONFIG);
+    private static CSPConfiguration newTestConfig() {
+        // get a new copy of the default configuration with an additional policy for testing purposes
+        CSPConfiguration config = new CSPConfiguration(DEFAULT_CONFIG);
+        config.getPolicies().add(new CSPPolicy("test", "test description", true, new ArrayList<>()));
+        return config;
     }
 
     private static CSPConfiguration getConfig() throws Exception {

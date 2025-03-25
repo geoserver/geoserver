@@ -149,7 +149,6 @@
         <module>notification</module>
         <module>notification-common</module>
         <module>notification-geonode</module>
-        <module>jdbc-metrics</module>
         <module>oseo</module>
         <module>s3-geotiff</module>
         <module>netcdf-ghrsst</module>
@@ -171,8 +170,6 @@
         <module>libdeflate</module>
         <module>vector-mosaic</module>
         <module>proxy-base-ext</module>
-        <module>xslt</module>
-        <module>imagemap</module>
         <module>wps-longitudinal-profile</module>
         <module>monitor-kafka</module>
         <module>monitor-micrometer</module>
@@ -180,12 +177,6 @@
         <module>wfs-freemarker</module>
         <module>stac-datastore</module>
         <module>acl</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>sextante</id>
-      <modules>
-        <module>wps-sextante</module>
       </modules>
     </profile>
     <profile>
@@ -388,12 +379,6 @@
       </modules>
     </profile>
     <profile>
-      <id>jdbc-metrics</id>
-      <modules>
-        <module>jdbc-metrics</module>
-      </modules>
-    </profile>
-    <profile>
       <id>s3-geotiff</id>
       <modules>
         <module>s3-geotiff</module>
@@ -433,12 +418,6 @@
       <id>taskmanager-metadata</id>
       <modules>
         <module>taskmanager</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>monitor-hibernate</id>
-      <modules>
-        <module>monitor-hibernate</module>
       </modules>
     </profile>
     <profile>
@@ -547,18 +526,6 @@
       <id>proxy-base-ext</id>
       <modules>
         <module>proxy-base-ext</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>xslt</id>
-      <modules>
-        <module>xslt</module>
-      </modules>
-    </profile>
-    <profile>
-      <id>imagemap</id>
-      <modules>
-        <module>imagemap</module>
       </modules>
     </profile>
     <profile>

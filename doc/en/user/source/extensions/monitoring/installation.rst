@@ -3,10 +3,6 @@
 Installing the Monitor Extension
 ================================
 
-.. note::
-  
-     If performing an upgrade of the monitor extension please see :ref:`monitor_upgrade`. 
-  
 The monitor extension is not part of the GeoServer core and must be installed as a plug-in. To install:
 
 #. Visit the :website:`website download <download>` page, locate your release, and download:  :download_extension:`monitor`

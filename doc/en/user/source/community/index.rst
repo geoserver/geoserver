@@ -42,7 +42,6 @@ officially part of the GeoServer releases. They are however built along with the
    gwc-mbtiles/index
    gwc-sqlite/index
    hana/index
-   imagemap
    importer-jdbc/index
    jdbcconfig/index
    jdbcstore/index
@@ -51,7 +50,6 @@ officially part of the GeoServer releases. They are however built along with the
    keycloak/index
    libdeflate/index
    mbtiles/index
-   monitor-hibernate/index
    monitor-kafka/index
    monitor-micrometer/index
    ncwms/index
@@ -72,7 +70,6 @@ officially part of the GeoServer releases. They are however built along with the
    taskmanager/index
    vector-mosaic/index
    vsi/index
-   xslt/index
    web-service-auth/index
    webp/index
    wfs-freemarker/index

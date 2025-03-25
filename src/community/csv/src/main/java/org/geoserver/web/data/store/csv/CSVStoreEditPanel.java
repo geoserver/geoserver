@@ -10,6 +10,7 @@ import static org.geotools.data.csv.CSVDataStoreFactory.URL_PARAM;
 
 import java.io.Serializable;
 import java.util.Map;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -45,7 +46,13 @@ public class CSVStoreEditPanel extends /*StoreEditPanel*/ DefaultDataStoreEditPa
         Panel file = buildFileParamPanel(paramsModel2);
         add(file);
         ParamInfo paramMetadata = new ParamInfo(STRATEGYP);
-        add(getInputComponent("strategy", paramsModel, paramMetadata));
+        Panel strategy = getInputComponent("strategy", paramsModel, paramMetadata);
+        add(strategy);
+        final WebMarkupContainer configsContainer = new WebMarkupContainer("configsContainer");
+        configsContainer.setOutputMarkupId(true);
+        add(configsContainer);
+
+      
     }
 
     protected Panel buildFileParamPanel(final IModel<Map<String, Object>> paramsModel) {

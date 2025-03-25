@@ -377,10 +377,21 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
             return getProxyBase(request, config);
         } else if (CSPUtils.PROPERTY_KEY_REGEX.matcher(key).matches()) {
             String value = CSPUtils.getStringProperty(key, config.getField(key));
-            if (value.isEmpty() || CSPUtils.PROPERTY_VALUE_REGEX.matcher(value).matches()) {
-                return value;
+            // HIDE is a keyword to allow hiding a directive
+            if (!value.isEmpty() && !"HIDE".equals(value)) {
+                if (!CSPUtils.PROPERTY_VALUE_REGEX.matcher(value).matches()) {
+                    LOGGER.fine(() -> "Ignoring invalid property value: " + value);
+                } else if (value.contains("'self'")
+                        || value.contains("'none'")
+                        || !(key.equals(CSPUtils.GEOSERVER_CSP_FORM_ACTION)
+                                || key.equals(CSPUtils.GEOSERVER_CSP_FRAME_ANCESTORS))) {
+                    return value;
+                } else {
+                    // automatically add 'self' to form-action and frame-ancestors sources that don't contain
+                    // 'self' or 'none'
+                    return "'self' " + value;
+                }
             }
-            LOGGER.fine(() -> "Ignoring invalid property value: " + value);
         } else {
             LOGGER.fine(() -> "Ignoring invalid property key: " + key);
         }
@@ -438,6 +449,14 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
                     .replace("-src 'self'", "-src 'self' ${proxy.base.url}")
                     .replace("-src-attr 'self'", "-src-attr 'self' ${proxy.base.url}")
                     .replace("-src-elem 'self'", "-src-elem 'self' ${proxy.base.url}");
+            String formAction = "form-action ${" + CSPUtils.GEOSERVER_CSP_FORM_ACTION + "}";
+            int index = policy.indexOf(formAction);
+            if (index >= 0) {
+                String value = getPropertyValue(null, config, CSPUtils.GEOSERVER_CSP_FORM_ACTION);
+                if (value.contains("'self'")) {
+                    policy = policy.replace(formAction, formAction + " ${proxy.base.url}");
+                }
+            }
         }
         if (!test && policy.contains("${proxy.base.url}")) {
             setProxyPolicy(policy);
@@ -519,6 +538,11 @@ public class CSPHeaderDAO extends AbstractDispatcherCallback {
             String value = getPropertyValue(request, config, key);
             policy = policy.replace(policy.substring(start, end + 1), value);
         }
+        // remove empty form-action and frame-ancestors directives
+        policy = CSPUtils.cleanDirectives(policy)
+                .replace("form-action;", "")
+                .replace("frame-ancestors;", "")
+                .trim();
         return CSPUtils.cleanDirectives(policy);
     }
 

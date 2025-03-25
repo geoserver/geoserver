@@ -731,7 +731,7 @@ Shortly before a major (2.xx.0) release, the following process should be followe
 
    .. code-block:: shell
 
-   cd /home/cite
+    cd /home/cite
 
 #. Create a local docker image tagged ``geoserver-docker.osgeo.org/geoserver:2.27.x`` from the latest nightly build at https://build.geoserver.org/geoserver/2.27.x using the build steps from https://github.com/geoserver/docker.git
 

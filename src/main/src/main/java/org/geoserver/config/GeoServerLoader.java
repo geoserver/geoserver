@@ -476,7 +476,7 @@ public abstract class GeoServerLoader {
         }
     }
 
-    boolean checkStoresOnStartup(XStreamPersister xp) {
+    protected boolean checkStoresOnStartup(XStreamPersister xp) {
         Resource f = resourceLoader.get("global.xml");
         if (Resources.exists(f)) {
             try {

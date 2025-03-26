@@ -8,6 +8,7 @@ import static java.util.Locale.CANADA_FRENCH;
 import static java.util.Locale.ENGLISH;
 
 import com.google.common.collect.Lists;
+import java.io.File;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
@@ -22,17 +23,24 @@ import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.PublishedInfo;
 import org.geoserver.catalog.WMSStoreInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.DataStoreInfoImpl;
 import org.geoserver.catalog.impl.LayerGroupInfoImpl;
 import org.geoserver.catalog.impl.MetadataLinkInfoImpl;
 import org.geoserver.catalog.impl.WMSStoreInfoImpl;
 import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geoserver.config.GeoServer;
+import org.geoserver.config.GeoServerConfigPersister;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.config.ServicePersister;
 import org.geoserver.config.SettingsInfo;
+import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService1.TestService1Impl;
+import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService2.TestService2Impl;
+import org.geoserver.config.impl.GeoServerImpl;
 import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.impl.SettingsInfoImpl;
+import org.geoserver.config.util.XStreamPersister;
+import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.config.util.XStreamServiceLoader;
 import org.geoserver.ows.util.OwsUtils;
 import org.geoserver.platform.GeoServerExtensions;
@@ -64,23 +72,6 @@ class DataDirectoryLoaderTestSupport {
                 return Objects.hash(getClass(), this);
             }
         }
-
-        static final class Loader extends XStreamServiceLoader<TestService1> {
-
-            public Loader(GeoServerResourceLoader resourceLoader) {
-                super(resourceLoader, "service1");
-            }
-
-            @Override
-            public Class<TestService1> getServiceClass() {
-                return TestService1.class;
-            }
-
-            @Override
-            protected TestService1 createServiceFromScratch(GeoServer gs) {
-                return new TestService1Impl();
-            }
-        }
     }
 
     public static interface TestService2 extends ServiceInfo {
@@ -97,36 +88,110 @@ class DataDirectoryLoaderTestSupport {
                 return Objects.hash(getClass(), this);
             }
         }
+    }
 
-        static final class Loader extends XStreamServiceLoader<TestService2> {
+    public static final class TestService1Loader extends XStreamServiceLoader<TestService1> {
 
-            public Loader(GeoServerResourceLoader resourceLoader) {
-                super(resourceLoader, "service2");
-            }
+        public TestService1Loader(GeoServerResourceLoader resourceLoader) {
+            super(resourceLoader, "service1");
+        }
 
-            @Override
-            public Class<TestService2> getServiceClass() {
-                return TestService2.class;
-            }
+        @Override
+        public Class<TestService1> getServiceClass() {
+            return TestService1.class;
+        }
 
-            @Override
-            protected TestService2 createServiceFromScratch(GeoServer gs) {
-                return new TestService2Impl();
-            }
+        @Override
+        protected TestService1 createServiceFromScratch(GeoServer gs) {
+            TestService1Impl s = new TestService1.TestService1Impl();
+            s.setName("TestService1");
+            return s;
         }
     }
 
-    public TestService1.Loader serviceLoader1;
-    public TestService2.Loader serviceLoader2;
-    private Catalog catalog;
+    public static final class TestService2Loader extends XStreamServiceLoader<TestService2> {
 
-    public DataDirectoryLoaderTestSupport(Catalog catalog) {
-        this.catalog = catalog;
+        public TestService2Loader(GeoServerResourceLoader resourceLoader) {
+            super(resourceLoader, "service2");
+        }
+
+        @Override
+        public Class<TestService2> getServiceClass() {
+            return TestService2.class;
+        }
+
+        @Override
+        protected TestService2 createServiceFromScratch(GeoServer gs) {
+            TestService2Impl s = new TestService2.TestService2Impl();
+            s.setName("TestService2");
+            return s;
+        }
     }
 
-    public void setUpServiceLoaders(final GeoServer geoServer) {
-        serviceLoader1 = new TestService1.Loader(geoServer.getCatalog().getResourceLoader());
-        serviceLoader2 = new TestService2.Loader(geoServer.getCatalog().getResourceLoader());
+    public final DataDirectoryLoaderTestSupport.TestService1Loader serviceLoader1;
+    public final DataDirectoryLoaderTestSupport.TestService2Loader serviceLoader2;
+    private Catalog catalog;
+    private GeoServer geoServer;
+
+    public DataDirectoryLoaderTestSupport(Catalog catalog, GeoServer geoServer) {
+        this.catalog = catalog;
+        this.geoServer = geoServer;
+
+        serviceLoader1 = new DataDirectoryLoaderTestSupport.TestService1Loader(
+                geoServer.getCatalog().getResourceLoader());
+        serviceLoader2 = new DataDirectoryLoaderTestSupport.TestService2Loader(
+                geoServer.getCatalog().getResourceLoader());
+    }
+
+    /**
+     * Returns an instance with fresh {@link Catalog} and {@link GeoServer} set up with persistence listeners to create
+     * initial data directory scenarios
+     */
+    public static DataDirectoryLoaderTestSupport withPersistence(File dataDirectory) {
+
+        DataDirectoryLoaderTestSupport support = withNoPersistence(dataDirectory);
+
+        Catalog catalog = support.catalog;
+        GeoServer geoServer = support.geoServer;
+
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        xp.setCatalog(catalog);
+        GeoServerConfigPersister configPersister = new GeoServerConfigPersister(catalog.getResourceLoader(), xp);
+
+        catalog.addListener(configPersister);
+        geoServer.addListener(configPersister);
+
+        return support;
+    }
+
+    public static DataDirectoryLoaderTestSupport withNoPersistence(File dataDirectory) {
+        GeoServerResourceLoader rl = new GeoServerResourceLoader(dataDirectory);
+
+        CatalogImpl tmpCatalog = new CatalogImpl();
+        tmpCatalog.setResourceLoader(rl);
+
+        GeoServerImpl tmpGeoServer = new GeoServerImpl();
+        tmpGeoServer.setCatalog(tmpCatalog);
+
+        XStreamPersister xp = new XStreamPersisterFactory().createXMLPersister();
+        xp.setCatalog(tmpCatalog);
+
+        return new DataDirectoryLoaderTestSupport(tmpCatalog, tmpGeoServer);
+    }
+
+    public Catalog getCatalog() {
+        return catalog;
+    }
+
+    public GeoServer getGeoServer() {
+        return geoServer;
+    }
+
+    public void setUpServiceLoaders() {
+        setUpServiceLoaders(geoServer);
+    }
+
+    public void setUpServiceLoaders(GeoServer geoServer) {
         GeoServerExtensionsHelper.singleton("testServiceLoader1", serviceLoader1, XStreamServiceLoader.class);
         GeoServerExtensionsHelper.singleton("testServiceLoader2", serviceLoader2, XStreamServiceLoader.class);
 
@@ -146,7 +211,11 @@ class DataDirectoryLoaderTestSupport {
     }
 
     public void tearDown() {
-        GeoServerExtensionsHelper.clear();
+        cleanUp();
+    }
+
+    public void cleanUp() {
+        GeoServerExtensionsHelper.init(null);
     }
 
     public TestService1 serviceInfo1(WorkspaceInfo workspace, String name, GeoServer geoServer) {

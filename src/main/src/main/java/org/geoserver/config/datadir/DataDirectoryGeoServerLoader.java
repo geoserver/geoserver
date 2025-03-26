@@ -16,7 +16,6 @@ import org.geoserver.catalog.FeatureTypeCallback;
 import org.geoserver.catalog.HTTPStoreInfo;
 import org.geoserver.catalog.LayerInfo;
 import org.geoserver.catalog.RetypeFeatureTypeCallback;
-import org.geoserver.catalog.ServiceResourceVoter;
 import org.geoserver.catalog.StyleHandler;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ModificationProxy;
@@ -34,10 +33,10 @@ import org.geoserver.security.GeoServerSecurityManager;
 import org.geoserver.security.password.ConfigurationPasswordEncryptionHelper;
 import org.geoserver.util.EntityResolverProvider;
 import org.geotools.api.referencing.FactoryException;
-import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
+import org.vfny.geoserver.util.DataStoreUtils;
 
 /**
  * Faster alternative to {@link DefaultGeoServerLoader}, especially over network drives like NFS shares.
@@ -87,16 +86,6 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
      * use
      */
     static final String GEOSERVER_DATA_DIR_LOADER_THREADS = "GEOSERVER_DATA_DIR_LOADER_THREADS";
-
-    static {
-        try {
-            // preemptively initialize the CRS subsystem to avoid factory lookups deadlocking while being hit
-            // concurrently at #readCatalog
-            CRS.decode("EPSG:4326");
-        } catch (FactoryException e) {
-            LOGGER.log(Level.WARNING, "Error initializing CRS factories", e);
-        }
-    }
 
     private final GeoServerDataDirectory dataDirectory;
     private final GeoServerSecurityManager securityManager;
@@ -158,6 +147,13 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
     @Override
     protected Catalog readCatalog(XStreamPersister xp) throws Exception {
         CatalogImpl catalog = newTemporaryCatalog();
+        xp.setCatalog(catalog);
+        xp.setUnwrapNulls(false);
+
+        // see if we really need to verify stores on startup
+        boolean checkStores = checkStoresOnStartup(xp);
+        catalog.setExtendedValidation(checkStores);
+
         catalog.setResourceLoader(resourceLoader);
 
         CatalogLoader catalogLoader = new CatalogLoader(catalog, fileWalker());
@@ -272,14 +268,37 @@ public class DataDirectoryGeoServerLoader extends DefaultGeoServerLoader {
 
     /** Warm up the extensions cache with all the extensions used during the loading process to avoid race conditions */
     private void initializeDependencies() {
+        try {
+            // preemptively initialize the CRS subsystem to avoid factory lookups deadlocking while being hit
+            // concurrently at #readCatalog
+            org.geotools.referencing.CRS.decode("EPSG:4326");
+        } catch (FactoryException e) {
+            LOGGER.log(Level.WARNING, "Error initializing CRS factories", e);
+        }
+
+        // warm up GeoServerExtensions with extensions probably called during catalog loading
         preLoadExtensions(EntityResolverProvider.class);
+        // CatalogImpl
         preLoadExtensions(CatalogValidator.class);
+        // Styles.handlers()
         preLoadExtensions(StyleHandler.class);
+        // ResourcePool
         preLoadExtensions(FeatureTypeCallback.class);
         preLoadExtensions(RetypeFeatureTypeCallback.class);
-        preLoadExtensions(ServiceResourceVoter.class);
+        // XStreamPersisterFactory
         preLoadExtensions(XStreamPersisterInitializer.class);
         preLoadExtensions(XStreamServiceLoader.class);
+
+        // misconfigured layers may end up calling FeatureTypeInfo.getFeatureType(), which in turn
+        // will trigger GeoServerExtensions and deadlock on the main thread's while spring is
+        // building up beans
+        DataStoreUtils.getAvailableDataStoreFactories().forEach(f -> {
+            try {
+                DataStoreUtils.aquireFactory(f.getDisplayName());
+            } catch (Exception ignore) {
+                //
+            }
+        });
     }
 
     private void preLoadExtensions(Class<?> extensionType) {

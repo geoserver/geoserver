@@ -16,7 +16,7 @@ passed by HTTP header attribute(s). In this scenario GeoServer will do no actual
 Prerequisites
 -------------
 
-This tutorial uses the `curl <http://curl.haxx.se/>`_ utility to issue HTTP 
+This tutorial uses the `curl <https://curl.haxx.se/>`_ utility to issue HTTP 
 request that test authentication. Install curl before proceeding.
 
 .. note::
@@ -74,13 +74,16 @@ Additional information about role services is here :ref:`security_rolesystem_rol
 
 #. Save.
 #. Back on the authentication page scroll down to the ``Filter Chains`` panel. 
-#. Select "Default" from the ``Request type`` drop down.
-#. Unselect the ``basic`` filter and select the ``proxy`` filter. Position the
+#. Select "Default" from the list of filter chains.
+
+   .. figure:: images/digest8.jpg
+      :align: center
+#. Scroll down to the ``Chain filters`` section and unselect the ``basic`` filter and select the ``proxy`` filter. Position the
    the ``proxy`` filter before the ``anonymous`` filter. 
 
    .. figure:: images/digest5.jpg
       :align: center
-#. Save.
+#. Click close at the bottom of the page and then click Save back on the Authentication page to save your filter chain changes.
 
 Secure OGC service requests
 ---------------------------

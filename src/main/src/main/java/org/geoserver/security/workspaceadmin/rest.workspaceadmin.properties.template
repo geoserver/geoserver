@@ -85,3 +85,5 @@
 /rest.{ext}=r
 /rest/index=r
 /rest/index.{ext}=r
+
+/rest/services/**=rw

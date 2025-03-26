@@ -27,17 +27,16 @@ import org.geoserver.catalog.CatalogInfo;
 import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
-import org.geoserver.catalog.LockingCatalogFacade;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
 import org.geoserver.catalog.StoreInfo;
 import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.AbstractCatalogFacade;
 import org.geoserver.catalog.impl.CatalogImpl;
 import org.geoserver.catalog.impl.ClassMappings;
 import org.geoserver.catalog.impl.ModificationProxy;
-import org.geoserver.catalog.impl.ProxyUtils;
 import org.geoserver.catalog.util.CloseableIterator;
 import org.geoserver.config.ServiceInfo;
 import org.geoserver.jdbcconfig.internal.ConfigDatabase;
@@ -709,47 +708,7 @@ public class JDBCCatalogFacade implements CatalogFacade {
     /** @see org.geoserver.catalog.CatalogFacade#syncTo(org.geoserver.catalog.CatalogFacade) */
     @Override
     public void syncTo(CatalogFacade other) {
-        other = ProxyUtils.unwrap(other, LockingCatalogFacade.class);
-        for (WorkspaceInfo w : getWorkspaces()) {
-            other.add(w);
-        }
-
-        for (NamespaceInfo ns : getNamespaces()) {
-            other.add(ns);
-        }
-
-        for (StoreInfo s : getStores(StoreInfo.class)) {
-            other.add(s);
-        }
-
-        for (ResourceInfo r : getResources(ResourceInfo.class)) {
-            other.add(r);
-        }
-
-        for (StyleInfo s : getStyles()) {
-            other.add(s);
-        }
-
-        for (LayerInfo l : getLayers()) {
-            other.add(l);
-        }
-        for (LayerGroupInfo lg : getLayerGroups()) {
-            other.add(lg);
-        }
-
-        for (MapInfo m : getMaps()) {
-            other.add(m);
-        }
-
-        other.setDefaultWorkspace(getDefaultWorkspace());
-        other.setDefaultNamespace(getDefaultNamespace());
-
-        for (WorkspaceInfo ws : getWorkspaces()) {
-            DataStoreInfo defaultDataStore = getDefaultDataStore(ws);
-            if (defaultDataStore != null) {
-                other.setDefaultDataStore(ws, defaultDataStore);
-            }
-        }
+        AbstractCatalogFacade.syncFromTo(this, other, true);
     }
 
     private <T extends CatalogInfo> T findUnique(Class<T> type, Filter filter) throws IllegalArgumentException {

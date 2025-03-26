@@ -5,13 +5,21 @@
  */
 package org.geoserver.catalog.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.lang.reflect.Proxy;
 import java.rmi.server.UID;
 import java.util.List;
+import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.CatalogFacade;
 import org.geoserver.catalog.CatalogInfo;
+import org.geoserver.catalog.DataStoreInfo;
 import org.geoserver.catalog.LayerGroupInfo;
 import org.geoserver.catalog.LayerInfo;
+import org.geoserver.catalog.LockingCatalogFacade;
 import org.geoserver.catalog.MapInfo;
 import org.geoserver.catalog.NamespaceInfo;
 import org.geoserver.catalog.ResourceInfo;
@@ -103,6 +111,90 @@ public abstract class AbstractCatalogFacade implements CatalogFacade {
         if (OwsUtils.get(o, "id") == null) {
             String uid = new UID().toString();
             OwsUtils.set(o, "id", o.getClass().getSimpleName() + "-" + uid);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    protected static <T extends CatalogInfo> T copy(T obj) {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try (ObjectOutputStream oos = new ObjectOutputStream(os)) {
+            oos.writeObject(obj);
+            try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(os.toByteArray()))) {
+                return (T) ois.readObject();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected static <T extends CatalogInfo> T syncInfo(T obj, boolean deep, Catalog catalog) {
+        obj = unwrap(obj);
+        if (deep) {
+            obj = copy(obj);
+        }
+        if (catalog != null) {
+            OwsUtils.set(obj, "catalog", catalog);
+        }
+        return obj;
+    }
+
+    /**
+     * Most basic way to sync catalog facade.
+     *
+     * @param source the source catalog facade
+     * @param target the target catalog facade
+     * @param deep whether deep copies should be made out of the catalog info objects. This might be necessary for some
+     *     catalog facades to prevent it from resetting the catalog reference back to the original catalog.
+     */
+    public static void syncFromTo(CatalogFacade source, CatalogFacade target, boolean deep) {
+        target = ProxyUtils.unwrap(target, LockingCatalogFacade.class);
+        for (WorkspaceInfo w : source.getWorkspaces()) {
+            target.add(syncInfo(w, deep, null));
+        }
+
+        for (NamespaceInfo ns : source.getNamespaces()) {
+            target.add(syncInfo(ns, deep, null));
+        }
+
+        for (StoreInfo s : source.getStores(StoreInfo.class)) {
+            target.add(syncInfo(s, deep, target.getCatalog()));
+        }
+
+        for (ResourceInfo r : source.getResources(ResourceInfo.class)) {
+            target.add(syncInfo(r, deep, target.getCatalog()));
+        }
+
+        for (StyleInfo s : source.getStyles()) {
+            target.add(syncInfo(s, deep, target.getCatalog()));
+        }
+
+        for (LayerInfo l : source.getLayers()) {
+            target.add(syncInfo(l, deep, null));
+        }
+
+        for (LayerGroupInfo lg : source.getLayerGroups()) {
+            target.add(syncInfo(lg, deep, null));
+        }
+
+        for (MapInfo m : source.getMaps()) {
+            target.add(syncInfo(m, deep, null));
+        }
+
+        WorkspaceInfo defaultWorkspace = source.getDefaultWorkspace();
+        NamespaceInfo defaultNamespace = source.getDefaultNamespace();
+        if (defaultWorkspace != null) {
+            target.setDefaultWorkspace(target.getWorkspace(defaultWorkspace.getId()));
+        }
+        if (defaultNamespace != null) {
+            target.setDefaultNamespace(target.getNamespace(defaultNamespace.getId()));
+        }
+        for (WorkspaceInfo ws : source.getWorkspaces()) {
+            DataStoreInfo defaultDataStore = source.getDefaultDataStore(ws);
+            if (defaultDataStore != null) {
+                target.setDefaultDataStore(
+                        target.getWorkspace(ws.getId()),
+                        target.getStore(defaultDataStore.getId(), DataStoreInfo.class));
+            }
         }
     }
 }

@@ -67,13 +67,25 @@ class DataDirectoryWalker {
 
     public DataDirectoryWalker(
             GeoServerDataDirectory dataDirectory, XStreamPersisterFactory xpf, GeoServerConfigurationLock configLock) {
+        this(dataDirectory, xpf, configLock, findServiceLoaders());
+    }
+
+    @SuppressWarnings("unchecked")
+    DataDirectoryWalker(
+            GeoServerDataDirectory dataDirectory,
+            XStreamPersisterFactory xpf,
+            GeoServerConfigurationLock configLock,
+            List<?> serviceLoaders) {
         this.dataDirectory = dataDirectory;
         this.configLock = configLock;
         this.xstreamLoader = new XStreamLoader(xpf);
         // cache all possible service loaders and their file names, and force #findServiceLoaders()
-        this.serviceLoaders = findServiceLoaders();
-        this.serviceFileNames =
-                serviceLoaders.stream().map(XStreamServiceLoader::getFilename).collect(Collectors.toList());
+        this.serviceLoaders = serviceLoaders.stream()
+                .map(l -> (XStreamServiceLoader<ServiceInfo>) l)
+                .collect(Collectors.toList());
+        this.serviceFileNames = this.serviceLoaders.stream()
+                .map(XStreamServiceLoader::getFilename)
+                .collect(Collectors.toList());
     }
 
     public List<XStreamServiceLoader<ServiceInfo>> getServiceLoaders() {
@@ -81,7 +93,7 @@ class DataDirectoryWalker {
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
+    private static List<XStreamServiceLoader<ServiceInfo>> findServiceLoaders() {
         return (List) GeoServerExtensions.extensions(XStreamServiceLoader.class);
     }
 

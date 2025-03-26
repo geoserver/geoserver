@@ -39,6 +39,8 @@ import org.geoserver.config.datadir.DataDirectoryWalker.WorkspaceDirectory;
 import org.geoserver.config.util.XStreamPersister;
 import org.geotools.util.logging.Logging;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Specialized loader for GeoServer catalog objects that supports parallel loading.
@@ -112,7 +114,9 @@ class CatalogLoader {
         final boolean extendedValidation = this.catalog.isExtendedValidation();
         this.catalog.setExtendedValidation(false);
 
-        ForkJoinPool executor = ExecutorFactory.createExecutor();
+        // admin auth set by GeoServerLoader and propagated to the ForkJoinPool threads
+        Authentication admin = SecurityContextHolder.getContext().getAuthentication();
+        ForkJoinPool executor = ExecutorFactory.createExecutor(admin);
         try {
             addAll(executor, this::loadGlobalStyles);
             // This is the best place where to initialize default styles since the sanitization during loading might

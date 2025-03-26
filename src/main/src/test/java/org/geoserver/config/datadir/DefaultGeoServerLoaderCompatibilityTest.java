@@ -64,8 +64,8 @@ public class DefaultGeoServerLoaderCompatibilityTest extends GeoServerSystemTest
     protected void onSetUp(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
         GeoServer geoServer = getGeoServer();
-        support = new DataDirectoryLoaderTestSupport(catalog);
-        support.setUpServiceLoaders(geoServer);
+        support = new DataDirectoryLoaderTestSupport(catalog, geoServer);
+        support.setUpServiceLoaders();
         geoServer.add(support.serviceInfo1(null, "service1", geoServer));
         geoServer.add(support.serviceInfo2(null, "service2", geoServer));
     }

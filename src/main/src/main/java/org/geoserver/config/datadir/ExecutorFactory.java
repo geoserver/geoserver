@@ -16,6 +16,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geoserver.platform.GeoServerExtensions;
 import org.geotools.util.logging.Logging;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,12 +47,13 @@ class ExecutorFactory {
      * <p>The parallelism level is determined based on system properties and available processors. The pool uses custom
      * thread naming and exception handling to facilitate debugging.
      *
+     * @param admin Admin authentication used to propagate it to the ForkjoinPool threads
      * @return a configured {@link ForkJoinPool} instance ready to execute data directory loading tasks
      */
-    public static ForkJoinPool createExecutor() {
+    public static ForkJoinPool createExecutor(Authentication admin) {
         final int parallelism = determineParallelism();
         final boolean asyncMode = false;
-        return new ForkJoinPool(parallelism, threadFactory(), uncaughtExceptionHandler(), asyncMode);
+        return new ForkJoinPool(parallelism, threadFactory(admin), uncaughtExceptionHandler(), asyncMode);
     }
 
     /**
@@ -59,14 +62,16 @@ class ExecutorFactory {
      * <p>The thread names follow the pattern "DatadirLoader-{poolId}-worker-{threadId}" to help with identification
      * during debugging.
      *
+     * @param admin Admin authentication used to propagate it to the ForkjoinPool threads
      * @return a thread factory for creating worker threads
      */
-    private static ForkJoinWorkerThreadFactory threadFactory() {
+    private static ForkJoinWorkerThreadFactory threadFactory(Authentication admin) {
 
         final int poolIndex = threadPoolId.incrementAndGet();
         final AtomicInteger threadIndex = new AtomicInteger();
 
         return pool -> {
+            SecurityContextHolder.getContext().setAuthentication(admin);
             ForkJoinWorkerThread worker = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
             worker.setName(String.format("DatadirLoader-%d-worker-%d", poolIndex, threadIndex.incrementAndGet()));
             return worker;

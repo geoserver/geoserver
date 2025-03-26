@@ -59,7 +59,6 @@ import org.geoserver.config.SettingsInfo;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService1;
 import org.geoserver.config.datadir.DataDirectoryLoaderTestSupport.TestService2;
 import org.geoserver.config.impl.GeoServerImpl;
-import org.geoserver.config.impl.ServiceInfoImpl;
 import org.geoserver.config.util.XStreamPersister;
 import org.geoserver.config.util.XStreamPersisterFactory;
 import org.geoserver.data.test.CiteTestData;
@@ -75,7 +74,6 @@ import org.geoserver.test.TestSetupFrequency;
 import org.geotools.api.filter.sort.SortBy;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.util.logging.Logging;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -95,17 +93,17 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
                 .setLevel(Level.CONFIG);
     }
 
-    @After
-    public void after() {
-        support.tearDown();
-    }
-
     @Override
     protected void onSetUp(SystemTestData testData) throws Exception {
         Catalog catalog = getCatalog();
         GeoServer geoServer = getGeoServer();
-        support = new DataDirectoryLoaderTestSupport(catalog);
-        support.setUpServiceLoaders(geoServer);
+        support = new DataDirectoryLoaderTestSupport(catalog, geoServer);
+        support.setUpServiceLoaders();
+    }
+
+    @Override
+    protected void onTearDown(SystemTestData testData) throws Exception {
+        support.tearDown();
     }
 
     @Override
@@ -628,7 +626,6 @@ public class DataDirectoryGeoServerLoaderTest extends GeoServerSystemTestSupport
         support.setUpServiceLoaders(geoServer);
 
         TestService1 service = support.serviceInfo1(ws, username, geoServer);
-        ((ServiceInfoImpl) service).setId("service-null-ws");
 
         String filename = support.serviceLoader1.getFilename();
         Resource resource = getDataDirectory().getWorkspaces(ws.getName(), filename);

@@ -5,6 +5,8 @@
 package org.geoserver.config.datadir;
 
 import java.nio.file.Path;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
@@ -13,6 +15,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import org.geoserver.catalog.Catalog;
 import org.geoserver.catalog.Info;
 import org.geoserver.catalog.WorkspaceInfo;
@@ -30,6 +33,8 @@ import org.geoserver.platform.resource.Resources;
 import org.geotools.util.decorate.AbstractDecorator;
 import org.geotools.util.logging.Logging;
 import org.springframework.lang.Nullable;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 /**
  * Specialized loader for GeoServer configuration objects.
@@ -62,8 +67,8 @@ class ConfigLoader {
     /** Successfully added workspace-specific {@link SettingsInfo}s */
     private final AtomicLong workspaceSettings = new AtomicLong();
 
-    private final GeoServer geoServer;
-    private final DataDirectoryWalker fileWalk;
+    final GeoServer geoServer;
+    final DataDirectoryWalker fileWalk;
 
     public ConfigLoader(GeoServer geoServer, DataDirectoryWalker fileWalk) {
 
@@ -80,49 +85,51 @@ class ConfigLoader {
         services.set(0);
         workspaceSettings.set(0);
 
-        // temporarily set the raw catalog to avoid decorators forcing spring to resolve beans and deadlock on the main
-        // thread
+        // temporarily set the raw catalog to avoid decorators forcing spring to resolve
+        // beans and deadlock on the main thread
         final Catalog realCatalog = geoServer.getCatalog();
         Catalog rawCatalog = rawCatalog(realCatalog);
         geoServer.setCatalog(rawCatalog);
 
-        ForkJoinPool executor = ExecutorFactory.createExecutor();
+        Optional<GeoServerInfo> global = loadGlobal();
+        global.ifPresent(geoServer::setGlobal);
+
+        Optional<LoggingInfo> logging = loadLogging();
+        logging.ifPresent(geoServer::setLogging);
+
+        loadRootServices().forEach(this::addService);
+
+        // admin auth set by GeoServerLoader and propagated to the ForkJoinPool threads
+        Authentication admin = SecurityContextHolder.getContext().getAuthentication();
+        ForkJoinPool executor = ExecutorFactory.createExecutor(admin);
         try {
-            Optional<GeoServerInfo> global = fileWalk.gsGlobal().flatMap(this::depersist);
-            global.ifPresent(geoServer::setGlobal);
-
-            Optional<LoggingInfo> logging = fileWalk.gsLogging().flatMap(this::depersist);
-            logging.ifPresent(geoServer::setLogging);
-
-            loadRootServices();
-
             executor.submit(this::loadWorkspaceServicesAndSettings).get();
-
-            log(
-                    Level.CONFIG,
-                    "Loaded {0} Config files, {1} services, {2} workspace settings",
-                    readFileCount,
-                    services,
-                    workspaceSettings);
         } catch (InterruptedException e) {
             LOGGER.log(Level.SEVERE, "Thread interrupted while loading the catalog", e);
             Thread.currentThread().interrupt();
         } catch (ExecutionException e) {
-            throw new IllegalStateException(e);
+            throw new IllegalStateException(e.getCause());
         } finally {
             geoServer.setCatalog(realCatalog);
             executor.shutdownNow();
         }
+        MinimalConfigLoaderSupport minimalConfigSupport = new MinimalConfigLoaderSupport(this);
+        minimalConfigSupport.initializeEmptyConfig();
     }
 
-    private void loadRootServices() {
-        Resource baseDirectory = fileWalk.getDataDirectory().getRoot();
-        for (XStreamServiceLoader<ServiceInfo> loader : fileWalk.getServiceLoaders()) {
-            ServiceInfo service = loadService(loader, baseDirectory);
-            if (service != null) {
-                addService(service);
-            }
-        }
+    Optional<GeoServerInfo> loadGlobal() {
+        return fileWalk.gsGlobal().flatMap(this::depersist);
+    }
+
+    Optional<LoggingInfo> loadLogging() {
+        return fileWalk.gsLogging().flatMap(this::depersist);
+    }
+
+    private List<ServiceInfo> loadRootServices() {
+        return fileWalk.getServiceLoaders().stream()
+                .map(this::loadRootService)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -165,6 +172,7 @@ class ConfigLoader {
                 // filter loaders on available service files for the workspace
                 .filter(loader -> serviceFiles.contains(loader.getFilename()))
                 .map(loader -> loadService(loader, wsdir))
+                .filter(Objects::nonNull)
                 .filter(service -> filterNullWorkspace(service, wd))
                 .forEach(this::addService);
     }
@@ -181,10 +189,19 @@ class ConfigLoader {
         return hasWorkspace;
     }
 
+    @Nullable
+    ServiceInfo loadRootService(XStreamServiceLoader<ServiceInfo> loader) {
+        Resource baseDirectory = fileWalk.getDataDirectory().getRoot();
+        return loadService(loader, baseDirectory);
+    }
+
     /**
      * Used to load both root services and workspace services
+     *
      * @param serviceLoader the service loader to use
-     * @param directory the directory where {@link XStreamServiceLoader#load(org.geoserver.config.GeoServer, Resource) loads) the service from
+     * @param directory     the directory where
+     *                      {@link XStreamServiceLoader#load(org.geoserver.config.GeoServer, Resource)
+     * loads) the service from
      * @return the service loaded, or {@code null} if there was an error
      */
     @Nullable

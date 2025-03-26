@@ -70,6 +70,22 @@ class XStreamLoader {
     }
 
     /**
+     * Returns the XStreamPersisterFactory used by this loader.
+     *
+     * <p>This factory is used to create XStreamPersister instances for XML serialization and deserialization of
+     * GeoServer configuration objects. Each thread gets its own persister instance to avoid contention when multiple
+     * threads are processing XML files concurrently.
+     *
+     * <p>The factory can be used by clients that need to create additional persisters with the same configuration as
+     * those used by this loader, ensuring consistent XML handling across the application.
+     *
+     * @return the XStreamPersisterFactory used by this loader
+     */
+    XStreamPersisterFactory getPersisterFactory() {
+        return xpf;
+    }
+
+    /**
      * Deserializes a GeoServer configuration or catalog object from an XML file.
      *
      * <p>This method performs both the file I/O and XML deserialization steps while ensuring thread safety and proper
@@ -77,14 +93,17 @@ class XStreamLoader {
      * performance:
      *
      * <ol>
-     *   <li>First, the file contents are loaded using a {@link ForkJoinPool.ManagedBlocker}
-     *   <li>Then, the XML content is parsed using a thread-local {@link XStreamPersister}
+     *   <li>The method opens an input stream to the file and passes it directly to the parse method
+     *   <li>The parse method uses a thread-local {@link XStreamPersister} to deserialize the XML
      *   <li>The {@link XStreamPersister} has no {@code Catalog} set, hence it won't resolve {@link ResolvingProxy
      *       proxies}. That's to be done by the caller in a thread-safe way.
      * </ol>
      *
      * <p>Any errors during loading or parsing are properly logged, and an empty Optional is returned in case of
      * failure.
+     *
+     * <p>This method is safe to call from multiple threads concurrently, as it uses thread-local resources and has no
+     * shared mutable state.
      *
      * @param <C> the type of the configuration or catalog object to deserialize
      * @param file the path to the XML file to deserialize

@@ -318,9 +318,9 @@ public class JDBCCatalogFacade implements CatalogFacade {
     @Override
     public List<LayerInfo> getLayers(ResourceInfo resource) {
 
-        Filter filter = equal("resource.id", resource.getId());
+        LayerInfo layer = db.getByIdentity(LayerInfo.class, "resource.id", resource.getId());
 
-        return db.queryAsList(LayerInfo.class, filter, null, null, null);
+        return layer == null ? Collections.emptyList() : Collections.singletonList(layer);
     }
 
     /** @see org.geoserver.catalog.CatalogFacade#getLayers(org.geoserver.catalog.StyleInfo) */
@@ -638,22 +638,18 @@ public class JDBCCatalogFacade implements CatalogFacade {
 
     @Override
     public LayerGroupInfo getLayerGroupByName(WorkspaceInfo workspace, String name) {
-        Filter filter = equal("name", name);
-        if (NO_WORKSPACE == workspace) {
-            Filter wsFilter = isNull("workspace.id");
-            filter = and(filter, wsFilter);
-        } else if (workspace != null && ANY_WORKSPACE != workspace) {
-            Filter wsFilter = equal("workspace.id", workspace.getId());
-            filter = and(filter, wsFilter);
-        }
+        checkNotNull(
+                workspace,
+                "workspace is null. Did you mean CatalogFacade.ANY_WORKSPACE or CatalogFacade.NO_WORKSPACE?");
+        checkNotNull(name, "name");
 
-        LayerGroupInfo store;
-        try {
-            store = findUnique(LayerGroupInfo.class, filter);
-        } catch (IllegalArgumentException e) {
-            return null;
+        if (workspace == ANY_WORKSPACE) {
+            return db.getByIdentity(LayerGroupInfo.class, "name", name);
+        } else if (workspace == NO_WORKSPACE) {
+            return db.getByIdentity(LayerGroupInfo.class, "workspace.id", null, "name", name);
+        } else {
+            return db.getByIdentity(LayerGroupInfo.class, "workspace.id", workspace.getId(), "name", name);
         }
-        return store;
     }
 
     @Override

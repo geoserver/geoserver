@@ -91,6 +91,9 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         testData.addStyle("dynamicArrows", this.getClass(), catalog);
         testData.addStyle("multiLanguageVector", this.getClass(), catalog);
         testData.addStyle("multiLanguageRaster", this.getClass(), catalog);
+        testData.addWorkspace("foo", "http://foo", catalog);
+        testData.addStyle(
+                catalog.getWorkspaceByName("foo"), "arealandmarks", "arealandmarks.sld", this.getClass(), catalog);
 
         Map<String, String> namespaces = new HashMap<>();
         namespaces.put("ogc", "http://www.opengis.net/ogc");
@@ -1024,6 +1027,41 @@ public class JSONLegendGraphicOutputFormatTest extends BaseLegendTest<JSONLegend
         final JSONObject gf2 =
                 s2.getJSONObject(JSONLegendGraphicBuilder.POLYGON).getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL);
         assertEquals("http://local-test:8080/geoserver/kml/icon/arealandmarks?0.1.0=&npg=true", gf2.getString("url"));
+    }
+
+    @Test
+    public void testGraphicFillLinksInWorkspace() throws Exception {
+        org.geoserver.catalog.Catalog catalog = getCatalog();
+        FeatureTypeInfo ftInfo =
+                catalog.getFeatureTypeByName(MockData.MPOLYGONS.getNamespaceURI(), MockData.MPOLYGONS.getLocalPart());
+        StyleInfo styleInfo = catalog.getStyleByName("foo:arealandmarks");
+        GetLegendGraphicRequest req = getRequest(ftInfo.getFeatureType(), styleInfo.getStyle());
+        req.setWidth(20);
+        req.setHeight(20);
+
+        JSONObject result = this.legendProducer.buildLegendGraphic(req);
+        assertNotNull(result);
+        JSONArray rules = result.getJSONArray(JSONLegendGraphicBuilder.LEGEND)
+                .getJSONObject(0)
+                .getJSONArray(JSONLegendGraphicBuilder.RULES);
+
+        // test URL of static image (rule 1) for style inside a workspace
+        String graphicUrl = rules.getJSONObject(0)
+                .getJSONArray("symbolizers")
+                .getJSONObject(0)
+                .getJSONObject(JSONLegendGraphicBuilder.POLYGON)
+                .getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL)
+                .getString("url");
+        assertEquals("http://local-test:8080/geoserver/styles/foo/img/landmarks/area/forest.png", graphicUrl);
+
+        // test URL of mark (rule 2) for style inside a workspace
+        String markUrl = rules.getJSONObject(1)
+                .getJSONArray("symbolizers")
+                .getJSONObject(0)
+                .getJSONObject(JSONLegendGraphicBuilder.POLYGON)
+                .getJSONObject(JSONLegendGraphicBuilder.GRAPHIC_FILL)
+                .getString("url");
+        assertEquals("http://local-test:8080/geoserver/kml/icon/foo/arealandmarks?0.1.0=&npg=true", markUrl);
     }
 
     @Test

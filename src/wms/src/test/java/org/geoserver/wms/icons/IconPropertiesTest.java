@@ -12,6 +12,8 @@ import static org.junit.Assert.assertEquals;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
+import org.geoserver.catalog.WorkspaceInfo;
+import org.geoserver.catalog.impl.WorkspaceInfoImpl;
 import org.geotools.api.feature.simple.SimpleFeature;
 import org.geotools.api.filter.expression.Expression;
 import org.geotools.api.style.Fill;
@@ -22,9 +24,18 @@ import org.geotools.api.style.Rule;
 import org.geotools.api.style.Stroke;
 import org.geotools.api.style.Style;
 import org.geotools.filter.text.cql2.CQLException;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class IconPropertiesTest extends IconTestSupport {
+
+    private static final WorkspaceInfo workspace = new WorkspaceInfoImpl();
+
+    @BeforeClass
+    public static void setup() throws UnsupportedEncodingException {
+        workspace.setName("workspace");
+    }
+
     @Test
     public void testSimpleStyleEncodesNoProperties() {
         final Style simple = styleFromRules(catchAllRule(grayCircle()));
@@ -34,7 +45,7 @@ public class IconPropertiesTest extends IconTestSupport {
     @Test
     public void testWorkspacedStyleEncodesNoProperties() {
         final Style simple = styleFromRules(catchAllRule(grayCircle()));
-        assertEquals("0.0.0=", encode("workspace", simple, fieldIs1));
+        assertEquals("0.0.0=", encode(workspace, simple, fieldIs1));
     }
 
     @Test
@@ -222,9 +233,9 @@ public class IconPropertiesTest extends IconTestSupport {
                 .replace("http://127.0.0.1/kml/icon/test?", "");
     }
 
-    protected String encode(String workspace, Style style, SimpleFeature feature) {
+    protected String encode(WorkspaceInfo workspace, Style style, SimpleFeature feature) {
         return IconPropertyExtractor.extractProperties(style, feature)
                 .href("http://127.0.0.1/", workspace, "test")
-                .replace("http://127.0.0.1/kml/icon/" + workspace + "/test?", "");
+                .replace("http://127.0.0.1/kml/icon/" + workspace.getName() + "/test?", "");
     }
 }

@@ -356,7 +356,7 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
                 if (l != null) {
                     for (GraphicalSymbol g : l.graphicalSymbols()) {
                         String href = IconPropertyExtractor.extractProperties(gt2Style, (SimpleFeature) feature)
-                                .href(request.getBaseUrl(), legend.getLayer(), legend.getStyleName());
+                                .href(request.getBaseUrl(), null, legend.getStyleName());
 
                         JSONObject jGraphicSymb = processGraphicalSymbol(g, href);
                         jGraphicSymb.element("url", href);
@@ -517,10 +517,9 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
         }
         Catalog catalog = wms.getCatalog();
         StyleInfo styleByName = catalog.getStyleByName(styleName);
-        String wsName = null;
+        WorkspaceInfo workspaceInfo = null;
         if (styleByName != null) {
-            WorkspaceInfo ws = styleByName.getWorkspace();
-            if (ws != null) wsName = ws.getName();
+            workspaceInfo = styleByName.getWorkspace();
         }
         List<List<MiniRule>> newStyle = new ArrayList<>();
         List<Integer> origRuleNo = new ArrayList<>();
@@ -543,7 +542,12 @@ public class JSONLegendGraphicBuilder extends LegendGraphicBuilder {
 
         IconProperties props = IconPropertyExtractor.extractProperties(newStyle, (SimpleFeature) feature);
 
-        String iconUrl = props.href(baseURL, wsName, styleName);
+        String iconUrl;
+        if (workspaceInfo != null) {
+            iconUrl = props.href(baseURL, workspaceInfo, styleByName.getName());
+        } else {
+            iconUrl = props.href(baseURL, null, styleName);
+        }
         int index = iconUrl.indexOf('?');
         if (index >= 0) {
             String base = iconUrl.substring(0, index + 1);

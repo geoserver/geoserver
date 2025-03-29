@@ -7,6 +7,7 @@ package org.geoserver.web.ogcapi;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import org.geoserver.data.test.SystemTestData;
 import org.geoserver.platform.GeoServerExtensionsHelper;
 import org.geoserver.test.GeoServerSystemTestSupport;
@@ -28,6 +29,10 @@ public class OgcApiServiceDescriptionProviderTest extends GeoServerSystemTestSup
         assertEquals("TestCaseServiceType", provider.getServiceType());
         assertEquals("OGCAPI-TestCase", provider.getServiceName());
         assertEquals("TestCase", provider.getSpecificServiceType());
+        assertTrue(
+                "skip service capabilities",
+                provider.getServiceTypes()
+                        .containsAll(Arrays.asList(provider.getServiceType(), provider.getSpecificServiceType())));
 
         assertEquals(TestCaseInfo.class, provider.getInfoClass());
         assertEquals(TestCaseService.class, provider.getServiceClass());

@@ -7,6 +7,8 @@ package org.geoserver.web.ogcapi;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import org.apache.wicket.util.string.Strings;
 import org.geoserver.catalog.Catalog;
@@ -27,11 +29,11 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         extends ServiceDescriptionProvider {
 
     /**
-     * This is the TYPE of service (i.e "WMS", "WMTS", "WFS", etc...). This is used to categorize the link into a group
-     * (i.e. OGCAPI-Features into the "WFS" category).
+     * The specific service type grouped within the {@code serviceType}.
+     *
+     * <p>Example OGCAPI-Features is represented as the specific service type "Features" within the "WFS" service type
+     * group.
      */
-    String serviceType;
-
     String specificServiceType;
 
     /** Specific name of the service ("OGCAPI-Tiles"). The link text consists of this name and the version number. */
@@ -53,10 +55,10 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
      */
     public OgcApiServiceDescriptionProvider(
             GeoServer gs, String serviceType, String serviceName, String specificServiceType) {
+        super(serviceType);
         this.geoserver = gs;
         catalog = gs.getCatalog();
         this.serviceName = serviceName;
-        this.serviceType = serviceType;
         this.specificServiceType = specificServiceType;
         @SuppressWarnings("unchecked")
         var infoClass = (Class<SERVICEINFOTYPE>)
@@ -67,6 +69,11 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         var serviceClass = (Class<SERVICETYPE>)
                 ((ParameterizedType) this.getClass().getGenericSuperclass()).getActualTypeArguments()[1];
         this.serviceClass = serviceClass;
+    }
+
+    @Override
+    public List<String> getServiceTypes() {
+        return Collections.unmodifiableList(Arrays.asList(this.serviceType, this.specificServiceType));
     }
 
     /**
@@ -89,12 +96,15 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
 
     @Override
     public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
-
         List<ServiceDescription> descriptions = new ArrayList<>();
-        SERVICEINFOTYPE info = info(workspaceInfo, layerInfo);
 
-        if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
-            descriptions.add(description(serviceType, info, workspaceInfo, layerInfo));
+        SERVICEINFOTYPE info = info(workspaceInfo, layerInfo);
+        if (info != null) {
+            if (workspaceInfo != null || geoserver.getGlobal().isGlobalServices()) {
+                descriptions.add(description(serviceType, info, workspaceInfo, layerInfo));
+            }
+        } else {
+            return descriptions;
         }
         return descriptions;
     }
@@ -145,6 +155,7 @@ public class OgcApiServiceDescriptionProvider<SERVICEINFOTYPE extends ServiceInf
         List<Service> extensions = GeoServerExtensions.extensions(Service.class);
 
         for (Service service : extensions) {
+
             if (service.getService().getClass() == serviceClass) {
                 String link = null;
                 if (service.getCustomCapabilitiesLink() != null) {

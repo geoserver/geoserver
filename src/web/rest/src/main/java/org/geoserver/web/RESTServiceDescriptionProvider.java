@@ -21,6 +21,10 @@ public class RESTServiceDescriptionProvider extends org.geoserver.web.ServiceDes
     /** Service type to cross-link between service description and service link description. */
     public static final String SERVICE_TYPE = "REST";
 
+    public RESTServiceDescriptionProvider() {
+        super(SERVICE_TYPE);
+    }
+
     @Override
     public List<ServiceDescription> getServices(WorkspaceInfo workspaceInfo, PublishedInfo layerInfo) {
         List<ServiceDescription> descriptions = new ArrayList<>();

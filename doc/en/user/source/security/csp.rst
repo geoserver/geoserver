@@ -17,7 +17,6 @@ releases to fix bugs, support new features or enhance security.
   The default header value for most GeoServer requests will be::
   
      base-uri 'self';
-     form-action 'self';
      default-src 'none';
      child-src 'self';
      connect-src 'self';
@@ -25,6 +24,7 @@ releases to fix bugs, support new features or enhance security.
      img-src 'self' data:;
      style-src 'self' 'unsafe-inline';
      script-src 'self';
+     form-action 'self';
      frame-ancestors 'self';
 
 The ``'unsafe-inline'`` and ``'unsafe-eval'`` sources will be added to the ``script-src``
@@ -86,7 +86,6 @@ This does not guarantee that other browser restrictions will not prevent the pag
   at the top of this page to::
   
       base-uri 'self';
-      form-action 'self' https://geoserver.org;
       default-src 'none';
       child-src 'self' https://geoserver.org;
       connect-src 'self' https://geoserver.org;
@@ -94,6 +93,7 @@ This does not guarantee that other browser restrictions will not prevent the pag
       img-src 'self' https://geoserver.org data:;
       style-src 'self' https://geoserver.org 'unsafe-inline';
       script-src 'self' https://geoserver.org;
+      form-action 'self' https://geoserver.org;
       frame-ancestors 'self';
 
 Use the :guilabel:`Allowed sources for remote web resources` text field to add sources to the
@@ -107,16 +107,44 @@ attacks.
   an HTML file in the static files directory::
   
      base-uri 'self';
-     form-action 'self';
      default-src 'none';
      child-src 'self'; connect-src 'self';
      font-src 'self' https://geoserver.org;
      img-src 'self' https://geoserver.org data:;
      style-src 'self' https://geoserver.org 'unsafe-inline';
      script-src 'self' https://geoserver.org;
+     form-action 'self';
      frame-ancestors 'self';
 
 .. note:: The ``geoserver.csp.remoteResources`` system property will override this field if it has been set.
+
+Use the :guilabel:`Allowed form-action directives sources` text field to control the sources of the
+``form-action`` directive. This is intended to make it easier for administrators to allow specific remote
+hosts to submit forms to. This can be useful for cases where form submissions may redirect the browser to
+a URL that does not exactly match the submitting page and can also help where GeoServer authentication is
+handled by an external service. Only trusted hosts should be added here to prevent cross-site scripting
+attacks from submitting sensitive data to an attacker-controlled site.
+
+  Setting this to ``'self' https://geoserver.org`` would change the header value at the top of this page to::
+
+     base-uri 'self';
+     default-src 'none';
+     child-src 'self';
+     connect-src 'self';
+     font-src 'self';
+     img-src 'self' data:;
+     style-src 'self' 'unsafe-inline';
+     script-src 'self';
+     form-action 'self' https://geoserver.org;
+     frame-ancestors 'self';
+
+.. note:: The ``geoserver.csp.formAction`` system property will override this field if it has been set.
+
+.. warning::
+    The web interface will block setting this field to a value containing ``'none'`` in order to prevent an
+    administrator from accidentally triggering a denial-of-service. If an administrator wants to disable all
+    form submissions, the full CSP header value can be configured in a rule or the configuration file can be
+    uploaded through the REST Resources API or modified manually in the data directory.
 
 Use the :guilabel:`Allowed frame-ancestors directive sources` text field to control the sources of
 the ``frame-ancestors`` directive. This is intended to make it easier for administrators to allow
@@ -126,7 +154,6 @@ here to prevent clickjacking attacks.
   Setting this to ``'self' https://geoserver.org`` would change the header value at the top of this page to::
   
      base-uri 'self';
-     form-action 'self';
      default-src 'none';
      child-src 'self';
      connect-src 'self';
@@ -134,10 +161,17 @@ here to prevent clickjacking attacks.
      img-src 'self' data:;
      style-src 'self' 'unsafe-inline';
      script-src 'self';
+     form-action 'self';
      frame-ancestors 'self' https://geoserver.org;
 
 .. note:: The ``geoserver.csp.frameAncestors`` system property will override this field if it has been set.
 
+.. note::
+    For the ``form-action`` and ``frame-ancestors`` text fields and system properties, ``HIDE`` is a special
+    keyword that can be used to hide their respective directive from the CSP header. Also, ``'self'`` will be
+    automatically added to the directive when a non-empty string is provided that is not ``HIDE`` and does
+    not contain ``'self'`` or ``'none'`` (e.g., setting the value to ``https://geoserver.org`` will cause
+    ``'self' https://geoserver.org`` to be used in the CSP).
 
 Configuring Policies
 ````````````````````
@@ -323,7 +357,7 @@ fixed. The ``geoserver.csp.fallbackDirectives`` property can be set either via J
 property, command line argument (-D), environment variable or web.xml init parameter to change the
 fallback directives from the default value::
 
-    base-uri 'none'; form-action 'none'; default-src 'none'; frame-ancestors 'none';
+    base-uri 'none'; default-src 'none'; form-action 'none'; frame-ancestors 'none';
 
 The keyword ``NONE`` can be used to specify that no header value will be assigned to requests when
 there are CSP configuration errors.

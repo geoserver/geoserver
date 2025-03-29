@@ -11,4 +11,5 @@
 
   <bean id="statusPageExtraTab" class="org.geoserver.web.admin.StatusPageTest$ExtraTabDefinition"/>
 
+  <bean class="org.geoserver.web.FakeServiceDescriptionProvider"/>
 </beans>

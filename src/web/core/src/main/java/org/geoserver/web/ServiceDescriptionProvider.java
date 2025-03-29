@@ -27,6 +27,24 @@ import org.geotools.api.util.InternationalString;
  */
 public abstract class ServiceDescriptionProvider {
 
+    /** Service type to cross-link between service description and service link description. */
+    protected final String serviceType;
+
+    protected ServiceDescriptionProvider(String serviceType) {
+        this.serviceType = serviceType;
+    }
+
+    /**
+     * List service types supported by this provider.
+     *
+     * <p>Used to determine what service types have been migrated, and do not need to be represented as generic fallback
+     * service capability links.
+     *
+     * @return service types
+     */
+    public List<String> getServiceTypes() {
+        return List.of(serviceType);
+    }
     /**
      * Provides service descriptions, filtered by workspace and layer.
      *
@@ -98,7 +116,10 @@ public abstract class ServiceDescriptionProvider {
 
             return layerServices.contains(serviceType) && serviceInfo.isEnabled();
         }
-        return serviceInfo.isEnabled();
+        if (serviceInfo != null) {
+            return serviceInfo.isEnabled();
+        }
+        return true;
     }
 
     /**

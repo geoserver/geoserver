@@ -93,6 +93,7 @@ public class GWCDataSecurityTest extends WMSTestSupport {
         GWC.get().getConfig().setSecurityEnabled(true);
 
         testData.addStyle("raster", "raster.sld", SystemTestData.class, getCatalog());
+        @SuppressWarnings("rawtypes")
         Map<LayerProperty, Object> properties = new HashMap<>();
         properties.put(LayerProperty.STYLE, "raster");
         testData.addRasterLayer(

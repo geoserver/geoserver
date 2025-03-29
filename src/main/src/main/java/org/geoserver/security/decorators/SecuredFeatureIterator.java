@@ -15,11 +15,11 @@ import org.geotools.feature.FeatureIterator;
  *
  * @author Andrea Aime - GeoSolutions
  */
-public class SecuredFeatureIterator implements FeatureIterator {
+public class SecuredFeatureIterator<F extends Feature> implements FeatureIterator<F> {
 
-    FeatureIterator wrapped;
+    FeatureIterator<F> wrapped;
 
-    public SecuredFeatureIterator(FeatureIterator wrapped) {
+    public SecuredFeatureIterator(FeatureIterator<F> wrapped) {
         this.wrapped = wrapped;
     }
 
@@ -34,7 +34,7 @@ public class SecuredFeatureIterator implements FeatureIterator {
     }
 
     @Override
-    public Feature next() throws NoSuchElementException {
+    public F next() throws NoSuchElementException {
         return wrapped.next();
     }
 }

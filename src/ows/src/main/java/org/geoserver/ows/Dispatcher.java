@@ -652,10 +652,10 @@ public class Dispatcher extends AbstractController {
         String service = req.getService();
 
         if ((service == null) || (req.getRequest() == null)) {
-            Map map = readOpContext(req);
+            Map<String, String> map = readOpContext(req);
 
             if (service == null) {
-                service = normalize((String) map.get("service"));
+                service = normalize(map.get("service"));
 
                 if ((service != null) && !citeCompliant) {
                     req.setService(service);
@@ -663,7 +663,7 @@ public class Dispatcher extends AbstractController {
             }
 
             if (req.getRequest() == null) {
-                req.setRequest(normalize((String) map.get("request")));
+                req.setRequest(normalize(map.get("request")));
             }
         }
 
@@ -819,7 +819,7 @@ public class Dispatcher extends AbstractController {
                 // GEOS-934  and GEOS-1288
                 Method setBaseUrl = OwsUtils.setter(requestBean.getClass(), "baseUrl", String.class);
                 if (setBaseUrl != null) {
-                    setBaseUrl.invoke(requestBean, new String[] {ResponseUtils.baseURL(req.getHttpRequest())});
+                    setBaseUrl.invoke(requestBean, ResponseUtils.baseURL(req.getHttpRequest()));
                 }
 
                 // another couple of thos of those lovley cite things, version+service has to
@@ -977,8 +977,8 @@ public class Dispatcher extends AbstractController {
 
             // first filter by binding, and canHandle
             O:
-            for (Iterator itr = responses.iterator(); itr.hasNext(); ) {
-                Response response = (Response) itr.next();
+            for (Iterator<Response> itr = responses.iterator(); itr.hasNext(); ) {
+                Response response = itr.next();
 
                 Class<?> binding = response.getBinding();
 
@@ -989,15 +989,14 @@ public class Dispatcher extends AbstractController {
                 }
 
                 // filter by output format
-                Set outputFormats = response.getOutputFormats();
+                Set<String> outputFormats = response.getOutputFormats();
 
                 if ((req.getOutputFormat() != null)
                         && (!outputFormats.isEmpty())
                         && !outputFormats.contains(req.getOutputFormat())) {
 
                     // must do a case insensitive check
-                    for (Object format : outputFormats) {
-                        String outputFormat = (String) format;
+                    for (String outputFormat : outputFormats) {
                         if (req.getOutputFormat().equalsIgnoreCase(outputFormat)) {
                             continue O;
                         }
@@ -1123,7 +1122,7 @@ public class Dispatcher extends AbstractController {
 
     void setHeaders(Request req, Operation opDescriptor, Object result, Response response) {
         // get the basics using the new api
-        Map rawKvp = req.getRawKvp();
+        Map<String, Object> rawKvp = req.getRawKvp();
         String disposition = response.getPreferredDisposition(result, opDescriptor);
         String filename = response.getAttachmentFileName(result, opDescriptor);
 
@@ -1389,10 +1388,10 @@ public class Dispatcher extends AbstractController {
                 if (!matches.isEmpty()) {
                     // we found some matches, make sure they are all in the
                     // same service
-                    Iterator itr = matches.iterator();
-                    XmlRequestReader first = (XmlRequestReader) itr.next();
+                    Iterator<XmlRequestReader> itr = matches.iterator();
+                    XmlRequestReader first = itr.next();
                     while (itr.hasNext()) {
-                        XmlRequestReader xmlReader = (XmlRequestReader) itr.next();
+                        XmlRequestReader xmlReader = itr.next();
                         if (!first.getServiceId().equals(xmlReader.getServiceId())) {
                             // abort
                             matches.clear();
@@ -1438,8 +1437,8 @@ public class Dispatcher extends AbstractController {
 
                 // version specified, look for a match (and allow version
                 // generic ones to live by)
-                for (Iterator itr = vmatches.iterator(); itr.hasNext(); ) {
-                    XmlRequestReader r = (XmlRequestReader) itr.next();
+                for (Iterator<XmlRequestReader> itr = vmatches.iterator(); itr.hasNext(); ) {
+                    XmlRequestReader r = itr.next();
 
                     if (r.getVersion() == null || version.equals(r.getVersion())) {
                         continue;

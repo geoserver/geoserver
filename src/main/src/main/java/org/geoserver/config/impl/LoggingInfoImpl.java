@@ -12,6 +12,7 @@ import org.geoserver.config.LoggingInfo;
  * This code is licensed under the GPL 2.0 license, available at the root
  * application directory.
  */
+@SuppressWarnings("serial")
 public class LoggingInfoImpl implements LoggingInfo {
 
     String id;

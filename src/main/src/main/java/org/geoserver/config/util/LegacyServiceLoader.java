@@ -20,6 +20,7 @@ import org.geoserver.config.ServiceLoader;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
+@SuppressWarnings("rawtypes")
 public abstract class LegacyServiceLoader<T extends ServiceInfo> implements ServiceLoader<T> {
 
     /** reader pointing to services.xml */

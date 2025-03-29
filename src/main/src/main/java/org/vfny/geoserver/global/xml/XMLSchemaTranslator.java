@@ -83,7 +83,7 @@ public class XMLSchemaTranslator extends NameSpaceTranslator {
      * @see org.vfny.geoserver.global.xml.NameSpaceTranslator#getElements()
      */
     @Override
-    public Set getElements() {
+    public Set<NameSpaceElement> getElements() {
         return elements;
     }
 

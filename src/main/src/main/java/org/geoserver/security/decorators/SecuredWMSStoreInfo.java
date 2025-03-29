@@ -13,6 +13,7 @@ import org.geoserver.security.WrapperPolicy;
 import org.geotools.api.util.ProgressListener;
 import org.geotools.ows.wms.WebMapServer;
 
+@SuppressWarnings("serial")
 public class SecuredWMSStoreInfo extends DecoratingWMSStoreInfo {
 
     WrapperPolicy policy;

@@ -395,8 +395,10 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
         if (destinationFile.getAbsolutePath().equalsIgnoreCase(sourceFile.getAbsolutePath()))
             throw new IllegalArgumentException("Cannot copy a file on itself");
 
-        try (FileChannel src = new RandomAccessFile(sourceFile, "r").getChannel();
-                FileChannel dst = new RandomAccessFile(destinationFile, "rw").getChannel()) {
+        try (RandomAccessFile srcRaf = new RandomAccessFile(sourceFile, "r");
+                RandomAccessFile dstRaf = new RandomAccessFile(destinationFile, "rw");
+                FileChannel src = srcRaf.getChannel();
+                FileChannel dst = dstRaf.getChannel()) {
             copyFileChannel(size, src, dst);
         }
     }
@@ -452,6 +454,7 @@ public class IOUtils extends org.apache.commons.io.IOUtils {
      * @return a <code>FileChannel</code>
      * @throws IOException in case something bad happens.
      */
+    @SuppressWarnings("resource")
     public static FileChannel getInputChannel(File source) {
         inputNotNull(source);
         if (!source.exists() || !source.canRead() || !source.isDirectory())

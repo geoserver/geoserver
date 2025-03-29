@@ -24,7 +24,7 @@ public class MessageXmlParser extends XmlRequestReader {
     }
 
     @Override
-    public Object read(Object request, Reader reader, Map kvp) throws Exception {
+    public Object read(Object request, Reader reader, @SuppressWarnings("rawtypes") Map kvp) throws Exception {
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 

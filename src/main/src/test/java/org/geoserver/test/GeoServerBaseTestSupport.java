@@ -75,6 +75,7 @@ public abstract class GeoServerBaseTestSupport<T extends TestData> {
     protected static TestData testData;
 
     /** test instance, used to give subclass hooks for one time setup/teardown */
+    @SuppressWarnings("rawtypes")
     protected static GeoServerBaseTestSupport test;
 
     /** Controls the frequency of the test setup */

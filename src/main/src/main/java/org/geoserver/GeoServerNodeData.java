@@ -139,11 +139,12 @@ public class GeoServerNodeData {
         try {
             InetAddress candidateAddress = null;
             // Iterate all NICs (network interface cards)...
-            for (Enumeration interfaces = NetworkInterface.getNetworkInterfaces(); interfaces.hasMoreElements(); ) {
-                NetworkInterface ni = (NetworkInterface) interfaces.nextElement();
+            for (Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+                    interfaces.hasMoreElements(); ) {
+                NetworkInterface ni = interfaces.nextElement();
                 // each interface can have more than one address
-                for (Enumeration inetAddrs = ni.getInetAddresses(); inetAddrs.hasMoreElements(); ) {
-                    InetAddress inetAddr = (InetAddress) inetAddrs.nextElement();
+                for (Enumeration<InetAddress> inetAddrs = ni.getInetAddresses(); inetAddrs.hasMoreElements(); ) {
+                    InetAddress inetAddr = inetAddrs.nextElement();
                     // we are not interested in loopback
                     if (!inetAddr.isLoopbackAddress()) {
                         if (inetAddr.isSiteLocalAddress()) {

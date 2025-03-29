@@ -197,6 +197,7 @@ public class FileSandboxEnforcer extends AbstractCatalogListener {
     }
 
     /** Sandbox exception, thrown when a user tries to access a file outside the sandbox */
+    @SuppressWarnings("serial")
     public static class SandboxException extends CatalogException {
         private final File file;
 

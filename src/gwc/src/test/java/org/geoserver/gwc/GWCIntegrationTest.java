@@ -174,6 +174,7 @@ public class GWCIntegrationTest extends GeoServerSystemTestSupport {
                         "Style %0 should be in workspace %1.",
                         not(nullValue()), WORKSPACED_STYLE_NAME, TEST_WORKSPACE_NAME));
 
+        @SuppressWarnings("rawtypes")
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, WORKSPACED_STYLE_NAME);
         testData.addVectorLayer(WORKSPACED_LAYER_QNAME, props, this.getClass(), catalog);

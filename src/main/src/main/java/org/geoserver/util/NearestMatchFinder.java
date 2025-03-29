@@ -45,7 +45,7 @@ import org.geotools.util.Range;
 import org.geotools.util.factory.Hints;
 
 /** Support class to find the nearest match to a given dimension value */
-@SuppressWarnings("unchecked") // uses Range in a raw way, not sure it can be generified, must
+@SuppressWarnings({"unchecked", "rawtypes"}) // uses Range in a raw way, not sure it can be generified, must
 // work for Numbers and Dates at the same time
 public abstract class NearestMatchFinder {
 

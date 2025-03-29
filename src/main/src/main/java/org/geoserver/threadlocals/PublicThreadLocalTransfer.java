@@ -38,7 +38,7 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
 
     @Override
     public void collect(Map<String, Object> storage) {
-        ThreadLocal threadLocal = getThreadLocal();
+        ThreadLocal<Object> threadLocal = getThreadLocal();
         if (threadLocal != null) {
             Object value = threadLocal.get();
             storage.put(key, value);
@@ -48,15 +48,15 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
     @Override
     public void apply(Map<String, Object> storage) {
         Object value = storage.get(key);
-        ThreadLocal threadLocal = getThreadLocal();
+        ThreadLocal<Object> threadLocal = getThreadLocal();
         if (threadLocal != null) {
             threadLocal.set(value);
         }
     }
 
-    ThreadLocal getThreadLocal() {
+    ThreadLocal<Object> getThreadLocal() {
         try {
-            return (ThreadLocal) field.get(null);
+            return (ThreadLocal<Object>) field.get(null);
         } catch (Exception e) {
             throw new RuntimeException("Failed to grab thread local " + key + " for transfer into other threads", e);
         }
@@ -64,7 +64,7 @@ public class PublicThreadLocalTransfer implements ThreadLocalTransfer {
 
     @Override
     public void cleanup() {
-        ThreadLocal threadLocal = getThreadLocal();
+        ThreadLocal<?> threadLocal = getThreadLocal();
         if (threadLocal != null) {
             threadLocal.remove();
         }

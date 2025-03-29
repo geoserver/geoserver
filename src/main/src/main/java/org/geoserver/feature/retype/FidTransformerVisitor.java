@@ -30,7 +30,7 @@ class FidTransformerVisitor extends DuplicatingFilterVisitor {
 
     @Override
     public Object visit(Id filter, Object extraData) {
-        Set ids = filter.getIDs();
+        Set<Object> ids = filter.getIDs();
         if (ids.isEmpty()) {
             throw new IllegalArgumentException("Invalid fid filter provides, has no fids inside");
         }

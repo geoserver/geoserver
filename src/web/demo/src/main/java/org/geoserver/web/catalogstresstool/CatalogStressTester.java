@@ -120,7 +120,7 @@ public class CatalogStressTester extends GeoServerSecuredPage {
     public CatalogStressTester() {
         super();
         setDefaultModel(new Model<>());
-        Form form = new Form<>("form", new Model<>());
+        Form<?> form = new Form<>("form", new Model<>());
         add(form);
 
         IModel<List<Tuple>> wsModel = new WorkspacesTestModel();
@@ -296,9 +296,9 @@ public class CatalogStressTester extends GeoServerSecuredPage {
             FeatureTypeInfo.class,
             WMSLayerInfo.class
         };
-        for (Class c : interfaces) {
+        for (Class<?> c : interfaces) {
             if (c.isAssignableFrom(original.getClass())) {
-                return c;
+                return (Class<? extends CatalogInfo>) c;
             }
         }
         throw new IllegalArgumentException();

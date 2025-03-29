@@ -40,7 +40,7 @@ import org.geoserver.web.wicket.SimpleAjaxLink;
 public abstract class SecurityNamedServicesPanel<T extends SecurityNamedServiceConfig> extends Panel {
 
     SecurityNamedServiceTablePanel<T> tablePanel;
-    AjaxLink removeLink;
+    AjaxLink<?> removeLink;
     FeedbackPanel feedbackPanel;
     GeoServerDialog dialog;
 

@@ -139,10 +139,8 @@ public abstract class AbstractURLPublisher extends AbstractController {
     }
 
     private boolean checkNotModified(HttpServletRequest request, long timeStamp) {
-        Enumeration headers = request.getHeaders("If-Modified-Since");
-        String header = headers != null && headers.hasMoreElements()
-                ? headers.nextElement().toString()
-                : null;
+        Enumeration<String> headers = request.getHeaders("If-Modified-Since");
+        String header = headers != null && headers.hasMoreElements() ? headers.nextElement() : null;
         if (header != null && !header.isEmpty()) {
             long ifModSinceSeconds = lastModified(header);
             // the HTTP header has second precision

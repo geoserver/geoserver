@@ -27,6 +27,7 @@ import org.geotools.api.filter.Filter;
  * @author Gabriel Roldan
  * @version $Id$
  */
+@SuppressWarnings("serial")
 public class GeoServerFeatureLocking extends GeoServerFeatureStore implements SimpleFeatureLocking {
     /**
      * Creates a new DEFQueryFeatureLocking object.

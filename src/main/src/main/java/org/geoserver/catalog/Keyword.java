@@ -7,6 +7,7 @@ package org.geoserver.catalog;
 
 import java.io.Serializable;
 
+@SuppressWarnings("serial")
 public class Keyword implements Serializable, KeywordInfo {
 
     String value;

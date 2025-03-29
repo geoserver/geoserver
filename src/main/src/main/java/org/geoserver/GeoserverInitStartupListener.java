@@ -255,7 +255,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * residual thread launched by the web app.
      */
     @Override
-    @SuppressWarnings("PMD.ForLoopCanBeForeach")
+    @SuppressWarnings({"PMD.ForLoopCanBeForeach", "rawtypes"})
     public void contextDestroyed(ServletContextEvent sce) {
         try {
             LOGGER.info("Beginning GeoServer cleanup sequence");
@@ -350,7 +350,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
             Set<IIOServiceProvider> providersToUnload = new HashSet<>();
             for (Iterator<Class<?>> cats = ioRegistry.getCategories(); cats.hasNext(); ) {
                 Class<?> category = cats.next();
-                for (Iterator it = ioRegistry.getServiceProviders(category, false); it.hasNext(); ) {
+                for (Iterator<?> it = ioRegistry.getServiceProviders(category, false); it.hasNext(); ) {
                     final IIOServiceProvider provider = (IIOServiceProvider) it.next();
                     if (webappClassLoader.equals(provider.getClass().getClassLoader())) {
                         providersToUnload.add(provider);
@@ -470,6 +470,7 @@ public class GeoserverInitStartupListener implements ServletContextListener {
      * @param context The servlet context used to look into web.xml (may be null)
      * @return logging redirection policy
      */
+    @SuppressWarnings("rawtypes")
     GeoToolsLoggingRedirection establishLoggingRedirectionPolicy(ServletContext context) {
         GeoToolsLoggingRedirection policy =
                 GeoToolsLoggingRedirection.findValue(getProperty(LoggingUtils.GT2_LOGGING_REDIRECTION, context));

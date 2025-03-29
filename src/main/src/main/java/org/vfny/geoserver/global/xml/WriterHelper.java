@@ -23,6 +23,7 @@ import org.vfny.geoserver.global.ConfigurationException;
  * @author dzwiers, Refractions Research, Inc.
  * @version $Id$
  */
+@SuppressWarnings("rawtypes")
 public class WriterHelper {
     /**
      * Will find out if a string contains chars that need to be turned into an xml entity, even if the string has

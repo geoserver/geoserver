@@ -26,6 +26,7 @@ import org.geotools.util.logging.Logging;
  *
  * @author Niels Charlier, Curtin University of Technology
  */
+@SuppressWarnings("rawtypes")
 public class DirectTemplateFeatureCollectionFactory
         implements FeatureWrapper.TemplateFeatureCollectionFactory<
                 DirectTemplateFeatureCollectionFactory.TemplateFeatureCollection> {

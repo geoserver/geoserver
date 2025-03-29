@@ -50,7 +50,12 @@ import org.locationtech.jts.geom.Envelope;
  *
  * @author Justin Deoliveira, The Open Planning Project
  */
-@SuppressWarnings({"unchecked", "PMD.JUnit4TestShouldUseBeforeAnnotation", "PMD.JUnit4TestShouldUseAfterAnnotation"})
+@SuppressWarnings({
+    "rawtypes",
+    "unchecked",
+    "PMD.JUnit4TestShouldUseBeforeAnnotation",
+    "PMD.JUnit4TestShouldUseAfterAnnotation"
+})
 public class MockData implements TestData {
     // Extra configuration keys for vector data
     /** Use FeatureTypeInfo constants for srs handling as values or use {@link ProjectionPolicy} values straight */

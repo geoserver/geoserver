@@ -13,6 +13,7 @@ import org.geoserver.catalog.StyleInfo;
 import org.geoserver.catalog.impl.FilteredList;
 import org.geotools.util.decorate.AbstractDecorator;
 
+@SuppressWarnings("serial")
 public class SecuredLayerGroupInfo extends DecoratingLayerGroupInfo {
 
     private LayerInfo rootLayer;

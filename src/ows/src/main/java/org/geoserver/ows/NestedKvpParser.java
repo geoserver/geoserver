@@ -95,7 +95,7 @@ public class NestedKvpParser extends KvpParser {
      *     {@link #parseTokenSet(List)}.
      * @return The final object.
      */
-    protected Object parse(List values) throws Exception {
+    protected Object parse(List<Object> values) throws Exception {
         return values;
     }
 }

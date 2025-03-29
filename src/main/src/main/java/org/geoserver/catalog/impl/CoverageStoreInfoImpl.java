@@ -15,6 +15,7 @@ import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.util.factory.Hints;
 
 /** Default implementation of {@link CoverageStoreInfo}. */
+@SuppressWarnings("serial")
 public class CoverageStoreInfoImpl extends StoreInfoImpl implements CoverageStoreInfo {
 
     protected String url;

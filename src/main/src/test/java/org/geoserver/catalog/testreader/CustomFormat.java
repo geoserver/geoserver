@@ -36,6 +36,7 @@ public final class CustomFormat extends AbstractGridFormat {
     private static final String TYPE_NAME = "org.geoserver.catalog.testreader.CustomFormat";
     static final Logger LOGGER = Logging.getLogger(CustomFormat.class);
 
+    @SuppressWarnings("rawtypes")
     private static final ParameterDescriptor<List> CUSTOM_DIMENSION = DefaultParameterDescriptor.create(
             CUSTOM_DIMENSION_NAME, "Optional list of nonstandard dimension values", List.class, null, false);
 

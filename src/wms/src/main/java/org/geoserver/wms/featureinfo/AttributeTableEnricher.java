@@ -62,13 +62,17 @@ class AttributeTableEnricher {
         List<PAMDataset.PAMRasterBand.FieldDefn> fields =
                 pamRasterBand.getGdalRasterAttributeTable().getFieldDefn();
         for (PAMDataset.PAMRasterBand.FieldDefn field : fields) {
-            Class type = String.class;
+            Class<?> type;
             switch (field.getType()) {
                 case Integer:
                     type = Long.class;
                     break;
                 case Real:
                     type = Double.class;
+                    break;
+                case String:
+                default:
+                    type = String.class;
                     break;
             }
 

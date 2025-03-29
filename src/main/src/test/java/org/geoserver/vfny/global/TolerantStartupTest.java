@@ -24,6 +24,7 @@ public class TolerantStartupTest extends GeoServerSystemTestSupport {
     protected void setUpTestData(SystemTestData testData) throws Exception {
         QName name = SystemTestData.BASIC_POLYGONS;
         String styleName = name.getLocalPart();
+        @SuppressWarnings("rawtypes")
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.STYLE, styleName);
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.REPROJECT_TO_DECLARED);

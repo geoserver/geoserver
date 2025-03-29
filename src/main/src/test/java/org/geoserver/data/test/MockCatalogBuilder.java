@@ -171,7 +171,7 @@ public class MockCatalogBuilder {
 
     // IAnswer cannot be fixed,
     // https://stackoverflow.com/questions/56954/easymock-how-do-i-create-a-mock-of-a-genericized-class-without-a-warning
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public MockCatalogBuilder dataStore(String name) {
         String dsId = newId();
         final WorkspaceInfo ws = workspaces.peekLast();
@@ -289,7 +289,7 @@ public class MockCatalogBuilder {
         return featureType(name, null, ProjectionPolicy.NONE, null, DEFAULT_LATLON_ENVELOPE);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "rawtypes"})
     public MockCatalogBuilder featureType(
             final String name,
             String srs,

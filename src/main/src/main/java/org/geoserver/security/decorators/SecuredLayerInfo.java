@@ -14,6 +14,7 @@ import org.geoserver.catalog.WMTSLayerInfo;
 import org.geoserver.security.SecureCatalogImpl;
 import org.geoserver.security.WrapperPolicy;
 
+@SuppressWarnings("serial")
 public class SecuredLayerInfo extends DecoratingLayerInfo {
 
     WrapperPolicy policy;

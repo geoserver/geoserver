@@ -32,8 +32,8 @@ public class SequenceMapModel extends MapModel implements TemplateSequenceModel 
     }
 
     @Override
-    @SuppressWarnings("unchecked")
-    protected Set keySet() {
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    protected Set<?> keySet() {
         // override, just return the map contents
         Set<Object> set = new HashSet<>();
         set.addAll(((Map) object).keySet());

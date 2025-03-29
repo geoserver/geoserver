@@ -214,6 +214,7 @@ class CoverageViewHandler {
 
         private static double DELTA = 1E-10;
 
+        @SuppressWarnings({"rawtypes", "unused"})
         private Set<ParameterDescriptor<List>> dynamicParameters; // NOPMD
 
         private String[] metadataNames;

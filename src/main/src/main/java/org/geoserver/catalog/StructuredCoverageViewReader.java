@@ -88,6 +88,7 @@ public class StructuredCoverageViewReader extends CoverageViewReader implements 
 
         private CoverageView coverageView;
 
+        @SuppressWarnings("unused")
         private String name; // NOPMD
 
         private boolean readOnly;

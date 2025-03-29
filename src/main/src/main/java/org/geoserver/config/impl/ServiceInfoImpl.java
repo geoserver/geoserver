@@ -21,6 +21,7 @@ import org.geotools.api.util.InternationalString;
 import org.geotools.util.GrowableInternationalString;
 import org.geotools.util.Version;
 
+@SuppressWarnings("serial")
 public class ServiceInfoImpl implements ServiceInfo {
 
     protected String id;

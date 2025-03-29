@@ -93,8 +93,8 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                 List<GeneralParameterValue> params = new ArrayList<>(Arrays.asList(parameters));
                 for (GeneralParameterValue lparam : limitParams) {
                     // remove the overwritten param, if any
-                    for (Iterator it = params.iterator(); it.hasNext(); ) {
-                        GeneralParameterValue param = (GeneralParameterValue) it.next();
+                    for (Iterator<GeneralParameterValue> it = params.iterator(); it.hasNext(); ) {
+                        GeneralParameterValue param = it.next();
                         if (param.getDescriptor().equals(lparam.getDescriptor())) {
                             it.remove();
                             break;
@@ -120,7 +120,7 @@ public class SecuredGridCoverage2DReader extends DecoratingGridCoverage2DReader 
                     String pdCode = pv.getDescriptor().getName().getCode();
                     if ("FILTER".equals(pdCode) || "Filter".equals(pdCode)) {
                         replacedOriginalFilter = true;
-                        ParameterValue pvalue = (ParameterValue) pv;
+                        ParameterValue<?> pvalue = (ParameterValue<?>) pv;
                         Filter originalFilter = (Filter) pvalue.getValue();
                         if (originalFilter == null || Filter.INCLUDE.equals(originalFilter)) {
                             pvalue.setValue(readFilter);

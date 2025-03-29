@@ -35,6 +35,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
         initUI();
     }
 
+    @SuppressWarnings("serial")
     protected void initUI() {
 
         List<ITab> tabs = new ArrayList<>();
@@ -94,7 +95,7 @@ public abstract class AbstractStatusPage extends ServerAdminPage {
             });
             tabs.add(tab);
         });
-        AjaxTabbedPanel tabbedPanel = new AjaxTabbedPanel<>("tabs", tabs);
+        AjaxTabbedPanel<?> tabbedPanel = new AjaxTabbedPanel<>("tabs", tabs);
         tabbedPanel.get("panel").add(new Behavior() {
 
             @Override

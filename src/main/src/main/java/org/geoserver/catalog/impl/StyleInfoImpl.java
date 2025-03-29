@@ -18,6 +18,7 @@ import org.geotools.api.style.Style;
 import org.geotools.api.style.StyledLayerDescriptor;
 import org.geotools.util.Version;
 
+@SuppressWarnings("serial")
 public class StyleInfoImpl implements StyleInfo {
 
     /** Marks a remote style, generated on the fly from a capabilites document */

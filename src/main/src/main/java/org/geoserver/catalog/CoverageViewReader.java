@@ -188,7 +188,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         }
         GridGeometry2D requestedGridGeometry = null;
         if (ggParameter.isPresent()) {
-            ParameterValue value = (ParameterValue) ggParameter.get();
+            ParameterValue<?> value = (ParameterValue<?>) ggParameter.get();
             requestedGridGeometry = (GridGeometry2D) value.getValue();
             ReferencedEnvelope requestedEnvelope = ReferencedEnvelope.reference(requestedGridGeometry.getEnvelope());
             ReferencedEnvelope dataEnvelope = ReferencedEnvelope.reference(handler.getOriginalEnvelope());
@@ -411,7 +411,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
             // check if multi-threaded loading is enabled
             multiThreadedLoading = Arrays.stream(parameters)
                     .filter(parameter -> matches(parameter, ImageMosaicFormat.ALLOW_MULTITHREADING))
-                    .map(p -> Boolean.TRUE.equals(((ParameterValue) p).getValue()))
+                    .map(p -> Boolean.TRUE.equals(((ParameterValue<?>) p).getValue()))
                     .findFirst()
                     .orElse(false);
         } else {
@@ -563,7 +563,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
 
         if (parameters != null) {
             for (GeneralParameterValue parameter : parameters) {
-                final ParameterValue param = (ParameterValue) parameter;
+                final ParameterValue<?> param = (ParameterValue<?>) parameter;
                 if (AbstractGridFormat.BANDS
                         .getName()
                         .equals(param.getDescriptor().getName())) {
@@ -937,6 +937,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         return read(parameters);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters(String coverageName) throws IOException {
         checkCoverageName(coverageName);
@@ -982,6 +983,7 @@ public class CoverageViewReader implements GridCoverage2DReader {
         return delegate.getCoordinateReferenceSystem(referenceName);
     }
 
+    @SuppressWarnings("rawtypes")
     @Override
     public Set<ParameterDescriptor<List>> getDynamicParameters() throws IOException {
         return delegate.getDynamicParameters(referenceName);

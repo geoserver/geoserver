@@ -19,6 +19,7 @@ import org.geotools.ows.wms.Layer;
  *
  * @author Andrea Aime - TOPP
  */
+@SuppressWarnings("serial")
 public class SecuredWMSLayerInfo extends DecoratingWMSLayerInfo {
 
     WrapperPolicy policy;

@@ -46,6 +46,7 @@ import org.w3c.dom.Element;
  *
  * @author Justin Deoliveira, The Open Planning Project, jdeolive@openplans.org
  */
+@SuppressWarnings("rawtypes")
 public class CatalogWriter {
     /** The xml document */
     Document document;

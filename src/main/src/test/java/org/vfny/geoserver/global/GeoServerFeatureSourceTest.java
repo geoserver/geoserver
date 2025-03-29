@@ -74,6 +74,7 @@ public class GeoServerFeatureSourceTest {
 
         // wrap with a filter capturing reader
         AtomicReference<Filter> lastFilter = new AtomicReference<>();
+        @SuppressWarnings("serial")
         DecoratingSimpleFeatureSource roads = new DecoratingSimpleFeatureSource(basicRoads) {
             @Override
             public int getCount(Query query) throws IOException {

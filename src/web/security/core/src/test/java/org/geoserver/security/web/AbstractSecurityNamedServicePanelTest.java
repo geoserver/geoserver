@@ -212,7 +212,7 @@ public abstract class AbstractSecurityNamedServicePanelTest extends AbstractSecu
                 if (clazz.isInstance(listItem.getModelObject())) {
                     listItem.forEach(action -> {
                         if (action instanceof AjaxLink) {
-                            AjaxLink link = (AjaxLink) action;
+                            AjaxLink<?> link = (AjaxLink<?>) action;
                             if (link.isEnabled()) {
                                 tester.executeAjaxEvent(link, "click");
                             }

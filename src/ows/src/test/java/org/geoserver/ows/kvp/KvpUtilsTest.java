@@ -28,9 +28,9 @@ public class KvpUtilsTest {
 
     @Test
     public void testEmtpyNestedString() {
-        List result = KvpUtils.readNested("");
+        List<List<String>> result = KvpUtils.readNested("");
         Assert.assertEquals(1, result.size());
-        Assert.assertEquals(0, ((List) result.get(0)).size());
+        Assert.assertEquals(0, result.get(0).size());
     }
 
     @Test
@@ -41,16 +41,16 @@ public class KvpUtilsTest {
 
     @Test
     public void testStarNestedString() {
-        List result = KvpUtils.readNested("*");
+        List<List<String>> result = KvpUtils.readNested("*");
         Assert.assertEquals(1, result.size());
-        Assert.assertEquals(0, ((List) result.get(0)).size());
+        Assert.assertEquals(0, result.get(0).size());
     }
 
     @Test
     public void testWellKnownTokenizers() {
 
         String[] expected = {"1", "2", "3", ""};
-        List actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
+        List<String> actual = KvpUtils.readFlat("1,2,3,", KvpUtils.INNER_DELIMETER);
         assertKvp(expected, actual);
 
         expected = new String[] {"abc", "def", ""};
@@ -82,15 +82,15 @@ public class KvpUtilsTest {
     public void testRadFlatUnkownDelimiter() {
 
         final String[] expected = {"1", "2", "3", ""};
-        List actual = KvpUtils.readFlat("1^2^3^", "\\^");
+        List<String> actual = KvpUtils.readFlat("1^2^3^", "\\^");
         assertKvp(expected, actual);
 
         actual = KvpUtils.readFlat("1-2-3-", "-");
         assertKvp(expected, actual);
     }
 
-    private void assertKvp(String[] expected, List actual) {
-        List expectedList = Arrays.asList(expected);
+    private void assertKvp(String[] expected, List<String> actual) {
+        List<String> expectedList = Arrays.asList(expected);
         Assert.assertEquals(expectedList.size(), actual.size());
         Assert.assertEquals(expectedList, actual);
     }

@@ -40,6 +40,7 @@ public class ProjectionPolicyTest extends GeoServerSystemTestSupport {
 
     @Override
     protected void setUpTestData(SystemTestData testData) throws Exception {
+        @SuppressWarnings("rawtypes")
         Map<LayerProperty, Object> props = new HashMap<>();
         props.put(LayerProperty.PROJECTION_POLICY, ProjectionPolicy.FORCE_DECLARED);
         props.put(LayerProperty.SRS, 4269);

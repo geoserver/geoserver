@@ -293,7 +293,7 @@ public class DataStoreController extends AbstractCatalogController {
             }
 
             @Override
-            protected void wrapInternal(SimpleHash model, Collection object) {
+            protected void wrapInternal(SimpleHash model, Collection<DataStoreInfo> object) {
                 for (Object w : object) {
                     DataStoreInfo wk = (DataStoreInfo) w;
                     wrapInternal(null, model, wk);

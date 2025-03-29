@@ -19,6 +19,7 @@ import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.config.SettingsInfo;
 import org.geoserver.filters.LoggingFilter;
 
+@SuppressWarnings("serial")
 public class GeoServerInfoImpl implements GeoServerInfo {
 
     public static final String TRAILING_SLASH_MATCH_KEY = "org.geoserver.trailingSlashMatch";

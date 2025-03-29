@@ -57,7 +57,7 @@ public class FlatKvpParser extends KvpParser {
     /** Tokenizes the value and delegates to {@link #parseToken(String)} to parse each token. */
     @Override
     public final Object parse(String value) throws Exception {
-        List tokens = KvpUtils.readFlat(value, delimiter);
+        List<String> tokens = KvpUtils.readFlat(value, delimiter);
         List<Object> parsed = new ArrayList<>(tokens.size());
         for (Object o : tokens) {
             String token = (String) o;
@@ -87,7 +87,7 @@ public class FlatKvpParser extends KvpParser {
      * @param values The parsed tokens, each value is an instance of {@link #getBinding()}.
      * @return The final object.
      */
-    protected Object parse(List values) throws Exception {
+    protected Object parse(List<Object> values) throws Exception {
         return values;
     }
 }

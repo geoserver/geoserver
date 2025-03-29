@@ -173,7 +173,7 @@ public class AboutController extends RestBaseController {
         xs.registerConverter(new Converter() {
 
             @Override
-            public boolean canConvert(Class type) {
+            public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                 return type.equals(ManifestModel.class);
             }
 
@@ -186,7 +186,7 @@ public class AboutController extends RestBaseController {
                     context.convertAnother(entry, new Converter() {
 
                         @Override
-                        public boolean canConvert(Class type) {
+                        public boolean canConvert(@SuppressWarnings("rawtypes") Class type) {
                             return Entry.class.isAssignableFrom(type);
                         }
 

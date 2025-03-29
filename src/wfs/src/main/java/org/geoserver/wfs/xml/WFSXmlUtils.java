@@ -6,28 +6,22 @@
 package org.geoserver.wfs.xml;
 
 import java.io.Reader;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.namespace.QName;
 import org.geoserver.catalog.Catalog;
-import org.geoserver.catalog.FeatureTypeInfo;
 import org.geoserver.config.GeoServer;
-import org.geoserver.config.ResourceErrorHandling;
 import org.geoserver.ows.XmlRequestReader;
 import org.geoserver.platform.GeoServerExtensions;
+import org.geoserver.wfs.CatalogFeatureTypeCache;
 import org.geoserver.wfs.CatalogNamespaceSupport;
 import org.geoserver.wfs.WFSException;
 import org.geoserver.wfs.WFSInfo;
 import org.geoserver.wfs.xml.gml3.AbstractGeometryTypeBinding;
-import org.geotools.api.feature.type.FeatureType;
 import org.geotools.api.referencing.crs.CoordinateReferenceSystem;
 import org.geotools.gml2.FeatureTypeCache;
 import org.geotools.gml2.SrsSyntax;
 import org.geotools.util.Converters;
-import org.geotools.util.logging.Logging;
 import org.geotools.xsd.Configuration;
 import org.geotools.xsd.OptionalComponentParameter;
 import org.geotools.xsd.Parser;
@@ -45,8 +39,6 @@ import org.xml.sax.InputSource;
  * @author Justin Deoliveira, OpenGeo
  */
 public class WFSXmlUtils {
-
-    private static final Logger LOGGER = Logging.getLogger(WFSXmlUtils.class);
 
     public static final String ENTITY_EXPANSION_LIMIT = "org.geoserver.wfs.xml.entityExpansionLimit";
 
@@ -101,32 +93,10 @@ public class WFSXmlUtils {
         MutablePicoContainer context = config.getContext();
 
         // seed the cache with entries from the catalog
-        FeatureTypeCache featureTypeCache = new FeatureTypeCache();
-
-        Collection featureTypes = gs.getCatalog().getFeatureTypes();
-        for (Object type : featureTypes) {
-            FeatureTypeInfo meta = (FeatureTypeInfo) type;
-            if (!meta.enabled()) {
-                continue;
-            }
-
-            FeatureType featureType = null;
-            try {
-                featureType = meta.getFeatureType();
-            } catch (Exception e) {
-                if (ResourceErrorHandling.SKIP_MISCONFIGURED_LAYERS
-                        == gs.getGlobal().getResourceErrorHandling()) {
-                    LOGGER.log(Level.FINE, "Skipping misconfigured feature type", e);
-                    break;
-                }
-                throw new RuntimeException(e);
-            }
-
-            featureTypeCache.put(featureType);
-        }
+        FeatureTypeCache featureTypeCache = new CatalogFeatureTypeCache(gs.getCatalog());
 
         // add the wfs handler factory to handle feature elements
-        context.registerComponentInstance(featureTypeCache);
+        context.registerComponentInstance(FeatureTypeCache.class, featureTypeCache);
         context.registerComponentInstance(new WFSHandlerFactory(gs.getCatalog(), schemaBuilder));
     }
 
